@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Auth.js required models
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          UserRole  @default(CUSTOMER)
+  
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  orders        Order[]
+  
+  // Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Business models
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique @default(cuid())
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  
+  // Customer info
+  email           String
+  phone           String?
+  
+  // Order details
+  status          OrderStatus @default(PENDING_PAYMENT)
+  items           OrderItem[]
+  files           OrderFile[]
+  
+  // Square integration (SINGLE SDK)
+  squareOrderId   String?
+  squarePaymentId String?
+  squareCustomerId String?
+  
+  // Pricing
+  subtotal        Float
+  tax             Float
+  shipping        Float
+  total           Float
+  
+  // Shipping
+  shippingAddress Json
+  shippingMethod  String?
+  trackingNumber  String?
+  carrier         Carrier?
+  
+  // Metadata
+  adminNotes      String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deleteAt        DateTime    @default(dbgenerated("(NOW() + '1 year'::interval)"))
+  
+  // Relations
+  statusHistory   StatusHistory[]
+  notifications   Notification[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productName String
+  productSku  String
+  quantity    Int
+  price       Float
+  options     Json?    // Size, paper type, etc.
+  
+  createdAt   DateTime @default(now())
+}
+
+model OrderFile {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  fileName    String
+  fileUrl     String   // MinIO URL
+  fileSize    BigInt
+  mimeType    String
+  metadata    Json?    // DPI, dimensions, etc.
+  
+  uploadedAt  DateTime @default(now())
+}
+
+model StatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  note       String?
+  changedBy  String?
+  
+  createdAt  DateTime   @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  
+  type      NotificationType
+  sent      Boolean  @default(false)
+  sentAt    DateTime?
+  error     String?
+  
+  createdAt DateTime @default(now())
+}
+
+// Enums
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  PRINTING
+  QUALITY_CHECK
+  PACKAGING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum Carrier {
+  FEDEX
+  UPS
+  SOUTHWEST_CARGO
+}
+
+enum NotificationType {
+  ORDER_CONFIRMED
+  PAYMENT_RECEIVED
+  ORDER_PROCESSING
+  ORDER_SHIPPED
+  ORDER_DELIVERED
+}
