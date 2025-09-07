@@ -75,7 +75,7 @@ model Order {
   // Order details
   status          OrderStatus @default(PENDING_PAYMENT)
   items           OrderItem[]
-  files           OrderFile[]
+  files           File[]
   
   // Square integration (SINGLE SDK)
   squareOrderId   String?
@@ -87,6 +87,9 @@ model Order {
   tax             Float
   shipping        Float
   total           Float
+  refundAmount    Float?
+  paidAt          DateTime?
+  refundedAt      DateTime?
   
   // Shipping
   shippingAddress Json
@@ -119,18 +122,20 @@ model OrderItem {
   createdAt   DateTime @default(now())
 }
 
-model OrderFile {
+model File {
   id          String   @id @default(cuid())
   orderId     String
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   
-  fileName    String
+  filename    String
   fileUrl     String   // MinIO URL
-  fileSize    BigInt
+  fileSize    Int
   mimeType    String
+  uploadedBy  String
   metadata    Json?    // DPI, dimensions, etc.
   
-  uploadedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model StatusHistory {
@@ -140,7 +145,7 @@ model StatusHistory {
   
   fromStatus OrderStatus?
   toStatus   OrderStatus
-  note       String?
+  notes      String?
   changedBy  String?
   
   createdAt  DateTime   @default(now())
@@ -172,10 +177,12 @@ enum OrderStatus {
   PRINTING
   QUALITY_CHECK
   PACKAGING
+  READY_FOR_PICKUP
   SHIPPED
   DELIVERED
   CANCELLED
   REFUNDED
+  PAYMENT_FAILED
 }
 
 enum Carrier {
@@ -190,4 +197,5 @@ enum NotificationType {
   ORDER_PROCESSING
   ORDER_SHIPPED
   ORDER_DELIVERED
+  ORDER_REFUNDED
 }

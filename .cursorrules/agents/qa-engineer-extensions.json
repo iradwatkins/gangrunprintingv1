@@ -1,0 +1,19 @@
+{
+  "agent": "qa-engineer",
+  "extensions": {
+    "required": [
+      "ms-playwright.playwright",
+      "Orta.vscode-jest",
+      "ryanluker.vscode-coverage-gutters"
+    ],
+    "autoActivate": true,
+    "commands": [
+      "testing.viewAsTree",
+      "coverage-gutters.displayCoverage"
+    ],
+    "mcpIntegration": {
+      "playwright": ["playwright-extension"],
+      "ref-tools": ["test-references"]
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import NextAuth from "next-auth"
 import { NextAuthConfig } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import GoogleProvider from "next-auth/providers/google"
@@ -35,13 +36,15 @@ export const authConfig: NextAuthConfig = {
     error: "/auth/error",
   },
   callbacks: {
-    async session({ session, user }) {
+    async session({ session, user }: any) {
       if (session?.user) {
         session.user.id = user.id
-        session.user.role = (user as any).role
+        session.user.role = user.role
       }
       return session
     },
   },
   trustHost: true,
 }
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)

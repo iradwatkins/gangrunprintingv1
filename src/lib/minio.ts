@@ -86,9 +86,9 @@ export async function deleteFile(objectName: string) {
 export async function listFiles(prefix?: string) {
   try {
     const stream = minioClient.listObjects(BUCKET_NAME, prefix, true)
-    const files: Minio.BucketItem[] = []
+    const files: any[] = []
     
-    return new Promise<Minio.BucketItem[]>((resolve, reject) => {
+    return new Promise<any[]>((resolve, reject) => {
       stream.on('data', (obj) => files.push(obj))
       stream.on('error', reject)
       stream.on('end', () => resolve(files))
