@@ -1,0 +1,33 @@
+{
+  "BMAD Status Update": {
+    "prefix": "bmad-status",
+    "body": [
+      "🤖 BMAD STATUS UPDATE",
+      "════════════════════",
+      "Current Agent: ${1:Active Agent}",
+      "Task: ${2:Current Task}",
+      "MCP Tools Active: ${3:Tools}",
+      "Progress: [██████████░░░░░░] ${4:65}%",
+      "Next Agent: ${5:Next Agent}",
+      "════════════════════"
+    ]
+  },
+  "Next.js Page Component": {
+    "prefix": "bmad-page",
+    "body": [
+      "'use client'",
+      "",
+      "import { useState, useEffect } from 'react'",
+      "",
+      "export default function ${1:PageName}() {",
+      "  const [${2:state}, set${2/(.*)/${1:/capitalize}/}] = useState(${3:initial})",
+      "",
+      "  return (",
+      "    <div className=\"${4:container mx-auto p-4}\">",
+      "      ${0:// Component content}",
+      "    </div>",
+      "  )",
+      "}"
+    ]
+  }
+}

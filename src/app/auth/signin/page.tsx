@@ -1,10 +1,10 @@
 'use client'
 
 import { signIn } from "next-auth/react"
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 
-export default function SignIn() {
+function SignInContent() {
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const searchParams = useSearchParams()
@@ -93,5 +93,17 @@ export default function SignIn() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   )
 }

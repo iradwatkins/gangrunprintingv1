@@ -1,0 +1,9 @@
+# MCP-EXTENSION BRIDGE CONFIGURATION
+
+## AUTOMATIC TOOL-EXTENSION COORDINATION
+
+When shadcn-ui generates → Open in editor, Enable Tailwind, Format
+When playwright runs → Open Test Explorer, Show coverage, Display trace
+When git operates → Show commit graph, Display blame, Open diff
+When exa searches → Create .http file, Execute requests, Generate types
+When firecrawl extracts → Create markdown, Generate TOC, Open preview

@@ -1,0 +1,46 @@
+{
+  "bmadMcpServers": {
+    "description": "MCP servers configured for BMAD agents",
+    "servers": {
+      "filesystem": {
+        "status": "active",
+        "purpose": "File system operations for all agents",
+        "command": "npx -y @modelcontextprotocol/server-filesystem"
+      },
+      "memory": {
+        "status": "active", 
+        "purpose": "Context and memory management for agents",
+        "command": "npx -y @modelcontextprotocol/server-memory"
+      },
+      "github": {
+        "status": "configured",
+        "purpose": "Git operations for DevOps and Developer agents",
+        "command": "npx -y @modelcontextprotocol/server-github",
+        "note": "Requires GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "playwright": {
+        "status": "active",
+        "purpose": "Testing for QA Engineer agent",
+        "command": "npx -y @modelcontextprotocol/server-playwright"
+      },
+      "sequentialthinking": {
+        "status": "active",
+        "purpose": "Complex reasoning for System Architect agent",
+        "command": "npx -y @modelcontextprotocol/server-sequential-thinking"
+      },
+      "fetch": {
+        "status": "active",
+        "purpose": "Web scraping for Product Manager agent",
+        "command": "npx -y @modelcontextprotocol/server-fetch"
+      }
+    },
+    "agentMappings": {
+      "productManager": ["fetch", "memory", "filesystem"],
+      "uxEngineer": ["filesystem", "memory"],
+      "systemArchitect": ["sequentialthinking", "filesystem", "memory"],
+      "fullStackDeveloper": ["filesystem", "github", "memory"],
+      "qaEngineer": ["playwright", "filesystem", "memory"],
+      "devOps": ["github", "filesystem", "memory"]
+    }
+  }
+}

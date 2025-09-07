@@ -1,0 +1,275 @@
+'use client'
+
+import { useState } from 'react'
+import { ArrowLeft, CreditCard, Lock } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+export default function CheckoutPage() {
+  const router = useRouter()
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [formData, setFormData] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    company: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    shippingMethod: 'standard'
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsProcessing(true)
+
+    // TODO: Integrate with Square Payment SDK
+    // This is where you would:
+    // 1. Create payment with Square
+    // 2. Create order in database
+    // 3. Send confirmation email
+    
+    setTimeout(() => {
+      // Mock successful payment
+      router.push('/checkout/success?order=ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase())
+    }, 2000)
+  }
+
+  // Mock order data
+  const orderTotal = 199.98
+  const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
+  const tax = 16.50
+  const total = orderTotal + shippingCost + tax
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Link href="/cart" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Cart
+      </Link>
+
+      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+
+      <form onSubmit={handleSubmit}>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Customer Information */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Contact Information */}
+            <div className="border rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      required
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      required
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="company">Company (Optional)</Label>
+                  <Input
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Shipping Address */}
+            <div className="border rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="address">Street Address</Label>
+                  <Input
+                    id="address"
+                    name="address"
+                    required
+                    value={formData.address}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      name="city"
+                      required
+                      value={formData.city}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      name="state"
+                      required
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      maxLength={2}
+                      placeholder="TX"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="zipCode">ZIP Code</Label>
+                  <Input
+                    id="zipCode"
+                    name="zipCode"
+                    required
+                    value={formData.zipCode}
+                    onChange={handleInputChange}
+                    maxLength={10}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Shipping Method */}
+            <div className="border rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Shipping Method</h2>
+              <RadioGroup 
+                value={formData.shippingMethod}
+                onValueChange={(value) => setFormData({...formData, shippingMethod: value})}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="standard" id="standard" />
+                      <Label htmlFor="standard" className="cursor-pointer">
+                        <div>
+                          <p className="font-medium">Standard Shipping</p>
+                          <p className="text-sm text-muted-foreground">5-7 business days</p>
+                        </div>
+                      </Label>
+                    </div>
+                    <span className="font-medium">$10.00</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="express" id="express" />
+                      <Label htmlFor="express" className="cursor-pointer">
+                        <div>
+                          <p className="font-medium">Express Shipping</p>
+                          <p className="text-sm text-muted-foreground">2-3 business days</p>
+                        </div>
+                      </Label>
+                    </div>
+                    <span className="font-medium">$25.00</span>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          {/* Order Summary */}
+          <div>
+            <div className="border rounded-lg p-6 sticky top-4">
+              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+              
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>${orderTotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Shipping</span>
+                  <span>${shippingCost.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Tax</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="border-t pt-2 font-semibold">
+                  <div className="flex justify-between text-lg">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <Button 
+                type="submit"
+                className="w-full" 
+                size="lg"
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>Processing...</>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    Pay with Square
+                  </>
+                )}
+              </Button>
+
+              <div className="mt-4 flex items-center justify-center text-sm text-muted-foreground">
+                <Lock className="mr-1 h-4 w-4" />
+                Secure checkout powered by Square
+              </div>
+
+              <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
+                <p>By placing this order, you agree to our Terms of Service and Privacy Policy.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}

@@ -1,0 +1,25 @@
+# BMAD AGENT-EXTENSION AUTONOMOUS BINDINGS
+
+## PRODUCT MANAGER AGENT
+Auto-Activated: markdown-all-in-one, markdown-mermaid, rest-client
+MCP Integration: exa→thunder-client, firecrawl→markdown, context7→git-graph
+
+## UX ENGINEER AGENT
+Auto-Activated: vscode-tailwindcss, color-highlight, css-peek
+MCP Integration: shadcn-ui→tailwind, playwright→coverage, ref-tools→css-peek
+
+## SYSTEM ARCHITECT AGENT
+Auto-Activated: prisma, errorlens, docker, yaml
+MCP Integration: context7→project-structure, ref-tools→patterns, git→branches
+
+## FULL STACK DEVELOPER AGENT
+Auto-Activated: path-intellisense, auto-rename-tag, import-cost, react-snippets
+MCP Integration: shadcn-ui→components, git→commits, context7→code-context
+
+## QA ENGINEER AGENT
+Auto-Activated: playwright, jest, coverage-gutters, errorlens
+MCP Integration: playwright-mcp→extension, ref-tools→test-cases, context7→bugs
+
+## DEVOPS AGENT
+Auto-Activated: docker, dotenv, yaml, gitlens
+MCP Integration: git→deployment, context7→infrastructure, firecrawl→docs

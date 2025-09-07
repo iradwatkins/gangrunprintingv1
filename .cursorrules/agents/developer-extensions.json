@@ -1,0 +1,20 @@
+{
+  "agent": "fullstack-developer",
+  "extensions": {
+    "required": [
+      "christian-kohler.path-intellisense",
+      "formulahendry.auto-rename-tag",
+      "wix.vscode-import-cost"
+    ],
+    "autoActivate": true,
+    "commands": [
+      "editor.action.organizeImports",
+      "import-cost.toggle"
+    ],
+    "mcpIntegration": {
+      "shadcn-ui": ["auto-rename-tag"],
+      "git": ["gitlens"],
+      "context7": ["errorlens"]
+    }
+  }
+}
