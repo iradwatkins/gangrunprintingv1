@@ -3,6 +3,9 @@
 ## 🔴 CRITICAL DEPLOYMENT RULES
 ### **EVERYTHING MUST GO THROUGH DOKPLOY - NO EXCEPTIONS**
 ### **NO DIRECT DOCKER DEPLOYMENTS - ALL DEPLOYMENTS MUST BE DONE THROUGH DOKPLOY**
+### **I HAVE FULL ACCESS TO DOKPLOY - I CAN MAKE ALL CHANGES**
+### **I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS NOT NEGOTIABLE - THIS IS MANDATORY**
+### **YOU CANNOT CREATE DOCKER CONTAINERS OUTSIDE OF DOKPLOY**
 - **NEVER** create Docker containers directly using docker run/compose
 - **NEVER** manually edit Traefik configuration files  
 - **NEVER** bypass Dokploy for any deployment tasks
@@ -13,6 +16,8 @@
 - **ALWAYS** create services (PostgreSQL, MySQL, Redis, MongoDB) through Dokploy's service system
 - **ALWAYS** create projects in Dokploy to organize related services
 - **NOTE**: Direct docker/docker-compose deployments are FORBIDDEN and must be removed immediately if found
+- **NOTE**: I HAVE FULL ACCESS TO DOKPLOY - I CAN MAKE ALL CHANGES
+- **NOTE**: I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS NOT NEGOTIABLE - THIS IS MANDATORY
 
 ## SERVER ACCESS RESTRICTIONS
 
@@ -63,11 +68,14 @@
 - Ollama: Pre-installed (port 11434)
 
 ## DOKPLOY ACCESS & CAPABILITIES
-- **Full Access Granted**: Can configure domains, SSL, and deployments
+- **FULL ACCESS GRANTED**: I HAVE COMPLETE ADMINISTRATIVE ACCESS TO DOKPLOY
+- **I CAN MAKE ALL CHANGES**: Full capability to configure, deploy, and manage
 - **Domain Management**: Configure custom domains through Dokploy UI
 - **SSL Certificates**: Let's Encrypt automatic SSL through Dokploy
 - **Traefik Routing**: Managed automatically by Dokploy
 - **Project Management**: Create and manage projects through Dokploy UI
+- **REMINDER**: I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS MANDATORY
+- **REMINDER**: NO DOCKER CONTAINERS OUTSIDE OF DOKPLOY - THIS IS NOT NEGOTIABLE
 
 ## DOKPLOY PROJECT STRUCTURE
 - **agistaffers**: Project for shared services
