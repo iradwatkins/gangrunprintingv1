@@ -22,6 +22,8 @@ model User {
   orders        Order[]
   sessions      Session[]
   quotes        Quote[]
+  pushSubscriptions PushSubscription[]
+  pushNotifications PushNotification[]
 }
 
 model Account {
@@ -611,4 +613,36 @@ enum QuoteStatus {
   REJECTED
   EXPIRED
   CONVERTED
+}
+
+model PushSubscription {
+  id           String    @id @default(cuid())
+  userId       String?
+  endpoint     String    @unique
+  subscription Json      // Full subscription object from browser
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([active])
+}
+
+model PushNotification {
+  id           String    @id @default(cuid())
+  userId       String
+  type         String    // NotificationType from notifications.ts
+  title        String
+  body         String
+  data         Json?     // Additional data (orderId, etc.)
+  read         Boolean   @default(false)
+  sentAt       DateTime  @default(now())
+  readAt       DateTime?
+  
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, read])
+  @@index([sentAt])
 }

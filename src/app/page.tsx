@@ -118,18 +118,18 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
         <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
-        <div className="container mx-auto px-4 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 xl:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-8 animate-slide-up">
               <Badge className="inline-flex items-center gap-1 px-3 py-1">
                 <Zap className="w-3 h-3" />
                 Same Day Printing Available
               </Badge>
-              <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight">
                 Professional Printing
                 <span className="text-primary"> Made Simple</span>
               </h1>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-lg sm:text-xl text-muted-foreground">
                 High-quality printing services with fast turnaround times. 
                 From business cards to banners, we bring your ideas to life.
               </p>
@@ -145,24 +145,24 @@ export default function Home() {
                   <Link href="/track">Track Order</Link>
                 </Button>
               </div>
-              <div className="flex items-center gap-8 pt-4">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-8 pt-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Free Design Review</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <span className="text-xs sm:text-sm">Free Design Review</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span className="text-sm">100% Satisfaction</span>
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <span className="text-xs sm:text-sm">100% Satisfaction</span>
                 </div>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative order-first lg:order-last">
               <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-4 p-8">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 p-4 sm:p-6 md:p-8">
                   {['Business Cards', 'Flyers', 'Banners', 'Stickers'].map((item, i) => (
-                    <div key={i} className="bg-white rounded-lg shadow-lg p-4 transform hover:scale-105 transition-transform">
-                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded mb-2" />
-                      <p className="text-sm font-medium text-center">{item}</p>
+                    <div key={i} className="bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 transform hover:scale-105 transition-transform">
+                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded mb-1 sm:mb-2" />
+                      <p className="text-xs sm:text-sm font-medium text-center">{item}</p>
                     </div>
                   ))}
                 </div>
@@ -174,8 +174,8 @@ export default function Home() {
 
       {/* Quick Stats */}
       <section className="border-y bg-muted/30">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="container mx-auto px-4 py-6 sm:py-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">10K+</div>
               <div className="text-sm text-muted-foreground">Happy Customers</div>
@@ -197,15 +197,15 @@ export default function Home() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-20">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Choose Your Product</h2>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Choose Your Product</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Select from our wide range of printing products. Each category offers multiple customization options.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {productCategories.map((category) => (
               <Link key={category.title} href={category.href}>
                 <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer overflow-hidden">
@@ -244,10 +244,10 @@ export default function Home() {
       </section>
 
       {/* Featured Products Carousel */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Featured Products</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Our most popular products with competitive pricing and fast delivery
             </p>
@@ -283,15 +283,15 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20">
+      <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose GangRun Printing?</h2>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Why Choose GangRun Printing?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               We combine quality, speed, and service to deliver exceptional printing solutions
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="h-8 w-8 text-primary" />
@@ -333,10 +333,10 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">What Our Customers Say</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">What Our Customers Say</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Don't just take our word for it - hear from our satisfied customers
             </p>
@@ -372,7 +372,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">

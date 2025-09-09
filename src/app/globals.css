@@ -1,5 +1,64 @@
 @import "tailwindcss";
 
+/* Foldable Device Support - Safe Areas */
+@supports (padding: max(0px)) {
+  .safe-padding-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .safe-padding-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-padding-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  .safe-padding-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Foldable Device Media Queries */
+/* Samsung Galaxy Fold (280px - 653px) */
+@media screen and (min-width: 280px) and (max-width: 653px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Surface Duo (540px per screen) */
+@media screen and (min-width: 540px) and (max-width: 720px) and (orientation: portrait) {
+  .dual-screen-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Fold Hinge Detection */
+@media (horizontal-viewport-segments: 2) {
+  .foldable-container {
+    display: grid;
+    grid-template-columns: env(viewport-segment-width 0 0) env(viewport-segment-width 1 0);
+    gap: calc(env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0));
+  }
+}
+
+@media (vertical-viewport-segments: 2) {
+  .foldable-container {
+    display: grid;
+    grid-template-rows: env(viewport-segment-height 0 0) env(viewport-segment-height 0 1);
+    gap: calc(env(viewport-segment-top 0 1) - env(viewport-segment-bottom 0 0));
+  }
+}
+
+/* Mobile-First Touch Targets */
+@media (pointer: coarse) {
+  button, a, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 @theme {
   --color-primary: hsl(25 95% 53%);
   --color-primary-foreground: hsl(0 0% 100%);
