@@ -9,11 +9,9 @@ import {
   X, 
   ShoppingCart, 
   User, 
-  Search, 
   Phone, 
   Mail,
   Package,
-  Upload,
   Info,
   FileText,
   ChevronDown
@@ -35,14 +33,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
 import { cn } from '@/lib/utils'
 import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
 
@@ -173,42 +163,58 @@ export default function Header() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
-            {/* Search */}
-            <Button size="icon" variant="ghost">
-              <Search className="h-5 w-5" />
-            </Button>
-
+          <div className="hidden lg:flex items-center space-x-3">
             {/* User Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
+                <Button variant="ghost" className="flex items-center gap-2">
                   <User className="h-5 w-5" />
+                  <span className="text-sm">Account</span>
+                  <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer" href="/auth/signin">Sign In</Link>
+                  <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
+                    <User className="h-4 w-4" />
+                    Sign In
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer" href="/auth/signup">Create Account</Link>
+                  <Link className="cursor-pointer flex items-center gap-2" href="/auth/signup">
+                    <User className="h-4 w-4" />
+                    Create Account
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer" href="/track">Track Orders</Link>
+                  <Link className="cursor-pointer flex items-center gap-2" href="/track">
+                    <Package className="h-4 w-4" />
+                    Track Orders
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link className="cursor-pointer flex items-center gap-2" href="/account/orders">
+                    <FileText className="h-4 w-4" />
+                    Order History
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link className="cursor-pointer flex items-center gap-2" href="/account/settings">
+                    <User className="h-4 w-4" />
+                    Settings
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
             {/* Cart */}
             <Link href="/cart">
-              <Button className="relative" size="icon" variant="ghost">
+              <Button className="relative flex items-center gap-2" variant="ghost">
                 <ShoppingCart className="h-5 w-5" />
+                <span className="text-sm">Cart</span>
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-primary text-primary-foreground">
                     {cartItemCount}
@@ -217,12 +223,8 @@ export default function Header() {
               </Button>
             </Link>
 
-            {/* Get Started Button */}
-            <Link href="/products">
-              <Button className="bg-primary hover:bg-primary/90">
-                Get Started
-              </Button>
-            </Link>
+            {/* Theme Toggle */}
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
@@ -314,11 +316,26 @@ export default function Header() {
                     </Link>
                   </div>
 
-                  <Link href="/products" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full bg-primary hover:bg-primary/90 mt-4">
-                      Get Started
-                    </Button>
-                  </Link>
+                  <div className="border-t pt-4 mt-4 space-y-1">
+                    <Link href="/track" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full justify-start" variant="ghost">
+                        <Package className="mr-2 h-4 w-4" />
+                        Track Orders
+                      </Button>
+                    </Link>
+                    <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full justify-start" variant="ghost">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Order History
+                      </Button>
+                    </Link>
+                    <Link href="/account/settings" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full justify-start" variant="ghost">
+                        <User className="mr-2 h-4 w-4" />
+                        Account Settings
+                      </Button>
+                    </Link>
+                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
