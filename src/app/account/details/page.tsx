@@ -1,17 +1,15 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
+import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function AccountDetailsPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { data: session } = useSession()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -20,10 +18,7 @@ export default function AccountDetailsPage() {
   })
 
   useEffect(() => {
-    if (status === 'loading') return
-    if (!session) {
-      router.push('/auth/signin?callbackUrl=/account/details')
-    } else {
+    if (session) {
       setFormData({
         firstName: session.user?.name?.split(' ')[0] || '',
         lastName: session.user?.name?.split(' ')[1] || '',
@@ -31,15 +26,7 @@ export default function AccountDetailsPage() {
         phone: '',
       })
     }
-  }, [session, status, router])
-
-  if (status === 'loading') {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>
-  }
-
-  if (!session) {
-    return null
-  }
+  }, [session])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,17 +35,10 @@ export default function AccountDetailsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Account Details</h1>
-            <p className="text-muted-foreground">Update your account information</p>
-          </div>
-          <Link href="/account/dashboard">
-            <Button variant="outline">Back to Dashboard</Button>
-          </Link>
-        </div>
+    <AccountWrapper>
+      <div className="max-w-2xl">
+        <h1 className="text-3xl font-bold mb-2">Account Details</h1>
+        <p className="text-muted-foreground mb-8">Update your account information</p>
 
         <Card>
           <CardHeader>
@@ -125,6 +105,6 @@ export default function AccountDetailsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </AccountWrapper>
   )
 }
