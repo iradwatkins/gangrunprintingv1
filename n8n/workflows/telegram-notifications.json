@@ -1,0 +1,269 @@
+{
+  "name": "GangRun Telegram Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gangrun-telegram",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-receiver",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "order.created"
+            }
+          ]
+        }
+      },
+      "id": "check-order-created",
+      "name": "New Order?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "payment.received"
+            }
+          ]
+        }
+      },
+      "id": "check-payment",
+      "name": "Payment?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "order.issue_detected"
+            }
+          ]
+        }
+      },
+      "id": "check-issue",
+      "name": "Issue?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 600]
+    },
+    {
+      "parameters": {
+        "authentication": "httpQueryAuth",
+        "httpMethod": "POST",
+        "url": "https://api.telegram.org/bot7241850736:AAHqJYoWRzJdtFUclpdmosvVZN5C6DDbKL4/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "7154912264"
+            },
+            {
+              "name": "text",
+              "value": "=🎉 *New Order Received!*\\n\\n📦 Order: `{{$json[\"data\"][\"orderNumber\"]}}`\\n👤 Customer: {{$json[\"data\"][\"customerEmail\"]}}\\n💰 Total: ${{$json[\"data\"][\"total\"]}}\\n📝 Items: {{$json[\"data\"][\"items\"].length}} product(s)\\n⏰ Time: {{$now.format('MM/DD/YYYY h:mm A')}}\\n\\n_View in admin panel to process_"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-new-order",
+      "name": "Send Order Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "authentication": "httpQueryAuth",
+        "httpMethod": "POST",
+        "url": "https://api.telegram.org/bot7241850736:AAHqJYoWRzJdtFUclpdmosvVZN5C6DDbKL4/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "7154912264"
+            },
+            {
+              "name": "text",
+              "value": "=💳 *Payment Confirmed!*\\n\\n✅ Order: `{{$json[\"data\"][\"orderNumber\"]}}`\\n💵 Amount: ${{$json[\"data\"][\"amount\"]}}\\n🔖 Transaction: {{$json[\"data\"][\"transactionId\"]}}\\n⏰ Time: {{$now.format('MM/DD/YYYY h:mm A')}}\\n\\n_Order is ready for production_"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-payment",
+      "name": "Send Payment Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "authentication": "httpQueryAuth",
+        "httpMethod": "POST",
+        "url": "https://api.telegram.org/bot7241850736:AAHqJYoWRzJdtFUclpdmosvVZN5C6DDbKL4/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "7154912264"
+            },
+            {
+              "name": "text",
+              "value": "=⚠️ *Issue Detected!*\\n\\n🚨 Order: `{{$json[\"data\"][\"orderNumber\"]}}`\\n❗ Type: {{$json[\"data\"][\"issueType\"]}}\\n📝 Description: {{$json[\"data\"][\"issueDescription\"]}}\\n🔴 Severity: {{$json[\"data\"][\"severity\"]}}\\n⏰ Time: {{$now.format('MM/DD/YYYY h:mm A')}}\\n\\n_Immediate attention required_"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-issue",
+      "name": "Send Issue Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 600]
+    },
+    {
+      "parameters": {
+        "mode": "responseNode",
+        "responseCode": 200,
+        "responseData": "={\"success\": true, \"message\": \"Notification sent\"}"
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "webhook-receiver": {
+      "main": [
+        [
+          {
+            "node": "check-order-created",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "check-payment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "check-issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check-order-created": {
+      "main": [
+        [
+          {
+            "node": "telegram-new-order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "check-payment": {
+      "main": [
+        [
+          {
+            "node": "telegram-payment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "check-issue": {
+      "main": [
+        [
+          {
+            "node": "telegram-issue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "telegram-new-order": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "telegram-payment": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "telegram-issue": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "telegram-notifications"
+}

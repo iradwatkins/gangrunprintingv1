@@ -1,0 +1,295 @@
+{
+  "name": "GangRun Order Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gangrun",
+        "responseMode": "responseNode",
+        "options": {
+          "responseData": "allEntries",
+          "responsePropertyName": "data"
+        }
+      },
+      "id": "webhook-receiver",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "gangrun-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "order.created"
+            }
+          ]
+        }
+      },
+      "id": "route-order-created",
+      "name": "Order Created?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "payment.received"
+            }
+          ]
+        }
+      },
+      "id": "route-payment-received",
+      "name": "Payment Received?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"event\"]}}",
+              "operation": "equals",
+              "value2": "order.status_changed"
+            }
+          ]
+        }
+      },
+      "id": "route-status-changed",
+      "name": "Status Changed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 600]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Process new order\nconst orderData = items[0].json.data;\n\n// Format order for vendor\nconst vendorOrder = {\n  orderNumber: orderData.orderNumber,\n  customerEmail: orderData.customerEmail,\n  items: orderData.items,\n  total: orderData.total,\n  priority: 'normal',\n  dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),\n  specialInstructions: ''\n};\n\n// Log the order\nconsole.log('New order received:', orderData.orderNumber);\n\nreturn [{\n  json: {\n    success: true,\n    message: 'Order processed',\n    vendorOrder: vendorOrder,\n    originalOrder: orderData\n  }\n}];"
+      },
+      "id": "process-new-order",
+      "name": "Process New Order",
+      "type": "n8n-nodes-base.functionItem",
+      "typeVersion": 1,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Handle payment confirmation\nconst paymentData = items[0].json.data;\n\nconsole.log('Payment received for order:', paymentData.orderNumber);\nconsole.log('Amount:', paymentData.amount);\nconsole.log('Transaction ID:', paymentData.transactionId);\n\n// Mark order as ready for production\nreturn [{\n  json: {\n    success: true,\n    message: 'Payment confirmed',\n    orderNumber: paymentData.orderNumber,\n    readyForProduction: true,\n    paidAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "process-payment",
+      "name": "Process Payment",
+      "type": "n8n-nodes-base.functionItem",
+      "typeVersion": 1,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Handle status changes\nconst statusData = items[0].json.data;\n\nconsole.log('Status changed for order:', statusData.orderNumber);\nconsole.log('From:', statusData.previousStatus);\nconsole.log('To:', statusData.newStatus);\n\n// Determine action based on new status\nlet action = 'none';\nif (statusData.newStatus === 'PRINTING') {\n  action = 'send_to_vendor';\n} else if (statusData.newStatus === 'SHIPPED') {\n  action = 'notify_customer';\n} else if (statusData.newStatus === 'DELIVERED') {\n  action = 'request_review';\n}\n\nreturn [{\n  json: {\n    success: true,\n    orderNumber: statusData.orderNumber,\n    status: statusData.newStatus,\n    action: action,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "process-status-change",
+      "name": "Process Status Change",
+      "type": "n8n-nodes-base.functionItem",
+      "typeVersion": 1,
+      "position": [650, 600]
+    },
+    {
+      "parameters": {
+        "url": "https://api.printvendor.com/orders",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "{{$env[\"VENDOR_API_KEY\"]}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "order",
+              "value": "={{$json[\"vendorOrder\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "send-to-vendor",
+      "name": "Send to Print Vendor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [850, 200],
+      "disabled": true,
+      "notes": "Enable this when vendor API is configured"
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "insert",
+        "table": "order_logs",
+        "columns": "event,order_number,data,created_at",
+        "values": "={{$json[\"event\"]}},={{$json[\"data\"][\"orderNumber\"]}},={{JSON.stringify($json[\"data\"])}},={{new Date().toISOString()}}"
+      },
+      "id": "log-to-database",
+      "name": "Log to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [850, 400],
+      "disabled": true,
+      "notes": "Configure PostgreSQL credentials"
+    },
+    {
+      "parameters": {
+        "mode": "responseNode",
+        "responseCode": 200,
+        "responseData": "={{$json}}"
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "webhook-receiver": {
+      "main": [
+        [
+          {
+            "node": "route-order-created",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "route-payment-received",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "route-status-changed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "route-order-created": {
+      "main": [
+        [
+          {
+            "node": "process-new-order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "route-payment-received": {
+      "main": [
+        [
+          {
+            "node": "process-payment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "route-status-changed": {
+      "main": [
+        [
+          {
+            "node": "process-status-change",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "process-new-order": {
+      "main": [
+        [
+          {
+            "node": "send-to-vendor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "process-payment": {
+      "main": [
+        [
+          {
+            "node": "log-to-database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "process-status-change": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-to-vendor": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log-to-database": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "gangrun-order-processing"
+}
