@@ -20,6 +20,10 @@ RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
+# Debug: List generated files in public directory after build
+RUN echo "=== Public directory contents after build ===" && \
+    ls -la /app/public/ | grep -E "(sw|workbox|swe-worker)" || echo "No PWA files found"
+
 # Production image
 FROM base AS runner
 WORKDIR /app
@@ -31,6 +35,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy necessary files
+# IMPORTANT: The build process generates PWA files in the public directory
+# We must copy the public folder AFTER the build to include these generated files
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
