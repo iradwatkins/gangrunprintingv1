@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -21,7 +21,8 @@ import {
   MapPin,
   CreditCard,
   Settings,
-  LogOut
+  LogOut,
+  Smartphone
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -77,9 +78,47 @@ export default function Header() {
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartItemCount] = useState(2) // This would come from cart context/state
+  const [showInstallOption, setShowInstallOption] = useState(false)
+  
+  useEffect(() => {
+    // Check if PWA install prompt is available
+    const checkInstallPrompt = () => {
+      if ((window as any).deferredPrompt) {
+        setShowInstallOption(true)
+      }
+    }
+    
+    // Listen for the beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault()
+      ;(window as any).deferredPrompt = e
+      setShowInstallOption(true)
+    }
+    
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    checkInstallPrompt()
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [])
   
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
+  }
+
+  const handleInstallApp = async () => {
+    // Trigger PWA installation
+    const installEvent = (window as any).deferredPrompt
+    if (installEvent) {
+      installEvent.prompt()
+      const { outcome } = await installEvent.userChoice
+      console.log('PWA install outcome:', outcome)
+      if (outcome === 'accepted') {
+        setShowInstallOption(false)
+      }
+      ;(window as any).deferredPrompt = null
+    }
   }
 
   return (
@@ -228,6 +267,18 @@ export default function Header() {
                         Account Details
                       </Link>
                     </DropdownMenuItem>
+                    {showInstallOption && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="cursor-pointer flex items-center gap-2" 
+                          onClick={handleInstallApp}
+                        >
+                          <Smartphone className="h-4 w-4" />
+                          Download App
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       className="cursor-pointer flex items-center gap-2 text-red-600" 
@@ -407,6 +458,19 @@ export default function Header() {
                             Account Details
                           </Button>
                         </Link>
+                        {showInstallOption && (
+                          <Button 
+                            className="w-full justify-start" 
+                            variant="ghost"
+                            onClick={() => {
+                              handleInstallApp()
+                              setMobileMenuOpen(false)
+                            }}
+                          >
+                            <Smartphone className="mr-2 h-4 w-4" />
+                            Download App
+                          </Button>
+                        )}
                         <Button 
                           className="w-full justify-start text-red-600" 
                           variant="ghost"
