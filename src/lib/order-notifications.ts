@@ -1,4 +1,4 @@
-import { OrderStatus } from '@prisma/client'
+import { type OrderStatus } from '@prisma/client'
 import { sendNotificationToUser, NotificationTypes } from './notifications'
 
 // Map order status to notification type

@@ -253,10 +253,10 @@ export default function VendorsPage() {
           <CardTitle>Active Vendors</CardTitle>
           <CardDescription>
             <Input
+              className="max-w-sm"
               placeholder="Search vendors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
             />
           </CardDescription>
         </CardHeader>
@@ -281,10 +281,10 @@ export default function VendorsPage() {
                       <div>{vendor.name}</div>
                       {vendor.website && (
                         <a 
+                          className="text-xs text-blue-600 hover:underline flex items-center gap-1" 
                           href={vendor.website} 
-                          target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                          target="_blank"
                         >
                           <Globe className="h-3 w-3" />
                           Website
@@ -309,7 +309,7 @@ export default function VendorsPage() {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {vendor.supportedCarriers.map(carrier => (
-                        <Badge key={carrier} variant="secondary" className="text-xs">
+                        <Badge key={carrier} className="text-xs" variant="secondary">
                           {carrier}
                         </Badge>
                       ))}
@@ -332,15 +332,15 @@ export default function VendorsPage() {
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
-                        variant="ghost"
                         size="icon"
+                        variant="ghost"
                         onClick={() => handleOpenDialog(vendor)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="ghost"
                         size="icon"
+                        variant="ghost"
                         onClick={() => handleDelete(vendor.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -365,7 +365,7 @@ export default function VendorsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="general" className="w-full">
+          <Tabs className="w-full" defaultValue="general">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="shipping">Shipping</TabsTrigger>
@@ -373,35 +373,35 @@ export default function VendorsPage() {
               <TabsTrigger value="notes">Notes</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="general" className="space-y-4">
+            <TabsContent className="space-y-4" value="general">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Vendor Name *</Label>
                   <Input
+                    required
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
                   />
                 </div>
                 <div>
                   <Label htmlFor="contactEmail">Contact Email *</Label>
                   <Input
+                    required
                     id="contactEmail"
                     type="email"
                     value={formData.contactEmail}
                     onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                    required
                   />
                 </div>
                 <div>
                   <Label htmlFor="orderEmail">Order Email (for n8n)</Label>
                   <Input
                     id="orderEmail"
+                    placeholder="orders@vendor.com"
                     type="email"
                     value={formData.orderEmail}
                     onChange={(e) => setFormData({ ...formData, orderEmail: e.target.value })}
-                    placeholder="orders@vendor.com"
                   />
                 </div>
                 <div>
@@ -416,10 +416,10 @@ export default function VendorsPage() {
                   <Label htmlFor="website">Website</Label>
                   <Input
                     id="website"
+                    placeholder="https://vendor-website.com"
                     type="url"
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    placeholder="https://vendor-website.com"
                   />
                 </div>
               </div>
@@ -464,15 +464,15 @@ export default function VendorsPage() {
 
               <div className="flex items-center space-x-2">
                 <Switch
-                  id="isActive"
                   checked={formData.isActive}
+                  id="isActive"
                   onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                 />
                 <Label htmlFor="isActive">Active Vendor</Label>
               </div>
             </TabsContent>
 
-            <TabsContent value="shipping" className="space-y-4">
+            <TabsContent className="space-y-4" value="shipping">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="turnaroundDays">Turnaround Days</Label>
@@ -490,8 +490,8 @@ export default function VendorsPage() {
                   <Label htmlFor="minimumOrderAmount">Minimum Order Amount</Label>
                   <Input
                     id="minimumOrderAmount"
-                    type="number"
                     step="0.01"
+                    type="number"
                     value={formData.minimumOrderAmount}
                     onChange={(e) => setFormData({ 
                       ...formData, 
@@ -507,11 +507,11 @@ export default function VendorsPage() {
                   {CARRIER_OPTIONS.map(carrier => (
                     <div key={carrier} className="flex items-center space-x-2">
                       <Checkbox
-                        id={carrier}
                         checked={formData.supportedCarriers.includes(carrier)}
+                        id={carrier}
                         onCheckedChange={() => toggleCarrier(carrier)}
                       />
-                      <Label htmlFor={carrier} className="flex items-center gap-2">
+                      <Label className="flex items-center gap-2" htmlFor={carrier}>
                         <Truck className="h-4 w-4" />
                         {carrier}
                       </Label>
@@ -524,23 +524,23 @@ export default function VendorsPage() {
                 <Label htmlFor="shippingCostFormula">Shipping Cost Formula/Notes</Label>
                 <Textarea
                   id="shippingCostFormula"
-                  value={formData.shippingCostFormula}
-                  onChange={(e) => setFormData({ ...formData, shippingCostFormula: e.target.value })}
                   placeholder="e.g., Base rate $10 + $0.50 per pound"
                   rows={3}
+                  value={formData.shippingCostFormula}
+                  onChange={(e) => setFormData({ ...formData, shippingCostFormula: e.target.value })}
                 />
               </div>
             </TabsContent>
 
-            <TabsContent value="integration" className="space-y-4">
+            <TabsContent className="space-y-4" value="integration">
               <div>
                 <Label htmlFor="n8nWebhookUrl">n8n Webhook URL</Label>
                 <Input
                   id="n8nWebhookUrl"
+                  placeholder="https://n8n.example.com/webhook/vendor-orders"
                   type="url"
                   value={formData.n8nWebhookUrl}
                   onChange={(e) => setFormData({ ...formData, n8nWebhookUrl: e.target.value })}
-                  placeholder="https://n8n.example.com/webhook/vendor-orders"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   This URL will receive order notifications for automated fulfillment
@@ -548,15 +548,15 @@ export default function VendorsPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="notes" className="space-y-4">
+            <TabsContent className="space-y-4" value="notes">
               <div>
                 <Label htmlFor="notes">Internal Notes</Label>
                 <Textarea
                   id="notes"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Add any internal notes about this vendor..."
                   rows={6}
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
               </div>
             </TabsContent>

@@ -87,17 +87,17 @@ export default function Header() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-2 text-sm">
             <div className="flex items-center gap-4">
-              <a href="tel:1-800-PRINTING" className="flex items-center gap-1 hover:text-primary transition-colors">
+              <a className="flex items-center gap-1 hover:text-primary transition-colors" href="tel:1-800-PRINTING">
                 <Phone className="h-3 w-3" />
                 1-800-PRINTING
               </a>
-              <a href="mailto:support@gangrunprinting.com" className="hidden sm:flex items-center gap-1 hover:text-primary transition-colors">
+              <a className="hidden sm:flex items-center gap-1 hover:text-primary transition-colors" href="mailto:support@gangrunprinting.com">
                 <Mail className="h-3 w-3" />
                 support@gangrunprinting.com
               </a>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge className="bg-primary/10 text-primary border-primary/20" variant="secondary">
                 Same Day Printing Available
               </Badge>
             </div>
@@ -110,7 +110,7 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link className="flex items-center space-x-2" href="/">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">GR</span>
               </div>
@@ -125,11 +125,11 @@ export default function Header() {
                 <DropdownMenu key={item.name}>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="ghost"
                       className={cn(
                         "flex items-center gap-1",
                         pathname === item.href && "text-primary bg-primary/10"
                       )}
+                      variant="ghost"
                     >
                       <item.icon className="h-4 w-4" />
                       {item.name}
@@ -141,7 +141,7 @@ export default function Header() {
                     <DropdownMenuSeparator />
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link href={child.href} className="cursor-pointer">
+                        <Link className="cursor-pointer" href={child.href}>
                           {child.name}
                         </Link>
                       </DropdownMenuItem>
@@ -154,11 +154,11 @@ export default function Header() {
                   href={item.href}
                 >
                   <Button
-                    variant="ghost"
                     className={cn(
                       "flex items-center gap-1",
                       pathname === item.href && "text-primary bg-primary/10"
                     )}
+                    variant="ghost"
                   >
                     <item.icon className="h-4 w-4" />
                     {item.name}
@@ -171,14 +171,14 @@ export default function Header() {
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">
             {/* Search */}
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <Search className="h-5 w-5" />
             </Button>
 
             {/* User Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button size="icon" variant="ghost">
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -186,14 +186,14 @@ export default function Header() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/auth/signin" className="cursor-pointer">Sign In</Link>
+                  <Link className="cursor-pointer" href="/auth/signin">Sign In</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/auth/signup" className="cursor-pointer">Create Account</Link>
+                  <Link className="cursor-pointer" href="/auth/signup">Create Account</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/track" className="cursor-pointer">Track Orders</Link>
+                  <Link className="cursor-pointer" href="/track">Track Orders</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -203,7 +203,7 @@ export default function Header() {
 
             {/* Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button className="relative" size="icon" variant="ghost">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-primary text-primary-foreground">
@@ -225,7 +225,7 @@ export default function Header() {
           <div className="flex lg:hidden items-center gap-2">
             {/* Mobile Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button className="relative" size="icon" variant="ghost">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-primary text-primary-foreground">
@@ -238,11 +238,11 @@ export default function Header() {
             {/* Mobile Menu Trigger */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button size="icon" variant="ghost">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
+              <SheetContent className="w-[300px]" side="right">
                 <SheetHeader>
                   <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
@@ -252,11 +252,11 @@ export default function Header() {
                       {item.children ? (
                         <>
                           <Button
-                            variant="ghost"
                             className={cn(
                               "w-full justify-start",
                               pathname === item.href && "text-primary bg-primary/10"
                             )}
+                            variant="ghost"
                             onClick={() => {}}
                           >
                             <item.icon className="mr-2 h-4 w-4" />
@@ -270,9 +270,9 @@ export default function Header() {
                                 onClick={() => setMobileMenuOpen(false)}
                               >
                                 <Button
-                                  variant="ghost"
-                                  size="sm"
                                   className="w-full justify-start text-sm"
+                                  size="sm"
+                                  variant="ghost"
                                 >
                                   {child.name}
                                 </Button>
@@ -286,11 +286,11 @@ export default function Header() {
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Button
-                            variant="ghost"
                             className={cn(
                               "w-full justify-start",
                               pathname === item.href && "text-primary bg-primary/10"
                             )}
+                            variant="ghost"
                           >
                             <item.icon className="mr-2 h-4 w-4" />
                             {item.name}
@@ -303,7 +303,7 @@ export default function Header() {
                   <div className="border-t pt-4 mt-4">
                     <MobileThemeToggle />
                     <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
+                      <Button className="w-full justify-start" variant="ghost">
                         <User className="mr-2 h-4 w-4" />
                         Sign In
                       </Button>
@@ -330,13 +330,13 @@ export default function Header() {
             {productCategories.slice(0, 4).map((category) => (
               <Link
                 key={category.href}
-                href={category.href}
                 className="text-sm hover:text-primary transition-colors"
+                href={category.href}
               >
                 {category.name}
               </Link>
             ))}
-            <Link href="/products" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors ml-auto">
+            <Link className="text-sm font-medium text-primary hover:text-primary/80 transition-colors ml-auto" href="/products">
               View All Products →
             </Link>
           </div>

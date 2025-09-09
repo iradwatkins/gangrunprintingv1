@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { QuoteStatus } from '@prisma/client';
+import { type QuoteStatus } from '@prisma/client';
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {

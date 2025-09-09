@@ -80,6 +80,11 @@ export default [
       'dist/**',
       'build/**',
       'new doc/**',
+      'check-categories.ts',
+      'test-order-workflow.ts',
+      'screenshot.js',
+      'scripts/**/*.js',
+      'next-env.d.ts',
     ],
   },
 ]

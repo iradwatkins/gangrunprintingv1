@@ -67,9 +67,9 @@ export function PWAInstallPrompt() {
   return (
     <Card className="fixed bottom-4 right-4 z-50 p-4 w-80 shadow-lg animate-slide-up">
       <button
-        onClick={handleDismiss}
-        className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
         aria-label="Dismiss"
+        className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+        onClick={handleDismiss}
       >
         <X className="h-4 w-4" />
       </button>
@@ -87,9 +87,9 @@ export function PWAInstallPrompt() {
           
           <div className="flex gap-2">
             <Button
+              className="flex items-center gap-1"
               size="sm"
               onClick={handleInstall}
-              className="flex items-center gap-1"
             >
               <Download className="h-3 w-3" />
               Install

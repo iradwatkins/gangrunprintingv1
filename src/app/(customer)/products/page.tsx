@@ -221,14 +221,14 @@ export default function ProductsPage() {
           {categories.filter(c => c !== 'All').map(category => (
             <div key={category} className="flex items-center space-x-2">
               <Checkbox
-                id={`category-${category}`}
                 checked={selectedCategories.includes(category)}
-                onCheckedChange={() => toggleCategory(category)}
                 className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                id={`category-${category}`}
+                onCheckedChange={() => toggleCategory(category)}
               />
               <Label
-                htmlFor={`category-${category}`}
                 className="text-sm font-normal cursor-pointer"
+                htmlFor={`category-${category}`}
               >
                 {category}
               </Label>
@@ -242,12 +242,12 @@ export default function ProductsPage() {
         <h3 className="font-semibold mb-3">Price Range</h3>
         <div className="space-y-3">
           <Slider
+            className="[&_[role=slider]]:bg-primary"
+            max={200}
+            min={0}
+            step={10}
             value={priceRange}
             onValueChange={setPriceRange}
-            min={0}
-            max={200}
-            step={10}
-            className="[&_[role=slider]]:bg-primary"
           />
           <div className="flex items-center justify-between text-sm">
             <span>${priceRange[0]}</span>
@@ -263,14 +263,14 @@ export default function ProductsPage() {
           {turnaroundOptions.map(turnaround => (
             <div key={turnaround} className="flex items-center space-x-2">
               <Checkbox
-                id={`turnaround-${turnaround}`}
                 checked={selectedTurnarounds.includes(turnaround)}
-                onCheckedChange={() => toggleTurnaround(turnaround)}
                 className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                id={`turnaround-${turnaround}`}
+                onCheckedChange={() => toggleTurnaround(turnaround)}
               />
               <Label
-                htmlFor={`turnaround-${turnaround}`}
                 className="text-sm font-normal cursor-pointer"
+                htmlFor={`turnaround-${turnaround}`}
               >
                 {turnaround}
               </Label>
@@ -286,14 +286,14 @@ export default function ProductsPage() {
           {finishOptions.map(finish => (
             <div key={finish} className="flex items-center space-x-2">
               <Checkbox
-                id={`finish-${finish}`}
                 checked={selectedFinishes.includes(finish)}
-                onCheckedChange={() => toggleFinish(finish)}
                 className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                id={`finish-${finish}`}
+                onCheckedChange={() => toggleFinish(finish)}
               />
               <Label
-                htmlFor={`finish-${finish}`}
                 className="text-sm font-normal cursor-pointer"
+                htmlFor={`finish-${finish}`}
               >
                 {finish}
               </Label>
@@ -304,8 +304,8 @@ export default function ProductsPage() {
 
       {activeFiltersCount > 0 && (
         <Button
-          variant="outline"
           className="w-full"
+          variant="outline"
           onClick={clearFilters}
         >
           Clear All Filters
@@ -344,7 +344,7 @@ export default function ProductsPage() {
             {/* Mobile Filter Toggle */}
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="lg:hidden">
+                <Button className="lg:hidden" variant="outline">
                   <SlidersHorizontal className="mr-2 h-4 w-4" />
                   Filters
                   {activeFiltersCount > 0 && (
@@ -354,7 +354,7 @@ export default function ProductsPage() {
                   )}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px]">
+              <SheetContent className="w-[300px]" side="left">
                 <SheetHeader>
                   <SheetTitle>Filters</SheetTitle>
                   <SheetDescription>
@@ -382,8 +382,8 @@ export default function ProductsPage() {
                 {sortOptions.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
-                    onClick={() => setSortBy(option.value)}
                     className={sortBy === option.value ? 'bg-primary/10' : ''}
+                    onClick={() => setSortBy(option.value)}
                   >
                     {option.label}
                   </DropdownMenuItem>
@@ -394,18 +394,18 @@ export default function ProductsPage() {
             {/* View Mode Toggle */}
             <div className="flex border rounded-lg">
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="icon"
-                onClick={() => setViewMode('grid')}
                 className="rounded-r-none"
+                size="icon"
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                onClick={() => setViewMode('grid')}
               >
                 <Grid3x3 className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="icon"
-                onClick={() => setViewMode('list')}
                 className="rounded-l-none"
+                size="icon"
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                onClick={() => setViewMode('list')}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -417,44 +417,44 @@ export default function ProductsPage() {
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2">
             {selectedCategories.map(category => (
-              <Badge key={category} variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge key={category} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
                 {category}
                 <button
-                  onClick={() => toggleCategory(category)}
                   className="ml-2 hover:text-primary-foreground"
+                  onClick={() => toggleCategory(category)}
                 >
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             ))}
             {selectedTurnarounds.map(turnaround => (
-              <Badge key={turnaround} variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge key={turnaround} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
                 {turnaround}
                 <button
-                  onClick={() => toggleTurnaround(turnaround)}
                   className="ml-2 hover:text-primary-foreground"
+                  onClick={() => toggleTurnaround(turnaround)}
                 >
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             ))}
             {selectedFinishes.map(finish => (
-              <Badge key={finish} variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge key={finish} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
                 {finish}
                 <button
-                  onClick={() => toggleFinish(finish)}
                   className="ml-2 hover:text-primary-foreground"
+                  onClick={() => toggleFinish(finish)}
                 >
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             ))}
             {(priceRange[0] > 0 || priceRange[1] < 200) && (
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge className="bg-primary/10 text-primary border-primary/20" variant="secondary">
                 ${priceRange[0]} - ${priceRange[1]}
                 <button
-                  onClick={() => setPriceRange([0, 200])}
                   className="ml-2 hover:text-primary-foreground"
+                  onClick={() => setPriceRange([0, 200])}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -535,7 +535,7 @@ export default function ProductsPage() {
                           <span className="text-sm text-muted-foreground">Starting at</span>
                           <p className="text-lg font-bold text-primary">${product.startingPrice}</p>
                         </div>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {product.turnaround}
                         </Badge>
                       </div>
@@ -577,12 +577,12 @@ export default function ProductsPage() {
                             </p>
                             <div className="flex flex-wrap gap-2 mb-3">
                               {product.sizes.slice(0, 3).map(size => (
-                                <Badge key={size} variant="outline" className="text-xs">
+                                <Badge key={size} className="text-xs" variant="outline">
                                   {size}
                                 </Badge>
                               ))}
                               {product.sizes.length > 3 && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge className="text-xs" variant="outline">
                                   +{product.sizes.length - 3} more
                                 </Badge>
                               )}
@@ -591,7 +591,7 @@ export default function ProductsPage() {
                           <div className="text-right ml-4">
                             <span className="text-sm text-muted-foreground">Starting at</span>
                             <p className="text-2xl font-bold text-primary">${product.startingPrice}</p>
-                            <Badge variant="outline" className="mt-2">
+                            <Badge className="mt-2" variant="outline">
                               {product.turnaround}
                             </Badge>
                           </div>
