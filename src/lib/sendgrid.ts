@@ -6,8 +6,15 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@gangrunprinting.com'
+const BILLING_EMAIL = process.env.SENDGRID_BILLING_EMAIL || 'billing@gangrunprinting.com'
+const SUPPORT_EMAIL = process.env.SENDGRID_SUPPORT_EMAIL || 'support@gangrunprinting.com'
 const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'GangRun Printing'
+
+// Determine which email to use based on email type
+const getFromEmail = (template: string) => {
+  const billingTemplates = ['paymentReceived', 'orderCancelled', 'invoice', 'quote']
+  return billingTemplates.includes(template) ? BILLING_EMAIL : SUPPORT_EMAIL
+}
 
 // Email templates
 const templates = {
@@ -176,7 +183,7 @@ export async function sendEmail(
     const msg = {
       to,
       from: {
-        email: FROM_EMAIL,
+        email: getFromEmail(template),
         name: FROM_NAME
       },
       subject: emailContent.subject,
