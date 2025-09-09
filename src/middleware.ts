@@ -10,6 +10,14 @@ export async function middleware(request: NextRequest) {
   // Protect admin routes
   if (pathname.startsWith('/admin')) {
     const token = await getToken({ req: request })
+    
+    // Debug logging
+    console.log('Admin route access attempt:', {
+      pathname,
+      tokenExists: !!token,
+      tokenEmail: token?.email,
+      expectedEmail: ADMIN_EMAIL
+    })
 
     if (!token) {
       const loginUrl = new URL('/auth/signin', request.url)
@@ -19,6 +27,7 @@ export async function middleware(request: NextRequest) {
 
     // Check if user is the admin (only iradwatkins@gmail.com)
     if (token.email !== ADMIN_EMAIL) {
+      console.log('Access denied - not admin email:', token.email)
       return NextResponse.redirect(new URL('/', request.url))
     }
   }

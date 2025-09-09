@@ -38,14 +38,22 @@ export const authConfig: NextAuthConfig = {
     error: "/auth/error",
   },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user, account, profile }: any) {
+      // On initial sign in
       if (user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
-        // Set admin status based on email
-        token.isAdmin = user.email === ADMIN_EMAIL
       }
+      
+      // Always ensure email is set (for OAuth providers)
+      if (!token.email && profile?.email) {
+        token.email = profile.email
+      }
+      
+      // Set admin status based on email
+      token.isAdmin = token.email === ADMIN_EMAIL
+      
       return token
     },
     async session({ session, token }: any) {
