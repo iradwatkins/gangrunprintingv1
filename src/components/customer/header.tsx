@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import { 
   Menu, 
   X, 
@@ -14,7 +15,13 @@ import {
   Package,
   Info,
   FileText,
-  ChevronDown
+  ChevronDown,
+  LayoutDashboard,
+  Download,
+  MapPin,
+  CreditCard,
+  Settings,
+  LogOut
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -67,8 +74,13 @@ const productCategories = [
 
 export default function Header() {
   const pathname = usePathname()
+  const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartItemCount] = useState(2) // This would come from cart context/state
+  
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' })
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -174,39 +186,82 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
-                    <User className="h-4 w-4" />
-                    Sign In
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer flex items-center gap-2" href="/auth/signup">
-                    <User className="h-4 w-4" />
-                    Create Account
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer flex items-center gap-2" href="/track">
-                    <Package className="h-4 w-4" />
-                    Track Orders
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer flex items-center gap-2" href="/account/orders">
-                    <FileText className="h-4 w-4" />
-                    Order History
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link className="cursor-pointer flex items-center gap-2" href="/account/settings">
-                    <User className="h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
+                {session ? (
+                  <>
+                    <DropdownMenuLabel>
+                      {session.user?.email || 'My Account'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/dashboard">
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/orders">
+                        <Package className="h-4 w-4" />
+                        Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/downloads">
+                        <Download className="h-4 w-4" />
+                        Downloads
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/addresses">
+                        <MapPin className="h-4 w-4" />
+                        Addresses
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/payment-methods">
+                        <CreditCard className="h-4 w-4" />
+                        Payment Methods
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/account/details">
+                        <Settings className="h-4 w-4" />
+                        Account Details
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer flex items-center gap-2 text-red-600" 
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Log Out
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
+                        <User className="h-4 w-4" />
+                        Sign In
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signup">
+                        <User className="h-4 w-4" />
+                        Create Account
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link className="cursor-pointer flex items-center gap-2" href="/track">
+                        <Package className="h-4 w-4" />
+                        Track Order (Guest)
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -308,33 +363,84 @@ export default function Header() {
                   
                   <div className="border-t pt-4 mt-4">
                     <MobileThemeToggle />
-                    <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full justify-start" variant="ghost">
-                        <User className="mr-2 h-4 w-4" />
-                        Sign In
-                      </Button>
-                    </Link>
                   </div>
-
+                  
                   <div className="border-t pt-4 mt-4 space-y-1">
-                    <Link href="/track" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full justify-start" variant="ghost">
-                        <Package className="mr-2 h-4 w-4" />
-                        Track Orders
-                      </Button>
-                    </Link>
-                    <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full justify-start" variant="ghost">
-                        <FileText className="mr-2 h-4 w-4" />
-                        Order History
-                      </Button>
-                    </Link>
-                    <Link href="/account/settings" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full justify-start" variant="ghost">
-                        <User className="mr-2 h-4 w-4" />
-                        Account Settings
-                      </Button>
-                    </Link>
+                    {session ? (
+                      <>
+                        <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
+                          {session.user?.email}
+                        </div>
+                        <Link href="/account/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            Dashboard
+                          </Button>
+                        </Link>
+                        <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <Package className="mr-2 h-4 w-4" />
+                            Orders
+                          </Button>
+                        </Link>
+                        <Link href="/account/downloads" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <Download className="mr-2 h-4 w-4" />
+                            Downloads
+                          </Button>
+                        </Link>
+                        <Link href="/account/addresses" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <MapPin className="mr-2 h-4 w-4" />
+                            Addresses
+                          </Button>
+                        </Link>
+                        <Link href="/account/payment-methods" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <CreditCard className="mr-2 h-4 w-4" />
+                            Payment Methods
+                          </Button>
+                        </Link>
+                        <Link href="/account/details" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <Settings className="mr-2 h-4 w-4" />
+                            Account Details
+                          </Button>
+                        </Link>
+                        <Button 
+                          className="w-full justify-start text-red-600" 
+                          variant="ghost"
+                          onClick={() => {
+                            handleSignOut()
+                            setMobileMenuOpen(false)
+                          }}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Log Out
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <User className="mr-2 h-4 w-4" />
+                            Sign In
+                          </Button>
+                        </Link>
+                        <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <User className="mr-2 h-4 w-4" />
+                            Create Account
+                          </Button>
+                        </Link>
+                        <Link href="/track" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full justify-start" variant="ghost">
+                            <Package className="mr-2 h-4 w-4" />
+                            Track Order (Guest)
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </nav>
               </SheetContent>
