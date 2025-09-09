@@ -5,8 +5,6 @@ import GoogleProvider from "next-auth/providers/google"
 import EmailProvider from "next-auth/providers/email"
 import { prisma } from "@/lib/prisma"
 
-const ADMIN_EMAIL = 'iradwatkins@gmail.com'
-
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -44,6 +42,23 @@ export const authConfig: NextAuthConfig = {
         token.id = user.id
         token.email = user.email
         token.name = user.name
+        
+        // Fetch user role from database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true, email: true }
+        })
+        
+        // Special handling for iradwatkins@gmail.com - always ADMIN
+        if (dbUser?.email === 'iradwatkins@gmail.com' && dbUser.role !== 'ADMIN') {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { role: 'ADMIN' }
+          })
+          token.role = 'ADMIN'
+        } else {
+          token.role = dbUser?.role || 'CUSTOMER'
+        }
       }
       
       // Always ensure email is set (for OAuth providers)
@@ -51,8 +66,20 @@ export const authConfig: NextAuthConfig = {
         token.email = profile.email
       }
       
-      // Set admin status based on email
-      token.isAdmin = token.email === ADMIN_EMAIL
+      // If we don't have a role yet, fetch it from database by email
+      if (!token.role && token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { role: true, email: true }
+        })
+        
+        // Ensure iradwatkins@gmail.com is always ADMIN
+        if (token.email === 'iradwatkins@gmail.com') {
+          token.role = 'ADMIN'
+        } else {
+          token.role = dbUser?.role || 'CUSTOMER'
+        }
+      }
       
       return token
     },
@@ -61,7 +88,8 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.id
         session.user.email = token.email
         session.user.name = token.name
-        session.user.isAdmin = token.isAdmin
+        session.user.role = token.role
+        session.user.isAdmin = token.role === 'ADMIN'
       }
       return session
     },

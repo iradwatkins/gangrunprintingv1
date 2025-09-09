@@ -148,12 +148,13 @@ async function getDashboardData() {
     }
   })
 
-  // Get low stock products (assuming we have an inventory field)
-  const lowStockProducts = await prisma.product.findMany({
+  // Get recently added products instead of low stock (no inventory field in schema)
+  const recentProducts = await prisma.product.findMany({
     where: {
-      inventory: {
-        lt: 100
-      }
+      isActive: true
+    },
+    orderBy: {
+      createdAt: 'desc'
     },
     take: 5
   })
@@ -180,7 +181,7 @@ async function getDashboardData() {
     recentOrders,
     totalCustomers,
     newCustomersThisMonth,
-    lowStockProducts
+    recentProducts
   }
 }
 
@@ -330,7 +331,7 @@ export default async function AdminDashboard() {
       </Card>
 
       {/* Alerts Section */}
-      {data.lowStockProducts.length > 0 && (
+      {data.urgentOrders > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -340,20 +341,11 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.lowStockProducts.map((product) => (
-                <Alert key={product.id}>
-                  <AlertDescription>
-                    Low stock alert: {product.name} - Only {product.inventory || 0} units remaining
-                  </AlertDescription>
-                </Alert>
-              ))}
-              {data.urgentOrders > 0 && (
-                <Alert>
-                  <AlertDescription>
-                    {data.urgentOrders} urgent orders need attention (due within 24 hours)
-                  </AlertDescription>
-                </Alert>
-              )}
+              <Alert>
+                <AlertDescription>
+                  {data.urgentOrders} urgent orders need attention
+                </AlertDescription>
+              </Alert>
             </div>
           </CardContent>
         </Card>
