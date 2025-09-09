@@ -1,0 +1,120 @@
+import { OrderStatus } from '@prisma/client'
+import { sendNotificationToUser, NotificationTypes } from './notifications'
+
+// Map order status to notification type
+export function getNotificationTypeForStatus(status: OrderStatus): string | null {
+  switch (status) {
+    case 'PENDING':
+      return NotificationTypes.ORDER_CONFIRMED
+    case 'CONFIRMATION':
+      return NotificationTypes.ORDER_CONFIRMED
+    case 'PRE_PRESS':
+      return NotificationTypes.DESIGN_APPROVED
+    case 'PRODUCTION':
+      return NotificationTypes.ORDER_PRINTING
+    case 'BINDERY':
+      return NotificationTypes.ORDER_PROCESSING
+    case 'READY':
+      return NotificationTypes.ORDER_READY
+    case 'SHIPPED':
+      return NotificationTypes.ORDER_SHIPPED
+    case 'DELIVERED':
+      return NotificationTypes.ORDER_DELIVERED
+    case 'CANCELLED':
+      return NotificationTypes.ORDER_CANCELLED
+    default:
+      return null
+  }
+}
+
+// Send notification when order status changes
+export async function notifyOrderStatusChange(
+  userId: string,
+  orderId: string,
+  status: OrderStatus,
+  additionalData?: any
+) {
+  const notificationType = getNotificationTypeForStatus(status)
+  
+  if (!notificationType) {
+    console.log(`No notification configured for status: ${status}`)
+    return
+  }
+
+  try {
+    await sendNotificationToUser(
+      userId,
+      notificationType,
+      {
+        orderId,
+        status,
+        ...additionalData
+      }
+    )
+    
+    console.log(`Notification sent for order ${orderId} status change to ${status}`)
+  } catch (error) {
+    console.error(`Failed to send notification for order ${orderId}:`, error)
+    // Don't throw - we don't want notification failures to break order processing
+  }
+}
+
+// Send notification for payment received
+export async function notifyPaymentReceived(
+  userId: string,
+  orderId: string,
+  amount: number
+) {
+  try {
+    await sendNotificationToUser(
+      userId,
+      NotificationTypes.PAYMENT_RECEIVED,
+      {
+        orderId,
+        amount: amount.toFixed(2)
+      }
+    )
+  } catch (error) {
+    console.error(`Failed to send payment notification for order ${orderId}:`, error)
+  }
+}
+
+// Send notification for design revision needed
+export async function notifyDesignRevision(
+  userId: string,
+  orderId: string,
+  comments: string
+) {
+  try {
+    await sendNotificationToUser(
+      userId,
+      NotificationTypes.DESIGN_REVISION,
+      {
+        orderId,
+        comments
+      }
+    )
+  } catch (error) {
+    console.error(`Failed to send design revision notification for order ${orderId}:`, error)
+  }
+}
+
+// Send promotional notification
+export async function notifySpecialOffer(
+  userId: string,
+  message: string,
+  offerUrl?: string
+) {
+  try {
+    await sendNotificationToUser(
+      userId,
+      NotificationTypes.SPECIAL_OFFER,
+      {
+        message,
+        url: offerUrl || '/products'
+      }
+    )
+  } catch (error) {
+    console.error(`Failed to send special offer notification to user ${userId}:`, error)
+  }
+}

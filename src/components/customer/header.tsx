@@ -44,6 +44,7 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
 import { cn } from '@/lib/utils'
+import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
@@ -197,6 +198,9 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Cart */}
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
@@ -297,6 +301,7 @@ export default function Header() {
                   ))}
                   
                   <div className="border-t pt-4 mt-4">
+                    <MobileThemeToggle />
                     <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start">
                         <User className="mr-2 h-4 w-4" />

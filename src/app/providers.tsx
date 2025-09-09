@@ -5,6 +5,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SessionProvider } from 'next-auth/react'
 import { useState } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { ThemeProvider } from '@/components/theme-provider'
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
+import { NotificationPermission } from '@/components/notification-permission'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -22,7 +25,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <PWAInstallPrompt />
+          <NotificationPermission />
+        </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
         <Toaster position="top-right" />
       </QueryClientProvider>
