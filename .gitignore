@@ -40,8 +40,12 @@ prisma/migrations/
 
 # uploads
 /uploads
-/public/sw*
-/public/workbox*
+
+# PWA generated files (keep sw.js and workbox files that are generated during build)
+# Only ignore the generated service worker, not the manual ones
+/public/sw.js
+/public/workbox-*.js
+/public/swe-worker-*.js
 
 # backups
 /backups
