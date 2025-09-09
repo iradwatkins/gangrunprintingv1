@@ -8,12 +8,20 @@ if (process.env.SENDGRID_API_KEY) {
 
 const BILLING_EMAIL = process.env.SENDGRID_BILLING_EMAIL || 'billing@gangrunprinting.com'
 const SUPPORT_EMAIL = process.env.SENDGRID_SUPPORT_EMAIL || 'support@gangrunprinting.com'
-const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'GangRun Printing'
 
-// Determine which email to use based on email type
-const getFromEmail = (template: string) => {
+// Determine which email and name to use based on email type
+const getFromDetails = (template: string) => {
   const billingTemplates = ['paymentReceived', 'orderCancelled', 'invoice', 'quote']
-  return billingTemplates.includes(template) ? BILLING_EMAIL : SUPPORT_EMAIL
+  if (billingTemplates.includes(template)) {
+    return {
+      email: BILLING_EMAIL,
+      name: 'GangRun Printing Billing'
+    }
+  }
+  return {
+    email: SUPPORT_EMAIL,
+    name: 'GangRun Printing Support'
+  }
 }
 
 // Email templates
@@ -179,13 +187,11 @@ export async function sendEmail(
 ) {
   try {
     const emailContent = templates[template](data)
+    const fromDetails = getFromDetails(template)
     
     const msg = {
       to,
-      from: {
-        email: getFromEmail(template),
-        name: FROM_NAME
-      },
+      from: fromDetails,
       subject: emailContent.subject,
       text: emailContent.text,
       html: emailContent.html
