@@ -13,6 +13,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'GangRun Printing - Professional Print Services',
   description: 'High-quality printing services for all your business and personal needs',
+  icons: {
+    icon: '/favicon-100x100.png',
+    apple: '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
+  },
 }
 
 export const viewport: Viewport = {
