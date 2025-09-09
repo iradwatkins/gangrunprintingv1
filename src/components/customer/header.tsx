@@ -236,6 +236,17 @@ export default function Header() {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
+                    {session?.user?.email === 'iradwatkins@gmail.com' && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link className="cursor-pointer flex items-center gap-2" href="/admin/dashboard">
+                            <Settings className="h-4 w-4" />
+                            Admin Panel
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link className="cursor-pointer flex items-center gap-2" href="/account/orders">
                         <Package className="h-4 w-4" />
@@ -408,6 +419,14 @@ export default function Header() {
                             Dashboard
                           </Button>
                         </Link>
+                        {session?.user?.email === 'iradwatkins@gmail.com' && (
+                          <Link href="/admin/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                            <Button className="w-full justify-start" variant="ghost">
+                              <Settings className="mr-2 h-4 w-4" />
+                              Admin Panel
+                            </Button>
+                          </Link>
+                        )}
                         <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
                             <Package className="mr-2 h-4 w-4" />

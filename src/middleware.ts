@@ -2,22 +2,24 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
+const ADMIN_EMAIL = 'iradwatkins@gmail.com'
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Protect admin routes
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+  if (pathname.startsWith('/admin')) {
     const token = await getToken({ req: request })
 
     if (!token) {
-      const loginUrl = new URL('/admin/login', request.url)
+      const loginUrl = new URL('/auth/signin', request.url)
       loginUrl.searchParams.set('from', pathname)
       return NextResponse.redirect(loginUrl)
     }
 
-    // Check if user has admin role
-    if (token.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/auth/signin', request.url))
+    // Check if user is the admin (only iradwatkins@gmail.com)
+    if (token.email !== ADMIN_EMAIL) {
+      return NextResponse.redirect(new URL('/', request.url))
     }
   }
 
