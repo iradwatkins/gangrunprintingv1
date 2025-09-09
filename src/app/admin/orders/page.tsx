@@ -49,9 +49,9 @@ export default function OrdersPage() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <input
-                type="text"
-                placeholder="Search orders..."
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Search orders..."
+                type="text"
               />
             </div>
             <Button variant="outline">
@@ -92,7 +92,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="p-4">{order.date}</td>
                     <td className="p-4">
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm" variant="ghost">
                         View
                       </Button>
                     </td>
@@ -108,8 +108,8 @@ export default function OrdersPage() {
               Showing 1 to 8 of 100 orders
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">Previous</Button>
-              <Button variant="outline" size="sm">Next</Button>
+              <Button size="sm" variant="outline">Previous</Button>
+              <Button size="sm" variant="outline">Next</Button>
             </div>
           </div>
         </CardContent>

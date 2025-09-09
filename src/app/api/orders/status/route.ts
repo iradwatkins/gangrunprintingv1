@@ -1,0 +1,193 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { OrderStatus } from '@prisma/client';
+import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management';
+
+// Update order status
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    // Only admins can update order status
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { orderId, newStatus, notes } = body;
+
+    if (!orderId || !newStatus) {
+      return NextResponse.json(
+        { error: 'Order ID and new status are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate the status value
+    if (!Object.values(OrderStatus).includes(newStatus)) {
+      return NextResponse.json(
+        { error: 'Invalid status value' },
+        { status: 400 }
+      );
+    }
+
+    // Get current order
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { 
+        id: true, 
+        status: true,
+        referenceNumber: true
+      }
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if transition is valid
+    if (!canTransitionTo(order.status, newStatus)) {
+      return NextResponse.json(
+        { error: `Cannot transition from ${order.status} to ${newStatus}` },
+        { status: 400 }
+      );
+    }
+
+    // Generate reference number if transitioning to CONFIRMATION and doesn't have one
+    let referenceNumber = order.referenceNumber;
+    if (newStatus === OrderStatus.CONFIRMATION && !referenceNumber) {
+      // Get the next order number
+      const orderCount = await prisma.order.count();
+      referenceNumber = generateReferenceNumber(orderCount + 1);
+    }
+
+    // Update order status in a transaction
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      // Create status history entry
+      await tx.statusHistory.create({
+        data: {
+          orderId: orderId,
+          fromStatus: order.status,
+          toStatus: newStatus,
+          notes: notes,
+          changedBy: session.user.email || session.user.id
+        }
+      });
+
+      // Update the order
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: {
+          status: newStatus,
+          ...(referenceNumber && { referenceNumber })
+        },
+        include: {
+          StatusHistory: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          }
+        }
+      });
+
+      // If order is delivered, schedule review request for 3 days later
+      if (newStatus === OrderStatus.DELIVERED) {
+        await tx.notification.create({
+          data: {
+            orderId: orderId,
+            type: 'ORDER_DELIVERED',
+            sent: false
+          }
+        });
+      }
+
+      return updated;
+    });
+
+    return NextResponse.json({
+      success: true,
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return NextResponse.json(
+      { error: 'Failed to update order status' },
+      { status: 500 }
+    );
+  }
+}
+
+// Get order status history
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const orderId = searchParams.get('orderId');
+
+    if (!orderId) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if user owns the order or is admin
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { 
+        userId: true,
+        status: true,
+        referenceNumber: true
+      }
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    if (session.user.role !== 'ADMIN' && order.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get status history
+    const statusHistory = await prisma.statusHistory.findMany({
+      where: { orderId },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    return NextResponse.json({
+      currentStatus: order.status,
+      referenceNumber: order.referenceNumber,
+      history: statusHistory
+    });
+
+  } catch (error) {
+    console.error('Error fetching order status history:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch order status history' },
+      { status: 500 }
+    );
+  }
+}

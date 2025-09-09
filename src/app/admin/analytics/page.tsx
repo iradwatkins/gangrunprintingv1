@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" variant="outline">
             <Filter className="h-4 w-4" />
             Filter
           </Button>
@@ -81,7 +81,7 @@ export default function AnalyticsPage() {
             <SelectItem value="last365">Last 365 days</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           <Calendar className="h-4 w-4 mr-2" />
           Custom Range
         </Button>
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Main Analytics Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="overview">
         <TabsList className="grid w-full max-w-[600px] grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
           <TabsTrigger value="products">Products</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent className="space-y-4" value="overview">
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="revenue" className="space-y-4">
+        <TabsContent className="space-y-4" value="revenue">
           <div className="grid gap-4 lg:grid-cols-3">
             <Card className="lg:col-span-2">
               <CardHeader>
@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="customers" className="space-y-4">
+        <TabsContent className="space-y-4" value="customers">
           <Card>
             <CardHeader>
               <CardTitle>Customer Segments</CardTitle>
@@ -186,7 +186,7 @@ export default function AnalyticsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{segment.segment}</span>
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge className="text-xs" variant="secondary">
                           {segment.customers} customers
                         </Badge>
                       </div>
@@ -205,7 +205,7 @@ export default function AnalyticsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="products" className="space-y-4">
+        <TabsContent className="space-y-4" value="products">
           <Card>
             <CardHeader>
               <CardTitle>Top Performing Products</CardTitle>

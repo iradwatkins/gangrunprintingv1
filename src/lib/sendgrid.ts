@@ -215,7 +215,7 @@ export async function processPendingNotifications() {
     for (const notification of pendingNotifications) {
       const order = notification.order
       let template: keyof typeof templates | null = null
-      let emailData: any = {
+      const emailData: any = {
         orderNumber: order.orderNumber,
         customerName: order.user?.name,
         total: order.total,

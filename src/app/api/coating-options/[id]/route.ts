@@ -1,0 +1,121 @@
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { auth } from '@/lib/auth'
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await auth()
+    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { name, description, additionalCost } = body
+
+    if (!name) {
+      return NextResponse.json(
+        { error: 'Name is required' },
+        { status: 400 }
+      )
+    }
+
+    const coatingOption = await prisma.coatingOption.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        additionalCost: additionalCost ? parseFloat(additionalCost) : null
+      }
+    })
+
+    return NextResponse.json(coatingOption)
+  } catch (error: any) {
+    console.error('Error updating coating option:', error)
+    
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A coating option with this name already exists' },
+        { status: 400 }
+      )
+    }
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Coating option not found' },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json(
+      { error: 'Failed to update coating option' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await auth()
+    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if coating option is in use
+    const coatingWithRelations = await prisma.coatingOption.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { paperStockCoatings: true }
+        }
+      }
+    })
+
+    if (!coatingWithRelations) {
+      return NextResponse.json(
+        { error: 'Coating option not found' },
+        { status: 404 }
+      )
+    }
+
+    if (coatingWithRelations._count.paperStockCoatings > 0) {
+      return NextResponse.json(
+        { error: 'Cannot delete coating option that is in use by paper stocks' },
+        { status: 400 }
+      )
+    }
+
+    await prisma.coatingOption.delete({
+      where: { id }
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    console.error('Error deleting coating option:', error)
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Coating option not found' },
+        { status: 404 }
+      )
+    }
+    
+    return NextResponse.json(
+      { error: 'Failed to delete coating option' },
+      { status: 500 }
+    )
+  }
+}

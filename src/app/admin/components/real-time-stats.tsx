@@ -103,8 +103,8 @@ export function RealTimeStats() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Real-Time Metrics</h2>
         <Badge 
-          variant={isLive ? "default" : "secondary"}
           className="cursor-pointer"
+          variant={isLive ? "default" : "secondary"}
           onClick={() => setIsLive(!isLive)}
         >
           <span className={`inline-block w-2 h-2 rounded-full mr-2 ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />

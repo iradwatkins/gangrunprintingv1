@@ -20,6 +20,8 @@ import {
   Palette,
   BarChart3,
   Home,
+  Droplets,
+  Layers,
 } from 'lucide-react'
 
 import { NavMain } from './nav-main'
@@ -169,6 +171,26 @@ const data = {
         {
           title: 'General',
           url: '/admin/settings',
+        },
+        {
+          title: 'Material Types',
+          url: '/admin/material-types',
+        },
+        {
+          title: 'Add-ons',
+          url: '/admin/add-ons',
+        },
+        {
+          title: 'Paper Stocks',
+          url: '/admin/paper-stocks',
+        },
+        {
+          title: 'Quantities',
+          url: '/admin/quantities',
+        },
+        {
+          title: 'Sizes',
+          url: '/admin/sizes',
         },
         {
           title: 'Printing',

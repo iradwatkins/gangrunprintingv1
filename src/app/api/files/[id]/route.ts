@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { 
@@ -12,13 +12,13 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params
   try {
+    const { id } = await context.params
     const session = await auth()
     
     // Get file record from database
     const file = await prisma.file.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         order: {
           select: {
@@ -77,8 +77,8 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params
   try {
+    const { id } = await context.params
     const session = await auth()
     
     // Only admins can delete files
@@ -91,7 +91,7 @@ export async function DELETE(
     
     // Get file record
     const file = await prisma.file.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
     
     if (!file) {
@@ -106,7 +106,7 @@ export async function DELETE(
     
     // Delete from database
     await prisma.file.delete({
-      where: { id: params.id }
+      where: { id }
     })
     
     return NextResponse.json({
