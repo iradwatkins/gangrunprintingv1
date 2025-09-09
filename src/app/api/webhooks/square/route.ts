@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { N8NWorkflows } from '@/lib/n8n'
 import crypto from 'crypto'
 
 // Verify Square webhook signature
@@ -123,6 +124,18 @@ async function handlePaymentCreated(data: any) {
     })
     
     console.log(`Order ${order.orderNumber} marked as paid`)
+    
+    // Trigger N8N workflow for payment received
+    try {
+      await N8NWorkflows.onPaymentReceived(order.id, {
+        transactionId: payment.id,
+        method: payment.source_type,
+        amount: payment.amount_money?.amount
+      })
+      await N8NWorkflows.onOrderStatusChanged(order.id, order.status)
+    } catch (n8nError) {
+      console.error('Failed to trigger N8N workflow:', n8nError)
+    }
   }
 }
 
