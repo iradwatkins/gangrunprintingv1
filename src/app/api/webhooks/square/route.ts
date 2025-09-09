@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
     const requestUrl = request.url
     
     // Verify webhook signature
-    if (process.env.SQUARE_WEBHOOK_SIGNATURE) {
+    if (process.env.SQUARE_WEBHOOK_SIGNATURE_KEY) {
       if (!signature || !verifyWebhookSignature(
         body,
         signature,
-        process.env.SQUARE_WEBHOOK_SIGNATURE,
+        process.env.SQUARE_WEBHOOK_SIGNATURE_KEY,
         requestUrl
       )) {
         return NextResponse.json(

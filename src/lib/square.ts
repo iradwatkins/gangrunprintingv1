@@ -1,13 +1,14 @@
-import { SquareClient, SquareEnvironment } from 'square'
-import crypto from 'crypto'
+import { SquareClient, SquareEnvironment, SquareError } from 'square'
+import * as crypto from 'crypto'
 
 // Initialize Square client
 const client = new SquareClient({
+  squareVersion: '2024-08-21',
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
   environment: process.env.SQUARE_ENVIRONMENT === 'production' 
     ? SquareEnvironment.Production 
     : SquareEnvironment.Sandbox,
-})
+} as any)
 
 export const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID!
 export const SQUARE_APPLICATION_ID = process.env.SQUARE_APPLICATION_ID!
@@ -27,7 +28,7 @@ export async function createSquareCheckout(orderData: {
   }>
 }) {
   try {
-    const { result } = await client.checkoutApi.createPaymentLink({
+    const { result } = await client.checkout.createPaymentLink({
       checkoutOptions: {
         acceptedPaymentMethods: {
           applePay: true,
@@ -62,9 +63,9 @@ export async function createSquareCheckout(orderData: {
       orderId: result.paymentLink?.orderId || ''
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error('Square API error:', error.result)
-      throw new Error(`Square checkout failed: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
+    if (error instanceof SquareError) {
+      console.error('Square API error:', error)
+      throw new Error(`Square checkout failed: ${error.message || 'Unknown error'}`)
     }
     throw error
   }
@@ -73,7 +74,7 @@ export async function createSquareCheckout(orderData: {
 // Retrieve payment details
 export async function retrieveSquarePayment(paymentId: string) {
   try {
-    const { result } = await client.paymentsApi.getPayment(paymentId)
+    const { result } = await client.payments.getPayment(paymentId)
     
     return {
       id: result.payment?.id,
@@ -86,9 +87,9 @@ export async function retrieveSquarePayment(paymentId: string) {
       createdAt: result.payment?.createdAt
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error('Square API error:', error.result)
-      throw new Error(`Failed to retrieve payment: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
+    if (error instanceof SquareError) {
+      console.error('Square API error:', error)
+      throw new Error(`Failed to retrieve payment: ${error.message || 'Unknown error'}`)
     }
     throw error
   }
@@ -102,7 +103,7 @@ export async function createOrUpdateSquareCustomer(
 ) {
   try {
     // First, try to find existing customer by email
-    const searchResult = await client.customersApi.searchCustomers({
+    const searchResult = await client.customers.searchCustomers({
       filter: {
         emailAddress: {
           exact: email
@@ -116,14 +117,14 @@ export async function createOrUpdateSquareCustomer(
       // Update existing customer
       customerId = searchResult.result.customers[0].id
       
-      await client.customersApi.updateCustomer(customerId, {
+      await client.customers.updateCustomer(customerId, {
         emailAddress: email,
         ...(name && { givenName: name.split(' ')[0], familyName: name.split(' ').slice(1).join(' ') }),
         ...(phone && { phoneNumber: phone })
       })
     } else {
       // Create new customer
-      const createResult = await client.customersApi.createCustomer({
+      const createResult = await client.customers.createCustomer({
         emailAddress: email,
         ...(name && { givenName: name.split(' ')[0], familyName: name.split(' ').slice(1).join(' ') }),
         ...(phone && { phoneNumber: phone })
@@ -139,9 +140,9 @@ export async function createOrUpdateSquareCustomer(
       phone 
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error('Square API error:', error.result)
-      throw new Error(`Customer operation failed: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
+    if (error instanceof SquareError) {
+      console.error('Square API error:', error)
+      throw new Error(`Customer operation failed: ${error.message || 'Unknown error'}`)
     }
     throw error
   }
@@ -165,7 +166,7 @@ export async function createSquareOrder(orderData: {
   }>
 }) {
   try {
-    const { result } = await client.ordersApi.createOrder({
+    const { result } = await client.orders.createOrder({
       order: {
         locationId: SQUARE_LOCATION_ID,
         referenceId: orderData.referenceId,
@@ -183,9 +184,9 @@ export async function createSquareOrder(orderData: {
       state: result.order?.state
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error('Square API error:', error.result)
-      throw new Error(`Order creation failed: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
+    if (error instanceof SquareError) {
+      console.error('Square API error:', error)
+      throw new Error(`Order creation failed: ${error.message || 'Unknown error'}`)
     }
     throw error
   }
@@ -194,7 +195,7 @@ export async function createSquareOrder(orderData: {
 // Retrieve an order
 export async function retrieveSquareOrder(orderId: string) {
   try {
-    const { result } = await client.ordersApi.retrieveOrder(orderId)
+    const { result } = await client.orders.retrieveOrder(orderId)
     
     return {
       id: result.order?.id,
@@ -206,9 +207,9 @@ export async function retrieveSquareOrder(orderId: string) {
       fulfillments: result.order?.fulfillments
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error('Square API error:', error.result)
-      throw new Error(`Failed to retrieve order: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
+    if (error instanceof SquareError) {
+      console.error('Square API error:', error)
+      throw new Error(`Failed to retrieve order: ${error.message || 'Unknown error'}`)
     }
     throw error
   }
@@ -221,7 +222,7 @@ export async function updateSquareFulfillment(
   state: 'PROPOSED' | 'RESERVED' | 'PREPARED' | 'COMPLETED' | 'CANCELED' | 'FAILED'
 ) {
   try {
-    const { result } = await client.ordersApi.updateOrder(orderId, {
+    const { result } = await client.orders.updateOrder(orderId, {
       order: {
         locationId: SQUARE_LOCATION_ID,
         fulfillments: [{
@@ -236,7 +237,7 @@ export async function updateSquareFulfillment(
       order: result.order
     }
   } catch (error) {
-    if (error instanceof ApiError) {
+    if (error instanceof SquareError) {
       console.error('Square API error:', error.result)
       throw new Error(`Fulfillment update failed: ${error.result.errors?.[0]?.detail || 'Unknown error'}`)
     }

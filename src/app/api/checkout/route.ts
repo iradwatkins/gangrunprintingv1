@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createSquareCheckout, createOrUpdateSquareCustomer, createSquareOrder } from '@/lib/square'
 import { auth } from '@/lib/auth'
+import { sendEmail } from '@/lib/sendgrid'
+import { getOrderConfirmationEmail } from '@/lib/email-templates'
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase()
@@ -154,6 +156,38 @@ export async function POST(request: NextRequest) {
         OrderItem: true
       }
     })
+
+    // Send order confirmation email
+    try {
+      const emailData = getOrderConfirmationEmail({
+        orderNumber: order.orderNumber,
+        customerName: name,
+        email,
+        items: order.OrderItem.map((item: any) => ({
+          name: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+          options: item.options
+        })),
+        subtotal,
+        tax,
+        shipping,
+        total,
+        shippingAddress
+      })
+
+      await sendEmail({
+        to: email,
+        subject: emailData.subject,
+        html: emailData.html,
+        text: emailData.text
+      })
+
+      console.log(`Order confirmation email sent to ${email}`)
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError)
+      // Don't fail the order if email fails
+    }
 
     // Create Square payment link
     try {
