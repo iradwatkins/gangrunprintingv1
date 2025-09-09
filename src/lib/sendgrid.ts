@@ -6,12 +6,12 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
-const BILLING_EMAIL = process.env.SENDGRID_BILLING_EMAIL || 'billing@gangrunprinting.com'
-const SUPPORT_EMAIL = process.env.SENDGRID_SUPPORT_EMAIL || 'support@gangrunprinting.com'
+const BILLING_EMAIL = process.env.SENDGRID_BILLING_EMAIL || 'Billing@gangrunprinting.com'
+const SUPPORT_EMAIL = process.env.SENDGRID_SUPPORT_EMAIL || 'Support@gangrunprinting.com'
 
 // Determine which email and name to use based on email type
 const getFromDetails = (template: string) => {
-  const billingTemplates = ['paymentReceived', 'orderCancelled', 'invoice', 'quote']
+  const billingTemplates = ['paymentReceived', 'orderCancelled', 'invoice', 'quote', 'orderRefunded']
   if (billingTemplates.includes(template)) {
     return {
       email: BILLING_EMAIL,
@@ -215,9 +215,9 @@ export async function processPendingNotifications() {
     const pendingNotifications = await prisma.notification.findMany({
       where: { sent: false },
       include: {
-        order: {
+        Order: {
           include: {
-            items: true,
+            OrderItem: true,
             user: true
           }
         }
@@ -226,14 +226,14 @@ export async function processPendingNotifications() {
     })
 
     for (const notification of pendingNotifications) {
-      const order = notification.order
+      const order = notification.Order
       let template: keyof typeof templates | null = null
       const emailData: any = {
         orderNumber: order.orderNumber,
         customerName: order.user?.name,
         total: order.total,
         status: order.status,
-        items: order.items,
+        items: order.OrderItem,
         shippingAddress: order.shippingAddress
       }
 
