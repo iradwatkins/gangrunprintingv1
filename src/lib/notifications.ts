@@ -9,13 +9,19 @@ const vapidKeys = {
   subject: process.env.VAPID_SUBJECT || 'mailto:support@gangrunprinting.com'
 }
 
-// Configure web-push
-if (vapidKeys.publicKey && vapidKeys.privateKey) {
-  webpush.setVapidDetails(
-    vapidKeys.subject,
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-  )
+// Configure web-push (only at runtime, not build time)
+const configureWebPush = () => {
+  if (vapidKeys.publicKey && vapidKeys.privateKey && typeof window === 'undefined') {
+    try {
+      webpush.setVapidDetails(
+        vapidKeys.subject,
+        vapidKeys.publicKey,
+        vapidKeys.privateKey
+      )
+    } catch (error) {
+      console.error('Failed to configure VAPID:', error)
+    }
+  }
 }
 
 // Notification types for different order events
@@ -179,6 +185,9 @@ export async function sendNotificationToUser(
       timestamp: Date.now()
     })
 
+    // Configure web push before sending
+    configureWebPush()
+    
     // Send to all user's subscriptions
     const results = await Promise.allSettled(
       subscriptions.map(async (subscription) => {
