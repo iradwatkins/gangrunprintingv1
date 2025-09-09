@@ -73,7 +73,6 @@ export default function VendorsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     name: '',
