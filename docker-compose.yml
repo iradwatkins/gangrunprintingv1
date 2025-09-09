@@ -5,14 +5,106 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    image: gangrunprinting:latest
+    container_name: gangrunprinting-app
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     environment:
+      # Core Configuration
       - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      
+      # Database - Will be set by Dokploy
+      - DATABASE_URL=${DATABASE_URL}
+      
+      # Authentication - Will be set by Dokploy
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://gangrunprinting.com}
+      - AUTH_TRUST_HOST=true
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      
+      # Admin Configuration
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-iradwatkins@gmail.com}
+      
+      # Payment Processing - Optional
+      - SQUARE_ACCESS_TOKEN=${SQUARE_ACCESS_TOKEN}
+      - SQUARE_ENVIRONMENT=${SQUARE_ENVIRONMENT:-production}
+      - SQUARE_LOCATION_ID=${SQUARE_LOCATION_ID}
+      - SQUARE_APPLICATION_ID=${SQUARE_APPLICATION_ID}
+      
+      # Email Service - Optional
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL:-support@gangrunprinting.com}
+      - SENDGRID_FROM_NAME=${SENDGRID_FROM_NAME:-GangRun Printing}
+      
+      # File Storage - Optional
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-gangrun-files}
+      
+      # Push Notifications - Optional
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:support@gangrunprinting.com}
+      
+      # Timezone
+      - TZ=${TZ:-America/Chicago}
+    
     restart: unless-stopped
+    
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
-      timeout: 3s
+      timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
+    
+    networks:
+      - gangrun-network
+    
+    volumes:
+      - uploads:/app/uploads
+      - ./prisma:/app/prisma:ro
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    labels:
+      # Dokploy labels
+      - "dokploy.enabled=true"
+      - "dokploy.name=gangrunprinting"
+      - "dokploy.type=application"
+      
+      # Traefik labels for routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.gangrunprinting.rule=Host(`gangrunprinting.com`) || Host(`www.gangrunprinting.com`)"
+      - "traefik.http.routers.gangrunprinting.entrypoints=websecure"
+      - "traefik.http.routers.gangrunprinting.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gangrunprinting.loadbalancer.server.port=3000"
+      
+      # WWW redirect
+      - "traefik.http.middlewares.gangrun-www-redirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.gangrun-www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.gangrun-www-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.gangrunprinting.middlewares=gangrun-www-redirect"
+
+networks:
+  gangrun-network:
+    external: true
+    name: dokploy-network
+
+volumes:
+  uploads:
+    driver: local

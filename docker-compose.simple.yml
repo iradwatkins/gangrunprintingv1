@@ -1,0 +1,19 @@
+# Simple fallback docker-compose for Dokploy
+# Use this if the main docker-compose.yml has issues
+
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+    restart: unless-stopped
