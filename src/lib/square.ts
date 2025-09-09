@@ -1,11 +1,12 @@
-import { Client, Environment, ApiError } from 'square'
+import { SquareClient, SquareEnvironment } from 'square'
+import crypto from 'crypto'
 
 // Initialize Square client
-const client = new Client({
+const client = new SquareClient({
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
   environment: process.env.SQUARE_ENVIRONMENT === 'production' 
-    ? Environment.Production 
-    : Environment.Sandbox,
+    ? SquareEnvironment.Production 
+    : SquareEnvironment.Sandbox,
 })
 
 export const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID!
@@ -269,7 +270,6 @@ export function verifyWebhookSignature(
   signatureKey: string,
   requestUrl: string
 ): boolean {
-  const crypto = require('crypto')
   const hmac = crypto.createHmac('sha256', signatureKey)
   hmac.update(requestUrl + body)
   const hash = hmac.digest('base64')

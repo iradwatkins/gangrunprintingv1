@@ -158,10 +158,10 @@ export function NotificationPermission() {
               Stay Updated
             </CardTitle>
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowPrompt(false)}
               className="h-8 w-8"
+              size="icon"
+              variant="ghost"
+              onClick={() => setShowPrompt(false)}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -191,9 +191,9 @@ export function NotificationPermission() {
           </ul>
           <div className="flex gap-2">
             <Button
-              onClick={requestPermission}
-              disabled={loading}
               className="flex-1"
+              disabled={loading}
+              onClick={requestPermission}
             >
               Enable Notifications
             </Button>
@@ -243,10 +243,10 @@ export function NotificationPermission() {
               <Badge variant="destructive">Blocked</Badge>
             )}
             <Button
-              variant={isSubscribed ? 'outline' : 'default'}
-              size="sm"
-              onClick={isSubscribed ? unsubscribeUser : requestPermission}
               disabled={loading || permission === 'denied'}
+              size="sm"
+              variant={isSubscribed ? 'outline' : 'default'}
+              onClick={isSubscribed ? unsubscribeUser : requestPermission}
             >
               {loading ? 'Loading...' : isSubscribed ? 'Disable' : 'Enable'}
             </Button>
@@ -294,7 +294,7 @@ export function TestNotificationButton() {
   }
 
   return (
-    <Button onClick={sendTestNotification} variant="outline" size="sm">
+    <Button size="sm" variant="outline" onClick={sendTestNotification}>
       Send Test Notification
     </Button>
   )

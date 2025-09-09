@@ -51,7 +51,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { DateRange } from 'react-day-picker';
+import { type DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
 import { getStatusInfo } from '@/lib/order-management';
 import { OrderStatus } from '@prisma/client';
@@ -272,10 +272,10 @@ export default function OrderHistory() {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
+                  className="pl-8 w-[250px]"
                   placeholder="Search orders..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-[250px]"
                 />
               </div>
               
@@ -297,23 +297,23 @@ export default function OrderHistory() {
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button className="gap-2" variant="outline">
                     <Calendar className="h-4 w-4" />
                     Date Range
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent align="start" className="w-auto p-0">
                   <CalendarComponent
+                    initialFocus
                     mode="range"
                     selected={dateRange}
                     onSelect={setDateRange}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
 
-            <Button onClick={fetchData} variant="outline" size="icon">
+            <Button size="icon" variant="outline" onClick={fetchData}>
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
@@ -329,7 +329,7 @@ export default function OrderHistory() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="orders" className="mt-4">
+            <TabsContent className="mt-4" value="orders">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -392,26 +392,26 @@ export default function OrderHistory() {
                         <TableCell>
                           <div className="flex gap-2">
                             <Button
-                              variant="ghost"
                               size="sm"
+                              variant="ghost"
                               onClick={() => router.push(`/orders/${order.id}`)}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
                             {order.status === 'DELIVERED' && (
                               <Button
-                                variant="ghost"
                                 size="sm"
-                                onClick={() => handleReorder(order.id)}
                                 title="Re-order"
+                                variant="ghost"
+                                onClick={() => handleReorder(order.id)}
                               >
                                 <RefreshCw className="h-4 w-4" />
                               </Button>
                             )}
                             <Button
-                              variant="ghost"
                               size="sm"
                               title="Download Invoice"
+                              variant="ghost"
                             >
                               <Download className="h-4 w-4" />
                             </Button>
@@ -430,7 +430,7 @@ export default function OrderHistory() {
               )}
             </TabsContent>
 
-            <TabsContent value="quotes" className="mt-4">
+            <TabsContent className="mt-4" value="quotes">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -463,8 +463,8 @@ export default function OrderHistory() {
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="ghost"
                             onClick={() => router.push(`/quotes/${quote.id}`)}
                           >
                             <Eye className="h-4 w-4" />
@@ -472,10 +472,10 @@ export default function OrderHistory() {
                           {quote.status === 'SENT' && 
                            new Date(quote.validUntil) > new Date() && (
                             <Button
-                              variant="ghost"
                               size="sm"
-                              onClick={() => handleConvertQuote(quote.id)}
                               title="Convert to Order"
+                              variant="ghost"
+                              onClick={() => handleConvertQuote(quote.id)}
                             >
                               <ChevronRight className="h-4 w-4" />
                             </Button>

@@ -134,14 +134,14 @@ export default function Home() {
                 From business cards to banners, we bring your ideas to life.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="group" asChild>
+                <Button asChild className="group" size="lg">
                   <Link href="/products">
                     <Package className="mr-2 h-5 w-5" />
                     Start Your Order
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button asChild size="lg" variant="outline">
                   <Link href="/track">Track Order</Link>
                 </Button>
               </div>
@@ -211,7 +211,7 @@ export default function Home() {
                 <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer overflow-hidden">
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
                     {category.popular && (
-                      <Badge variant="secondary" className="absolute top-3 right-3 z-10 bg-primary/10 text-primary border-primary/20">
+                      <Badge className="absolute top-3 right-3 z-10 bg-primary/10 text-primary border-primary/20" variant="secondary">
                         Popular
                       </Badge>
                     )}
@@ -268,7 +268,7 @@ export default function Home() {
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                       <p className="text-primary font-bold">{product.price}</p>
-                      <Button className="w-full mt-4" variant="outline" asChild>
+                      <Button asChild className="w-full mt-4" variant="outline">
                         <Link href="/products">View Details</Link>
                       </Button>
                     </CardContent>
@@ -379,14 +379,14 @@ export default function Home() {
             Choose from our wide selection of products and upload your design. Our team is ready to bring your vision to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="group" asChild>
+            <Button asChild className="group" size="lg">
               <Link href="/products">
                 <Package className="mr-2 h-5 w-5" />
                 Browse Products
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button asChild size="lg" variant="outline">
               <Link href="/track">Track Your Order</Link>
             </Button>
           </div>

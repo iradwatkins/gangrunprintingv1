@@ -49,9 +49,9 @@ export default function Footer() {
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <Input 
-                type="email" 
+                className="max-w-sm" 
                 placeholder="Enter your email" 
-                className="max-w-sm"
+                type="email"
               />
               <Button className="bg-primary hover:bg-primary/90">
                 Subscribe
@@ -66,7 +66,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
+            <Link className="flex items-center space-x-2 mb-4" href="/">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">GR</span>
               </div>
@@ -102,8 +102,8 @@ export default function Footer() {
               {footerLinks.products.map((link) => (
                 <li key={link.href}>
                   <Link 
-                    href={link.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    href={link.href}
                   >
                     {link.name}
                   </Link>
@@ -119,8 +119,8 @@ export default function Footer() {
               {footerLinks.services.map((link) => (
                 <li key={link.href}>
                   <Link 
-                    href={link.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    href={link.href}
                   >
                     {link.name}
                   </Link>
@@ -136,8 +136,8 @@ export default function Footer() {
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link 
-                    href={link.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    href={link.href}
                   >
                     {link.name}
                   </Link>
@@ -153,8 +153,8 @@ export default function Footer() {
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link 
-                    href={link.href}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    href={link.href}
                   >
                     {link.name}
                   </Link>
@@ -201,24 +201,24 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
             <p>© 2024 GangRun Printing. All rights reserved.</p>
             <div className="flex gap-4">
-              <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Cookie Policy</Link>
+              <Link className="hover:text-primary transition-colors" href="#">Privacy Policy</Link>
+              <Link className="hover:text-primary transition-colors" href="#">Terms of Service</Link>
+              <Link className="hover:text-primary transition-colors" href="#">Cookie Policy</Link>
             </div>
           </div>
           
           {/* Social Links */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Button className="hover:text-primary" size="icon" variant="ghost">
               <Facebook className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Button className="hover:text-primary" size="icon" variant="ghost">
               <Twitter className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Button className="hover:text-primary" size="icon" variant="ghost">
               <Instagram className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Button className="hover:text-primary" size="icon" variant="ghost">
               <Linkedin className="h-4 w-4" />
             </Button>
           </div>

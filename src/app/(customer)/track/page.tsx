@@ -347,8 +347,8 @@ export default function TrackOrderPage() {
                           </span>
                         </div>
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="ghost"
                           onClick={() => setUploadedFile(null)}
                         >
                           Remove

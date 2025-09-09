@@ -101,9 +101,9 @@ export function ChatWidget() {
       {/* Chat Button */}
       {!isOpen && (
         <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:scale-105 transition-transform"
           aria-label="Open chat"
+          className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:scale-105 transition-transform"
+          onClick={() => setIsOpen(true)}
         >
           <MessageCircle className="h-6 w-6" />
         </button>
@@ -122,8 +122,8 @@ export function ChatWidget() {
               </div>
             </div>
             <Button
-              variant="ghost"
               size="icon"
+              variant="ghost"
               onClick={() => setIsOpen(false)}
             >
               <X className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function ChatWidget() {
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+          <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -187,20 +187,20 @@ export function ChatWidget() {
           {/* Input */}
           <div className="p-4 border-t">
             <form
+              className="flex gap-2"
               onSubmit={(e) => {
                 e.preventDefault()
                 sendMessage()
               }}
-              className="flex gap-2"
             >
               <Input
+                className="flex-1"
+                disabled={isLoading}
+                placeholder="Type your message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message..."
-                disabled={isLoading}
-                className="flex-1"
               />
-              <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+              <Button disabled={isLoading || !input.trim()} size="icon" type="submit">
                 <Send className="h-4 w-4" />
               </Button>
             </form>
