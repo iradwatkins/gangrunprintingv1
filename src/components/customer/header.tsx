@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { 
   Menu, 
@@ -111,10 +112,13 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link className="flex items-center space-x-2" href="/">
-              <img 
+              <Image 
                 src="/gangrunprinting_logo_new_1448921366__42384-268x50.png" 
                 alt="GangRun Printing" 
-                className="h-10 w-auto"
+                width={268}
+                height={50}
+                className="h-10 w-auto object-contain"
+                priority
               />
             </Link>
           </div>

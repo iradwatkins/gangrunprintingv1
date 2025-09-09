@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -67,10 +68,12 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <Link className="flex items-center space-x-2 mb-4" href="/">
-              <img 
+              <Image 
                 src="/gangrunprinting_logo_new_1448921366__42384-268x50.png" 
                 alt="GangRun Printing" 
-                className="h-10 w-auto"
+                width={268}
+                height={50}
+                className="h-10 w-auto object-contain"
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
