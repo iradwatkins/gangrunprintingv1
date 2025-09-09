@@ -1,0 +1,26 @@
+{
+  "name": "gangrunprinting",
+  "type": "github",
+  "branch": "main",
+  "repository": "https://github.com/iradwatkins/gangrunprinting.git",
+  "buildCommand": "npm install && npm run build",
+  "startCommand": "npm start",
+  "port": 3000,
+  "env": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://gangrun_user:GangRun2024Secure!@gangrunprinting-postgres:5432/gangrun_db",
+    "AUTH_SECRET": "gangrun_production_secret_key_2024_secure_32_characters_minimum",
+    "NEXTAUTH_URL": "https://gangrunprinting.com",
+    "NEXT_PUBLIC_APP_URL": "https://gangrunprinting.com",
+    "SQUARE_ACCESS_TOKEN": "EAAAlxUo1UKk1Lin6wHkpILz-NgqN0-OiNMWN9LBAK-axvt4gmBUCKw8PW1HZeJD",
+    "SQUARE_ENVIRONMENT": "production",
+    "SENDGRID_API_KEY": "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",
+    "N8N_WEBHOOK_URL": "https://n8n.agistaffers.com/webhook/gangrunprinting",
+    "N8N_API_KEY": "GangRun_N8N_2024_SecureKey",
+    "VAPID_PUBLIC_KEY": "BKt4SWiLCEREI9aqSJuLOPhS6u9rF0XhNPGmpQudB0t5aaSpI5bl0sCVGhGNMUYYhg5KZPLNuNxI2ID4xKJf7_o",
+    "VAPID_PRIVATE_KEY": "aL55ctC_KsQ7nGzDzKfT0SAVnHGdNo8VhZ7P5k_7oVE"
+  },
+  "domains": ["gangrunprinting.com", "www.gangrunprinting.com"],
+  "ssl": true,
+  "healthCheck": "/api/health"
+}
