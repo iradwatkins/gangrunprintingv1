@@ -32,7 +32,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
+import toast from 'react-hot-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface VendorAddress {
@@ -108,19 +108,11 @@ export default function VendorsPage() {
         const data = await response.json();
         setVendors(data);
       } else {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch vendors',
-          variant: 'destructive'
-        });
+        toast.error('Failed to fetch vendors');
       }
     } catch (error) {
       console.error('Error fetching vendors:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch vendors',
-        variant: 'destructive'
-      });
+      toast.error('Failed to fetch vendors');
     } finally {
       setLoading(false);
     }
@@ -192,27 +184,16 @@ export default function VendorsPage() {
       });
 
       if (response.ok) {
-        toast({
-          title: 'Success',
-          description: `Vendor ${editingVendor ? 'updated' : 'created'} successfully`
-        });
+        toast.success(`Vendor ${editingVendor ? 'updated' : 'created'} successfully`);
         fetchVendors();
         setIsDialogOpen(false);
       } else {
         const error = await response.json();
-        toast({
-          title: 'Error',
-          description: error.error || 'Failed to save vendor',
-          variant: 'destructive'
-        });
+        toast.error(error.error || 'Failed to save vendor');
       }
     } catch (error) {
       console.error('Error saving vendor:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save vendor',
-        variant: 'destructive'
-      });
+      toast.error('Failed to save vendor');
     }
   };
 
@@ -225,26 +206,15 @@ export default function VendorsPage() {
       });
 
       if (response.ok) {
-        toast({
-          title: 'Success',
-          description: 'Vendor deactivated successfully'
-        });
+        toast.success('Vendor deactivated successfully');
         fetchVendors();
       } else {
         const error = await response.json();
-        toast({
-          title: 'Error',
-          description: error.error || 'Failed to deactivate vendor',
-          variant: 'destructive'
-        });
+        toast.error(error.error || 'Failed to deactivate vendor');
       }
     } catch (error) {
       console.error('Error deleting vendor:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to deactivate vendor',
-        variant: 'destructive'
-      });
+      toast.error('Failed to deactivate vendor');
     }
   };
 
