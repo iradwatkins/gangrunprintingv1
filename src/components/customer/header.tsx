@@ -111,10 +111,11 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link className="flex items-center space-x-2" href="/">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">GR</span>
-              </div>
-              <span className="hidden sm:block font-bold text-xl">GangRun Printing</span>
+              <img 
+                src="/gangrunprinting_logo_new_1448921366__42384-268x50.png" 
+                alt="GangRun Printing" 
+                className="h-10 w-auto"
+              />
             </Link>
           </div>
 
