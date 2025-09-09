@@ -1,0 +1,404 @@
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function main() {
+  console.log('Seeding comprehensive paper stocks...')
+
+  const paperStocks = [
+    // Business Card Stocks
+    {
+      name: '14pt Gloss Cover',
+      category: 'Business Cards',
+      coating: 'Gloss',
+      weight: '14pt',
+      finish: 'Gloss',
+      opacity: 95,
+      brightness: 88,
+      priceMultiplier: 1.0,
+      pricePerSqInch: 0.0012,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Our most popular business card stock - thick and durable with a glossy finish',
+      costPerSheet: 0.08,
+      thickness: 0.014,
+      isEcoFriendly: false,
+      reorderPoint: 5000,
+      reorderQuantity: 25000,
+      sheetsInStock: 15000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: '14pt Matte Cover',
+      category: 'Business Cards',
+      coating: 'Matte',
+      weight: '14pt',
+      finish: 'Matte',
+      opacity: 95,
+      brightness: 85,
+      priceMultiplier: 1.0,
+      pricePerSqInch: 0.0012,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Professional matte finish - no glare, easy to write on',
+      costPerSheet: 0.08,
+      thickness: 0.014,
+      isEcoFriendly: false,
+      reorderPoint: 5000,
+      reorderQuantity: 25000,
+      sheetsInStock: 12000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: '16pt Premium Cover',
+      category: 'Business Cards',
+      coating: 'UV',
+      weight: '16pt',
+      finish: 'High Gloss UV',
+      opacity: 98,
+      brightness: 92,
+      priceMultiplier: 1.25,
+      pricePerSqInch: 0.0015,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Extra thick premium stock with UV coating for maximum impact',
+      costPerSheet: 0.10,
+      thickness: 0.016,
+      isEcoFriendly: false,
+      reorderPoint: 3000,
+      reorderQuantity: 15000,
+      sheetsInStock: 8000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: '32pt Suede',
+      category: 'Business Cards',
+      coating: 'Soft Touch',
+      weight: '32pt',
+      finish: 'Suede',
+      opacity: 100,
+      brightness: 90,
+      priceMultiplier: 2.5,
+      pricePerSqInch: 0.0030,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Luxury suede finish - ultra-thick with velvet-like texture',
+      costPerSheet: 0.25,
+      thickness: 0.032,
+      isEcoFriendly: false,
+      reorderPoint: 1000,
+      reorderQuantity: 5000,
+      sheetsInStock: 2500,
+      sides: 'Double',
+      isActive: true
+    },
+
+    // Flyer/Brochure Stocks
+    {
+      name: '100lb Gloss Text',
+      category: 'Flyers',
+      coating: 'Gloss',
+      weight: '100lb',
+      finish: 'Gloss',
+      opacity: 94,
+      brightness: 88,
+      priceMultiplier: 0.8,
+      pricePerSqInch: 0.0008,
+      secondSideMarkupPercent: 40.0,
+      tooltipText: 'Standard flyer stock - good quality at an affordable price',
+      costPerSheet: 0.05,
+      thickness: 0.007,
+      isEcoFriendly: false,
+      reorderPoint: 10000,
+      reorderQuantity: 50000,
+      sheetsInStock: 30000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: '100lb Matte Text',
+      category: 'Flyers',
+      coating: 'Matte',
+      weight: '100lb',
+      finish: 'Matte',
+      opacity: 94,
+      brightness: 85,
+      priceMultiplier: 0.8,
+      pricePerSqInch: 0.0008,
+      secondSideMarkupPercent: 40.0,
+      tooltipText: 'Matte finish for reduced glare - ideal for text-heavy designs',
+      costPerSheet: 0.05,
+      thickness: 0.007,
+      isEcoFriendly: false,
+      reorderPoint: 10000,
+      reorderQuantity: 50000,
+      sheetsInStock: 25000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: '80lb Gloss Cover',
+      category: 'Flyers',
+      coating: 'Gloss',
+      weight: '80lb',
+      finish: 'Gloss',
+      opacity: 96,
+      brightness: 90,
+      priceMultiplier: 1.1,
+      pricePerSqInch: 0.0011,
+      secondSideMarkupPercent: 45.0,
+      tooltipText: 'Thick cover stock for premium flyers and handouts',
+      costPerSheet: 0.07,
+      thickness: 0.009,
+      isEcoFriendly: false,
+      reorderPoint: 8000,
+      reorderQuantity: 40000,
+      sheetsInStock: 20000,
+      sides: 'Double',
+      isActive: true
+    },
+
+    // Poster/Large Format Stocks
+    {
+      name: '12pt C2S Poster',
+      category: 'Posters',
+      coating: 'Satin',
+      weight: '12pt',
+      finish: 'Satin',
+      opacity: 95,
+      brightness: 88,
+      priceMultiplier: 0.9,
+      pricePerSqInch: 0.0010,
+      secondSideMarkupPercent: 60.0,
+      tooltipText: 'Standard poster stock with satin finish - good for indoor use',
+      costPerSheet: 0.15,
+      thickness: 0.012,
+      isEcoFriendly: false,
+      reorderPoint: 2000,
+      reorderQuantity: 10000,
+      sheetsInStock: 5000,
+      sides: 'Single',
+      isActive: true
+    },
+    {
+      name: '24pt Styrene',
+      category: 'Posters',
+      coating: 'None',
+      weight: '24pt',
+      finish: 'Matte',
+      opacity: 100,
+      brightness: 95,
+      priceMultiplier: 2.0,
+      pricePerSqInch: 0.0025,
+      secondSideMarkupPercent: 80.0,
+      tooltipText: 'Rigid plastic poster board - waterproof and durable for outdoor use',
+      costPerSheet: 0.50,
+      thickness: 0.024,
+      isEcoFriendly: false,
+      reorderPoint: 500,
+      reorderQuantity: 2500,
+      sheetsInStock: 1200,
+      sides: 'Single',
+      isActive: true
+    },
+
+    // Sticker/Label Stocks
+    {
+      name: 'White Vinyl Adhesive',
+      category: 'Stickers',
+      coating: 'Gloss Laminate',
+      weight: '4mil',
+      finish: 'Gloss',
+      opacity: 100,
+      brightness: 92,
+      priceMultiplier: 1.5,
+      pricePerSqInch: 0.0018,
+      secondSideMarkupPercent: 0.0,
+      tooltipText: 'Waterproof vinyl stickers with permanent adhesive',
+      costPerSheet: 0.20,
+      thickness: 0.004,
+      isEcoFriendly: false,
+      reorderPoint: 3000,
+      reorderQuantity: 15000,
+      sheetsInStock: 8000,
+      sides: 'Single',
+      isActive: true
+    },
+    {
+      name: 'Clear Vinyl Adhesive',
+      category: 'Stickers',
+      coating: 'Gloss Laminate',
+      weight: '4mil',
+      finish: 'Clear',
+      opacity: 0,
+      brightness: 0,
+      priceMultiplier: 1.8,
+      pricePerSqInch: 0.0022,
+      secondSideMarkupPercent: 0.0,
+      tooltipText: 'Transparent vinyl stickers - perfect for window decals',
+      costPerSheet: 0.25,
+      thickness: 0.004,
+      isEcoFriendly: false,
+      reorderPoint: 2000,
+      reorderQuantity: 10000,
+      sheetsInStock: 5000,
+      sides: 'Single',
+      isActive: true
+    },
+    {
+      name: 'Paper Matte Labels',
+      category: 'Stickers',
+      coating: 'None',
+      weight: '60lb',
+      finish: 'Matte',
+      opacity: 100,
+      brightness: 88,
+      priceMultiplier: 0.7,
+      pricePerSqInch: 0.0006,
+      secondSideMarkupPercent: 0.0,
+      tooltipText: 'Economical paper labels for indoor use',
+      costPerSheet: 0.04,
+      thickness: 0.004,
+      isEcoFriendly: true,
+      reorderPoint: 5000,
+      reorderQuantity: 25000,
+      sheetsInStock: 15000,
+      sides: 'Single',
+      isActive: true
+    },
+
+    // Eco-Friendly Options
+    {
+      name: '100% Recycled 14pt',
+      category: 'Eco-Friendly',
+      coating: 'Aqueous',
+      weight: '14pt',
+      finish: 'Satin',
+      opacity: 93,
+      brightness: 84,
+      priceMultiplier: 1.15,
+      pricePerSqInch: 0.0013,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: '100% post-consumer recycled content with eco-friendly coating',
+      costPerSheet: 0.09,
+      thickness: 0.014,
+      isEcoFriendly: true,
+      reorderPoint: 3000,
+      reorderQuantity: 15000,
+      sheetsInStock: 8000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: 'Bamboo Card Stock',
+      category: 'Eco-Friendly',
+      coating: 'None',
+      weight: '14pt',
+      finish: 'Natural',
+      opacity: 90,
+      brightness: 82,
+      priceMultiplier: 1.35,
+      pricePerSqInch: 0.0016,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Sustainable bamboo fiber stock with natural texture',
+      costPerSheet: 0.12,
+      thickness: 0.014,
+      isEcoFriendly: true,
+      reorderPoint: 2000,
+      reorderQuantity: 10000,
+      sheetsInStock: 5000,
+      sides: 'Double',
+      isActive: true
+    },
+
+    // Specialty Stocks
+    {
+      name: 'Metallic Pearl',
+      category: 'Specialty',
+      coating: 'Pearlescent',
+      weight: '14pt',
+      finish: 'Pearl',
+      opacity: 98,
+      brightness: 95,
+      priceMultiplier: 2.0,
+      pricePerSqInch: 0.0024,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Shimmering pearl finish for elegant designs',
+      costPerSheet: 0.18,
+      thickness: 0.014,
+      isEcoFriendly: false,
+      reorderPoint: 1000,
+      reorderQuantity: 5000,
+      sheetsInStock: 2500,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: 'Black Edge Cards',
+      category: 'Specialty',
+      coating: 'Matte',
+      weight: '32pt',
+      finish: 'Matte',
+      opacity: 100,
+      brightness: 85,
+      priceMultiplier: 3.0,
+      pricePerSqInch: 0.0036,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Triple-layered cards with black core - premium luxury option',
+      costPerSheet: 0.30,
+      thickness: 0.032,
+      isEcoFriendly: false,
+      reorderPoint: 500,
+      reorderQuantity: 2500,
+      sheetsInStock: 1000,
+      sides: 'Double',
+      isActive: true
+    },
+    {
+      name: 'Kraft Brown',
+      category: 'Specialty',
+      coating: 'None',
+      weight: '18pt',
+      finish: 'Natural',
+      opacity: 100,
+      brightness: 70,
+      priceMultiplier: 1.2,
+      pricePerSqInch: 0.0014,
+      secondSideMarkupPercent: 50.0,
+      tooltipText: 'Natural brown kraft paper for rustic, organic look',
+      costPerSheet: 0.10,
+      thickness: 0.018,
+      isEcoFriendly: true,
+      reorderPoint: 2000,
+      reorderQuantity: 10000,
+      sheetsInStock: 5000,
+      sides: 'Double',
+      isActive: true
+    }
+  ]
+
+  let createdCount = 0
+  for (const stock of paperStocks) {
+    try {
+      await prisma.paperStock.upsert({
+        where: { name: stock.name },
+        update: stock,
+        create: stock
+      })
+      createdCount++
+      console.log(`✓ Created/Updated paper stock: ${stock.name}`)
+    } catch (error) {
+      console.error(`✗ Error creating paper stock ${stock.name}:`, error)
+    }
+  }
+
+  console.log(`\n✅ Successfully seeded ${createdCount} paper stocks!`)
+}
+
+main()
+  .catch((e) => {
+    console.error('Error seeding paper stocks:', e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
