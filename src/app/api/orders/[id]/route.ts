@@ -1,48 +1,41 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params
-    const session = await auth()
-    
-    const order = await prisma.order.findUnique({
-      where: { id },
+    const session = await getServerSession(authOptions)
+    const { id } = await params
+
+    // Get order with user check for security
+    const order = await prisma.order.findFirst({
+      where: {
+        AND: [
+          { id },
+          session?.user?.id ? { userId: session.user.id } : { email: session?.user?.email || '' }
+        ]
+      },
       include: {
-        user: true,
-        items: true,
-        files: true,
-        statusHistory: {
-          orderBy: { createdAt: 'desc' }
-        },
-        notifications: true
+        OrderItem: true
       }
     })
-    
+
     if (!order) {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
       )
     }
-    
-    // Check authorization
-    if (!session?.user || (order.userId !== session.user.id && (session.user as any).role !== 'ADMIN')) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-    
+
     return NextResponse.json(order)
   } catch (error) {
     console.error('Error fetching order:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch order' },
       { status: 500 }
     )
   }
@@ -50,139 +43,52 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params
-    const session = await auth()
+    const session = await getServerSession(authOptions)
     
-    // Only admins can update orders
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    // Check if user is admin
+    if (session?.user?.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
-    
+
+    const { id } = await params
     const body = await request.json()
-    const { status, trackingNumber, carrier, adminNotes } = body
-    
-    // Get current order
-    const currentOrder = await prisma.order.findUnique({
-      where: { id }
-    })
-    
-    if (!currentOrder) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      )
-    }
-    
-    // Update order with transaction
-    const updatedOrder = await prisma.$transaction(async (tx) => {
-      // Update order
-      const order = await tx.order.update({
-        where: { id },
-        data: {
-          status: status || undefined,
-          trackingNumber: trackingNumber || undefined,
-          carrier: carrier || undefined,
-          adminNotes: adminNotes || undefined
-        }
-      })
-      
-      // Add status history entry if status changed
-      if (status && status !== currentOrder.status) {
-        await tx.statusHistory.create({
-          data: {
-            orderId: id,
-            fromStatus: currentOrder.status,
-            toStatus: status,
-            changedBy: session.user?.email || 'Admin'
-          }
-        })
-        
-        // Create notification based on status
-        let notificationType = null
-        switch (status) {
-          case 'PAID':
-            notificationType = 'PAYMENT_RECEIVED'
-            break
-          case 'PROCESSING':
-          case 'PRINTING':
-            notificationType = 'ORDER_PROCESSING'
-            break
-          case 'SHIPPED':
-            notificationType = 'ORDER_SHIPPED'
-            break
-          case 'DELIVERED':
-            notificationType = 'ORDER_DELIVERED'
-            break
-        }
-        
-        if (notificationType) {
-          await tx.notification.create({
-            data: {
-              orderId: id,
-              type: notificationType as any,
-              sent: false
-            }
-          })
-        }
-      }
-      
-      return order
-    })
-    
-    // Get updated order with all relations
-    const fullOrder = await prisma.order.findUnique({
+    const { trackingNumber, carrier, status } = body
+
+    // Update order
+    const updatedOrder = await prisma.order.update({
       where: { id },
-      include: {
-        items: true,
-        files: true,
-        statusHistory: {
-          orderBy: { createdAt: 'desc' }
-        },
-        notifications: true
+      data: {
+        ...(trackingNumber && { trackingNumber }),
+        ...(carrier && { carrier }),
+        ...(status && { status })
       }
     })
-    
-    return NextResponse.json(fullOrder)
+
+    // If tracking info was added, send tracking email
+    if (trackingNumber && carrier) {
+      fetch(`${process.env.NEXTAUTH_URL}/api/orders/send-tracking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id })
+      }).catch(error => {
+        console.error('Failed to send tracking email:', error)
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      order: updatedOrder
+    })
   } catch (error) {
     console.error('Error updating order:', error)
     return NextResponse.json(
       { error: 'Failed to update order' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await context.params
-    const session = await auth()
-    
-    // Only admins can delete orders
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-    
-    await prisma.order.delete({
-      where: { id }
-    })
-    
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Error deleting order:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete order' },
       { status: 500 }
     )
   }

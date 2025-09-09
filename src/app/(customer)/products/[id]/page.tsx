@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useCart } from '@/contexts/cart-context'
+import { toast } from 'react-hot-toast'
 
 const products: { [key: string]: any } = {
   '1': {
@@ -74,6 +76,7 @@ const products: { [key: string]: any } = {
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const router = useRouter()
+  const { addItem, openCart } = useCart()
   const product = products[resolvedParams.id] || products['1']
   
   const [selectedSize, setSelectedSize] = useState(product.sizes[0].id)
@@ -98,17 +101,36 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   }
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log('Adding to cart:', {
-      product: product.name,
-      size: selectedSize,
-      paper: selectedPaper,
-      quantity: selectedQuantity,
-      finish: selectedFinish,
+    if (!uploadedFile) {
+      toast.error('Please upload your design file')
+      return
+    }
+
+    const selectedSizeData = product.sizes.find((s: any) => s.id === selectedSize)
+    const selectedPaperData = product.paperTypes.find((p: any) => p.id === selectedPaper)
+    const selectedFinishData = product.finishes.find((f: any) => f.id === selectedFinish)
+    
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      productSlug: product.id,
+      sku: `${product.id}-${selectedSize}-${selectedPaper}`,
       price: calculatePrice(),
-      file: uploadedFile?.name
+      quantity: selectedQuantity,
+      turnaround: product.turnaround,
+      options: {
+        size: selectedSizeData?.name,
+        paperStock: selectedPaperData?.name,
+        coating: selectedFinishData?.name,
+        sides: 'Double'
+      },
+      fileName: uploadedFile.name,
+      fileSize: uploadedFile.size,
+      image: '/gangrunprinting_logo_new_1448921366__42384-200x200.png'
     })
-    router.push('/cart')
+
+    toast.success('Product added to cart!')
+    openCart()
   }
 
   return (

@@ -1,14 +1,32 @@
 'use client'
 
-import { Suspense } from 'react'
-import { CheckCircle, Download, Mail } from 'lucide-react'
+import { Suspense, useEffect, useState } from 'react'
+import { CheckCircle, Download, Mail, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
-  const orderNumber = searchParams.get('order') || 'ORD-XXXXXX'
+  const [orderInfo, setOrderInfo] = useState<any>(null)
+  
+  useEffect(() => {
+    // Get order info from session storage or query params
+    const storedOrder = sessionStorage.getItem('lastOrder')
+    if (storedOrder) {
+      setOrderInfo(JSON.parse(storedOrder))
+      sessionStorage.removeItem('lastOrder')
+    } else {
+      // Fallback to query params if available
+      const orderNumber = searchParams.get('order')
+      if (orderNumber) {
+        setOrderInfo({ orderNumber })
+      }
+    }
+  }, [searchParams])
+
+  const orderNumber = orderInfo?.orderNumber || searchParams.get('order') || 'ORD-XXXXXX'
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-2xl">
