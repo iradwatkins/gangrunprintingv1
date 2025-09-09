@@ -14,7 +14,6 @@ import {
   Mail,
   Package,
   Upload,
-  Home,
   Info,
   FileText,
   ChevronDown
@@ -48,9 +47,8 @@ import { cn } from '@/lib/utils'
 import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
 
 const navigation = [
-  { name: 'Home', href: '/', icon: Home },
   { 
-    name: 'Products', 
+    name: 'Print Products', 
     href: '/products',
     icon: Package,
     children: [
@@ -63,7 +61,8 @@ const navigation = [
       { name: 'Postcards', href: '/products?category=postcards' },
     ]
   },
-  { name: 'My Orders', href: '/track', icon: FileText },
+  { name: 'About', href: '/about', icon: Info },
+  { name: 'Help', href: '/help-center', icon: FileText },
   { name: 'Contact', href: '/contact', icon: Phone },
 ]
 
@@ -142,7 +141,7 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
+                    <DropdownMenuLabel>Print Product Categories</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
