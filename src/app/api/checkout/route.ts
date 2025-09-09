@@ -4,6 +4,7 @@ import { createSquareCheckout, createOrUpdateSquareCustomer, createSquareOrder }
 import { auth } from '@/lib/auth'
 import { sendEmail } from '@/lib/sendgrid'
 import { getOrderConfirmationEmail } from '@/lib/email-templates'
+import { N8NWorkflows } from '@/lib/n8n'
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase()
@@ -156,6 +157,15 @@ export async function POST(request: NextRequest) {
         OrderItem: true
       }
     })
+
+    // Trigger N8N workflow for order creation
+    try {
+      await N8NWorkflows.onOrderCreated(order.id)
+      console.log(`N8N workflow triggered for order ${order.orderNumber}`)
+    } catch (n8nError) {
+      console.error('Failed to trigger N8N workflow:', n8nError)
+      // Don't fail the order if N8N fails
+    }
 
     // Send order confirmation email
     try {

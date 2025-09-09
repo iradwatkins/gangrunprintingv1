@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { OrderStatus } from '@prisma/client';
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management';
+import { N8NWorkflows } from '@/lib/n8n';
 
 // Update order status
 export async function PUT(request: NextRequest) {
@@ -109,6 +110,26 @@ export async function PUT(request: NextRequest) {
 
       return updated;
     });
+
+    // Trigger N8N workflow for status change
+    try {
+      await N8NWorkflows.onOrderStatusChanged(orderId, order.status)
+      
+      // Additional workflow triggers based on specific status
+      if (newStatus === OrderStatus.SHIPPED) {
+        const trackingInfo = updatedOrder.trackingNumber ? {
+          trackingNumber: updatedOrder.trackingNumber,
+          carrier: updatedOrder.carrier || 'FEDEX',
+          estimatedDelivery: updatedOrder.estimatedDelivery
+        } : null
+        
+        if (trackingInfo) {
+          await N8NWorkflows.onOrderShipped(orderId, trackingInfo)
+        }
+      }
+    } catch (n8nError) {
+      console.error('Failed to trigger N8N workflow:', n8nError)
+    }
 
     return NextResponse.json({
       success: true,
