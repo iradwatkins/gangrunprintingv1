@@ -56,7 +56,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Link href="/cart" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6">
+      <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6" href="/cart">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Cart
       </Link>
@@ -74,10 +74,10 @@ export default function CheckoutPage() {
                 <div>
                   <Label htmlFor="email">Email Address</Label>
                   <Input
+                    required
                     id="email"
                     name="email"
                     type="email"
-                    required
                     value={formData.email}
                     onChange={handleInputChange}
                   />
@@ -86,9 +86,9 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
+                      required
                       id="firstName"
                       name="firstName"
-                      required
                       value={formData.firstName}
                       onChange={handleInputChange}
                     />
@@ -96,9 +96,9 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
+                      required
                       id="lastName"
                       name="lastName"
-                      required
                       value={formData.lastName}
                       onChange={handleInputChange}
                     />
@@ -116,10 +116,10 @@ export default function CheckoutPage() {
                 <div>
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input
+                    required
                     id="phone"
                     name="phone"
                     type="tel"
-                    required
                     value={formData.phone}
                     onChange={handleInputChange}
                   />
@@ -134,9 +134,9 @@ export default function CheckoutPage() {
                 <div>
                   <Label htmlFor="address">Street Address</Label>
                   <Input
+                    required
                     id="address"
                     name="address"
-                    required
                     value={formData.address}
                     onChange={handleInputChange}
                   />
@@ -145,9 +145,9 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="city">City</Label>
                     <Input
+                      required
                       id="city"
                       name="city"
-                      required
                       value={formData.city}
                       onChange={handleInputChange}
                     />
@@ -155,25 +155,25 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="state">State</Label>
                     <Input
-                      id="state"
-                      name="state"
                       required
+                      id="state"
+                      maxLength={2}
+                      name="state"
+                      placeholder="TX"
                       value={formData.state}
                       onChange={handleInputChange}
-                      maxLength={2}
-                      placeholder="TX"
                     />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="zipCode">ZIP Code</Label>
                   <Input
-                    id="zipCode"
-                    name="zipCode"
                     required
+                    id="zipCode"
+                    maxLength={10}
+                    name="zipCode"
                     value={formData.zipCode}
                     onChange={handleInputChange}
-                    maxLength={10}
                   />
                 </div>
               </div>
@@ -189,8 +189,8 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="standard" id="standard" />
-                      <Label htmlFor="standard" className="cursor-pointer">
+                      <RadioGroupItem id="standard" value="standard" />
+                      <Label className="cursor-pointer" htmlFor="standard">
                         <div>
                           <p className="font-medium">Standard Shipping</p>
                           <p className="text-sm text-muted-foreground">5-7 business days</p>
@@ -201,8 +201,8 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="express" id="express" />
-                      <Label htmlFor="express" className="cursor-pointer">
+                      <RadioGroupItem id="express" value="express" />
+                      <Label className="cursor-pointer" htmlFor="express">
                         <div>
                           <p className="font-medium">Express Shipping</p>
                           <p className="text-sm text-muted-foreground">2-3 business days</p>
@@ -243,10 +243,10 @@ export default function CheckoutPage() {
               </div>
 
               <Button 
-                type="submit"
-                className="w-full" 
+                className="w-full"
+                disabled={isProcessing} 
                 size="lg"
-                disabled={isProcessing}
+                type="submit"
               >
                 {isProcessing ? (
                   <>Processing...</>

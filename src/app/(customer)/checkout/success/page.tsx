@@ -16,7 +16,7 @@ function SuccessContent() {
         <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
         <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
         <p className="text-lg text-muted-foreground mb-8">
-          Thank you for your order. We've received your payment and will begin processing your items shortly.
+          Thank you for your order. We&apos;ve received your payment and will begin processing your items shortly.
         </p>
 
         <div className="border rounded-lg p-6 mb-8 bg-muted/50">
@@ -35,7 +35,7 @@ function SuccessContent() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold mb-4">What's Next?</h2>
+          <h2 className="text-xl font-semibold mb-4">What&apos;s Next?</h2>
           <div className="text-left space-y-3 max-w-md mx-auto">
             <div className="flex gap-3">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">
@@ -61,7 +61,7 @@ function SuccessContent() {
               </div>
               <div>
                 <p className="font-medium">Shipping</p>
-                <p className="text-sm text-muted-foreground">We'll notify you when your order ships</p>
+                <p className="text-sm text-muted-foreground">We&apos;ll notify you when your order ships</p>
               </div>
             </div>
           </div>
@@ -81,7 +81,7 @@ function SuccessContent() {
         </div>
 
         <div className="mt-8">
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
+          <Button className="text-muted-foreground" size="sm" variant="ghost">
             <Download className="mr-2 h-4 w-4" />
             Download Receipt
           </Button>

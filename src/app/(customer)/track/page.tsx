@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Package, Truck, CheckCircle, Clock, FileText } from 'lucide-react'
+import { Search, Package, Truck, CheckCircle, Clock, FileText, Upload, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Label } from '@/components/ui/label'
 
 interface OrderStatus {
   status: string
@@ -55,18 +57,39 @@ export default function TrackOrderPage() {
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [hasIssue, setHasIssue] = useState(false) // Simulate order with issue
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadedFile(e.target.files[0])
+    }
+  }
+
+  const handleSubmitNewFile = () => {
+    if (uploadedFile) {
+      // Simulate file submission
+      console.log('Submitting new file:', uploadedFile.name)
+      alert('New file submitted successfully! We\'ll review it and update your order.')
+      setUploadedFile(null)
+    }
+  }
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
+    setHasIssue(false)
 
     // Simulate API call
     setTimeout(() => {
       if (searchValue.toLowerCase().includes('grp')) {
+        // Simulate that some orders have issues (e.g., if order number contains "123")
+        const orderHasIssue = searchValue.includes('123')
+        setHasIssue(orderHasIssue)
         setOrder({
           orderNumber: searchValue.toUpperCase(),
-          status: 'shipped',
+          status: orderHasIssue ? 'processing' : 'shipped',
           email: 'customer@example.com',
           createdAt: '2024-01-15',
           estimatedDelivery: '2024-01-20',
@@ -139,16 +162,16 @@ export default function TrackOrderPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSearch} className="flex gap-3">
+            <form className="flex gap-3" onSubmit={handleSearch}>
               <Input
-                type="text"
+                required
+                className="flex-1"
                 placeholder="Order number or email"
+                type="text"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                className="flex-1"
-                required
               />
-              <Button type="submit" disabled={loading}>
+              <Button disabled={loading} type="submit">
                 <Search className="w-4 h-4 mr-2" />
                 {loading ? 'Searching...' : 'Track Order'}
               </Button>
@@ -161,6 +184,17 @@ export default function TrackOrderPage() {
 
         {order && (
           <>
+            {/* Alert if order has issue */}
+            {hasIssue && (
+              <Alert className="mb-6 border-orange-200 bg-orange-50">
+                <AlertCircle className="h-4 w-4 text-primary" />
+                <AlertTitle>File Issue Detected</AlertTitle>
+                <AlertDescription>
+                  We've detected an issue with your print file. Please upload a corrected version below to avoid delays.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <Card className="mb-6">
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -192,7 +226,7 @@ export default function TrackOrderPage() {
                       <p className="font-semibold">
                         {order.carrier}: {order.trackingNumber}
                       </p>
-                      <Button variant="link" className="px-0 h-auto text-sm">
+                      <Button className="px-0 h-auto text-sm" variant="link">
                         Track on {order.carrier} website →
                       </Button>
                     </div>
@@ -221,7 +255,7 @@ export default function TrackOrderPage() {
               <CardHeader>
                 <CardTitle>Order Timeline</CardTitle>
                 <CardDescription>
-                  Track your order's journey from placement to delivery
+                  Track your order&apos;s journey from placement to delivery
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -266,6 +300,73 @@ export default function TrackOrderPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* File Upload Card (only shown when there's an issue) */}
+            {hasIssue && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Upload Corrected File</CardTitle>
+                  <CardDescription>
+                    Please upload a new version of your design file to resolve the issue
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="corrected-file">Select File</Label>
+                      <div className="mt-2 border-2 border-dashed rounded-lg p-4">
+                        <Input
+                          accept=".pdf,.ai,.psd,.jpg,.jpeg,.png"
+                          className="hidden"
+                          id="corrected-file"
+                          type="file"
+                          onChange={handleFileUpload}
+                        />
+                        <Label
+                          className="cursor-pointer flex flex-col items-center justify-center"
+                          htmlFor="corrected-file"
+                        >
+                          <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {uploadedFile ? uploadedFile.name : 'Click to upload or drag and drop'}
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-1">
+                            PDF, AI, PSD, JPG, PNG (max. 100MB)
+                          </span>
+                        </Label>
+                      </div>
+                    </div>
+                    
+                    {uploadedFile && (
+                      <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-medium">{uploadedFile.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setUploadedFile(null)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+
+                    <Button 
+                      className="w-full"
+                      disabled={!uploadedFile}
+                      onClick={handleSubmitNewFile}
+                    >
+                      Submit Corrected File
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>

@@ -44,7 +44,7 @@ export function RecentOrders() {
       {recentOrders.map((order) => (
         <div key={order.id} className="flex items-center">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={`/avatars/${order.id}.png`} alt="Avatar" />
+            <AvatarImage alt="Avatar" src={`/avatars/${order.id}.png`} />
             <AvatarFallback>
               {order.customer
                 .split(' ')

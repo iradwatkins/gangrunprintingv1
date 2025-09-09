@@ -90,7 +90,7 @@ export default function UploadPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Upload Your Files</h1>
         <p className="text-muted-foreground mb-8">
-          Upload your artwork files and we'll help you configure your print order
+          Upload your artwork files and we&apos;ll help you configure your print order
         </p>
 
         <Card className="mb-6">
@@ -144,9 +144,9 @@ export default function UploadPage() {
                   >
                     {file.preview ? (
                       <img
-                        src={file.preview}
                         alt={file.name}
                         className="w-12 h-12 object-cover rounded"
+                        src={file.preview}
                       />
                     ) : file.type === 'application/pdf' ? (
                       <FileText className="w-12 h-12 text-red-500" />
@@ -163,7 +163,7 @@ export default function UploadPage() {
                       </div>
                       
                       {file.status === 'uploading' ? (
-                        <Progress value={file.progress} className="h-2" />
+                        <Progress className="h-2" value={file.progress} />
                       ) : file.status === 'completed' ? (
                         <div className="flex items-center gap-1 text-green-600">
                           <CheckCircle className="w-4 h-4" />
@@ -173,10 +173,10 @@ export default function UploadPage() {
                     </div>
                     
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file.id)}
                       disabled={file.status === 'uploading'}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeFile(file.id)}
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -189,8 +189,8 @@ export default function UploadPage() {
                   Clear All
                 </Button>
                 <Button 
-                  onClick={proceedToConfiguration}
                   disabled={uploading || files.length === 0}
+                  onClick={proceedToConfiguration}
                 >
                   Configure Print Options
                 </Button>

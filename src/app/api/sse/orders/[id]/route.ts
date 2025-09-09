@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
@@ -9,10 +9,8 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const params = await context.params
-  const orderId = params.id
-  
   try {
+    const { id: orderId } = await context.params
     const session = await auth()
     
     // Verify user has access to this order

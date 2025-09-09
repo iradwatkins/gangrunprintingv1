@@ -5,7 +5,6 @@ import { ArrowLeft, Upload, ShoppingCart, Clock, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -114,7 +113,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/products" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6">
+      <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6" href="/products">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Products
       </Link>
@@ -137,7 +136,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         {/* Product Details */}
         <div>
           <div className="mb-6">
-            <Badge variant="secondary" className="mb-2">{product.category}</Badge>
+            <Badge className="mb-2" variant="secondary">{product.category}</Badge>
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-muted-foreground mb-4">{product.description}</p>
             <div className="flex items-center gap-4 text-sm">
@@ -148,32 +147,33 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </div>
           </div>
 
-          <Tabs defaultValue="customize" className="mb-6">
+          <Tabs className="mb-6" defaultValue="customize">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="customize">Customize</TabsTrigger>
               <TabsTrigger value="specifications">Specifications</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="customize" className="space-y-6">
+            <TabsContent className="space-y-6" value="customize">
               {/* Size Selection */}
               <div>
-                <Label className="text-base mb-3 block">Size</Label>
-                <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
-                  {product.sizes.map((size: any) => (
-                    <div key={size.id} className="flex items-center space-x-2 mb-2">
-                      <RadioGroupItem value={size.id} id={size.id} />
-                      <Label htmlFor={size.id} className="cursor-pointer flex-1">
-                        <span>{size.name}</span>
-                        <span className="ml-2 text-muted-foreground">${size.price}</span>
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                <Label className="text-base mb-3 block" htmlFor="size">Size</Label>
+                <Select value={selectedSize} onValueChange={setSelectedSize}>
+                  <SelectTrigger id="size">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {product.sizes.map((size: any) => (
+                      <SelectItem key={size.id} value={size.id}>
+                        {size.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Paper Type */}
               <div>
-                <Label htmlFor="paper" className="text-base mb-3 block">Paper Type</Label>
+                <Label className="text-base mb-3 block" htmlFor="paper">Paper Type</Label>
                 <Select value={selectedPaper} onValueChange={setSelectedPaper}>
                   <SelectTrigger id="paper">
                     <SelectValue />
@@ -181,7 +181,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <SelectContent>
                     {product.paperTypes.map((paper: any) => (
                       <SelectItem key={paper.id} value={paper.id}>
-                        {paper.name} {paper.price > 0 && `(+$${paper.price})`}
+                        {paper.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -190,7 +190,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               {/* Quantity */}
               <div>
-                <Label htmlFor="quantity" className="text-base mb-3 block">Quantity</Label>
+                <Label className="text-base mb-3 block" htmlFor="quantity">Quantity</Label>
                 <Select value={selectedQuantity.toString()} onValueChange={(v) => setSelectedQuantity(parseInt(v))}>
                   <SelectTrigger id="quantity">
                     <SelectValue />
@@ -198,7 +198,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <SelectContent>
                     {product.quantities.map((qty: any) => (
                       <SelectItem key={qty.amount} value={qty.amount.toString()}>
-                        {qty.amount} - ${qty.price}
+                        {qty.amount.toLocaleString()}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -207,7 +207,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               {/* Finish */}
               <div>
-                <Label htmlFor="finish" className="text-base mb-3 block">Finish</Label>
+                <Label className="text-base mb-3 block" htmlFor="finish">Finish</Label>
                 <Select value={selectedFinish} onValueChange={setSelectedFinish}>
                   <SelectTrigger id="finish">
                     <SelectValue />
@@ -215,7 +215,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <SelectContent>
                     {product.finishes.map((finish: any) => (
                       <SelectItem key={finish.id} value={finish.id}>
-                        {finish.name} {finish.price > 0 && `(+$${finish.price})`}
+                        {finish.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -224,18 +224,18 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               {/* File Upload */}
               <div>
-                <Label htmlFor="file" className="text-base mb-3 block">Upload Your Design</Label>
+                <Label className="text-base mb-3 block" htmlFor="file">Upload Your Design</Label>
                 <div className="border-2 border-dashed rounded-lg p-4">
                   <Input
+                    accept=".pdf,.ai,.psd,.jpg,.jpeg,.png"
+                    className="hidden"
                     id="file"
                     type="file"
-                    accept=".pdf,.ai,.psd,.jpg,.jpeg,.png"
                     onChange={handleFileUpload}
-                    className="hidden"
                   />
                   <Label
-                    htmlFor="file"
                     className="cursor-pointer flex flex-col items-center justify-center"
+                    htmlFor="file"
                   >
                     <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
@@ -249,7 +249,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               </div>
             </TabsContent>
 
-            <TabsContent value="specifications" className="space-y-4">
+            <TabsContent className="space-y-4" value="specifications">
               <div>
                 <h3 className="font-semibold mb-2">Product Specifications</h3>
                 <dl className="space-y-2">
@@ -302,16 +302,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <span className="text-sm text-muted-foreground">Total Price</span>
                 <p className="text-3xl font-bold">${calculatePrice().toFixed(2)}</p>
               </div>
-              <Badge variant="outline" className="mb-1">
+              <Badge className="mb-1" variant="outline">
                 <Clock className="mr-1 h-3 w-3" />
                 {product.turnaround}
               </Badge>
             </div>
             <Button 
-              onClick={handleAddToCart}
-              size="lg" 
               className="w-full"
-              disabled={!uploadedFile}
+              disabled={!uploadedFile} 
+              size="lg"
+              onClick={handleAddToCart}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
               Add to Cart

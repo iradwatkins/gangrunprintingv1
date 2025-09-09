@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { processPendingNotifications } from '@/lib/sendgrid'
 
 // This endpoint can be called by a cron job service

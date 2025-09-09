@@ -119,7 +119,7 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href="/products" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4">
+        <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4" href="/products">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Continue Shopping
         </Link>
@@ -140,15 +140,15 @@ export default function CartPage() {
                     <p>Finish: {item.finish}</p>
                     <p>File: {item.fileName}</p>
                   </div>
-                  <Badge variant="secondary" className="mt-2">
+                  <Badge className="mt-2" variant="secondary">
                     {item.turnaround}
                   </Badge>
                 </div>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeItem(item.id)}
                   className="text-destructive hover:text-destructive"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => removeItem(item.id)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -157,10 +157,10 @@ export default function CartPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateQuantity(item.id, -50)}
                     disabled={item.quantity <= 50}
+                    size="icon"
+                    variant="outline"
+                    onClick={() => updateQuantity(item.id, -50)}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -168,8 +168,8 @@ export default function CartPage() {
                     <span className="font-medium">{item.quantity}</span>
                   </div>
                   <Button
-                    variant="outline"
                     size="icon"
+                    variant="outline"
                     onClick={() => updateQuantity(item.id, 50)}
                   >
                     <Plus className="h-4 w-4" />
@@ -216,7 +216,7 @@ export default function CartPage() {
 
             {/* Promo Code */}
             <div className="mb-4">
-              <Label htmlFor="promo" className="text-sm mb-2 block">Promo Code</Label>
+              <Label className="text-sm mb-2 block" htmlFor="promo">Promo Code</Label>
               <div className="flex gap-2">
                 <Input
                   id="promo"
@@ -231,9 +231,9 @@ export default function CartPage() {
             </div>
 
             <Button 
+              className="w-full"
+              size="lg" 
               onClick={handleCheckout}
-              className="w-full" 
-              size="lg"
             >
               Proceed to Checkout
             </Button>

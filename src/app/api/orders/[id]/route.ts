@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 
@@ -6,12 +6,12 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params
   try {
+    const { id } = await context.params
     const session = await auth()
     
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: true,
         items: true,
@@ -52,8 +52,8 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params
   try {
+    const { id } = await context.params
     const session = await auth()
     
     // Only admins can update orders
@@ -69,7 +69,7 @@ export async function PATCH(
     
     // Get current order
     const currentOrder = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
     
     if (!currentOrder) {
@@ -83,7 +83,7 @@ export async function PATCH(
     const updatedOrder = await prisma.$transaction(async (tx) => {
       // Update order
       const order = await tx.order.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           status: status || undefined,
           trackingNumber: trackingNumber || undefined,
@@ -96,7 +96,7 @@ export async function PATCH(
       if (status && status !== currentOrder.status) {
         await tx.statusHistory.create({
           data: {
-            orderId: params.id,
+            orderId: id,
             fromStatus: currentOrder.status,
             toStatus: status,
             changedBy: session.user?.email || 'Admin'
@@ -124,7 +124,7 @@ export async function PATCH(
         if (notificationType) {
           await tx.notification.create({
             data: {
-              orderId: params.id,
+              orderId: id,
               type: notificationType as any,
               sent: false
             }
@@ -137,7 +137,7 @@ export async function PATCH(
     
     // Get updated order with all relations
     const fullOrder = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         items: true,
         files: true,
@@ -162,8 +162,8 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params
   try {
+    const { id } = await context.params
     const session = await auth()
     
     // Only admins can delete orders
@@ -175,7 +175,7 @@ export async function DELETE(
     }
     
     await prisma.order.delete({
-      where: { id: params.id }
+      where: { id }
     })
     
     return NextResponse.json({ success: true })
