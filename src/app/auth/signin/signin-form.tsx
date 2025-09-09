@@ -18,8 +18,6 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-const ADMIN_EMAIL = 'iradwatkins@gmail.com'
-
 export default function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -33,16 +31,17 @@ export default function SignInForm() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       const from = searchParams.get('from')
+      const userRole = (session.user as any).role
       
-      // If admin user, always redirect to admin dashboard
-      if (session.user.email === ADMIN_EMAIL) {
+      // Redirect based on user role from database
+      if (userRole === 'ADMIN') {
         router.push('/admin/dashboard')
-      } else if (from) {
-        // Regular users go to the requested page
+      } else if (from && !from.startsWith('/admin')) {
+        // Regular users go to the requested page (unless it's an admin page)
         router.push(from)
       } else {
-        // Default redirect for regular users
-        router.push('/products')
+        // Default redirect for regular users to their dashboard
+        router.push('/account/dashboard')
       }
     }
   }, [session, status, router, searchParams])
@@ -53,10 +52,8 @@ export default function SignInForm() {
     setLoading(true)
 
     try {
-      // Determine callback URL based on email
-      const callbackUrl = email === ADMIN_EMAIL 
-        ? '/admin/dashboard' 
-        : searchParams.get('from') || '/products'
+      // Use a generic callback URL, role-based redirect will happen after auth
+      const callbackUrl = searchParams.get('from') || '/account/dashboard'
       
       const result = await signIn('email', { 
         email,
@@ -77,8 +74,8 @@ export default function SignInForm() {
   }
 
   const handleGoogleSignIn = () => {
-    // For Google sign-in, we'll check the email after authentication
-    const from = searchParams.get('from') || '/products'
+    // For Google sign-in, role-based redirect will happen after authentication
+    const from = searchParams.get('from') || '/account/dashboard'
     signIn('google', { callbackUrl: from })
   }
 

@@ -120,8 +120,8 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2">
-              {footerLinks.services.map((link) => (
-                <li key={link.href}>
+              {footerLinks.services.map((link, index) => (
+                <li key={`services-${index}-${link.name}`}>
                   <Link 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
@@ -137,8 +137,8 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
+              {footerLinks.company.map((link, index) => (
+                <li key={`company-${index}-${link.name}`}>
                   <Link 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
@@ -154,8 +154,8 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
-                <li key={link.href}>
+              {footerLinks.support.map((link, index) => (
+                <li key={`support-${index}-${link.name}`}>
                   <Link 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}

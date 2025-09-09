@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, User, Menu } from 'lucide-react'
+import { Bell, Search, User, Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -12,8 +12,29 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export function AdminHeader() {
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
+    router.push('/auth/signin')
+  }
+
+  // Get user initials for avatar
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    }
+    if (email) {
+      return email.slice(0, 2).toUpperCase()
+    }
+    return 'AD'
+  }
+
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
       <Button className="md:hidden" size="icon" variant="ghost">
@@ -43,18 +64,27 @@ export function AdminHeader() {
           <DropdownMenuTrigger asChild>
             <Button className="relative h-8 w-8 rounded-full" variant="ghost">
               <Avatar className="h-8 w-8">
-                <AvatarImage alt="Admin" src="/avatars/admin.jpg" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage alt={session?.user?.name || 'Admin'} src={session?.user?.image || undefined} />
+                <AvatarFallback>
+                  {getInitials(session?.user?.name, session?.user?.email)}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent forceMount align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Admin User</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  admin@gangrunprinting.com
+                <p className="text-sm font-medium leading-none">
+                  {session?.user?.name || 'Admin User'}
                 </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {session?.user?.email || 'Loading...'}
+                </p>
+                {(session?.user as any)?.role === 'ADMIN' && (
+                  <p className="text-xs text-primary font-medium mt-1">
+                    Administrator
+                  </p>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -66,7 +96,11 @@ export function AdminHeader() {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem 
+              className="text-destructive cursor-pointer"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

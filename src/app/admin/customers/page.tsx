@@ -15,7 +15,7 @@ async function getCustomersData() {
       role: 'CUSTOMER'
     },
     include: {
-      Order: {
+      orders: {
         select: {
           id: true,
           total: true,
@@ -31,7 +31,7 @@ async function getCustomersData() {
 
   // Calculate customer stats
   const customersWithStats = customers.map(customer => {
-    const orders = customer.Order || []
+    const orders = customer.orders || []
     const totalSpent = orders
       .filter(o => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
       .reduce((sum, order) => sum + (order.total || 0), 0)
