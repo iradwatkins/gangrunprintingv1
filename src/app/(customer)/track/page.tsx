@@ -78,10 +78,18 @@ export default function TrackOrderPage() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    
+    if (!searchValue.trim()) {
+      setError('Please enter an order number or email')
+      return
+    }
+    
+    // Navigate to the detailed tracking page
+    window.location.href = `/track/${searchValue.trim().toUpperCase()}`
+    
+    /* Original simulation code (kept for reference)
     setLoading(true)
     setHasIssue(false)
-
-    // Simulate API call
     setTimeout(() => {
       if (searchValue.toLowerCase().includes('grp')) {
         // Simulate that some orders have issues (e.g., if order number contains "123")
@@ -143,7 +151,7 @@ export default function TrackOrderPage() {
         setOrder(null)
       }
       setLoading(false)
-    }, 1000)
+    }, 1000) */
   }
 
   return (
