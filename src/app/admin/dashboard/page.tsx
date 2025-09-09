@@ -90,14 +90,11 @@ async function getDashboardData() {
     }
   })
 
-  // Get urgent orders (needed within 24 hours)
+  // Get urgent orders (orders in processing)
   const urgentOrders = await prisma.order.count({
     where: {
       status: {
         in: ['PAID', 'PROCESSING', 'PRINTING']
-      },
-      needByDate: {
-        lte: tomorrow
       }
     }
   })
