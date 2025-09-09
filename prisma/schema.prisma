@@ -15,6 +15,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   name          String?
+  password      String?   // For credentials authentication
   role          UserRole  @default(CUSTOMER)
   isBroker      Boolean   @default(false) // Broker status
   brokerDiscounts Json?   // Category-specific discount percentages
