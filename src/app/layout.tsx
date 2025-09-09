@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
+import { InstallPrompt } from '@/components/pwa/install-prompt'
+import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -29,7 +31,9 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable} font-sans`}>
+        <OfflineIndicator />
         <Providers>{children}</Providers>
+        <InstallPrompt />
       </body>
     </html>
   )

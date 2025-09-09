@@ -11,7 +11,7 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   customWorkerDest: 'public',
   customWorkerWebpack: true,
   workboxOptions: {
-    importScripts: ['/sw-push.js'],
+    importScripts: ['/sw-push.js', '/sw-offline.js'],
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
