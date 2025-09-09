@@ -1,5 +1,6 @@
 import Header from './header'
 import Footer from './footer'
+import { ChatwootWidget } from './chatwoot-widget'
 
 export default function CustomerLayout({
   children,
@@ -13,6 +14,7 @@ export default function CustomerLayout({
         {children}
       </main>
       <Footer />
+      <ChatwootWidget />
     </div>
   )
 }
