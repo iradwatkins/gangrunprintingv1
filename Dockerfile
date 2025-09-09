@@ -40,13 +40,13 @@ RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
-EXPOSE 3003
-ENV PORT 3003
+EXPOSE 3000
+ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3003/api/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
 
-# Run migrations and start
-CMD npx prisma migrate deploy && node server.js
+# Start the server (migrations should be run separately)
+CMD node server.js
