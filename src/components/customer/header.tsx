@@ -8,7 +8,6 @@ import { useSession, signOut } from 'next-auth/react'
 import { 
   Menu, 
   X, 
-  ShoppingCart, 
   User, 
   Phone, 
   Mail,
@@ -43,6 +42,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
+import { CartButton } from '@/components/cart/cart-button'
 
 const navigation = [
   { 
@@ -77,7 +77,6 @@ export default function Header() {
   const pathname = usePathname()
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [cartItemCount] = useState(2) // This would come from cart context/state
   const [showInstallOption, setShowInstallOption] = useState(false)
   
   useEffect(() => {
@@ -317,17 +316,7 @@ export default function Header() {
             </DropdownMenu>
 
             {/* Cart */}
-            <Link href="/cart">
-              <Button className="relative flex items-center gap-2" variant="ghost">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="text-sm">Cart</span>
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-primary text-primary-foreground">
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            <CartButton />
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -336,16 +325,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
             {/* Mobile Cart */}
-            <Link href="/cart">
-              <Button className="relative" size="icon" variant="ghost">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-primary text-primary-foreground">
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            <CartButton />
 
             {/* Mobile Menu Trigger */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>

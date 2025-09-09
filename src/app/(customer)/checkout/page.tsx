@@ -1,17 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, CreditCard, Lock } from 'lucide-react'
+import { ArrowLeft, CreditCard, Lock, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Checkbox } from '@/components/ui/checkbox'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useCart } from '@/contexts/cart-context'
+import { toast } from 'react-hot-toast'
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const { items, subtotal, tax, shipping, total, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [sameAsShipping, setSameAsShipping] = useState(true)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -22,6 +27,10 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     zipCode: '',
+    billingAddress: '',
+    billingCity: '',
+    billingState: '',
+    billingZipCode: '',
     shippingMethod: 'standard'
   })
 
@@ -34,25 +43,99 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (items.length === 0) {
+      toast.error('Your cart is empty')
+      router.push('/cart')
+      return
+    }
+
     setIsProcessing(true)
 
-    // TODO: Integrate with Square Payment SDK
-    // This is where you would:
-    // 1. Create payment with Square
-    // 2. Create order in database
-    // 3. Send confirmation email
-    
-    setTimeout(() => {
-      // Mock successful payment
-      router.push('/checkout/success?order=ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase())
-    }, 2000)
+    try {
+      // Prepare checkout data
+      const checkoutData = {
+        cartItems: items,
+        customerInfo: {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          company: formData.company,
+          phone: formData.phone
+        },
+        shippingAddress: {
+          street: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: 'US'
+        },
+        billingAddress: sameAsShipping ? null : {
+          street: formData.billingAddress,
+          city: formData.billingCity,
+          state: formData.billingState,
+          zipCode: formData.billingZipCode,
+          country: 'US'
+        },
+        shippingMethod: formData.shippingMethod,
+        subtotal,
+        tax,
+        shipping: formData.shippingMethod === 'express' ? 25.00 : 10.00,
+        total: subtotal + tax + (formData.shippingMethod === 'express' ? 25.00 : 10.00)
+      }
+
+      // Create Square checkout session
+      const response = await fetch('/api/checkout/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(checkoutData)
+      })
+
+      const result = await response.json()
+
+      if (result.success && result.checkoutUrl) {
+        // Store order info in session storage for success page
+        sessionStorage.setItem('lastOrder', JSON.stringify({
+          orderNumber: result.orderNumber,
+          orderId: result.orderId,
+          total: checkoutData.total
+        }))
+
+        // Clear cart
+        clearCart()
+        
+        // Redirect to Square checkout
+        window.location.href = result.checkoutUrl
+      } else {
+        throw new Error(result.error || 'Failed to create checkout session')
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      toast.error('Failed to process checkout. Please try again.')
+      setIsProcessing(false)
+    }
   }
 
-  // Mock order data
-  const orderTotal = 199.98
   const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
-  const tax = 16.50
-  const total = orderTotal + shippingCost + tax
+  const orderTotal = subtotal + tax + shippingCost
+
+  if (items.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
+          <p className="text-muted-foreground mb-8">
+            Add items to your cart before checking out
+          </p>
+          <Link href="/products">
+            <Button size="lg">Browse Products</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -179,6 +262,73 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* Billing Address */}
+            <div className="border rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Billing Address</h2>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="sameAsShipping"
+                    checked={sameAsShipping}
+                    onCheckedChange={(checked) => setSameAsShipping(checked as boolean)}
+                  />
+                  <Label htmlFor="sameAsShipping" className="text-sm font-normal cursor-pointer">
+                    Same as shipping
+                  </Label>
+                </div>
+              </div>
+              
+              {!sameAsShipping && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="billingAddress">Street Address</Label>
+                    <Input
+                      required={!sameAsShipping}
+                      id="billingAddress"
+                      name="billingAddress"
+                      value={formData.billingAddress}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="billingCity">City</Label>
+                      <Input
+                        required={!sameAsShipping}
+                        id="billingCity"
+                        name="billingCity"
+                        value={formData.billingCity}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="billingState">State</Label>
+                      <Input
+                        required={!sameAsShipping}
+                        id="billingState"
+                        maxLength={2}
+                        name="billingState"
+                        placeholder="TX"
+                        value={formData.billingState}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="billingZipCode">ZIP Code</Label>
+                    <Input
+                      required={!sameAsShipping}
+                      id="billingZipCode"
+                      maxLength={10}
+                      name="billingZipCode"
+                      value={formData.billingZipCode}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Shipping Method */}
             <div className="border rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Shipping Method</h2>
@@ -221,10 +371,23 @@ export default function CheckoutPage() {
             <div className="border rounded-lg p-6 sticky top-4">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
               
-              <div className="space-y-2 mb-4">
+              {/* Cart Items */}
+              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                {items.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <div className="flex-1">
+                      <p className="font-medium">{item.productName}</p>
+                      <p className="text-muted-foreground">Qty: {item.quantity}</p>
+                    </div>
+                    <span>${item.subtotal.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="space-y-2 mb-4 border-t pt-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${orderTotal.toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -237,7 +400,7 @@ export default function CheckoutPage() {
                 <div className="border-t pt-2 font-semibold">
                   <div className="flex justify-between text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>${orderTotal.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -249,7 +412,10 @@ export default function CheckoutPage() {
                 type="submit"
               >
                 {isProcessing ? (
-                  <>Processing...</>
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Processing...
+                  </>
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-5 w-5" />

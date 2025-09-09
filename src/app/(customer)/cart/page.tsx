@@ -8,92 +8,46 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-interface CartItem {
-  id: string
-  productName: string
-  productId: string
-  size: string
-  paperType: string
-  quantity: number
-  finish: string
-  price: number
-  fileName: string
-  turnaround: string
-}
-
-// Mock cart data - in production this would come from context/state management
-const initialCartItems: CartItem[] = [
-  {
-    id: '1',
-    productName: 'Business Cards',
-    productId: '1',
-    size: 'Standard (3.5" x 2")',
-    paperType: '16pt Matte',
-    quantity: 500,
-    finish: 'UV Coating',
-    price: 64.99,
-    fileName: 'my-business-card.pdf',
-    turnaround: '3-5 business days'
-  },
-  {
-    id: '2',
-    productName: 'Flyers',
-    productId: '2',
-    size: '8.5" x 11"',
-    paperType: '100lb Text',
-    quantity: 100,
-    finish: 'Gloss Finish',
-    price: 134.99,
-    fileName: 'event-flyer.pdf',
-    turnaround: '5-7 business days'
-  }
-]
+import { useCart } from '@/contexts/cart-context'
+import Image from 'next/image'
+import { toast } from 'react-hot-toast'
 
 export default function CartPage() {
   const router = useRouter()
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems)
+  const { 
+    items: cartItems, 
+    updateQuantity, 
+    removeItem, 
+    clearCart, 
+    subtotal, 
+    tax, 
+    shipping, 
+    total 
+  } = useCart()
   const [promoCode, setPromoCode] = useState('')
   const [discount, setDiscount] = useState(0)
 
-  const updateQuantity = (id: string, change: number) => {
-    setCartItems(items =>
-      items.map(item => {
-        if (item.id === id) {
-          const newQuantity = Math.max(1, item.quantity + change)
-          // Recalculate price based on quantity (simplified)
-          const basePrice = item.price / item.quantity
-          return { ...item, quantity: newQuantity, price: basePrice * newQuantity }
-        }
-        return item
-      })
-    )
-  }
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id))
-  }
-
   const applyPromoCode = () => {
-    // Mock promo code validation
     if (promoCode.toUpperCase() === 'SAVE10') {
-      setDiscount(0.1) // 10% discount
+      setDiscount(0.1)
+      toast.success('Promo code applied: 10% off')
     } else if (promoCode.toUpperCase() === 'SAVE20') {
-      setDiscount(0.2) // 20% discount
+      setDiscount(0.2)
+      toast.success('Promo code applied: 20% off')
     } else {
       setDiscount(0)
-      alert('Invalid promo code')
+      toast.error('Invalid promo code')
     }
   }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0)
   const discountAmount = subtotal * discount
-  const tax = (subtotal - discountAmount) * 0.0825 // 8.25% tax
-  const total = subtotal - discountAmount + tax
+  const finalTotal = total - discountAmount
 
   const handleCheckout = () => {
-    // TODO: Implement checkout with Square
-    console.log('Proceeding to checkout with items:', cartItems)
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty')
+      return
+    }
     router.push('/checkout')
   }
 
@@ -123,7 +77,19 @@ export default function CartPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Continue Shopping
         </Link>
-        <h1 className="text-3xl font-bold">Shopping Cart</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          {cartItems.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearCart}
+              className="text-destructive hover:text-destructive"
+            >
+              Clear All
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -131,14 +97,25 @@ export default function CartPage() {
         <div className="lg:col-span-2 space-y-4">
           {cartItems.map((item) => (
             <div key={item.id} className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex gap-4">
+                {item.image && (
+                  <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
+                    <Image
+                      src={item.image}
+                      alt={item.productName}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg mb-1">{item.productName}</h3>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <p>Size: {item.size}</p>
-                    <p>Paper: {item.paperType}</p>
-                    <p>Finish: {item.finish}</p>
-                    <p>File: {item.fileName}</p>
+                    {item.options.size && <p>Size: {item.options.size}</p>}
+                    {item.options.paperStock && <p>Paper: {item.options.paperStock}</p>}
+                    {item.options.coating && <p>Coating: {item.options.coating}</p>}
+                    {item.options.sides && <p>Sides: {item.options.sides}</p>}
+                    {item.fileName && <p>File: {item.fileName}</p>}
                   </div>
                   <Badge className="mt-2" variant="secondary">
                     {item.turnaround}
@@ -154,13 +131,13 @@ export default function CartPage() {
                 </Button>
               </div>
               
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-2">
                   <Button
-                    disabled={item.quantity <= 50}
+                    disabled={item.quantity <= 1}
                     size="icon"
                     variant="outline"
-                    onClick={() => updateQuantity(item.id, -50)}
+                    onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -170,15 +147,15 @@ export default function CartPage() {
                   <Button
                     size="icon"
                     variant="outline"
-                    onClick={() => updateQuantity(item.id, 50)}
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-semibold">${item.price.toFixed(2)}</p>
+                  <p className="text-lg font-semibold">${item.subtotal.toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground">
-                    ${(item.price / item.quantity).toFixed(3)} each
+                    ${item.price.toFixed(2)} each
                   </p>
                 </div>
               </div>
@@ -206,10 +183,14 @@ export default function CartPage() {
                 <span>Tax</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span>${shipping.toFixed(2)}</span>
+              </div>
               <div className="border-t pt-2 font-semibold">
                 <div className="flex justify-between text-lg">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>${finalTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>

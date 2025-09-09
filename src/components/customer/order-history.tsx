@@ -14,6 +14,8 @@ import {
   Download,
   ChevronRight
 } from 'lucide-react';
+import { TrackingButton } from '@/components/tracking/tracking-button';
+import { Carrier } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +67,7 @@ interface Order {
   createdAt: string;
   updatedAt: string;
   trackingNumber?: string;
+  carrier?: Carrier;
   OrderItem: Array<{
     productName: string;
     quantity: number;
@@ -350,9 +353,14 @@ export default function OrderHistory() {
                         <TableCell className="font-medium">
                           <div>
                             {order.referenceNumber || order.orderNumber}
-                            {order.trackingNumber && (
-                              <div className="text-xs text-muted-foreground">
-                                Tracking: {order.trackingNumber}
+                            {order.trackingNumber && order.carrier && (
+                              <div className="mt-1">
+                                <TrackingButton
+                                  carrier={order.carrier}
+                                  trackingNumber={order.trackingNumber}
+                                  size="sm"
+                                  variant="outline"
+                                />
                               </div>
                             )}
                           </div>
