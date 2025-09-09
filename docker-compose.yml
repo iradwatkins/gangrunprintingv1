@@ -102,8 +102,8 @@ services:
 
 networks:
   gangrun-network:
-    external: true
-    name: dokploy-network
+    external: false
+    driver: bridge
 
 volumes:
   uploads:
