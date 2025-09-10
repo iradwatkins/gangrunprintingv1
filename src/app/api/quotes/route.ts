@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     // List quotes
-    const whereClause: any = {};
+    const whereClause: Record<string, any> = {};
     
     // Customers see only their quotes
     if (session.user.role !== 'ADMIN') {

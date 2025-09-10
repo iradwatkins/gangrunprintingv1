@@ -49,6 +49,8 @@ export const authConfig: NextAuthConfig = {
           scope: "openid email profile"
         }
       },
+      // Add checks to handle OAuth errors gracefully
+      checks: ['pkce', 'state'],
       // Profile mapping
       profile(profile) {
         return {
@@ -135,11 +137,24 @@ export const authConfig: NextAuthConfig = {
     
     // REDIRECT CALLBACK - Important for NextAuth v5
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
+      // Ensure proper redirect after auth
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url
       return baseUrl
+    },
+    
+    // AUTHORIZED CALLBACK - Check if user is authorized
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user
+      const isOnAuthPage = nextUrl.pathname.startsWith('/auth')
+      
+      if (isOnAuthPage) {
+        if (isLoggedIn) return Response.redirect(new URL('/', nextUrl))
+        return true
+      }
+      
+      return true
     }
   },
   
