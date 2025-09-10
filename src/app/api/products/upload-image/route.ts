@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { auth } from '@clerk/nextjs/server'
 import { uploadProductImage, validateImage } from '@/lib/minio-products'
 
 // POST /api/products/upload-image - Upload product image

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { auth } from '@clerk/nextjs/server';
 
 // Re-order functionality - creates a new cart from previous order
 export async function POST(request: NextRequest) {

@@ -1,15 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/auth';
+import { auth } from '@clerk/nextjs/server';
 import { type QuoteStatus } from '@prisma/client';
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Check authorization
-      if (session.user.role !== 'ADMIN' && quote.userId !== session.user.id) {
+      if ('USER' !== 'ADMIN' && quote.userId !== userId) {
         return NextResponse.json(
           { error: 'Unauthorized' },
           { status: 401 }
@@ -57,8 +56,8 @@ export async function GET(request: NextRequest) {
     const whereClause: Record<string, any> = {};
     
     // Customers see only their quotes
-    if (session.user.role !== 'ADMIN') {
-      whereClause.userId = session.user.id;
+    if ('USER' !== 'ADMIN') {
+      whereClause.userId = userId;
     }
 
     // Filter by status if provided
@@ -94,9 +93,9 @@ export async function GET(request: NextRequest) {
 // CREATE a new quote
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -133,7 +132,7 @@ export async function POST(request: NextRequest) {
     const quote = await prisma.quote.create({
       data: {
         quoteNumber,
-        userId: session.user.role === 'ADMIN' ? null : session.user.id,
+        userId: 'USER' === 'ADMIN' ? null : userId,
         customerEmail,
         customerName,
         customerPhone,
@@ -142,7 +141,7 @@ export async function POST(request: NextRequest) {
         validUntil,
         status: 'DRAFT',
         notes,
-        createdBy: session.user.role === 'ADMIN' ? session.user.email : null
+        createdBy: 'USER' === 'ADMIN' ? userId : null
       }
     });
 
@@ -163,9 +162,9 @@ export async function POST(request: NextRequest) {
 // UPDATE quote status or convert to order
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -194,7 +193,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check authorization
-    if (session.user.role !== 'ADMIN' && quote.userId !== session.user.id) {
+    if ('USER' !== 'ADMIN' && quote.userId !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

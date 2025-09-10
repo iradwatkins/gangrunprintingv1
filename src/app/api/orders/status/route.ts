@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { auth } from '@clerk/nextjs/server';
 import { OrderStatus } from '@prisma/client';
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management';
 import { N8NWorkflows } from '@/lib/n8n';
