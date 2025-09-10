@@ -6,47 +6,68 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
-        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-        - NEXT_PUBLIC_CLERK_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_SIGN_IN_URL:-/sign-in}
-        - NEXT_PUBLIC_CLERK_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_SIGN_UP_URL:-/sign-up}
-        - NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:-/}
-        - NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:-/}
-    image: gangrunprinting:latest
-    container_name: gangrunprinting-app
+    image: gangrunprinting:v1
+    container_name: gangrunprinting_app
     ports:
-      - ${PORT:-3001}:3000
+      - "3002:3002"
     environment:
+      # Node.js settings
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3002
       - HOSTNAME=0.0.0.0
-      - DATABASE_URL=${DATABASE_URL}
+      - TZ=America/Chicago
+      
+      # Database - PostgreSQL
+      - DATABASE_URL=${DATABASE_URL:-postgresql://gangrun_user:gangrun_secure_2025@postgres_db:5432/gangrunprinting_db}
+      
+      # Redis
+      - REDIS_URL=${REDIS_URL:-redis://redis_cache:6379}
+      # Auth (Lucia)
       - AUTH_SECRET=${AUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL:-https://gangrunprinting.com}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://gangrunprinting.com}
       - AUTH_TRUST_HOST=true
-      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
-      - NEXT_PUBLIC_CLERK_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_SIGN_IN_URL:-/sign-in}
-      - NEXT_PUBLIC_CLERK_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_SIGN_UP_URL:-/sign-up}
-      - NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:-/}
-      - NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=${NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:-/}
+      
+      # OAuth Providers (optional)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      # Admin
       - ADMIN_EMAIL=${ADMIN_EMAIL:-iradwatkins@gmail.com}
+      
+      # Square Payments (Primary)
       - SQUARE_ACCESS_TOKEN=${SQUARE_ACCESS_TOKEN}
       - SQUARE_ENVIRONMENT=${SQUARE_ENVIRONMENT:-production}
       - SQUARE_LOCATION_ID=${SQUARE_LOCATION_ID}
       - SQUARE_APPLICATION_ID=${SQUARE_APPLICATION_ID}
-      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
-      - SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL:-support@gangrunprinting.com}
-      - SENDGRID_FROM_NAME=${SENDGRID_FROM_NAME:-GangRun Printing}
-      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      - MINIO_PORT=${MINIO_PORT}
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-gangrun-files}
+      - SQUARE_WEBHOOK_SIGNATURE_KEY=${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      - NEXT_PUBLIC_SQUARE_APPLICATION_ID=${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      # Cloudflare R2 Storage
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME:-gangrun-files}
+      - R2_PUBLIC_URL=${R2_PUBLIC_URL}
+      
+      # Email (Resend)
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-support@gangrunprinting.com}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME:-GangRun Printing}
+      # PWA
       - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:support@gangrunprinting.com}
-      - TZ=${TZ:-America/Chicago}
+      
+      # Bull Queue
+      - BULL_REDIS_HOST=redis_cache
+      - BULL_REDIS_PORT=6379
+    volumes:
+      - uploads:/app/uploads
+      - print_files:/app/print-files
+      - ./public:/app/public:ro
+      - ./prisma:/app/prisma:ro
+    networks:
+      - web_network
     restart: unless-stopped
     healthcheck:
       test:
@@ -60,30 +81,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    networks:
-      - gangrun-network
-      - dokploy-network
-    volumes:
-      - uploads:/app/uploads
-      - ./prisma:/app/prisma:ro
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-    labels:
-      - dokploy.enabled=true
-      - dokploy.name=gangrunprinting
-      - dokploy.type=application
-networks:
-  gangrun-network:
-    external: false
-    driver: bridge
-  dokploy-network:
-    external: true
+
 volumes:
   uploads:
     driver: local
+  print_files:
+    driver: local
+
+networks:
+  web_network:
+    external: true
