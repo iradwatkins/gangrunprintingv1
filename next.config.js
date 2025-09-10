@@ -5,6 +5,16 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   reloadOnOnline: true,
   disable: process.env.NODE_ENV === 'development',
   buildExcludes: [/middleware-manifest\.json$/],
+  // Exclude authentication routes from caching
+  publicExcludes: [
+    '!**/api/auth/**',
+    '!**/auth/**',
+    '!**/oauth/**',
+    '!**/callback/**',
+    '!**/signin**',
+    '!**/signout**'
+  ],
+  dynamicStartUrlRedirect: false,
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   customWorkerSrc: 'src/worker',
@@ -12,6 +22,14 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   customWorkerWebpack: true,
   workboxOptions: {
     importScripts: ['/sw-push.js', '/sw-offline.js'],
+    // Exclude auth routes from runtime caching
+    navigateFallbackDenylist: [
+      /^\/api\/auth/,
+      /^\/auth/,
+      /^\/oauth/,
+      /^\/callback/,
+      /accounts\.google\.com/
+    ],
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
