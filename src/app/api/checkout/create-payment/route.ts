@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { auth } from '@/auth'
 import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square'
 import { prisma } from '@/lib/prisma'
 import { CartItem } from '@/lib/cart-types'

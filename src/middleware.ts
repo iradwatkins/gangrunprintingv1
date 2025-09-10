@@ -4,7 +4,14 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  
+  // Use AUTH_SECRET first, fallback to NEXTAUTH_SECRET for compatibility
   const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+  
+  // Log for debugging (remove in production)
+  if (!secret && process.env.NODE_ENV === 'development') {
+    console.error('Warning: No AUTH_SECRET or NEXTAUTH_SECRET found')
+  }
 
   // Protect admin routes
   if (pathname.startsWith('/admin')) {

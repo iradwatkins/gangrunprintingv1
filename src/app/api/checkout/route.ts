@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createSquareCheckout, createOrUpdateSquareCustomer, createSquareOrder } from '@/lib/square'
-import { auth } from '@/lib/auth'
+import { auth } from '@/auth'
 import { sendEmail } from '@/lib/sendgrid'
 import { getOrderConfirmationEmail } from '@/lib/email-templates'
 import { N8NWorkflows } from '@/lib/n8n'
