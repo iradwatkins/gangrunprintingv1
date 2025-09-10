@@ -1,13 +1,6 @@
-# GangRun Printing - E-Commerce Print Shop Platform
+# GangrunPrinting v1 - Containerized Print Broker Platform
 
-A complete e-commerce print shop platform with full automation and AI support.
-
-## ⚠️ CRITICAL SERVER RESTRICTIONS
-
-**PRODUCTION SERVER: 72.60.28.175**
-
-### 🚫 FORBIDDEN - DO NOT TOUCH
-- **SteppersLife.com** - ABSOLUTELY NO modifications to this website or any of its files, database, or configurations
+A fully containerized print broker platform built with Next.js 15.5.2, featuring Square payments, image processing with Sharp, and cloud storage. Optimized for Docker deployment with external PostgreSQL and Redis.
 - Any existing websites on the server must NOT be altered
 - NO direct server configuration changes outside of Dokploy
 
