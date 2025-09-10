@@ -14,7 +14,7 @@ services:
     image: gangrunprinting:latest
     container_name: gangrunprinting-app
     ports:
-      - ${PORT:-3000}:3000
+      - ${PORT:-3001}:3000
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -75,39 +75,9 @@ services:
           cpus: '0.5'
           memory: 512M
     labels:
-      - traefik.http.routers.gangrunprinting-3-web.rule=Host(`www.gangrunprinting.com`)
-      - traefik.http.routers.gangrunprinting-3-web.entrypoints=web
-      - traefik.http.services.gangrunprinting-3-web.loadbalancer.server.port=3001
-      - traefik.http.routers.gangrunprinting-3-web.service=gangrunprinting-3-web
-      - traefik.http.routers.gangrunprinting-3-web.middlewares=redirect-to-https@file
-      - traefik.http.routers.gangrunprinting-3-websecure.rule=Host(`www.gangrunprinting.com`)
-      - traefik.http.routers.gangrunprinting-3-websecure.entrypoints=websecure
-      - traefik.http.services.gangrunprinting-3-websecure.loadbalancer.server.port=3001
-      - traefik.http.routers.gangrunprinting-3-websecure.service=gangrunprinting-3-websecure
-      - traefik.http.routers.gangrunprinting-3-websecure.tls.certresolver=letsencrypt
-      - traefik.docker.network=dokploy-network
-      - traefik.http.routers.gangrunprinting-2-web.rule=Host(`gangrunprinting.com`)
-      - traefik.http.routers.gangrunprinting-2-web.entrypoints=web
-      - traefik.http.services.gangrunprinting-2-web.loadbalancer.server.port=3001
-      - traefik.http.routers.gangrunprinting-2-web.service=gangrunprinting-2-web
-      - traefik.http.routers.gangrunprinting-2-web.middlewares=redirect-to-https@file
-      - traefik.http.routers.gangrunprinting-2-websecure.rule=Host(`gangrunprinting.com`)
-      - traefik.http.routers.gangrunprinting-2-websecure.entrypoints=websecure
-      - traefik.http.services.gangrunprinting-2-websecure.loadbalancer.server.port=3001
-      - traefik.http.routers.gangrunprinting-2-websecure.service=gangrunprinting-2-websecure
-      - traefik.http.routers.gangrunprinting-2-websecure.tls.certresolver=letsencrypt
       - dokploy.enabled=true
       - dokploy.name=gangrunprinting
       - dokploy.type=application
-      - traefik.enable=true
-      - traefik.http.routers.gangrunprinting.rule=Host(`gangrunprinting.com`) || Host(`www.gangrunprinting.com`)
-      - traefik.http.routers.gangrunprinting.entrypoints=websecure
-      - traefik.http.routers.gangrunprinting.tls.certresolver=letsencrypt
-      - traefik.http.services.gangrunprinting.loadbalancer.server.port=3001
-      - traefik.http.middlewares.gangrun-www-redirect.redirectregex.regex=^https://www\.(.*)
-      - traefik.http.middlewares.gangrun-www-redirect.redirectregex.replacement=https://$${1}
-      - traefik.http.middlewares.gangrun-www-redirect.redirectregex.permanent=true
-      - traefik.http.routers.gangrunprinting.middlewares=gangrun-www-redirect
 networks:
   gangrun-network:
     external: false
