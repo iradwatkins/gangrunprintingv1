@@ -5,13 +5,34 @@ import GoogleProvider from "next-auth/providers/google"
 import EmailProvider from "next-auth/providers/email"
 import { prisma } from "@/lib/prisma"
 
+// Validate required environment variables
+if (!process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
+  throw new Error('AUTH_SECRET or NEXTAUTH_SECRET is not set')
+}
+
+if (!process.env.AUTH_GOOGLE_ID) {
+  console.error('AUTH_GOOGLE_ID is not set - Google OAuth will not work')
+}
+
+if (!process.env.AUTH_GOOGLE_SECRET) {
+  console.error('AUTH_GOOGLE_SECRET is not set - Google OAuth will not work')
+}
+
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      clientId: process.env.AUTH_GOOGLE_ID || '',
+      clientSecret: process.env.AUTH_GOOGLE_SECRET || '',
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     EmailProvider({
       server: {
@@ -95,6 +116,7 @@ export const authConfig: NextAuthConfig = {
     },
   },
   trustHost: true,
+  debug: process.env.NODE_ENV === 'development',
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)

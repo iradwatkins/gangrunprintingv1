@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { auth } from '@/auth'
 import { processPendingNotifications, sendTestEmail } from '@/lib/sendgrid'
 
 export async function POST(request: NextRequest) {
