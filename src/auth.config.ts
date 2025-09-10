@@ -149,21 +149,39 @@ export const authConfig: NextAuthConfig = {
   // Enable debug in development
   debug: process.env.NODE_ENV === 'development',
   
-  // Cookies configuration for production
+  // Cookies configuration - simplified for compatibility
   cookies: {
     sessionToken: {
-      name: `${process.env.NODE_ENV === 'production' ? '__Secure-' : ''}next-auth.session-token`,
+      name: `next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: true
+      }
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true
+      }
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true
       }
     },
   },
   
-  // Use secure cookies in production
-  useSecureCookies: process.env.NODE_ENV === 'production',
+  // Always use secure cookies in production
+  useSecureCookies: true,
 }
 
 export default authConfig
