@@ -1,15 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/auth';
+import { auth } from '@clerk/nextjs/server';
 
 // GET all vendors or a specific vendor
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
     // Only admins can view vendors
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    if (!userId || 'USER' !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -85,9 +84,9 @@ export async function GET(request: NextRequest) {
 // CREATE a new vendor
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    if (!userId || 'USER' !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -165,9 +164,9 @@ export async function POST(request: NextRequest) {
 // UPDATE a vendor
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    if (!userId || 'USER' !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -206,9 +205,9 @@ export async function PUT(request: NextRequest) {
 // DELETE a vendor
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    if (!userId || 'USER' !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
