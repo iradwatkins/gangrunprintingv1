@@ -1,0 +1,59 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
+
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  
+  // Use AUTH_SECRET first, fallback to NEXTAUTH_SECRET for compatibility
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+  
+  // Enhanced error logging for production debugging
+  if (!secret) {
+    console.error('[MIDDLEWARE] CRITICAL: No AUTH_SECRET or NEXTAUTH_SECRET found')
+    console.error('[MIDDLEWARE] Available env vars:', Object.keys(process.env).filter(k => k.includes('AUTH') || k.includes('NEXT')).join(', '))
+    
+    // In production, return early to prevent crashes
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[MIDDLEWARE] Bypassing auth check due to missing secret')
+      return NextResponse.next()
+    }
+  }
+
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    const token = await getToken({ req: request, secret }) as any
+
+    if (!token) {
+      const loginUrl = new URL('/auth/signin', request.url)
+      loginUrl.searchParams.set('from', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    // Check if user has ADMIN role from database
+    if (token.role !== 'ADMIN') {
+      // Redirect non-admin users to their account dashboard
+      return NextResponse.redirect(new URL('/account/dashboard', request.url))
+    }
+  }
+
+  // Protect account routes
+  if (pathname.startsWith('/account')) {
+    const token = await getToken({ req: request, secret })
+
+    if (!token) {
+      const loginUrl = new URL('/auth/signin', request.url)
+      loginUrl.searchParams.set('from', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    '/admin/:path*',
+    '/account/:path*',
+  ]
+}
