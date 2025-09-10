@@ -64,13 +64,13 @@ async function getUserDashboardData(userId: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await auth()
+  const { userId } = await auth()
   
-  if (!session?.user?.id) {
-    redirect('/auth/signin')
+  if (!userId) {
+    redirect('/sign-in')
   }
 
-  const dashboardData = await getUserDashboardData(session.user.id)
+  const dashboardData = await getUserDashboardData(userId)
 
   return (
     <AccountWrapper>
