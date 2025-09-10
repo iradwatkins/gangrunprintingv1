@@ -41,8 +41,8 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // Check authorization
-      if ('USER' !== 'ADMIN' && quote.userId !== userId) {
+      // Check authorization - users can only view their own quotes
+      if (quote.userId && quote.userId !== userId) {
         return NextResponse.json(
           { error: 'Unauthorized' },
           { status: 401 }
@@ -55,10 +55,9 @@ export async function GET(request: NextRequest) {
     // List quotes
     const whereClause: Record<string, any> = {};
     
-    // Customers see only their quotes
-    if ('USER' !== 'ADMIN') {
-      whereClause.userId = userId;
-    }
+    // For now, users see only their quotes
+    // TODO: Add admin role check with Clerk
+    whereClause.userId = userId;
 
     // Filter by status if provided
     if (status) {
@@ -132,7 +131,7 @@ export async function POST(request: NextRequest) {
     const quote = await prisma.quote.create({
       data: {
         quoteNumber,
-        userId: 'USER' === 'ADMIN' ? null : userId,
+        userId: userId,
         customerEmail,
         customerName,
         customerPhone,
@@ -141,7 +140,7 @@ export async function POST(request: NextRequest) {
         validUntil,
         status: 'DRAFT',
         notes,
-        createdBy: 'USER' === 'ADMIN' ? userId : null
+        createdBy: userId
       }
     });
 
@@ -192,8 +191,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Check authorization
-    if ('USER' !== 'ADMIN' && quote.userId !== userId) {
+    // Check authorization - users can only update their own quotes
+    if (quote.userId && quote.userId !== userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

@@ -14,7 +14,7 @@ function generateOrderNumber(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { userId } = await auth()
     const data = await request.json()
     
     const {
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         referenceNumber,
         email,
         phone,
-        userId: session?.user?.id,
+        userId: userId || null,
         subtotal,
         tax,
         shipping,
