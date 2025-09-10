@@ -7,15 +7,9 @@ const STATIC_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/icons/icon-72x72.png',
-  '/icons/icon-96x96.png',
-  '/icons/icon-128x128.png',
-  '/icons/icon-144x144.png',
-  '/icons/icon-152x152.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-384x384.png',
-  '/icons/icon-512x512.png'
+  '/favicon-100x100.png',
+  '/gangrunprinting_logo_new_1448921366__42384-100x100.png',
+  '/gangrunprinting_logo_new_1448921366__42384-200x200.png'
 ];
 
 // API endpoints to cache
@@ -32,17 +26,26 @@ self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing...');
   
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
       console.log('[Service Worker] Caching static assets');
-      return cache.addAll(STATIC_ASSETS.filter(url => {
-        // Only cache existing assets
-        return fetch(url, { method: 'HEAD' })
-          .then(() => true)
-          .catch(() => {
-            console.log(`[Service Worker] Skipping ${url} - not found`);
-            return false;
-          });
-      }));
+      
+      // Try to cache each asset individually to avoid complete failure
+      const cachePromises = STATIC_ASSETS.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            await cache.put(url, response);
+            console.log(`[Service Worker] Cached: ${url}`);
+          } else {
+            console.log(`[Service Worker] Skipping ${url} - status ${response.status}`);
+          }
+        } catch (error) {
+          console.log(`[Service Worker] Failed to cache ${url}:`, error.message);
+        }
+      });
+      
+      await Promise.all(cachePromises);
+      console.log('[Service Worker] Static assets cached');
     })
   );
   
