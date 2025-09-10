@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { useClerk } from '@clerk/nextjs'
 import { 
   LayoutDashboard, 
   Package, 
@@ -78,8 +78,10 @@ export default function AccountSidebar() {
     }
   }, [])
 
+  const { signOut } = useClerk()
+  
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' })
+    signOut({ redirectUrl: '/' })
   }
 
   const handleInstallApp = async () => {
