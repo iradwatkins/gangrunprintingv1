@@ -100,6 +100,11 @@ self.addEventListener('fetch', (event) => {
 
 // Handle API requests with network-first strategy
 async function handleApiRequest(request) {
+  // Skip chrome-extension and other non-http(s) URLs
+  if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+    return fetch(request);
+  }
+  
   const cache = await caches.open(CACHE_NAME);
   
   try {
