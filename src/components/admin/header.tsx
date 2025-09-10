@@ -12,16 +12,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useSession, signOut } from 'next-auth/react'
+import { useUser, useClerk } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
 export function AdminHeader() {
-  const { data: session } = useSession()
+  const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
   const router = useRouter()
 
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    router.push('/auth/signin')
+    await signOut({ redirectUrl: '/sign-in' })
   }
 
   // Get user initials for avatar
@@ -64,9 +64,9 @@ export function AdminHeader() {
           <DropdownMenuTrigger asChild>
             <Button className="relative h-8 w-8 rounded-full" variant="ghost">
               <Avatar className="h-8 w-8">
-                <AvatarImage alt={session?.user?.name || 'Admin'} src={session?.user?.image || undefined} />
+                <AvatarImage alt={user?.fullName || 'Admin'} src={user?.imageUrl || undefined} />
                 <AvatarFallback>
-                  {getInitials(session?.user?.name, session?.user?.email)}
+                  {getInitials(user?.fullName, user?.primaryEmailAddress?.emailAddress)}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -75,12 +75,12 @@ export function AdminHeader() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {session?.user?.name || 'Admin User'}
+                  {user?.fullName || 'Admin User'}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {session?.user?.email || 'Loading...'}
+                  {user?.primaryEmailAddress?.emailAddress || 'Loading...'}
                 </p>
-                {(session?.user as any)?.role === 'ADMIN' && (
+                {user?.publicMetadata?.role === 'ADMIN' && (
                   <p className="text-xs text-primary font-medium mt-1">
                     Administrator
                   </p>

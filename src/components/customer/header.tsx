@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { useUser, useClerk } from '@clerk/nextjs'
 import { 
   Menu, 
   X, 
@@ -75,7 +75,8 @@ const productCategories = [
 
 export default function Header() {
   const pathname = usePathname()
-  const { data: session, status } = useSession()
+  const { user, isLoaded, isSignedIn } = useUser()
+  const { signOut } = useClerk()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
   
@@ -103,7 +104,7 @@ export default function Header() {
   }, [])
   
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' })
+    signOut({ redirectUrl: '/' })
   }
 
   const handleInstallApp = async () => {
@@ -224,10 +225,10 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                {session ? (
+                {isSignedIn ? (
                   <>
                     <DropdownMenuLabel>
-                      {session.user?.email || 'My Account'}
+                      {user?.primaryEmailAddress?.emailAddress || 'My Account'}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -292,13 +293,13 @@ export default function Header() {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
+                      <Link className="cursor-pointer flex items-center gap-2" href="/sign-in">
                         <User className="h-4 w-4" />
                         Sign In
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signup">
+                      <Link className="cursor-pointer flex items-center gap-2" href="/sign-up">
                         <User className="h-4 w-4" />
                         Create Account
                       </Link>
@@ -397,10 +398,10 @@ export default function Header() {
                   </div>
                   
                   <div className="border-t pt-4 mt-4 space-y-1">
-                    {session ? (
+                    {isSignedIn ? (
                       <>
                         <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
-                          {session.user?.email}
+                          {user?.primaryEmailAddress?.emailAddress}
                         </div>
                         <Link href="/account/dashboard" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
@@ -465,13 +466,13 @@ export default function Header() {
                       </>
                     ) : (
                       <>
-                        <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
                             <User className="mr-2 h-4 w-4" />
                             Sign In
                           </Button>
                         </Link>
-                        <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
                             <User className="mr-2 h-4 w-4" />
                             Create Account
