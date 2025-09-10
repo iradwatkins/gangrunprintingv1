@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useUser } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function AccountDetailsPage() {
-  const { data: session } = useSession()
+  const { user } = useUser()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,15 +18,15 @@ export default function AccountDetailsPage() {
   })
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       setFormData({
-        firstName: session.user?.name?.split(' ')[0] || '',
-        lastName: session.user?.name?.split(' ')[1] || '',
-        email: session.user?.email || '',
-        phone: '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.primaryEmailAddress?.emailAddress || '',
+        phone: user.primaryPhoneNumber?.phoneNumber || '',
       })
     }
-  }, [session])
+  }, [user])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

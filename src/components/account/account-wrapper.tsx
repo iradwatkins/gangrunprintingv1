@@ -1,22 +1,22 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import AccountSidebar from './account-sidebar'
 
 export default function AccountWrapper({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession()
+  const { user, isLoaded, isSignedIn } = useUser()
   const router = useRouter()
 
   useEffect(() => {
-    if (status === 'loading') return
-    if (!session) {
-      router.push('/auth/signin?callbackUrl=' + window.location.pathname)
+    if (!isLoaded) return
+    if (!isSignedIn) {
+      router.push('/sign-in?redirectUrl=' + window.location.pathname)
     }
-  }, [session, status, router])
+  }, [isSignedIn, isLoaded, router])
 
-  if (status === 'loading') {
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
@@ -27,7 +27,7 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
     )
   }
 
-  if (!session) {
+  if (!isSignedIn) {
     return null
   }
 
