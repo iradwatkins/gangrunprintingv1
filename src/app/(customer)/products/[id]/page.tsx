@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
-import { toast } from 'react-hot-toast'
+import toast from '@/lib/toast'
 
 const products: { [key: string]: any } = {
   '1': {

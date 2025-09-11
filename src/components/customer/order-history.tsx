@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format } from '@/lib/date';
 import { 
   Package, 
   RefreshCw, 

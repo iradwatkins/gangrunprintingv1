@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { format } from '@/lib/date'
 import { TrackingButton, TrackingLink } from '@/components/tracking/tracking-button'
 import { formatTrackingNumber, getCarrierName } from '@/lib/tracking'
-import { toast } from 'react-hot-toast'
+import toast from '@/lib/toast'
 
 interface OrderDetail {
   id: string
