@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
-import { Toaster } from 'react-hot-toast'
+// Removed react-hot-toast - not in tech stack
 import { ThemeProvider } from '@/components/theme-provider'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { NotificationPermission } from '@/components/notification-permission'
@@ -39,7 +39,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </CartProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster position="top-right" />
     </QueryClientProvider>
   )
 }
