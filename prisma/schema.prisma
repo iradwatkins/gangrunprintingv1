@@ -10,12 +10,12 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  emailVerified DateTime?
+  emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   name          String?
-  password      String?   // For credentials authentication
+  password      String?   // For Lucia Auth
   role          UserRole  @default(CUSTOMER)
   isBroker      Boolean   @default(false) // Broker status
   brokerDiscounts Json?   // Category-specific discount percentages
@@ -46,10 +46,9 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+  id           String   @id
   userId       String
-  expires      DateTime
+  expiresAt    DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

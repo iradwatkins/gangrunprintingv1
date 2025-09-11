@@ -1,0 +1,23 @@
+version: '3.8'
+
+networks:
+  new_web_network:
+    external: true
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: new_caddy_proxy
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data:/data
+      - ./config:/config
+    networks:
+      new_web_network:
+        ipv4_address: 172.30.0.5
+    environment:
+      - CADDY_ADMIN=0.0.0.0:2019

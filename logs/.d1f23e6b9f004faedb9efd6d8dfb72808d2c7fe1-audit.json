@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/irawatkins/Documents/GitSEP102024/gangrunprintingv1/logs/.d1f23e6b9f004faedb9efd6d8dfb72808d2c7fe1-audit.json",
+    "files": [
+        {
+            "date": 1757551778172,
+            "name": "/Users/irawatkins/Documents/GitSEP102024/gangrunprintingv1/logs/mcp-puppeteer-2025-09-10.log",
+            "hash": "7f0ff974e5ede1986bdcecc493770e710db6906987c23d0b107dbebc2a3f291a"
+        }
+    ],
+    "hashType": "sha256"
+}

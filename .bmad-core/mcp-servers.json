@@ -1,46 +1,100 @@
 {
   "bmadMcpServers": {
-    "description": "MCP servers configured for BMAD agents",
+    "description": "MCP servers configured for BMAD agents - Updated Sept 2025",
     "servers": {
       "filesystem": {
         "status": "active",
         "purpose": "File system operations for all agents",
-        "command": "npx -y @modelcontextprotocol/server-filesystem"
+        "command": "npx -y @modelcontextprotocol/server-filesystem",
+        "installed": true
       },
       "memory": {
         "status": "active", 
-        "purpose": "Context and memory management for agents",
-        "command": "npx -y @modelcontextprotocol/server-memory"
+        "purpose": "Knowledge graph-based persistent memory system",
+        "command": "npx -y @modelcontextprotocol/server-memory",
+        "installed": true
       },
       "github": {
-        "status": "configured",
-        "purpose": "Git operations for DevOps and Developer agents",
-        "command": "npx -y @modelcontextprotocol/server-github",
-        "note": "Requires GITHUB_PERSONAL_ACCESS_TOKEN"
-      },
-      "playwright": {
         "status": "active",
-        "purpose": "Testing for QA Engineer agent",
-        "command": "npx -y @modelcontextprotocol/server-playwright"
+        "purpose": "Git operations with OAuth 2.1 + PKCE authentication",
+        "command": "npx -y @modelcontextprotocol/server-github",
+        "note": "Requires GITHUB_PERSONAL_ACCESS_TOKEN",
+        "installed": true
       },
       "sequentialthinking": {
         "status": "active",
-        "purpose": "Complex reasoning for System Architect agent",
-        "command": "npx -y @modelcontextprotocol/server-sequential-thinking"
+        "purpose": "Dynamic and reflective problem-solving through thought sequences",
+        "command": "npx -y @modelcontextprotocol/server-sequential-thinking",
+        "installed": true
       },
-      "fetch": {
+      "ref-tools": {
+        "status": "available",
+        "purpose": "Reference and documentation management",
+        "command": "npx -y ref-tools-mcp",
+        "note": "Alternative package available as ref-tools-mcp"
+      },
+      "figma": {
+        "status": "available",
+        "purpose": "Figma design integration",
+        "command": "npx -y figma-mcp",
+        "note": "Community package for Figma integration"
+      },
+      "puppeteer": {
+        "status": "available",
+        "purpose": "Browser automation alternative",
+        "command": "npx -y puppeteer-mcp-server",
+        "note": "Alternative to playwright for browser automation"
+      },
+      "shadcn-ui": {
         "status": "active",
-        "purpose": "Web scraping for Product Manager agent",
-        "command": "npx -y @modelcontextprotocol/server-fetch"
+        "purpose": "UI component management for React/Next.js",
+        "command": "npx -y @jpisnice/shadcn-ui-mcp-server",
+        "args": ["--github-api-key", "YOUR_GITHUB_API_KEY"],
+        "installed": true
+      },
+      "firecrawl": {
+        "status": "active",
+        "purpose": "Advanced web scraping and data extraction",
+        "command": "npx -y firecrawl-mcp",
+        "env": {
+          "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY"
+        },
+        "installed": true
+      },
+      "cloudflare": {
+        "status": "active",
+        "purpose": "Complete Cloudflare management - DNS, R2, Workers, KV, D1, Pages, Images, Stream",
+        "command": "npx -y @cloudflare/mcp-server-cloudflare",
+        "note": "Requires CLOUDFLARE_API_TOKEN or CLOUDFLARE_API_KEY",
+        "installed": true,
+        "capabilities": [
+          "DNS Management",
+          "R2 Storage (S3-compatible)",
+          "Workers (Edge Functions)",
+          "KV (Key-Value Storage)",
+          "D1 (SQLite Database)",
+          "Pages (Static Sites)",
+          "Images (Optimization)",
+          "Stream (Video)",
+          "SSL/TLS Management",
+          "Firewall Rules",
+          "Page Rules",
+          "Load Balancing"
+        ]
       }
     },
     "agentMappings": {
-      "productManager": ["fetch", "memory", "filesystem"],
-      "uxEngineer": ["filesystem", "memory"],
-      "systemArchitect": ["sequentialthinking", "filesystem", "memory"],
-      "fullStackDeveloper": ["filesystem", "github", "memory"],
-      "qaEngineer": ["playwright", "filesystem", "memory"],
-      "devOps": ["github", "filesystem", "memory"]
+      "productManager": ["memory", "filesystem", "github", "firecrawl", "cloudflare"],
+      "uxEngineer": ["filesystem", "memory", "figma", "shadcn-ui", "cloudflare"],
+      "systemArchitect": ["sequentialthinking", "filesystem", "memory", "ref-tools", "cloudflare"],
+      "fullStackDeveloper": ["filesystem", "github", "memory", "shadcn-ui", "cloudflare"],
+      "qaEngineer": ["puppeteer", "filesystem", "memory"],
+      "devOps": ["github", "filesystem", "memory", "cloudflare"],
+      "researcher": ["memory", "filesystem", "ref-tools", "firecrawl"]
+    },
+    "securityConsiderations": {
+      "note": "MCP security landscape evolving rapidly - prioritize defense-in-depth strategies",
+      "lastUpdated": "September 2025"
     }
   }
 }
