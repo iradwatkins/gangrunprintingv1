@@ -27,6 +27,11 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.production
+.env.production.local
+.env.sandbox
+.env.dokploy
+.env.n8n
 
 # vercel
 .vercel
@@ -49,6 +54,7 @@ prisma/migrations/
 
 # backups
 /backups
+*.tar.gz
 
 # docker volumes
 postgres_data/
