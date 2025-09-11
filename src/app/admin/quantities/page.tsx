@@ -48,7 +48,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 
 interface QuantityGroup {
   id: string

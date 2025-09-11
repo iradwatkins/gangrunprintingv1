@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 
 interface EditProductPageProps {
   params: Promise<{

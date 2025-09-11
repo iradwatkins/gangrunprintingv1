@@ -1,91 +1,50 @@
 'use client'
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import { Bar } from 'react-chartjs-2'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-)
+interface ChartData {
+  labels: string[]
+  datasets: {
+    label: string
+    data: number[]
+    backgroundColor: string
+  }[]
+}
 
-export function OrdersOverviewChart() {
-  const data = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Completed',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: 'rgba(34, 197, 94, 0.8)',
-        borderColor: 'rgb(34, 197, 94)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Pending',
-        data: [28, 48, 40, 19, 86, 27, 90],
-        backgroundColor: 'rgba(251, 146, 60, 0.8)',
-        borderColor: 'rgb(251, 146, 60)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Cancelled',
-        data: [12, 15, 8, 10, 5, 7, 4],
-        backgroundColor: 'rgba(239, 68, 68, 0.8)',
-        borderColor: 'rgb(239, 68, 68)',
-        borderWidth: 1,
-      },
-    ],
-  }
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          padding: 10,
-          font: {
-            size: 12,
-          },
-        },
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        stacked: true,
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        stacked: true,
-        beginAtZero: true,
-        grid: {
-          display: true,
-          drawBorder: false,
-        },
-      },
-    },
-  }
-
+export function OrdersOverviewChart({ data }: { data?: ChartData }) {
+  // Simple bar chart implementation using CSS
+  const maxValue = Math.max(...(data?.datasets[0]?.data || [1]))
+  
   return (
-    <div className="h-[300px]">
-      <Bar data={data} options={options} />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Orders Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-64 flex items-end justify-between gap-2 px-4">
+          {data?.labels.map((label, index) => {
+            const value = data.datasets[0]?.data[index] || 0
+            const height = (value / maxValue) * 100
+            
+            return (
+              <div key={label} className="flex-1 flex flex-col items-center">
+                <div className="w-full bg-gray-200 rounded-t relative" style={{ height: '200px' }}>
+                  <div 
+                    className="absolute bottom-0 w-full bg-blue-500 rounded-t transition-all hover:bg-blue-600"
+                    style={{ height: `${height}%` }}
+                    title={`${label}: ${value}`}
+                  >
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-medium">
+                      {value}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-xs mt-2 text-center">{label}</span>
+              </div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

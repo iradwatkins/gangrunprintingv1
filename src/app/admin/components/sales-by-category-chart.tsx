@@ -1,70 +1,69 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import { Pie } from 'react-chartjs-2'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+interface ChartData {
+  labels: string[]
+  datasets: {
+    label: string
+    data: number[]
+    backgroundColor?: string[]
+  }[]
+}
 
-export function SalesByCategoryChart() {
-  const data = {
+export function SalesByCategoryChart({ data }: { data?: ChartData }) {
+  const defaultData = {
     labels: ['Business Cards', 'Flyers', 'Posters', 'Banners', 'T-Shirts', 'Brochures'],
-    datasets: [
-      {
-        label: 'Sales by Category',
-        data: [30, 25, 15, 10, 12, 8],
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(168, 85, 247, 0.8)',
-          'rgba(251, 146, 60, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-          'rgba(107, 114, 128, 0.8)',
-        ],
-        borderColor: [
-          'rgb(59, 130, 246)',
-          'rgb(34, 197, 94)',
-          'rgb(168, 85, 247)',
-          'rgb(251, 146, 60)',
-          'rgb(239, 68, 68)',
-          'rgb(107, 114, 128)',
-        ],
-        borderWidth: 1,
-      },
-    ],
+    datasets: [{
+      label: 'Sales by Category',
+      data: [30, 25, 15, 10, 12, 8],
+      backgroundColor: [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
+      ]
+    }]
   }
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          padding: 15,
-          font: {
-            size: 12,
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context: any) {
-            return context.label + ': ' + context.parsed + '%'
-          },
-        },
-      },
-    },
-  }
-
+  
+  const chartData = data || defaultData
+  const total = chartData.datasets[0].data.reduce((a, b) => a + b, 0)
+  
   return (
-    <div className="h-[300px]">
-      <Pie data={data} options={options} />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Sales by Category</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {chartData.labels.map((label, index) => {
+            const value = chartData.datasets[0].data[index]
+            const percentage = ((value / total) * 100).toFixed(1)
+            const color = chartData.datasets[0].backgroundColor?.[index] || '#3b82f6'
+            
+            return (
+              <div key={label} className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="flex items-center gap-2">
+                    <span 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: color }}
+                    />
+                    {label}
+                  </span>
+                  <span className="font-medium">{percentage}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="h-2 rounded-full transition-all"
+                    style={{ 
+                      width: `${percentage}%`,
+                      backgroundColor: color 
+                    }}
+                  />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
