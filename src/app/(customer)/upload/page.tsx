@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useState, useRef } from 'react'
 import { Upload, X, FileText, Image, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import toast from 'react-hot-toast'
+import toast from '@/lib/toast'
 
 interface UploadedFile {
   id: string
@@ -28,10 +27,11 @@ const formatFileSize = (bytes: number): string => {
 
 export default function UploadPage() {
   const [files, setFiles] = useState<UploadedFile[]>([])
-  const [uploading, setUploading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const newFiles: UploadedFile[] = acceptedFiles.map(file => ({
+  const handleFiles = (fileList: FileList) => {
+    const newFiles = Array.from(fileList).map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
       size: file.size,
@@ -42,163 +42,126 @@ export default function UploadPage() {
     }))
 
     setFiles(prev => [...prev, ...newFiles])
-    setUploading(true)
-
-    // Simulate file upload with progress
-    for (const [index, file] of newFiles.entries()) {
-      const fileIndex = files.length + index
-      
-      // Simulate upload progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        
-        setFiles(prev => prev.map((f, i) => 
-          i === fileIndex 
-            ? { ...f, progress, status: progress === 100 ? 'completed' : 'uploading' }
+    
+    // Simulate upload
+    newFiles.forEach((file, index) => {
+      setTimeout(() => {
+        setFiles(prev => prev.map(f => 
+          f.id === file.id 
+            ? { ...f, progress: 100, status: 'completed' }
             : f
         ))
-      }
+      }, (index + 1) * 1000)
+    })
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files)
     }
+  }
 
-    setUploading(false)
-    toast.success('Files uploaded successfully!')
-  }, [files.length])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.svg'],
-      'application/pdf': ['.pdf'],
-      'application/postscript': ['.ai', '.eps'],
-      'application/x-indesign': ['.indd'],
-      'image/x-adobe-photoshop': ['.psd']
-    },
-    maxSize: 100 * 1024 * 1024 // 100MB
-  })
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files)
+    }
+  }
 
   const removeFile = (id: string) => {
     setFiles(prev => prev.filter(f => f.id !== id))
   }
 
-  const proceedToConfiguration = () => {
-    // Navigate to product configuration with uploaded files
-    console.log('Proceeding with files:', files)
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Upload Your Files</h1>
-        <p className="text-muted-foreground mb-8">
-          Upload your artwork files and we&apos;ll help you configure your print order
-        </p>
+    <div className="container mx-auto p-6 max-w-4xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload Files</CardTitle>
+          <CardDescription>
+            Upload your print files. We support PDF, PNG, JPG, and other common formats.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+              isDragging ? 'border-primary bg-primary/5' : 'border-gray-300'
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileInput}
+              className="hidden"
+              accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+            />
+            
+            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-lg mb-2">Drag & drop files here, or click to select</p>
+            <p className="text-sm text-gray-500 mb-4">
+              Support for PDF, PNG, JPG, DOC, DOCX (Max 100MB per file)
+            </p>
+            <Button onClick={() => fileInputRef.current?.click()}>
+              Select Files
+            </Button>
+          </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Upload Artwork</CardTitle>
-            <CardDescription>
-              Accepted formats: PDF, AI, EPS, PSD, INDD, PNG, JPG, SVG (Max 100MB per file)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div
-              {...getRootProps()}
-              className={`
-                border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-                transition-colors duration-200
-                ${isDragActive 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-gray-300 hover:border-primary hover:bg-gray-50'
-                }
-              `}
-            >
-              <input {...getInputProps()} />
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              {isDragActive ? (
-                <p className="text-lg">Drop the files here...</p>
-              ) : (
-                <>
-                  <p className="text-lg mb-2">
-                    Drag & drop your files here, or click to select
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    You can upload multiple files at once
-                  </p>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {files.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Uploaded Files ({files.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {files.map(file => (
-                  <div
-                    key={file.id}
-                    className="flex items-center gap-3 p-3 border rounded-lg"
-                  >
-                    {file.preview ? (
-                      <img
-                        alt={file.name}
-                        className="w-12 h-12 object-cover rounded"
-                        src={file.preview}
-                      />
-                    ) : file.type === 'application/pdf' ? (
-                      <FileText className="w-12 h-12 text-red-500" />
-                    ) : (
-                      <Image className="w-12 h-12 text-blue-500" />
-                    )}
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm truncate">{file.name}</p>
-                        <span className="text-xs text-muted-foreground">
-                          {formatFileSize(file.size)}
-                        </span>
-                      </div>
-                      
-                      {file.status === 'uploading' ? (
-                        <Progress className="h-2" value={file.progress} />
-                      ) : file.status === 'completed' ? (
-                        <div className="flex items-center gap-1 text-green-600">
-                          <CheckCircle className="w-4 h-4" />
-                          <span className="text-xs">Uploaded</span>
-                        </div>
-                      ) : null}
+          {files.length > 0 && (
+            <div className="mt-6 space-y-3">
+              {files.map(file => (
+                <div key={file.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                  {file.type.startsWith('image/') ? (
+                    <Image className="w-8 h-8 text-blue-500" />
+                  ) : (
+                    <FileText className="w-8 h-8 text-gray-500" />
+                  )}
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{file.name}</p>
+                      <span className="text-sm text-gray-500">{formatFileSize(file.size)}</span>
                     </div>
                     
-                    <Button
-                      disabled={file.status === 'uploading'}
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => removeFile(file.id)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                    {file.status === 'uploading' && (
+                      <Progress value={file.progress} className="h-1 mt-2" />
+                    )}
+                    
+                    {file.status === 'completed' && (
+                      <div className="flex items-center gap-1 mt-1 text-sm text-green-600">
+                        <CheckCircle className="w-4 h-4" />
+                        Upload complete
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-
-              <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={() => setFiles([])}>
-                  Clear All
-                </Button>
-                <Button 
-                  disabled={uploading || files.length === 0}
-                  onClick={proceedToConfiguration}
-                >
-                  Configure Print Options
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFile(file.id)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
