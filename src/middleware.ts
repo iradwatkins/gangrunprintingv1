@@ -1,38 +1,52 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// Define public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/products(.*)',
-  '/about',
-  '/contact',
-  '/help-center',
-  '/privacy-policy',
-  '/terms-of-service',
-  '/api/health',
-  '/api/products(.*)',
-  '/api/webhooks(.*)',
-  '/track(.*)',
-  '/sw.js',
-  '/manifest.json',
-  '/offline.html',
-]);
-
-// Define admin routes that require admin role
-const isAdminRoute = createRouteMatcher([
-  '/admin(.*)',
-  '/api/admin(.*)',
-]);
-
-export default clerkMiddleware((auth, req) => {
-  // Allow public routes
-  if (isPublicRoute(req)) return;
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
   
-  // Protect all other routes
-  auth().protect();
-});
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/api/auth/signin",
+    "/api/auth/signup",
+    "/api/auth/signout",
+    "/products",
+    "/about",
+    "/contact",
+    "/help-center",
+    "/privacy-policy",
+    "/terms-of-service",
+    "/api/health",
+    "/api/products",
+    "/api/webhooks",
+    "/track",
+    "/sw.js",
+    "/manifest.json",
+    "/offline.html"
+  ];
+  
+  // Admin only routes
+  const adminRoutes = [
+    "/admin",
+    "/api/admin"
+  ];
+  
+  // Check if route is public
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname === route || pathname.startsWith(route + "/")
+  );
+  
+  // Skip middleware for public routes and static files
+  if (isPublicRoute || pathname.includes("_next") || pathname.includes(".")) {
+    return NextResponse.next();
+  }
+  
+  // For now, allow all routes until auth pages are created
+  // This will be updated once auth pages are ready
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

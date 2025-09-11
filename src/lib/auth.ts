@@ -1,122 +1,175 @@
-import NextAuth from "next-auth"
-import { type NextAuthConfig } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import GoogleProvider from "next-auth/providers/google"
-import EmailProvider from "next-auth/providers/email"
-import { prisma } from "@/lib/prisma"
+import { Lucia } from "lucia";
+import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
+import { PrismaClient } from "@prisma/client";
+import { cookies } from "next/headers";
+import { cache } from "react";
+import * as argon2 from "argon2";
 
-// Validate required environment variables
-if (!process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
-  throw new Error('AUTH_SECRET or NEXTAUTH_SECRET is not set')
-}
+const prisma = new PrismaClient();
 
-if (!process.env.AUTH_GOOGLE_ID) {
-  console.error('AUTH_GOOGLE_ID is not set - Google OAuth will not work')
-}
+const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
-if (!process.env.AUTH_GOOGLE_SECRET) {
-  console.error('AUTH_GOOGLE_SECRET is not set - Google OAuth will not work')
-}
-
-export const authConfig: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
-  providers: [
-    GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID || '',
-      clientSecret: process.env.AUTH_GOOGLE_SECRET || '',
-      allowDangerousEmailAccountLinking: true,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
-        }
-      }
-    }),
-    EmailProvider({
-      server: {
-        host: "smtp.sendgrid.net",
-        port: 587,
-        auth: {
-          user: "apikey",
-          pass: process.env.SENDGRID_API_KEY!
-        }
-      },
-      from: process.env.SENDGRID_FROM_EMAIL!,
-      maxAge: 24 * 60 * 60, // Magic links valid for 24 hours
-    }),
-  ],
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+export const lucia = new Lucia(adapter, {
+  sessionCookie: {
+    attributes: {
+      secure: process.env.NODE_ENV === "production"
+    }
   },
-  pages: {
-    signIn: "/auth/signin",
-    verifyRequest: "/auth/verify",
-    error: "/auth/error",
-  },
-  callbacks: {
-    async jwt({ token, user, account, profile }: any) {
-      // On initial sign in
-      if (user) {
-        token.id = user.id
-        token.email = user.email
-        token.name = user.name
-        
-        // Fetch user role from database
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true, email: true }
-        })
-        
-        // Special handling for iradwatkins@gmail.com - always ADMIN
-        if (dbUser?.email === 'iradwatkins@gmail.com' && dbUser.role !== 'ADMIN') {
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { role: 'ADMIN' }
-          })
-          token.role = 'ADMIN'
-        } else {
-          token.role = dbUser?.role || 'CUSTOMER'
-        }
-      }
-      
-      // Always ensure email is set (for OAuth providers)
-      if (!token.email && profile?.email) {
-        token.email = profile.email
-      }
-      
-      // If we don't have a role yet, fetch it from database by email
-      if (!token.role && token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          select: { role: true, email: true }
-        })
-        
-        // Ensure iradwatkins@gmail.com is always ADMIN
-        if (token.email === 'iradwatkins@gmail.com') {
-          token.role = 'ADMIN'
-        } else {
-          token.role = dbUser?.role || 'CUSTOMER'
-        }
-      }
-      
-      return token
-    },
-    async session({ session, token }: any) {
-      if (session?.user) {
-        session.user.id = token.id
-        session.user.email = token.email
-        session.user.name = token.name
-        session.user.role = token.role
-        session.user.isAdmin = token.role === 'ADMIN'
-      }
-      return session
-    },
-  },
-  trustHost: true,
-  debug: process.env.NODE_ENV === 'development',
+  getUserAttributes: (attributes) => {
+    return {
+      email: attributes.email,
+      name: attributes.name,
+      role: attributes.role,
+      emailVerified: attributes.emailVerified
+    };
+  }
+});
+
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof lucia;
+    DatabaseUserAttributes: DatabaseUserAttributes;
+  }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
+interface DatabaseUserAttributes {
+  email: string;
+  name: string;
+  role: string;
+  emailVerified: boolean;
+}
+
+export const validateRequest = cache(
+  async (): Promise<
+    { user: User; session: Session } | { user: null; session: null }
+  > => {
+    const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+    if (!sessionId) {
+      return {
+        user: null,
+        session: null
+      };
+    }
+
+    const result = await lucia.validateSession(sessionId);
+    
+    try {
+      if (result.session && result.session.fresh) {
+        const sessionCookie = lucia.createSessionCookie(result.session.id);
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes
+        );
+      }
+      if (!result.session) {
+        const sessionCookie = lucia.createBlankSessionCookie();
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes
+        );
+      }
+    } catch {}
+    
+    return result;
+  }
+);
+
+// Helper functions for authentication
+export async function hashPassword(password: string): Promise<string> {
+  return await argon2.hash(password);
+}
+
+export async function verifyPassword(
+  hashedPassword: string,
+  plainPassword: string
+): Promise<boolean> {
+  return await argon2.verify(hashedPassword, plainPassword);
+}
+
+export async function createUser(
+  email: string,
+  password: string,
+  name: string,
+  role: string = "CUSTOMER"
+) {
+  const hashedPassword = await hashPassword(password);
+  
+  // Special handling for admin email
+  if (email === 'iradwatkins@gmail.com') {
+    role = 'ADMIN';
+  }
+  
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+      role,
+      emailVerified: false
+    }
+  });
+  
+  return user;
+}
+
+export async function signIn(email: string, password: string) {
+  const user = await prisma.user.findUnique({
+    where: { email }
+  });
+  
+  if (!user || !user.password) {
+    throw new Error("Invalid credentials");
+  }
+  
+  const validPassword = await verifyPassword(user.password, password);
+  
+  if (!validPassword) {
+    throw new Error("Invalid credentials");
+  }
+  
+  const session = await lucia.createSession(user.id, {});
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+  
+  return { user, session };
+}
+
+export async function signOut() {
+  const { session } = await validateRequest();
+  
+  if (!session) {
+    return {
+      error: "Unauthorized"
+    };
+  }
+  
+  await lucia.invalidateSession(session.id);
+  
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+}
+
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  emailVerified: boolean;
+};
+
+export type Session = {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+};
