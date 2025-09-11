@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function AccountDetailsPage() {
-  const { user } = useUser()
+  // TODO: Replace with Lucia auth when implemented
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,93 +17,70 @@ export default function AccountDetailsPage() {
   })
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.primaryEmailAddress?.emailAddress || '',
-        phone: user.primaryPhoneNumber?.phoneNumber || '',
-      })
-    }
-  }, [user])
+    // TODO: Fetch user data from Lucia auth
+    setFormData({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'user@example.com',
+      phone: '',
+    })
+  }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log('Form submitted:', formData)
+    // TODO: Update user profile with Lucia auth
+    console.log('Updating profile:', formData)
   }
 
   return (
     <AccountWrapper>
-      <div className="max-w-2xl">
-        <h1 className="text-3xl font-bold mb-2">Account Details</h1>
-        <p className="text-muted-foreground mb-8">Update your account information</p>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Update your personal details</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  />
-                </div>
-              </div>
-              
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Details</CardTitle>
+          <CardDescription>Manage your account information</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 />
               </div>
-              
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="lastName">Last Name</Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 000-0000"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 />
               </div>
-
-              <div className="flex gap-4">
-                <Button type="submit">Save Changes</Button>
-                <Button type="button" variant="outline">Cancel</Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Password</CardTitle>
-            <CardDescription>Change your password</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline">Change Password</Button>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
+            </div>
+            <Button type="submit">Save Changes</Button>
+          </form>
+        </CardContent>
+      </Card>
     </AccountWrapper>
   )
 }

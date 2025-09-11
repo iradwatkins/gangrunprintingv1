@@ -32,7 +32,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import toast from 'react-hot-toast';
+import toast from '@/lib/toast';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface VendorAddress {
