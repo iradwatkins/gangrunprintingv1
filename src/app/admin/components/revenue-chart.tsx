@@ -1,84 +1,95 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from 'chart.js'
-import { Line } from 'react-chartjs-2'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-)
+interface ChartData {
+  labels: string[]
+  datasets: {
+    label: string
+    data: number[]
+    borderColor?: string
+    backgroundColor?: string
+  }[]
+}
 
-export function RevenueChart() {
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-        label: 'Revenue',
-        data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 35000, 32000, 38000, 42000, 45000],
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.4,
-        fill: true,
-      },
-    ],
+export function RevenueChart({ data }: { data?: ChartData }) {
+  if (!data) return null
+  
+  const maxValue = Math.max(...(data.datasets[0]?.data || [1]))
+  const points = data.labels.length
+  
+  // Create SVG path for line chart
+  const createPath = (dataset: number[]) => {
+    return dataset.map((value, index) => {
+      const x = (index / (points - 1)) * 100
+      const y = 100 - (value / maxValue) * 100
+      return `${index === 0 ? 'M' : 'L'} ${x} ${y}`
+    }).join(' ')
   }
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context: any) {
-            return '$' + context.parsed.y.toLocaleString()
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: function(value: any) {
-            return '$' + (value / 1000) + 'k'
-          },
-        },
-        grid: {
-          display: true,
-          drawBorder: false,
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-    },
-  }
-
+  
   return (
-    <div className="h-[350px]">
-      <Line data={data} options={options} />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Revenue Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="relative h-64">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Grid lines */}
+            {[0, 25, 50, 75, 100].map(y => (
+              <line
+                key={y}
+                x1="0"
+                y1={y}
+                x2="100"
+                y2={y}
+                stroke="#e5e7eb"
+                strokeWidth="0.2"
+              />
+            ))}
+            
+            {/* Line chart */}
+            {data.datasets.map((dataset, idx) => (
+              <g key={idx}>
+                <path
+                  d={createPath(dataset.data)}
+                  fill="none"
+                  stroke={dataset.borderColor || '#3b82f6'}
+                  strokeWidth="0.5"
+                />
+                {/* Data points */}
+                {dataset.data.map((value, index) => {
+                  const x = (index / (points - 1)) * 100
+                  const y = 100 - (value / maxValue) * 100
+                  return (
+                    <circle
+                      key={index}
+                      cx={x}
+                      cy={y}
+                      r="1"
+                      fill={dataset.borderColor || '#3b82f6'}
+                    />
+                  )
+                })}
+              </g>
+            ))}
+          </svg>
+          
+          {/* Labels */}
+          <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 mt-2">
+            {data.labels.map((label, idx) => (
+              <span key={idx}>{label}</span>
+            ))}
+          </div>
+          
+          {/* Y-axis labels */}
+          <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-500 -ml-8">
+            <span>${maxValue}</span>
+            <span>${maxValue / 2}</span>
+            <span>$0</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

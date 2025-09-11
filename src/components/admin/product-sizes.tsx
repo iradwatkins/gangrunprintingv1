@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Ruler, Layers, Plus, X } from 'lucide-react'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 
 interface Size {
   id: string

@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 
 interface MaterialType {
   id: string

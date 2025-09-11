@@ -24,7 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 import { Plus, Edit, Trash2, GripVertical } from 'lucide-react'
 
 interface MaterialType {

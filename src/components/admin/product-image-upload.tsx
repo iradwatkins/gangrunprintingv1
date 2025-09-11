@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 import { 
   Upload, 
   X, 
@@ -168,10 +167,13 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
     })
   )
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragActive, setIsDragActive] = useState(false)
 
-    const newImages: ProductImage[] = acceptedFiles.map((file, index) => ({
+  const handleFiles = async (files: File[]) => {
+    if (files.length === 0) return
+
+    const newImages: ProductImage[] = Array.from(files).map((file, index) => ({
       url: URL.createObjectURL(file),
       file,
       isPrimary: images.length === 0 && index === 0,
@@ -181,9 +183,9 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
 
     onImagesChange([...images, ...newImages])
 
-    // Upload images to MinIO
-    for (let i = 0; i < acceptedFiles.length; i++) {
-      const file = acceptedFiles[i]
+    // Upload images to R2
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
       const formData = new FormData()
       formData.append('file', file)
       if (productId) {
@@ -218,15 +220,33 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
         onImagesChange(prev => prev.filter((_, idx) => idx !== images.length + i))
       }
     }
-  }, [images, onImagesChange, productId])
+  }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
-    },
-    maxSize: 10 * 1024 * 1024, // 10MB
-  })
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragActive(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragActive(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragActive(false)
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+    )
+    handleFiles(files)
+  }
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).filter(file => 
+      file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+    )
+    handleFiles(files)
+  }
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
@@ -286,13 +306,23 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
   return (
     <div className="space-y-4">
       <div
-        {...getRootProps()}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
           ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary'}
         `}
       >
-        <input {...getInputProps()} />
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileInput}
+          className="hidden"
+        />
         <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-sm font-medium">
           {isDragActive ? 'Drop images here' : 'Drag & drop images here, or click to select'}

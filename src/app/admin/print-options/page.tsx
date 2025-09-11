@@ -22,7 +22,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs'
-import { toast } from 'sonner'
+import toast from '@/lib/toast'
 
 interface SidesOption {
   id: string
