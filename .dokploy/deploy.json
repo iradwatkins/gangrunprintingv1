@@ -2,7 +2,7 @@
   "name": "gangrunprinting",
   "type": "github",
   "branch": "main",
-  "repository": "https://github.com/iradwatkins/gangrunprinting.git",
+  "repository": "https://github.com/iradwatkins/gangrunprintingv1.git",
   "buildCommand": "npm install && npm run build",
   "startCommand": "npm start",
   "port": 3000,
