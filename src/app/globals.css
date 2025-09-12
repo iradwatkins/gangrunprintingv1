@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Foldable Device Support - Safe Areas */
 @supports (padding: max(0px)) {
@@ -59,33 +61,6 @@
   }
 }
 
-@theme {
-  --color-primary: hsl(25 95% 53%);
-  --color-primary-foreground: hsl(0 0% 100%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-accent: hsl(25 85% 90%);
-  --color-accent-foreground: hsl(25 95% 53%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(25 95% 53%);
-  --color-background: hsl(210 40% 98%);
-  --color-foreground: hsl(222.2 84% 4.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  
-  --color-chart-1: hsl(25 95% 53%);
-  --color-chart-2: hsl(30 90% 60%);
-  --color-chart-3: hsl(35 85% 55%);
-  --color-chart-4: hsl(20 90% 50%);
-  --color-chart-5: hsl(15 85% 45%);
-}
 
 @layer base {
   :root {
