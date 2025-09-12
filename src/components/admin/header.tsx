@@ -12,16 +12,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useUser, useClerk } from '@clerk/nextjs'
+// import { useUser, useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { useRouter } from 'next/navigation'
 
 export function AdminHeader() {
-  const { user, isLoaded } = useUser()
-  const { signOut } = useClerk()
+  // const { user, isLoaded } = useUser()
+  // const { signOut } = useClerk()
+  // TODO: Replace with Lucia auth
+  const user = null
+  const isLoaded = true
+  const signOut = async () => {}
   const router = useRouter()
 
   const handleLogout = async () => {
-    await signOut({ redirectUrl: '/sign-in' })
+    await signOut() // TODO: Implement with Lucia auth
   }
 
   // Get user initials for avatar

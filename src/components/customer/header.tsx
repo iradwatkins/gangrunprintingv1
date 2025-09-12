@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useUser, useClerk } from '@clerk/nextjs'
+// import { useUser, useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { 
   Menu, 
   X, 
@@ -75,8 +75,13 @@ const productCategories = [
 
 export default function Header() {
   const pathname = usePathname()
-  const { user, isLoaded, isSignedIn } = useUser()
-  const { signOut } = useClerk()
+  // const { user, isLoaded, isSignedIn } = useUser()
+  // const { signOut } = useClerk()
+  // TODO: Replace with Lucia auth
+  const user = null
+  const isLoaded = true
+  const isSignedIn = false
+  const signOut = () => {}
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
   
@@ -104,7 +109,7 @@ export default function Header() {
   }, [])
   
   const handleSignOut = () => {
-    signOut({ redirectUrl: '/' })
+    signOut() // TODO: Implement with Lucia auth
   }
 
   const handleInstallApp = async () => {

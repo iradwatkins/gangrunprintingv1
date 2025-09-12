@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useClerk } from '@clerk/nextjs'
+// import { useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { 
   LayoutDashboard, 
   Package, 
@@ -78,10 +78,12 @@ export default function AccountSidebar() {
     }
   }, [])
 
-  const { signOut } = useClerk()
+  // const { signOut } = useClerk()
+  // TODO: Replace with Lucia auth
+  const signOut = () => {}
   
   const handleSignOut = () => {
-    signOut({ redirectUrl: '/' })
+    signOut() // TODO: Implement with Lucia auth
   }
 
   const handleInstallApp = async () => {
