@@ -1,12 +1,16 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+// import { useUser } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import AccountSidebar from './account-sidebar'
 
 export default function AccountWrapper({ children }: { children: React.ReactNode }) {
-  const { user, isLoaded, isSignedIn } = useUser()
+  // const { user, isLoaded, isSignedIn } = useUser()
+  // TODO: Replace with Lucia auth
+  const user = null
+  const isLoaded = true
+  const isSignedIn = false
   const router = useRouter()
 
   useEffect(() => {
