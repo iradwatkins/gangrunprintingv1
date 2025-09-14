@@ -133,16 +133,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
             email: true,
           }
         },
-        OrderItem: {
-          include: {
-            product: {
-              select: {
-                name: true,
-                slug: true,
-              }
-            }
-          }
-        },
+        OrderItem: true,
         _count: {
           select: {
             OrderItem: true

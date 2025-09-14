@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { deleteProductImage } from '@/lib/minio-products'
+import { validateRequest } from '@/lib/auth'
 
 // GET /api/products/[id] - Get single product
 export async function GET(
@@ -12,24 +13,24 @@ export async function GET(
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        category: true,
-        images: {
+        ProductCategory: true,
+        ProductImage: {
           orderBy: { sortOrder: 'asc' }
         },
-        paperStocks: {
+        productPaperStocks: {
           include: {
             paperStock: true
           }
         },
-        options: {
+        ProductOption: {
           include: {
-            values: {
+            OptionValue: {
               orderBy: { sortOrder: 'asc' }
             }
           },
           orderBy: { sortOrder: 'asc' }
         },
-        pricingTiers: {
+        PricingTier: {
           orderBy: { minQuantity: 'asc' }
         }
       }
@@ -80,14 +81,14 @@ export async function PUT(
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        images: true,
-        paperStocks: true,
-        options: {
+        ProductImage: true,
+        productPaperStocks: true,
+        ProductOption: {
           include: {
-            values: true
+            OptionValue: true
           }
         },
-        pricingTiers: true
+        PricingTier: true
       }
     })
 
@@ -99,7 +100,7 @@ export async function PUT(
     }
 
     // Delete removed images from MinIO
-    const existingImageUrls = existingProduct.images.map(img => img.url)
+    const existingImageUrls = existingProduct.ProductImage.map(img => img.url)
     const newImageUrls = images?.map((img: any) => img.url) || []
     const imagesToDelete = existingImageUrls.filter(url => !newImageUrls.includes(url))
     
@@ -125,7 +126,7 @@ export async function PUT(
         data: {
           ...productData,
           // Recreate images
-          images: images?.length > 0 ? {
+          ProductImage: images?.length > 0 ? {
             create: images.map((img: any, index: number) => ({
               url: img.url,
               thumbnailUrl: img.thumbnailUrl,
@@ -140,7 +141,7 @@ export async function PUT(
             }))
           } : undefined,
           // Recreate paper stock associations
-          paperStocks: paperStocks?.length > 0 ? {
+          productPaperStocks: paperStocks?.length > 0 ? {
             create: paperStocks.map((ps: any) => ({
               paperStockId: ps.paperStockId,
               isDefault: ps.isDefault,
@@ -148,13 +149,13 @@ export async function PUT(
             }))
           } : undefined,
           // Recreate options with values
-          options: options?.length > 0 ? {
+          ProductOption: options?.length > 0 ? {
             create: options.map((opt: any, index: number) => ({
               name: opt.name,
               type: opt.type,
               required: opt.required,
               sortOrder: index,
-              values: {
+              OptionValue: {
                 create: opt.values.map((val: any, valIndex: number) => ({
                   value: val.value,
                   label: val.label,
@@ -166,7 +167,7 @@ export async function PUT(
             }))
           } : undefined,
           // Recreate pricing tiers
-          pricingTiers: pricingTiers?.length > 0 ? {
+          PricingTier: pricingTiers?.length > 0 ? {
             create: pricingTiers.map((tier: any) => ({
               minQuantity: tier.minQuantity,
               maxQuantity: tier.maxQuantity,
@@ -176,19 +177,19 @@ export async function PUT(
           } : undefined
         },
         include: {
-          category: true,
-          images: true,
-          paperStocks: {
+          ProductCategory: true,
+          ProductImage: true,
+          productPaperStocks: {
             include: {
               paperStock: true
             }
           },
-          options: {
+          ProductOption: {
             include: {
-              values: true
+              OptionValue: true
             }
           },
-          pricingTiers: true
+          PricingTier: true
         }
       })
     })
@@ -232,7 +233,7 @@ export async function DELETE(
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        images: true
+        ProductImage: true
       }
     })
 
@@ -244,7 +245,7 @@ export async function DELETE(
     }
 
     // Delete images from MinIO
-    for (const image of product.images) {
+    for (const image of product.ProductImage) {
       try {
         await deleteProductImage(image.url)
       } catch (error) {

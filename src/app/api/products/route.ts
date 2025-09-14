@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {
@@ -17,52 +18,49 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       where,
       include: {
-        category: true,
-        images: {
+        ProductCategory: true,
+        ProductImage: {
           orderBy: { sortOrder: 'asc' }
         },
-        paperStocks: {
+        productPaperStocks: {
           include: {
             paperStock: true
           }
         },
-        options: {
+        ProductOption: {
           include: {
-            values: {
+            OptionValue: {
               orderBy: { sortOrder: 'asc' }
             }
           },
           orderBy: { sortOrder: 'asc' }
         },
-        pricingTiers: {
+        PricingTier: {
           orderBy: { minQuantity: 'asc' }
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: {
-              include: {
-                quantities: {
-                  include: {
-                    quantity: true
-                  },
-                  orderBy: { sortOrder: 'asc' }
-                }
-              }
-            }
+            quantityGroup: true
           }
         },
-        productQuantities: {
+        productSizeGroups: {
           include: {
-            quantity: true
+            sizeGroup: true
+          }
+        },
+        productAddOns: {
+          include: {
+            addOn: true
           }
         },
         _count: {
           select: {
-            images: true,
-            paperStocks: true,
-            options: true,
-            productQuantities: true,
-            productQuantityGroups: true
+            ProductImage: true,
+            productPaperStocks: true,
+            ProductOption: true,
+            productQuantityGroups: true,
+            productSizeGroups: true,
+            productAddOns: true
           }
         }
       },
@@ -99,9 +97,8 @@ export async function POST(request: NextRequest) {
       paperStocks,
       options,
       pricingTiers,
-      useQuantityGroup,
       quantityGroupId,
-      quantityIds,
+      sizeGroupId,
       ...productData
     } = data
 
@@ -110,7 +107,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...productData,
         // Create images
-        images: images?.length > 0 ? {
+        ProductImage: images?.length > 0 ? {
           create: images.map((img: any, index: number) => ({
             url: img.url,
             thumbnailUrl: img.thumbnailUrl,
@@ -125,7 +122,7 @@ export async function POST(request: NextRequest) {
           }))
         } : undefined,
         // Create paper stock associations
-        paperStocks: paperStocks?.length > 0 ? {
+        productPaperStocks: paperStocks?.length > 0 ? {
           create: paperStocks.map((ps: any) => ({
             paperStockId: ps.paperStockId,
             isDefault: ps.isDefault,
@@ -133,13 +130,13 @@ export async function POST(request: NextRequest) {
           }))
         } : undefined,
         // Create options with values
-        options: options?.length > 0 ? {
+        ProductOption: options?.length > 0 ? {
           create: options.map((opt: any, index: number) => ({
             name: opt.name,
             type: opt.type,
             required: opt.required,
             sortOrder: index,
-            values: {
+            OptionValue: {
               create: opt.values.map((val: any, valIndex: number) => ({
                 value: val.value,
                 label: val.label,
@@ -151,7 +148,7 @@ export async function POST(request: NextRequest) {
           }))
         } : undefined,
         // Create pricing tiers
-        pricingTiers: pricingTiers?.length > 0 ? {
+        PricingTier: pricingTiers?.length > 0 ? {
           create: pricingTiers.map((tier: any) => ({
             minQuantity: tier.minQuantity,
             maxQuantity: tier.maxQuantity,
@@ -160,34 +157,32 @@ export async function POST(request: NextRequest) {
           }))
         } : undefined,
         // Create quantity group association
-        productQuantityGroups: useQuantityGroup && quantityGroupId ? {
+        productQuantityGroups: quantityGroupId ? {
           create: {
-            quantityGroupId: quantityGroupId,
-            isDefault: true
+            quantityGroupId: quantityGroupId
           }
         } : undefined,
-        // Create individual quantity associations
-        productQuantities: !useQuantityGroup && quantityIds?.length > 0 ? {
-          create: quantityIds.map((quantityId: string) => ({
-            quantityId: quantityId,
-            isDefault: false
-          }))
+        // Create size group association
+        productSizeGroups: sizeGroupId ? {
+          create: {
+            sizeGroupId: sizeGroupId
+          }
         } : undefined
       },
       include: {
-        category: true,
-        images: true,
-        paperStocks: {
+        ProductCategory: true,
+        ProductImage: true,
+        productPaperStocks: {
           include: {
             paperStock: true
           }
         },
-        options: {
+        ProductOption: {
           include: {
-            values: true
+            OptionValue: true
           }
         },
-        pricingTiers: true
+        PricingTier: true
       }
     })
 
