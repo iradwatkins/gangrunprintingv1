@@ -33,6 +33,18 @@ declare module "lucia" {
   }
 }
 
+export class MagicLinkError extends Error {
+  public readonly code: string;
+  public readonly userMessage: string;
+
+  constructor(code: string, message: string, userMessage: string) {
+    super(message);
+    this.code = code;
+    this.userMessage = userMessage;
+    this.name = 'MagicLinkError';
+  }
+}
+
 interface DatabaseUserAttributes {
   email: string;
   name: string;
@@ -80,7 +92,7 @@ export const validateRequest = cache(
 // Magic Link Authentication Functions
 export async function generateMagicLink(email: string): Promise<string> {
   const token = generateRandomString(32, "abcdefghijklmnopqrstuvwxyz0123456789");
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
 
   // Delete any existing tokens for this email
   await prisma.verificationToken.deleteMany({
@@ -100,8 +112,18 @@ export async function generateMagicLink(email: string): Promise<string> {
 }
 
 export async function sendMagicLink(email: string, name?: string): Promise<void> {
+  console.log('=== MAGIC LINK GENERATION DEBUG ===');
+  console.log('Generating magic link for email:', email);
+
   const token = await generateMagicLink(email);
-  const magicLink = `${process.env.NEXTAUTH_URL}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+  console.log('Generated token:', token);
+  console.log('Token length:', token.length);
+
+  // Use API route for verification to properly handle cookies
+  const magicLink = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}&email=${email}`;
+
+  console.log('Generated magic link:', magicLink);
+  console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
 
   await resend.emails.send({
     from: 'GangRun Printing <noreply@gangrunprinting.com>',
@@ -112,13 +134,42 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
       <p>Hello${name ? ` ${name}` : ''},</p>
       <p>Click the link below to sign in to your account:</p>
       <p><a href="${magicLink}" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Sign In</a></p>
-      <p>This link will expire in 15 minutes.</p>
+      <p>This link will expire in 1 year.</p>
       <p>If you didn't request this, you can safely ignore this email.</p>
     `
   });
 }
 
 export async function verifyMagicLink(token: string, email: string) {
+  console.log('=== MAGIC LINK VERIFICATION DEBUG ===');
+  console.log('Received parameters:');
+  console.log('- Token:', token);
+  console.log('- Email:', email);
+  console.log('- Email length:', email?.length);
+  console.log('- Token length:', token?.length);
+  console.log('- Email encoded:', encodeURIComponent(email));
+
+  // Input validation
+  if (!token || typeof token !== 'string' || token.length !== 32) {
+    console.log('=== VALIDATION FAILED ===');
+    console.log('Invalid token format');
+    throw new MagicLinkError(
+      'INVALID_TOKEN_FORMAT',
+      'Magic link token has invalid format',
+      'This magic link appears to be corrupted. Please request a new one.'
+    );
+  }
+
+  if (!email || typeof email !== 'string' || !email.includes('@')) {
+    console.log('=== VALIDATION FAILED ===');
+    console.log('Invalid email format');
+    throw new MagicLinkError(
+      'INVALID_EMAIL_FORMAT',
+      'Email has invalid format',
+      'This magic link appears to be corrupted. Please request a new one.'
+    );
+  }
+
   const verificationToken = await prisma.verificationToken.findUnique({
     where: {
       identifier_token: {
@@ -128,54 +179,120 @@ export async function verifyMagicLink(token: string, email: string) {
     }
   });
 
-  if (!verificationToken || verificationToken.expires < new Date()) {
-    throw new Error("Invalid or expired token");
-  }
-
-  // Delete the used token
-  await prisma.verificationToken.delete({
-    where: {
-      identifier_token: {
-        identifier: email,
-        token
-      }
-    }
-  });
-
-  // Find or create user
-  let user = await prisma.user.findUnique({
-    where: { email }
-  });
-
-  if (!user) {
-    // Special handling for admin email
-    const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER';
-
-    user = await prisma.user.create({
-      data: {
-        email,
-        name: email.split('@')[0], // Default name from email
-        role,
-        emailVerified: true
-      }
-    });
+  console.log('Database query result:');
+  console.log('- Token found:', !!verificationToken);
+  if (verificationToken) {
+    console.log('- Token expires:', verificationToken.expires);
+    console.log('- Current time:', new Date());
+    console.log('- Is expired:', verificationToken.expires < new Date());
+    console.log('- Token identifier:', verificationToken.identifier);
+    console.log('- Token value:', verificationToken.token);
   } else {
-    // Mark email as verified
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: { emailVerified: true }
-    });
+    console.log('- No token found with identifier:', email, 'and token:', token);
   }
 
-  // Create session
-  const session = await lucia.createSession(user.id, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
+  if (!verificationToken) {
+    console.log('=== VERIFICATION FAILED ===');
+    console.log('Reason: Token not found');
+    throw new MagicLinkError(
+      'TOKEN_NOT_FOUND',
+      'Magic link token not found in database',
+      'This magic link is invalid or has already been used. Please request a new one.'
+    );
+  }
 
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes
-  );
+  if (verificationToken.expires < new Date()) {
+    console.log('=== VERIFICATION FAILED ===');
+    console.log('Reason: Token expired');
+    throw new MagicLinkError(
+      'TOKEN_EXPIRED',
+      'Magic link token has expired',
+      'This magic link has expired. Please request a new one.'
+    );
+  }
+
+  console.log('=== VERIFICATION SUCCESSFUL ===');
+
+  // Delete the used token with error handling
+  try {
+    await prisma.verificationToken.delete({
+      where: {
+        identifier_token: {
+          identifier: email,
+          token
+        }
+      }
+    });
+    console.log('Token successfully deleted from database');
+  } catch (deleteError) {
+    console.error('Warning: Failed to delete verification token:', deleteError);
+    // Don't throw here - user should still be able to authenticate even if cleanup fails
+  }
+
+  // Find or create user with error handling
+  let user;
+  try {
+    user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      console.log('Creating new user for email:', email);
+
+      // Special handling for admin email
+      const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER';
+
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: email.split('@')[0], // Default name from email
+          role,
+          emailVerified: true
+        }
+      });
+
+      console.log('New user created with ID:', user.id);
+    } else {
+      console.log('Existing user found, updating verification status');
+
+      // Mark email as verified
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: true }
+      });
+
+      console.log('User verification status updated');
+    }
+  } catch (userError) {
+    console.error('Database error during user lookup/creation:', userError);
+    throw new MagicLinkError(
+      'USER_CREATION_FAILED',
+      'Failed to create or update user account',
+      'There was a problem with your account. Please try again or contact support.'
+    );
+  }
+
+  // Create session with error handling
+  let session;
+  try {
+    session = await lucia.createSession(user.id, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
+
+    cookies().set(
+      sessionCookie.name,
+      sessionCookie.value,
+      sessionCookie.attributes
+    );
+
+    console.log('Session created successfully:', session.id);
+  } catch (sessionError) {
+    console.error('Failed to create session:', sessionError);
+    throw new MagicLinkError(
+      'SESSION_CREATION_FAILED',
+      'Failed to create user session',
+      'Authentication succeeded but failed to create session. Please try signing in again.'
+    );
+  }
 
   return { user, session };
 }

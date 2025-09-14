@@ -45,6 +45,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "arctic": "^3.7.0",
     "argon2": "^0.31.2",
     "autoprefixer": "^10.4.0",
     "bull": "^4.12.0",

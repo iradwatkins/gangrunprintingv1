@@ -100,6 +100,14 @@
 - **Name**: Ira Watkins
 - **Password**: Iw2006js!
 
+## RECENT FIXES & KNOWN ISSUES
+
+### ✅ FIXED: Magic Link Authentication (2025-09-14)
+- **Issue**: Magic links failing with "expired" error immediately
+- **Root Cause**: Double URL encoding + cookie setting in wrong context
+- **Solution**: Created API route handler at `/api/auth/verify`
+- **Details**: See `/docs/bmad/fixes/magic-link-authentication-fix.md`
+
 ## REMEMBER
 - **NEVER** touch SteppersLife.com or any of its resources
 - **ALWAYS** use Dokploy for deployments
