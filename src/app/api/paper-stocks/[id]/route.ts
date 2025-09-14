@@ -1,21 +1,20 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@clerk/nextjs/server'
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-        const { id } = await params
-    // Temporarily skip auth check
-    // const session = await auth()
-    // if (!session?.user || (session.user as any).role !== 'ADMIN') {
-    //   return NextResponse.json(
-    //     { error: 'Unauthorized' },
-    //     { status: 401 }
-    //   )
-    // }
+    const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
 
     const body = await request.json()
     const { 
@@ -113,14 +112,13 @@ export async function DELETE(
 ) {
   try {
         const { id } = await params
-    // Temporarily skip auth check
-    // const session = await auth()
-    // if (!session?.user || (session.user as any).role !== 'ADMIN') {
-    //   return NextResponse.json(
-    //     { error: 'Unauthorized' },
-    //     { status: 401 }
-    //   )
-    // }
+    const { user, session } = await validateRequest()
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
 
     // Check if paper stock is being used by products
     const productsCount = await prisma.productPaperStock.count({

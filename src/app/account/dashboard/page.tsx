@@ -1,5 +1,5 @@
-import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -64,13 +64,13 @@ async function getUserDashboardData(userId: string) {
 }
 
 export default async function DashboardPage() {
-  const { userId } = await auth()
+  const { user, session } = await validateRequest()
   
-  if (!userId) {
+  if (!user?.id) {
     redirect('/sign-in')
   }
 
-  const dashboardData = await getUserDashboardData(userId)
+  const dashboardData = await getUserDashboardData(user.id)
 
   return (
     <AccountWrapper>

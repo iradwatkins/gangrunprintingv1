@@ -1,20 +1,22 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { 
-  uploadFile, 
-  getPresignedUploadUrl, 
+import { validateRequest } from '@/lib/auth'
+import {
+  uploadFile,
+  getPresignedUploadUrl,
   BUCKETS,
-  initializeBuckets 
+  initializeBuckets
 } from '@/lib/minio-client'
 import { randomUUID } from 'crypto'
 
-// Initialize buckets on startup
-initializeBuckets().catch(console.error)
+// Initialize buckets on startup only if MinIO config is available
+if (process.env.MINIO_ENDPOINT && process.env.MINIO_ACCESS_KEY) {
+  initializeBuckets().catch(console.error)
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Get form data
     const formData = await request.formData()
@@ -108,7 +110,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     const searchParams = request.nextUrl.searchParams
     const action = searchParams.get('action')
     const filename = searchParams.get('filename')

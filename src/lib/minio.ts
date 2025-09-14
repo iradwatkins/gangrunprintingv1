@@ -3,9 +3,9 @@ import * as Minio from 'minio'
 const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_ENDPOINT || 'localhost',
   port: parseInt(process.env.MINIO_PORT || '9000'),
-  useSSL: process.env.NODE_ENV === 'production',
-  accessKey: process.env.MINIO_ROOT_USER!,
-  secretKey: process.env.MINIO_ROOT_PASSWORD!,
+  useSSL: process.env.MINIO_USE_SSL === 'true',
+  accessKey: process.env.MINIO_ACCESS_KEY || process.env.MINIO_ROOT_USER!,
+  secretKey: process.env.MINIO_SECRET_KEY || process.env.MINIO_ROOT_PASSWORD!,
 })
 
 const BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'printshop-files'
@@ -24,30 +24,56 @@ export async function ensureBucket() {
 }
 
 export async function uploadFile(
-  fileName: string,
-  buffer: Buffer,
-  metadata: Record<string, string> = {}
+  bucketOrFileName: string,
+  objectNameOrBuffer?: string | Buffer,
+  bufferOrMetadata?: Buffer | Record<string, string>,
+  metadata?: Record<string, string>
 ) {
   try {
-    await ensureBucket()
-    
-    const objectName = `${Date.now()}-${fileName}`
-    
+    // Handle both signatures for backward compatibility
+    let bucket: string
+    let objectName: string
+    let buffer: Buffer
+    let meta: Record<string, string>
+
+    if (typeof objectNameOrBuffer === 'string' && Buffer.isBuffer(bufferOrMetadata)) {
+      // New signature: uploadFile(bucket, objectName, buffer, metadata)
+      bucket = bucketOrFileName
+      objectName = objectNameOrBuffer
+      buffer = bufferOrMetadata
+      meta = metadata || {}
+    } else if (Buffer.isBuffer(objectNameOrBuffer)) {
+      // Old signature: uploadFile(fileName, buffer, metadata)
+      bucket = BUCKET_NAME
+      objectName = `${Date.now()}-${bucketOrFileName}`
+      buffer = objectNameOrBuffer
+      meta = (bufferOrMetadata as Record<string, string>) || {}
+      await ensureBucket()
+    } else {
+      throw new Error('Invalid arguments to uploadFile')
+    }
+
+    // Ensure bucket exists
+    const exists = await minioClient.bucketExists(bucket)
+    if (!exists) {
+      await minioClient.makeBucket(bucket, 'us-east-1')
+    }
+
     await minioClient.putObject(
-      BUCKET_NAME,
+      bucket,
       objectName,
       buffer,
       buffer.length,
-      metadata
+      meta
     )
-    
+
     // Generate a presigned URL for accessing the file
     const url = await minioClient.presignedGetObject(
-      BUCKET_NAME,
+      bucket,
       objectName,
       24 * 60 * 60 * 7 // 7 days expiry
     )
-    
+
     return {
       objectName,
       url,
@@ -105,6 +131,42 @@ export async function getFileMetadata(objectName: string) {
     return stat
   } catch (error) {
     console.error('Error getting file metadata:', error)
+    throw error
+  }
+}
+
+export async function initializeBuckets() {
+  const buckets = ['gangrun-uploads', 'gangrun-products']
+
+  for (const bucket of buckets) {
+    try {
+      const exists = await minioClient.bucketExists(bucket)
+      if (!exists) {
+        await minioClient.makeBucket(bucket, 'us-east-1')
+        console.log(`Bucket ${bucket} created successfully`)
+      }
+    } catch (error) {
+      console.error(`Error creating bucket ${bucket}:`, error)
+    }
+  }
+}
+
+export async function getPresignedUploadUrl(bucket: string, objectName: string, expiry: number = 3600) {
+  try {
+    const url = await minioClient.presignedPutObject(bucket, objectName, expiry)
+    return url
+  } catch (error) {
+    console.error('Error generating presigned upload URL:', error)
+    throw error
+  }
+}
+
+export async function getPresignedDownloadUrl(bucket: string, objectName: string, expiry: number = 3600) {
+  try {
+    const url = await minioClient.presignedGetObject(bucket, objectName, expiry)
+    return url
+  } catch (error) {
+    console.error('Error generating presigned download URL:', error)
     throw error
   }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Bell, Search, User, Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,20 +13,53 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-// import { useUser, useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { useRouter } from 'next/navigation'
 
 export function AdminHeader() {
-  // const { user, isLoaded } = useUser()
-  // const { signOut } = useClerk()
-  // TODO: Replace with Lucia auth
-  const user = null
-  const isLoaded = true
-  const signOut = async () => {}
   const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Check user authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const userData = await response.json()
+          setUser(userData.user)
+        } else {
+          setUser(null)
+          // Redirect non-authenticated users
+          router.push('/auth/signin')
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setUser(null)
+        router.push('/auth/signin')
+      } finally {
+        setIsLoaded(true)
+      }
+    }
+
+    checkAuth()
+  }, [])
 
   const handleLogout = async () => {
-    await signOut() // TODO: Implement with Lucia auth
+    try {
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        setUser(null)
+        router.push('/auth/signin')
+      } else {
+        console.error('Failed to sign out')
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
   }
 
   // Get user initials for avatar
@@ -68,9 +102,9 @@ export function AdminHeader() {
           <DropdownMenuTrigger asChild>
             <Button className="relative h-8 w-8 rounded-full" variant="ghost">
               <Avatar className="h-8 w-8">
-                <AvatarImage alt={user?.fullName || 'Admin'} src={user?.imageUrl || undefined} />
+                <AvatarImage alt={user?.name || 'Admin'} src={undefined} />
                 <AvatarFallback>
-                  {getInitials(user?.fullName, user?.primaryEmailAddress?.emailAddress)}
+                  {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -79,12 +113,12 @@ export function AdminHeader() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {user?.fullName || 'Admin User'}
+                  {user?.name || 'Admin User'}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user?.primaryEmailAddress?.emailAddress || 'Loading...'}
+                  {user?.email || 'Loading...'}
                 </p>
-                {user?.publicMetadata?.role === 'ADMIN' && (
+                {user?.role === 'ADMIN' && (
                   <p className="text-xs text-primary font-medium mt-1">
                     Administrator
                   </p>

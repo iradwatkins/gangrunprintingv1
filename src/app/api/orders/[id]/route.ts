@@ -1,5 +1,5 @@
+import { validateRequest } from "@/lib/auth"
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     const { id } = await params
 
     // Get order with user check for security
@@ -15,7 +15,7 @@ export async function GET(
       where: {
         AND: [
           { id },
-          session?.user?.id ? { userId: session.user.id } : { email: session?.user?.email || '' }
+          user ? { userId: user.id } : { email: user?.email || '' }
         ]
       },
       include: {
@@ -45,10 +45,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Check if user is admin
-    if (session?.user?.role !== 'ADMIN') {
+    if (user?.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

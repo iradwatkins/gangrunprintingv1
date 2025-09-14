@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import sgMail from '@sendgrid/mail'
+import { sendEmail, emailTemplates } from '@/lib/resend'
 import { prisma } from '@/lib/prisma'
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
 
 export async function POST(request: NextRequest) {
   try {

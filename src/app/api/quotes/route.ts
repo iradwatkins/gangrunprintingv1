@@ -1,14 +1,14 @@
+import { validateRequest } from "@/lib/auth"
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
 import { type QuoteStatus } from '@prisma/client';
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -54,10 +54,14 @@ export async function GET(request: NextRequest) {
 
     // List quotes
     const whereClause: Record<string, any> = {};
-    
-    // For now, users see only their quotes
-    // TODO: Add admin role check with Clerk
-    whereClause.userId = userId;
+
+    // Admin users can see all quotes, regular users see only their quotes
+    if (user?.role === 'ADMIN') {
+      // Admin can see all quotes - no userId filter
+    } else {
+      // Regular users only see their own quotes
+      whereClause.userId = userId;
+    }
 
     // Filter by status if provided
     if (status) {
@@ -92,9 +96,9 @@ export async function GET(request: NextRequest) {
 // CREATE a new quote
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -161,9 +165,9 @@ export async function POST(request: NextRequest) {
 // UPDATE quote status or convert to order
 export async function PUT(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

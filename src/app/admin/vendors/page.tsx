@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Package } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Package, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -331,6 +332,14 @@ export default function VendorsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
+                      <Link href={`/admin/vendors/${vendor.id}`}>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         size="icon"
                         variant="ghost"

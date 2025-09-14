@@ -5,7 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { 
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   ArrowLeft,
   Package,
   User,
@@ -21,52 +30,188 @@ import {
   AlertCircle,
   Printer,
   Download,
-  MessageSquare
+  MessageSquare,
+  XCircle,
+  RefreshCw,
+  CreditCard,
+  Edit,
+  ChevronRight,
+  Eye,
+  Factory,
+  UserCheck
 } from 'lucide-react'
+import { VendorAssignment } from '@/components/admin/vendor-assignment'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 async function getOrder(id: string) {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      OrderItem: true,
-      StatusHistory: {
-        orderBy: { createdAt: 'desc' }
+      user: true,
+      vendor: true,
+      OrderItem: {
+        include: {
+          product: true
+        }
       },
-      Notification: {
-        orderBy: { createdAt: 'desc' }
-      }
+      Payment: true
     }
   })
 
   return order
 }
 
-const statusConfig: Record<string, { color: string; icon: any }> = {
-  PENDING_PAYMENT: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  PAID: { color: 'bg-blue-100 text-blue-800', icon: CheckCircle },
-  PROCESSING: { color: 'bg-purple-100 text-purple-800', icon: Package },
-  PRINTING: { color: 'bg-orange-100 text-orange-800', icon: Printer },
-  READY_FOR_PICKUP: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  SHIPPED: { color: 'bg-indigo-100 text-indigo-800', icon: Truck },
-  DELIVERED: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  CANCELLED: { color: 'bg-red-100 text-red-800', icon: AlertCircle },
-  REFUNDED: { color: 'bg-gray-100 text-gray-800', icon: AlertCircle }
+async function getVendors() {
+  const vendors = await prisma.vendor.findMany({
+    where: { isActive: true },
+    orderBy: { name: 'asc' }
+  })
+  return vendors
+}
+
+const statusConfig: Record<string, { label: string; color: string; icon: any; next?: string[] }> = {
+  PENDING_PAYMENT: {
+    label: 'Pending Payment',
+    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+    icon: Clock,
+    next: ['PAID', 'CANCELLED']
+  },
+  PAID: {
+    label: 'Paid',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+    icon: DollarSign,
+    next: ['PROCESSING', 'REFUNDED']
+  },
+  PROCESSING: {
+    label: 'Processing',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+    icon: Package,
+    next: ['PRINTING', 'CANCELLED']
+  },
+  PRINTING: {
+    label: 'Printing',
+    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+    icon: Printer,
+    next: ['QUALITY_CHECK', 'PROCESSING']
+  },
+  QUALITY_CHECK: {
+    label: 'Quality Check',
+    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
+    icon: CheckCircle,
+    next: ['PACKAGING', 'PRINTING']
+  },
+  PACKAGING: {
+    label: 'Packaging',
+    color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
+    icon: Package,
+    next: ['SHIPPED']
+  },
+  SHIPPED: {
+    label: 'Shipped',
+    color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
+    icon: Truck,
+    next: ['DELIVERED']
+  },
+  DELIVERED: {
+    label: 'Delivered',
+    color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
+    icon: CheckCircle,
+    next: []
+  },
+  CANCELLED: {
+    label: 'Cancelled',
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+    icon: XCircle,
+    next: []
+  },
+  REFUNDED: {
+    label: 'Refunded',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+    icon: AlertCircle,
+    next: []
+  }
+}
+
+// Generate order timeline based on order status
+function getOrderTimeline(order: any) {
+  const timeline = []
+  const currentStatus = order.status
+
+  // Always show order placed
+  timeline.push({
+    status: 'Order Placed',
+    date: order.createdAt,
+    description: `Order ${order.orderNumber} was placed`,
+    icon: Package,
+    completed: true
+  })
+
+  // Payment status
+  if (order.status !== 'PENDING_PAYMENT') {
+    timeline.push({
+      status: 'Payment Received',
+      date: order.createdAt, // In real app, would have separate payment date
+      description: 'Payment was successfully processed',
+      icon: DollarSign,
+      completed: true
+    })
+  }
+
+  // Add current status if beyond payment
+  const statusFlow = ['PROCESSING', 'PRINTING', 'QUALITY_CHECK', 'PACKAGING', 'SHIPPED', 'DELIVERED']
+  const currentIndex = statusFlow.indexOf(currentStatus)
+
+  if (currentIndex >= 0) {
+    statusFlow.slice(0, currentIndex + 1).forEach((status, index) => {
+      const config = statusConfig[status]
+      timeline.push({
+        status: config.label,
+        date: order.updatedAt, // In real app, would track each status change
+        description: `Order is ${config.label.toLowerCase()}`,
+        icon: config.icon,
+        completed: index < currentIndex || status === currentStatus
+      })
+    })
+  }
+
+  // Handle cancelled/refunded
+  if (currentStatus === 'CANCELLED' || currentStatus === 'REFUNDED') {
+    const config = statusConfig[currentStatus]
+    timeline.push({
+      status: config.label,
+      date: order.updatedAt,
+      description: `Order was ${config.label.toLowerCase()}`,
+      icon: config.icon,
+      completed: true
+    })
+  }
+
+  return timeline
 }
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
-  const order = await getOrder(params.id)
+  const [order, vendors] = await Promise.all([
+    getOrder(params.id),
+    getVendors()
+  ])
 
   if (!order) {
     notFound()
   }
 
-  const StatusIcon = statusConfig[order.status]?.icon || Package
+  const status = statusConfig[order.status] || statusConfig.PENDING_PAYMENT
+  const StatusIcon = status.icon
+  const timeline = getOrderTimeline(order)
   const shippingAddress = order.shippingAddress as any
   const billingAddress = order.billingAddress as any
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/orders">
             <Button variant="ghost" size="icon">
@@ -74,287 +219,374 @@ export default async function OrderDetailPage({ params }: { params: { id: string
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Order #{order.orderNumber}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Order {order.orderNumber}
+            </h1>
             <p className="text-muted-foreground">
-              Created on {new Date(order.createdAt).toLocaleDateString()}
+              Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
+          <Button variant="outline" size="sm" disabled>
+            <Download className="h-4 w-4 mr-2" />
+            Download Invoice
           </Button>
-          <Button variant="outline">
-            <Printer className="mr-2 h-4 w-4" />
-            Print
+          <Button variant="outline" size="sm" disabled>
+            <Printer className="h-4 w-4 mr-2" />
+            Print Order
           </Button>
-          <Button>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Contact Customer
+          <Button variant="outline" size="sm" disabled>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Order
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Order Status */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Order Status</CardTitle>
-                <Badge className={statusConfig[order.status]?.color || 'bg-gray-100 text-gray-800'}>
-                  <StatusIcon className="mr-1 h-3 w-3" />
-                  {order.status.replace(/_/g, ' ')}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Reference Number:</span>
-                  <span className="font-medium">{order.referenceNumber || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Payment Status:</span>
-                  <span className="font-medium">
-                    {order.status === 'PENDING_PAYMENT' ? 'Pending' : 'Paid'}
-                  </span>
-                </div>
-                {order.trackingNumber && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tracking Number:</span>
-                    <span className="font-medium">{order.trackingNumber}</span>
-                  </div>
-                )}
-                {order.carrier && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Carrier:</span>
-                    <span className="font-medium">{order.carrier}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+      {/* Status Alert */}
+      {order.status === 'PENDING_PAYMENT' && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            This order is awaiting payment. The customer has been notified to complete payment.
+          </AlertDescription>
+        </Alert>
+      )}
 
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column - Order Details */}
+        <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <Card>
             <CardHeader>
               <CardTitle>Order Items</CardTitle>
-              <CardDescription>
-                {order.OrderItem.length} item(s) in this order
-              </CardDescription>
+              <CardDescription>Products in this order</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {order.OrderItem.map((item, index) => (
-                  <div key={item.id}>
-                    {index > 0 && <Separator className="mb-4" />}
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-muted-foreground">
-                          SKU: {item.productSku}
-                        </p>
-                        {item.options && (
-                          <div className="mt-2 text-sm">
-                            {Object.entries(item.options as any).map(([key, value]) => (
-                              <div key={key} className="flex gap-2">
-                                <span className="text-muted-foreground capitalize">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Configuration</TableHead>
+                    <TableHead className="text-right">Quantity</TableHead>
+                    <TableHead className="text-right">Unit Price</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {order.OrderItem.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{item.product?.name || 'Product Deleted'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            SKU: {item.product?.sku || 'N/A'}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {item.configuration ? (
+                          <div className="text-sm">
+                            {Object.entries(item.configuration as any).map(([key, value]) => (
+                              <div key={key}>
+                                <span className="font-medium capitalize">
                                   {key.replace(/_/g, ' ')}:
-                                </span>
-                                <span>{String(value)}</span>
+                                </span> {String(value)}
                               </div>
                             ))}
                           </div>
+                        ) : (
+                          <span className="text-muted-foreground">Standard</span>
                         )}
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          ${((item.price * item.quantity) / 100).toFixed(2)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Qty: {item.quantity} × ${(item.price / 100).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      </TableCell>
+                      <TableCell className="text-right">{item.quantity}</TableCell>
+                      <TableCell className="text-right">
+                        ${(item.price / 100).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        ${((item.price * item.quantity) / 100).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
 
-              <Separator className="my-4" />
-
-              {/* Order Summary */}
-              <div className="space-y-2">
+              {/* Order Totals */}
+              <div className="mt-6 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
+                  <span>Subtotal</span>
                   <span>${(order.subtotal / 100).toFixed(2)}</span>
                 </div>
-                {order.tax > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span>Tax:</span>
-                    <span>${(order.tax / 100).toFixed(2)}</span>
-                  </div>
-                )}
                 {order.shipping > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span>Shipping:</span>
+                    <span>Shipping</span>
                     <span>${(order.shipping / 100).toFixed(2)}</span>
                   </div>
                 )}
+                {order.tax > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span>Tax</span>
+                    <span>${(order.tax / 100).toFixed(2)}</span>
+                  </div>
+                )}
                 <Separator />
-                <div className="flex justify-between font-semibold">
-                  <span>Total:</span>
+                <div className="flex justify-between font-medium text-lg">
+                  <span>Total</span>
                   <span>${(order.total / 100).toFixed(2)}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Status History */}
-          {order.StatusHistory.length > 0 && (
+          {/* Customer Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Customer Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Customer</p>
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span>{order.user?.name || 'Guest Customer'}</span>
+                  </div>
+                  {order.user && (
+                    <Link href={`/admin/customers/${order.user.id}`} className="inline-block mt-2">
+                      <Button variant="outline" size="sm">
+                        View Profile
+                        <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Contact</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{order.user?.email || 'No email'}</span>
+                    </div>
+                    {shippingAddress?.phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{shippingAddress.phone}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                    <MapPin className="inline h-4 w-4 mr-1" />
+                    Shipping Address
+                  </p>
+                  {shippingAddress ? (
+                    <div className="text-sm space-y-1">
+                      <p className="font-medium">{shippingAddress.name}</p>
+                      <p>{shippingAddress.street}</p>
+                      <p>
+                        {shippingAddress.city}, {shippingAddress.state} {shippingAddress.zipCode}
+                      </p>
+                      <p>{shippingAddress.country}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No shipping address</p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                    <CreditCard className="inline h-4 w-4 mr-1" />
+                    Billing Address
+                  </p>
+                  {billingAddress ? (
+                    <div className="text-sm space-y-1">
+                      <p className="font-medium">{billingAddress.name}</p>
+                      <p>{billingAddress.street}</p>
+                      <p>
+                        {billingAddress.city}, {billingAddress.state} {billingAddress.zipCode}
+                      </p>
+                      <p>{billingAddress.country}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Same as shipping address</p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Order Notes */}
+          {order.notes && (
             <Card>
               <CardHeader>
-                <CardTitle>Status History</CardTitle>
-                <CardDescription>
-                  Track all status changes for this order
-                </CardDescription>
+                <CardTitle>Customer Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {order.StatusHistory.map((history, index) => (
-                    <div key={history.id} className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">
-                            {history.fromStatus ? `${history.fromStatus} → ` : ''}
-                            {history.toStatus}
-                          </p>
-                          <span className="text-xs text-muted-foreground">
-                            by {history.changedBy}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(history.createdAt).toLocaleString()}
-                        </p>
-                        {history.notes && (
-                          <p className="text-sm mt-1">{history.notes}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-sm">{order.notes}</p>
               </CardContent>
             </Card>
           )}
         </div>
 
-        {/* Sidebar */}
+        {/* Right Column - Status and Timeline */}
         <div className="space-y-6">
-          {/* Customer Information */}
+          {/* Order Status */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Customer Information
-              </CardTitle>
+              <CardTitle>Order Status</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{order.email}</span>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Badge className={`${status.color} gap-1 px-3 py-1`}>
+                  <StatusIcon className="h-4 w-4" />
+                  {status.label}
+                </Badge>
+                <Button size="sm" variant="outline" disabled>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Update
+                </Button>
               </div>
-              {order.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{order.phone}</span>
-                </div>
-              )}
-              {order.userId && (
-                <Link href={`/admin/customers/${order.userId}`}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    View Customer Profile
-                  </Button>
-                </Link>
-              )}
             </CardContent>
           </Card>
 
-          {/* Shipping Address */}
-          {shippingAddress && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Shipping Address
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm space-y-1">
-                  <p>{shippingAddress.name || order.email}</p>
-                  <p className="text-muted-foreground">
-                    {shippingAddress.street}<br />
-                    {shippingAddress.city}, {shippingAddress.state} {shippingAddress.zip}<br />
-                    {shippingAddress.country || 'United States'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Vendor Assignment */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Factory className="h-5 w-5" />
+                Vendor Assignment
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VendorAssignment
+                order={order}
+                vendors={vendors}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Payment Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Method</span>
+                <span className="text-sm font-medium">
+                  {order.paymentMethod || 'Not specified'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Status</span>
+                <Badge variant={order.status === 'PENDING_PAYMENT' ? 'secondary' : 'default'}>
+                  {order.status === 'PENDING_PAYMENT' ? 'Pending' : 'Paid'}
+                </Badge>
+              </div>
+              {order.Payment && order.Payment.length > 0 && (
+                <>
+                  <Separator />
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Transaction ID</span>
+                    <span className="text-xs font-mono">
+                      {order.Payment[0].transactionId?.substring(0, 12)}...
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Amount</span>
+                    <span className="text-sm font-medium">
+                      ${(order.Payment[0].amount / 100).toFixed(2)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Order Timeline */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Timeline
-              </CardTitle>
+              <CardTitle>Order Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span>{new Date(order.createdAt).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Updated:</span>
-                  <span>{new Date(order.updatedAt).toLocaleDateString()}</span>
-                </div>
-                {order.paidAt && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Paid:</span>
-                    <span>{new Date(order.paidAt).toLocaleDateString()}</span>
-                  </div>
-                )}
-                {order.estimatedDelivery && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Est. Delivery:</span>
-                    <span>{new Date(order.estimatedDelivery).toLocaleDateString()}</span>
-                  </div>
-                )}
+              <div className="space-y-4">
+                {timeline.map((event, index) => {
+                  const EventIcon = event.icon
+                  return (
+                    <div key={index} className="flex gap-3">
+                      <div className="relative flex flex-col items-center">
+                        <div className={`rounded-full p-2 ${
+                          event.completed
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          <EventIcon className="h-4 w-4" />
+                        </div>
+                        {index < timeline.length - 1 && (
+                          <div className={`w-0.5 h-16 mt-2 ${
+                            event.completed ? 'bg-primary' : 'bg-muted'
+                          }`} />
+                        )}
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <p className="font-medium text-sm">{event.status}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {event.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(event.date).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
 
-          {/* Admin Notes */}
+          {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Admin Notes
-              </CardTitle>
+              <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent>
-              <textarea
-                className="w-full min-h-[100px] p-2 text-sm border rounded-md"
-                placeholder="Add internal notes about this order..."
-                defaultValue={order.adminNotes || ''}
-              />
-              <Button size="sm" className="mt-2">
-                Save Notes
+            <CardContent className="space-y-2">
+              <Button className="w-full justify-start" variant="outline" disabled>
+                <Mail className="h-4 w-4 mr-2" />
+                Send Email to Customer
               </Button>
+              <Button className="w-full justify-start" variant="outline" disabled>
+                <FileText className="h-4 w-4 mr-2" />
+                Generate Invoice
+              </Button>
+              <Button className="w-full justify-start" variant="outline" disabled>
+                <Truck className="h-4 w-4 mr-2" />
+                Update Tracking
+              </Button>
+              {order.status !== 'CANCELLED' && order.status !== 'REFUNDED' && (
+                <Button className="w-full justify-start" variant="outline" disabled>
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Cancel Order
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>

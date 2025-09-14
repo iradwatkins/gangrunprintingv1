@@ -1,6 +1,6 @@
+import { validateRequest } from "@/lib/auth"
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
 import { OrderStatus } from '@prisma/client';
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management';
 import { N8NWorkflows } from '@/lib/n8n';
@@ -8,7 +8,7 @@ import { N8NWorkflows } from '@/lib/n8n';
 // Update order status
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
+    const { user, session } = await validateRequest();
     
     // Only admins can update order status
     if (!session?.user || session.user.role !== 'ADMIN') {
@@ -148,7 +148,7 @@ export async function PUT(request: NextRequest) {
 // Get order status history
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
+    const { user, session } = await validateRequest();
     
     if (!session?.user) {
       return NextResponse.json(

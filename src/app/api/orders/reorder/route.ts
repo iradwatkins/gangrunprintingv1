@@ -1,11 +1,11 @@
+import { validateRequest } from "@/lib/auth"
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
 
 // Re-order functionality - creates a new cart from previous order
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const { user, session } = await validateRequest();
     
     if (!session?.user) {
       return NextResponse.json(
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 // Get re-orderable items for a user
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
+    const { user, session } = await validateRequest();
     
     if (!session?.user) {
       return NextResponse.json(
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
 
     const orders = await prisma.order.findMany({
       where: {
-        userId: session.user.id,
+        userId: user.id,
         status: 'DELIVERED',
         createdAt: {
           gte: oneYearAgo

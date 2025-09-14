@@ -1,22 +1,45 @@
 'use client'
 
-// import { useUser } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import AccountSidebar from './account-sidebar'
 
 export default function AccountWrapper({ children }: { children: React.ReactNode }) {
-  // const { user, isLoaded, isSignedIn } = useUser()
-  // TODO: Replace with Lucia auth
-  const user = null
-  const isLoaded = true
-  const isSignedIn = false
   const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isSignedIn, setIsSignedIn] = useState(false)
 
+  // Check user authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const userData = await response.json()
+          setUser(userData.user)
+          setIsSignedIn(!!userData.user)
+        } else {
+          setUser(null)
+          setIsSignedIn(false)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setUser(null)
+        setIsSignedIn(false)
+      } finally {
+        setIsLoaded(true)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  // Redirect if not authenticated
   useEffect(() => {
     if (!isLoaded) return
     if (!isSignedIn) {
-      router.push('/sign-in?redirectUrl=' + window.location.pathname)
+      router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
     }
   }, [isSignedIn, isLoaded, router])
 

@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -35,6 +36,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable} font-sans`}>
+        <GoogleAnalytics />
         <OfflineIndicator />
         <Providers>{children}</Providers>
         <InstallPrompt />

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { Suspense, useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Search, Filter, ChevronDown, Grid3x3, List, SlidersHorizontal, X, ArrowUpDown, Package } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -140,7 +141,8 @@ const sortOptions = [
 const turnaroundOptions = ['3-5 business days', '5-7 business days', '7-10 business days']
 const finishOptions = ['Matte', 'Gloss', 'UV Coating', 'Vinyl', 'Screen Print', 'DTG']
 
-export default function ProductsPage() {
+function ProductsPageContent() {
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedTurnarounds, setSelectedTurnarounds] = useState<string[]>([])
@@ -150,6 +152,27 @@ export default function ProductsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+
+  // Handle URL search parameters
+  useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    if (categoryParam) {
+      // Map URL category to display category name
+      const categoryMap: Record<string, string> = {
+        'business-cards': 'Marketing Materials',
+        'flyers': 'Marketing Materials',
+        'banners': 'Large Format',
+        'stickers': 'Marketing Materials',
+        'apparel': 'Apparel',
+        'postcards': 'Marketing Materials'
+      }
+
+      const displayCategory = categoryMap[categoryParam]
+      if (displayCategory && !selectedCategories.includes(displayCategory)) {
+        setSelectedCategories([displayCategory])
+      }
+    }
+  }, [searchParams])
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -618,5 +641,35 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1 space-y-6">
+              <div className="h-8 bg-muted rounded animate-pulse" />
+              <div className="space-y-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-4 bg-muted rounded animate-pulse" />
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-80 bg-muted rounded animate-pulse" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <ProductsPageContent />
+    </Suspense>
   )
 }

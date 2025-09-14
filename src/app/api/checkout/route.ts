@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createSquareCheckout, createOrUpdateSquareCustomer, createSquareOrder } from '@/lib/square'
-import { auth } from '@clerk/nextjs/server'
-import { sendEmail } from '@/lib/sendgrid'
+import { sendEmail } from '@/lib/resend'
 import { getOrderConfirmationEmail } from '@/lib/email-templates'
 import { N8NWorkflows } from '@/lib/n8n'
 
@@ -14,7 +14,7 @@ function generateOrderNumber(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const { user, session } = await validateRequest()
     const data = await request.json()
     
     const {

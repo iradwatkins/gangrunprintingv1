@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square'
 import { prisma } from '@/lib/prisma'
 import { CartItem } from '@/lib/cart-types'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     const body = await request.json()
     
     const {
@@ -36,7 +35,7 @@ export async function POST(request: NextRequest) {
       data: {
         orderNumber,
         referenceNumber: orderNumber,
-        userId: session?.user?.id || null,
+        userId: user?.id || null,
         email: customerInfo.email,
         phone: customerInfo.phone,
         subtotal,

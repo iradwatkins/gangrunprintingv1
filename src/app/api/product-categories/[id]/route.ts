@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/product-categories/[id] - Get single category
@@ -52,7 +51,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -107,7 +106,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },

@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-// import { useUser, useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
+import { usePathname, useRouter } from 'next/navigation'
 import { 
   Menu, 
   X, 
@@ -75,16 +74,38 @@ const productCategories = [
 
 export default function Header() {
   const pathname = usePathname()
-  // const { user, isLoaded, isSignedIn } = useUser()
-  // const { signOut } = useClerk()
-  // TODO: Replace with Lucia auth
-  const user = null
-  const isLoaded = true
-  const isSignedIn = false
-  const signOut = () => {}
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isSignedIn, setIsSignedIn] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
   
+  // Check user authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const userData = await response.json()
+          setUser(userData.user)
+          setIsSignedIn(!!userData.user)
+        } else {
+          setUser(null)
+          setIsSignedIn(false)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setUser(null)
+        setIsSignedIn(false)
+      } finally {
+        setIsLoaded(true)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
   useEffect(() => {
     // Check if PWA install prompt is available
     const checkInstallPrompt = () => {
@@ -92,24 +113,39 @@ export default function Header() {
         setShowInstallOption(true)
       }
     }
-    
+
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       ;(window as any).deferredPrompt = e
       setShowInstallOption(true)
     }
-    
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     checkInstallPrompt()
-    
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     }
   }, [])
   
-  const handleSignOut = () => {
-    signOut() // TODO: Implement with Lucia auth
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        setUser(null)
+        setIsSignedIn(false)
+        router.refresh()
+        router.push('/')
+      } else {
+        console.error('Failed to sign out')
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
   }
 
   const handleInstallApp = async () => {
@@ -233,7 +269,7 @@ export default function Header() {
                 {isSignedIn ? (
                   <>
                     <DropdownMenuLabel>
-                      {user?.primaryEmailAddress?.emailAddress || 'My Account'}
+                      {user?.email || 'My Account'}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -298,13 +334,13 @@ export default function Header() {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/sign-in">
+                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
                         <User className="h-4 w-4" />
                         Sign In
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/sign-up">
+                      <Link className="cursor-pointer flex items-center gap-2" href="/auth/signin">
                         <User className="h-4 w-4" />
                         Create Account
                       </Link>
@@ -406,7 +442,7 @@ export default function Header() {
                     {isSignedIn ? (
                       <>
                         <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
-                          {user?.primaryEmailAddress?.emailAddress}
+                          {user?.email}
                         </div>
                         <Link href="/account/dashboard" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
@@ -471,13 +507,13 @@ export default function Header() {
                       </>
                     ) : (
                       <>
-                        <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
                             <User className="mr-2 h-4 w-4" />
                             Sign In
                           </Button>
                         </Link>
-                        <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
                           <Button className="w-full justify-start" variant="ghost">
                             <User className="mr-2 h-4 w-4" />
                             Create Account
