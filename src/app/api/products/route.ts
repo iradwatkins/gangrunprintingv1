@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/products - List all products
@@ -86,7 +85,7 @@ export async function GET(request: NextRequest) {
 // POST /api/products - Create new product
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },

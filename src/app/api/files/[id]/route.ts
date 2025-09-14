@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { 
   getPresignedDownloadUrl,
@@ -14,7 +14,7 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Get file record from database
     const file = await prisma.file.findUnique({
@@ -79,7 +79,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Only admins can delete files
     if ((session?.user as any)?.role !== 'ADMIN') {

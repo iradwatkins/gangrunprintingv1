@@ -1,11 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { uploadProductImage, validateImage } from '@/lib/minio-products'
 
 // POST /api/products/upload-image - Upload product image
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },

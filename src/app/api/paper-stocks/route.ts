@@ -83,14 +83,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Temporarily skip auth check
-    // const session = await auth()
-    // if (!session?.user || (session.user as any).role !== 'ADMIN') {
-    //   return NextResponse.json(
-    //     { error: 'Unauthorized' },
-    //     { status: 401 }
-    //   )
-    // }
+    const { user, session } = await validateRequest()
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
 
     const body = await request.json()
     const { 

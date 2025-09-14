@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { sendNotificationToUser, NotificationTypes } from '@/lib/notifications'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
 
     if (!session?.user?.id) {
       return NextResponse.json(

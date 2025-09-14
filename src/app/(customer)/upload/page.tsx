@@ -42,16 +42,45 @@ export default function UploadPage() {
     }))
 
     setFiles(prev => [...prev, ...newFiles])
-    
-    // Simulate upload
-    newFiles.forEach((file, index) => {
-      setTimeout(() => {
-        setFiles(prev => prev.map(f => 
-          f.id === file.id 
-            ? { ...f, progress: 100, status: 'completed' }
+
+    // Upload files to the API
+    newFiles.forEach(async (uploadFile, index) => {
+      try {
+        const file = Array.from(fileList)[index]
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('fileType', 'design')
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          setFiles(prev => prev.map(f =>
+            f.id === uploadFile.id
+              ? { ...f, progress: 100, status: 'completed' }
+              : f
+          ))
+          toast.success(`${file.name} uploaded successfully!`)
+        } else {
+          const error = await response.json()
+          setFiles(prev => prev.map(f =>
+            f.id === uploadFile.id
+              ? { ...f, status: 'error' }
+              : f
+          ))
+          toast.error(`Failed to upload ${file.name}: ${error.error || 'Unknown error'}`)
+        }
+      } catch (error) {
+        setFiles(prev => prev.map(f =>
+          f.id === uploadFile.id
+            ? { ...f, status: 'error' }
             : f
         ))
-      }, (index + 1) * 1000)
+        toast.error(`Failed to upload ${uploadFile.name}: Network error`)
+      }
     })
   }
 
@@ -108,13 +137,13 @@ export default function UploadPage() {
               multiple
               onChange={handleFileInput}
               className="hidden"
-              accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+              accept=".pdf,.jpg,.jpeg,.png,.svg,.ai,.psd"
             />
             
             <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <p className="text-lg mb-2">Drag & drop files here, or click to select</p>
             <p className="text-sm text-gray-500 mb-4">
-              Support for PDF, PNG, JPG, DOC, DOCX (Max 100MB per file)
+              Support for PDF, JPG, PNG, SVG, AI, PSD (Max 100MB per file)
             </p>
             <Button onClick={() => fileInputRef.current?.click()}>
               Select Files
@@ -145,6 +174,13 @@ export default function UploadPage() {
                       <div className="flex items-center gap-1 mt-1 text-sm text-green-600">
                         <CheckCircle className="w-4 h-4" />
                         Upload complete
+                      </div>
+                    )}
+
+                    {file.status === 'error' && (
+                      <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                        <X className="w-4 h-4" />
+                        Upload failed
                       </div>
                     )}
                   </div>

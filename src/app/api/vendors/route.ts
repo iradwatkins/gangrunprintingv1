@@ -1,14 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
 
 // GET all vendors or a specific vendor
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
     // Only authenticated users can view vendors
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -84,9 +83,9 @@ export async function GET(request: NextRequest) {
 // CREATE a new vendor
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -164,9 +163,9 @@ export async function POST(request: NextRequest) {
 // UPDATE a vendor
 export async function PUT(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -205,9 +204,9 @@ export async function PUT(request: NextRequest) {
 // DELETE a vendor
 export async function DELETE(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { user, session } = await validateRequest();
     
-    if (!userId) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

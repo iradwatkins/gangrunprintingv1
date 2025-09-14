@@ -3,7 +3,8 @@ import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import * as argon2 from "argon2";
+import { generateRandomString } from "oslo/crypto";
+import resend from "@/lib/resend";
 
 const prisma = new PrismaClient();
 
@@ -76,68 +77,106 @@ export const validateRequest = cache(
   }
 );
 
-// Helper functions for authentication
-export async function hashPassword(password: string): Promise<string> {
-  return await argon2.hash(password);
-}
+// Magic Link Authentication Functions
+export async function generateMagicLink(email: string): Promise<string> {
+  const token = generateRandomString(32, "abcdefghijklmnopqrstuvwxyz0123456789");
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-export async function verifyPassword(
-  hashedPassword: string,
-  plainPassword: string
-): Promise<boolean> {
-  return await argon2.verify(hashedPassword, plainPassword);
-}
+  // Delete any existing tokens for this email
+  await prisma.verificationToken.deleteMany({
+    where: { identifier: email }
+  });
 
-export async function createUser(
-  email: string,
-  password: string,
-  name: string,
-  role: string = "CUSTOMER"
-) {
-  const hashedPassword = await hashPassword(password);
-  
-  // Special handling for admin email
-  if (email === 'iradwatkins@gmail.com') {
-    role = 'ADMIN';
-  }
-  
-  const user = await prisma.user.create({
+  // Create new verification token
+  await prisma.verificationToken.create({
     data: {
-      email,
-      password: hashedPassword,
-      name,
-      role,
-      emailVerified: false
+      identifier: email,
+      token,
+      expires: expiresAt
     }
   });
-  
-  return user;
+
+  return token;
 }
 
-export async function signIn(email: string, password: string) {
-  const user = await prisma.user.findUnique({
+export async function sendMagicLink(email: string, name?: string): Promise<void> {
+  const token = await generateMagicLink(email);
+  const magicLink = `${process.env.NEXTAUTH_URL}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+
+  await resend.emails.send({
+    from: 'GangRun Printing <noreply@gangrunprinting.com>',
+    to: email,
+    subject: 'Sign in to GangRun Printing',
+    html: `
+      <h1>Sign in to GangRun Printing</h1>
+      <p>Hello${name ? ` ${name}` : ''},</p>
+      <p>Click the link below to sign in to your account:</p>
+      <p><a href="${magicLink}" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Sign In</a></p>
+      <p>This link will expire in 15 minutes.</p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
+    `
+  });
+}
+
+export async function verifyMagicLink(token: string, email: string) {
+  const verificationToken = await prisma.verificationToken.findUnique({
+    where: {
+      identifier_token: {
+        identifier: email,
+        token
+      }
+    }
+  });
+
+  if (!verificationToken || verificationToken.expires < new Date()) {
+    throw new Error("Invalid or expired token");
+  }
+
+  // Delete the used token
+  await prisma.verificationToken.delete({
+    where: {
+      identifier_token: {
+        identifier: email,
+        token
+      }
+    }
+  });
+
+  // Find or create user
+  let user = await prisma.user.findUnique({
     where: { email }
   });
-  
-  if (!user || !user.password) {
-    throw new Error("Invalid credentials");
+
+  if (!user) {
+    // Special handling for admin email
+    const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER';
+
+    user = await prisma.user.create({
+      data: {
+        email,
+        name: email.split('@')[0], // Default name from email
+        role,
+        emailVerified: true
+      }
+    });
+  } else {
+    // Mark email as verified
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: true }
+    });
   }
-  
-  const validPassword = await verifyPassword(user.password, password);
-  
-  if (!validPassword) {
-    throw new Error("Invalid credentials");
-  }
-  
+
+  // Create session
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
-  
+
   cookies().set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes
   );
-  
+
   return { user, session };
 }
 

@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@clerk/nextjs/server'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     const searchParams = request.nextUrl.searchParams
     const orderNumber = searchParams.get('orderNumber')
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     const body = await request.json()
     
     const {
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         orderNumber,
         email,
         phone,
-        userId: session?.user?.id,
+        userId: user?.id,
         subtotal,
         tax,
         shipping,
@@ -184,9 +184,38 @@ export async function POST(request: NextRequest) {
       }
     })
     
-    // TODO: Send confirmation email
-    // TODO: Initiate payment process
-    
+    // Send confirmation email
+    try {
+      await fetch(`${process.env.NEXTAUTH_URL}/api/orders/confirm-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          customerEmail: order.email
+        })
+      })
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError)
+      // Don't fail the order creation if email fails
+    }
+
+    // Create payment session for order
+    try {
+      await fetch(`${process.env.NEXTAUTH_URL}/api/checkout/create-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: order.id,
+          amount: order.total,
+          customerEmail: order.email
+        })
+      })
+    } catch (paymentError) {
+      console.error('Failed to initiate payment process:', paymentError)
+      // Payment can be retried later
+    }
+
     return NextResponse.json(order, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)

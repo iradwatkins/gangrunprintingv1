@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // Store active connections
@@ -11,7 +11,7 @@ export async function GET(
 ): Promise<Response> {
   try {
     const { id: orderId } = await context.params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Verify user has access to this order
     const order = await prisma.order.findUnique({

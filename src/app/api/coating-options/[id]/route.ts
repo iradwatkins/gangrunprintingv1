@@ -1,6 +1,6 @@
+import { validateRequest } from "@/lib/auth"
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@clerk/nextjs/server'
 
 export async function PUT(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -66,7 +66,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-// import { useClerk } from '@clerk/nextjs' // TODO: Replace with Lucia auth
 import { 
   LayoutDashboard, 
   Package, 
@@ -78,12 +77,20 @@ export default function AccountSidebar() {
     }
   }, [])
 
-  // const { signOut } = useClerk()
-  // TODO: Replace with Lucia auth
-  const signOut = () => {}
-  
-  const handleSignOut = () => {
-    signOut() // TODO: Implement with Lucia auth
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        window.location.href = '/auth/signin'
+      } else {
+        console.error('Failed to sign out')
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
   }
 
   const handleInstallApp = async () => {

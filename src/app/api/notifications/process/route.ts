@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { processPendingNotifications, sendTestEmail } from '@/lib/sendgrid'
+import { validateRequest } from '@/lib/auth'
+import { sendBatchEmails, sendEmail } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Only admins can manually trigger notification processing
-    if ((session?.user as any)?.role !== 'ADMIN') {
+    if (user?.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
 // Test endpoint for SendGrid
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     
     // Only admins can send test emails
-    if ((session?.user as any)?.role !== 'ADMIN') {
+    if (user?.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

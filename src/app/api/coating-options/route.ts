@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@clerk/nextjs/server'
 
 export async function GET() {
   try {
@@ -25,7 +24,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
