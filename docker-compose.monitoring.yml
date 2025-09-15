@@ -1,0 +1,209 @@
+# Docker Compose configuration for monitoring stack
+# To be deployed via Dokploy for GangRun Printing monitoring infrastructure
+
+version: '3.8'
+
+services:
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gangrun-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    environment:
+      - TZ=America/Chicago
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.gangrunprinting.com`)"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gangrun-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123!}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=monitoring.gangrunprinting.com
+      - GF_SERVER_ROOT_URL=https://monitoring.gangrunprinting.com
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY}
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana
+      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.resend.com:587
+      - GF_SMTP_USER=resend
+      - GF_SMTP_PASSWORD=${RESEND_API_KEY}
+      - GF_SMTP_FROM_ADDRESS=alerts@gangrunprinting.com
+      - GF_SMTP_FROM_NAME=GangRun Printing Monitoring
+      - TZ=America/Chicago
+    depends_on:
+      - prometheus
+      - postgres
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`monitoring.gangrunprinting.com`)"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+  # AlertManager for handling alerts
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: gangrun-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - alertmanager-data:/alertmanager
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=https://alerts.gangrunprinting.com'
+    environment:
+      - TZ=America/Chicago
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.rule=Host(`alerts.gangrunprinting.com`)"
+      - "traefik.http.routers.alertmanager.tls=true"
+      - "traefik.http.routers.alertmanager.tls.certresolver=letsencrypt"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: gangrun-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - monitoring
+
+  # PostgreSQL for Grafana and metrics storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: gangrun-monitoring-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=grafana
+      - POSTGRES_USER=grafana
+      - POSTGRES_PASSWORD=${GRAFANA_DB_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - TZ=America/Chicago
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - monitoring
+
+  # Blackbox Exporter for uptime monitoring
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: gangrun-blackbox-exporter
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./monitoring/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    networks:
+      - monitoring
+
+  # Pushgateway for batch metrics
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: gangrun-pushgateway
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    networks:
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pushgateway.rule=Host(`metrics.gangrunprinting.com`)"
+      - "traefik.http.routers.pushgateway.tls=true"
+      - "traefik.http.routers.pushgateway.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pushgateway.loadbalancer.server.port=9091"
+
+volumes:
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gangrun/monitoring/prometheus
+
+  grafana-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gangrun/monitoring/grafana
+
+  alertmanager-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gangrun/monitoring/alertmanager
+
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gangrun/monitoring/postgres
+
+networks:
+  monitoring:
+    external: true
+    name: dokploy-network
+
+# Health checks and monitoring configuration
+# This file should be deployed through Dokploy with the following steps:
+# 1. Create the monitoring project in Dokploy
+# 2. Create the required directories: /opt/gangrun/monitoring/{prometheus,grafana,alertmanager,postgres}
+# 3. Upload configuration files to their respective directories
+# 4. Deploy using this compose file in Dokploy
+# 5. Configure domain routing through Dokploy UI

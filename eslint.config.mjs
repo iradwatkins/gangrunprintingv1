@@ -14,77 +14,75 @@ const compat = new FlatCompat({
   recommendedConfig: js.configs.recommended,
 })
 
-export default [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  {
-    files: ['**/*.{js,jsx,ts,tsx}'],
-    plugins: {
-      '@typescript-eslint': typescript,
-      prettier: prettier,
+export default [{
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "scripts/**", "next-env.d.ts"]
+}, ...compat.extends('next/core-web-vitals', 'next/typescript'), {
+  files: ['**/*.{js,jsx,ts,tsx}'],
+  plugins: {
+    '@typescript-eslint': typescript,
+    prettier: prettier,
+  },
+  languageOptions: {
+    parser: typescriptParser,
+    parserOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      project: './tsconfig.json',
     },
-    languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: './tsconfig.json',
+  },
+  rules: {
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
       },
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/consistent-type-imports': [
-        'warn',
-        {
-          prefer: 'type-imports',
-          fixStyle: 'inline-type-imports',
-        },
-      ],
-      'no-console': [
-        'warn',
-        {
-          allow: ['warn', 'error'],
-        },
-      ],
-      'react/jsx-sort-props': [
-        'warn',
-        {
-          callbacksLast: true,
-          shorthandFirst: true,
-          ignoreCase: true,
-          reservedFirst: true,
-        },
-      ],
-      'react/no-unescaped-entities': 'off',
-    },
-  },
-  {
-    ignores: [
-      'node_modules/**',
-      '.next/**',
-      'out/**',
-      'public/**',
-      '*.config.js',
-      '*.config.ts',
-      '*.config.mjs',
-      'playwright-report/**',
-      'tests/**',
-      'prisma/seed*.js',
-      'prisma/seed*.ts',
-      'dist/**',
-      'build/**',
-      'new doc/**',
-      'check-categories.ts',
-      'test-order-workflow.ts',
-      'screenshot.js',
-      'scripts/**/*.js',
-      'next-env.d.ts',
     ],
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/consistent-type-imports': [
+      'warn',
+      {
+        prefer: 'type-imports',
+        fixStyle: 'inline-type-imports',
+      },
+    ],
+    'no-console': [
+      'warn',
+      {
+        allow: ['warn', 'error'],
+      },
+    ],
+    'react/jsx-sort-props': [
+      'warn',
+      {
+        callbacksLast: true,
+        shorthandFirst: true,
+        ignoreCase: true,
+        reservedFirst: true,
+      },
+    ],
+    'react/no-unescaped-entities': 'off',
   },
-]
+}, {
+  ignores: [
+    'node_modules/**',
+    '.next/**',
+    'out/**',
+    'public/**',
+    '*.config.js',
+    '*.config.ts',
+    '*.config.mjs',
+    'playwright-report/**',
+    'tests/**',
+    'prisma/seed*.js',
+    'prisma/seed*.ts',
+    'dist/**',
+    'build/**',
+    'new doc/**',
+    'check-categories.ts',
+    'test-order-workflow.ts',
+    'screenshot.js',
+    'scripts/**/*.js',
+    'next-env.d.ts',
+  ],
+}];

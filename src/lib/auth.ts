@@ -92,7 +92,7 @@ export const validateRequest = cache(
 // Magic Link Authentication Functions
 export async function generateMagicLink(email: string): Promise<string> {
   const token = generateRandomString(32, "abcdefghijklmnopqrstuvwxyz0123456789");
-  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
   // Delete any existing tokens for this email
   await prisma.verificationToken.deleteMany({
@@ -120,7 +120,8 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
   console.log('Token length:', token.length);
 
   // Use API route for verification to properly handle cookies
-  const magicLink = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}&email=${email}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
+  const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`;
 
   console.log('Generated magic link:', magicLink);
   console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
@@ -134,7 +135,7 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
       <p>Hello${name ? ` ${name}` : ''},</p>
       <p>Click the link below to sign in to your account:</p>
       <p><a href="${magicLink}" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Sign In</a></p>
-      <p>This link will expire in 1 year.</p>
+      <p>This link will expire in 15 minutes.</p>
       <p>If you didn't request this, you can safely ignore this email.</p>
     `
   });

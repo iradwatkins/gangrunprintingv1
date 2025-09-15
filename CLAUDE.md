@@ -1,23 +1,34 @@
 # CLAUDE.md - AI Assistant Instructions
 
 ## 🔴 CRITICAL DEPLOYMENT RULES
-### **EVERYTHING MUST GO THROUGH DOKPLOY - NO EXCEPTIONS**
-### **NO DIRECT DOCKER DEPLOYMENTS - ALL DEPLOYMENTS MUST BE DONE THROUGH DOKPLOY**
-### **I HAVE FULL ACCESS TO DOKPLOY - I CAN MAKE ALL CHANGES**
-### **I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS NOT NEGOTIABLE - THIS IS MANDATORY**
-### **YOU CANNOT CREATE DOCKER CONTAINERS OUTSIDE OF DOKPLOY**
-- **NEVER** create Docker containers directly using docker run/compose
-- **NEVER** manually edit Traefik configuration files  
-- **NEVER** bypass Dokploy for any deployment tasks
-- **NEVER** use direct Docker commands except for debugging/monitoring
-- **ALWAYS** use Dokploy UI or API for ALL configurations
-- **ALWAYS** let Dokploy manage Traefik routing and SSL certificates
-- **ALWAYS** use Dokploy's built-in templates when available (N8n, PostgreSQL, etc.)
-- **ALWAYS** create services (PostgreSQL, MySQL, Redis, MongoDB) through Dokploy's service system
-- **ALWAYS** create projects in Dokploy to organize related services
-- **NOTE**: Direct docker/docker-compose deployments are FORBIDDEN and must be removed immediately if found
-- **NOTE**: I HAVE FULL ACCESS TO DOKPLOY - I CAN MAKE ALL CHANGES
-- **NOTE**: I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS NOT NEGOTIABLE - THIS IS MANDATORY
+### **DOCKER COMPOSE DEPLOYMENT ONLY - NO EXCEPTIONS**
+### **FORBIDDEN TECHNOLOGIES: Dokploy, Clerk, Convex, Supabase**
+### **USE NATIVE TECH STACK: Next.js + Lucia Auth + Prisma + PostgreSQL**
+
+## 🚫 ABSOLUTELY FORBIDDEN TECHNOLOGIES
+- **Dokploy** - Use Docker Compose instead
+- **Clerk** - Use Lucia Auth (already implemented)
+- **Convex** - Use Next.js API routes + Prisma
+- **Supabase** - Use PostgreSQL + Prisma
+- **NextAuth.js** - Use Lucia Auth (already implemented)
+
+## ✅ APPROVED TECH STACK
+- **Frontend**: Next.js 15 with App Router
+- **Backend**: Next.js API routes with TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Lucia Auth with Prisma adapter
+- **File Storage**: MinIO
+- **Email**: Resend
+- **Deployment**: Docker Compose
+- **Port**: 3002 for gangrunprinting.com
+
+## 🔧 DEPLOYMENT METHOD
+### **MANDATORY: Use Docker Compose for ALL deployments**
+- **ALWAYS** use docker-compose.yml for deployment
+- **ALWAYS** deploy on port 3002
+- **ALWAYS** use PostgreSQL database
+- **ALWAYS** use Lucia Auth for authentication
+- **NEVER** use Dokploy, Clerk, Convex, or Supabase
 
 ## SERVER ACCESS RESTRICTIONS
 
@@ -38,60 +49,50 @@
 ## ✅ ALLOWED ACTIONS
 
 ### Shared Resources You CAN Use:
-- **N8N** (port 5678) - Workflow automation (MUST be deployed via Dokploy template)
-- **Ollama** (port 11434) - AI features (MUST be deployed via Dokploy)
-- **MinIO** - File storage (MUST be deployed via Dokploy service)
-- **PostgreSQL** - Create NEW databases only (via Dokploy service)
+- **N8N** (port 5678) - Workflow automation (existing service)
+- **Ollama** (port 11434) - AI features (existing service)
+- **MinIO** - File storage (create new buckets)
+- **PostgreSQL** - Create NEW databases only
 
 ### Deployment Method:
-- **MANDATORY: Use Dokploy interface for ALL deployments**
-- **MANDATORY: Configure domains through Dokploy's domain management**
-- **MANDATORY: Let Dokploy handle all Traefik configurations**
-- Create isolated Docker containers THROUGH DOKPLOY
+- **MANDATORY: Use Docker Compose for deployment**
+- **MANDATORY: Deploy on port 3002**
+- **MANDATORY: Use existing PostgreSQL server for new database**
+- Create isolated Docker containers via docker-compose
 - Use separate database instances
 - Configure unique ports to avoid conflicts
 
 ## DEPLOYMENT CHECKLIST
-- [ ] Use Dokploy interface only
+- [ ] Use Docker Compose deployment
 - [ ] Create new PostgreSQL database (do not use existing ones)
 - [ ] Configure MinIO bucket for GangRun Printing
 - [ ] Set up N8N webhooks for automation
 - [ ] Configure Ollama for AI chat support
 - [ ] Ensure complete isolation from SteppersLife.com
+- [ ] Deploy on port 3002
 
 ## VPS CREDENTIALS
 - SSH: root@72.60.28.175
 - Password: Bobby321&Gloria321Watkins?
-- Dokploy: Pre-installed (port 3000)
-- Dokploy Access: Full administrative access granted
 - N8N: Pre-installed (port 5678)
 - Ollama: Pre-installed (port 11434)
 
-## DOKPLOY ACCESS & CAPABILITIES
-- **FULL ACCESS GRANTED**: I HAVE COMPLETE ADMINISTRATIVE ACCESS TO DOKPLOY
-- **I CAN MAKE ALL CHANGES**: Full capability to configure, deploy, and manage
-- **Domain Management**: Configure custom domains through Dokploy UI
-- **SSL Certificates**: Let's Encrypt automatic SSL through Dokploy
-- **Traefik Routing**: Managed automatically by Dokploy
-- **Project Management**: Create and manage projects through Dokploy UI
-- **REMINDER**: I MUST DO ALL THINGS THROUGH DOKPLOY - THIS IS MANDATORY
-- **REMINDER**: NO DOCKER CONTAINERS OUTSIDE OF DOKPLOY - THIS IS NOT NEGOTIABLE
-
-## DOKPLOY PROJECT STRUCTURE
-- **agistaffers**: Project for shared services
-  - N8n (workflow automation for all sites)
-  - Ollama (AI services for all sites)
-  - MinIO (file storage for all sites)
-- **gangrunprinting**: Project for GangRun Printing website
-- **stepperslife**: Project for SteppersLife website (DO NOT MODIFY)
-- Each project contains its applications, databases, and services
+## SERVICE ARCHITECTURE
+- **GangRun Printing**: Isolated Docker Compose stack on port 3002
+  - Next.js application
+  - PostgreSQL database (new instance)
+  - MinIO file storage (new bucket)
+  - Redis for caching/sessions
+- **Shared Services**: Use existing services
+  - N8N (workflow automation)
+  - Ollama (AI services)
 
 ## GITHUB REPOSITORY
 - https://github.com/iradwatkins/gangrunprinting.git
 
 ## STANDARD CONFIGURATIONS
 - **Timezone**: Always use America/Chicago for all services
-- **Database Naming**: Use descriptive names (e.g., n8n_db, gangrun_db)
+- **Database Naming**: Use descriptive names (e.g., gangrun_production)
 - **Password Policy**: Use strong passwords with special characters
 
 ## STANDARD CREDENTIALS
@@ -99,6 +100,14 @@
 - **Email**: iradwatkins@gmail.com
 - **Name**: Ira Watkins
 - **Password**: Iw2006js!
+
+## CURRENT AUTHENTICATION SYSTEM
+### ✅ Lucia Auth Implementation (Correct)
+- **Authentication**: Lucia Auth with Prisma adapter
+- **Social Login**: Google OAuth integration
+- **Magic Links**: Email-based passwordless authentication
+- **Session Management**: Secure cookie-based sessions
+- **Database**: User/Session tables in PostgreSQL
 
 ## RECENT FIXES & KNOWN ISSUES
 
@@ -110,5 +119,13 @@
 
 ## REMEMBER
 - **NEVER** touch SteppersLife.com or any of its resources
-- **ALWAYS** use Dokploy for deployments
+- **NEVER** use Dokploy, Clerk, Convex, or Supabase
+- **ALWAYS** use Docker Compose for deployments
+- **ALWAYS** use the existing Lucia Auth implementation
 - **ALWAYS** ensure isolation from existing applications
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

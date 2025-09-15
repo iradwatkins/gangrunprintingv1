@@ -41,13 +41,13 @@ function getErrorMessage(errorCode: string): string {
 }
 
 interface VerifyPageProps {
-  searchParams: {
+  searchParams: Promise<{
     error?: string
-  }
+  }>
 }
 
-function VerifyContent({ searchParams }: VerifyPageProps) {
-  const { error } = searchParams
+async function VerifyContent({ searchParams }: VerifyPageProps) {
+  const { error } = await searchParams
 
   if (!error) {
     // If no error, show loading/processing state (shouldn't normally reach here)
@@ -82,7 +82,7 @@ function VerifyContent({ searchParams }: VerifyPageProps) {
   )
 }
 
-export default function VerifyPage({ searchParams }: VerifyPageProps) {
+export default async function VerifyPage({ searchParams }: VerifyPageProps) {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">

@@ -2,7 +2,7 @@
 
 import { ChevronsUpDown, LogOut, User } from 'lucide-react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -30,6 +30,16 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      await fetch('/api/auth/signout', { method: 'POST' })
+      router.push('/')
+    } catch (error) {
+      console.error('Failed to sign out:', error)
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -82,7 +92,7 @@ export function NavUser({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={handleSignOut}
             >
               <LogOut className="mr-2 h-4 w-4" />
               Log out

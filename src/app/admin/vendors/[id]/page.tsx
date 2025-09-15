@@ -172,10 +172,11 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   REFUNDED: { label: 'Refunded', color: 'bg-red-100 text-red-800' }
 }
 
-export default async function VendorDetailPage({ params }: { params: { id: string } }) {
+export default async function VendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const [vendor, stats] = await Promise.all([
-    getVendor(params.id),
-    getVendorStats(params.id)
+    getVendor(id),
+    getVendorStats(id)
   ])
 
   if (!vendor) {

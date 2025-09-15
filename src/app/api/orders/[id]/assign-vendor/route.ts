@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { user, session } = await validateRequest()
+    const { id } = await params
+    const { user } = await validateRequest()
 
     if (!user?.id) {
       return NextResponse.json(
@@ -27,7 +28,7 @@ export async function POST(
 
     // Get the order
     const order = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id: id }
     })
 
     if (!order) {
@@ -60,7 +61,7 @@ export async function POST(
 
     // Update the order with vendor assignment
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         vendorId,
         adminNotes: notes ?
@@ -75,7 +76,7 @@ export async function POST(
     // Create status history entry
     await prisma.statusHistory.create({
       data: {
-        orderId: params.id,
+        orderId: id,
         fromStatus: order.status,
         toStatus: order.status,
         notes: `Vendor assigned: ${vendor.name}`,

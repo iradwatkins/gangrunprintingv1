@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -92,15 +93,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { 
-      name, 
-      basePrice, 
-      shippingWeight, 
+    const {
+      name,
+      basePrice,
+      shippingWeight,
       isActive,
       coatings,
       sidesOptions,
-      defaultCoating,
-      defaultSides
+      defaultCoating
     } = body
 
     if (!name) {

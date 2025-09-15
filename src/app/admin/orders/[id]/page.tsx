@@ -192,9 +192,10 @@ function getOrderTimeline(order: any) {
   return timeline
 }
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
+export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const [order, vendors] = await Promise.all([
-    getOrder(params.id),
+    getOrder(id),
     getVendors()
   ])
 

@@ -106,8 +106,11 @@ The platform was ready for its users, and more importantly, it was ready for the
 ## Quick Navigation
 
 - **Foundation**: [Shard 001 - Setup](./shards/shard-001-setup.md)
-- **Authentication**: [Shard 002 - Auth](./shards/shard-002-auth.md)  
+- **Authentication**: [Shard 002 - Auth](./shards/shard-002-auth.md)
 - **Products**: [Shard 003 - Products](./shards/shard-003-products.md)
 - **Commerce**: [Shard 004 - Cart](./shards/shard-004-cart.md)
+- **Administration**: [Shard 005 - Admin](./shards/shard-005-admin.md)
+- **Marketing**: [Shard 006 - Marketing](./shards/shard-006-marketing.md)
+- **Localization**: [Shard 007 - Localization](./shards/shard-007-localization.md)
 - **Transformations**: [Agent Logs](./agents/transformation-log.md)
 - **Progress**: [Current Status](./progress.md)

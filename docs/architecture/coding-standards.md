@@ -126,7 +126,7 @@ function ProductPage() {
 // app/api/products/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 
 // Define schema for validation
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
 ### Prisma Usage
 ```typescript
 // ✅ Good - Use Prisma with proper error handling
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 export async function getProductBySlug(slug: string) {
   try {

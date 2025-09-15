@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { user, session } = await validateRequest()
+    const { id } = await params
+    const { user } = await validateRequest()
 
     if (!user?.id) {
       return NextResponse.json(
@@ -18,7 +19,7 @@ export async function POST(
 
     // Get the order with vendor information
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         vendor: true,
         user: true,
@@ -122,7 +123,7 @@ export async function POST(
 
     // Update order notes
     await prisma.order.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         adminNotes: `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor notified at ${new Date().toLocaleString()}`
       }
