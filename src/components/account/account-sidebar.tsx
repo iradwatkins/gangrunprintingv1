@@ -3,19 +3,22 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  Package, 
-  Download, 
-  MapPin, 
-  CreditCard, 
-  User, 
+import {
+  LayoutDashboard,
+  Package,
+  Download,
+  MapPin,
+  CreditCard,
+  User,
   LogOut,
-  Smartphone
+  Smartphone,
+  Menu,
+  X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import NotificationToggle from '@/components/notifications/notification-toggle'
 
 const accountNavItems = [
   {
@@ -50,7 +53,19 @@ const accountNavItems = [
   },
 ]
 
-export default function AccountSidebar() {
+interface AccountSidebarProps {
+  isMobileOpen?: boolean
+  setIsMobileOpen?: (open: boolean) => void
+  isDesktopOpen?: boolean
+  showMobileToggle?: boolean
+}
+
+export default function AccountSidebar({
+  isMobileOpen = false,
+  setIsMobileOpen = () => {},
+  isDesktopOpen = true,
+  showMobileToggle = true
+}: AccountSidebarProps) {
   const pathname = usePathname()
   const [showInstallOption, setShowInstallOption] = useState(false)
 
@@ -105,63 +120,133 @@ export default function AccountSidebar() {
     }
   }
 
+  const handleMobileNavClick = () => {
+    if (showMobileToggle) {
+      setIsMobileOpen(false)
+    }
+  }
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileOpen(false)
+      }
+    }
+
+    if (isMobileOpen) {
+      document.addEventListener('keydown', handleEscape)
+      // Prevent body scroll when mobile menu is open
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileOpen, setIsMobileOpen])
+
   return (
-    <div className="w-64 min-h-[calc(100vh-4rem)] border-r bg-background flex flex-col">
-      <div className="p-6 flex-1">
-        <h2 className="text-lg font-semibold mb-4">My Account</h2>
-        <nav className="space-y-1">
-          {accountNavItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                pathname === item.href
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "hover:bg-muted text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-        
-        <div className="mt-6 pt-6 border-t">
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={handleSignOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Log Out
-          </Button>
+    <div className={cn(
+      // Base sidebar container
+      "w-64 bg-background border-r flex flex-col",
+      // Fixed positioning for both mobile and desktop - higher z-index to be above header
+      "fixed inset-y-0 left-0 z-50 shadow-xl transition-transform duration-300 ease-in-out",
+      // Mobile transform based on state
+      isMobileOpen ? "translate-x-0" : "-translate-x-full",
+      // Desktop transform based on state - always fixed, collapsible
+      isDesktopOpen ? "lg:translate-x-0" : "lg:-translate-x-full"
+    )}>
+        <div className="flex-1 flex flex-col">
+          {/* Mobile Header - "My Account" only on mobile */}
+          {showMobileToggle && (
+            <div className="flex items-center justify-between p-4 border-b lg:hidden">
+              <h2 className="text-lg font-semibold">My Account</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileOpen(false)}
+                className="h-8 w-8"
+                aria-label="Close navigation"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <div className="p-4 lg:p-6 flex-1">
+            {/* Desktop Title */}
+            <h2 className="text-lg font-semibold mb-4 hidden lg:block">My Account</h2>
+
+            {/* Navigation */}
+            <nav className="space-y-1">
+              {accountNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={handleMobileNavClick}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 lg:px-3 lg:py-2 rounded-lg text-sm transition-colors",
+                    "min-h-[44px] lg:min-h-auto", // Mobile touch targets
+                    pathname === item.href
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "hover:bg-muted text-muted-foreground hover:text-foreground active:bg-muted/50"
+                  )}
+                >
+                  <item.icon className="h-5 w-5 lg:h-4 lg:w-4 flex-shrink-0" />
+                  <span className="font-medium lg:font-normal">{item.name}</span>
+                </Link>
+              ))}
+            </nav>
+
+            {/* Notification Toggle - positioned after navigation */}
+            <div className="mt-4 pt-4 border-t">
+              <NotificationToggle />
+            </div>
+
+            {/* Logout Button */}
+            <div className="mt-8 lg:mt-6 pt-6 border-t">
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className={cn(
+                  "w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50",
+                  "min-h-[44px] lg:min-h-auto px-4 py-3 lg:px-3 lg:py-2"
+                )}
+              >
+                <LogOut className="mr-3 lg:mr-2 h-5 w-5 lg:h-4 lg:w-4" />
+                <span className="font-medium lg:font-normal">Log Out</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* PWA Install Container at Bottom */}
+          {showInstallOption && (
+            <div className="p-4 border-t mt-auto">
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Smartphone className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium text-sm">Get the App</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Install our app for a better experience with offline access and faster loading.
+                  </p>
+                  <Button
+                    size="sm"
+                    className="w-full min-h-[40px]"
+                    onClick={handleInstallApp}
+                  >
+                    Download App
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* PWA Install Container at Bottom */}
-      {showInstallOption && (
-        <div className="p-4 border-t">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <Smartphone className="h-5 w-5 text-primary" />
-                <h3 className="font-medium text-sm">Get the App</h3>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Install our app for a better experience with offline access and faster loading.
-              </p>
-              <Button 
-                size="sm" 
-                className="w-full"
-                onClick={handleInstallApp}
-              >
-                Download App
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
   )
 }

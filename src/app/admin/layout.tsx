@@ -1,19 +1,47 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useState } from 'react'
+import { Menu } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { AdminSidebar } from '@/components/admin/sidebar'
 import { AdminHeader } from '@/components/admin/header'
 import { AdminAuthWrapper } from '@/components/admin/admin-auth-wrapper'
-import { brandConfig } from '@/lib/brand-config'
 
 export default function GangRunAdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+
   return (
     <AdminAuthWrapper>
-      <div className="flex h-screen bg-background">
+      <div className="min-h-screen bg-background">
+        {/* Mobile Overlay */}
+        {isMobileSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
+            aria-label="Close navigation"
+          />
+        )}
+
+        {/* Floating Mobile Toggle Button */}
+        <Button
+          className="fixed top-4 left-4 z-50 lg:hidden"
+          variant="outline"
+          size="icon"
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+
         {/* Sidebar with Gang Run branding */}
-        <aside className="w-64 border-r bg-card">
+        <aside className={`w-64 border-r bg-card fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${isDesktopSidebarOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}`}>
           <div className="flex h-full flex-col">
             {/* Logo Section */}
             <div className="flex h-16 items-center border-b px-6">
@@ -33,9 +61,12 @@ export default function GangRunAdminLayout({
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          <AdminHeader />
-          <main className="flex-1 overflow-y-auto p-6 bg-muted/10">
+        <div className={`transition-all duration-300 ${isDesktopSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
+          <AdminHeader
+            onToggleDesktopSidebar={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
+            onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          />
+          <main className="p-6 bg-muted/10 min-h-[calc(100vh-4rem)]">
             {children}
           </main>
         </div>

@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Menu } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import AccountSidebar from './account-sidebar'
 
 export default function AccountWrapper({ children }: { children: React.ReactNode }) {
@@ -9,6 +11,8 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
   const [user, setUser] = useState<any>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isSignedIn, setIsSignedIn] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true)
 
   // Check user authentication status
   useEffect(() => {
@@ -59,10 +63,57 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
-      <AccountSidebar />
-      <div className="flex-1 p-8">
-        {children}
+    <div className="min-h-[calc(100vh-4rem)]">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-label="Close navigation"
+        />
+      )}
+
+      {/* Floating Mobile Toggle Button */}
+      <Button
+        className="fixed top-4 left-4 z-50 lg:hidden"
+        variant="outline"
+        size="icon"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle navigation menu"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
+      {/* Account Sidebar - Overlay on mobile, collapsible on desktop */}
+      <AccountSidebar
+        isMobileOpen={isMobileMenuOpen}
+        setIsMobileOpen={setIsMobileMenuOpen}
+        isDesktopOpen={isDesktopSidebarOpen}
+        showMobileToggle={true}
+      />
+
+      {/* Main Content Area */}
+      <div className={`transition-all duration-300 ${isDesktopSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
+        {/* Header */}
+        <header className="h-16 border-b bg-background flex items-center px-4 lg:px-6">
+          {/* Desktop sidebar toggle */}
+          <Button
+            className="hidden lg:flex mr-3"
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          <h1 className="text-lg font-semibold hidden lg:block">My Account</h1>
+        </header>
+
+        {/* Page Content */}
+        <main className="p-4 lg:p-6">
+          {children}
+        </main>
       </div>
     </div>
   )

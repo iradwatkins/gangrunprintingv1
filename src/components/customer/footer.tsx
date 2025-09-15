@@ -1,6 +1,9 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -15,29 +18,35 @@ const footerLinks = {
     { name: 'View All Products', href: '/products' },
   ],
   services: [
-    { name: 'Design Services', href: '#' },
-    { name: 'Bulk Orders', href: '#' },
-    { name: 'Rush Printing', href: '#' },
-    { name: 'Free Samples', href: '#' },
-    { name: 'Custom Quotes', href: '#' },
+    { name: 'Design Services', href: '/quote' },
+    { name: 'Bulk Orders', href: '/quote' },
+    { name: 'Rush Printing', href: '/quote' },
+    { name: 'Free Samples', href: '/quote' },
+    { name: 'Custom Quotes', href: '/quote' },
   ],
   company: [
-    { name: 'About Us', href: '#' },
-    { name: 'Contact Us', href: '#' },
-    { name: 'Careers', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Press', href: '#' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact Us', href: '/contact' },
+    { name: 'Locations', href: '/locations' },
+    { name: 'Careers', href: '/contact' },
+    { name: 'Blog', href: '/help-center' },
   ],
   support: [
     { name: 'Track Order', href: '/track' },
-    { name: 'Help Center', href: '#' },
-    { name: 'Shipping Info', href: '#' },
-    { name: 'Return Policy', href: '#' },
-    { name: 'FAQs', href: '#' },
+    { name: 'Help Center', href: '/help-center' },
+    { name: 'Shipping Info', href: '/locations' },
+    { name: 'Return Policy', href: '/help-center' },
+    { name: 'FAQs', href: '/help-center' },
   ],
 }
 
 export default function Footer() {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded)
+  }
+
   return (
     <footer className="bg-background border-t">
       {/* Newsletter Section */}
@@ -62,8 +71,28 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Mobile Footer Toggle - Only visible on mobile */}
+      <div className="md:hidden bg-background border-b">
+        <div className="container mx-auto px-4 py-4">
+          <button
+            onClick={toggleExpanded}
+            className="flex items-center justify-between w-full text-left"
+            aria-expanded={isExpanded}
+          >
+            <span className="font-semibold">Footer Links</span>
+            {isExpanded ? (
+              <ChevronUp className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
+      <div className={`container mx-auto px-4 transition-all duration-300 py-12 ${
+        isExpanded ? 'block' : 'hidden md:block'
+      }`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
@@ -205,9 +234,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
             <p>© 2024 GangRun Printing. All rights reserved.</p>
             <div className="flex gap-4">
-              <Link className="hover:text-primary transition-colors" href="#">Privacy Policy</Link>
-              <Link className="hover:text-primary transition-colors" href="#">Terms of Service</Link>
-              <Link className="hover:text-primary transition-colors" href="#">Cookie Policy</Link>
+              <Link className="hover:text-primary transition-colors" href="/privacy-policy">Privacy Policy</Link>
+              <Link className="hover:text-primary transition-colors" href="/terms-of-service">Terms of Service</Link>
+              <Link className="hover:text-primary transition-colors" href="/privacy-policy#cookies">Cookie Policy</Link>
             </div>
           </div>
           
@@ -237,6 +266,30 @@ export default function Footer() {
                 {method}
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Only - Always visible footer info */}
+      <div className="md:hidden bg-muted/30 border-t">
+        <div className="container mx-auto px-4 py-4">
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              © 2024 GangRun Printing. All rights reserved.
+            </p>
+            <div className="flex items-center justify-center gap-4 text-sm">
+              <a href="tel:1-800-PRINTING" className="text-primary hover:underline">
+                1-800-PRINTING
+              </a>
+              <span className="text-muted-foreground">|</span>
+              <Link href="/contact" className="text-primary hover:underline">
+                Contact
+              </Link>
+              <span className="text-muted-foreground">|</span>
+              <Link href="/track" className="text-primary hover:underline">
+                Track Order
+              </Link>
+            </div>
           </div>
         </div>
       </div>

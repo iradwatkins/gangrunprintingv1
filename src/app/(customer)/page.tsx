@@ -8,8 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Header from '@/components/customer/header'
-import Footer from '@/components/customer/footer'
 
 const productCategories = [
   {
@@ -112,9 +110,7 @@ const testimonials = [
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <main className="min-h-screen">
+    <main className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
         <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
@@ -393,7 +389,5 @@ export default function Home() {
         </div>
       </section>
       </main>
-      <Footer />
-    </>
   )
 }
