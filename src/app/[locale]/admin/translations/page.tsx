@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Loading } from '@/components/ui/loading';
 
+// Force dynamic rendering for admin pages (requires authentication)
+export const dynamic = 'force-dynamic';
+
 type Props = {
   params: Promise<{locale: string}>;
   searchParams: Promise<{[key: string]: string | string[] | undefined}>;
