@@ -1,1 +1,1 @@
-export { useToast } from '@/lib/toast'
+export { toast as useToast } from '@/lib/toast'

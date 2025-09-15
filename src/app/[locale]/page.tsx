@@ -32,7 +32,7 @@ export default async function HomePage({ params }: Props) {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/quote">
+              <Link href="/contact">
                 {t('home.hero.cta.quote')}
               </Link>
             </Button>

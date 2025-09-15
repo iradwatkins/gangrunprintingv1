@@ -165,5 +165,42 @@
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
   }
+
+  /* Admin layout improvements */
+  .admin-layout {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .admin-content {
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+
+  /* Improved scrollbar styling */
+  .admin-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .admin-content::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+
+  .admin-content::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 3px;
+  }
+
+  .admin-content::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+
+  /* Fix mobile sidebar overlay */
+  @media (max-width: 1024px) {
+    [data-sidebar="sidebar"] {
+      position: fixed !important;
+      z-index: 50;
+    }
+  }
 }
 

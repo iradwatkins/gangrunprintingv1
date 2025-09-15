@@ -412,7 +412,7 @@ export default function LocationsPage() {
               <div key={day} className="text-sm grid grid-cols-2 gap-2">
                 <span className="text-muted-foreground">{day}:</span>
                 <span className={hours === 'Closed' ? 'text-muted-foreground' : ''}>
-                  {hours}
+                  {String(hours)}
                 </span>
               </div>
             ))}

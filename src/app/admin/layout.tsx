@@ -12,13 +12,17 @@ export default function GangRunAdminLayout({
   return (
     <AdminAuthWrapper>
       <SidebarProvider defaultOpen={true}>
-        <AppSidebar />
-        <SidebarInset>
-          <AdminHeader />
-          <main className="flex-1 p-6 bg-muted/10 min-h-[calc(100vh-4rem)]">
-            {children}
-          </main>
-        </SidebarInset>
+        <div className="flex min-h-screen w-full bg-background">
+          <AppSidebar />
+          <SidebarInset className="flex-1">
+            <AdminHeader />
+            <main className="flex-1 overflow-auto">
+              <div className="container mx-auto p-6 space-y-6">
+                {children}
+              </div>
+            </main>
+          </SidebarInset>
+        </div>
       </SidebarProvider>
     </AdminAuthWrapper>
   )
