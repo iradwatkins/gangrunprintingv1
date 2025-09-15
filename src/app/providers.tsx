@@ -6,7 +6,6 @@ import { useState } from 'react'
 // Removed react-hot-toast - not in tech stack
 import { ThemeProvider } from '@/components/theme-provider'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
-import { NotificationPermission } from '@/components/notification-permission'
 import { CartProvider } from '@/contexts/cart-context'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 
@@ -35,7 +34,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {children}
           <CartDrawer />
           <PWAInstallPrompt />
-          <NotificationPermission />
         </CartProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
