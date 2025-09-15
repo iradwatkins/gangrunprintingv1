@@ -13,7 +13,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install production dependencies
-RUN npm ci --omit=dev && \
+RUN npm ci --omit=dev --legacy-peer-deps && \
     npx prisma generate
 
 # Copy source code

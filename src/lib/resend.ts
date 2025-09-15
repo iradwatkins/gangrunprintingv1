@@ -1,6 +1,13 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let resend: Resend | null = null
+
+function getResendClient(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY || '')
+  }
+  return resend
+}
 
 export interface EmailTemplate {
   to: string | string[]
@@ -18,7 +25,7 @@ export interface EmailTemplate {
 
 export async function sendEmail(template: EmailTemplate) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: template.from || `${process.env.RESEND_FROM_NAME} <${process.env.RESEND_FROM_EMAIL}>`,
       to: template.to,
       subject: template.subject,
@@ -147,4 +154,4 @@ export async function sendBatchEmails(emails: EmailTemplate[]) {
   return results
 }
 
-export default resend
+export default getResendClient
