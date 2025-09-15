@@ -37,12 +37,15 @@ import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
 import { NavUser } from './nav-user'
 import { TeamSwitcher } from './team-switcher'
+import { ThemeToggle } from '@/components/admin/theme-toggle'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarGroup,
+  SidebarGroupContent,
 } from '@/components/ui/sidebar'
 
 const data = {
@@ -346,6 +349,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <div className="flex items-center justify-between px-2 py-1">
+              <span className="text-xs text-muted-foreground">Theme</span>
+              <ThemeToggle />
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
