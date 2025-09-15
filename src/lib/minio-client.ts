@@ -5,4 +5,10 @@ export const BUCKETS = {
   PRODUCTS: 'gangrun-products',
 };
 
-export { initializeBuckets, getPresignedUploadUrl, getPresignedDownloadUrl } from './minio';
+export {
+  initializeBuckets,
+  getPresignedUploadUrl,
+  getPresignedDownloadUrl,
+  isMinioAvailable,
+  resetMinioClient
+} from './minio';

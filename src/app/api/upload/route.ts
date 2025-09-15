@@ -5,17 +5,20 @@ import {
   uploadFile,
   getPresignedUploadUrl,
   BUCKETS,
-  initializeBuckets
+  initializeBuckets,
+  isMinioAvailable
 } from '@/lib/minio-client'
 import { randomUUID } from 'crypto'
 
-// Initialize buckets on startup only if MinIO config is available
-if (process.env.MINIO_ENDPOINT && process.env.MINIO_ACCESS_KEY) {
-  initializeBuckets().catch(console.error)
-}
+// Bucket initialization will happen at runtime when needed
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize buckets on first request if MinIO is available
+    if (isMinioAvailable()) {
+      await initializeBuckets().catch(console.error)
+    }
+
     const { user, session } = await validateRequest()
     
     // Get form data

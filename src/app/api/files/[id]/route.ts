@@ -47,8 +47,8 @@ export async function GET(
       )
     }
     
-    // Get file metadata from MinIO
-    const metadata = await getFileMetadata(BUCKETS.UPLOADS, file.fileUrl)
+    // Get file metadata from MinIO - using file.fileUrl as the objectName
+    const metadata = await getFileMetadata(file.fileUrl)
     
     // Generate presigned download URL
     const downloadUrl = await getPresignedDownloadUrl(
@@ -101,8 +101,8 @@ export async function DELETE(
       )
     }
     
-    // Delete from MinIO
-    await deleteFile(BUCKETS.UPLOADS, file.fileUrl)
+    // Delete from MinIO - using file.fileUrl as the objectName
+    await deleteFile(file.fileUrl)
     
     // Delete from database
     await prisma.file.delete({
