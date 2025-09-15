@@ -1,0 +1,304 @@
+# Prometheus alerting rules for GangRun Printing monitoring
+groups:
+  # System alerts
+  - name: system_alerts
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 95% for more than 2 minutes on {{ $labels.instance }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 95% for more than 2 minutes on {{ $labels.instance }}"
+
+      # High disk usage
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage is above 85% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+
+      - alert: CriticalDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical disk usage on {{ $labels.instance }}"
+          description: "Disk usage is above 95% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+
+      # System load
+      - alert: HighSystemLoad
+        expr: node_load15 / count by(instance) (node_cpu_seconds_total{mode="idle"}) > 2
+        for: 10m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High system load on {{ $labels.instance }}"
+          description: "System load is {{ $value }} (normalized by CPU count) on {{ $labels.instance }}"
+
+  # Application alerts
+  - name: application_alerts
+    rules:
+      # Service down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: application
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+
+      # High HTTP error rate
+      - alert: HighHTTPErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: application
+        annotations:
+          summary: "High HTTP 5xx error rate for {{ $labels.job }}"
+          description: "HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}"
+
+      - alert: CriticalHTTPErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 10
+        for: 2m
+        labels:
+          severity: critical
+          service: application
+        annotations:
+          summary: "Critical HTTP 5xx error rate for {{ $labels.job }}"
+          description: "HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}"
+
+      # Slow HTTP response time
+      - alert: SlowHTTPResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: application
+        annotations:
+          summary: "Slow HTTP response time for {{ $labels.job }}"
+          description: "95th percentile HTTP response time is {{ $value }}s for {{ $labels.job }} on {{ $labels.instance }}"
+
+      # High HTTP request rate
+      - alert: HighHTTPRequestRate
+        expr: rate(http_requests_total[5m]) > 1000
+        for: 10m
+        labels:
+          severity: warning
+          service: application
+        annotations:
+          summary: "High HTTP request rate for {{ $labels.job }}"
+          description: "HTTP request rate is {{ $value }} req/s for {{ $labels.job }} on {{ $labels.instance }}"
+
+  # Business alerts
+  - name: business_alerts
+    rules:
+      # Low conversion rate
+      - alert: LowConversionRate
+        expr: business_conversion_rate < 1.5
+        for: 30m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Low conversion rate detected"
+          description: "Conversion rate has been below 1.5% for more than 30 minutes: {{ $value }}%"
+
+      # High cart abandonment rate
+      - alert: HighCartAbandonmentRate
+        expr: business_cart_abandonment_rate > 80
+        for: 60m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "High cart abandonment rate detected"
+          description: "Cart abandonment rate has been above 80% for more than 60 minutes: {{ $value }}%"
+
+      # Payment failure spike
+      - alert: PaymentFailureSpike
+        expr: increase(business_payment_failures_total[10m]) > 10
+        for: 0m
+        labels:
+          severity: critical
+          service: business
+        annotations:
+          summary: "Payment failure spike detected"
+          description: "{{ $value }} payment failures in the last 10 minutes"
+
+      # Revenue drop
+      - alert: RevenueDrop
+        expr: rate(business_revenue_total[1h]) < rate(business_revenue_total[1h] offset 24h) * 0.5
+        for: 30m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Significant revenue drop detected"
+          description: "Revenue rate is less than 50% of the same time yesterday"
+
+      # Order processing delay
+      - alert: OrderProcessingDelay
+        expr: business_order_processing_duration_seconds > 300
+        for: 5m
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Order processing delay detected"
+          description: "Orders are taking more than 5 minutes to process: {{ $value }}s"
+
+  # Database alerts
+  - name: database_alerts
+    rules:
+      # Database connection issues
+      - alert: DatabaseConnectionFailure
+        expr: database_connections_failed_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "Database connection failures detected"
+          description: "{{ $value }} database connection failures in the last minute"
+
+      # Slow database queries
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile database query time is {{ $value }}s"
+
+      # High database CPU
+      - alert: HighDatabaseCPU
+        expr: database_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "High database CPU usage"
+          description: "Database CPU usage is {{ $value }}%"
+
+  # SSL certificate alerts
+  - name: ssl_alerts
+    rules:
+      # SSL certificate expiring soon
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 0m
+        labels:
+          severity: warning
+          service: ssl
+        annotations:
+          summary: "SSL certificate expiring soon for {{ $labels.instance }}"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+      # SSL certificate expired
+      - alert: SSLCertificateExpired
+        expr: probe_ssl_earliest_cert_expiry - time() <= 0
+        for: 0m
+        labels:
+          severity: critical
+          service: ssl
+        annotations:
+          summary: "SSL certificate expired for {{ $labels.instance }}"
+          description: "SSL certificate for {{ $labels.instance }} has expired"
+
+  # External service alerts
+  - name: external_service_alerts
+    rules:
+      # External service down
+      - alert: ExternalServiceDown
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: external
+        annotations:
+          summary: "External service {{ $labels.instance }} is down"
+          description: "External service {{ $labels.instance }} has been unreachable for more than 2 minutes"
+
+      # Slow external service
+      - alert: SlowExternalService
+        expr: probe_duration_seconds{job="blackbox-http"} > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: external
+        annotations:
+          summary: "External service {{ $labels.instance }} is slow"
+          description: "External service {{ $labels.instance }} response time is {{ $value }}s"
+
+  # Storage alerts
+  - name: storage_alerts
+    rules:
+      # MinIO storage issues
+      - alert: MinIODown
+        expr: up{job="minio"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: storage
+        annotations:
+          summary: "MinIO storage service is down"
+          description: "MinIO storage service has been down for more than 1 minute"
+
+      # High storage usage
+      - alert: HighStorageUsage
+        expr: minio_cluster_disk_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: storage
+        annotations:
+          summary: "High MinIO storage usage"
+          description: "MinIO storage usage is {{ $value }}%"

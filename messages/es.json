@@ -1,0 +1,317 @@
+{
+  "metadata": {
+    "title": "GangRun Printing - Servicios Profesionales de Impresión",
+    "description": "Servicios de impresión de alta calidad para todas sus necesidades comerciales y personales"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "products": "Productos",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "quote": "Obtener Cotización",
+    "signin": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "account": "Cuenta",
+    "admin": "Administrador",
+    "cart": "Carrito",
+    "track": "Rastrear Pedido"
+  },
+  "home": {
+    "hero": {
+      "title": "Soluciones Profesionales de Impresión para su Negocio",
+      "description": "Desde tarjetas de presentación hasta impresión de gran formato, ofrecemos calidad excepcional a precios competitivos con tiempos de entrega rápidos.",
+      "cta": {
+        "products": "Ver Productos",
+        "quote": "Obtener Cotización Personalizada"
+      }
+    },
+    "services": {
+      "title": "Nuestros Servicios de Impresión",
+      "business": {
+        "title": "Impresión Comercial",
+        "description": "Materiales profesionales para elevar su marca",
+        "items": {
+          "cards": "Tarjetas de Presentación",
+          "flyers": "Volantes y Postales",
+          "brochures": "Folletos y Catálogos",
+          "letterhead": "Membrete y Sobres"
+        }
+      },
+      "marketing": {
+        "title": "Material Publicitario",
+        "description": "Diseños llamativos que captan la atención",
+        "items": {
+          "banners": "Banners y Letreros",
+          "posters": "Pósters y Displays",
+          "signs": "Letreros de Jardín",
+          "decals": "Calcomanías y Pegatinas"
+        }
+      },
+      "personal": {
+        "title": "Impresión Personal",
+        "description": "Impresión personalizada para ocasiones especiales",
+        "items": {
+          "invitations": "Invitaciones",
+          "announcements": "Anuncios",
+          "photos": "Impresión de Fotos",
+          "calendars": "Calendarios y Libros"
+        }
+      }
+    },
+    "features": {
+      "title": "¿Por qué Elegir GangRun Printing?",
+      "fast": {
+        "title": "Entrega Rápida",
+        "description": "La mayoría de pedidos completados en 24-48 horas"
+      },
+      "quality": {
+        "title": "Calidad Premium",
+        "description": "Equipo de última generación y materiales premium"
+      },
+      "affordable": {
+        "title": "Precios Competitivos",
+        "description": "Los mejores precios sin comprometer la calidad"
+      },
+      "support": {
+        "title": "Soporte Experto",
+        "description": "Servicio al cliente amigable y asistencia en diseño"
+      }
+    },
+    "cta": {
+      "title": "¿Listo para Comenzar?",
+      "description": "Contáctenos hoy para una cotización gratuita de su proyecto de impresión.",
+      "button": "Contáctenos Hoy"
+    }
+  },
+  "auth": {
+    "signin": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Bienvenido de vuelta a GangRun Printing",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "button": "Iniciar Sesión",
+      "forgot": "¿Olvidó su contraseña?",
+      "noAccount": "¿No tiene una cuenta?",
+      "signupLink": "Regístrese aquí"
+    },
+    "signup": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únase a GangRun Printing hoy",
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "button": "Crear Cuenta",
+      "haveAccount": "¿Ya tiene una cuenta?",
+      "signinLink": "Inicie sesión aquí"
+    },
+    "verify": {
+      "title": "Verifique su Correo",
+      "subtitle": "Le hemos enviado un enlace de verificación",
+      "resend": "Reenviar correo de verificación",
+      "backToSignin": "Volver a iniciar sesión"
+    }
+  },
+  "products": {
+    "title": "Nuestros Productos",
+    "subtitle": "Servicios profesionales de impresión para todas sus necesidades",
+    "categories": {
+      "all": "Todos los Productos",
+      "business": "Tarjetas de Presentación",
+      "marketing": "Material Publicitario",
+      "personal": "Impresión Personal"
+    },
+    "filters": {
+      "category": "Categoría",
+      "priceRange": "Rango de Precios",
+      "turnaround": "Tiempo de Entrega"
+    },
+    "product": {
+      "from": "Desde",
+      "configure": "Configurar y Ordenar",
+      "details": "Detalles del Producto",
+      "specifications": "Especificaciones",
+      "pricing": "Precios",
+      "addToCart": "Agregar al Carrito",
+      "quantity": "Cantidad",
+      "size": "Tamaño",
+      "paper": "Tipo de Papel",
+      "finish": "Acabado"
+    }
+  },
+  "cart": {
+    "title": "Carrito de Compras",
+    "empty": "Su carrito está vacío",
+    "continueShopping": "Continuar Comprando",
+    "item": "Artículo",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "tax": "Impuesto",
+    "shipping": "Envío",
+    "grandTotal": "Total General",
+    "checkout": "Proceder al Pago",
+    "remove": "Eliminar",
+    "update": "Actualizar"
+  },
+  "checkout": {
+    "title": "Pagar",
+    "shipping": {
+      "title": "Información de Envío",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "state": "Estado",
+      "zipCode": "Código Postal",
+      "phone": "Número de Teléfono"
+    },
+    "billing": {
+      "title": "Información de Facturación",
+      "sameAsShipping": "Misma dirección de envío"
+    },
+    "payment": {
+      "title": "Información de Pago",
+      "cardNumber": "Número de Tarjeta",
+      "expiryDate": "MM/AA",
+      "cvv": "CVV",
+      "nameOnCard": "Nombre en la Tarjeta"
+    },
+    "review": {
+      "title": "Revisar su Pedido",
+      "orderSummary": "Resumen del Pedido"
+    },
+    "placeOrder": "Realizar Pedido",
+    "processing": "Procesando su pedido..."
+  },
+  "account": {
+    "dashboard": {
+      "title": "Panel de Cuenta",
+      "welcome": "Bienvenido de vuelta",
+      "recentOrders": "Pedidos Recientes",
+      "accountInfo": "Información de la Cuenta"
+    },
+    "orders": {
+      "title": "Historial de Pedidos",
+      "orderNumber": "Pedido #",
+      "date": "Fecha",
+      "status": "Estado",
+      "total": "Total",
+      "view": "Ver Detalles",
+      "reorder": "Reordenar",
+      "track": "Rastrear"
+    },
+    "details": {
+      "title": "Detalles de la Cuenta",
+      "personalInfo": "Información Personal",
+      "changePassword": "Cambiar Contraseña",
+      "preferences": "Preferencias"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Panel de Administración",
+      "overview": "Resumen",
+      "orders": "Pedidos",
+      "products": "Productos",
+      "customers": "Clientes",
+      "analytics": "Analíticas"
+    },
+    "orders": {
+      "title": "Gestión de Pedidos",
+      "pending": "Pendientes",
+      "processing": "Procesando",
+      "completed": "Completados",
+      "cancelled": "Cancelados"
+    },
+    "products": {
+      "title": "Gestión de Productos",
+      "addProduct": "Agregar Producto",
+      "editProduct": "Editar Producto",
+      "categories": "Categorías",
+      "inventory": "Inventario"
+    },
+    "whiteLabelTitle": "Gestión de Marca Blanca",
+    "translationsTitle": "Gestión de Traducciones",
+    "tenantsTitle": "Gestión de Inquilinos"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "update": "Actualizar",
+    "create": "Crear",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "submit": "Enviar",
+    "reset": "Restablecer",
+    "clear": "Limpiar",
+    "select": "Seleccionar",
+    "choose": "Elegir",
+    "upload": "Subir",
+    "download": "Descargar",
+    "print": "Imprimir",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "name": "Nombre",
+    "description": "Descripción",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "total": "Total",
+    "date": "Fecha",
+    "time": "Hora",
+    "status": "Estado",
+    "actions": "Acciones",
+    "welcome": "Bienvenido",
+    "thankyou": "Gracias",
+    "comingSoon": "Próximamente",
+    "notFound": "No Encontrado"
+  },
+  "contact": {
+    "title": "Contáctenos",
+    "subtitle": "Póngase en contacto con nuestro equipo",
+    "form": {
+      "name": "Su Nombre",
+      "email": "Su Correo",
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "send": "Enviar Mensaje"
+    },
+    "info": {
+      "address": "Dirección",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "hours": "Horario de Atención"
+    }
+  },
+  "footer": {
+    "about": "Acerca de GangRun Printing",
+    "services": "Servicios",
+    "support": "Soporte",
+    "legal": "Legal",
+    "newsletter": "Boletín",
+    "newsletterDesc": "Suscríbase para recibir actualizaciones sobre nuevos productos y ofertas",
+    "emailPlaceholder": "Ingrese su correo",
+    "subscribe": "Suscribirse",
+    "copyright": "© 2024 GangRun Printing. Todos los derechos reservados.",
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio"
+  }
+}

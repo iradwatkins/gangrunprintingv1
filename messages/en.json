@@ -1,0 +1,317 @@
+{
+  "metadata": {
+    "title": "GangRun Printing - Professional Print Services",
+    "description": "High-quality printing services for all your business and personal needs"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "quote": "Get Quote",
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "account": "Account",
+    "admin": "Admin",
+    "cart": "Cart",
+    "track": "Track Order"
+  },
+  "home": {
+    "hero": {
+      "title": "Professional Printing Solutions for Your Business",
+      "description": "From business cards to large format printing, we deliver exceptional quality at competitive prices with fast turnaround times.",
+      "cta": {
+        "products": "Browse Products",
+        "quote": "Get Custom Quote"
+      }
+    },
+    "services": {
+      "title": "Our Print Services",
+      "business": {
+        "title": "Business Printing",
+        "description": "Professional materials to elevate your brand",
+        "items": {
+          "cards": "Business Cards",
+          "flyers": "Flyers & Postcards",
+          "brochures": "Brochures & Catalogs",
+          "letterhead": "Letterhead & Envelopes"
+        }
+      },
+      "marketing": {
+        "title": "Marketing Materials",
+        "description": "Eye-catching designs that get noticed",
+        "items": {
+          "banners": "Banners & Signs",
+          "posters": "Posters & Displays",
+          "signs": "Yard Signs",
+          "decals": "Stickers & Decals"
+        }
+      },
+      "personal": {
+        "title": "Personal Printing",
+        "description": "Custom printing for special occasions",
+        "items": {
+          "invitations": "Invitations",
+          "announcements": "Announcements",
+          "photos": "Photo Printing",
+          "calendars": "Calendars & Books"
+        }
+      }
+    },
+    "features": {
+      "title": "Why Choose GangRun Printing?",
+      "fast": {
+        "title": "Fast Turnaround",
+        "description": "Most orders completed within 24-48 hours"
+      },
+      "quality": {
+        "title": "Premium Quality",
+        "description": "State-of-the-art equipment and premium materials"
+      },
+      "affordable": {
+        "title": "Competitive Pricing",
+        "description": "Best prices without compromising on quality"
+      },
+      "support": {
+        "title": "Expert Support",
+        "description": "Friendly customer service and design assistance"
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Contact us today for a free quote on your printing project.",
+      "button": "Contact Us Today"
+    }
+  },
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to GangRun Printing",
+      "email": "Email address",
+      "password": "Password",
+      "button": "Sign In",
+      "forgot": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up here"
+    },
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Join GangRun Printing today",
+      "name": "Full name",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "button": "Create Account",
+      "haveAccount": "Already have an account?",
+      "signinLink": "Sign in here"
+    },
+    "verify": {
+      "title": "Verify Your Email",
+      "subtitle": "We've sent you a verification link",
+      "resend": "Resend verification email",
+      "backToSignin": "Back to sign in"
+    }
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Professional printing services for all your needs",
+    "categories": {
+      "all": "All Products",
+      "business": "Business Cards",
+      "marketing": "Marketing Materials",
+      "personal": "Personal Printing"
+    },
+    "filters": {
+      "category": "Category",
+      "priceRange": "Price Range",
+      "turnaround": "Turnaround Time"
+    },
+    "product": {
+      "from": "Starting from",
+      "configure": "Configure & Order",
+      "details": "Product Details",
+      "specifications": "Specifications",
+      "pricing": "Pricing",
+      "addToCart": "Add to Cart",
+      "quantity": "Quantity",
+      "size": "Size",
+      "paper": "Paper Stock",
+      "finish": "Finish"
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "item": "Item",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "shipping": "Shipping",
+    "grandTotal": "Grand Total",
+    "checkout": "Proceed to Checkout",
+    "remove": "Remove",
+    "update": "Update"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shipping": {
+      "title": "Shipping Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "address": "Address",
+      "city": "City",
+      "state": "State",
+      "zipCode": "ZIP Code",
+      "phone": "Phone Number"
+    },
+    "billing": {
+      "title": "Billing Information",
+      "sameAsShipping": "Same as shipping address"
+    },
+    "payment": {
+      "title": "Payment Information",
+      "cardNumber": "Card Number",
+      "expiryDate": "MM/YY",
+      "cvv": "CVV",
+      "nameOnCard": "Name on Card"
+    },
+    "review": {
+      "title": "Review Your Order",
+      "orderSummary": "Order Summary"
+    },
+    "placeOrder": "Place Order",
+    "processing": "Processing your order..."
+  },
+  "account": {
+    "dashboard": {
+      "title": "Account Dashboard",
+      "welcome": "Welcome back",
+      "recentOrders": "Recent Orders",
+      "accountInfo": "Account Information"
+    },
+    "orders": {
+      "title": "Order History",
+      "orderNumber": "Order #",
+      "date": "Date",
+      "status": "Status",
+      "total": "Total",
+      "view": "View Details",
+      "reorder": "Reorder",
+      "track": "Track"
+    },
+    "details": {
+      "title": "Account Details",
+      "personalInfo": "Personal Information",
+      "changePassword": "Change Password",
+      "preferences": "Preferences"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "overview": "Overview",
+      "orders": "Orders",
+      "products": "Products",
+      "customers": "customers",
+      "analytics": "Analytics"
+    },
+    "orders": {
+      "title": "Order Management",
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "products": {
+      "title": "Product Management",
+      "addProduct": "Add Product",
+      "editProduct": "Edit Product",
+      "categories": "Categories",
+      "inventory": "Inventory"
+    },
+    "whiteLabelTitle": "White Label Management",
+    "translationsTitle": "Translation Management",
+    "tenantsTitle": "Tenant Management"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "update": "Update",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "open": "Open",
+    "next": "Next",
+    "previous": "Previous",
+    "back": "Back",
+    "continue": "Continue",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear",
+    "select": "Select",
+    "choose": "Choose",
+    "upload": "Upload",
+    "download": "Download",
+    "print": "Print",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "date": "Date",
+    "time": "Time",
+    "status": "Status",
+    "actions": "Actions",
+    "welcome": "Welcome",
+    "thankyou": "Thank you",
+    "comingSoon": "Coming Soon",
+    "notFound": "Not Found"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our team",
+    "form": {
+      "name": "Your Name",
+      "email": "Your Email",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message"
+    },
+    "info": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Business Hours"
+    }
+  },
+  "footer": {
+    "about": "About GangRun Printing",
+    "services": "Services",
+    "support": "Support",
+    "legal": "Legal",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Subscribe to get updates on new products and offers",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "copyright": "© 2024 GangRun Printing. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  }
+}

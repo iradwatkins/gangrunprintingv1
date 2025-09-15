@@ -93,18 +93,19 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 }
 
 interface OrdersPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string
     status?: string
     search?: string
-  }
+  }>
 }
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
-  const page = Number(searchParams?.page) || 1
+  const params = await searchParams
+  const page = Number(params?.page) || 1
   const pageSize = 20
-  const statusFilter = searchParams?.status || 'all'
-  const searchQuery = searchParams?.search || ''
+  const statusFilter = params?.status || 'all'
+  const searchQuery = params?.search || ''
 
   // Build where clause for filtering
   const where: any = {}

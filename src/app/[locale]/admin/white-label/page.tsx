@@ -1,0 +1,268 @@
+import { Suspense } from 'react';
+import { useTranslations } from 'next-intl';
+import { setRequestLocale } from 'next-intl/server';
+import { BrandEditor } from '@/components/white-label/brand-editor';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Loading } from '@/components/ui/loading';
+import { Palette, Layout, Image, Code, Mail, Eye } from 'lucide-react';
+
+type Props = {
+  params: Promise<{locale: string}>;
+  searchParams: Promise<{[key: string]: string | string[] | undefined}>;
+};
+
+export default async function WhiteLabelPage({ params, searchParams }: Props) {
+  const { locale } = await params;
+  const search = await searchParams;
+  setRequestLocale(locale);
+
+  const t = useTranslations('admin');
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('whiteLabelTitle')}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Customize your brand appearance and white-label settings
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Badge variant="secondary">
+            Current Locale: {locale.toUpperCase()}
+          </Badge>
+        </div>
+      </div>
+
+      <Tabs defaultValue="brand" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="brand" className="flex items-center gap-2">
+            <Palette className="h-4 w-4" />
+            Brand Colors
+          </TabsTrigger>
+          <TabsTrigger value="typography" className="flex items-center gap-2">
+            <Layout className="h-4 w-4" />
+            Typography
+          </TabsTrigger>
+          <TabsTrigger value="logos" className="flex items-center gap-2">
+            <Image className="h-4 w-4" />
+            Logos & Assets
+          </TabsTrigger>
+          <TabsTrigger value="layout" className="flex items-center gap-2">
+            <Layout className="h-4 w-4" />
+            Layout
+          </TabsTrigger>
+          <TabsTrigger value="custom" className="flex items-center gap-2">
+            <Code className="h-4 w-4" />
+            Custom CSS
+          </TabsTrigger>
+          <TabsTrigger value="email" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Email Themes
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Editor Panel */}
+          <div className="lg:col-span-2 space-y-4">
+            <TabsContent value="brand" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Brand Colors
+                  </CardTitle>
+                  <CardDescription>
+                    Define your brand's primary color palette
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="colors" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="typography" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Layout className="h-5 w-5" />
+                    Typography
+                  </CardTitle>
+                  <CardDescription>
+                    Configure fonts and text styling
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="typography" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="logos" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    Logos & Assets
+                  </CardTitle>
+                  <CardDescription>
+                    Upload and manage your brand assets
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="logos" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="layout" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Layout className="h-5 w-5" />
+                    Layout & Spacing
+                  </CardTitle>
+                  <CardDescription>
+                    Adjust layout properties and spacing
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="layout" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="custom" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Code className="h-5 w-5" />
+                    Custom CSS & JavaScript
+                  </CardTitle>
+                  <CardDescription>
+                    Add custom styling and functionality
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="custom" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="email" className="mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email Templates
+                  </CardTitle>
+                  <CardDescription>
+                    Customize email template appearance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<Loading />}>
+                    <BrandEditor section="email" />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </div>
+
+          {/* Preview Panel */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Live Preview
+                </CardTitle>
+                <CardDescription>
+                  See how your changes look in real-time
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<Loading />}>
+                  <BrandPreview />
+                </Suspense>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Theme Templates</CardTitle>
+                <CardDescription>
+                  Choose from pre-made themes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<Loading />}>
+                  <ThemeTemplates />
+                </Suspense>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Export/Import</CardTitle>
+                <CardDescription>
+                  Manage your theme configurations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<Loading />}>
+                  <ThemeImportExport />
+                </Suspense>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Tabs>
+    </div>
+  );
+}
+
+// Component stubs - these will be implemented
+function BrandPreview() {
+  return (
+    <div className="space-y-4">
+      <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+        <p className="text-sm text-gray-500">Live preview will appear here</p>
+      </div>
+      <div className="text-xs text-gray-500">
+        Preview updates automatically as you make changes
+      </div>
+    </div>
+  );
+}
+
+function ThemeTemplates() {
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-gray-600">Theme Templates Component</p>
+    </div>
+  );
+}
+
+function ThemeImportExport() {
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-gray-600">Import/Export Component</p>
+    </div>
+  );
+}

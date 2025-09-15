@@ -22,7 +22,8 @@ import {
   ScrollText,
   Ruler,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Mail
 } from 'lucide-react'
 
 const navigationStructure = [
@@ -88,6 +89,45 @@ const navigationStructure = [
         href: '/admin/sizes',
         icon: Ruler,
         description: 'Print sizes'
+      }
+    ]
+  },
+
+  // Marketing & Automation - Dropdown
+  {
+    title: 'Marketing & Automation',
+    icon: Mail,
+    isDropdown: true,
+    children: [
+      {
+        title: 'Campaigns',
+        href: '/admin/marketing/campaigns',
+        icon: Mail,
+        description: 'Email & SMS campaigns'
+      },
+      {
+        title: 'Email Builder',
+        href: '/admin/marketing/email-builder',
+        icon: Mail,
+        description: 'Design email templates'
+      },
+      {
+        title: 'Automation',
+        href: '/admin/marketing/automation',
+        icon: Settings,
+        description: 'Workflow automation'
+      },
+      {
+        title: 'Segments',
+        href: '/admin/marketing/segments',
+        icon: Users,
+        description: 'Customer segmentation'
+      },
+      {
+        title: 'Analytics',
+        href: '/admin/marketing/analytics',
+        icon: BarChart3,
+        description: 'Campaign performance'
       }
     ]
   },

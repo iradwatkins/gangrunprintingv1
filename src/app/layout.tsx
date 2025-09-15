@@ -5,6 +5,8 @@ import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import { ComprehensivePerformanceMonitor } from '@/components/performance-monitor'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -38,8 +40,11 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
         <OfflineIndicator />
-        <Providers>{children}</Providers>
-        <InstallPrompt />
+        <ComprehensivePerformanceMonitor />
+        <ErrorBoundary name="RootLayout">
+          <Providers>{children}</Providers>
+          <InstallPrompt />
+        </ErrorBoundary>
       </body>
     </html>
   )

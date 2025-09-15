@@ -1,0 +1,206 @@
+version: '3.8'
+
+services:
+  # Main Next.js Application
+  gangrun-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    image: gangrunprinting:production
+    container_name: gangrun_app
+    ports:
+      - "3002:3000"
+    environment:
+      # Node.js settings
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - TZ=America/Chicago
+
+      # Database - PostgreSQL
+      - DATABASE_URL=postgresql://gangrun_user:${POSTGRES_PASSWORD}@gangrun-postgres:5432/gangrun_production
+
+      # Redis for sessions and caching
+      - REDIS_URL=redis://gangrun-redis:6379
+
+      # Lucia Auth (NOT NextAuth)
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXT_PUBLIC_APP_URL=https://gangrunprinting.com
+      - AUTH_TRUST_HOST=true
+
+      # OAuth Providers
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Admin
+      - ADMIN_EMAIL=iradwatkins@gmail.com
+
+      # Square Payments
+      - SQUARE_ACCESS_TOKEN=${SQUARE_ACCESS_TOKEN}
+      - SQUARE_ENVIRONMENT=production
+      - SQUARE_LOCATION_ID=${SQUARE_LOCATION_ID}
+      - SQUARE_APPLICATION_ID=${SQUARE_APPLICATION_ID}
+      - SQUARE_WEBHOOK_SIGNATURE_KEY=${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      - NEXT_PUBLIC_SQUARE_APPLICATION_ID=${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+
+      # MinIO File Storage
+      - MINIO_ENDPOINT=gangrun-minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET_NAME=gangrun-production
+
+      # Email with Resend
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=support@gangrunprinting.com
+      - RESEND_FROM_NAME=GangRun Printing
+
+      # N8N Integration (existing service)
+      - N8N_WEBHOOK_URL=http://72.60.28.175:5678/webhook
+      - N8N_API_KEY=${N8N_API_KEY}
+
+      # Ollama Integration (existing service)
+      - OLLAMA_URL=http://72.60.28.175:11434
+      - OLLAMA_MODEL=llama3
+
+      # OpenAI for translations
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+      # PWA
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=mailto:support@gangrunprinting.com
+
+      # Performance monitoring
+      - NEXT_PUBLIC_SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_ORG=${SENTRY_ORG}
+      - SENTRY_PROJECT=${SENTRY_PROJECT}
+      - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+
+    volumes:
+      - app_uploads:/app/uploads
+      - app_files:/app/files
+    depends_on:
+      - gangrun-postgres
+      - gangrun-redis
+      - gangrun-minio
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - '--no-verbose'
+        - '--tries=1'
+        - '--spider'
+        - http://localhost:3000/api/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # PostgreSQL Database
+  gangrun-postgres:
+    image: postgres:15
+    container_name: gangrun_postgres
+    environment:
+      - POSTGRES_DB=gangrun_production
+      - POSTGRES_USER=gangrun_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=America/Chicago
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gangrun_user -d gangrun_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and sessions
+  gangrun-redis:
+    image: redis:7-alpine
+    container_name: gangrun_redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - redis_data:/data
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # MinIO for file storage
+  gangrun-minio:
+    image: minio/minio:latest
+    container_name: gangrun_minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+      - TZ=America/Chicago
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Nginx Reverse Proxy
+  gangrun-nginx:
+    image: nginx:alpine
+    container_name: gangrun_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites:/etc/nginx/sites-available:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - gangrun-app
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_files:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  gangrun_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

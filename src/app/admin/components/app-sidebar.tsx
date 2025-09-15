@@ -11,7 +11,6 @@ import {
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
   Package,
   Users,
   ShoppingCart,
@@ -22,6 +21,11 @@ import {
   Home,
   Droplets,
   Layers,
+  Mail,
+  Zap,
+  Target,
+  TrendingUp,
+  MessageSquare,
 } from 'lucide-react'
 
 import { NavMain } from './nav-main'
@@ -80,6 +84,25 @@ const data = {
       ],
     },
     {
+      title: 'Customers',
+      url: '/admin/customers',
+      icon: Users,
+      items: [
+        {
+          title: 'All Customers',
+          url: '/admin/customers',
+        },
+        {
+          title: 'Corporate',
+          url: '/admin/customers/corporate',
+        },
+        {
+          title: 'Individual',
+          url: '/admin/customers/individual',
+        },
+      ],
+    },
+    {
       title: 'Products',
       url: '/admin/products',
       icon: Package,
@@ -103,6 +126,91 @@ const data = {
       ],
     },
     {
+      title: 'Analytics',
+      url: '/admin/analytics',
+      icon: BarChart3,
+      items: [
+        {
+          title: 'Overview',
+          url: '/admin/analytics',
+        },
+        {
+          title: 'Revenue',
+          url: '/admin/analytics?tab=revenue',
+        },
+        {
+          title: 'Customers',
+          url: '/admin/analytics?tab=customers',
+        },
+        {
+          title: 'Products',
+          url: '/admin/analytics?tab=products',
+        },
+        {
+          title: 'Performance',
+          url: '/admin/analytics?tab=performance',
+        },
+      ],
+    },
+    {
+      title: 'Marketing & Automation',
+      url: '/admin/marketing',
+      icon: Mail,
+      items: [
+        {
+          title: 'Campaigns',
+          url: '/admin/marketing/campaigns',
+        },
+        {
+          title: 'Email Builder',
+          url: '/admin/marketing/email-builder',
+        },
+        {
+          title: 'Automation',
+          url: '/admin/marketing/automation',
+        },
+        {
+          title: 'Segments',
+          url: '/admin/marketing/segments',
+        },
+        {
+          title: 'Analytics',
+          url: '/admin/marketing/analytics',
+        },
+        {
+          title: 'Templates',
+          url: '/admin/marketing/templates',
+        },
+        {
+          title: 'A/B Testing',
+          url: '/admin/marketing/ab-testing',
+        },
+        {
+          title: 'SMS Marketing',
+          url: '/admin/marketing/sms',
+        },
+      ],
+    },
+    {
+      title: 'Staff',
+      url: '/admin/staff',
+      icon: Users,
+      items: [
+        {
+          title: 'All Staff',
+          url: '/admin/staff',
+        },
+        {
+          title: 'Roles & Permissions',
+          url: '/admin/staff?tab=roles',
+        },
+        {
+          title: 'Activity Log',
+          url: '/admin/staff?tab=activity',
+        },
+      ],
+    },
+    {
       title: 'Design Studio',
       url: '/admin/design',
       icon: Palette,
@@ -122,48 +230,6 @@ const data = {
       ],
     },
     {
-      title: 'Customers',
-      url: '/admin/customers',
-      icon: Users,
-      items: [
-        {
-          title: 'All Customers',
-          url: '/admin/customers',
-        },
-        {
-          title: 'Corporate',
-          url: '/admin/customers/corporate',
-        },
-        {
-          title: 'Individual',
-          url: '/admin/customers/individual',
-        },
-      ],
-    },
-    {
-      title: 'Reports',
-      url: '/admin/reports',
-      icon: BarChart3,
-      items: [
-        {
-          title: 'Sales',
-          url: '/admin/reports/sales',
-        },
-        {
-          title: 'Production',
-          url: '/admin/reports/production',
-        },
-        {
-          title: 'Inventory',
-          url: '/admin/reports/inventory',
-        },
-        {
-          title: 'Analytics',
-          url: '/admin/reports/analytics',
-        },
-      ],
-    },
-    {
       title: 'Settings',
       url: '/admin/settings',
       icon: Settings2,
@@ -171,6 +237,26 @@ const data = {
         {
           title: 'General',
           url: '/admin/settings',
+        },
+        {
+          title: 'Printing',
+          url: '/admin/settings?tab=printing',
+        },
+        {
+          title: 'Payments',
+          url: '/admin/settings?tab=payments',
+        },
+        {
+          title: 'Shipping',
+          url: '/admin/settings?tab=shipping',
+        },
+        {
+          title: 'Notifications',
+          url: '/admin/settings?tab=notifications',
+        },
+        {
+          title: 'Integrations',
+          url: '/admin/settings?tab=integrations',
         },
         {
           title: 'Material Types',
@@ -191,22 +277,6 @@ const data = {
         {
           title: 'Sizes',
           url: '/admin/sizes',
-        },
-        {
-          title: 'Printing',
-          url: '/admin/settings/printing',
-        },
-        {
-          title: 'Shipping',
-          url: '/admin/settings/shipping',
-        },
-        {
-          title: 'Payments',
-          url: '/admin/settings/payments',
-        },
-        {
-          title: 'Integrations',
-          url: '/admin/settings/integrations',
         },
       ],
     },

@@ -1,0 +1,144 @@
+# Prometheus configuration for GangRun Printing monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load alerting rules
+rule_files:
+  - "alert-rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # GangRun Printing application metrics
+  - job_name: 'gangrun-app'
+    static_configs:
+      - targets: ['gangrunprinting.com:3002']
+    scrape_interval: 30s
+    metrics_path: /api/monitoring/prometheus
+    scheme: https
+    scrape_timeout: 10s
+
+  # Application health checks
+  - job_name: 'gangrun-health'
+    static_configs:
+      - targets: ['gangrunprinting.com:3002']
+    scrape_interval: 30s
+    metrics_path: /api/health
+    scheme: https
+    scrape_timeout: 5s
+
+  # Blackbox exporter for uptime monitoring
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://gangrunprinting.com
+        - https://gangrunprinting.com/api/health
+        - https://gangrunprinting.com/products
+        - https://gangrunprinting.com/admin
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # SSL certificate monitoring
+  - job_name: 'blackbox-ssl'
+    metrics_path: /probe
+    params:
+      module: [ssl_expire]
+    static_configs:
+      - targets:
+        - gangrunprinting.com:443
+        - monitoring.gangrunprinting.com:443
+        - alerts.gangrunprinting.com:443
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Redis monitoring (if Redis exporter is available)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # PostgreSQL monitoring (if postgres exporter is available)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # N8N workflow monitoring
+  - job_name: 'n8n'
+    static_configs:
+      - targets: ['n8n.agistaffers.com:5678']
+    scrape_interval: 60s
+    metrics_path: /metrics
+    scheme: https
+
+  # Ollama AI service monitoring
+  - job_name: 'ollama'
+    static_configs:
+      - targets: ['72.60.28.175:11434']
+    scrape_interval: 60s
+    metrics_path: /metrics
+
+  # MinIO object storage monitoring
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['72.60.28.175:9000']
+    scrape_interval: 30s
+    metrics_path: /minio/v2/metrics/cluster
+
+  # Pushgateway for batch metrics
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets: ['pushgateway:9091']
+    scrape_interval: 15s
+    honor_labels: true
+
+  # Grafana monitoring
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+# Remote write configuration (for long-term storage)
+# Uncomment if using external time-series database
+# remote_write:
+#   - url: "https://prometheus-remote-write-endpoint.com/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"

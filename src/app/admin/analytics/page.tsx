@@ -3,9 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  TrendingUp,
+  TrendingDown,
   Activity,
   DollarSign,
   Users,
@@ -17,6 +17,7 @@ import {
 import { RevenueChart } from '../components/revenue-chart'
 import { OrdersOverviewChart } from '../components/orders-overview-chart'
 import { SalesByCategoryChart } from '../components/sales-by-category-chart'
+import { prisma } from '@/lib/prisma'
 
 // Performance metrics data
 const performanceMetrics = [
@@ -44,7 +45,101 @@ const customerSegments = [
   { segment: 'Education', customers: 34, revenue: '$18,000', percentage: 5 },
 ]
 
-export default function AnalyticsPage() {
+async function getAnalyticsData() {
+  const now = new Date()
+  const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1)
+
+  // Get monthly revenue data for the last 12 months
+  const monthlyRevenue = await prisma.$queryRaw`
+    SELECT
+      TO_CHAR("createdAt", 'YYYY-MM') as month,
+      SUM(total) as revenue,
+      COUNT(*) as orders
+    FROM "Order"
+    WHERE "createdAt" >= ${twelveMonthsAgo}
+      AND status NOT IN ('CANCELLED', 'REFUNDED')
+    GROUP BY TO_CHAR("createdAt", 'YYYY-MM')
+    ORDER BY month ASC
+  ` as Array<{ month: string; revenue: number; orders: number }>
+
+  // Get order status distribution
+  const orderStatuses = await prisma.order.groupBy({
+    by: ['status'],
+    _count: { status: true },
+    where: {
+      createdAt: {
+        gte: new Date(now.getFullYear(), now.getMonth() - 3, 1) // Last 3 months
+      }
+    }
+  })
+
+  // Get product category sales data
+  const categorySales = await prisma.$queryRaw`
+    SELECT
+      COALESCE(p.category, 'Uncategorized') as category,
+      SUM(oi.quantity * oi.price) as revenue,
+      SUM(oi.quantity) as quantity
+    FROM "OrderItem" oi
+    LEFT JOIN "Product" p ON oi."productSku" = p.sku
+    JOIN "Order" o ON oi."orderId" = o.id
+    WHERE o."createdAt" >= ${new Date(now.getFullYear(), now.getMonth() - 1, 1)}
+      AND o.status NOT IN ('CANCELLED', 'REFUNDED')
+    GROUP BY p.category
+    ORDER BY revenue DESC
+    LIMIT 10
+  ` as Array<{ category: string; revenue: number; quantity: number }>
+
+  // Format revenue chart data
+  const revenueChartData = {
+    labels: monthlyRevenue.map(item => {
+      const [year, month] = item.month.split('-')
+      return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+    }),
+    datasets: [{
+      label: 'Revenue',
+      data: monthlyRevenue.map(item => Math.round(item.revenue / 100)), // Convert cents to dollars
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    }]
+  }
+
+  // Format orders chart data
+  const ordersChartData = {
+    labels: orderStatuses.map(item => item.status),
+    datasets: [{
+      label: 'Orders',
+      data: orderStatuses.map(item => item._count.status),
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    }]
+  }
+
+  // Format category chart data
+  const categoryChartData = {
+    labels: categorySales.map(item => item.category),
+    datasets: [{
+      label: 'Revenue',
+      data: categorySales.map(item => Math.round(item.revenue / 100)), // Convert cents to dollars
+      borderColor: '#f59e0b',
+      backgroundColor: [
+        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+        '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'
+      ],
+    }]
+  }
+
+  return {
+    revenueChartData,
+    ordersChartData,
+    categoryChartData,
+    monthlyRevenue: monthlyRevenue.map(item => ({ ...item, revenue: item.revenue / 100 })),
+    orderStatuses,
+    categorySales: categorySales.map(item => ({ ...item, revenue: item.revenue / 100 }))
+  }
+}
+
+export default async function AnalyticsPage() {
+  const analyticsData = await getAnalyticsData()
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -135,7 +230,7 @@ export default function AnalyticsPage() {
                 <CardDescription>Monthly revenue over the past year</CardDescription>
               </CardHeader>
               <CardContent>
-                <RevenueChart />
+                <RevenueChart data={analyticsData.revenueChartData} />
               </CardContent>
             </Card>
             <Card>
@@ -144,7 +239,7 @@ export default function AnalyticsPage() {
                 <CardDescription>Weekly breakdown by status</CardDescription>
               </CardHeader>
               <CardContent>
-                <OrdersOverviewChart />
+                <OrdersOverviewChart data={analyticsData.ordersChartData} />
               </CardContent>
             </Card>
           </div>
@@ -158,7 +253,7 @@ export default function AnalyticsPage() {
                 <CardDescription>Detailed revenue breakdown and trends</CardDescription>
               </CardHeader>
               <CardContent>
-                <RevenueChart />
+                <RevenueChart data={analyticsData.revenueChartData} />
               </CardContent>
             </Card>
             <Card>
@@ -167,7 +262,7 @@ export default function AnalyticsPage() {
                 <CardDescription>Product category contribution</CardDescription>
               </CardHeader>
               <CardContent>
-                <SalesByCategoryChart />
+                <SalesByCategoryChart data={analyticsData.categoryChartData} />
               </CardContent>
             </Card>
           </div>

@@ -224,8 +224,9 @@ function getActivityTimeline(customer: any) {
   )
 }
 
-export default async function CustomerDetailPage({ params }: { params: { id: string } }) {
-  const customer = await getCustomer(params.id)
+export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const customer = await getCustomer(id)
 
   if (!customer || customer.role === 'ADMIN' || customer.role === 'STAFF') {
     notFound()

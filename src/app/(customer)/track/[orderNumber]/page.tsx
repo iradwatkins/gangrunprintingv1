@@ -20,9 +20,9 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 interface OrderTrackingPageProps {
-  params: {
+  params: Promise<{
     orderNumber: string
-  }
+  }>
 }
 
 const statusSteps = [
@@ -66,7 +66,8 @@ async function getOrderDetails(orderNumber: string) {
 }
 
 export default async function OrderTrackingPage({ params }: OrderTrackingPageProps) {
-  const order = await getOrderDetails(params.orderNumber)
+  const { orderNumber } = await params
+  const order = await getOrderDetails(orderNumber)
 
   if (!order) {
     notFound()
