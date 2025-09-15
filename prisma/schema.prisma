@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  email             String             @unique
-  emailVerified     Boolean            @default(false)
-  image             String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  name              String?
-  role              UserRole           @default(CUSTOMER)
-  isBroker          Boolean            @default(false)
-  brokerDiscounts   Json?
+  id              String   @id @default(cuid())
+  email           String   @unique
+  emailVerified   Boolean  @default(false)
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  name            String?
+  role            UserRole @default(CUSTOMER)
+  isBroker        Boolean  @default(false)
+  brokerDiscounts Json?
 
   // Marketing preferences
-  marketingOptIn    Boolean            @default(true)
-  smsOptIn          Boolean            @default(false)
-  phoneNumber       String?
+  marketingOptIn Boolean @default(true)
+  smsOptIn       Boolean @default(false)
+  phoneNumber    String?
 
   // Existing relations
   accounts          Account[]
@@ -33,10 +33,10 @@ model User {
   sessions          Session[]
 
   // New marketing relations
-  campaignSends     CampaignSend[]
-  smsSends          SMSSend[]
+  campaignSends      CampaignSend[]
+  smsSends           SMSSend[]
   workflowExecutions WorkflowExecution[]
-  journey           CustomerJourney?
+  journey            CustomerJourney?
 
   // Multi-tenancy relations
   tenantMemberships TenantUser[]
@@ -659,37 +659,37 @@ enum QuoteStatus {
 // Marketing & Automation System Models
 
 model MarketingCampaign {
-  id                String                    @id @default(cuid())
-  name              String
-  type              CampaignType
-  status            CampaignStatus            @default(DRAFT)
-  subject           String?
-  previewText       String?
-  content           Json                      // Email template/content data
-  senderName        String                    @default("GangRun Printing")
-  senderEmail       String                    @default("noreply@gangrunprinting.com")
-  replyToEmail      String?
-  segmentId         String?
-  scheduledAt       DateTime?
-  sentAt            DateTime?
-  completedAt       DateTime?
-  isTemplate        Boolean                   @default(false)
-  templateName      String?
-  tags              String[]
-  settings          Json?                     // Additional campaign settings
-  trackingPixelUrl  String?
-  utmCampaign       String?
-  utmSource         String                    @default("email")
-  utmMedium         String                    @default("email")
-  createdBy         String
-  createdAt         DateTime                  @default(now())
-  updatedAt         DateTime                  @updatedAt
+  id               String         @id @default(cuid())
+  name             String
+  type             CampaignType
+  status           CampaignStatus @default(DRAFT)
+  subject          String?
+  previewText      String?
+  content          Json // Email template/content data
+  senderName       String         @default("GangRun Printing")
+  senderEmail      String         @default("noreply@gangrunprinting.com")
+  replyToEmail     String?
+  segmentId        String?
+  scheduledAt      DateTime?
+  sentAt           DateTime?
+  completedAt      DateTime?
+  isTemplate       Boolean        @default(false)
+  templateName     String?
+  tags             String[]
+  settings         Json? // Additional campaign settings
+  trackingPixelUrl String?
+  utmCampaign      String?
+  utmSource        String         @default("email")
+  utmMedium        String         @default("email")
+  createdBy        String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   // Relations
-  segment           CustomerSegment?          @relation(fields: [segmentId], references: [id])
-  sends             CampaignSend[]
-  abTests           CampaignABTest[]
-  analytics         CampaignAnalytics[]
+  segment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
+  sends     CampaignSend[]
+  abTests   CampaignABTest[]
+  analytics CampaignAnalytics[]
 
   @@index([status])
   @@index([type])
@@ -698,21 +698,21 @@ model MarketingCampaign {
 }
 
 model CustomerSegment {
-  id          String              @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  criteria    Json                // Segmentation criteria and rules
-  isActive    Boolean             @default(true)
-  isDynamic   Boolean             @default(true)  // Auto-update based on criteria
-  customerIds String[]            // Cached customer IDs for performance
-  count       Int                 @default(0)
-  lastUpdated DateTime            @default(now())
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  criteria    Json // Segmentation criteria and rules
+  isActive    Boolean  @default(true)
+  isDynamic   Boolean  @default(true) // Auto-update based on criteria
+  customerIds String[] // Cached customer IDs for performance
+  count       Int      @default(0)
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  campaigns   MarketingCampaign[]
-  workflows   MarketingWorkflow[]
+  campaigns    MarketingCampaign[]
+  workflows    MarketingWorkflow[]
   smsCampaigns SMSCampaign[]
 
   @@index([isActive])
@@ -720,12 +720,12 @@ model CustomerSegment {
 }
 
 model CampaignSend {
-  id             String            @id @default(cuid())
+  id             String     @id @default(cuid())
   campaignId     String
   recipientEmail String
   recipientName  String?
   userId         String?
-  status         SendStatus        @default(PENDING)
+  status         SendStatus @default(PENDING)
   sentAt         DateTime?
   deliveredAt    DateTime?
   openedAt       DateTime?
@@ -735,12 +735,12 @@ model CampaignSend {
   bounceReason   String?
   errorMessage   String?
   trackingData   Json?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   // Relations
-  campaign       MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user           User?             @relation(fields: [userId], references: [id])
+  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user     User?             @relation(fields: [userId], references: [id])
 
   @@index([campaignId])
   @@index([recipientEmail])
@@ -749,47 +749,47 @@ model CampaignSend {
 }
 
 model CampaignABTest {
-  id               String            @id @default(cuid())
-  campaignId       String
-  name             String
-  description      String?
-  testType         ABTestType
-  variants         Json              // A/B test variant configurations
-  trafficSplit     Json              // Percentage split between variants
-  winnerCriteria   String            // Which metric determines winner
-  confidence       Float             @default(95.0)
-  isActive         Boolean           @default(true)
-  winnerId         String?           // ID of winning variant
-  results          Json?             // Test results and statistics
-  startedAt        DateTime?
-  endedAt          DateTime?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id             String     @id @default(cuid())
+  campaignId     String
+  name           String
+  description    String?
+  testType       ABTestType
+  variants       Json // A/B test variant configurations
+  trafficSplit   Json // Percentage split between variants
+  winnerCriteria String // Which metric determines winner
+  confidence     Float      @default(95.0)
+  isActive       Boolean    @default(true)
+  winnerId       String? // ID of winning variant
+  results        Json? // Test results and statistics
+  startedAt      DateTime?
+  endedAt        DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   // Relations
-  campaign         MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([isActive])
 }
 
 model CampaignAnalytics {
-  id             String            @id @default(cuid())
-  campaignId     String
-  date           DateTime          @default(now())
-  sent           Int               @default(0)
-  delivered      Int               @default(0)
-  opened         Int               @default(0)
-  clicked        Int               @default(0)
-  bounced        Int               @default(0)
-  unsubscribed   Int               @default(0)
-  revenue        Float             @default(0)
-  orders         Int               @default(0)
-  uniqueOpens    Int               @default(0)
-  uniqueClicks   Int               @default(0)
+  id           String   @id @default(cuid())
+  campaignId   String
+  date         DateTime @default(now())
+  sent         Int      @default(0)
+  delivered    Int      @default(0)
+  opened       Int      @default(0)
+  clicked      Int      @default(0)
+  bounced      Int      @default(0)
+  unsubscribed Int      @default(0)
+  revenue      Float    @default(0)
+  orders       Int      @default(0)
+  uniqueOpens  Int      @default(0)
+  uniqueClicks Int      @default(0)
 
   // Relations
-  campaign       MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@unique([campaignId, date])
   @@index([campaignId])
@@ -797,40 +797,40 @@ model CampaignAnalytics {
 }
 
 model MarketingWorkflow {
-  id          String              @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  trigger     Json                // Workflow trigger configuration
-  steps       Json                // Workflow steps and actions
-  isActive    Boolean             @default(false)
+  trigger     Json // Workflow trigger configuration
+  steps       Json // Workflow steps and actions
+  isActive    Boolean  @default(false)
   segmentId   String?
   settings    Json?
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  segment     CustomerSegment?    @relation(fields: [segmentId], references: [id])
-  executions  WorkflowExecution[]
+  segment    CustomerSegment?    @relation(fields: [segmentId], references: [id])
+  executions WorkflowExecution[]
 
   @@index([isActive])
 }
 
 model WorkflowExecution {
-  id           String            @id @default(cuid())
+  id           String          @id @default(cuid())
   workflowId   String
   userId       String?
-  triggerData  Json              // Data that triggered the workflow
-  currentStep  Int               @default(0)
-  status       ExecutionStatus   @default(RUNNING)
+  triggerData  Json // Data that triggered the workflow
+  currentStep  Int             @default(0)
+  status       ExecutionStatus @default(RUNNING)
   completedAt  DateTime?
   errorMessage String?
-  stepResults  Json?             // Results from each step
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  stepResults  Json? // Results from each step
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   // Relations
-  workflow     MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  user         User?             @relation(fields: [userId], references: [id])
+  workflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  user     User?             @relation(fields: [userId], references: [id])
 
   @@index([workflowId])
   @@index([userId])
@@ -838,24 +838,24 @@ model WorkflowExecution {
 }
 
 model CustomerJourney {
-  id             String                @id @default(cuid())
+  id             String        @id @default(cuid())
   userId         String
-  stage          CustomerStage         @default(LEAD)
-  score          Int                   @default(0)
-  lastActivity   DateTime              @default(now())
-  totalSpent     Float                 @default(0)
-  orderCount     Int                   @default(0)
-  avgOrderValue  Float                 @default(0)
-  daysSinceFirst Int                   @default(0)
-  daysSinceLast  Int                   @default(0)
-  engagement     Json?                 // Engagement metrics
-  preferences    Json?                 // Customer preferences
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  stage          CustomerStage @default(LEAD)
+  score          Int           @default(0)
+  lastActivity   DateTime      @default(now())
+  totalSpent     Float         @default(0)
+  orderCount     Int           @default(0)
+  avgOrderValue  Float         @default(0)
+  daysSinceFirst Int           @default(0)
+  daysSinceLast  Int           @default(0)
+  engagement     Json? // Engagement metrics
+  preferences    Json? // Customer preferences
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   // Relations
-  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  touchpoints    CustomerTouchpoint[]
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  touchpoints CustomerTouchpoint[]
 
   @@unique([userId])
   @@index([stage])
@@ -864,16 +864,16 @@ model CustomerJourney {
 }
 
 model CustomerTouchpoint {
-  id         String          @id @default(cuid())
-  journeyId  String
-  type       TouchpointType
-  channel    String
-  action     String
-  details    Json?
-  timestamp  DateTime        @default(now())
+  id        String         @id @default(cuid())
+  journeyId String
+  type      TouchpointType
+  channel   String
+  action    String
+  details   Json?
+  timestamp DateTime       @default(now())
 
   // Relations
-  journey    CustomerJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  journey CustomerJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index([journeyId])
   @@index([type])
@@ -881,7 +881,7 @@ model CustomerTouchpoint {
 }
 
 model SMSCampaign {
-  id          String        @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
   message     String
   segmentId   String?
@@ -889,32 +889,32 @@ model SMSCampaign {
   scheduledAt DateTime?
   sentAt      DateTime?
   createdBy   String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   // Relations
-  segment     CustomerSegment? @relation(fields: [segmentId], references: [id])
-  sends       SMSSend[]
+  segment CustomerSegment? @relation(fields: [segmentId], references: [id])
+  sends   SMSSend[]
 
   @@index([status])
   @@index([scheduledAt])
 }
 
 model SMSSend {
-  id           String      @id @default(cuid())
+  id           String     @id @default(cuid())
   campaignId   String
   phoneNumber  String
   userId       String?
-  status       SendStatus  @default(PENDING)
+  status       SendStatus @default(PENDING)
   sentAt       DateTime?
   deliveredAt  DateTime?
   errorMessage String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   // Relations
-  campaign     SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user         User?       @relation(fields: [userId], references: [id])
+  campaign SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user     User?       @relation(fields: [userId], references: [id])
 
   @@index([campaignId])
   @@index([phoneNumber])
@@ -922,74 +922,73 @@ model SMSSend {
 }
 
 model EmailTemplate {
-  id           String    @id @default(cuid())
-  name         String
-  category     String
-  subject      String
-  content      Json      // Template content structure
-  previewText  String?
-  thumbnail    String?
-  isPublic     Boolean   @default(false)
-  tags         String[]
-  createdBy    String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  subject     String
+  content     Json // Template content structure
+  previewText String?
+  thumbnail   String?
+  isPublic    Boolean  @default(false)
+  tags        String[]
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([isPublic])
 }
 
 model MarketingAsset {
-  id          String    @id @default(cuid())
-  name        String
-  type        AssetType
-  url         String
-  fileSize    Int?
-  dimensions  Json?     // Width/height for images
-  alt         String?
-  tags        String[]
-  folder      String?
-  createdBy   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String    @id @default(cuid())
+  name       String
+  type       AssetType
+  url        String
+  fileSize   Int?
+  dimensions Json? // Width/height for images
+  alt        String?
+  tags       String[]
+  folder     String?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@index([type])
   @@index([folder])
 }
 
 model N8NWebhook {
-  id          String           @id @default(cuid())
-  name        String
-  url         String           @unique
-  trigger     String           // Event that triggers this webhook
-  isActive    Boolean          @default(true)
-  description String?
-  payload     Json?            // Expected payload structure
+  id            String          @id @default(cuid())
+  name          String
+  url           String          @unique
+  trigger       String // Event that triggers this webhook
+  isActive      Boolean         @default(true)
+  description   String?
+  payload       Json? // Expected payload structure
   lastTriggered DateTime?
-  triggerCount  Int            @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  logs        N8NWebhookLog[]
+  triggerCount  Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  logs          N8NWebhookLog[]
 
   @@index([trigger])
   @@index([isActive])
 }
 
 model N8NWebhookLog {
-  id          String      @id @default(cuid())
-  webhookId   String
-  payload     Json
-  response    Json?
-  status      Int         @default(200)
-  executedAt  DateTime    @default(now())
+  id         String   @id @default(cuid())
+  webhookId  String
+  payload    Json
+  response   Json?
+  status     Int      @default(200)
+  executedAt DateTime @default(now())
 
   // Relations
-  webhook     N8NWebhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhook N8NWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
 
   @@index([webhookId])
   @@index([executedAt])
 }
-
 
 // Enums for the marketing system
 enum CampaignType {
@@ -1066,40 +1065,41 @@ enum AssetType {
 // Localization & White-label Platform Models
 
 model Tenant {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String
-  slug          String    @unique
-  domain        String?   @unique  // Custom domain
-  subdomain     String    @unique  // tenant.gangrunprinting.com
-  isActive      Boolean   @default(true)
+  slug          String     @unique
+  domain        String?    @unique // Custom domain
+  subdomain     String     @unique // tenant.gangrunprinting.com
+  isActive      Boolean    @default(true)
   plan          TenantPlan @default(BASIC)
-  settings      Json?     // Tenant-specific settings
-  branding      Json?     // Branding configuration
-  locales       String[]  @default(["en"]) // Supported locales
-  defaultLocale String    @default("en")
-  timezone      String    @default("America/Chicago")
-  currency      String    @default("USD")
+  settings      Json? // Tenant-specific settings
+  branding      Json? // Branding configuration
+  locales       String[]   @default(["en"]) // Supported locales
+  defaultLocale String     @default("en")
+  timezone      String     @default("America/Chicago")
+  currency      String     @default("USD")
 
   // Contact & billing info
-  contactEmail  String
-  contactName   String?
-  contactPhone  String?
-  billingEmail  String?
+  contactEmail String
+  contactName  String?
+  contactPhone String?
+  billingEmail String?
 
   // Feature flags
-  features      Json?     // Feature configuration per tenant
+  features Json? // Feature configuration per tenant
 
   // Dates
-  trialEndsAt   DateTime?
-  suspendedAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  trialEndsAt DateTime?
+  suspendedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
-  domains       TenantDomain[]
-  brands        TenantBrand[]
-  translations  Translation[]
-  users         TenantUser[]
+  domains            TenantDomain[]
+  brands             TenantBrand[]
+  translations       Translation[]
+  users              TenantUser[]
+  TranslationRequest TranslationRequest[]
 
   @@index([slug])
   @@index([domain])
@@ -1108,15 +1108,15 @@ model Tenant {
 }
 
 model TenantDomain {
-  id          String         @id @default(cuid())
-  tenantId    String
-  domain      String         @unique
-  isVerified  Boolean        @default(false)
-  isPrimary   Boolean        @default(false)
-  sslEnabled  Boolean        @default(false)
+  id         String  @id @default(cuid())
+  tenantId   String
+  domain     String  @unique
+  isVerified Boolean @default(false)
+  isPrimary  Boolean @default(false)
+  sslEnabled Boolean @default(false)
 
   // DNS verification
-  verificationToken String?
+  verificationToken  String?
   verificationMethod String? // TXT, CNAME, FILE
   verificationStatus String? // PENDING, VERIFIED, FAILED
 
@@ -1124,11 +1124,11 @@ model TenantDomain {
   sslCertificateId String?
   sslExpiresAt     DateTime?
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([domain])
@@ -1136,15 +1136,15 @@ model TenantDomain {
 }
 
 model TenantUser {
-  id       String           @id @default(cuid())
+  id       String         @id @default(cuid())
   tenantId String
   userId   String
-  role     TenantUserRole   @default(MEMBER)
-  joinedAt DateTime         @default(now())
+  role     TenantUserRole @default(MEMBER)
+  joinedAt DateTime       @default(now())
 
   // Relations
-  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, userId])
   @@index([tenantId])
@@ -1152,35 +1152,35 @@ model TenantUser {
 }
 
 model TenantBrand {
-  id              String    @id @default(cuid())
-  tenantId        String
-  name            String
-  isDefault       Boolean   @default(false)
+  id        String  @id @default(cuid())
+  tenantId  String
+  name      String
+  isDefault Boolean @default(false)
 
   // Visual branding
-  logoUrl         String?
-  logoText        String?
-  faviconUrl      String?
+  logoUrl    String?
+  logoText   String?
+  faviconUrl String?
 
   // Color scheme
-  primaryColor    String    @default("#3b82f6")
-  secondaryColor  String    @default("#64748b")
-  accentColor     String    @default("#f59e0b")
-  backgroundColor String    @default("#ffffff")
-  textColor       String    @default("#1f2937")
+  primaryColor    String @default("#3b82f6")
+  secondaryColor  String @default("#64748b")
+  accentColor     String @default("#f59e0b")
+  backgroundColor String @default("#ffffff")
+  textColor       String @default("#1f2937")
 
   // Typography
-  primaryFont     String    @default("Inter")
-  secondaryFont   String    @default("Inter")
-  fontSize        String    @default("16px")
+  primaryFont   String @default("Inter")
+  secondaryFont String @default("Inter")
+  fontSize      String @default("16px")
 
   // Layout & spacing
-  borderRadius    String    @default("8px")
-  spacing         String    @default("16px")
+  borderRadius String @default("8px")
+  spacing      String @default("16px")
 
   // Custom CSS
-  customCss       String?
-  customJs        String?
+  customCss String?
+  customJs  String?
 
   // Email branding
   emailHeaderLogo String?
@@ -1188,11 +1188,11 @@ model TenantBrand {
   emailColors     Json?
 
   // Dates
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -1200,34 +1200,34 @@ model TenantBrand {
 }
 
 model Translation {
-  id              String           @id @default(cuid())
-  tenantId        String?          // null for global translations
-  key             String           // Translation key (e.g., "common.welcome")
-  namespace       String           @default("common") // Namespace for organization
-  locale          String           // Language code (en, es, fr, etc.)
-  value           String           // Translated text
+  id        String  @id @default(cuid())
+  tenantId  String? // null for global translations
+  key       String // Translation key (e.g., "common.welcome")
+  namespace String  @default("common") // Namespace for organization
+  locale    String // Language code (en, es, fr, etc.)
+  value     String // Translated text
 
   // Translation metadata
-  context         String?          // Context for translators
-  pluralization   Json?            // Plural forms for different counts
-  interpolation   String[]         @default([]) // Variables that can be interpolated
+  context       String? // Context for translators
+  pluralization Json? // Plural forms for different counts
+  interpolation String[] @default([]) // Variables that can be interpolated
 
   // Quality & approval
-  isApproved      Boolean          @default(false)
-  confidence      Float?           // Auto-translation confidence score
-  source          TranslationSource @default(MANUAL)
-  translatedBy    String?          // User ID who created/approved
+  isApproved   Boolean           @default(false)
+  confidence   Float? // Auto-translation confidence score
+  source       TranslationSource @default(MANUAL)
+  translatedBy String? // User ID who created/approved
 
   // Auto-translation data
-  autoTranslated  Boolean          @default(false)
-  originalText    String?          // Original text before translation
-  translationModel String?         // AI model used for translation
+  autoTranslated   Boolean @default(false)
+  originalText     String? // Original text before translation
+  translationModel String? // AI model used for translation
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant          Tenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, key, namespace, locale])
   @@index([tenantId])
@@ -1239,36 +1239,36 @@ model Translation {
 }
 
 model TranslationRequest {
-  id          String                @id @default(cuid())
-  tenantId    String?
-  key         String
-  namespace   String                @default("common")
-  sourceLocale String               @default("en")
-  targetLocale String
-  sourceText  String
+  id             String  @id @default(cuid())
+  tenantId       String?
+  key            String
+  namespace      String  @default("common")
+  sourceLocale   String  @default("en")
+  targetLocale   String
+  sourceText     String
   translatedText String?
 
-  status      TranslationStatus     @default(PENDING)
-  priority    TranslationPriority   @default(NORMAL)
-  context     String?
-  notes       String?
+  status   TranslationStatus   @default(PENDING)
+  priority TranslationPriority @default(NORMAL)
+  context  String?
+  notes    String?
 
   // Assignment
-  assignedTo  String?               // User ID
+  assignedTo  String? // User ID
   assignedAt  DateTime?
   completedAt DateTime?
 
   // Auto-translation
-  autoAttempted Boolean             @default(false)
-  autoResult    String?
+  autoAttempted  Boolean @default(false)
+  autoResult     String?
   autoConfidence Float?
 
-  requestedBy String                // User ID who requested
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  requestedBy String // User ID who requested
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  tenant      Tenant?               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([status])
@@ -1277,67 +1277,67 @@ model TranslationRequest {
 }
 
 model Locale {
-  id            String    @id @default(cuid())
-  code          String    @unique // en, es, fr, etc.
-  name          String    // English, Spanish, French
-  nativeName    String    // English, Español, Français
-  direction     String    @default("ltr") // ltr or rtl
+  id         String @id @default(cuid())
+  code       String @unique // en, es, fr, etc.
+  name       String // English, Spanish, French
+  nativeName String // English, Español, Français
+  direction  String @default("ltr") // ltr or rtl
 
   // Regional settings
-  dateFormat    String    @default("MM/dd/yyyy")
-  timeFormat    String    @default("h:mm a")
-  numberFormat  Json      // Number formatting rules
-  currencyFormat Json     // Currency formatting rules
+  dateFormat     String @default("MM/dd/yyyy")
+  timeFormat     String @default("h:mm a")
+  numberFormat   Json // Number formatting rules
+  currencyFormat Json // Currency formatting rules
 
   // Display settings
-  flag          String?   // Flag emoji or icon
-  isActive      Boolean   @default(true)
-  sortOrder     Int       @default(0)
+  flag      String? // Flag emoji or icon
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])
 }
 
 model Currency {
-  id          String    @id @default(cuid())
-  code        String    @unique // USD, EUR, GBP, etc.
-  name        String    // US Dollar, Euro, British Pound
-  symbol      String    // $, €, £
+  id     String @id @default(cuid())
+  code   String @unique // USD, EUR, GBP, etc.
+  name   String // US Dollar, Euro, British Pound
+  symbol String // $, €, £
 
   // Exchange rate (relative to USD)
   exchangeRate Float    @default(1.0)
-  lastUpdated DateTime  @default(now())
+  lastUpdated  DateTime @default(now())
 
   // Formatting
-  decimalPlaces Int     @default(2)
+  decimalPlaces      Int    @default(2)
   thousandsSeparator String @default(",")
-  decimalSeparator String @default(".")
-  symbolPosition String @default("before") // before, after
+  decimalSeparator   String @default(".")
+  symbolPosition     String @default("before") // before, after
 
   // Regional settings
-  countries   String[] // Countries that use this currency
-  isActive    Boolean  @default(true)
+  countries String[] // Countries that use this currency
+  isActive  Boolean  @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])
 }
 
 model ExchangeRate {
-  id          String    @id @default(cuid())
+  id           String @id @default(cuid())
   fromCurrency String
-  toCurrency  String
-  rate        Float
-  source      String    @default("api") // api, manual, calculated
+  toCurrency   String
+  rate         Float
+  source       String @default("api") // api, manual, calculated
 
-  validFrom   DateTime  @default(now())
-  validTo     DateTime?
-  createdAt   DateTime  @default(now())
+  validFrom DateTime  @default(now())
+  validTo   DateTime?
+  createdAt DateTime  @default(now())
 
   @@unique([fromCurrency, toCurrency, validFrom])
   @@index([fromCurrency])
@@ -1346,35 +1346,34 @@ model ExchangeRate {
 }
 
 model ThemeTemplate {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String  @id @default(cuid())
+  name        String  @unique
   description String?
-  category    String    @default("business")
+  category    String  @default("business")
 
   // Preview
-  thumbnail   String?
-  previewUrl  String?
+  thumbnail  String?
+  previewUrl String?
 
   // Theme configuration
-  colors      Json      // Color palette
-  typography  Json      // Font settings
-  layout      Json      // Layout settings
-  components  Json      // Component styles
+  colors     Json // Color palette
+  typography Json // Font settings
+  layout     Json // Layout settings
+  components Json // Component styles
 
   // Metadata
-  isPremium   Boolean   @default(false)
-  isActive    Boolean   @default(true)
-  tags        String[]  @default([])
+  isPremium Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  tags      String[] @default([])
 
-  createdBy   String    // User ID
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdBy String // User ID
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([isPremium])
   @@index([isActive])
 }
-
 
 // Enums for Localization & White-label
 
