@@ -117,11 +117,7 @@ async function getCustomer(id: string) {
     include: {
       orders: {
         include: {
-          OrderItem: {
-            include: {
-              product: true
-            }
-          }
+          OrderItem: true
         },
         orderBy: { createdAt: 'desc' },
         take: 10

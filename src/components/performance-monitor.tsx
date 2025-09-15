@@ -128,7 +128,7 @@ export function usePerformanceTiming() {
     return measure?.duration || 0;
   };
 
-  const measureAsync = async <T>(name: string, asyncFn: () => Promise<T>): Promise<T> => {
+  const measureAsync = async <T,>(name: string, asyncFn: () => Promise<T>): Promise<T> => {
     startTiming(name);
     try {
       const result = await asyncFn();

@@ -2,7 +2,7 @@
   "levels": {
     "low": false,
     "moderate": false,
-    "high": true,
+    "high": false,
     "critical": true
   },
   "report-type": "important",

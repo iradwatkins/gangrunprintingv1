@@ -104,7 +104,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <ErrorBoundary name="LocaleLayout">
           <NextIntlClientProvider messages={messages}>
             <TenantProvider initialTenant={tenantContext}>
-              <ThemeProvider tenant={tenantContext?.tenant}>
+              <ThemeProvider tenant={tenantContext?.tenant || null}>
                 <Providers>
                   {children}
                 </Providers>
