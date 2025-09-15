@@ -7,6 +7,7 @@ import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { ComprehensivePerformanceMonitor } from '@/components/performance-monitor'
 import { ErrorBoundary } from '@/components/error-boundary'
+import { ThemeInjector } from '@/components/theme/theme-injector'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
+        <ThemeInjector />
         <OfflineIndicator />
         <ComprehensivePerformanceMonitor />
         <ErrorBoundary name="RootLayout">
