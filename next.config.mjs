@@ -1,17 +1,7 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from '@sentry/nextjs';
-import withSerwistInit from '@serwist/next';
 
 const withNextIntl = createNextIntlPlugin('./src/lib/i18n/config.ts');
-
-const withSerwist = withSerwistInit({
-  swSrc: 'src/app/sw.ts',
-  swDest: 'public/sw.js',
-  cacheOnNavigation: true,
-  additionalPrecacheEntries: [
-    '/offline.html'
-  ]
-});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -177,7 +167,6 @@ const nextConfig = {
 // Apply plugins in order
 let config = nextConfig;
 config = withNextIntl(config);
-config = withSerwist(config);
 
 // Apply Sentry config last for production
 if (process.env.NODE_ENV === 'production') {
