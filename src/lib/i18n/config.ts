@@ -8,10 +8,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   // Get tenant context to determine supported locales
   const tenantContext = await getCurrentTenant();
-  const supportedLocales = tenantContext?.tenant?.locales || routing.locales;
+  const supportedLocales = tenantContext?.tenant?.locales || ['en', 'es'];
 
   if (!locale || !supportedLocales.includes(locale)) {
-    locale = tenantContext?.tenant?.defaultLocale || routing.defaultLocale;
+    locale = tenantContext?.tenant?.defaultLocale || 'en';
   }
 
   return {

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { trackApiRoute, addBreadcrumb } from '@/lib/sentry';
 import { v4 as uuidv4 } from 'uuid';
-import createMiddleware from 'next-intl/middleware';
-import { routing } from '@/lib/i18n/routing';
+// All i18n functionality temporarily disabled
+// import createMiddleware from 'next-intl/middleware';
+// import { routing } from '@/lib/i18n/routing';
 import { resolveTenantContext } from '@/lib/tenants/resolver';
 
 // Request correlation ID for distributed tracing
@@ -11,8 +12,7 @@ function generateCorrelationId(): string {
   return uuidv4();
 }
 
-// Create the internationalization middleware
-const intlMiddleware = createMiddleware(routing);
+// Internationalization middleware completely disabled
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -77,29 +77,7 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Apply internationalization middleware for non-API routes
-  try {
-    // Create a modified request with tenant context
-    const modifiedRequest = new NextRequest(request.url, {
-      headers: requestHeaders,
-      method: request.method,
-    });
-
-    // Apply internationalization
-    const intlResponse = intlMiddleware(modifiedRequest);
-
-    if (intlResponse) {
-      // Add tenant and monitoring headers to the intl response
-      if (tenantContext.tenant) {
-        intlResponse.headers.set('x-tenant-id', tenantContext.tenant.id);
-        intlResponse.headers.set('x-tenant-slug', tenantContext.tenant.slug);
-      }
-      addResponseHeaders(intlResponse, correlationId);
-      return intlResponse;
-    }
-  } catch (error) {
-    console.error('Internationalization middleware error:', error);
-  }
+  // Internationalization middleware completely removed
 
   // Public routes that don't require authentication
   const publicRoutes = [
