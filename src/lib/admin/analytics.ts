@@ -66,8 +66,14 @@ export class AnalyticsService {
           status: { notIn: ['CANCELLED', 'REFUNDED'] }
         },
         include: {
-          orderItems: {
-            include: { product: true }
+          OrderItem: {
+            include: {
+              product: {
+                include: {
+                  ProductCategory: true
+                }
+              }
+            }
           },
           user: true
         }
@@ -120,7 +126,7 @@ export class AnalyticsService {
     const categorySales = new Map<string, { revenue: number; orders: number }>()
 
     currentOrders.forEach(order => {
-      order.orderItems.forEach(item => {
+      order.OrderItem.forEach(item => {
         if (item.product) {
           const existing = productSales.get(item.product.id) || {
             name: item.product.name,
@@ -129,7 +135,7 @@ export class AnalyticsService {
           }
           productSales.set(item.product.id, {
             ...existing,
-            revenue: existing.revenue + (order.total / order.orderItems.length), // Approximate revenue per item
+            revenue: existing.revenue + (order.total / order.OrderItem.length), // Approximate revenue per item
             quantity: existing.quantity + item.quantity
           })
 
@@ -137,7 +143,7 @@ export class AnalyticsService {
           if (item.product.categoryId) {
             const categoryRevenue = categorySales.get(item.product.categoryId) || { revenue: 0, orders: 0 }
             categorySales.set(item.product.categoryId, {
-              revenue: categoryRevenue.revenue + (order.total / order.orderItems.length),
+              revenue: categoryRevenue.revenue + (order.total / order.OrderItem.length),
               orders: categoryRevenue.orders + 1
             })
           }
@@ -151,7 +157,7 @@ export class AnalyticsService {
       .slice(0, 10)
 
     // Get category names
-    const categoryNames = await prisma.category.findMany({
+    const categoryNames = await prisma.productCategory.findMany({
       where: { id: { in: Array.from(categorySales.keys()) } }
     })
 
