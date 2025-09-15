@@ -1,6 +1,6 @@
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin('./src/lib/i18n/config.ts');
+// Temporarily disable next-intl plugin due to module compatibility issues
+// import createNextIntlPlugin from 'next-intl/plugin';
+// const withNextIntl = createNextIntlPlugin('./src/lib/i18n/config.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -119,25 +119,17 @@ const nextConfig = {
     ];
   },
 
-  // Webpack configuration
+  // Minimal webpack configuration - let Next.js handle defaults
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Optimize bundle size
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      cacheGroups: {
-        default: {
-          minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true
-        },
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          priority: -10,
-          chunks: 'all'
-        }
-      }
-    };
+    // Only add essential fallbacks for browser compatibility
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      };
+    }
 
     return config;
   },
@@ -163,9 +155,9 @@ const nextConfig = {
   }
 };
 
-// Apply plugins in order
+// Apply plugins in order - next-intl temporarily disabled
 let config = nextConfig;
-config = withNextIntl(config);
+// config = withNextIntl(config);
 
 // Sentry configuration temporarily disabled due to Next.js 15 compatibility issues
 // TODO: Re-enable when @sentry/nextjs supports Next.js 15

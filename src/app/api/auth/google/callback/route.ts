@@ -19,8 +19,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     state: state ? "present" : "missing"
   });
 
-  const storedState = cookies().get("google_oauth_state")?.value ?? null;
-  const storedCodeVerifier = cookies().get("google_oauth_code_verifier")?.value ?? null;
+  const storedState = (await cookies()).get("google_oauth_state")?.value ?? null;
+  const storedCodeVerifier = (await cookies()).get("google_oauth_code_verifier")?.value ?? null;
 
   console.log("Stored cookies:", {
     storedState: storedState ? "present" : "missing",
@@ -232,15 +232,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const sessionCookie = lucia.createSessionCookie(session.id);
     console.log("Session created:", session.id);
 
-    cookies().set(
+    (await cookies()).set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes
     );
 
     // Clear OAuth cookies
-    cookies().delete("google_oauth_state");
-    cookies().delete("google_oauth_code_verifier");
+    (await cookies()).delete("google_oauth_state");
+    (await cookies()).delete("google_oauth_code_verifier");
 
     // Redirect based on user role
     const redirectUrl = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard';
