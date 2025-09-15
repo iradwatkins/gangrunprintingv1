@@ -267,6 +267,10 @@ const data = {
           url: '/admin/settings?tab=integrations',
         },
         {
+          title: 'Themes',
+          url: '/admin/settings/themes',
+        },
+        {
           title: 'Material Types',
           url: '/admin/material-types',
         },
