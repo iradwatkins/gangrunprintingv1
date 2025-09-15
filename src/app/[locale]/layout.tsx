@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/lib/i18n/routing'
-import { getCurrentTenant } from '@/lib/tenants/resolver'
+import { getStaticTenantContext } from '@/lib/tenants/static-resolver'
 import { ThemeProvider } from '@/components/white-label/theme-provider'
 import { TenantProvider } from '@/components/tenants/tenant-provider'
 import '../globals.css'
@@ -31,7 +31,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const tenantContext = await getCurrentTenant();
+  const tenantContext = await getStaticTenantContext(locale);
   const t = await getMessages();
 
   const title = tenantContext?.tenant?.branding?.logoText ||
@@ -91,8 +91,8 @@ export default async function LocaleLayout({ children, params }: Props) {
   // Enable static rendering
   setRequestLocale(locale);
 
-  // Get tenant context and messages
-  const tenantContext = await getCurrentTenant();
+  // Get tenant context and messages (using static resolver for SSG)
+  const tenantContext = await getStaticTenantContext(locale);
   const messages = await getMessages();
 
   return (

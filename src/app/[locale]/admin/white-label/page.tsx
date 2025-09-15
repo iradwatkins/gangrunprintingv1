@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Loading } from '@/components/ui/loading';
 import { Palette, Layout, Image, Code, Mail, Eye } from 'lucide-react';
 
+// Force dynamic rendering for admin pages (requires authentication)
+export const dynamic = 'force-dynamic';
+
 type Props = {
   params: Promise<{locale: string}>;
   searchParams: Promise<{[key: string]: string | string[] | undefined}>;
