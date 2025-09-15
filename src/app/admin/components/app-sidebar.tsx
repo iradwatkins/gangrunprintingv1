@@ -26,6 +26,11 @@ import {
   Target,
   TrendingUp,
   MessageSquare,
+  Truck,
+  Monitor,
+  TestTube,
+  Settings,
+  Wrench,
 } from 'lucide-react'
 
 import { NavMain } from './nav-main'
@@ -177,18 +182,6 @@ const data = {
           title: 'Analytics',
           url: '/admin/marketing/analytics',
         },
-        {
-          title: 'Templates',
-          url: '/admin/marketing/templates',
-        },
-        {
-          title: 'A/B Testing',
-          url: '/admin/marketing/ab-testing',
-        },
-        {
-          title: 'SMS Marketing',
-          url: '/admin/marketing/sms',
-        },
       ],
     },
     {
@@ -211,21 +204,36 @@ const data = {
       ],
     },
     {
-      title: 'Design Studio',
-      url: '/admin/design',
-      icon: Palette,
+      title: 'Vendors',
+      url: '/admin/vendors',
+      icon: Truck,
       items: [
         {
-          title: 'Templates',
-          url: '/admin/design/templates',
+          title: 'All Vendors',
+          url: '/admin/vendors',
         },
         {
-          title: 'Assets',
-          url: '/admin/design/assets',
+          title: 'Add Vendor',
+          url: '/admin/vendors/new',
+        },
+      ],
+    },
+    {
+      title: 'Monitoring',
+      url: '/admin/monitoring',
+      icon: Monitor,
+      items: [
+        {
+          title: 'System Health',
+          url: '/admin/monitoring',
         },
         {
-          title: 'Fonts',
-          url: '/admin/design/fonts',
+          title: 'Performance',
+          url: '/admin/monitoring?tab=performance',
+        },
+        {
+          title: 'Logs',
+          url: '/admin/monitoring?tab=logs',
         },
       ],
     },
@@ -278,6 +286,14 @@ const data = {
           title: 'Sizes',
           url: '/admin/sizes',
         },
+        {
+          title: 'Test Colors',
+          url: '/admin/test-colors',
+        },
+        {
+          title: 'Print Options',
+          url: '/admin/print-options',
+        },
       ],
     },
   ],
@@ -285,29 +301,39 @@ const data = {
     {
       name: 'Quick Actions',
       url: '#',
-      icon: Frame,
+      icon: Zap,
     },
     {
-      name: 'New Order',
-      url: '/admin/orders/new',
+      name: 'Orders',
+      url: '/admin/orders',
       icon: ShoppingCart,
     },
     {
-      name: 'Add Product',
-      url: '/admin/products/new',
-      icon: Package,
+      name: 'Customers',
+      url: '/admin/customers',
+      icon: Users,
     },
     {
-      name: 'Print Queue',
-      url: '/admin/queue',
-      icon: Printer,
+      name: 'Vendors',
+      url: '/admin/vendors',
+      icon: Truck,
+    },
+    {
+      name: 'System Monitor',
+      url: '/admin/monitoring',
+      icon: Monitor,
+    },
+    {
+      name: 'Test Colors',
+      url: '/admin/test-colors',
+      icon: TestTube,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" defaultOpen={true} {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
