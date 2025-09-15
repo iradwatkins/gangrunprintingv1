@@ -206,7 +206,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Today's Revenue"
           value={`$${(data.todayRevenue / 100).toFixed(2)}`}
@@ -215,7 +215,7 @@ export default async function AdminDashboard() {
           subtitle={`$${(data.monthRevenue / 100).toFixed(2)} this month`}
           change={data.revenueChange}
         />
-        
+
         <StatsCard
           title="Pending Orders"
           value={data.pendingOrders.toString()}
@@ -223,7 +223,7 @@ export default async function AdminDashboard() {
           iconBg="bg-blue-100 dark:bg-blue-900/20"
           subtitle={`${data.urgentOrders} urgent`}
         />
-        
+
         <StatsCard
           title="Customers"
           value={data.totalCustomers.toString()}
@@ -231,7 +231,7 @@ export default async function AdminDashboard() {
           iconBg="bg-purple-100 dark:bg-purple-900/20"
           subtitle={`+${data.newCustomersThisMonth} this month`}
         />
-        
+
         <StatsCard
           title="Completion Rate"
           value={`${data.completionRate.toFixed(0)}%`}
@@ -242,12 +242,12 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/admin/orders">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Package className="h-4 w-4" />
+                <Package className="h-5 w-5 sm:h-4 sm:w-4" />
                 Orders
               </CardTitle>
             </CardHeader>
@@ -259,12 +259,12 @@ export default async function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
-        
+
         <Link href="/admin/products">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Printer className="h-4 w-4" />
+                <Printer className="h-5 w-5 sm:h-4 sm:w-4" />
                 Products
               </CardTitle>
             </CardHeader>
@@ -275,12 +275,12 @@ export default async function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
-        
+
         <Link href="/admin/customers">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Users className="h-4 w-4" />
+                <Users className="h-5 w-5 sm:h-4 sm:w-4" />
                 Customers
               </CardTitle>
             </CardHeader>
@@ -292,12 +292,12 @@ export default async function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
-        
+
         <Link href="/admin/analytics">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
+                <TrendingUp className="h-5 w-5 sm:h-4 sm:w-4" />
                 Analytics
               </CardTitle>
             </CardHeader>
@@ -311,11 +311,11 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid gap-4 lg:grid-cols-7">
-        <div className="lg:col-span-4">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
           <ProductionChart />
         </div>
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-1">
           <GangRunSchedule />
         </div>
       </div>

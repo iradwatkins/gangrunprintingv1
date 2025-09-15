@@ -164,29 +164,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Top Bar */}
-      <div className="bg-primary/5 border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-2 text-sm">
-            <div className="flex items-center gap-4">
-              <a className="flex items-center gap-1 hover:text-primary transition-colors" href="tel:1-800-PRINTING">
-                <Phone className="h-3 w-3" />
-                1-800-PRINTING
-              </a>
-              <a className="hidden sm:flex items-center gap-1 hover:text-primary transition-colors" href="mailto:support@gangrunprinting.com">
-                <Mail className="h-3 w-3" />
-                support@gangrunprinting.com
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-primary/10 text-primary border-primary/20" variant="secondary">
-                Same Day Printing Available
-              </Badge>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navigation */}
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -256,6 +233,17 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-3">
+            {/* Phone Number */}
+            <a href="tel:1-800-PRINTING" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Phone className="h-4 w-4" />
+              <span>1-800-PRINTING</span>
+            </a>
+
+            {/* Same Day Badge */}
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              Same Day Available
+            </Badge>
+
             {/* User Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -380,6 +368,18 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
+
+                {/* Mobile Contact Info */}
+                <div className="mt-4 pb-4 border-b">
+                  <a href="tel:1-800-PRINTING" className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50">
+                    <Phone className="h-4 w-4 text-primary" />
+                    <div>
+                      <p className="font-medium">1-800-PRINTING</p>
+                      <p className="text-xs text-muted-foreground">Call now for instant support</p>
+                    </div>
+                  </a>
+                </div>
+
                 <nav className="mt-6 flex flex-col space-y-1">
                   {navigation.map((item) => (
                     <div key={item.name}>

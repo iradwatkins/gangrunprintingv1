@@ -173,7 +173,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
         </div>
       )}
       
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -186,11 +186,11 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                 />
               </TableHead>
               <TableHead>Order #</TableHead>
-              <TableHead>Customer</TableHead>
+              <TableHead className="hidden sm:table-cell">Customer</TableHead>
               <TableHead>Items</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead className="hidden md:table-cell">Total</TableHead>
+              <TableHead className="hidden lg:table-cell">Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -206,14 +206,18 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                   />
                 </TableCell>
                 <TableCell className="font-medium">
-                  <Link 
+                  <Link
                     href={`/admin/orders/${order.id}`}
                     className="hover:underline"
                   >
                     {order.orderNumber}
                   </Link>
+                  {/* Mobile-only: Show customer info below order number */}
+                  <div className="sm:hidden text-xs text-muted-foreground mt-1">
+                    {order.email}
+                  </div>
                 </TableCell>
-                <TableCell>{order.email}</TableCell>
+                <TableCell className="hidden sm:table-cell">{order.email}</TableCell>
                 <TableCell>
                   <div className="text-sm">
                     {order.OrderItem.length} item(s)
@@ -225,9 +229,13 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                 </TableCell>
                 <TableCell>
                   {getStatusBadge(order.status)}
+                  {/* Mobile-only: Show total and date below status */}
+                  <div className="md:hidden text-xs text-muted-foreground mt-1">
+                    ${(order.total / 100).toFixed(2)} • {formatDate(order.createdAt)}
+                  </div>
                 </TableCell>
-                <TableCell>${(order.total / 100).toFixed(2)}</TableCell>
-                <TableCell>{formatDate(order.createdAt)}</TableCell>
+                <TableCell className="hidden md:table-cell">${(order.total / 100).toFixed(2)}</TableCell>
+                <TableCell className="hidden lg:table-cell">{formatDate(order.createdAt)}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

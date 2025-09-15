@@ -15,7 +15,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter } from 'next/navigation'
 
-export function AdminHeader() {
+interface AdminHeaderProps {
+  onToggleDesktopSidebar?: () => void
+  onToggleMobileSidebar?: () => void
+}
+
+export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: AdminHeaderProps) {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -75,7 +80,14 @@ export function AdminHeader() {
 
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
-      <Button className="md:hidden" size="icon" variant="ghost">
+      {/* Desktop sidebar toggle */}
+      <Button
+        className="hidden lg:flex"
+        variant="ghost"
+        size="icon"
+        onClick={onToggleDesktopSidebar}
+        aria-label="Toggle sidebar"
+      >
         <Menu className="h-5 w-5" />
       </Button>
       

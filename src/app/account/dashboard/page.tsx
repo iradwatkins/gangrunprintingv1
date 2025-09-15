@@ -128,7 +128,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-8">
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="sm:col-span-1 lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="sm:col-span-2 lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-base">Need Help?</CardTitle>
             </CardHeader>
@@ -201,12 +201,12 @@ export default async function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-4 md:grid-cols-4 mt-8">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-8">
           <Link href="/account/orders">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Package className="h-4 w-4" />
+                  <Package className="h-5 w-5 sm:h-4 sm:w-4" />
                   All Orders
                 </CardTitle>
               </CardHeader>
@@ -217,9 +217,9 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
-          
+
           <Link href="/account/details">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">
                   Account Details
@@ -232,9 +232,9 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
-          
+
           <Link href="/account/addresses">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">
                   Addresses
@@ -247,9 +247,9 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
-          
+
           <Link href="/products">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">
                   New Order
@@ -263,6 +263,7 @@ export default async function DashboardPage() {
             </Card>
           </Link>
         </div>
+
       </div>
     </AccountWrapper>
   )
