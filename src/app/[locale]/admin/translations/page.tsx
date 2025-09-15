@@ -1,6 +1,5 @@
+// Temporarily simplified - i18n disabled
 import { Suspense } from 'react';
-import { useTranslations } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
 import { TranslationManager } from '@/components/admin/translation-manager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,16 +14,13 @@ type Props = {
 export default async function TranslationsPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const search = await searchParams;
-  setRequestLocale(locale);
-
-  const t = useTranslations('admin');
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            {t('translationsTitle')}
+            Translation Management
           </h1>
           <p className="text-muted-foreground mt-2">
             Manage translations across multiple languages and tenants
