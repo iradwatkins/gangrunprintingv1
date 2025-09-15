@@ -1,5 +1,4 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import { withSentryConfig } from '@sentry/nextjs';
 
 const withNextIntl = createNextIntlPlugin('./src/lib/i18n/config.ts');
 
@@ -168,19 +167,7 @@ const nextConfig = {
 let config = nextConfig;
 config = withNextIntl(config);
 
-// Apply Sentry config last for production
-if (process.env.NODE_ENV === 'production') {
-  config = withSentryConfig(config, {
-    silent: true,
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    widenClientFileUpload: true,
-    transpileClientSDK: true,
-    tunnelRoute: '/monitoring/tunnel',
-    hideSourceMaps: true,
-    disableLogger: true,
-    automaticVercelMonitors: true
-  });
-}
+// Sentry configuration temporarily disabled due to Next.js 15 compatibility issues
+// TODO: Re-enable when @sentry/nextjs supports Next.js 15
 
 export default config;
