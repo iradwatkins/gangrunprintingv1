@@ -17,7 +17,17 @@ export function ThemeInjector() {
   }, []);
 
   useEffect(() => {
-    if (!theme) return;
+    // Only apply custom theme if one exists and has valid variables
+    const hasValidTheme = theme && theme.cssVariables && Object.keys(theme.cssVariables).length > 0;
+
+    if (!hasValidTheme) {
+      // Remove any existing custom theme styles to let defaults show through
+      const existingStyle = document.getElementById('custom-theme-styles');
+      if (existingStyle && existingStyle.parentNode) {
+        existingStyle.parentNode.removeChild(existingStyle);
+      }
+      return;
+    }
 
     // Create style element
     const styleId = 'custom-theme-styles';
@@ -71,10 +81,16 @@ export function ThemeInjector() {
       const response = await fetch('/api/themes/active');
       if (response.ok) {
         const data = await response.json();
-        setTheme(data);
+        // Only set theme if we got valid data
+        if (data && data.cssVariables) {
+          setTheme(data);
+        }
       }
+      // If response is not OK or theme is not found, leave theme as null
+      // This will cause the default theme from globals.css to be used
     } catch (error) {
-      console.error('Failed to fetch active theme:', error);
+      // Silently fail and use default theme
+      // console.error('Failed to fetch active theme:', error);
     }
   };
 
