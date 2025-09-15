@@ -173,10 +173,10 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
               <span className="text-muted-foreground">Total Amount:</span>
               <span className="font-semibold">${(order.total / 100).toFixed(2)}</span>
             </div>
-            {order.estimatedDelivery && (
+            {(order as any).estimatedDelivery && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Est. Delivery:</span>
-                <span>{new Date(order.estimatedDelivery).toLocaleDateString()}</span>
+                <span>{new Date((order as any).estimatedDelivery).toLocaleDateString()}</span>
               </div>
             )}
           </CardContent>
