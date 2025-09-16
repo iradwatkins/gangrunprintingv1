@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
@@ -19,7 +18,6 @@ import { Loader2, Square } from 'lucide-react'
 interface SidesOption {
   id: string
   name: string
-  description: string | null
 }
 
 interface SidesCreationModalProps {
@@ -34,14 +32,13 @@ export function SidesCreationModal({
   onSidesCreated
 }: SidesCreationModalProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    description: ''
+    name: ''
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const resetForm = () => {
-    setFormData({ name: '', description: '' })
+    setFormData({ name: '' })
     setErrors({})
   }
 
@@ -56,9 +53,6 @@ export function SidesCreationModal({
       newErrors.name = 'Name must be less than 100 characters'
     }
 
-    if (formData.description.length > 200) {
-      newErrors.description = 'Description must be less than 200 characters'
-    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -79,8 +73,7 @@ export function SidesCreationModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name.trim(),
-          description: formData.description.trim() || null
+          name: formData.name.trim()
         }),
       })
 
@@ -123,7 +116,7 @@ export function SidesCreationModal({
               Create New Sides Option
             </DialogTitle>
             <DialogDescription>
-              Add a new printing sides option. Multipliers are set per paper stock.
+              Add a new printing sides option.
             </DialogDescription>
           </DialogHeader>
 
@@ -145,25 +138,6 @@ export function SidesCreationModal({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="sides-description">
-                Description
-              </Label>
-              <Textarea
-                id="sides-description"
-                placeholder="Optional description of this printing option"
-                rows={3}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className={errors.description ? 'border-red-500' : ''}
-              />
-              {errors.description && (
-                <p className="text-sm text-red-600">{errors.description}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                {formData.description.length}/200 characters
-              </p>
-            </div>
           </div>
 
           <DialogFooter>
