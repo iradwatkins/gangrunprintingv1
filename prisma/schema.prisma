@@ -102,6 +102,7 @@ model PaperStock {
   paperStockSides         PaperStockSides[]
   productPaperStocks      ProductPaperStock[]
   vendorPaperStocks       VendorPaperStock[]
+  paperException          PaperException?
 }
 
 model CoatingOption {
@@ -182,6 +183,9 @@ model Product {
   productQuantityGroups ProductQuantityGroup[]
   productSizeGroups     ProductSizeGroup[]
   vendorProducts        VendorProduct[]
+  pricingConfig         ProductPricingConfig?
+  productSizes          ProductSize[]
+  productQuantities     ProductQuantity[]
 
   @@index([categoryId])
   @@index([slug])
@@ -1413,4 +1417,138 @@ enum TranslationPriority {
   NORMAL
   HIGH
   URGENT
+}
+
+// CustomTheme model for theme management
+model CustomTheme {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+
+  // Theme variables stored as JSON
+  cssVariables      Json
+  darkModeVariables Json?
+  customCSS         String?
+
+  // Status
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+// ==========================================
+// PRICING FORMULA TABLES
+// ==========================================
+
+// Pre-calculated standard sizes with backend values
+model StandardSize {
+  id                 String   @id @default(cuid())
+  name               String   @unique // "4x6", "5x5", etc.
+  displayName        String   // "4″ × 6″ Standard"
+  width              Float    // 4.0
+  height             Float    // 6.0
+  preCalculatedValue Float    // 24.0 - THE CRITICAL BACKEND VALUE
+  sortOrder          Int      @default(0)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  productSizes ProductSize[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// Standard quantities with adjustment values
+model StandardQuantity {
+  id               String   @id @default(cuid())
+  displayValue     Int      @unique // 200 - what customer sees
+  calculationValue Int      // 250 - what backend uses (for <5000)
+  adjustmentValue  Int?     // Optional override for specific cases
+  sortOrder        Int      @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  productQuantities ProductQuantity[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// Paper type exceptions for sides multiplier
+model PaperException {
+  id                    String     @id @default(cuid())
+  paperStockId          String     @unique
+  exceptionType         String     // "TEXT_PAPER", etc.
+  doubleSidedMultiplier Float      @default(1.75)
+  description           String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  // Relations
+  paperStock PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+
+  @@index([exceptionType])
+}
+
+// Product-specific pricing configuration
+model ProductPricingConfig {
+  id                  String   @id @default(cuid())
+  productId           String   @unique
+  allowCustomSize     Boolean  @default(false)
+  allowCustomQuantity Boolean  @default(false)
+  minCustomWidth      Float?   // Minimum width for custom size
+  maxCustomWidth      Float?   // Maximum width for custom size
+  minCustomHeight     Float?   // Minimum height for custom size
+  maxCustomHeight     Float?   // Maximum height for custom size
+  minCustomQuantity   Int?     // Minimum custom quantity
+  maxCustomQuantity   Int?     // Maximum custom quantity
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Product-to-Size relationship
+model ProductSize {
+  id             String   @id @default(cuid())
+  productId      String
+  standardSizeId String
+  isDefault      Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  standardSize StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, standardSizeId])
+  @@index([productId])
+  @@index([standardSizeId])
+}
+
+// Product-to-Quantity relationship
+model ProductQuantity {
+  id                 String   @id @default(cuid())
+  productId          String
+  standardQuantityId String
+  isDefault          Boolean  @default(false)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  product          Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  standardQuantity StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, standardQuantityId])
+  @@index([productId])
+  @@index([standardQuantityId])
 }
