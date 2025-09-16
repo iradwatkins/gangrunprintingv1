@@ -215,7 +215,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/orders">
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -236,15 +236,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
+          <Button disabled size="sm" variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Download Invoice
           </Button>
-          <Button variant="outline" size="sm" disabled>
+          <Button disabled size="sm" variant="outline">
             <Printer className="h-4 w-4 mr-2" />
             Print Order
           </Button>
-          <Button variant="outline" size="sm" disabled>
+          <Button disabled size="sm" variant="outline">
             <Edit className="h-4 w-4 mr-2" />
             Edit Order
           </Button>
@@ -361,8 +361,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <span>{order.user?.name || 'Guest Customer'}</span>
                   </div>
                   {order.user && (
-                    <Link href={`/admin/customers/${order.user.id}`} className="inline-block mt-2">
-                      <Button variant="outline" size="sm">
+                    <Link className="inline-block mt-2" href={`/admin/customers/${order.user.id}`}>
+                      <Button size="sm" variant="outline">
                         View Profile
                         <ChevronRight className="h-3 w-3 ml-1" />
                       </Button>
@@ -456,7 +456,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <StatusIcon className="h-4 w-4" />
                   {status.label}
                 </Badge>
-                <Button size="sm" variant="outline" disabled>
+                <Button disabled size="sm" variant="outline">
                   <RefreshCw className="h-3 w-3 mr-1" />
                   Update
                 </Button>
@@ -570,20 +570,20 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <Mail className="h-4 w-4 mr-2" />
                 Send Email to Customer
               </Button>
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Invoice
               </Button>
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <Truck className="h-4 w-4 mr-2" />
                 Update Tracking
               </Button>
               {order.status !== 'CANCELLED' && order.status !== 'REFUNDED' && (
-                <Button className="w-full justify-start" variant="outline" disabled>
+                <Button disabled className="w-full justify-start" variant="outline">
                   <XCircle className="h-4 w-4 mr-2" />
                   Cancel Order
                 </Button>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { cache, cacheKeys } from '@/lib/redis'
 import { logSearch } from '@/components/GoogleAnalytics'

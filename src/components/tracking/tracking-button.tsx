@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Package, ExternalLink } from 'lucide-react'
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 import { getTrackingInfo } from '@/lib/tracking'
 
 interface TrackingButtonProps {
@@ -30,9 +30,9 @@ export function TrackingButton({
 
   return (
     <Button
-      variant={variant}
-      size={size}
       className={className}
+      size={size}
+      variant={variant}
       onClick={handleClick}
     >
       {showIcon && <Package className="mr-2 h-4 w-4" />}
@@ -59,10 +59,10 @@ export function TrackingLink({
 
   return (
     <a
-      href={trackingInfo.trackingUrl}
-      target="_blank"
-      rel="noopener noreferrer"
       className={className || 'text-primary hover:underline inline-flex items-center gap-1'}
+      href={trackingInfo.trackingUrl}
+      rel="noopener noreferrer"
+      target="_blank"
     >
       {showNumber ? `${trackingInfo.trackingNumber}` : trackingInfo.buttonText}
       <ExternalLink className="h-3 w-3" />

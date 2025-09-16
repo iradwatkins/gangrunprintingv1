@@ -36,7 +36,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
         </div>
       </div>
 
-      <Tabs defaultValue="manage" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="manage">
         <TabsList>
           <TabsTrigger value="manage">Manage Translations</TabsTrigger>
           <TabsTrigger value="requests">Translation Requests</TabsTrigger>
@@ -45,7 +45,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="manage" className="space-y-4">
+        <TabsContent className="space-y-4" value="manage">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -119,7 +119,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           </Card>
         </TabsContent>
 
-        <TabsContent value="requests" className="space-y-4">
+        <TabsContent className="space-y-4" value="requests">
           <Card>
             <CardHeader>
               <CardTitle>Translation Requests</CardTitle>
@@ -135,7 +135,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           </Card>
         </TabsContent>
 
-        <TabsContent value="auto-translate" className="space-y-4">
+        <TabsContent className="space-y-4" value="auto-translate">
           <Card>
             <CardHeader>
               <CardTitle>Auto Translation</CardTitle>
@@ -151,7 +151,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           </Card>
         </TabsContent>
 
-        <TabsContent value="import-export" className="space-y-4">
+        <TabsContent className="space-y-4" value="import-export">
           <Card>
             <CardHeader>
               <CardTitle>Import/Export Translations</CardTitle>
@@ -167,7 +167,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           </Card>
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-4">
+        <TabsContent className="space-y-4" value="settings">
           <Card>
             <CardHeader>
               <CardTitle>Translation Settings</CardTitle>

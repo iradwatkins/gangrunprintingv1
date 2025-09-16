@@ -35,10 +35,10 @@ export function CartDrawer() {
             </span>
             {items.length > 0 && (
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearCart}
                 className="text-destructive hover:text-destructive"
+                size="sm"
+                variant="ghost"
+                onClick={clearCart}
               >
                 Clear All
               </Button>
@@ -67,10 +67,10 @@ export function CartDrawer() {
                       {item.image && (
                         <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
                           <Image
-                            src={item.image}
-                            alt={item.productName}
                             fill
+                            alt={item.productName}
                             className="object-cover"
+                            src={item.image}
                           />
                         </div>
                       )}
@@ -85,9 +85,9 @@ export function CartDrawer() {
                         </div>
                       </div>
                       <Button
-                        variant="ghost"
-                        size="icon"
                         className="h-8 w-8"
+                        size="icon"
+                        variant="ghost"
                         onClick={() => removeItem(item.id)}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -97,11 +97,11 @@ export function CartDrawer() {
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center gap-2">
                         <Button
-                          variant="outline"
-                          size="icon"
                           className="h-8 w-8"
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                           disabled={item.quantity <= 1}
+                          size="icon"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -109,9 +109,9 @@ export function CartDrawer() {
                           {item.quantity}
                         </span>
                         <Button
-                          variant="outline"
-                          size="icon"
                           className="h-8 w-8"
+                          size="icon"
+                          variant="outline"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
                           <Plus className="h-3 w-3" />
@@ -157,8 +157,8 @@ export function CartDrawer() {
                   </Link>
                 </Button>
                 <Button
-                  variant="outline"
                   className="w-full"
+                  variant="outline"
                   onClick={closeCart}
                 >
                   Continue Shopping

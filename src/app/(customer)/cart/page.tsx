@@ -81,10 +81,10 @@ export default function CartPage() {
           <h1 className="text-3xl font-bold">Shopping Cart</h1>
           {cartItems.length > 0 && (
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearCart}
               className="text-destructive hover:text-destructive"
+              size="sm"
+              variant="ghost"
+              onClick={clearCart}
             >
               Clear All
             </Button>
@@ -101,10 +101,10 @@ export default function CartPage() {
                 {item.image && (
                   <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
                     <Image
-                      src={item.image}
-                      alt={item.productName}
                       fill
+                      alt={item.productName}
                       className="object-cover"
+                      src={item.image}
                     />
                   </div>
                 )}

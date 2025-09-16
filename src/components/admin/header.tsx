@@ -82,11 +82,11 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
     <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
       {/* Mobile sidebar toggle - only show on mobile */}
       <Button
-        className="lg:hidden"
-        variant="ghost"
-        size="icon"
-        onClick={onToggleMobileSidebar}
         aria-label="Toggle mobile sidebar"
+        className="lg:hidden"
+        size="icon"
+        variant="ghost"
+        onClick={onToggleMobileSidebar}
       >
         <Menu className="h-5 w-5" />
       </Button>

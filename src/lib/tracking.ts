@@ -1,4 +1,4 @@
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 
 export interface TrackingInfo {
   carrier: Carrier

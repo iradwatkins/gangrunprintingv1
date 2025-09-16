@@ -16,7 +16,7 @@ import { ColorPicker } from '@/components/ui/color-picker';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { CodeEditor } from '@/components/ui/code-editor';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Reset, Eye, Copy, Download, Upload } from 'lucide-react';
+import { Save, RefreshCw, Eye, Copy, Download, Upload } from 'lucide-react';
 
 interface BrandEditorProps {
   section: 'colors' | 'typography' | 'logos' | 'layout' | 'custom' | 'email';
@@ -246,12 +246,12 @@ export function BrandEditor({ section }: BrandEditorProps) {
       {/* Action Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button onClick={saveBrandConfig} disabled={isLoading}>
+          <Button disabled={isLoading} onClick={saveBrandConfig}>
             <Save className="mr-2 h-4 w-4" />
             Save Changes
           </Button>
           <Button variant="outline" onClick={resetToDefaults}>
-            <Reset className="mr-2 h-4 w-4" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Reset
           </Button>
           <Button variant="outline" onClick={() => setPreviewMode(!previewMode)}>
@@ -265,15 +265,15 @@ export function BrandEditor({ section }: BrandEditorProps) {
             Export
           </Button>
           <div className="relative">
-            <Button variant="outline" asChild>
+            <Button asChild variant="outline">
               <label>
                 <Upload className="mr-2 h-4 w-4" />
                 Import
                 <input
-                  type="file"
                   accept=".json"
-                  onChange={importConfig}
                   className="absolute inset-0 opacity-0 cursor-pointer"
+                  type="file"
+                  onChange={importConfig}
                 />
               </label>
             </Button>
@@ -428,9 +428,9 @@ function TypographySection({ config, updateConfig }: {
           <div>
             <Label htmlFor="fontSize">Base Font Size</Label>
             <Input
+              placeholder="16px"
               value={config.fontSize}
               onChange={(e) => updateConfig('fontSize', e.target.value)}
-              placeholder="16px"
             />
           </div>
           <div>
@@ -451,9 +451,9 @@ function TypographySection({ config, updateConfig }: {
           <div>
             <Label htmlFor="lineHeight">Line Height</Label>
             <Input
+              placeholder="1.6"
               value={config.lineHeight}
               onChange={(e) => updateConfig('lineHeight', e.target.value)}
-              placeholder="1.6"
             />
           </div>
         </CardContent>
@@ -478,34 +478,34 @@ function LogosSection({ config, updateConfig }: {
           <div>
             <Label htmlFor="logoUrl">Main Logo</Label>
             <ImageUpload
+              className="mt-2"
               value={config.logoUrl}
               onChange={(url) => updateConfig('logoUrl', url)}
-              className="mt-2"
             />
           </div>
           <div>
             <Label htmlFor="faviconUrl">Favicon</Label>
             <ImageUpload
+              accept="image/x-icon,image/png"
+              className="mt-2"
               value={config.faviconUrl}
               onChange={(url) => updateConfig('faviconUrl', url)}
-              className="mt-2"
-              accept="image/x-icon,image/png"
             />
           </div>
           <div>
             <Label htmlFor="logoText">Logo Text</Label>
             <Input
+              placeholder="Brand Name"
               value={config.logoText}
               onChange={(e) => updateConfig('logoText', e.target.value)}
-              placeholder="Brand Name"
             />
           </div>
           <div>
             <Label htmlFor="brandName">Brand Name</Label>
             <Input
+              placeholder="Your Company Name"
               value={config.brandName}
               onChange={(e) => updateConfig('brandName', e.target.value)}
-              placeholder="Your Company Name"
             />
           </div>
         </CardContent>
@@ -530,33 +530,33 @@ function LayoutSection({ config, updateConfig }: {
           <div>
             <Label htmlFor="borderRadius">Border Radius</Label>
             <Input
+              placeholder="8px"
               value={config.borderRadius}
               onChange={(e) => updateConfig('borderRadius', e.target.value)}
-              placeholder="8px"
             />
           </div>
           <div>
             <Label htmlFor="spacing">Base Spacing</Label>
             <Input
+              placeholder="16px"
               value={config.spacing}
               onChange={(e) => updateConfig('spacing', e.target.value)}
-              placeholder="16px"
             />
           </div>
           <div>
             <Label htmlFor="containerWidth">Container Width</Label>
             <Input
+              placeholder="1200px"
               value={config.containerWidth}
               onChange={(e) => updateConfig('containerWidth', e.target.value)}
-              placeholder="1200px"
             />
           </div>
           <div>
             <Label htmlFor="headerHeight">Header Height</Label>
             <Input
+              placeholder="64px"
               value={config.headerHeight}
               onChange={(e) => updateConfig('headerHeight', e.target.value)}
-              placeholder="64px"
             />
           </div>
         </CardContent>
@@ -579,10 +579,10 @@ function CustomSection({ config, updateConfig }: {
         </CardHeader>
         <CardContent>
           <CodeEditor
+            height="300px"
             language="css"
             value={config.customCss}
             onChange={(value) => updateConfig('customCss', value)}
-            height="300px"
           />
         </CardContent>
       </Card>
@@ -594,10 +594,10 @@ function CustomSection({ config, updateConfig }: {
         </CardHeader>
         <CardContent>
           <CodeEditor
+            height="200px"
             language="javascript"
             value={config.customJs}
             onChange={(value) => updateConfig('customJs', value)}
-            height="200px"
           />
         </CardContent>
       </Card>
@@ -622,17 +622,17 @@ function EmailSection({ config, updateConfig, updateEmailColor }: {
           <div>
             <Label htmlFor="emailHeaderLogo">Email Header Logo</Label>
             <ImageUpload
+              className="mt-2"
               value={config.emailHeaderLogo}
               onChange={(url) => updateConfig('emailHeaderLogo', url)}
-              className="mt-2"
             />
           </div>
           <div>
             <Label htmlFor="emailFooterText">Email Footer Text</Label>
             <Textarea
+              placeholder="Copyright © 2024 Your Company. All rights reserved."
               value={config.emailFooterText}
               onChange={(e) => updateConfig('emailFooterText', e.target.value)}
-              placeholder="Copyright © 2024 Your Company. All rights reserved."
             />
           </div>
         </CardContent>

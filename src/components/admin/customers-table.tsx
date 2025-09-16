@@ -122,17 +122,17 @@ export function CustomersTable({ customers }: CustomersTableProps) {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            className="pl-8"
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           <Filter className="mr-2 h-4 w-4" />
           Filters
         </Button>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           <Download className="mr-2 h-4 w-4" />
           Export
         </Button>
@@ -160,10 +160,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
             <TableRow>
               <TableHead className="w-[40px]">
                 <input
-                  type="checkbox"
                   checked={selectedCustomers.length === sortedCustomers.length && sortedCustomers.length > 0}
-                  onChange={selectAllCustomers}
                   className="rounded border-gray-300"
+                  type="checkbox"
+                  onChange={selectAllCustomers}
                 />
               </TableHead>
               <TableHead 
@@ -198,7 +198,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
           <TableBody>
             {sortedCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                <TableCell className="text-center py-8 text-muted-foreground" colSpan={8}>
                   No customers found
                 </TableCell>
               </TableRow>
@@ -207,10 +207,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                 <TableRow key={customer.id}>
                   <TableCell>
                     <input
-                      type="checkbox"
                       checked={selectedCustomers.includes(customer.id)}
-                      onChange={() => toggleCustomerSelection(customer.id)}
                       className="rounded border-gray-300"
+                      type="checkbox"
+                      onChange={() => toggleCustomerSelection(customer.id)}
                     />
                   </TableCell>
                   <TableCell>
@@ -221,12 +221,12 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   </TableCell>
                   <TableCell>
                     {customer.status === 'verified' ? (
-                      <Badge variant="default" className="gap-1">
+                      <Badge className="gap-1" variant="default">
                         <UserCheck className="h-3 w-3" />
                         Verified
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="gap-1">
+                      <Badge className="gap-1" variant="secondary">
                         <UserX className="h-3 w-3" />
                         Unverified
                       </Badge>
@@ -239,7 +239,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button className="h-8 w-8 p-0" variant="ghost">
                           <span className="sr-only">Open menu</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
@@ -280,10 +280,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
             Showing {sortedCustomers.length} of {customers.length} customers
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>
+            <Button disabled size="sm" variant="outline">
               Previous
             </Button>
-            <Button variant="outline" size="sm" disabled>
+            <Button disabled size="sm" variant="outline">
               Next
             </Button>
           </div>

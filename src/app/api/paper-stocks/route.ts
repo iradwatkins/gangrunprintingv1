@@ -61,13 +61,12 @@ export async function GET() {
       return {
         id: stock.id,
         name: stock.name,
-        basePrice: stock.costPerSheet * 0.00001, // Convert to micro-pricing
-        shippingWeight: stock.thickness || 0.5,
+        weight: stock.weight,
+        pricePerSqInch: stock.pricePerSqInch,
+        tooltipText: stock.tooltipText,
         isActive: stock.isActive,
-        coatings,
-        sidesOptions,
-        defaultCoating,
-        defaultSides,
+        paperStockCoatings: stock.paperStockCoatings,
+        paperStockSides: stock.paperStockSides,
         productsCount: stock.productPaperStocks.length
       }
     })
@@ -95,12 +94,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       name,
-      basePrice,
-      shippingWeight,
+      weight,
+      pricePerSqInch,
+      tooltipText,
       isActive,
       coatings,
-      sidesOptions,
-      defaultCoating
+      sidesOptions
     } = body
 
     if (!name) {
@@ -114,36 +113,24 @@ export async function POST(request: NextRequest) {
     const paperStock = await prisma.paperStock.create({
       data: {
         name,
-        category: 'Custom',
-        weight: `${Math.round(shippingWeight * 100)}lb`,
-        finish: 'Custom',
-        coating: 'Custom',
-        sides: 'Custom',
-        costPerSheet: basePrice / 0.00001,
-        priceMultiplier: 1.0,
-        thickness: shippingWeight,
+        weight: weight || 0.0015,
+        pricePerSqInch: pricePerSqInch || 0.0015,
+        tooltipText: tooltipText || null,
         isActive: isActive !== undefined ? isActive : true,
-        sheetsInStock: 0,
-        reorderPoint: 1000,
-        reorderQuantity: 5000,
         // Add coating relationships
         paperStockCoatings: {
-          create: coatings
-            .filter((c: any) => c.enabled)
-            .map((c: any) => ({
-              coatingId: c.id,
-              isDefault: c.id === defaultCoating
-            }))
+          create: coatings?.map((c: any) => ({
+            coatingId: c.id,
+            isDefault: c.isDefault || false
+          })) || []
         },
         // Add sides relationships
         paperStockSides: {
-          create: sidesOptions
-            .filter((s: any) => s.enabled)
-            .map((s: any) => ({
-              sidesOptionId: s.id,
-              priceMultiplier: s.multiplier || 1.0,
-              isEnabled: true
-            }))
+          create: sidesOptions?.map((s: any) => ({
+            sidesOptionId: s.id,
+            priceMultiplier: s.multiplier || 1.0,
+            isEnabled: true
+          })) || []
         }
       },
       include: {

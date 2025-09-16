@@ -69,61 +69,61 @@ export default function SettingsPage() {
       </div>
 
       {/* Settings Tabs */}
-      <Tabs defaultValue="general" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="general">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="general" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="general">
             <Building className="h-4 w-4" />
             General
           </TabsTrigger>
-          <TabsTrigger value="printing" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="printing">
             <Printer className="h-4 w-4" />
             Printing
           </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="payments">
             <CreditCard className="h-4 w-4" />
             Payments
           </TabsTrigger>
-          <TabsTrigger value="shipping" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="shipping">
             <Truck className="h-4 w-4" />
             Shipping
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="notifications">
             <Bell className="h-4 w-4" />
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="integrations" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="integrations">
             <Webhook className="h-4 w-4" />
             Integrations
           </TabsTrigger>
         </TabsList>
 
         {/* General Settings Tab */}
-        <TabsContent value="general" className="space-y-4">
+        <TabsContent className="space-y-4" value="general">
           <GeneralSettingsForm />
         </TabsContent>
 
         {/* Printing Settings Tab */}
-        <TabsContent value="printing" className="space-y-4">
+        <TabsContent className="space-y-4" value="printing">
           <PrintingSettingsForm />
         </TabsContent>
 
         {/* Payment Settings Tab */}
-        <TabsContent value="payments" className="space-y-4">
+        <TabsContent className="space-y-4" value="payments">
           <PaymentSettingsForm />
         </TabsContent>
 
         {/* Shipping Settings Tab */}
-        <TabsContent value="shipping" className="space-y-4">
+        <TabsContent className="space-y-4" value="shipping">
           <ShippingSettingsForm />
         </TabsContent>
 
         {/* Notification Settings Tab */}
-        <TabsContent value="notifications" className="space-y-4">
+        <TabsContent className="space-y-4" value="notifications">
           <NotificationSettingsForm />
         </TabsContent>
 
         {/* Integration Settings Tab */}
-        <TabsContent value="integrations" className="space-y-4">
+        <TabsContent className="space-y-4" value="integrations">
           <IntegrationSettingsForm />
         </TabsContent>
       </Tabs>

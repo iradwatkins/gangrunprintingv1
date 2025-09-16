@@ -14,7 +14,7 @@ interface ToastState {
 
 const toastTimeouts = new Map<string, NodeJS.Timeout>()
 
-let listeners: Array<(state: ToastState) => void> = []
+const listeners: Array<(state: ToastState) => void> = []
 let memoryState: ToastState = { toasts: [] }
 
 function dispatch(action: { type: string; toast?: Toast; id?: string }) {

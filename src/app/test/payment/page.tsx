@@ -269,30 +269,30 @@ export default function PaymentTestPage() {
                 <Label htmlFor="email">Test Email</Label>
                 <Input
                   id="email"
+                  placeholder="test@example.com"
                   type="email"
                   value={testEmail}
                   onChange={(e) => setTestEmail(e.target.value)}
-                  placeholder="test@example.com"
                 />
               </div>
               <div>
                 <Label htmlFor="amount">Test Amount ($)</Label>
                 <Input
                   id="amount"
-                  type="number"
+                  placeholder="99.99"
                   step="0.01"
+                  type="number"
                   value={testAmount}
                   onChange={(e) => setTestAmount(e.target.value)}
-                  placeholder="99.99"
                 />
               </div>
               <div>
                 <Label htmlFor="order">Order Number (for status check)</Label>
                 <Input
                   id="order"
+                  placeholder="GRP-XXXXX"
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
-                  placeholder="GRP-XXXXX"
                 />
               </div>
             </CardContent>
@@ -304,18 +304,18 @@ export default function PaymentTestPage() {
               <CardDescription>Run integration tests</CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="payment" className="w-full">
+              <Tabs className="w-full" defaultValue="payment">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="payment">Payment</TabsTrigger>
                   <TabsTrigger value="webhook">Webhooks</TabsTrigger>
                   <TabsTrigger value="system">System</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="payment" className="space-y-4">
+                <TabsContent className="space-y-4" value="payment">
                   <Button 
-                    onClick={testCheckout} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={testCheckout}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -326,10 +326,10 @@ export default function PaymentTestPage() {
                   </Button>
                   
                   <Button 
-                    onClick={checkOrderStatus} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={checkOrderStatus}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -340,11 +340,11 @@ export default function PaymentTestPage() {
                   </Button>
                 </TabsContent>
                 
-                <TabsContent value="webhook" className="space-y-4">
+                <TabsContent className="space-y-4" value="webhook">
                   <Button 
-                    onClick={testWebhook} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={testWebhook}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -355,10 +355,10 @@ export default function PaymentTestPage() {
                   </Button>
                   
                   <Button 
-                    onClick={testEmailNotification} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={testEmailNotification}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -369,11 +369,11 @@ export default function PaymentTestPage() {
                   </Button>
                 </TabsContent>
                 
-                <TabsContent value="system" className="space-y-4">
+                <TabsContent className="space-y-4" value="system">
                   <Button 
-                    onClick={testHealthCheck} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={testHealthCheck}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -14,7 +14,7 @@ import toast from '@/lib/toast'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, subtotal, tax, shipping, total, clearCart } = useCart()
+  const { items, subtotal, tax, shipping: _shipping, total: _total, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
   const [sameAsShipping, setSameAsShipping] = useState(true)
   const [formData, setFormData] = useState({
@@ -268,11 +268,11 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-semibold">Billing Address</h2>
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="sameAsShipping"
                     checked={sameAsShipping}
+                    id="sameAsShipping"
                     onCheckedChange={(checked) => setSameAsShipping(checked as boolean)}
                   />
-                  <Label htmlFor="sameAsShipping" className="text-sm font-normal cursor-pointer">
+                  <Label className="text-sm font-normal cursor-pointer" htmlFor="sameAsShipping">
                     Same as shipping
                   </Label>
                 </div>
@@ -283,9 +283,9 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="billingAddress">Street Address</Label>
                     <Input
-                      required={!sameAsShipping}
                       id="billingAddress"
                       name="billingAddress"
+                      required={!sameAsShipping}
                       value={formData.billingAddress}
                       onChange={handleInputChange}
                     />
@@ -294,9 +294,9 @@ export default function CheckoutPage() {
                     <div>
                       <Label htmlFor="billingCity">City</Label>
                       <Input
-                        required={!sameAsShipping}
                         id="billingCity"
                         name="billingCity"
+                        required={!sameAsShipping}
                         value={formData.billingCity}
                         onChange={handleInputChange}
                       />
@@ -304,11 +304,11 @@ export default function CheckoutPage() {
                     <div>
                       <Label htmlFor="billingState">State</Label>
                       <Input
-                        required={!sameAsShipping}
                         id="billingState"
                         maxLength={2}
                         name="billingState"
                         placeholder="TX"
+                        required={!sameAsShipping}
                         value={formData.billingState}
                         onChange={handleInputChange}
                       />
@@ -317,10 +317,10 @@ export default function CheckoutPage() {
                   <div>
                     <Label htmlFor="billingZipCode">ZIP Code</Label>
                     <Input
-                      required={!sameAsShipping}
                       id="billingZipCode"
                       maxLength={10}
                       name="billingZipCode"
+                      required={!sameAsShipping}
                       value={formData.billingZipCode}
                       onChange={handleInputChange}
                     />

@@ -17,7 +17,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { name, description, additionalCost } = body
+    const { name, description } = body
 
     if (!name) {
       return NextResponse.json(
@@ -30,8 +30,7 @@ export async function PUT(
       where: { id },
       data: {
         name,
-        description,
-        additionalCost: additionalCost ? parseFloat(additionalCost) : null
+        description
       }
     })
 

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { reportError, addBreadcrumb } from '@/lib/sentry';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -394,7 +394,7 @@ export const withStandardMiddleware = <T extends any[]>(
     validationOptions?: Parameters<typeof withRequestValidation>[1];
   } = {}
 ) => {
-  let middlewares: Array<(handler: any) => any> = [withErrorHandling];
+  const middlewares: Array<(handler: any) => any> = [withErrorHandling];
 
   if (options.logRequests) {
     middlewares.push(withLogging);

@@ -307,11 +307,11 @@ export function ThemeManager() {
                     <Label htmlFor="name">Theme Name</Label>
                     <Input
                       id="name"
+                      placeholder="My Custom Theme"
                       value={uploadForm.name}
                       onChange={(e) =>
                         setUploadForm(prev => ({ ...prev, name: e.target.value }))
                       }
-                      placeholder="My Custom Theme"
                     />
                   </div>
 
@@ -319,22 +319,22 @@ export function ThemeManager() {
                     <Label htmlFor="description">Description (optional)</Label>
                     <Textarea
                       id="description"
+                      placeholder="A brief description of your theme"
+                      rows={3}
                       value={uploadForm.description}
                       onChange={(e) =>
                         setUploadForm(prev => ({ ...prev, description: e.target.value }))
                       }
-                      placeholder="A brief description of your theme"
-                      rows={3}
                     />
                   </div>
 
                   <div>
                     <Label htmlFor="file">CSS File</Label>
                     <Input
+                      ref={fileInputRef}
+                      accept=".css"
                       id="file"
                       type="file"
-                      accept=".css"
-                      ref={fileInputRef}
                       onChange={handleFileChange}
                     />
                     {uploadForm.file && (
@@ -357,7 +357,7 @@ export function ThemeManager() {
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleUpload} disabled={uploading}>
+                    <Button disabled={uploading} onClick={handleUpload}>
                       {uploading ? 'Uploading...' : 'Upload & Apply'}
                     </Button>
                   </div>
@@ -420,10 +420,10 @@ export function ThemeManager() {
                         <Download className="w-4 h-4" />
                       </Button>
                       <Button
+                        disabled={theme.isActive}
                         size="sm"
                         variant="outline"
                         onClick={() => setDeleteTheme(theme)}
-                        disabled={theme.isActive}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -457,19 +457,19 @@ export function ThemeManager() {
                 <TabsTrigger value="custom">Custom CSS</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="variables" className="space-y-2">
+              <TabsContent className="space-y-2" value="variables">
                 <div className="bg-muted p-4 rounded-lg font-mono text-sm">
                   <pre>{JSON.stringify(selectedTheme.cssVariables, null, 2)}</pre>
                 </div>
               </TabsContent>
 
-              <TabsContent value="dark" className="space-y-2">
+              <TabsContent className="space-y-2" value="dark">
                 <div className="bg-muted p-4 rounded-lg font-mono text-sm">
                   <pre>{JSON.stringify(selectedTheme.darkModeVariables || {}, null, 2)}</pre>
                 </div>
               </TabsContent>
 
-              <TabsContent value="custom" className="space-y-2">
+              <TabsContent className="space-y-2" value="custom">
                 <div className="bg-muted p-4 rounded-lg font-mono text-sm">
                   <pre>{selectedTheme.customCSS || 'No custom CSS'}</pre>
                 </div>

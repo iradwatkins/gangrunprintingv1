@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
-import { CartState, CartItem, CartContextType } from '@/lib/cart-types'
+import { type CartState, type CartItem, type CartContextType } from '@/lib/cart-types'
 
 const TAX_RATE = 0.0825
 const SHIPPING_RATE = 10.00

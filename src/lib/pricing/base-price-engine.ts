@@ -1,12 +1,13 @@
 /**
  * Base Price Engine - Implements EXACT Pricing Formula
  *
- * Formula: Base Paper Price × Size × Quantity × Sides Multiplier
+ * Formula: Base Price = ((Base Paper Price × Sides Multiplier) × Size × Quantity)
  *
  * CRITICAL RULES:
  * 1. Size = Pre-calculated backend value for standard sizes OR width×height for custom
  * 2. Quantity = Calculation value for <5000 quantities OR exact for >=5000
  * 3. Sides Multiplier = 1.75 for exception papers (text) double-sided, 1.0 otherwise
+ * 4. Formula structure ensures proper add-on integration
  */
 
 export interface StandardSize {
@@ -75,7 +76,7 @@ export interface BasePriceResult {
 export class BasePriceEngine {
   /**
    * Calculate base price using EXACT formula requirements
-   * Base Paper Price × Size × Quantity × Sides Multiplier
+   * Formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
    */
   calculateBasePrice(input: PricingInput): BasePriceResult {
     const validation = this.validateInput(input)
@@ -88,7 +89,7 @@ export class BasePriceEngine {
           size: 0,
           quantity: 0,
           sidesMultiplier: 0,
-          formula: 'Base Paper Price × Size × Quantity × Sides Multiplier',
+          formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
           calculation: 'Invalid input'
         },
         validation
@@ -104,10 +105,10 @@ export class BasePriceEngine {
     // Step 3: Calculate Sides Multiplier
     const sidesMultiplier = this.calculateSidesMultiplier(input)
 
-    // Step 4: Apply EXACT formula
-    const basePrice = input.basePaperPrice * size * quantity * sidesMultiplier
+    // Step 4: Apply EXACT formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
+    const basePrice = (input.basePaperPrice * sidesMultiplier) * size * quantity
 
-    const calculation = `${input.basePaperPrice} × ${size} × ${quantity} × ${sidesMultiplier} = ${basePrice}`
+    const calculation = `((${input.basePaperPrice} × ${sidesMultiplier}) × ${size} × ${quantity}) = ${basePrice}`
 
     return {
       basePrice,
@@ -116,7 +117,7 @@ export class BasePriceEngine {
         size,
         quantity,
         sidesMultiplier,
-        formula: 'Base Paper Price × Size × Quantity × Sides Multiplier',
+        formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
         calculation
       },
       validation
@@ -291,6 +292,7 @@ export class BasePriceEngine {
 
   /**
    * Quick price calculation for simple cases
+   * Formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
    */
   quickCalculatePrice(
     basePaperPrice: number,
@@ -299,7 +301,7 @@ export class BasePriceEngine {
     isDoubleSidedTextPaper: boolean = false
   ): number {
     const sidesMultiplier = isDoubleSidedTextPaper ? 1.75 : 1.0
-    return basePaperPrice * preCalculatedSize * calculationQuantity * sidesMultiplier
+    return (basePaperPrice * sidesMultiplier) * preCalculatedSize * calculationQuantity
   }
 }
 
@@ -318,7 +320,7 @@ const result1 = basePriceEngine.calculateBasePrice({
   sides: 'single',
   isExceptionPaper: false
 })
-// Expected: 0.00145833333 × 24 × 5000 × 1.0 = 175
+// Expected: ((0.00145833333 × 1.0) × 24 × 5000) = 175
 
 // Test Case 2: Custom size + Standard quantity + Double-sided text paper
 const result2 = basePriceEngine.calculateBasePrice({
@@ -332,5 +334,5 @@ const result2 = basePriceEngine.calculateBasePrice({
   isExceptionPaper: true,
   paperException: { doubleSidedMultiplier: 1.75 }
 })
-// Expected: 0.002 × 24 × 250 × 1.75 = 210
+// Expected: ((0.002 × 1.75) × 24 × 250) = 210
 */

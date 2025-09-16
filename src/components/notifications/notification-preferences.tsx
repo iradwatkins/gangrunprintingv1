@@ -272,7 +272,7 @@ export default function NotificationPreferences() {
     }
 
     if (state.isSubscribed) {
-      return <Badge variant="default" className="bg-green-500">Enabled</Badge>
+      return <Badge className="bg-green-500" variant="default">Enabled</Badge>
     }
 
     return <Badge variant="secondary">Disabled</Badge>
@@ -347,18 +347,18 @@ export default function NotificationPreferences() {
               <div className="flex items-center space-x-2">
                 {state.isSubscribed && (
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={testNotification}
                     disabled={isLoading}
+                    size="sm"
+                    variant="outline"
+                    onClick={testNotification}
                   >
                     Test
                   </Button>
                 )}
                 <Button
-                  onClick={state.isSubscribed ? disableNotifications : enableNotifications}
                   disabled={isLoading}
                   variant={state.isSubscribed ? "outline" : "default"}
+                  onClick={state.isSubscribed ? disableNotifications : enableNotifications}
                 >
                   {isLoading ? (
                     <div className="flex items-center space-x-2">

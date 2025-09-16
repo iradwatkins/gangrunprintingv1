@@ -206,11 +206,11 @@ export function TranslationManager({ searchParams }: TranslationManagerProps) {
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
+              className="pl-8"
               id="search"
               placeholder="Search translations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
             />
           </div>
         </div>
@@ -282,8 +282,8 @@ export function TranslationManager({ searchParams }: TranslationManagerProps) {
             <DialogContent className="max-w-2xl">
               <TranslationDialog
                 translation={null}
-                onSave={handleSaveTranslation}
                 onClose={() => setIsAddDialogOpen(false)}
+                onSave={handleSaveTranslation}
               />
             </DialogContent>
           </Dialog>
@@ -325,7 +325,7 @@ export function TranslationManager({ searchParams }: TranslationManagerProps) {
                           {translation.locale.toUpperCase()}
                         </Badge>
                         {translation.autoTranslated && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="text-xs" variant="outline">
                             <Languages className="w-3 h-3 mr-1" />
                             AI
                           </Badge>
@@ -338,23 +338,23 @@ export function TranslationManager({ searchParams }: TranslationManagerProps) {
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="ghost"
                           onClick={() => setEditingTranslation(translation)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="ghost"
                           onClick={() => handleDeleteTranslation(translation.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                         {!translation.isApproved && (
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="ghost"
                             onClick={() => handleApproveTranslation(translation.id)}
                           >
                             <CheckCircle className="h-4 w-4" />
@@ -391,8 +391,8 @@ export function TranslationManager({ searchParams }: TranslationManagerProps) {
           <DialogContent className="max-w-2xl">
             <TranslationDialog
               translation={editingTranslation}
-              onSave={handleSaveTranslation}
               onClose={() => setEditingTranslation(null)}
+              onSave={handleSaveTranslation}
             />
           </DialogContent>
         </Dialog>
@@ -438,7 +438,7 @@ function TranslationDialog({
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="namespace">Namespace</Label>
@@ -474,23 +474,23 @@ function TranslationDialog({
         <div>
           <Label htmlFor="key">Key</Label>
           <Input
+            required
             id="key"
+            placeholder="e.g., welcome.title"
             value={formData.key}
             onChange={(e) => setFormData(prev => ({ ...prev, key: e.target.value }))}
-            placeholder="e.g., welcome.title"
-            required
           />
         </div>
 
         <div>
           <Label htmlFor="value">Translation Value</Label>
           <Textarea
+            required
             id="value"
+            placeholder="Enter the translated text"
+            rows={3}
             value={formData.value}
             onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
-            placeholder="Enter the translated text"
-            required
-            rows={3}
           />
         </div>
 
@@ -498,10 +498,10 @@ function TranslationDialog({
           <Label htmlFor="context">Context (Optional)</Label>
           <Textarea
             id="context"
-            value={formData.context}
-            onChange={(e) => setFormData(prev => ({ ...prev, context: e.target.value }))}
             placeholder="Provide context for translators"
             rows={2}
+            value={formData.context}
+            onChange={(e) => setFormData(prev => ({ ...prev, context: e.target.value }))}
           />
         </div>
 

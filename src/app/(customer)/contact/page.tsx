@@ -1,17 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
   Send,
   Building,
   MessageSquare,
@@ -140,21 +141,21 @@ export default function ContactPage() {
                 <CardTitle>Quick Links</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <a href="/track" className="block text-sm hover:text-primary transition-colors">
+                <Link className="block text-sm hover:text-primary transition-colors" href="/track">
                   Track Your Order
-                </a>
-                <a href="/products" className="block text-sm hover:text-primary transition-colors">
+                </Link>
+                <Link className="block text-sm hover:text-primary transition-colors" href="/products">
                   Browse Products
-                </a>
-                <a href="/custom-quotes" className="block text-sm hover:text-primary transition-colors">
+                </Link>
+                <Link className="block text-sm hover:text-primary transition-colors" href="/quote">
                   Request Custom Quote
-                </a>
-                <a href="/free-samples" className="block text-sm hover:text-primary transition-colors">
+                </Link>
+                <Link className="block text-sm hover:text-primary transition-colors" href="/products">
                   Request Samples
-                </a>
-                <a href="/help-center" className="block text-sm hover:text-primary transition-colors">
+                </Link>
+                <Link className="block text-sm hover:text-primary transition-colors" href="/help-center">
                   Help Center
-                </a>
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -177,29 +178,29 @@ export default function ContactPage() {
                     </AlertDescription>
                   </Alert>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="name">Name *</Label>
                         <Input
+                          required
                           id="name"
                           name="name"
+                          placeholder="John Doe"
                           value={formData.name}
                           onChange={handleChange}
-                          required
-                          placeholder="John Doe"
                         />
                       </div>
                       <div>
                         <Label htmlFor="email">Email *</Label>
                         <Input
+                          required
                           id="email"
                           name="email"
+                          placeholder="john@example.com"
                           type="email"
                           value={formData.email}
                           onChange={handleChange}
-                          required
-                          placeholder="john@example.com"
                         />
                       </div>
                     </div>
@@ -210,10 +211,10 @@ export default function ContactPage() {
                         <Input
                           id="phone"
                           name="phone"
+                          placeholder="(555) 123-4567"
                           type="tel"
                           value={formData.phone}
                           onChange={handleChange}
-                          placeholder="(555) 123-4567"
                         />
                       </div>
                       <div>
@@ -221,9 +222,9 @@ export default function ContactPage() {
                         <Input
                           id="company"
                           name="company"
+                          placeholder="Your Company"
                           value={formData.company}
                           onChange={handleChange}
-                          placeholder="Your Company"
                         />
                       </div>
                     </div>
@@ -231,29 +232,29 @@ export default function ContactPage() {
                     <div>
                       <Label htmlFor="subject">Subject *</Label>
                       <Input
+                        required
                         id="subject"
                         name="subject"
+                        placeholder="How can we help you?"
                         value={formData.subject}
                         onChange={handleChange}
-                        required
-                        placeholder="How can we help you?"
                       />
                     </div>
 
                     <div>
                       <Label htmlFor="message">Message *</Label>
                       <Textarea
+                        required
                         id="message"
                         name="message"
+                        placeholder="Tell us more about your printing needs..."
+                        rows={6}
                         value={formData.message}
                         onChange={handleChange}
-                        required
-                        rows={6}
-                        placeholder="Tell us more about your printing needs..."
                       />
                     </div>
 
-                    <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+                    <Button className="w-full sm:w-auto" disabled={loading} type="submit">
                       {loading ? (
                         <>Sending...</>
                       ) : (

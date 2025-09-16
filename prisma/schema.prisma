@@ -76,28 +76,14 @@ model VerificationToken {
 }
 
 model PaperStock {
-  id                      String              @id @default(cuid())
-  name                    String              @unique
-  category                String
-  coating                 String              @default("None")
-  weight                  String
-  opacity                 Int?
-  brightness              Int?
-  priceMultiplier         Float               @default(1.0)
-  pricePerSqInch          Float               @default(0.001)
-  secondSideMarkupPercent Float               @default(50.0)
-  tooltipText             String?
-  isActive                Boolean             @default(true)
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
-  costPerSheet            Float
-  finish                  String
-  isEcoFriendly           Boolean             @default(false)
-  reorderPoint            Int                 @default(1000)
-  reorderQuantity         Int                 @default(5000)
-  sheetsInStock           Int                 @default(0)
-  sides                   String              @default("Double")
-  thickness               Float?
+  id              String  @id @default(cuid())
+  name            String  @unique
+  weight          Float   @default(0.0015)
+  pricePerSqInch  Float   @default(0.001)
+  tooltipText     String?
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   paperStockCoatings      PaperStockCoating[]
   paperStockSides         PaperStockSides[]
   productPaperStocks      ProductPaperStock[]
@@ -109,19 +95,17 @@ model CoatingOption {
   id                 String              @id @default(cuid())
   name               String              @unique
   description        String?
-  additionalCost     Float?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   paperStockCoatings PaperStockCoating[]
 }
 
 model PaperStockCoating {
-  paperStockId    String
-  coatingId       String
-  isDefault       Boolean       @default(false)
-  priceAdjustment Float?
-  coating         CoatingOption @relation(fields: [coatingId], references: [id], onDelete: Cascade)
-  paperStock      PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+  paperStockId String
+  coatingId    String
+  isDefault    Boolean       @default(false)
+  coating      CoatingOption @relation(fields: [coatingId], references: [id], onDelete: Cascade)
+  paperStock   PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
 
   @@id([paperStockId, coatingId])
   @@index([paperStockId])
@@ -133,7 +117,6 @@ model SidesOption {
   name            String            @unique
   code            String            @unique
   description     String?
-  isDefault       Boolean           @default(false)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   paperStockSides PaperStockSides[]

@@ -1,12 +1,10 @@
 import { Lucia } from "lucia";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { generateRandomString } from "oslo/crypto";
 import resend from "@/lib/resend";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 

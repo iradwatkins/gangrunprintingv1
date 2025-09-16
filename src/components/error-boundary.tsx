@@ -53,7 +53,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
         )}
 
         <div className="flex gap-2">
-          <Button onClick={resetError} className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={resetError}>
             <RefreshCw className="h-4 w-4" />
             Try again
           </Button>
@@ -123,9 +123,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
       return (
         <FallbackComponent
+          componentName={this.props.name}
           error={this.state.error}
           resetError={this.resetError}
-          componentName={this.props.name}
         />
       );
     }
@@ -147,9 +147,9 @@ export function withErrorBoundary<P extends object>(
   const WrappedComponent = React.forwardRef<any, P>((props, ref) => (
     <ErrorBoundary
       fallback={options?.fallback}
-      onError={options?.onError}
       isolate={options?.isolate}
       name={options?.name || Component.displayName || Component.name}
+      onError={options?.onError}
     >
       <Component {...props} ref={ref} />
     </ErrorBoundary>
@@ -168,8 +168,8 @@ export const PageErrorBoundary: React.FC<{ children: React.ReactNode; pageName?:
   pageName,
 }) => (
   <ErrorBoundary
-    name={`Page: ${pageName}`}
     isolate={true}
+    name={`Page: ${pageName}`}
     onError={(error, errorInfo) => {
       console.error(`Page error in ${pageName}:`, error, errorInfo);
     }}
@@ -184,8 +184,8 @@ export const ComponentErrorBoundary: React.FC<{
   componentName?: string;
 }> = ({ children, componentName }) => (
   <ErrorBoundary
-    name={componentName}
     isolate={false}
+    name={componentName}
   >
     {children}
   </ErrorBoundary>
@@ -197,8 +197,8 @@ export const CriticalErrorBoundary: React.FC<{
   operationName?: string;
 }> = ({ children, operationName }) => (
   <ErrorBoundary
-    name={`Critical: ${operationName}`}
     isolate={true}
+    name={`Critical: ${operationName}`}
     onError={(error, errorInfo) => {
       // Critical errors should be reported immediately
       reportError(error, {

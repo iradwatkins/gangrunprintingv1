@@ -58,7 +58,7 @@ export function GeneralSettingsForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       {/* Company Information */}
       <Card>
         <CardHeader>
@@ -76,9 +76,9 @@ export function GeneralSettingsForm() {
               <Label htmlFor="companyName">Company Name</Label>
               <Input
                 id="companyName"
+                placeholder="Enter company name"
                 value={formData.companyName}
                 onChange={(e) => handleInputChange('companyName', e.target.value)}
-                placeholder="Enter company name"
               />
             </div>
 
@@ -86,10 +86,10 @@ export function GeneralSettingsForm() {
               <Label htmlFor="website">Website URL</Label>
               <Input
                 id="website"
+                placeholder="https://example.com"
                 type="url"
                 value={formData.website}
                 onChange={(e) => handleInputChange('website', e.target.value)}
-                placeholder="https://example.com"
               />
             </div>
 
@@ -97,10 +97,10 @@ export function GeneralSettingsForm() {
               <Label htmlFor="email">Business Email</Label>
               <Input
                 id="email"
+                placeholder="business@example.com"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="business@example.com"
               />
             </div>
 
@@ -108,10 +108,10 @@ export function GeneralSettingsForm() {
               <Label htmlFor="phone">Business Phone</Label>
               <Input
                 id="phone"
+                placeholder="+1 (555) 123-4567"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="+1 (555) 123-4567"
               />
             </div>
           </div>
@@ -120,10 +120,10 @@ export function GeneralSettingsForm() {
             <Label htmlFor="address">Business Address</Label>
             <Textarea
               id="address"
-              value={formData.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
               placeholder="Enter complete business address"
               rows={3}
+              value={formData.address}
+              onChange={(e) => handleInputChange('address', e.target.value)}
             />
           </div>
 
@@ -131,10 +131,10 @@ export function GeneralSettingsForm() {
             <Label htmlFor="description">Business Description</Label>
             <Textarea
               id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Brief description of your printing services"
               rows={3}
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
             />
           </div>
         </CardContent>
@@ -302,7 +302,7 @@ export function GeneralSettingsForm() {
               <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
                 <Building className="h-4 w-4 text-muted-foreground" />
               </div>
-              <Button variant="outline" size="sm">
+              <Button size="sm" variant="outline">
                 <Upload className="mr-2 h-3 w-3" />
                 Upload Favicon
               </Button>
@@ -316,7 +316,7 @@ export function GeneralSettingsForm() {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button type="submit" disabled={loading}>
+        <Button disabled={loading} type="submit">
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           <Save className="mr-2 h-4 w-4" />
           Save General Settings

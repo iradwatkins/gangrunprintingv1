@@ -75,9 +75,9 @@ export default function Footer() {
       <div className="md:hidden bg-background border-b">
         <div className="container mx-auto px-4 py-4">
           <button
-            onClick={toggleExpanded}
-            className="flex items-center justify-between w-full text-left"
             aria-expanded={isExpanded}
+            className="flex items-center justify-between w-full text-left"
+            onClick={toggleExpanded}
           >
             <span className="font-semibold">Footer Links</span>
             {isExpanded ? (
@@ -98,11 +98,11 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link className="flex items-center space-x-2 mb-4" href="/">
               <Image 
-                src="/gangrunprinting_logo_new_1448921366__42384-268x50.png" 
                 alt="GangRun Printing" 
-                width={268}
+                className="h-10 w-auto object-contain" 
                 height={50}
-                className="h-10 w-auto object-contain"
+                src="/gangrunprinting_logo_new_1448921366__42384-268x50.png"
+                width={268}
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
@@ -278,15 +278,15 @@ export default function Footer() {
               © 2024 GangRun Printing. All rights reserved.
             </p>
             <div className="flex items-center justify-center gap-4 text-sm">
-              <a href="tel:1-800-PRINTING" className="text-primary hover:underline">
+              <a className="text-primary hover:underline" href="tel:1-800-PRINTING">
                 1-800-PRINTING
               </a>
               <span className="text-muted-foreground">|</span>
-              <Link href="/contact" className="text-primary hover:underline">
+              <Link className="text-primary hover:underline" href="/contact">
                 Contact
               </Link>
               <span className="text-muted-foreground">|</span>
-              <Link href="/track" className="text-primary hover:underline">
+              <Link className="text-primary hover:underline" href="/track">
                 Track Order
               </Link>
             </div>

@@ -46,24 +46,24 @@ export default function AccountDetailsPage() {
             <CardDescription>Update your profile details</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
+                    className="h-11 text-base"
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="h-11 text-base"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
+                    className="h-11 text-base"
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="h-11 text-base"
                   />
                 </div>
               </div>
@@ -71,31 +71,31 @@ export default function AccountDetailsPage() {
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
+                  className="h-11 text-base"
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="h-11 text-base"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
+                  className="h-11 text-base"
                   id="phone"
+                  placeholder="(555) 123-4567"
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="h-11 text-base"
-                  placeholder="(555) 123-4567"
                 />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <Button type="submit" className="sm:w-auto w-full h-11 text-base">
+                <Button className="sm:w-auto w-full h-11 text-base" type="submit">
                   Save Changes
                 </Button>
-                <Button type="button" variant="outline" className="sm:w-auto w-full h-11 text-base">
+                <Button className="sm:w-auto w-full h-11 text-base" type="button" variant="outline">
                   Cancel
                 </Button>
               </div>

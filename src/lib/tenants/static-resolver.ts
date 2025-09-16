@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { cache } from 'react';
 import type { TenantInfo, TenantContext } from './resolver';
+import { prisma } from '@/lib/prisma';
 
 // Default tenant configuration for static generation
 const DEFAULT_TENANT: TenantInfo = {
@@ -51,8 +51,6 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
 
   // Try to fetch from database if available
   try {
-    const prisma = new PrismaClient();
-
     const tenant = await prisma.tenant.findFirst({
       where: {
         slug,
@@ -65,8 +63,6 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         }
       }
     });
-
-    await prisma.$disconnect();
 
     if (tenant) {
       return {

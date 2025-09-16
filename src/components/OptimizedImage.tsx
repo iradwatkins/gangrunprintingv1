@@ -70,24 +70,24 @@ export function OptimizedImage({
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
         <Image
-          src={imageSrc}
-          alt={alt}
           fill
-          priority={priority}
-          quality={quality}
-          sizes={responsiveSizes}
-          placeholder={placeholder}
+          alt={alt}
           blurDataURL={blurDataURL}
-          onLoad={handleLoad}
-          onError={handleError}
-          style={{
-            objectFit,
-            objectPosition
-          }}
           className={cn(
             'transition-opacity duration-300',
             isLoading ? 'opacity-0' : 'opacity-100'
           )}
+          placeholder={placeholder}
+          priority={priority}
+          quality={quality}
+          sizes={responsiveSizes}
+          src={imageSrc}
+          style={{
+            objectFit,
+            objectPosition
+          }}
+          onError={handleError}
+          onLoad={handleLoad}
         />
       </div>
     )
@@ -102,22 +102,22 @@ export function OptimizedImage({
         />
       )}
       <Image
-        src={imageSrc}
         alt={alt}
-        width={width || 500}
-        height={height || 500}
-        priority={priority}
-        quality={quality}
-        sizes={responsiveSizes}
-        placeholder={placeholder}
         blurDataURL={blurDataURL}
-        onLoad={handleLoad}
-        onError={handleError}
         className={cn(
           'transition-opacity duration-300',
           isLoading ? 'opacity-0' : 'opacity-100',
           className
         )}
+        height={height || 500}
+        placeholder={placeholder}
+        priority={priority}
+        quality={quality}
+        sizes={responsiveSizes}
+        src={imageSrc}
+        width={width || 500}
+        onError={handleError}
+        onLoad={handleLoad}
       />
     </div>
   )
@@ -141,10 +141,10 @@ export function ProductImage({ images, productName, className }: ProductImagePro
     return (
       <div className={cn('relative aspect-square bg-gray-100', className)}>
         <OptimizedImage
-          src="/images/product-placeholder.jpg"
-          alt="No image available"
           fill
+          alt="No image available"
           sizes="(max-width: 768px) 100vw, 50vw"
+          src="/images/product-placeholder.jpg"
         />
       </div>
     )
@@ -160,13 +160,13 @@ export function ProductImage({ images, productName, className }: ProductImagePro
         onClick={() => setIsZoomed(!isZoomed)}
       >
         <OptimizedImage
-          src={currentImage.url}
-          alt={currentImage.alt || productName}
           fill
           priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-          quality={90}
+          alt={currentImage.alt || productName}
           objectFit={isZoomed ? 'contain' : 'cover'}
+          quality={90}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          src={currentImage.url}
         />
       </div>
 
@@ -176,20 +176,20 @@ export function ProductImage({ images, productName, className }: ProductImagePro
           {images.map((image, index) => (
             <button
               key={index}
-              onClick={() => setSelectedIndex(index)}
               className={cn(
                 'relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors',
                 selectedIndex === index
                   ? 'border-primary'
                   : 'border-transparent hover:border-gray-300'
               )}
+              onClick={() => setSelectedIndex(index)}
             >
               <OptimizedImage
-                src={image.url}
-                alt={`${productName} ${index + 1}`}
                 fill
-                sizes="80px"
+                alt={`${productName} ${index + 1}`}
                 quality={60}
+                sizes="80px"
+                src={image.url}
               />
             </button>
           ))}
@@ -224,13 +224,13 @@ export function HeroBanner({
   return (
     <div className={cn('relative overflow-hidden', height, className)}>
       <OptimizedImage
-        src={src}
-        alt={alt}
         fill
         priority
-        sizes="100vw"
-        quality={85}
+        alt={alt}
         objectFit="cover"
+        quality={85}
+        sizes="100vw"
+        src={src}
       />
 
       {/* Gradient overlay */}
@@ -252,8 +252,8 @@ export function HeroBanner({
             )}
             {ctaText && ctaHref && (
               <a
-                href={ctaHref}
                 className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                href={ctaHref}
               >
                 {ctaText}
               </a>
@@ -285,20 +285,20 @@ export function CategoryCard({
 }: CategoryCardProps) {
   return (
     <a
-      href={href}
       className={cn(
         'group relative block overflow-hidden rounded-lg bg-gray-100 transition-transform hover:scale-105',
         className
       )}
+      href={href}
     >
       <div className="aspect-[4/3] relative">
         <OptimizedImage
-          src={src}
-          alt={alt}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          quality={75}
+          alt={alt}
           objectFit="cover"
+          quality={75}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          src={src}
         />
 
         {/* Overlay */}
@@ -351,12 +351,12 @@ export function ImageGrid({
       {images.map((image, index) => (
         <div key={index} className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
           <OptimizedImage
-            src={image.src}
-            alt={image.alt}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            quality={75}
+            alt={image.alt}
             priority={index < 6} // Prioritize first 6 images
+            quality={75}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            src={image.src}
           />
           {image.title && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">

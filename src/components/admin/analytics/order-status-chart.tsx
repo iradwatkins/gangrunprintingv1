@@ -65,16 +65,16 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
 
   return (
     <div className="h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <PieChart>
           <Pie
-            data={chartData}
             cx="50%"
             cy="50%"
+            data={chartData}
+            dataKey="value"
             innerRadius={60}
             outerRadius={100}
             paddingAngle={2}
-            dataKey="value"
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -82,11 +82,11 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            verticalAlign="bottom"
-            height={36}
             formatter={(value, entry) => (
               <span style={{ color: entry.color }}>{value}</span>
             )}
+            height={36}
+            verticalAlign="bottom"
           />
         </PieChart>
       </ResponsiveContainer>

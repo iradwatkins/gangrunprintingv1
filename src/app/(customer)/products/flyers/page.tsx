@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Check, ShoppingCart, Clock, Package, Truck } from 'lucide-react'
 import Image from 'next/image'
 
-interface MaterialType {
+interface PaperStock {
   id: string
   name: string
   basePrice: number
@@ -38,28 +38,36 @@ interface QuantityOption {
 
 export default function FlyerProductPage() {
   // Product configuration state
-  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([])
-  const [selectedMaterial, setSelectedMaterial] = useState<string>('')
+  const [paperStocks, setPaperStocks] = useState<PaperStock[]>([])
+  const [selectedPaperStock, setSelectedPaperStock] = useState<string>('')
   const [selectedCoating, setSelectedCoating] = useState<string>('')
   const [selectedSides, setSelectedSides] = useState<string>('')
   const [selectedQuantity, setSelectedQuantity] = useState(500)
   const [calculatedPrice, setCalculatedPrice] = useState(0)
   
-  // Load material types from localStorage
+  // Load paper stocks from API
   useEffect(() => {
-    const stored = localStorage.getItem('materialTypes')
-    if (stored) {
-      const materials = JSON.parse(stored).filter((m: MaterialType) => m.isActive)
-      setMaterialTypes(materials)
-      
-      // Set default selections
-      if (materials.length > 0) {
-        const defaultMaterial = materials[0]
-        setSelectedMaterial(defaultMaterial.id)
-        setSelectedCoating(defaultMaterial.defaultCoating)
-        setSelectedSides(defaultMaterial.defaultSides)
+    const fetchPaperStocks = async () => {
+      try {
+        const res = await fetch('/api/paper-stocks')
+        if (res.ok) {
+          const paperStocks: PaperStock[] = await res.json()
+          const activeStocks = paperStocks.filter(ps => ps.isActive)
+          setPaperStocks(activeStocks)
+
+          // Set default selections
+          if (activeStocks.length > 0) {
+            const defaultStock = activeStocks[0]
+            setSelectedPaperStock(defaultStock.id)
+            setSelectedCoating(defaultStock.defaultCoating)
+            setSelectedSides(defaultStock.defaultSides)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch paper stocks:', error)
       }
     }
+    fetchPaperStocks()
   }, [])
 
   const quantityOptions = [
@@ -71,19 +79,19 @@ export default function FlyerProductPage() {
     { value: 5000, basePrice: 199.95 },
   ]
   
-  // Get current selected material
-  const currentMaterial = materialTypes.find(m => m.id === selectedMaterial)
+  // Get current selected paper stock
+  const currentPaperStock = paperStocks.find(ps => ps.id === selectedPaperStock)
 
   // Calculate price whenever options change
   useEffect(() => {
-    if (currentMaterial) {
-      const selectedSide = currentMaterial.sidesOptions.find(s => s.id === selectedSides)
+    if (currentPaperStock) {
+      const selectedSide = currentPaperStock.sidesOptions.find(s => s.id === selectedSides)
       const quantity = quantityOptions.find(q => q.value === selectedQuantity)
       
       if (selectedSide && quantity) {
         // Base price calculation: basePrice * size * quantity * sides multiplier
         const sizeInSquareInches = 24 // 4x6
-        const baseCost = currentMaterial.basePrice * sizeInSquareInches * selectedQuantity * selectedSide.multiplier
+        const baseCost = currentPaperStock.basePrice * sizeInSquareInches * selectedQuantity * selectedSide.multiplier
         
         // Add markup for retail pricing
         const markupMultiplier = 3.5 // 350% markup for retail
@@ -92,7 +100,7 @@ export default function FlyerProductPage() {
         setCalculatedPrice(Math.round(retailPrice * 100) / 100)
       }
     }
-  }, [selectedMaterial, selectedCoating, selectedSides, selectedQuantity, currentMaterial])
+  }, [selectedPaperStock, selectedCoating, selectedSides, selectedQuantity, currentPaperStock])
 
   return (
     <div className="container mx-auto py-8">
@@ -157,30 +165,30 @@ export default function FlyerProductPage() {
             </CardContent>
           </Card>
 
-          {/* Material Type Selection */}
+          {/* Paper Stock Selection */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Material Type</CardTitle>
+              <CardTitle className="text-lg">Paper Stock</CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={selectedMaterial} onValueChange={(value) => {
-                setSelectedMaterial(value)
-                const material = materialTypes.find(m => m.id === value)
-                if (material) {
-                  setSelectedCoating(material.defaultCoating)
-                  setSelectedSides(material.defaultSides)
+              <RadioGroup value={selectedPaperStock} onValueChange={(value) => {
+                setSelectedPaperStock(value)
+                const paperStock = paperStocks.find(ps => ps.id === value)
+                if (paperStock) {
+                  setSelectedCoating(paperStock.defaultCoating)
+                  setSelectedSides(paperStock.defaultSides)
                 }
               }}>
-                {materialTypes.map((material) => (
-                  <div key={material.id} className="flex items-center justify-between py-2">
+                {paperStocks.map((paperStock) => (
+                  <div key={paperStock.id} className="flex items-center justify-between py-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem id={`material-${material.id}`} value={material.id} />
-                      <Label className="cursor-pointer" htmlFor={`material-${material.id}`}>
-                        {material.name}
+                      <RadioGroupItem id={`paper-${paperStock.id}`} value={paperStock.id} />
+                      <Label className="cursor-pointer" htmlFor={`paper-${paperStock.id}`}>
+                        {paperStock.name}
                       </Label>
                     </div>
                     <span className="text-sm font-medium">
-                      ${(material.basePrice * 24 * 500 * 3.5).toFixed(2)}
+                      ${(paperStock.basePrice * 24 * 500 * 3.5).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -188,21 +196,21 @@ export default function FlyerProductPage() {
             </CardContent>
           </Card>
 
-          {/* Coating Selection - Only show if material has coating options */}
-          {currentMaterial && currentMaterial.coatings.length > 0 && (
+          {/* Coating Selection - Only show if paper stock has coating options */}
+          {currentPaperStock && currentPaperStock.coatings.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Coating Options</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup value={selectedCoating} onValueChange={setSelectedCoating}>
-                  {currentMaterial.coatings.map((coating) => (
+                  {currentPaperStock.coatings.map((coating) => (
                     <div key={coating.id} className="flex items-center justify-between py-2">
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem id={`coating-${coating.id}`} value={coating.id} />
                         <Label className="cursor-pointer" htmlFor={`coating-${coating.id}`}>
                           {coating.label}
-                          {coating.id === currentMaterial.defaultCoating && (
+                          {coating.id === currentPaperStock.defaultCoating && (
                             <Badge className="ml-2" variant="secondary">Default</Badge>
                           )}
                         </Label>
@@ -215,14 +223,14 @@ export default function FlyerProductPage() {
           )}
 
           {/* Sides Selection - Only show enabled options */}
-          {currentMaterial && currentMaterial.sidesOptions.length > 0 && (
+          {currentPaperStock && currentPaperStock.sidesOptions.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Printing Sides</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup value={selectedSides} onValueChange={setSelectedSides}>
-                  {currentMaterial.sidesOptions.map((sides) => (
+                  {currentPaperStock.sidesOptions.map((sides) => (
                     <div key={sides.id} className="flex items-center justify-between py-2">
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem id={`sides-${sides.id}`} value={sides.id} />
@@ -233,7 +241,7 @@ export default function FlyerProductPage() {
                               {sides.multiplier}x
                             </Badge>
                           )}
-                          {sides.id === currentMaterial.defaultSides && (
+                          {sides.id === currentPaperStock.defaultSides && (
                             <Badge className="ml-2" variant="secondary">Default</Badge>
                           )}
                         </Label>

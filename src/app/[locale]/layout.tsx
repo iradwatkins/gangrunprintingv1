@@ -96,7 +96,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   return (
-    <html suppressHydrationWarning lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <html suppressHydrationWarning dir={locale === 'ar' ? 'rtl' : 'ltr'} lang={locale}>
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
         <OfflineIndicator />

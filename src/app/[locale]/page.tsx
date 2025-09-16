@@ -22,12 +22,12 @@ export default async function HomePage({ params }: Props) {
             High-quality printing solutions for all your business needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild className="bg-blue-600 hover:bg-blue-700" size="lg">
               <Link href="/products">
                 View Products
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
+            <Button asChild size="lg" variant="outline">
               <Link href="/contact">
                 Get Quote
               </Link>

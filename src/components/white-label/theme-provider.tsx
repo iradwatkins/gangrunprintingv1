@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { TenantInfo } from '@/lib/tenants/resolver';
-import { ThemeEngine, CompiledTheme } from '@/lib/white-label/theming';
+import { type TenantInfo } from '@/lib/tenants/resolver';
+import { ThemeEngine, type CompiledTheme } from '@/lib/white-label/theming';
 
 interface ThemeContextType {
   theme: CompiledTheme;

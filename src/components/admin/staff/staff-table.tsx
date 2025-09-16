@@ -130,7 +130,7 @@ export function StaffTable({ staff }: StaffTableProps) {
   const getStatusBadge = (member: StaffMember) => {
     if (!member.emailVerified) {
       return (
-        <Badge variant="outline" className="gap-1">
+        <Badge className="gap-1" variant="outline">
           <Clock className="h-3 w-3" />
           Pending
         </Badge>
@@ -138,7 +138,7 @@ export function StaffTable({ staff }: StaffTableProps) {
     }
 
     return (
-      <Badge variant="default" className="gap-1">
+      <Badge className="gap-1" variant="default">
         <UserCheck className="h-3 w-3" />
         Active
       </Badge>
@@ -171,10 +171,10 @@ export function StaffTable({ staff }: StaffTableProps) {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            className="pl-8"
             placeholder="Search staff members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
           />
         </div>
       </div>
@@ -236,7 +236,7 @@ export function StaffTable({ staff }: StaffTableProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getRoleBadgeVariant(member.role)} className="gap-1">
+                    <Badge className="gap-1" variant={getRoleBadgeVariant(member.role)}>
                       {member.role === 'ADMIN' && <Shield className="h-3 w-3" />}
                       {member.role === 'STAFF' && <User className="h-3 w-3" />}
                       {member.role}
@@ -250,12 +250,12 @@ export function StaffTable({ staff }: StaffTableProps) {
                       {member.permissions.length} permissions
                       <div className="flex gap-1 mt-1">
                         {member.permissions.slice(0, 2).map((permission) => (
-                          <Badge key={permission} variant="outline" className="text-xs">
+                          <Badge key={permission} className="text-xs" variant="outline">
                             {permission.replace('_', ' ')}
                           </Badge>
                         ))}
                         {member.permissions.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="text-xs" variant="outline">
                             +{member.permissions.length - 2}
                           </Badge>
                         )}
@@ -267,7 +267,7 @@ export function StaffTable({ staff }: StaffTableProps) {
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button className="h-8 w-8 p-0" variant="ghost">
                           <span className="sr-only">Open menu</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
@@ -317,8 +317,8 @@ export function StaffTable({ staff }: StaffTableProps) {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteStaff(member.id)}
                                 className="bg-destructive text-destructive-foreground"
+                                onClick={() => handleDeleteStaff(member.id)}
                               >
                                 Delete
                               </AlertDialogAction>

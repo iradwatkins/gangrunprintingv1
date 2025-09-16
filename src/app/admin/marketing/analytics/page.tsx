@@ -224,7 +224,7 @@ export default function MarketingAnalyticsPage() {
       </div>
 
       {/* Analytics Tabs */}
-      <Tabs defaultValue="campaigns" className="space-y-6">
+      <Tabs className="space-y-6" defaultValue="campaigns">
         <TabsList>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
           <TabsTrigger value="automation">Automation</TabsTrigger>
@@ -233,7 +233,7 @@ export default function MarketingAnalyticsPage() {
         </TabsList>
 
         {/* Campaigns Analytics */}
-        <TabsContent value="campaigns" className="space-y-6">
+        <TabsContent className="space-y-6" value="campaigns">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
@@ -342,7 +342,7 @@ export default function MarketingAnalyticsPage() {
         </TabsContent>
 
         {/* Automation Analytics */}
-        <TabsContent value="automation" className="space-y-6">
+        <TabsContent className="space-y-6" value="automation">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -412,7 +412,7 @@ export default function MarketingAnalyticsPage() {
         </TabsContent>
 
         {/* Segments Analytics */}
-        <TabsContent value="segments" className="space-y-6">
+        <TabsContent className="space-y-6" value="segments">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -474,7 +474,7 @@ export default function MarketingAnalyticsPage() {
         </TabsContent>
 
         {/* Performance Analytics */}
-        <TabsContent value="performance" className="space-y-6">
+        <TabsContent className="space-y-6" value="performance">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>

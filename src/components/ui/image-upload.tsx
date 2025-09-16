@@ -101,15 +101,15 @@ export function ImageUpload({
         <div className="relative">
           <div className="relative w-full h-32 border rounded-lg overflow-hidden bg-gray-50">
             <img
-              src={value}
               alt="Preview"
               className="w-full h-full object-cover"
+              src={value}
               onError={() => onChange('')}
             />
             <Button
+              className="absolute top-2 right-2"
               size="sm"
               variant="destructive"
-              className="absolute top-2 right-2"
               onClick={handleRemove}
             >
               <X className="h-4 w-4" />
@@ -125,16 +125,16 @@ export function ImageUpload({
           isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300',
           'hover:border-gray-400'
         )}
-        onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
         <input
           ref={fileInputRef}
-          type="file"
           accept={accept}
-          onChange={(e) => handleFileSelect(e.target.files)}
           className="hidden"
+          type="file"
+          onChange={(e) => handleFileSelect(e.target.files)}
         />
 
         <div className="space-y-4">
@@ -151,10 +151,10 @@ export function ImageUpload({
               Drag and drop an image here, or click to select
             </p>
             <Button
+              disabled={isUploading}
               type="button"
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
             >
               <Upload className="mr-2 h-4 w-4" />
               {isUploading ? 'Uploading...' : 'Choose File'}
@@ -172,10 +172,10 @@ export function ImageUpload({
         <Label htmlFor="image-url">Or enter image URL:</Label>
         <Input
           id="image-url"
+          placeholder="https://example.com/image.jpg"
           type="url"
           value={value}
           onChange={(e) => handleUrlInput(e.target.value)}
-          placeholder="https://example.com/image.jpg"
         />
       </div>
     </div>

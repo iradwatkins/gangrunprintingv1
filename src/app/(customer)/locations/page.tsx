@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -396,7 +395,7 @@ export default function LocationsPage() {
         {location.phone && (
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-            <a href={`tel:${location.phone}`} className="text-sm text-primary hover:underline">
+            <a className="text-sm text-primary hover:underline" href={`tel:${location.phone}`}>
               {location.phone}
             </a>
           </div>
@@ -420,12 +419,12 @@ export default function LocationsPage() {
         </div>
 
         <div className="pt-3 flex gap-2">
-          <Button size="sm" variant="outline" className="flex-1">
+          <Button className="flex-1" size="sm" variant="outline">
             <Navigation className="h-4 w-4 mr-1" />
             Get Directions
           </Button>
           {location.phone && (
-            <Button size="sm" variant="outline" asChild>
+            <Button asChild size="sm" variant="outline">
               <a href={`tel:${location.phone}`}>
                 <Phone className="h-4 w-4" />
               </a>
@@ -496,17 +495,17 @@ export default function LocationsPage() {
         {/* Locations Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-            <TabsTrigger value="retail" className="flex items-center gap-2">
+            <TabsTrigger className="flex items-center gap-2" value="retail">
               <Building2 className="h-4 w-4" />
               Retail Locations
             </TabsTrigger>
-            <TabsTrigger value="cargo" className="flex items-center gap-2">
+            <TabsTrigger className="flex items-center gap-2" value="cargo">
               <Plane className="h-4 w-4" />
               Air Cargo Pickup
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="retail" className="mt-8">
+          <TabsContent className="mt-8" value="retail">
             {filteredRetailLocations.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
@@ -536,7 +535,7 @@ export default function LocationsPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="cargo" className="mt-8">
+          <TabsContent className="mt-8" value="cargo">
             {filteredAirCargoLocations.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
@@ -576,7 +575,7 @@ export default function LocationsPage() {
                           Request Quote
                         </Link>
                       </Button>
-                      <Button variant="outline" asChild>
+                      <Button asChild variant="outline">
                         <Link href="/contact">
                           <Phone className="mr-2 h-4 w-4" />
                           Contact Us

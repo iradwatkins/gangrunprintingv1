@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { sendEmail, emailTemplates } from '@/lib/resend'
 import { prisma } from '@/lib/prisma'
 

@@ -67,28 +67,28 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
+          aria-label="Close navigation"
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
-          aria-label="Close navigation"
         />
       )}
 
       {/* Floating Mobile Toggle Button */}
       <Button
-        className="fixed top-4 left-4 z-50 lg:hidden"
-        variant="outline"
-        size="icon"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         aria-label="Toggle navigation menu"
+        className="fixed top-4 left-4 z-50 lg:hidden"
+        size="icon"
+        variant="outline"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
         <Menu className="h-5 w-5" />
       </Button>
 
       {/* Account Sidebar - Overlay on mobile, collapsible on desktop */}
       <AccountSidebar
+        isDesktopOpen={isDesktopSidebarOpen}
         isMobileOpen={isMobileMenuOpen}
         setIsMobileOpen={setIsMobileMenuOpen}
-        isDesktopOpen={isDesktopSidebarOpen}
         showMobileToggle={true}
       />
 
@@ -98,11 +98,11 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
         <header className="h-16 border-b bg-background flex items-center px-4 lg:px-6">
           {/* Desktop sidebar toggle */}
           <Button
-            className="hidden lg:flex mr-3"
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
             aria-label="Toggle sidebar"
+            className="hidden lg:flex mr-3"
+            size="icon"
+            variant="ghost"
+            onClick={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
           >
             <Menu className="h-5 w-5" />
           </Button>

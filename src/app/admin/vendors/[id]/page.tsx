@@ -191,7 +191,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/vendors">
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -206,7 +206,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={vendor.isActive ? 'default' : 'secondary'} className="gap-1">
+          <Badge className="gap-1" variant={vendor.isActive ? 'default' : 'secondary'}>
             {vendor.isActive ? (
               <>
                 <CheckCircle className="h-3 w-3" />
@@ -310,7 +310,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
       </Card>
 
       {/* Tabs */}
-      <Tabs defaultValue="orders" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="orders">
         <TabsList>
           <TabsTrigger value="orders">Recent Orders</TabsTrigger>
           <TabsTrigger value="details">Vendor Details</TabsTrigger>
@@ -319,7 +319,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
         </TabsList>
 
         {/* Recent Orders Tab */}
-        <TabsContent value="orders" className="space-y-4">
+        <TabsContent className="space-y-4" value="orders">
           <Card>
             <CardHeader>
               <CardTitle>Recent Orders</CardTitle>
@@ -340,7 +340,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                 <TableBody>
                   {vendor.orders.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell className="text-center py-8 text-muted-foreground" colSpan={6}>
                         No orders assigned yet
                       </TableCell>
                     </TableRow>
@@ -368,7 +368,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                           </TableCell>
                           <TableCell>
                             <Link href={`/admin/orders/${order.id}`}>
-                              <Button variant="ghost" size="sm">
+                              <Button size="sm" variant="ghost">
                                 View
                               </Button>
                             </Link>
@@ -384,7 +384,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
         </TabsContent>
 
         {/* Vendor Details Tab */}
-        <TabsContent value="details" className="space-y-4">
+        <TabsContent className="space-y-4" value="details">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -421,8 +421,8 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     <Globe className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Website</p>
-                      <a href={vendor.website} target="_blank" rel="noopener noreferrer"
-                         className="text-sm text-blue-600 hover:underline">
+                      <a className="text-sm text-blue-600 hover:underline" href={vendor.website} rel="noopener noreferrer"
+                         target="_blank">
                         {vendor.website}
                       </a>
                     </div>
@@ -455,7 +455,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     <p className="text-sm font-medium">Supported Carriers</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {vendor.supportedCarriers.map(carrier => (
-                        <Badge key={carrier} variant="secondary" className="text-xs">
+                        <Badge key={carrier} className="text-xs" variant="secondary">
                           {carrier}
                         </Badge>
                       ))}
@@ -497,7 +497,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
         </TabsContent>
 
         {/* Products Tab */}
-        <TabsContent value="products" className="space-y-4">
+        <TabsContent className="space-y-4" value="products">
           <Card>
             <CardHeader>
               <CardTitle>Assigned Products</CardTitle>
@@ -534,7 +534,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                         </TableCell>
                         <TableCell>
                           {vp.isPreferred && (
-                            <Badge variant="default" className="gap-1">
+                            <Badge className="gap-1" variant="default">
                               <Star className="h-3 w-3" />
                               Preferred
                             </Badge>
@@ -550,7 +550,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
         </TabsContent>
 
         {/* Integration Tab */}
-        <TabsContent value="integration" className="space-y-4">
+        <TabsContent className="space-y-4" value="integration">
           <Card>
             <CardHeader>
               <CardTitle>Integration Settings</CardTitle>
@@ -563,7 +563,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     <code className="text-xs bg-muted px-2 py-1 rounded flex-1">
                       {vendor.n8nWebhookUrl}
                     </code>
-                    <Badge variant="default" className="gap-1">
+                    <Badge className="gap-1" variant="default">
                       <Activity className="h-3 w-3" />
                       Connected
                     </Badge>

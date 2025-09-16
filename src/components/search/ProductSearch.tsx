@@ -163,30 +163,30 @@ export function ProductSearch({ className }: { className?: string }) {
   }, [])
 
   return (
-    <div className={className} ref={searchRef}>
-      <form onSubmit={handleSearch} className="flex gap-2">
+    <div ref={searchRef} className={className}>
+      <form className="flex gap-2" onSubmit={handleSearch}>
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            type="search"
+            className="pl-10 pr-10"
             placeholder="Search products..."
+            type="search"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
               setShowSuggestions(true)
             }}
             onFocus={() => setShowSuggestions(true)}
-            className="pl-10 pr-10"
           />
           {query && (
             <button
+              className="absolute right-3 top-1/2 -translate-y-1/2"
               type="button"
               onClick={() => {
                 setQuery('')
                 setSuggestions([])
                 setShowSuggestions(false)
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
             >
               <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
@@ -198,8 +198,8 @@ export function ProductSearch({ className }: { className?: string }) {
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  type="button"
                   className="w-full text-left px-4 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
+                  type="button"
                   onClick={() => {
                     if (suggestion.type === 'category') {
                       updateFilter('category', suggestion.text)
@@ -233,7 +233,7 @@ export function ProductSearch({ className }: { className?: string }) {
         {/* Filter button (mobile) */}
         <Sheet>
           <SheetTrigger asChild className="lg:hidden">
-            <Button variant="outline" size="icon">
+            <Button size="icon" variant="outline">
               <Filter className="h-4 w-4" />
             </Button>
           </SheetTrigger>
@@ -246,16 +246,16 @@ export function ProductSearch({ className }: { className?: string }) {
             </SheetHeader>
             <div className="mt-6 space-y-6">
               <SearchFiltersContent
+                clearFilters={clearFilters}
                 filters={filters}
                 updateFilter={updateFilter}
-                clearFilters={clearFilters}
               />
             </div>
           </SheetContent>
         </Sheet>
 
         {/* Search button */}
-        <Button type="submit" disabled={isSearching}>
+        <Button disabled={isSearching} type="submit">
           {isSearching ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -286,8 +286,8 @@ export function ProductSearch({ className }: { className?: string }) {
 
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="inStock"
               checked={filters.inStock || false}
+              id="inStock"
               onCheckedChange={(checked) => updateFilter('inStock', checked)}
             />
             <Label htmlFor="inStock">In Stock Only</Label>
@@ -295,10 +295,10 @@ export function ProductSearch({ className }: { className?: string }) {
 
           {Object.keys(filters).length > 0 && (
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
               className="ml-auto"
+              size="sm"
+              variant="ghost"
+              onClick={clearFilters}
             >
               Clear Filters
             </Button>
@@ -329,27 +329,27 @@ function SearchFiltersContent({
           onValueChange={(value) => updateFilter('sortBy', value)}
         >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="relevance" id="relevance" />
+            <RadioGroupItem id="relevance" value="relevance" />
             <Label htmlFor="relevance">Relevance</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="price_asc" id="price_asc" />
+            <RadioGroupItem id="price_asc" value="price_asc" />
             <Label htmlFor="price_asc">Price: Low to High</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="price_desc" id="price_desc" />
+            <RadioGroupItem id="price_desc" value="price_desc" />
             <Label htmlFor="price_desc">Price: High to Low</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="name" id="name" />
+            <RadioGroupItem id="name" value="name" />
             <Label htmlFor="name">Name: A to Z</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="newest" id="newest" />
+            <RadioGroupItem id="newest" value="newest" />
             <Label htmlFor="newest">Newest First</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="popular" id="popular" />
+            <RadioGroupItem id="popular" value="popular" />
             <Label htmlFor="popular">Most Popular</Label>
           </div>
         </RadioGroup>
@@ -360,19 +360,19 @@ function SearchFiltersContent({
         <Label>Price Range</Label>
         <div className="flex gap-2 items-center">
           <Input
-            type="number"
+            className="w-24"
             placeholder="Min"
+            type="number"
             value={filters.minPrice || ''}
             onChange={(e) => updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
-            className="w-24"
           />
           <span>to</span>
           <Input
-            type="number"
+            className="w-24"
             placeholder="Max"
+            type="number"
             value={filters.maxPrice || ''}
             onChange={(e) => updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
-            className="w-24"
           />
         </div>
       </div>
@@ -380,8 +380,8 @@ function SearchFiltersContent({
       {/* In Stock */}
       <div className="flex items-center space-x-2">
         <Checkbox
-          id="inStockFilter"
           checked={filters.inStock || false}
+          id="inStockFilter"
           onCheckedChange={(checked) => updateFilter('inStock', checked)}
         />
         <Label htmlFor="inStockFilter">In Stock Only</Label>
@@ -390,9 +390,9 @@ function SearchFiltersContent({
       {/* Clear Filters */}
       {Object.keys(filters).length > 0 && (
         <Button
+          className="w-full"
           variant="outline"
           onClick={clearFilters}
-          className="w-full"
         >
           Clear All Filters
         </Button>

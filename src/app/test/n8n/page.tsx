@@ -322,18 +322,18 @@ export default function N8NTestPage() {
                 <Label htmlFor="order">Order Number</Label>
                 <Input
                   id="order"
+                  placeholder="GRP-XXXXX"
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
-                  placeholder="GRP-XXXXX"
                 />
               </div>
               <div>
                 <Label htmlFor="vendor">Vendor Name (for assignment)</Label>
                 <Input
                   id="vendor"
+                  placeholder="Vendor name"
                   value={vendorId}
                   onChange={(e) => setVendorId(e.target.value)}
-                  placeholder="Vendor name"
                 />
               </div>
             </CardContent>
@@ -345,7 +345,7 @@ export default function N8NTestPage() {
               <CardDescription>Trigger N8N workflows</CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="order" className="w-full">
+              <Tabs className="w-full" defaultValue="order">
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="order">Order</TabsTrigger>
                   <TabsTrigger value="status">Status</TabsTrigger>
@@ -353,12 +353,12 @@ export default function N8NTestPage() {
                   <TabsTrigger value="custom">Custom</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="order" className="space-y-4">
+                <TabsContent className="space-y-4" value="order">
                   <Button 
-                    onClick={testWebhookStatus} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={testWebhookStatus}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -369,9 +369,9 @@ export default function N8NTestPage() {
                   </Button>
                   
                   <Button 
-                    onClick={testOrderCreated} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={testOrderCreated}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -382,10 +382,10 @@ export default function N8NTestPage() {
                   </Button>
                   
                   <Button 
-                    onClick={testVendorAssignment} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={testVendorAssignment}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -396,10 +396,10 @@ export default function N8NTestPage() {
                   </Button>
                   
                   <Button 
-                    onClick={testTrackingUpdate} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={testTrackingUpdate}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -410,109 +410,109 @@ export default function N8NTestPage() {
                   </Button>
                 </TabsContent>
                 
-                <TabsContent value="status" className="space-y-4">
+                <TabsContent className="space-y-4" value="status">
                   <Button 
-                    onClick={() => testStatusUpdate('PAID')} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={() => testStatusUpdate('PAID')}
                   >
                     <DollarSign className="mr-2 h-4 w-4" />
                     Payment Received
                   </Button>
                   
                   <Button 
-                    onClick={() => testStatusUpdate('PROCESSING')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testStatusUpdate('PROCESSING')}
                   >
                     <Clock className="mr-2 h-4 w-4" />
                     Processing
                   </Button>
                   
                   <Button 
-                    onClick={() => testStatusUpdate('PRINTING')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testStatusUpdate('PRINTING')}
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     In Production
                   </Button>
                   
                   <Button 
-                    onClick={() => testStatusUpdate('SHIPPED')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testStatusUpdate('SHIPPED')}
                   >
                     <Truck className="mr-2 h-4 w-4" />
                     Shipped
                   </Button>
                 </TabsContent>
                 
-                <TabsContent value="notify" className="space-y-4">
+                <TabsContent className="space-y-4" value="notify">
                   <Button 
-                    onClick={() => testNotificationSend('ORDER_CONFIRMED')} 
+                    className="w-full" 
                     disabled={loading}
-                    className="w-full"
+                    onClick={() => testNotificationSend('ORDER_CONFIRMED')}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Order Confirmation
                   </Button>
                   
                   <Button 
-                    onClick={() => testNotificationSend('PAYMENT_RECEIVED')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testNotificationSend('PAYMENT_RECEIVED')}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Payment Received
                   </Button>
                   
                   <Button 
-                    onClick={() => testNotificationSend('ORDER_SHIPPED')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testNotificationSend('ORDER_SHIPPED')}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Shipment Notification
                   </Button>
                   
                   <Button 
-                    onClick={() => testNotificationSend('ORDER_DELIVERED')} 
+                    className="w-full" 
                     disabled={loading}
                     variant="outline"
-                    className="w-full"
+                    onClick={() => testNotificationSend('ORDER_DELIVERED')}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Delivery Confirmation
                   </Button>
                 </TabsContent>
                 
-                <TabsContent value="custom" className="space-y-4">
+                <TabsContent className="space-y-4" value="custom">
                   <div>
                     <Label htmlFor="payload">Custom JSON Payload</Label>
                     <Textarea
+                      className="font-mono text-sm"
                       id="payload"
-                      value={customPayload}
-                      onChange={(e) => setCustomPayload(e.target.value)}
                       placeholder={JSON.stringify({
                         action: 'custom.action',
                         orderNumber: 'GRP-12345',
                         data: {}
                       }, null, 2)}
                       rows={8}
-                      className="font-mono text-sm"
+                      value={customPayload}
+                      onChange={(e) => setCustomPayload(e.target.value)}
                     />
                   </div>
                   
                   <Button 
-                    onClick={testCustomWebhook} 
+                    className="w-full" 
                     disabled={loading || !customPayload}
-                    className="w-full"
+                    onClick={testCustomWebhook}
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

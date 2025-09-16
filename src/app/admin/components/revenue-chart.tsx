@@ -34,17 +34,17 @@ export function RevenueChart({ data }: { data?: ChartData }) {
       </CardHeader>
       <CardContent>
         <div className="relative h-64">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
             {/* Grid lines */}
             {[0, 25, 50, 75, 100].map(y => (
               <line
                 key={y}
-                x1="0"
-                y1={y}
-                x2="100"
-                y2={y}
                 stroke="#e5e7eb"
                 strokeWidth="0.2"
+                x1="0"
+                x2="100"
+                y1={y}
+                y2={y}
               />
             ))}
             
@@ -66,8 +66,8 @@ export function RevenueChart({ data }: { data?: ChartData }) {
                       key={index}
                       cx={x}
                       cy={y}
-                      r="1"
                       fill={dataset.borderColor || '#3b82f6'}
+                      r="1"
                     />
                   )
                 })}

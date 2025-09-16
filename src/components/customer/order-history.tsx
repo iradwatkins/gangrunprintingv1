@@ -15,7 +15,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { TrackingButton } from '@/components/tracking/tracking-button';
-import { Carrier } from '@prisma/client';
+import { type Carrier } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -357,8 +357,8 @@ export default function OrderHistory() {
                               <div className="mt-1">
                                 <TrackingButton
                                   carrier={order.carrier}
-                                  trackingNumber={order.trackingNumber}
                                   size="sm"
+                                  trackingNumber={order.trackingNumber}
                                   variant="outline"
                                 />
                               </div>

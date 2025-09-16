@@ -1,12 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { 
-  Users, 
-  Target, 
-  Award, 
-  Clock,
-  Building,
+import {
+  Users,
+  Target,
   Sparkles,
   CheckCircle,
   ArrowRight

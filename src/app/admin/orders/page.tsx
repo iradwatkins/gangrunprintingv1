@@ -260,16 +260,16 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <form>
                 <Input
-                  name="search"
                   className="pl-10"
+                  defaultValue={searchQuery}
+                  name="search"
                   placeholder="Search by order number, customer name or email..."
                   type="text"
-                  defaultValue={searchQuery}
                 />
               </form>
             </div>
             <form>
-              <Select name="status" defaultValue={statusFilter}>
+              <Select defaultValue={statusFilter} name="status">
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
@@ -283,11 +283,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                 </SelectContent>
               </Select>
             </form>
-            <Button variant="outline" disabled>
+            <Button disabled variant="outline">
               <Filter className="mr-2 h-4 w-4" />
               More Filters
             </Button>
-            <Button variant="outline" disabled>
+            <Button disabled variant="outline">
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
@@ -310,7 +310,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               <TableBody>
                 {orders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
+                    <TableCell className="text-center py-8" colSpan={7}>
                       {searchQuery || statusFilter !== 'all'
                         ? 'No orders found matching your filters'
                         : 'No orders yet. Orders will appear here when customers place them.'}
@@ -325,8 +325,8 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
                           <Link
-                            href={`/admin/orders/${order.id}`}
                             className="hover:underline"
+                            href={`/admin/orders/${order.id}`}
                           >
                             {order.orderNumber}
                           </Link>
@@ -401,9 +401,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                   href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                 >
                   <Button
+                    disabled={page <= 1}
                     size="sm"
                     variant="outline"
-                    disabled={page <= 1}
                   >
                     Previous
                   </Button>
@@ -431,9 +431,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                   href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                 >
                   <Button
+                    disabled={page >= totalPages}
                     size="sm"
                     variant="outline"
-                    disabled={page >= totalPages}
                   >
                     Next
                   </Button>

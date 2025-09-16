@@ -17,15 +17,14 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { 
-      name, 
-      basePrice, 
-      shippingWeight, 
+    const {
+      name,
+      weight,
+      pricePerSqInch,
+      tooltipText,
       isActive,
       coatings,
-      sidesOptions,
-      defaultCoating,
-      defaultSides
+      sidesOptions
     } = body
 
     // Update paper stock and relationships in a transaction
@@ -43,31 +42,24 @@ export async function PUT(
         where: { id },
         data: {
           name,
-          weight: `${Math.round(shippingWeight * 100)}lb`,
-          finish: 'Custom',
-          coating: 'Custom',
-          sides: 'Custom',
-          costPerSheet: basePrice / 0.00001,
-          thickness: shippingWeight,
+          weight: weight || 0.0015,
+          pricePerSqInch: pricePerSqInch || 0.0015,
+          tooltipText: tooltipText || null,
           isActive: isActive !== undefined ? isActive : true,
           // Add new coating relationships
           paperStockCoatings: {
-            create: coatings
-              .filter((c: any) => c.enabled)
-              .map((c: any) => ({
-                coatingId: c.id,
-                isDefault: c.id === defaultCoating
-              }))
+            create: coatings?.map((c: any) => ({
+              coatingId: c.id,
+              isDefault: c.isDefault || false
+            })) || []
           },
           // Add new sides relationships
           paperStockSides: {
-            create: sidesOptions
-              .filter((s: any) => s.enabled)
-              .map((s: any) => ({
-                sidesOptionId: s.id,
-                priceMultiplier: s.multiplier || 1.0,
-                isEnabled: true
-              }))
+            create: sidesOptions?.map((s: any) => ({
+              sidesOptionId: s.id,
+              priceMultiplier: s.multiplier || 1.0,
+              isEnabled: true
+            })) || []
           }
         },
         include: {

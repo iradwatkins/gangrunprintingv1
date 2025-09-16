@@ -72,43 +72,11 @@ const data = {
       title: 'Orders',
       url: '/admin/orders',
       icon: ShoppingCart,
-      items: [
-        {
-          title: 'All Orders',
-          url: '/admin/orders',
-        },
-        {
-          title: 'Pending',
-          url: '/admin/orders?status=pending',
-        },
-        {
-          title: 'In Production',
-          url: '/admin/orders?status=production',
-        },
-        {
-          title: 'Completed',
-          url: '/admin/orders?status=completed',
-        },
-      ],
     },
     {
       title: 'Customers',
       url: '/admin/customers',
       icon: Users,
-      items: [
-        {
-          title: 'All Customers',
-          url: '/admin/customers',
-        },
-        {
-          title: 'Corporate',
-          url: '/admin/customers/corporate',
-        },
-        {
-          title: 'Individual',
-          url: '/admin/customers/individual',
-        },
-      ],
     },
     {
       title: 'Products',
@@ -121,15 +89,23 @@ const data = {
         },
         {
           title: 'Categories',
-          url: '/admin/products/categories',
+          url: '/admin/categories',
         },
         {
-          title: 'Templates',
-          url: '/admin/products/templates',
+          title: 'Paper Stocks',
+          url: '/admin/paper-stocks',
         },
         {
-          title: 'Pricing',
-          url: '/admin/products/pricing',
+          title: 'Quantities',
+          url: '/admin/quantities',
+        },
+        {
+          title: 'Sizes',
+          url: '/admin/sizes',
+        },
+        {
+          title: 'Add-ons',
+          url: '/admin/add-ons',
         },
       ],
     },
@@ -137,28 +113,6 @@ const data = {
       title: 'Analytics',
       url: '/admin/analytics',
       icon: BarChart3,
-      items: [
-        {
-          title: 'Overview',
-          url: '/admin/analytics',
-        },
-        {
-          title: 'Revenue',
-          url: '/admin/analytics?tab=revenue',
-        },
-        {
-          title: 'Customers',
-          url: '/admin/analytics?tab=customers',
-        },
-        {
-          title: 'Products',
-          url: '/admin/analytics?tab=products',
-        },
-        {
-          title: 'Performance',
-          url: '/admin/analytics?tab=performance',
-        },
-      ],
     },
     {
       title: 'Marketing & Automation',
@@ -188,59 +142,6 @@ const data = {
       ],
     },
     {
-      title: 'Staff',
-      url: '/admin/staff',
-      icon: Users,
-      items: [
-        {
-          title: 'All Staff',
-          url: '/admin/staff',
-        },
-        {
-          title: 'Roles & Permissions',
-          url: '/admin/staff?tab=roles',
-        },
-        {
-          title: 'Activity Log',
-          url: '/admin/staff?tab=activity',
-        },
-      ],
-    },
-    {
-      title: 'Vendors',
-      url: '/admin/vendors',
-      icon: Truck,
-      items: [
-        {
-          title: 'All Vendors',
-          url: '/admin/vendors',
-        },
-        {
-          title: 'Add Vendor',
-          url: '/admin/vendors/new',
-        },
-      ],
-    },
-    {
-      title: 'Monitoring',
-      url: '/admin/monitoring',
-      icon: Monitor,
-      items: [
-        {
-          title: 'System Health',
-          url: '/admin/monitoring',
-        },
-        {
-          title: 'Performance',
-          url: '/admin/monitoring?tab=performance',
-        },
-        {
-          title: 'Logs',
-          url: '/admin/monitoring?tab=logs',
-        },
-      ],
-    },
-    {
       title: 'Settings',
       url: '/admin/settings',
       icon: Settings2,
@@ -250,90 +151,22 @@ const data = {
           url: '/admin/settings',
         },
         {
-          title: 'Printing',
-          url: '/admin/settings?tab=printing',
+          title: 'Staff',
+          url: '/admin/staff',
         },
         {
-          title: 'Payments',
-          url: '/admin/settings?tab=payments',
+          title: 'Vendors',
+          url: '/admin/vendors',
         },
         {
-          title: 'Shipping',
-          url: '/admin/settings?tab=shipping',
-        },
-        {
-          title: 'Notifications',
-          url: '/admin/settings?tab=notifications',
-        },
-        {
-          title: 'Integrations',
-          url: '/admin/settings?tab=integrations',
-        },
-        {
-          title: 'Themes',
-          url: '/admin/settings/themes',
-        },
-        {
-          title: 'Material Types',
-          url: '/admin/material-types',
-        },
-        {
-          title: 'Add-ons',
-          url: '/admin/add-ons',
-        },
-        {
-          title: 'Paper Stocks',
-          url: '/admin/paper-stocks',
-        },
-        {
-          title: 'Quantities',
-          url: '/admin/quantities',
-        },
-        {
-          title: 'Sizes',
-          url: '/admin/sizes',
+          title: 'System Health',
+          url: '/admin/monitoring',
         },
         {
           title: 'Theme Colors',
           url: '/admin/theme-colors',
         },
-        {
-          title: 'Print Options',
-          url: '/admin/print-options',
-        },
       ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Quick Actions',
-      url: '#',
-      icon: Zap,
-    },
-    {
-      name: 'Orders',
-      url: '/admin/orders',
-      icon: ShoppingCart,
-    },
-    {
-      name: 'Customers',
-      url: '/admin/customers',
-      icon: Users,
-    },
-    {
-      name: 'Vendors',
-      url: '/admin/vendors',
-      icon: Truck,
-    },
-    {
-      name: 'System Monitor',
-      url: '/admin/monitoring',
-      icon: Monitor,
-    },
-    {
-      name: 'Theme Colors',
-      url: '/admin/theme-colors',
-      icon: Palette,
     },
   ],
 }
@@ -346,7 +179,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>

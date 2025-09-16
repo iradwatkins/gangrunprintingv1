@@ -68,7 +68,7 @@ export function RolePermissionsTable({ roles }: RolePermissionsTableProps) {
                 {permission.label}
               </TableCell>
               <TableCell>
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs" variant="outline">
                   {permission.category}
                 </Badge>
               </TableCell>

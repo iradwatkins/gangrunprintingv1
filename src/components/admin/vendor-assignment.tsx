@@ -149,7 +149,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
                   <Truck className="h-3 w-3 text-muted-foreground" />
                   <div className="flex flex-wrap gap-1">
                     {currentVendor.supportedCarriers.map((carrier: string) => (
-                      <Badge key={carrier} variant="secondary" className="text-xs">
+                      <Badge key={carrier} className="text-xs" variant="secondary">
                         {carrier}
                       </Badge>
                     ))}
@@ -161,18 +161,18 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
 
           <div className="flex gap-2">
             <Button
+              className="flex-1"
               size="sm"
               variant="outline"
-              className="flex-1"
               onClick={() => setIsDialogOpen(true)}
             >
               Change Vendor
             </Button>
             <Button
+              disabled={isNotifying}
               size="sm"
               variant="outline"
               onClick={notifyVendor}
-              disabled={isNotifying}
             >
               {isNotifying ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -191,8 +191,8 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
             </AlertDescription>
           </Alert>
           <Button
-            size="sm"
             className="w-full"
+            size="sm"
             onClick={() => setIsDialogOpen(true)}
           >
             Assign Vendor
@@ -264,9 +264,9 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
               <Textarea
                 id="notes"
                 placeholder="Add any special instructions or notes for this assignment..."
+                rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                rows={3}
               />
             </div>
           </div>
@@ -275,7 +275,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={assignVendor} disabled={isAssigning || !selectedVendorId}>
+            <Button disabled={isAssigning || !selectedVendorId} onClick={assignVendor}>
               {isAssigning ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

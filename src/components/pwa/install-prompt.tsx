@@ -104,9 +104,9 @@ export function InstallPrompt() {
       <Card className="shadow-lg border-primary/20">
         <CardContent className="p-4">
           <button
-            onClick={handleDismiss}
-            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
             aria-label="Dismiss"
+            className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+            onClick={handleDismiss}
           >
             <X className="h-4 w-4" />
           </button>
@@ -141,17 +141,17 @@ export function InstallPrompt() {
               
               <div className="flex gap-2 pt-2">
                 <Button
+                  className="flex-1"
                   size="sm"
                   onClick={handleInstall}
-                  className="flex-1"
                 >
                   Install App
                 </Button>
                 <Button
+                  className="flex-1"
                   size="sm"
                   variant="ghost"
                   onClick={handleDismiss}
-                  className="flex-1"
                 >
                   Not Now
                 </Button>

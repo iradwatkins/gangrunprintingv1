@@ -53,13 +53,12 @@ export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [categories, setCategories] = useState([])
-  const [materialTypes, setMaterialTypes] = useState([])
+  const [paperStocks, setPaperStocks] = useState([])
   const [formData, setFormData] = useState({
     name: product?.name || '',
     slug: product?.slug || '',
     sku: product?.sku || '',
     categoryId: product?.categoryId || '',
-    materialTypeId: product?.materialTypeId || '',
     description: product?.description || '',
     shortDescription: product?.shortDescription || '',
     basePrice: product?.basePrice || 0,
@@ -87,7 +86,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   useEffect(() => {
     fetchCategories()
-    fetchMaterialTypes()
+    fetchPaperStocks()
   }, [])
 
   const fetchCategories = async () => {
@@ -102,15 +101,15 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   }
 
-  const fetchMaterialTypes = async () => {
+  const fetchPaperStocks = async () => {
     try {
-      const res = await fetch('/api/material-types')
+      const res = await fetch('/api/paper-stocks')
       if (res.ok) {
         const data = await res.json()
-        setMaterialTypes(data.filter((mt: any) => mt.isActive))
+        setPaperStocks(data.filter((ps: any) => ps.isActive))
       }
     } catch (error) {
-      console.error('Failed to fetch material types:', error)
+      console.error('Failed to fetch paper stocks:', error)
     }
   }
 
@@ -144,7 +143,6 @@ export function ProductForm({ product }: ProductFormProps) {
       // Clean up the data before sending
       const dataToSend = {
         ...formData,
-        materialTypeId: formData.materialTypeId === 'none' ? null : formData.materialTypeId
       }
       
       const res = await fetch(url, {
@@ -269,30 +267,6 @@ export function ProductForm({ product }: ProductFormProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="materialType">Material Type</Label>
-                  <Select
-                    value={formData.materialTypeId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, materialTypeId: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select material type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {materialTypes.map((mt: any) => (
-                        <SelectItem key={mt.id} value={mt.id}>
-                          {mt.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground">
-                    Optional: Categorize by material type (Paper, Vinyl, Canvas, etc.)
-                  </p>
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="shortDescription">Short Description</Label>

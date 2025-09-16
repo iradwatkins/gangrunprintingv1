@@ -9,11 +9,11 @@ export function CartButton() {
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
-      className="relative"
-      onClick={openCart}
       aria-label={`Shopping cart with ${itemCount} items`}
+      className="relative"
+      size="icon"
+      variant="ghost"
+      onClick={openCart}
     >
       <ShoppingBag className="h-5 w-5" />
       {itemCount > 0 && (

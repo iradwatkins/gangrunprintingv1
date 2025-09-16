@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                         {order.status.replace(/_/g, ' ')}
                       </span>
                       <Link href={`/account/orders/${order.id}`}>
-                        <Button variant="link" size="sm" className="mt-1">
+                        <Button className="mt-1" size="sm" variant="link">
                           View Details →
                         </Button>
                       </Link>
@@ -173,7 +173,7 @@ export default async function DashboardPage() {
                 {dashboardData.user?.role === 'ADMIN' && (
                   <div className="mt-3 pt-3 border-t">
                     <Link href="/admin/dashboard">
-                      <Button variant="outline" size="sm" className="w-full">
+                      <Button className="w-full" size="sm" variant="outline">
                         Go to Admin Dashboard
                       </Button>
                     </Link>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
                 Get assistance with your orders or account
               </p>
               <Link href="/contact">
-                <Button variant="outline" size="sm" className="w-full">
+                <Button className="w-full" size="sm" variant="outline">
                   Contact Support
                 </Button>
               </Link>

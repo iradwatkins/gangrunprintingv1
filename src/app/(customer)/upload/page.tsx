@@ -127,17 +127,17 @@ export default function UploadPage() {
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               isDragging ? 'border-primary bg-primary/5' : 'border-gray-300'
             }`}
-            onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
             onDrop={handleDrop}
           >
             <input
               ref={fileInputRef}
-              type="file"
               multiple
-              onChange={handleFileInput}
-              className="hidden"
               accept=".pdf,.jpg,.jpeg,.png,.svg,.ai,.psd"
+              className="hidden"
+              type="file"
+              onChange={handleFileInput}
             />
             
             <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
@@ -167,7 +167,7 @@ export default function UploadPage() {
                     </div>
                     
                     {file.status === 'uploading' && (
-                      <Progress value={file.progress} className="h-1 mt-2" />
+                      <Progress className="h-1 mt-2" value={file.progress} />
                     )}
                     
                     {file.status === 'completed' && (
@@ -186,8 +186,8 @@ export default function UploadPage() {
                   </div>
                   
                   <Button
-                    variant="ghost"
                     size="sm"
+                    variant="ghost"
                     onClick={() => removeFile(file.id)}
                   >
                     <X className="w-4 h-4" />
