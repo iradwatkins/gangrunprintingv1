@@ -8,17 +8,18 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  DollarSign, 
-  Percent, 
-  Package, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  DollarSign,
+  Percent,
+  Package,
   Settings,
   Search,
   Save,
-  X
+  X,
+  Copy
 } from 'lucide-react'
 import {
   Table,
@@ -232,6 +233,48 @@ export default function AddOnsPage() {
     setEditingAddOn(null)
   }
 
+  const handleDuplicate = (addOn: AddOn) => {
+    setEditingAddOn(null) // Important: clear editing addon so it creates a new item
+
+    // Parse configuration based on pricing model
+    let flatPrice = 0
+    let percentage = 0
+    let percentageAppliesTo = 'base_price'
+    let pricePerUnit = 0
+    let unitName = 'piece'
+    let customConfig = '{}'
+
+    if (addOn.pricingModel === 'FLAT') {
+      flatPrice = addOn.configuration.price || 0
+    } else if (addOn.pricingModel === 'PERCENTAGE') {
+      percentage = addOn.configuration.percentage || 0
+      percentageAppliesTo = addOn.configuration.appliesTo || 'base_price'
+    } else if (addOn.pricingModel === 'PER_UNIT') {
+      pricePerUnit = addOn.configuration.pricePerUnit || 0
+      unitName = addOn.configuration.unitName || 'piece'
+    } else {
+      customConfig = JSON.stringify(addOn.configuration, null, 2)
+    }
+
+    setFormData({
+      name: `${addOn.name} - Copy`,
+      description: addOn.description || '',
+      tooltipText: addOn.tooltipText || '',
+      pricingModel: addOn.pricingModel,
+      additionalTurnaroundDays: addOn.additionalTurnaroundDays,
+      sortOrder: addOn.sortOrder,
+      isActive: addOn.isActive,
+      adminNotes: addOn.adminNotes || '',
+      flatPrice,
+      percentage,
+      percentageAppliesTo,
+      pricePerUnit,
+      unitName,
+      customConfig
+    })
+    setDialogOpen(true)
+  }
+
   const openEditDialog = (addOn: AddOn) => {
     setEditingAddOn(addOn)
     
@@ -397,6 +440,14 @@ export default function AddOnsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDuplicate(addOn)}
+                            title="Duplicate"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"

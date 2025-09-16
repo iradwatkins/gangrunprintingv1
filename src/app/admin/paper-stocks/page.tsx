@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Package, Palette, Square } from 'lucide-react'
+import { Plus, Edit, Trash2, Package, Palette, Square, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -257,6 +257,33 @@ export default function PaperStocksPage() {
   const openDeleteDialog = (stock: PaperStock) => {
     setDeletingStock(stock)
     setDeleteDialogOpen(true)
+  }
+
+  const handleDuplicate = (stock: PaperStock) => {
+    setEditingStock(null) // Important: clear editing stock so it creates a new item
+    // Extract coating data
+    const selectedCoatings = stock.paperStockCoatings.map(pc => pc.coatingId)
+    const defaultCoating = stock.paperStockCoatings.find(pc => pc.isDefault)?.coatingId || ''
+
+    // Extract sides data and multipliers
+    const selectedSides = stock.paperStockSides.map(ps => ps.sidesOptionId)
+    const sidesMultipliers = stock.paperStockSides.reduce((acc, ps) => {
+      acc[ps.sidesOptionId] = ps.priceMultiplier
+      return acc
+    }, {} as Record<string, number>)
+
+    setFormData({
+      name: `${stock.name} - Copy`,
+      weight: stock.weight,
+      pricePerSqInch: stock.pricePerSqInch,
+      tooltipText: stock.tooltipText || '',
+      isActive: stock.isActive,
+      selectedCoatings,
+      defaultCoating,
+      selectedSides,
+      sidesMultipliers
+    })
+    setDialogOpen(true)
   }
 
   const handleCoatingCreated = (newCoating: CoatingOption) => {
@@ -653,7 +680,16 @@ export default function PaperStocksPage() {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => handleDuplicate(stock)}
+                          title="Duplicate"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => handleEdit(stock)}
+                          title="Edit"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -662,6 +698,7 @@ export default function PaperStocksPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => openDeleteDialog(stock)}
+                          title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
