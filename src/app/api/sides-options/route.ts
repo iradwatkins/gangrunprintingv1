@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, code, description, isDefault } = body
+    const { name, description } = body
 
-    if (!name || !code) {
+    if (!name) {
       return NextResponse.json(
-        { error: 'Name and code are required' },
+        { error: 'Name is required' },
         { status: 400 }
       )
     }
@@ -46,9 +46,7 @@ export async function POST(request: NextRequest) {
     const sidesOption = await prisma.sidesOption.create({
       data: {
         name,
-        code,
-        description,
-        isDefault: isDefault || false
+        description
       }
     })
 
@@ -58,7 +56,7 @@ export async function POST(request: NextRequest) {
     
     if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'A sides option with this name or code already exists' },
+        { error: 'A sides option with this name already exists' },
         { status: 400 }
       )
     }
