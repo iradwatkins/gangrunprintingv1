@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description } = body
+    const { name } = body
 
     if (!name) {
       return NextResponse.json(
@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
 
     const coatingOption = await prisma.coatingOption.create({
       data: {
-        name,
-        description
+        name
       }
     })
 
