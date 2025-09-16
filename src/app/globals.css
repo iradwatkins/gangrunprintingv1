@@ -76,8 +76,8 @@
     --secondary-foreground: oklch(0.4461 0.0263 256.8018);
     --muted: oklch(0.9846 0.0017 247.8389);
     --muted-foreground: oklch(0.5510 0.0234 264.3637);
-    --accent: oklch(0.9119 0.0222 243.8174);
-    --accent-foreground: oklch(0.3791 0.1378 265.5222);
+    --accent: oklch(0.7500 0.1200 45.0000);
+    --accent-foreground: oklch(0.2000 0 0);
     --destructive: oklch(0.6368 0.2078 25.3313);
     --destructive-foreground: oklch(1.0000 0 0);
     --border: oklch(0.9022 0.0052 247.8822);
@@ -92,8 +92,8 @@
     --sidebar-foreground: oklch(0.3211 0 0);
     --sidebar-primary: oklch(0.6397 0.1720 36.4421);
     --sidebar-primary-foreground: oklch(1.0000 0 0);
-    --sidebar-accent: oklch(0.9119 0.0222 243.8174);
-    --sidebar-accent-foreground: oklch(0.3791 0.1378 265.5222);
+    --sidebar-accent: oklch(0.7500 0.1200 45.0000);
+    --sidebar-accent-foreground: oklch(0.2000 0 0);
     --sidebar-border: oklch(0.9276 0.0058 264.5313);
     --sidebar-ring: oklch(0.6397 0.1720 36.4421);
     --font-sans: Inter, sans-serif;
@@ -133,8 +133,8 @@
     --secondary-foreground: oklch(0.9219 0 0);
     --muted: oklch(0.3095 0.0266 266.7132);
     --muted-foreground: oklch(0.7155 0 0);
-    --accent: oklch(0.3380 0.0589 267.5867);
-    --accent-foreground: oklch(0.8823 0.0571 254.1284);
+    --accent: oklch(0.5500 0.1400 40.0000);
+    --accent-foreground: oklch(0.9500 0 0);
     --destructive: oklch(0.6368 0.2078 25.3313);
     --destructive-foreground: oklch(1.0000 0 0);
     --border: oklch(0.3843 0.0301 269.7337);
@@ -149,8 +149,8 @@
     --sidebar-foreground: oklch(0.9219 0 0);
     --sidebar-primary: oklch(0.6397 0.1720 36.4421);
     --sidebar-primary-foreground: oklch(1.0000 0 0);
-    --sidebar-accent: oklch(0.3380 0.0589 267.5867);
-    --sidebar-accent-foreground: oklch(0.8823 0.0571 254.1284);
+    --sidebar-accent: oklch(0.5500 0.1400 40.0000);
+    --sidebar-accent-foreground: oklch(0.9500 0 0);
     --sidebar-border: oklch(0.3843 0.0301 269.7337);
     --sidebar-ring: oklch(0.6397 0.1720 36.4421);
     --font-sans: Inter, sans-serif;
