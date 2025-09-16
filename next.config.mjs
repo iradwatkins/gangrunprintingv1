@@ -132,6 +132,11 @@ const nextConfig = {
         source: '/sign-up',
         destination: '/auth/signup',
         permanent: true
+      },
+      {
+        source: '/admin/test-colors',
+        destination: '/admin/theme-colors',
+        permanent: true
       }
     ];
   },
