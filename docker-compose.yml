@@ -18,7 +18,7 @@ services:
       - TZ=America/Chicago
       
       # Database - PostgreSQL
-      - DATABASE_URL=${DATABASE_URL:-postgresql://gangrun_user:gangrun_secure_2025@postgres_db:5432/gangrunprinting_db}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://gangrun_user:GangRun2024Secure@172.22.0.1:5432/gangrun_db}
       
       # Redis
       - REDIS_URL=${REDIS_URL:-redis://redis_cache:6379}
@@ -29,8 +29,8 @@ services:
       - AUTH_TRUST_HOST=true
       
       # OAuth Providers (optional)
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
       # Admin
       - ADMIN_EMAIL=${ADMIN_EMAIL:-iradwatkins@gmail.com}
       
