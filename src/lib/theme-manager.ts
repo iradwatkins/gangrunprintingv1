@@ -274,6 +274,47 @@ export class ThemeManager {
   }
 
   /**
+   * Update globals.css with theme variables for immediate effect
+   */
+  async updateGlobalCSS(theme: ThemeConfig): Promise<void> {
+    try {
+      const globalsPath = path.join(process.cwd(), 'src', 'app', 'globals.css');
+
+      // Read current globals.css
+      let cssContent = await fs.readFile(globalsPath, 'utf-8');
+
+      // Generate new CSS variables
+      const newCSS = this.generateCSS(theme);
+
+      // Replace :root and .dark blocks with new theme
+      cssContent = cssContent.replace(
+        /:root\s*{[^}]*}/g,
+        newCSS.match(/:root\s*{[^}]*/)?.[0] + '}'
+      );
+
+      if (theme.darkModeVariables && Object.keys(theme.darkModeVariables).length > 0) {
+        cssContent = cssContent.replace(
+          /\.dark\s*{[^}]*}/g,
+          newCSS.match(/\.dark\s*{[^}]*/)?.[0] + '}'
+        );
+      }
+
+      // Add custom CSS if it doesn't exist
+      if (theme.customCSS && !cssContent.includes(theme.customCSS)) {
+        cssContent += '\n\n' + theme.customCSS;
+      }
+
+      // Write updated globals.css
+      await fs.writeFile(globalsPath, cssContent, 'utf-8');
+
+      console.log('Updated globals.css with new theme:', theme.name);
+    } catch (error) {
+      console.error('Error updating globals.css:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get default theme configuration
    */
   getDefaultTheme(): ThemeConfig {
