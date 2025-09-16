@@ -294,8 +294,8 @@ const data = {
           url: '/admin/sizes',
         },
         {
-          title: 'Test Colors',
-          url: '/admin/test-colors',
+          title: 'Theme Colors',
+          url: '/admin/theme-colors',
         },
         {
           title: 'Print Options',
@@ -331,9 +331,9 @@ const data = {
       icon: Monitor,
     },
     {
-      name: 'Test Colors',
-      url: '/admin/test-colors',
-      icon: TestTube,
+      name: 'Theme Colors',
+      url: '/admin/theme-colors',
+      icon: Palette,
     },
   ],
 }
