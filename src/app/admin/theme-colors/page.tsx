@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon, Copy, Check } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -314,9 +314,9 @@ export default function ThemeColors() {
   const [mounted, setMounted] = useState(false);
 
   // Ensure component is mounted to avoid hydration issues
-  useState(() => {
+  useEffect(() => {
     setMounted(true);
-  });
+  }, []);
 
   if (!mounted) {
     return null;
