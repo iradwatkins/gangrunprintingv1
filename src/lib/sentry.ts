@@ -1,5 +1,5 @@
 // Sentry functionality temporarily disabled for build
-import { User } from '@prisma/client';
+import { type User } from '@prisma/client';
 
 // No-op functions for temporary build fix
 export function initSentry() {

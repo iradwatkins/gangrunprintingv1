@@ -7,13 +7,13 @@ import ReactFlow, {
   addEdge,
   Background,
   Controls,
-  Connection,
+  type Connection,
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
   Handle,
   Position,
-  NodeTypes,
+  type NodeTypes,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 
@@ -160,7 +160,7 @@ function WorkflowStepNode({ data }: { data: any }) {
       }`}
       onClick={() => data.onSelect(data.id)}
     >
-      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle className="w-3 h-3" position={Position.Top} type="target" />
 
       <div className="flex items-center gap-2">
         <div
@@ -178,31 +178,31 @@ function WorkflowStepNode({ data }: { data: any }) {
       {data.type === 'condition' && (
         <>
           <Handle
-            type="source"
-            position={Position.Bottom}
-            id="true"
             className="w-3 h-3"
+            id="true"
+            position={Position.Bottom}
             style={{ left: '30%' }}
+            type="source"
           />
           <Handle
-            type="source"
-            position={Position.Bottom}
-            id="false"
             className="w-3 h-3"
+            id="false"
+            position={Position.Bottom}
             style={{ left: '70%' }}
+            type="source"
           />
         </>
       )}
 
       {data.type !== 'condition' && (
-        <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+        <Handle className="w-3 h-3" position={Position.Bottom} type="source" />
       )}
 
       <div className="absolute top-1 right-1">
         <Button
+          className="h-6 w-6 p-0 hover:bg-red-100"
           size="sm"
           variant="ghost"
-          className="h-6 w-6 p-0 hover:bg-red-100"
           onClick={(e) => {
             e.stopPropagation()
             data.onDelete(data.id)
@@ -233,7 +233,7 @@ function TriggerNode({ data }: { data: any }) {
         </div>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle className="w-3 h-3" position={Position.Bottom} type="source" />
     </div>
   )
 }
@@ -263,21 +263,21 @@ function StepEditor({
           <div>
             <Label>Subject</Label>
             <Input
+              placeholder="Email subject"
               value={step.settings?.subject || ''}
               onChange={(e) => updateSettings({ subject: e.target.value })}
-              placeholder="Email subject"
             />
           </div>
 
           <div>
             <Label>Content</Label>
             <Textarea
+              placeholder="Email content (HTML)"
+              rows={6}
               value={step.settings?.content?.html || ''}
               onChange={(e) => updateSettings({
                 content: { html: e.target.value, type: 'html' }
               })}
-              placeholder="Email content (HTML)"
-              rows={6}
             />
           </div>
 
@@ -307,11 +307,11 @@ function StepEditor({
           <div>
             <Label>Message</Label>
             <Textarea
-              value={step.settings?.message || ''}
-              onChange={(e) => updateSettings({ message: e.target.value })}
+              maxLength={160}
               placeholder="SMS message content"
               rows={4}
-              maxLength={160}
+              value={step.settings?.message || ''}
+              onChange={(e) => updateSettings({ message: e.target.value })}
             />
             <div className="text-xs text-gray-500 mt-1">
               {(step.settings?.message || '').length}/160 characters
@@ -327,10 +327,10 @@ function StepEditor({
             <Label>Wait Duration</Label>
             <div className="flex gap-2">
               <Input
+                className="flex-1"
                 type="number"
                 value={step.settings?.duration || 60}
                 onChange={(e) => updateSettings({ duration: parseInt(e.target.value) })}
-                className="flex-1"
               />
               <Select
                 value={step.settings?.unit || 'minutes'}
@@ -397,11 +397,11 @@ function StepEditor({
           <div>
             <Label>Value</Label>
             <Input
+              placeholder="Condition value"
               value={step.settings?.condition?.value || ''}
               onChange={(e) => updateSettings({
                 condition: { ...step.settings?.condition, value: e.target.value }
               })}
-              placeholder="Condition value"
             />
           </div>
         </div>
@@ -413,9 +413,9 @@ function StepEditor({
           <div>
             <Label>Webhook URL</Label>
             <Input
+              placeholder="https://example.com/webhook"
               value={step.settings?.url || ''}
               onChange={(e) => updateSettings({ url: e.target.value })}
-              placeholder="https://example.com/webhook"
             />
           </div>
 
@@ -440,6 +440,8 @@ function StepEditor({
           <div>
             <Label>Payload (JSON)</Label>
             <Textarea
+              placeholder='{"key": "value"}'
+              rows={4}
               value={JSON.stringify(step.settings?.payload || {}, null, 2)}
               onChange={(e) => {
                 try {
@@ -449,8 +451,6 @@ function StepEditor({
                   // Invalid JSON, don't update
                 }
               }}
-              placeholder='{"key": "value"}'
-              rows={4}
             />
           </div>
         </div>
@@ -478,11 +478,11 @@ function StepEditor({
           <div>
             <Label>Tags (comma separated)</Label>
             <Input
+              placeholder="tag1, tag2, tag3"
               value={(step.settings?.tags || []).join(', ')}
               onChange={(e) => updateSettings({
                 tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
               })}
-              placeholder="tag1, tag2, tag3"
             />
           </div>
         </div>
@@ -513,9 +513,9 @@ function StepEditor({
           <div>
             <Label>New Value</Label>
             <Input
+              placeholder="New value"
               value={step.settings?.value || ''}
               onChange={(e) => updateSettings({ value: e.target.value })}
-              placeholder="New value"
             />
           </div>
         </div>
@@ -599,11 +599,11 @@ function TriggerEditor({
             <div>
               <Label>Cron Expression</Label>
               <Input
+                placeholder="0 9 * * *"
                 value={trigger.schedule?.recurringPattern || ''}
                 onChange={(e) => onUpdate({
                   schedule: { ...trigger.schedule, recurringPattern: e.target.value }
                 })}
-                placeholder="0 9 * * *"
               />
             </div>
           )}
@@ -654,11 +654,11 @@ function TriggerEditor({
           <div>
             <Label>Value</Label>
             <Input
+              placeholder="Condition value"
               value={trigger.condition?.value || ''}
               onChange={(e) => onUpdate({
                 condition: { ...trigger.condition, value: e.target.value }
               })}
-              placeholder="Condition value"
             />
           </div>
         </div>
@@ -839,9 +839,9 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
               <div>
                 <Label>Description</Label>
                 <Textarea
+                  rows={3}
                   value={currentWorkflow.description || ''}
                   onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, description: e.target.value }))}
-                  rows={3}
                 />
               </div>
             </div>
@@ -855,8 +855,8 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
                 return (
                   <Button
                     key={stepType.type}
-                    variant="outline"
                     className="w-full justify-start text-left"
+                    variant="outline"
                     onClick={() => addStep(stepType.type)}
                   >
                     <div
@@ -880,14 +880,14 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
       {/* Center - Workflow Canvas */}
       <div className="flex-1 relative">
         <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
           fitView
           className="bg-gray-50"
+          edges={edges}
+          nodes={nodes}
+          nodeTypes={nodeTypes}
+          onConnect={onConnect}
+          onEdgesChange={onEdgesChange}
+          onNodesChange={onNodesChange}
         >
           <Background />
           <Controls />
@@ -895,7 +895,7 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
 
         {/* Action Buttons */}
         <div className="absolute top-4 right-4 flex gap-2">
-          <Button onClick={() => onPreview(currentWorkflow)} variant="outline">
+          <Button variant="outline" onClick={() => onPreview(currentWorkflow)}>
             <Eye className="w-4 h-4 mr-2" />
             Preview
           </Button>

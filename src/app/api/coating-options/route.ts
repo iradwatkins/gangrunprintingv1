@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, additionalCost } = body
+    const { name, description } = body
 
     if (!name) {
       return NextResponse.json(
@@ -45,8 +46,7 @@ export async function POST(request: NextRequest) {
     const coatingOption = await prisma.coatingOption.create({
       data: {
         name,
-        description,
-        additionalCost: additionalCost ? parseFloat(additionalCost) : null
+        description
       }
     })
 

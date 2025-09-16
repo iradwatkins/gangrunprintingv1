@@ -171,12 +171,12 @@ export default function Header() {
           <div className="flex items-center">
             <Link className="flex items-center space-x-2" href="/">
               <Image 
-                src="/gangrunprinting_logo_new_1448921366__42384-268x50.png" 
+                priority 
                 alt="GangRun Printing" 
-                width={268}
-                height={50}
                 className="h-10 w-auto object-contain"
-                priority
+                height={50}
+                src="/gangrunprinting_logo_new_1448921366__42384-268x50.png"
+                width={268}
               />
             </Link>
           </div>
@@ -234,20 +234,20 @@ export default function Header() {
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Phone Number */}
-            <a href="tel:1-800-PRINTING" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors" href="tel:1-800-PRINTING">
               <Phone className="h-4 w-4" />
               <span>1-800-PRINTING</span>
             </a>
 
             {/* Same Day Badge */}
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+            <Badge className="bg-primary/10 text-primary border-primary/20" variant="secondary">
               Same Day Available
             </Badge>
 
             {/* User Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
+                <Button className="flex items-center gap-2" variant="ghost">
                   <User className="h-5 w-5" />
                   <span className="text-sm">Account</span>
                   <ChevronDown className="h-3 w-3" />
@@ -371,7 +371,7 @@ export default function Header() {
 
                 {/* Mobile Contact Info */}
                 <div className="mt-4 pb-4 border-b">
-                  <a href="tel:1-800-PRINTING" className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50">
+                  <a className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50" href="tel:1-800-PRINTING">
                     <Phone className="h-4 w-4 text-primary" />
                     <div>
                       <p className="font-medium">1-800-PRINTING</p>

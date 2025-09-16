@@ -228,7 +228,7 @@ export class WorkflowEngine {
 
     try {
       let currentStepIndex = execution.currentStep
-      let stepResults = execution.stepResults as any[] || []
+      const stepResults = execution.stepResults as any[] || []
 
       while (currentStepIndex < steps.length) {
         const step = steps[currentStepIndex]

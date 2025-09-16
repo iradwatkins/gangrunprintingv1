@@ -165,11 +165,11 @@ export default function AccountSidebar({
             <div className="flex items-center justify-between p-4 border-b lg:hidden">
               <h2 className="text-lg font-semibold">My Account</h2>
               <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileOpen(false)}
-                className="h-8 w-8"
                 aria-label="Close navigation"
+                className="h-8 w-8"
+                size="icon"
+                variant="ghost"
+                onClick={() => setIsMobileOpen(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -186,8 +186,6 @@ export default function AccountSidebar({
               {accountNavItems.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
-                  onClick={handleMobileNavClick}
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 lg:px-3 lg:py-2 rounded-lg text-sm transition-colors",
                     "min-h-[44px] lg:min-h-auto", // Mobile touch targets
@@ -195,6 +193,8 @@ export default function AccountSidebar({
                       ? "bg-primary/10 text-primary font-medium"
                       : "hover:bg-muted text-muted-foreground hover:text-foreground active:bg-muted/50"
                   )}
+                  href={item.href}
+                  onClick={handleMobileNavClick}
                 >
                   <item.icon className="h-5 w-5 lg:h-4 lg:w-4 flex-shrink-0" />
                   <span className="font-medium lg:font-normal">{item.name}</span>
@@ -210,12 +210,12 @@ export default function AccountSidebar({
             {/* Logout Button */}
             <div className="mt-8 lg:mt-6 pt-6 border-t">
               <Button
-                variant="ghost"
-                onClick={handleSignOut}
                 className={cn(
                   "w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50",
                   "min-h-[44px] lg:min-h-auto px-4 py-3 lg:px-3 lg:py-2"
                 )}
+                variant="ghost"
+                onClick={handleSignOut}
               >
                 <LogOut className="mr-3 lg:mr-2 h-5 w-5 lg:h-4 lg:w-4" />
                 <span className="font-medium lg:font-normal">Log Out</span>
@@ -236,8 +236,8 @@ export default function AccountSidebar({
                     Install our app for a better experience with offline access and faster loading.
                   </p>
                   <Button
-                    size="sm"
                     className="w-full min-h-[40px]"
+                    size="sm"
                     onClick={handleInstallApp}
                   >
                     Download App

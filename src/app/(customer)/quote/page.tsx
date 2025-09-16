@@ -197,7 +197,7 @@ export default function QuotePage() {
               <CardDescription>877-M13-1913</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button variant="outline" size="sm" className="w-full">
+              <Button className="w-full" size="sm" variant="outline">
                 <Phone className="mr-2 h-4 w-4" />
                 Call Now
               </Button>
@@ -211,7 +211,7 @@ export default function QuotePage() {
               <CardDescription>Fast reorder process</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button variant="outline" size="sm" className="w-full" asChild>
+              <Button asChild className="w-full" size="sm" variant="outline">
                 <Link href="/auth/signin">
                   <ArrowRight className="mr-2 h-4 w-4" />
                   Login
@@ -227,7 +227,7 @@ export default function QuotePage() {
               <CardDescription>Multiple locations</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button variant="outline" size="sm" className="w-full" asChild>
+              <Button asChild className="w-full" size="sm" variant="outline">
                 <Link href="/contact">
                   <MapPin className="mr-2 h-4 w-4" />
                   Locations & Hours
@@ -246,7 +246,7 @@ export default function QuotePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form className="space-y-8" onSubmit={handleSubmit}>
               {/* Department Selection */}
               <div className="space-y-2">
                 <Label htmlFor="department">Department *</Label>
@@ -274,21 +274,21 @@ export default function QuotePage() {
                   <div>
                     <Label htmlFor="firstName">First Name *</Label>
                     <Input
+                      required
                       id="firstName"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name *</Label>
                     <Input
+                      required
                       id="lastName"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                 </div>
@@ -307,23 +307,23 @@ export default function QuotePage() {
                   <div>
                     <Label htmlFor="email">Email Address *</Label>
                     <Input
+                      required
                       id="email"
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                   <div>
                     <Label htmlFor="phone">Phone Number *</Label>
                     <Input
+                      required
                       id="phone"
                       name="phone"
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                 </div>
@@ -356,13 +356,13 @@ export default function QuotePage() {
                   <div>
                     <Label htmlFor="quantity">Quantity *</Label>
                     <Input
+                      required
                       id="quantity"
                       name="quantity"
+                      placeholder="e.g., 500"
                       type="number"
                       value={formData.quantity}
                       onChange={handleChange}
-                      placeholder="e.g., 500"
-                      required
                     />
                   </div>
                   <div>
@@ -370,9 +370,9 @@ export default function QuotePage() {
                     <Input
                       id="size"
                       name="size"
+                      placeholder="e.g., 8.5 x 11"
                       value={formData.size}
                       onChange={handleChange}
-                      placeholder="e.g., 8.5 x 11"
                     />
                   </div>
                   <div>
@@ -380,9 +380,9 @@ export default function QuotePage() {
                     <Input
                       id="paperType"
                       name="paperType"
+                      placeholder="e.g., 100lb Gloss"
                       value={formData.paperType}
                       onChange={handleChange}
-                      placeholder="e.g., 100lb Gloss"
                     />
                   </div>
                 </div>
@@ -395,12 +395,12 @@ export default function QuotePage() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, turnaround: value }))}
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="standard" id="standard" />
+                      <RadioGroupItem id="standard" value="standard" />
                       <Label htmlFor="standard">Standard (5-7 business days)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="rush" id="rush" />
-                      <Label htmlFor="rush" className="flex items-center gap-2">
+                      <RadioGroupItem id="rush" value="rush" />
+                      <Label className="flex items-center gap-2" htmlFor="rush">
                         <Zap className="h-4 w-4 text-orange-500" />
                         Rush (1-3 business days) - Additional fees apply
                       </Label>
@@ -415,13 +415,13 @@ export default function QuotePage() {
                     {finishingOptions.map((option) => (
                       <div key={option.id} className="flex items-center space-x-2">
                         <Checkbox
-                          id={option.id}
                           checked={formData.finishing.includes(option.id)}
+                          id={option.id}
                           onCheckedChange={(checked) =>
                             handleFinishingChange(option.id, checked as boolean)
                           }
                         />
-                        <Label htmlFor={option.id} className="text-sm font-normal">
+                        <Label className="text-sm font-normal" htmlFor={option.id}>
                           {option.label}
                         </Label>
                       </div>
@@ -435,17 +435,17 @@ export default function QuotePage() {
                 <Label htmlFor="files">Upload Files (Optional)</Label>
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                  <Label htmlFor="files" className="cursor-pointer">
+                  <Label className="cursor-pointer" htmlFor="files">
                     <span className="text-primary hover:underline">Click to upload</span> or drag and drop
                   </Label>
                   <Input
+                    multiple
+                    accept=".pdf,.ai,.psd,.jpg,.jpeg,.png,.eps"
+                    className="hidden"
                     id="files"
                     name="files"
                     type="file"
-                    multiple
                     onChange={handleFileChange}
-                    className="hidden"
-                    accept=".pdf,.ai,.psd,.jpg,.jpeg,.png,.eps"
                   />
                   <p className="text-xs text-muted-foreground mt-2">
                     PDF, AI, PSD, JPG, PNG, EPS (Max 25MB per file)
@@ -472,10 +472,10 @@ export default function QuotePage() {
                 <Textarea
                   id="message"
                   name="message"
+                  placeholder="Please provide any additional details about your project, including special requirements, color preferences, or questions you may have..."
+                  rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  rows={5}
-                  placeholder="Please provide any additional details about your project, including special requirements, color preferences, or questions you may have..."
                 />
               </div>
 
@@ -486,9 +486,9 @@ export default function QuotePage() {
                   Estimated response time: 2-4 business hours
                 </div>
                 <Button
-                  type="submit"
-                  size="lg"
                   disabled={loading || !formData.department || !formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.projectType || !formData.quantity}
+                  size="lg"
+                  type="submit"
                 >
                   {loading ? (
                     <>Submitting...</>

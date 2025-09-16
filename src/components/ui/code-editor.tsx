@@ -64,7 +64,7 @@ export function CodeEditor({
       {/* Header */}
       <div className="flex items-center justify-between p-3 bg-gray-50 border-b">
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary" className={getLanguageColor(language)}>
+          <Badge className={getLanguageColor(language)} variant="secondary">
             {language.toUpperCase()}
           </Badge>
           <span className="text-sm text-gray-600">
@@ -73,10 +73,10 @@ export function CodeEditor({
         </div>
         <div className="flex items-center space-x-2">
           <Button
+            className="h-7 px-2"
             size="sm"
             variant="ghost"
             onClick={handleCopy}
-            className="h-7 px-2"
           >
             {copied ? (
               <Check className="h-3 w-3" />
@@ -85,10 +85,10 @@ export function CodeEditor({
             )}
           </Button>
           <Button
+            className="h-7 px-2"
             size="sm"
             variant="ghost"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="h-7 px-2"
           >
             {isExpanded ? (
               <Minimize2 className="h-3 w-3" />
@@ -102,16 +102,16 @@ export function CodeEditor({
       {/* Editor */}
       <div className="relative">
         <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
           className={cn(
             'border-0 rounded-none resize-none font-mono text-sm',
             'focus:ring-0 focus:border-0',
             isExpanded ? 'min-h-[400px]' : ''
           )}
-          style={{ height: isExpanded ? '400px' : height }}
           placeholder={`Enter ${language} code here...`}
           readOnly={readOnly}
+          style={{ height: isExpanded ? '400px' : height }}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
         />
 
         {/* Line numbers */}

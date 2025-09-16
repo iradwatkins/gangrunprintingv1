@@ -230,7 +230,7 @@ export default function AutomationPage() {
             <TableBody>
               {workflows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell className="text-center py-8" colSpan={7}>
                     <div className="flex flex-col items-center gap-2">
                       <Zap className="w-8 h-8 text-gray-400" />
                       <p className="text-gray-500">No workflows found</p>
@@ -284,7 +284,7 @@ export default function AutomationPage() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button className="h-8 w-8 p-0" variant="ghost">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

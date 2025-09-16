@@ -51,8 +51,8 @@ export default function NewWorkflowPage() {
       {/* Workflow Designer */}
       <div className="flex-1">
         <WorkflowDesigner
-          onSave={handleSave}
           onPreview={handlePreview}
+          onSave={handleSave}
         />
       </div>
     </div>

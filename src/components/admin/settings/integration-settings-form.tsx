@@ -27,7 +27,7 @@ export function IntegrationSettingsForm() {
 
         <div className="space-y-2">
           <Label>Mailchimp API Key</Label>
-          <Input type="password" defaultValue="mc_api_..." />
+          <Input defaultValue="mc_api_..." type="password" />
         </div>
 
         <div className="flex items-center justify-between">

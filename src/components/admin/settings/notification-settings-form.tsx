@@ -79,7 +79,7 @@ export function NotificationSettingsForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       {/* Email Notifications */}
       <Card>
         <CardHeader>
@@ -286,10 +286,10 @@ export function NotificationSettingsForm() {
                   <Label htmlFor="smsNumber">Phone Number</Label>
                   <Input
                     id="smsNumber"
+                    placeholder="+1 (555) 123-4567"
                     type="tel"
                     value={formData.smsNumber}
                     onChange={(e) => handleInputChange('smsNumber', e.target.value)}
-                    placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
@@ -359,10 +359,10 @@ export function NotificationSettingsForm() {
                   <Label htmlFor="webhookUrl">Webhook URL</Label>
                   <Input
                     id="webhookUrl"
+                    placeholder="https://your-app.com/webhook"
                     type="url"
                     value={formData.webhookUrl}
                     onChange={(e) => handleInputChange('webhookUrl', e.target.value)}
-                    placeholder="https://your-app.com/webhook"
                   />
                 </div>
 
@@ -370,10 +370,10 @@ export function NotificationSettingsForm() {
                   <Label htmlFor="webhookSecret">Secret Key (Optional)</Label>
                   <Input
                     id="webhookSecret"
+                    placeholder="Secret for webhook verification"
                     type="password"
                     value={formData.webhookSecret}
                     onChange={(e) => handleInputChange('webhookSecret', e.target.value)}
-                    placeholder="Secret for webhook verification"
                   />
                 </div>
 
@@ -411,7 +411,7 @@ export function NotificationSettingsForm() {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button type="submit" disabled={loading}>
+        <Button disabled={loading} type="submit">
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           <Save className="mr-2 h-4 w-4" />
           Save Notification Settings

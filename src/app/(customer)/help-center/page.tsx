@@ -1,17 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import Link from 'next/link'
-import { 
-  Search, 
-  HelpCircle, 
-  FileText, 
-  Package, 
-  Truck, 
+import {
+  Search,
+  HelpCircle,
+  Package,
+  Truck,
   CreditCard,
   Upload,
   MessageSquare,
@@ -134,10 +132,10 @@ export default function HelpCenterPage() {
             <div className="relative max-w-xl mx-auto">
               <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <Input
+                className="pl-10 h-12 text-lg"
                 placeholder="Search for help..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-lg"
               />
             </div>
           </div>
@@ -188,7 +186,7 @@ export default function HelpCenterPage() {
                   <category.icon className="h-5 w-5 text-primary" />
                   {category.category}
                 </h3>
-                <Accordion type="single" collapsible className="space-y-2">
+                <Accordion collapsible className="space-y-2" type="single">
                   {category.questions.map((faq, index) => (
                     <AccordionItem key={index} value={`${category.category}-${index}`}>
                       <AccordionTrigger className="text-left">
@@ -223,7 +221,7 @@ export default function HelpCenterPage() {
                   <p className="text-sm text-muted-foreground mb-3">
                     Mon-Fri 9am-6pm CST
                   </p>
-                  <a href="tel:1-800-PRINTING" className="text-primary hover:underline">
+                  <a className="text-primary hover:underline" href="tel:1-800-PRINTING">
                     1-800-PRINTING
                   </a>
                 </CardContent>
@@ -236,7 +234,7 @@ export default function HelpCenterPage() {
                   <p className="text-sm text-muted-foreground mb-3">
                     24/7 Support
                   </p>
-                  <a href="mailto:support@gangrunprinting.com" className="text-primary hover:underline">
+                  <a className="text-primary hover:underline" href="mailto:support@gangrunprinting.com">
                     support@gangrunprinting.com
                   </a>
                 </CardContent>

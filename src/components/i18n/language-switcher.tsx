@@ -161,10 +161,10 @@ export function LanguageSwitcher({
         {availableLanguages.map((language) => (
           <Button
             key={language.code}
-            variant={locale === language.code ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => handleLanguageChange(language.code)}
             className="px-2 py-1"
+            size="sm"
+            variant={locale === language.code ? 'default' : 'ghost'}
+            onClick={() => handleLanguageChange(language.code)}
           >
             {showFlag && language.flag}
             {showName && (
@@ -183,7 +183,7 @@ export function LanguageSwitcher({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className={cn('gap-2', className)}>
+        <Button className={cn('gap-2', className)} size="sm" variant="ghost">
           <Globe className="h-4 w-4" />
           {showFlag && currentLanguage?.flag}
           {showName && (
@@ -198,8 +198,8 @@ export function LanguageSwitcher({
         {availableLanguages.map((language) => (
           <DropdownMenuItem
             key={language.code}
-            onClick={() => handleLanguageChange(language.code)}
             className="flex items-center gap-2"
+            onClick={() => handleLanguageChange(language.code)}
           >
             {showFlag && language.flag}
             <span>{language.nativeName}</span>
@@ -220,10 +220,10 @@ export function LanguageSwitcher({
 export function CompactLanguageSwitcher({ className }: { className?: string }) {
   return (
     <LanguageSwitcher
-      variant="dropdown"
       className={className}
       showFlag={true}
       showName={false}
+      variant="dropdown"
     />
   );
 }
@@ -232,10 +232,10 @@ export function CompactLanguageSwitcher({ className }: { className?: string }) {
 export function FullLanguageSwitcher({ className }: { className?: string }) {
   return (
     <LanguageSwitcher
-      variant="dropdown"
       className={className}
       showFlag={true}
       showName={true}
+      variant="dropdown"
     />
   );
 }
@@ -244,10 +244,10 @@ export function FullLanguageSwitcher({ className }: { className?: string }) {
 export function LanguageButtonGroup({ className }: { className?: string }) {
   return (
     <LanguageSwitcher
-      variant="buttons"
       className={className}
       showFlag={true}
       showName={false}
+      variant="buttons"
     />
   );
 }

@@ -56,34 +56,34 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
 
   return (
     <div className="h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <LineChart data={data}>
           <XAxis
-            dataKey="date"
-            tickFormatter={formatDate}
             axisLine={false}
-            tickLine={false}
+            dataKey="date"
             tick={{ fontSize: 12 }}
+            tickFormatter={formatDate}
+            tickLine={false}
           />
           <YAxis
-            tickFormatter={(value) => `$${value}`}
             axisLine={false}
-            tickLine={false}
             tick={{ fontSize: 12 }}
+            tickFormatter={(value) => `$${value}`}
+            tickLine={false}
           />
           <Tooltip content={<CustomTooltip />} />
           <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="hsl(var(--primary))"
-            strokeWidth={2}
-            dot={false}
             activeDot={{
               r: 4,
               stroke: "hsl(var(--primary))",
               strokeWidth: 2,
               fill: "hsl(var(--background))"
             }}
+            dataKey="revenue"
+            dot={false}
+            stroke="hsl(var(--primary))"
+            strokeWidth={2}
+            type="monotone"
           />
         </LineChart>
       </ResponsiveContainer>

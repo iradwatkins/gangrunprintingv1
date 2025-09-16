@@ -236,13 +236,13 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                       return (
                         <Link
                           key={child.href}
-                          href={child.href}
-                          onClick={handleNavClick}
                           className={cn(
                             "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent",
                             "min-h-[40px] lg:min-h-auto",
                             isActive && "bg-primary/10 text-primary font-medium"
                           )}
+                          href={child.href}
+                          onClick={handleNavClick}
                         >
                           <child.icon className="h-4 w-4" />
                           <div>

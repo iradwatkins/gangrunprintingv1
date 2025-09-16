@@ -73,7 +73,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           <Edit className="mr-2 h-4 w-4" />
           Edit Customer
         </Button>
@@ -86,15 +86,15 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
                 id="name"
+                placeholder="Enter customer name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="Enter customer name"
               />
             </div>
 
@@ -102,17 +102,17 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
               <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
+                placeholder="Enter email address"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter email address"
               />
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Status:</span>
                 {customer.emailVerified ? (
-                  <Badge variant="default" className="text-xs">Verified</Badge>
+                  <Badge className="text-xs" variant="default">Verified</Badge>
                 ) : (
-                  <Badge variant="secondary" className="text-xs">Unverified</Badge>
+                  <Badge className="text-xs" variant="secondary">Unverified</Badge>
                 )}
               </div>
             </div>
@@ -121,10 +121,10 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
               <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
+                placeholder="Enter phone number"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="Enter phone number"
               />
             </div>
 
@@ -145,10 +145,10 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
               <Label htmlFor="notes">Internal Notes</Label>
               <Textarea
                 id="notes"
-                value={formData.notes}
-                onChange={(e) => handleInputChange('notes', e.target.value)}
                 placeholder="Add internal notes about this customer..."
                 rows={3}
+                value={formData.notes}
+                onChange={(e) => handleInputChange('notes', e.target.value)}
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button disabled={loading} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </Button>

@@ -156,7 +156,7 @@ export function AddStaffDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Basic Information */}
           <div className="space-y-4">
             <h4 className="font-medium">Basic Information</h4>
@@ -165,30 +165,30 @@ export function AddStaffDialog() {
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
+                  required
                   id="name"
+                  placeholder="Enter full name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter full name"
-                  required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
+                  required
                   id="email"
+                  placeholder="Enter email address"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="Enter email address"
-                  required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Select value={formData.role} onValueChange={handleRoleChange} required>
+              <Select required value={formData.role} onValueChange={handleRoleChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
@@ -218,16 +218,16 @@ export function AddStaffDialog() {
                       {permissions.map((permission) => (
                         <div key={permission.id} className="flex items-start space-x-2">
                           <Checkbox
-                            id={permission.id}
                             checked={formData.permissions.includes(permission.id)}
+                            id={permission.id}
                             onCheckedChange={(checked) =>
                               handlePermissionChange(permission.id, checked as boolean)
                             }
                           />
                           <div className="grid gap-1.5 leading-none">
                             <label
-                              htmlFor={permission.id}
                               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              htmlFor={permission.id}
                             >
                               {permission.label}
                             </label>
@@ -249,15 +249,15 @@ export function AddStaffDialog() {
             <h4 className="font-medium">Options</h4>
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="sendInvitation"
                 checked={formData.sendInvitation}
+                id="sendInvitation"
                 onCheckedChange={(checked) =>
                   setFormData(prev => ({ ...prev, sendInvitation: checked as boolean }))
                 }
               />
               <label
-                htmlFor="sendInvitation"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="sendInvitation"
               >
                 Send invitation email
               </label>
@@ -268,7 +268,7 @@ export function AddStaffDialog() {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button disabled={loading} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Staff Member
             </Button>

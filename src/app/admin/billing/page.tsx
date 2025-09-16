@@ -96,7 +96,7 @@ export default function BillingPage() {
                     <p className="text-sm text-gray-500">Connected</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm">Configure</Button>
+                <Button size="sm" variant="outline">Configure</Button>
               </div>
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
@@ -140,19 +140,19 @@ export default function BillingPage() {
             <div>
               <label className="text-sm font-medium">Invoice Prefix</label>
               <input
-                type="text"
                 className="mt-2 w-full px-3 py-2 border rounded-md"
-                placeholder="INV-"
                 defaultValue="INV-"
+                placeholder="INV-"
+                type="text"
               />
             </div>
             <div>
               <label className="text-sm font-medium">Tax Rate (%)</label>
               <input
-                type="number"
                 className="mt-2 w-full px-3 py-2 border rounded-md"
-                placeholder="0"
                 defaultValue="8.25"
+                placeholder="0"
+                type="number"
               />
             </div>
             <Button className="w-full">Save Billing Settings</Button>

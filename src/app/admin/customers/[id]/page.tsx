@@ -245,7 +245,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/customers">
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -262,7 +262,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" disabled>
+          <Button disabled variant="outline">
             <Edit className="mr-2 h-4 w-4" />
             Edit Profile
           </Button>
@@ -277,7 +277,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <Tabs defaultValue="orders" className="space-y-4">
+          <Tabs className="space-y-4" defaultValue="orders">
             <TabsList>
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -286,7 +286,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             </TabsList>
 
             {/* Orders Tab */}
-            <TabsContent value="orders" className="space-y-4">
+            <TabsContent className="space-y-4" value="orders">
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -297,7 +297,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       </CardDescription>
                     </div>
                     <Link href={`/admin/orders?search=${customer.email}`}>
-                      <Button variant="outline" size="sm">
+                      <Button size="sm" variant="outline">
                         View All Orders
                         <ChevronRight className="h-3 w-3 ml-1" />
                       </Button>
@@ -336,8 +336,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                               <TableRow key={order.id}>
                                 <TableCell>
                                   <Link
-                                    href={`/admin/orders/${order.id}`}
                                     className="font-medium hover:underline"
+                                    href={`/admin/orders/${order.id}`}
                                   >
                                     {order.orderNumber}
                                   </Link>
@@ -383,7 +383,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             </TabsContent>
 
             {/* Activity Tab */}
-            <TabsContent value="activity" className="space-y-4">
+            <TabsContent className="space-y-4" value="activity">
               <Card>
                 <CardHeader>
                   <CardTitle>Activity Timeline</CardTitle>
@@ -408,7 +408,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           <div className="flex-1 pt-1">
                             <div className="flex items-center gap-2">
                               {activity.link ? (
-                                <Link href={activity.link} className="font-medium hover:underline">
+                                <Link className="font-medium hover:underline" href={activity.link}>
                                   {activity.title}
                                 </Link>
                               ) : (
@@ -437,7 +437,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             </TabsContent>
 
             {/* Broker Settings Tab */}
-            <TabsContent value="broker" className="space-y-4">
+            <TabsContent className="space-y-4" value="broker">
               <Card>
                 <CardHeader>
                   <CardTitle>Broker Configuration</CardTitle>
@@ -449,7 +449,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label>Customer Type</Label>
-                      <Select defaultValue={customer.role} disabled>
+                      <Select disabled defaultValue={customer.role}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -464,7 +464,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       <>
                         <div className="grid gap-2">
                           <Label>Broker Tier</Label>
-                          <Select defaultValue="SILVER" disabled>
+                          <Select disabled defaultValue="SILVER">
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -481,10 +481,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                         <div className="grid gap-2">
                           <Label>Custom Discount (%)</Label>
                           <Input
-                            type="number"
-                            placeholder="0-100"
-                            defaultValue="10"
                             disabled
+                            defaultValue="10"
+                            placeholder="0-100"
+                            type="number"
                           />
                           <p className="text-xs text-muted-foreground">
                             Override tier discount with custom percentage
@@ -528,7 +528,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             </TabsContent>
 
             {/* Notes Tab */}
-            <TabsContent value="notes" className="space-y-4">
+            <TabsContent className="space-y-4" value="notes">
               <Card>
                 <CardHeader>
                   <CardTitle>Customer Notes</CardTitle>
@@ -579,12 +579,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Status</span>
                   {customer.emailVerified ? (
-                    <Badge variant="default" className="gap-1">
+                    <Badge className="gap-1" variant="default">
                       <UserCheck className="h-3 w-3" />
                       Verified
                     </Badge>
                   ) : (
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge className="gap-1" variant="secondary">
                       <UserX className="h-3 w-3" />
                       Unverified
                     </Badge>
@@ -672,7 +672,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     {tag.label}
                   </Badge>
                 ))}
-                <Button variant="outline" size="sm" disabled>
+                <Button disabled size="sm" variant="outline">
                   + Add Tag
                 </Button>
               </div>
@@ -685,19 +685,19 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <Mail className="h-4 w-4 mr-2" />
                 Send Email
               </Button>
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <CreditCard className="h-4 w-4 mr-2" />
                 Process Refund
               </Button>
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Report
               </Button>
-              <Button className="w-full justify-start" variant="outline" disabled>
+              <Button disabled className="w-full justify-start" variant="outline">
                 <Star className="h-4 w-4 mr-2" />
                 Add to VIP List
               </Button>

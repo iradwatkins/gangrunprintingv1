@@ -67,18 +67,18 @@ export function CustomerInsightsChart({
       </div>
 
       <div className="h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <XAxis
-              dataKey="category"
               axisLine={false}
-              tickLine={false}
+              dataKey="category"
               tick={{ fontSize: 12 }}
+              tickLine={false}
             />
             <YAxis
               axisLine={false}
-              tickLine={false}
               tick={{ fontSize: 12 }}
+              tickLine={false}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar

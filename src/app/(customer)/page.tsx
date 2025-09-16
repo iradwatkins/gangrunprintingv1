@@ -1,13 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowRight, Upload, Package, Clock, Shield, Star, CheckCircle, Zap, Users, TrendingUp } from 'lucide-react'
+import { ArrowRight, Package, Clock, Shield, Star, CheckCircle, Zap, Users, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 const productCategories = [
   {

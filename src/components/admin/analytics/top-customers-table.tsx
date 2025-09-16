@@ -79,12 +79,12 @@ export function TopCustomersTable({ customers }: TopCustomersTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="sm" asChild>
+                    <Button asChild size="sm" variant="ghost">
                       <Link href={`/admin/customers/${customer.id}`}>
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button size="sm" variant="ghost">
                       <Mail className="h-4 w-4" />
                     </Button>
                   </div>

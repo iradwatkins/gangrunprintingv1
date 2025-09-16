@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Copy,
   Hash,
   Save,
   X,
@@ -207,6 +208,21 @@ export default function QuantitiesPage() {
     setDeleteDialogOpen(true)
   }
 
+  const openDuplicateDialog = (group: QuantityGroup) => {
+    setEditingGroup(null) // Important: clear editing group so it creates a new item
+    setFormData({
+      name: `${group.name} - Copy`,
+      description: group.description || '',
+      values: group.values,
+      defaultValue: group.defaultValue,
+      customMin: group.customMin || 1,
+      customMax: group.customMax || 100000,
+      sortOrder: group.sortOrder,
+      isActive: group.isActive
+    })
+    setDialogOpen(true)
+  }
+
   const toggleGroupExpansion = (groupId: string) => {
     const newExpanded = new Set(expandedGroups)
     if (newExpanded.has(groupId)) {
@@ -310,6 +326,13 @@ export default function QuantitiesPage() {
                               onClick={() => openEditDialog(group)}
                             >
                               <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openDuplicateDialog(group)}
+                            >
+                              <Copy className="h-4 w-4" />
                             </Button>
                             <Button
                               size="sm"

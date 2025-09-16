@@ -43,19 +43,30 @@ import {
 interface PaperStock {
   id: string
   name: string
-  category: string
-  weight: string
-  finish: string
-  coating: string
-  sides: string
-  costPerSheet: number
-  priceMultiplier: number
-  sheetsInStock: number
+  weight: number
+  pricePerSqInch: number
+  tooltipText: string | null
   isActive: boolean
-  isEcoFriendly: boolean
-  thickness?: number
-  opacity?: number
-  brightness?: number
+  paperStockCoatings: Array<{
+    coatingId: string
+    isDefault: boolean
+    coating: {
+      id: string
+      name: string
+      description: string | null
+    }
+  }>
+  paperStockSides: Array<{
+    sidesOptionId: string
+    priceMultiplier: number
+    isEnabled: boolean
+    sidesOption: {
+      id: string
+      name: string
+      code: string
+      description: string | null
+    }
+  }>
 }
 
 interface ProductPaperStock {
@@ -135,29 +146,24 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
 
   const filteredStocks = availableStocks.filter(stock => {
     const matchesSearch = stock.name.toLowerCase().includes(filter.toLowerCase()) ||
-                         stock.category.toLowerCase().includes(filter.toLowerCase()) ||
-                         stock.finish.toLowerCase().includes(filter.toLowerCase())
-    const matchesCategory = categoryFilter === 'all' || stock.category === categoryFilter
-    return matchesSearch && matchesCategory
+                         (stock.tooltipText && stock.tooltipText.toLowerCase().includes(filter.toLowerCase()))
+    return matchesSearch
   })
 
-  const categories = Array.from(new Set(availableStocks.map(s => s.category)))
+  // Remove category filtering since we simplified the schema
+  // const categories = []
 
   const getStockStatus = (stock: PaperStock) => {
-    if (stock.sheetsInStock === 0) return { label: 'Out of Stock', color: 'destructive' }
-    if (stock.sheetsInStock < 1000) return { label: 'Low Stock', color: 'warning' }
-    return { label: 'In Stock', color: 'success' }
+    // Since we simplified the schema, all active stocks are considered available
+    return { label: 'Available', color: 'success' }
   }
 
-  const getCoatingInfo = (coating: string) => {
-    const coatings: Record<string, string> = {
-      'None': 'No coating applied',
-      'UV': 'High-gloss UV coating for vibrant colors and durability',
-      'Aqueous': 'Water-based coating for protection and subtle sheen',
-      'Soft Touch': 'Velvety soft-touch coating for premium feel',
-      'Spot UV': 'Selective UV coating for highlighting specific areas'
-    }
-    return coatings[coating] || coating
+  const getDefaultCoating = (stock: PaperStock) => {
+    return stock.paperStockCoatings.find(pc => pc.isDefault)?.coating.name || 'None'
+  }
+
+  const getSidesOptions = (stock: PaperStock) => {
+    return stock.paperStockSides.map(ps => `${ps.sidesOption.name} (${ps.priceMultiplier}x)`).join(', ')
   }
 
   if (loading) {
@@ -173,18 +179,6 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
-        <RadioGroup className="flex gap-4" value={categoryFilter} onValueChange={setCategoryFilter}>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem id="all" value="all" />
-            <Label htmlFor="all">All</Label>
-          </div>
-          {categories.map(category => (
-            <div key={category} className="flex items-center space-x-2">
-              <RadioGroupItem id={category} value={category} />
-              <Label htmlFor={category}>{category}</Label>
-            </div>
-          ))}
-        </RadioGroup>
       </div>
 
       <div className="border rounded-lg">
@@ -193,10 +187,10 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
             <TableRow>
               <TableHead className="w-12">Select</TableHead>
               <TableHead>Paper Stock</TableHead>
-              <TableHead>Specifications</TableHead>
-              <TableHead>Coating</TableHead>
-              <TableHead>Inventory</TableHead>
-              <TableHead>Pricing</TableHead>
+              <TableHead>Weight (shipping)</TableHead>
+              <TableHead>Coating Options</TableHead>
+              <TableHead>Sides Options</TableHead>
+              <TableHead>Base Price</TableHead>
               <TableHead>Additional Cost</TableHead>
               <TableHead className="w-20">Default</TableHead>
             </TableRow>
@@ -218,76 +212,60 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                   <TableCell>
                     <div className="space-y-1">
                       <div className="font-medium">{stock.name}</div>
-                      <div className="flex gap-2">
-                        <Badge className="text-xs" variant="outline">
-                          {stock.category}
-                        </Badge>
-                        {stock.isEcoFriendly && (
-                          <Badge className="text-xs" variant="success">
-                            Eco-Friendly
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1 text-sm">
-                      <div>{stock.weight} • {stock.finish}</div>
-                      {stock.thickness && (
-                        <div className="text-muted-foreground">
-                          {stock.thickness}pt thick
-                        </div>
-                      )}
-                      {(stock.opacity || stock.brightness) && (
-                        <div className="text-muted-foreground text-xs">
-                          {stock.opacity && `${stock.opacity}% opacity`}
-                          {stock.opacity && stock.brightness && ' • '}
-                          {stock.brightness && `${stock.brightness}% brightness`}
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={stock.coating === 'None' ? 'secondary' : 'default'}>
-                          {stock.coating}
-                        </Badge>
-                        {stock.coating !== 'None' && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <Info className="h-3 w-3 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs">{getCoatingInfo(stock.coating)}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                      </div>
-                      {stock.coating !== 'None' && (
+                      {stock.tooltipText && (
                         <div className="text-xs text-muted-foreground">
-                          {stock.sides}-sided
+                          {stock.tooltipText}
                         </div>
+                      )}
+                      <Badge className="text-xs" variant={stock.isActive ? 'default' : 'secondary'}>
+                        {stock.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1 text-sm">
+                      <div>{stock.weight.toFixed(4)}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Shipping weight
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {stock.paperStockCoatings.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {stock.paperStockCoatings.map(pc => (
+                            <Badge key={pc.coating.id} variant="outline" className="text-xs">
+                              {pc.coating.name}
+                              {pc.isDefault && <span className="ml-1">★</span>}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No coatings</span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <Badge className="text-xs" variant={status.color as any}>
-                        {status.label}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground">
-                        {stock.sheetsInStock.toLocaleString()} sheets
-                      </div>
+                      {stock.paperStockSides.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {stock.paperStockSides.map(ps => (
+                            <Badge key={ps.sidesOption.id} variant="outline" className="text-xs">
+                              {ps.sidesOption.name} ({ps.priceMultiplier}x)
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No sides</span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1 text-sm">
-                      <div>${stock.costPerSheet.toFixed(3)}/sheet</div>
+                      <div>${stock.pricePerSqInch.toFixed(4)}/sq in</div>
                       <div className="text-xs text-muted-foreground">
-                        ×{stock.priceMultiplier} multiplier
+                        Base pricing
                       </div>
                     </div>
                   </TableCell>

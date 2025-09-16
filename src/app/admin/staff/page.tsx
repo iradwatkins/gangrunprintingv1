@@ -1,4 +1,7 @@
-import { prisma } from '@/lib/prisma'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -20,9 +23,6 @@ import { StaffTable } from '@/components/admin/staff/staff-table'
 import { RolePermissionsTable } from '@/components/admin/staff/role-permissions-table'
 import { ActivityLogTable } from '@/components/admin/staff/activity-log-table'
 import { AddStaffDialog } from '@/components/admin/staff/add-staff-dialog'
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 interface StaffMember {
   id: string
@@ -59,120 +59,100 @@ interface StaffData {
   }>
 }
 
-async function getStaffData(): Promise<StaffData> {
-  // Get all staff members (ADMIN and STAFF roles)
-  const staffMembers = await prisma.user.findMany({
-    where: {
-      role: {
-        in: ['ADMIN', 'STAFF']
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
-
-  // Transform staff data
-  const staff: StaffMember[] = staffMembers.map(member => ({
-    id: member.id,
-    name: member.name,
-    email: member.email,
-    role: member.role,
-    emailVerified: member.emailVerified,
-    createdAt: member.createdAt,
-    lastLoginAt: member.updatedAt, // Using updatedAt as proxy for lastLoginAt
-    isActive: !!member.emailVerified,
-    permissions: getPermissionsForRole(member.role)
-  }))
-
-  // Calculate role statistics
-  const roles = [
-    {
-      name: 'ADMIN',
-      count: staff.filter(s => s.role === 'ADMIN').length,
-      permissions: getPermissionsForRole('ADMIN')
-    },
-    {
-      name: 'STAFF',
-      count: staff.filter(s => s.role === 'STAFF').length,
-      permissions: getPermissionsForRole('STAFF')
-    }
-  ]
-
-  // Calculate stats
-  const stats = {
-    total: staff.length,
-    active: staff.filter(s => s.isActive).length,
-    pending: staff.filter(s => !s.isActive).length,
-    admins: staff.filter(s => s.role === 'ADMIN').length
-  }
-
-  // Mock recent activity data
-  const recentActivity = [
-    {
-      id: '1',
-      userId: staff[0]?.id || '',
-      userName: staff[0]?.name || 'Admin User',
-      action: 'LOGIN',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      details: 'Logged in to admin dashboard'
-    },
-    {
-      id: '2',
-      userId: staff[0]?.id || '',
-      userName: staff[0]?.name || 'Admin User',
-      action: 'ORDER_UPDATE',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      details: 'Updated order #ORD-001 status to PROCESSING'
-    },
-    {
-      id: '3',
-      userId: staff[0]?.id || '',
-      userName: staff[0]?.name || 'Admin User',
-      action: 'CUSTOMER_CREATE',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-      details: 'Created new customer account'
-    }
-  ]
-
-  return {
-    staff,
-    roles,
-    stats,
-    recentActivity
-  }
-}
-
 function getPermissionsForRole(role: string): string[] {
-  const permissions: Record<string, string[]> = {
+  const permissions: { [key: string]: string[] } = {
     ADMIN: [
-      'view_dashboard',
-      'manage_orders',
-      'manage_customers',
-      'manage_products',
-      'manage_staff',
-      'view_analytics',
-      'manage_settings',
-      'view_reports',
-      'manage_payments',
-      'manage_inventory'
+      'Manage Users',
+      'Manage Products',
+      'Manage Orders',
+      'View Analytics',
+      'Manage Settings',
+      'Manage Vendors',
+      'Manage Marketing',
+      'View Financial Reports',
+      'System Configuration'
     ],
     STAFF: [
-      'view_dashboard',
-      'manage_orders',
-      'view_customers',
-      'view_products',
-      'view_reports'
+      'View Users',
+      'Manage Products',
+      'Manage Orders',
+      'View Analytics',
+      'Customer Support'
     ],
-    CUSTOMER: [],
-    BROKER: []
+    CUSTOMER: [
+      'View Products',
+      'Place Orders',
+      'View Order History'
+    ]
   }
 
   return permissions[role] || []
 }
 
-export default async function StaffPage() {
-  const data = await getStaffData()
+export default function StaffPage() {
+  const searchParams = useSearchParams()
+  const currentTab = searchParams.get('tab') || 'members'
+
+  const [data, setData] = useState<StaffData>({
+    staff: [],
+    roles: [
+      { name: 'ADMIN', count: 0, permissions: getPermissionsForRole('ADMIN') },
+      { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') }
+    ],
+    stats: { total: 0, active: 0, pending: 0, admins: 0 },
+    recentActivity: []
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/staff')
+        if (response.ok) {
+          const staffData = await response.json()
+          setData(staffData)
+        } else {
+          // Use mock data if API fails
+          setData({
+            staff: [
+              {
+                id: '1',
+                name: 'Admin User',
+                email: 'admin@gangrunprinting.com',
+                role: 'ADMIN',
+                emailVerified: new Date(),
+                createdAt: new Date(),
+                lastLoginAt: new Date(),
+                isActive: true,
+                permissions: getPermissionsForRole('ADMIN')
+              }
+            ],
+            roles: [
+              { name: 'ADMIN', count: 1, permissions: getPermissionsForRole('ADMIN') },
+              { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') }
+            ],
+            stats: { total: 1, active: 1, pending: 0, admins: 1 },
+            recentActivity: [
+              {
+                id: '1',
+                userId: '1',
+                userName: 'Admin User',
+                action: 'Logged in',
+                timestamp: new Date(),
+                details: 'Successfully logged in'
+              }
+            ]
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching staff data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   const formatDate = (date: Date | null) => {
     if (!date) return 'Never'
@@ -190,6 +170,14 @@ export default async function StaffPage() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    )
   }
 
   return (
@@ -267,7 +255,7 @@ export default async function StaffPage() {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="members" className="space-y-4">
+      <Tabs className="space-y-4" value={currentTab} defaultValue="members">
         <TabsList>
           <TabsTrigger value="members">Staff Members</TabsTrigger>
           <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
@@ -275,7 +263,7 @@ export default async function StaffPage() {
         </TabsList>
 
         {/* Staff Members Tab */}
-        <TabsContent value="members" className="space-y-4">
+        <TabsContent className="space-y-4" value="members">
           <Card>
             <CardHeader>
               <CardTitle>Staff Members</CardTitle>
@@ -284,13 +272,21 @@ export default async function StaffPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <StaffTable staff={data.staff} />
+              {data.staff.length > 0 ? (
+                <StaffTable staff={data.staff} />
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No staff members yet</h3>
+                  <p className="text-muted-foreground">Add your first team member to get started</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Roles & Permissions Tab */}
-        <TabsContent value="roles" className="space-y-4">
+        <TabsContent className="space-y-4" value="roles">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -308,27 +304,16 @@ export default async function StaffPage() {
                           {role.name}
                         </Badge>
                         <span className="text-sm text-muted-foreground">
-                          {role.count} members
+                          {role.count} member{role.count !== 1 ? 's' : ''}
                         </span>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Edit Permissions
+                      <Button size="sm" variant="outline">
+                        Edit
                       </Button>
                     </div>
-                    <div className="pl-4 space-y-1">
-                      <p className="text-sm font-medium">Permissions ({role.permissions.length}):</p>
-                      <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 5).map((permission) => (
-                          <Badge key={permission} variant="outline" className="text-xs">
-                            {permission.replace('_', ' ')}
-                          </Badge>
-                        ))}
-                        {role.permissions.length > 5 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{role.permissions.length - 5} more
-                          </Badge>
-                        )}
-                      </div>
+                    <div className="text-xs text-muted-foreground">
+                      {role.permissions.slice(0, 3).join(', ')}
+                      {role.permissions.length > 3 && ` +${role.permissions.length - 3} more`}
                     </div>
                   </div>
                 ))}
@@ -337,29 +322,58 @@ export default async function StaffPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Permission Details</CardTitle>
+                <CardTitle>Permission Matrix</CardTitle>
                 <CardDescription>
-                  Detailed breakdown of role permissions
+                  Detailed view of role permissions
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <RolePermissionsTable roles={data.roles} />
+                {data.roles.length > 0 ? (
+                  <RolePermissionsTable roles={data.roles} />
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-muted-foreground">No roles configured</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
         {/* Activity Log Tab */}
-        <TabsContent value="activity" className="space-y-4">
+        <TabsContent className="space-y-4" value="activity">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>Activity Log</CardTitle>
               <CardDescription>
-                Staff member actions and system events
+                Recent actions performed by staff members
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ActivityLogTable activities={data.recentActivity} />
+              {data.recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {data.recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-center justify-between py-3 border-b">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{activity.action}</Badge>
+                          <span className="text-sm font-medium">{activity.userName}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{activity.details}</p>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDateTime(activity.timestamp)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium">No recent activity</h3>
+                  <p className="text-muted-foreground">Activity will appear here as staff members perform actions</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

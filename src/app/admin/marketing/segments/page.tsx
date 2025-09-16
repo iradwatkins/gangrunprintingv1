@@ -239,9 +239,9 @@ export default function SegmentsPage() {
                 <div>
                   <Label>Segment Name</Label>
                   <Input
+                    placeholder="Enter segment name"
                     value={newSegment.name}
                     onChange={(e) => setNewSegment(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter segment name"
                   />
                 </div>
               </div>
@@ -249,10 +249,10 @@ export default function SegmentsPage() {
               <div>
                 <Label>Description (Optional)</Label>
                 <Textarea
-                  value={newSegment.description}
-                  onChange={(e) => setNewSegment(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Describe this segment"
                   rows={2}
+                  value={newSegment.description}
+                  onChange={(e) => setNewSegment(prev => ({ ...prev, description: e.target.value }))}
                 />
               </div>
 
@@ -305,9 +305,9 @@ export default function SegmentsPage() {
                       <div>
                         <Label className="text-xs">Value</Label>
                         <Input
+                          placeholder="Value"
                           value={rule.value}
                           onChange={(e) => updateRule(index, { value: e.target.value })}
-                          placeholder="Value"
                         />
                       </div>
 
@@ -337,13 +337,13 @@ export default function SegmentsPage() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button onClick={handleCreateSegment} className="flex-1">
+                <Button className="flex-1" onClick={handleCreateSegment}>
                   Create Segment
                 </Button>
                 <Button
+                  className="flex-1"
                   variant="outline"
                   onClick={() => setShowCreateDialog(false)}
-                  className="flex-1"
                 >
                   Cancel
                 </Button>
@@ -433,7 +433,7 @@ export default function SegmentsPage() {
             <TableBody>
               {segments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell className="text-center py-8" colSpan={6}>
                     <div className="flex flex-col items-center gap-2">
                       <Target className="w-8 h-8 text-gray-400" />
                       <p className="text-gray-500">No segments found</p>
@@ -485,7 +485,7 @@ export default function SegmentsPage() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button className="h-8 w-8 p-0" variant="ghost">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

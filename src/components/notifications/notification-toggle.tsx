@@ -82,7 +82,7 @@ export default function NotificationToggle() {
           return
         }
 
-        let registration = await navigator.serviceWorker.ready
+        const registration = await navigator.serviceWorker.ready
 
         // Get VAPID public key
         const vapidResponse = await fetch('/api/notifications/vapid-public-key')
@@ -133,14 +133,14 @@ export default function NotificationToggle() {
     if (!state.isPushSupported) return null
 
     if (state.permission === 'denied') {
-      return <Badge variant="destructive" className="text-xs">Blocked</Badge>
+      return <Badge className="text-xs" variant="destructive">Blocked</Badge>
     }
 
     if (state.isSubscribed) {
       return <Badge className="bg-green-500 text-xs">On</Badge>
     }
 
-    return <Badge variant="secondary" className="text-xs">Off</Badge>
+    return <Badge className="text-xs" variant="secondary">Off</Badge>
   }
 
   if (!state.isPushSupported) {
@@ -168,11 +168,11 @@ export default function NotificationToggle() {
           </p>
         ) : (
           <Button
+            className="w-full h-8 text-xs"
+            disabled={isLoading}
             size="sm"
             variant={state.isSubscribed ? "outline" : "default"}
-            className="w-full h-8 text-xs"
             onClick={toggleNotifications}
-            disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center gap-1">

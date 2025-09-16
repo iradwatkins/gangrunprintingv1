@@ -93,7 +93,7 @@ export function TopProductsTable({ products }: TopProductsTableProps) {
                 {formatCurrency(product.revenue)}
               </TableCell>
               <TableCell className="text-right">
-                <Button variant="ghost" size="sm">
+                <Button size="sm" variant="ghost">
                   <Eye className="h-4 w-4" />
                 </Button>
               </TableCell>

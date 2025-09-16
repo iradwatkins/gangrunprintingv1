@@ -208,36 +208,36 @@ export default async function AdminDashboard() {
       {/* Key Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Today's Revenue"
-          value={`$${(data.todayRevenue / 100).toFixed(2)}`}
+          change={data.revenueChange}
           icon={<DollarSign className="h-4 w-4" />}
           iconBg="bg-green-100 dark:bg-green-900/20"
           subtitle={`$${(data.monthRevenue / 100).toFixed(2)} this month`}
-          change={data.revenueChange}
+          title="Today's Revenue"
+          value={`$${(data.todayRevenue / 100).toFixed(2)}`}
         />
 
         <StatsCard
-          title="Pending Orders"
-          value={data.pendingOrders.toString()}
           icon={<ShoppingCart className="h-4 w-4" />}
           iconBg="bg-blue-100 dark:bg-blue-900/20"
           subtitle={`${data.urgentOrders} urgent`}
+          title="Pending Orders"
+          value={data.pendingOrders.toString()}
         />
 
         <StatsCard
-          title="Customers"
-          value={data.totalCustomers.toString()}
           icon={<Users className="h-4 w-4" />}
           iconBg="bg-purple-100 dark:bg-purple-900/20"
           subtitle={`+${data.newCustomersThisMonth} this month`}
+          title="Customers"
+          value={data.totalCustomers.toString()}
         />
 
         <StatsCard
-          title="Completion Rate"
-          value={`${data.completionRate.toFixed(0)}%`}
           icon={<CheckCircle className="h-4 w-4" />}
           iconBg="bg-amber-100 dark:bg-amber-900/20"
           subtitle={`${data.completedToday} completed today`}
+          title="Completion Rate"
+          value={`${data.completionRate.toFixed(0)}%`}
         />
       </div>
 

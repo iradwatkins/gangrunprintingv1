@@ -9,8 +9,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragStartEvent,
-  DragEndEvent,
+  type DragStartEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -173,8 +173,8 @@ function SortableComponent({
       case 'text':
         return (
           <div
-            style={component.styles}
             className="min-h-[40px] p-2 border-2 border-dashed border-transparent hover:border-blue-300 cursor-text"
+            style={component.styles}
             onClick={() => onSelect(component.id)}
           >
             {component.content.text || 'Click to edit text'}
@@ -184,16 +184,16 @@ function SortableComponent({
       case 'image':
         return (
           <div
-            style={component.styles}
             className="min-h-[100px] p-2 border-2 border-dashed border-transparent hover:border-blue-300 cursor-pointer"
+            style={component.styles}
             onClick={() => onSelect(component.id)}
           >
             {component.content.src ? (
               <img
-                src={component.content.src}
                 alt={component.content.alt}
-                style={{ width: component.content.width }}
                 className="max-w-full h-auto"
+                src={component.content.src}
+                style={{ width: component.content.width }}
               />
             ) : (
               <div className="bg-gray-100 flex items-center justify-center h-32 text-gray-500">
@@ -207,8 +207,8 @@ function SortableComponent({
       case 'button':
         return (
           <div
-            style={{ textAlign: component.styles.textAlign }}
             className="p-2 border-2 border-dashed border-transparent hover:border-blue-300 cursor-pointer"
+            style={{ textAlign: component.styles.textAlign }}
             onClick={() => onSelect(component.id)}
           >
             <button
@@ -264,26 +264,26 @@ function SortableComponent({
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={`relative group ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+      style={style}
     >
       {renderComponent()}
 
       {/* Component controls */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button
+          className="h-6 w-6 p-0"
           size="sm"
           variant="outline"
-          className="h-6 w-6 p-0"
           {...attributes}
           {...listeners}
         >
           <GripVertical className="w-3 h-3" />
         </Button>
         <Button
+          className="h-6 w-6 p-0"
           size="sm"
           variant="outline"
-          className="h-6 w-6 p-0"
           onClick={(e) => {
             e.stopPropagation()
             onDuplicate(component.id)
@@ -292,9 +292,9 @@ function SortableComponent({
           <Copy className="w-3 h-3" />
         </Button>
         <Button
+          className="h-6 w-6 p-0"
           size="sm"
           variant="outline"
-          className="h-6 w-6 p-0"
           onClick={(e) => {
             e.stopPropagation()
             onDelete(component.id)
@@ -329,10 +329,10 @@ function ComponentEditor({
           <div>
             <Label>Content</Label>
             <Textarea
-              value={component.content.text || ''}
-              onChange={(e) => updateContent({ text: e.target.value })}
               placeholder="Enter your text here..."
               rows={4}
+              value={component.content.text || ''}
+              onChange={(e) => updateContent({ text: e.target.value })}
             />
           </div>
 
@@ -402,18 +402,18 @@ function ComponentEditor({
           <div>
             <Label>Image URL</Label>
             <Input
+              placeholder="https://example.com/image.jpg"
               value={component.content.src || ''}
               onChange={(e) => updateContent({ src: e.target.value })}
-              placeholder="https://example.com/image.jpg"
             />
           </div>
 
           <div>
             <Label>Alt Text</Label>
             <Input
+              placeholder="Description of the image"
               value={component.content.alt || ''}
               onChange={(e) => updateContent({ alt: e.target.value })}
-              placeholder="Description of the image"
             />
           </div>
 
@@ -473,18 +473,18 @@ function ComponentEditor({
           <div>
             <Label>Button Text</Label>
             <Input
+              placeholder="Click Here"
               value={component.content.text || ''}
               onChange={(e) => updateContent({ text: e.target.value })}
-              placeholder="Click Here"
             />
           </div>
 
           <div>
             <Label>Link URL</Label>
             <Input
+              placeholder="https://example.com"
               value={component.content.url || ''}
               onChange={(e) => updateContent({ url: e.target.value })}
-              placeholder="https://example.com"
             />
           </div>
 
@@ -740,8 +740,8 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
             return (
               <Button
                 key={componentType.type}
-                variant="outline"
                 className="w-full justify-start"
+                variant="outline"
                 onClick={() => addComponent(componentType.type)}
               >
                 <Icon className="w-4 h-4 mr-2" />
@@ -838,11 +838,11 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
               <div>
                 <Label>Preview Text</Label>
                 <Input
+                  placeholder="This appears in the inbox preview"
                   value={currentTemplate.previewText}
                   onChange={(e) =>
                     setCurrentTemplate(prev => ({ ...prev, previewText: e.target.value }))
                   }
-                  placeholder="This appears in the inbox preview"
                 />
               </div>
             </CardContent>
@@ -862,10 +862,10 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                 }}
               >
                 <DndContext
-                  sensors={sensors}
                   collisionDetection={closestCenter}
-                  onDragStart={handleDragStart}
+                  sensors={sensors}
                   onDragEnd={handleDragEnd}
+                  onDragStart={handleDragStart}
                 >
                   <SortableContext
                     items={currentTemplate.components.map(c => c.id)}
@@ -881,10 +881,10 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                           key={component.id}
                           component={component}
                           isSelected={selectedComponentId === component.id}
-                          onSelect={setSelectedComponentId}
-                          onUpdate={updateComponent}
                           onDelete={deleteComponent}
                           onDuplicate={duplicateComponent}
+                          onSelect={setSelectedComponentId}
+                          onUpdate={updateComponent}
                         />
                       ))
                     )}
@@ -904,7 +904,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
 
           {/* Action Buttons */}
           <div className="flex gap-4 mt-6">
-            <Button onClick={() => onPreview(currentTemplate)} variant="outline">
+            <Button variant="outline" onClick={() => onPreview(currentTemplate)}>
               <Eye className="w-4 h-4 mr-2" />
               Preview
             </Button>

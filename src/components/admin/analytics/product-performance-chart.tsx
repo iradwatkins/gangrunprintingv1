@@ -46,22 +46,22 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
 
   return (
     <div className="h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
           <XAxis
-            dataKey="category"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12 }}
             angle={-45}
-            textAnchor="end"
+            axisLine={false}
+            dataKey="category"
             height={80}
+            textAnchor="end"
+            tick={{ fontSize: 12 }}
+            tickLine={false}
           />
           <YAxis
-            tickFormatter={(value) => `$${value}`}
             axisLine={false}
-            tickLine={false}
             tick={{ fontSize: 12 }}
+            tickFormatter={(value) => `$${value}`}
+            tickLine={false}
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar

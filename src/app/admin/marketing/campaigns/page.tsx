@@ -240,9 +240,9 @@ export default function CampaignsPage() {
               <div>
                 <Label>Campaign Name</Label>
                 <Input
+                  placeholder="Enter campaign name"
                   value={newCampaign.name}
                   onChange={(e) => setNewCampaign(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter campaign name"
                 />
               </div>
 
@@ -267,18 +267,18 @@ export default function CampaignsPage() {
                   <div>
                     <Label>Subject Line</Label>
                     <Input
+                      placeholder="Email subject"
                       value={newCampaign.subject}
                       onChange={(e) => setNewCampaign(prev => ({ ...prev, subject: e.target.value }))}
-                      placeholder="Email subject"
                     />
                   </div>
 
                   <div>
                     <Label>Preview Text</Label>
                     <Input
+                      placeholder="This appears in the inbox preview"
                       value={newCampaign.previewText}
                       onChange={(e) => setNewCampaign(prev => ({ ...prev, previewText: e.target.value }))}
-                      placeholder="This appears in the inbox preview"
                     />
                   </div>
                 </>
@@ -305,13 +305,13 @@ export default function CampaignsPage() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button onClick={handleCreateCampaign} className="flex-1">
+                <Button className="flex-1" onClick={handleCreateCampaign}>
                   Create Campaign
                 </Button>
                 <Button
+                  className="flex-1"
                   variant="outline"
                   onClick={() => setShowCreateDialog(false)}
-                  className="flex-1"
                 >
                   Cancel
                 </Button>
@@ -328,10 +328,10 @@ export default function CampaignsPage() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
+                className="pl-10"
                 placeholder="Search campaigns..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
               />
             </div>
 
@@ -383,7 +383,7 @@ export default function CampaignsPage() {
             <TableBody>
               {filteredCampaigns.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell className="text-center py-8 text-gray-500" colSpan={7}>
                     No campaigns found
                   </TableCell>
                 </TableRow>
@@ -433,7 +433,7 @@ export default function CampaignsPage() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button className="h-8 w-8 p-0" variant="ghost">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>

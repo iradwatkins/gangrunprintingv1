@@ -142,7 +142,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
     const Icon = config.icon
     
     return (
-      <Badge variant={config.variant} className="gap-1">
+      <Badge className="gap-1" variant={config.variant}>
         <Icon className="h-3 w-3" />
         {config.label}
       </Badge>
@@ -179,10 +179,10 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
             <TableRow>
               <TableHead className="w-[40px]">
                 <input
-                  type="checkbox"
                   checked={selectedOrders.length === orders.length && orders.length > 0}
-                  onChange={selectAllOrders}
                   className="rounded border-gray-300"
+                  type="checkbox"
+                  onChange={selectAllOrders}
                 />
               </TableHead>
               <TableHead>Order #</TableHead>
@@ -199,16 +199,16 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
               <TableRow key={order.id}>
                 <TableCell>
                   <input
-                    type="checkbox"
                     checked={selectedOrders.includes(order.id)}
-                    onChange={() => toggleOrderSelection(order.id)}
                     className="rounded border-gray-300"
+                    type="checkbox"
+                    onChange={() => toggleOrderSelection(order.id)}
                   />
                 </TableCell>
                 <TableCell className="font-medium">
                   <Link
-                    href={`/admin/orders/${order.id}`}
                     className="hover:underline"
+                    href={`/admin/orders/${order.id}`}
                   >
                     {order.orderNumber}
                   </Link>
@@ -239,7 +239,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button className="h-8 w-8 p-0" variant="ghost">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>

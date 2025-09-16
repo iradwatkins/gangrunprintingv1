@@ -193,35 +193,35 @@ export function NotificationsDropdown() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative">
+        <Button className="relative" size="sm" variant="ghost">
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
             <Badge
-              variant="destructive"
               className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+              variant="destructive"
             >
               {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-medium">Notifications</h3>
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={markAllAsRead}
                 className="text-xs"
+                size="sm"
+                variant="ghost"
+                onClick={markAllAsRead}
               >
                 Mark all read
               </Button>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button size="sm" variant="ghost">
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -286,19 +286,19 @@ export function NotificationsDropdown() {
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {!notification.read && (
                               <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => markAsRead(notification.id)}
                                 className="h-6 w-6 p-0"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => markAsRead(notification.id)}
                               >
                                 <Check className="h-3 w-3" />
                               </Button>
                             )}
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteNotification(notification.id)}
                               className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteNotification(notification.id)}
                             >
                               <X className="h-3 w-3" />
                             </Button>
@@ -307,9 +307,9 @@ export function NotificationsDropdown() {
 
                         {notification.actionUrl && notification.actionLabel && (
                           <Button
-                            variant="outline"
-                            size="sm"
                             className="mt-2 h-7 text-xs"
+                            size="sm"
+                            variant="outline"
                             onClick={() => {
                               // Navigate to action URL
                               window.location.href = notification.actionUrl!
@@ -331,8 +331,8 @@ export function NotificationsDropdown() {
         {notifications.length > 0 && (
           <div className="p-2 border-t">
             <Button
-              variant="ghost"
               className="w-full text-xs"
+              variant="ghost"
               onClick={() => {
                 // Navigate to notifications page
                 window.location.href = '/admin/notifications'
@@ -378,9 +378,9 @@ export function NotificationToast({
 
           {notification.actionUrl && notification.actionLabel && (
             <Button
-              variant="outline"
-              size="sm"
               className="h-7 text-xs"
+              size="sm"
+              variant="outline"
               onClick={() => {
                 window.location.href = notification.actionUrl!
                 onDismiss()
@@ -392,10 +392,10 @@ export function NotificationToast({
         </div>
 
         <Button
-          variant="ghost"
-          size="sm"
-          onClick={onDismiss}
           className="h-6 w-6 p-0"
+          size="sm"
+          variant="ghost"
+          onClick={onDismiss}
         >
           <X className="h-3 w-3" />
         </Button>

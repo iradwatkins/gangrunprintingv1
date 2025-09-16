@@ -119,8 +119,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <Link 
-        href="/account/orders"
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
+        href="/account/orders"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Orders
@@ -141,11 +141,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
         <div className="space-x-2">
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Invoice
           </Button>
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <Printer className="mr-2 h-4 w-4" />
             Print
           </Button>
@@ -172,10 +172,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     {formatTrackingNumber(order.carrier, order.trackingNumber)}
                   </p>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCopyTrackingNumber}
                     className="h-8 w-8"
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleCopyTrackingNumber}
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -184,13 +184,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div className="space-y-2">
                 <TrackingButton
                   carrier={order.carrier}
-                  trackingNumber={order.trackingNumber}
                   size="lg"
+                  trackingNumber={order.trackingNumber}
                 />
                 <Button
-                  variant="outline"
-                  size="sm"
                   className="w-full"
+                  size="sm"
+                  variant="outline"
                   onClick={handleShareTracking}
                 >
                   <Share2 className="mr-2 h-4 w-4" />
@@ -203,9 +203,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <p>You can also track your package directly at:</p>
               <TrackingLink
                 carrier={order.carrier}
-                trackingNumber={order.trackingNumber}
-                showNumber={false}
                 className="text-primary hover:underline inline-flex items-center gap-1 mt-1"
+                showNumber={false}
+                trackingNumber={order.trackingNumber}
               />
             </div>
           </CardContent>

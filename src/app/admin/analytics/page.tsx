@@ -194,11 +194,11 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </Button>
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -210,9 +210,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         {Object.entries(periodLabels).map(([key, label]) => (
           <Button
             key={key}
-            variant={period === key ? "default" : "outline"}
-            size="sm"
             asChild
+            size="sm"
+            variant={period === key ? "default" : "outline"}
           >
             <a href={`/admin/analytics?period=${key}`}>{label}</a>
           </Button>
@@ -222,39 +222,39 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          title="Total Revenue"
-          value={formatCurrency(metrics.revenue.total)}
           change={metrics.revenue.growth}
           icon={<DollarSign className="h-4 w-4 text-green-600" />}
           subtitle={`${formatCurrency(metrics.revenue.previousPeriod)} previous period`}
+          title="Total Revenue"
+          value={formatCurrency(metrics.revenue.total)}
         />
 
         <MetricCard
-          title="Total Orders"
-          value={metrics.orders.total.toString()}
           change={metrics.orders.growth}
           icon={<ShoppingCart className="h-4 w-4 text-blue-600" />}
           subtitle={`${metrics.orders.previousPeriod} previous period`}
+          title="Total Orders"
+          value={metrics.orders.total.toString()}
         />
 
         <MetricCard
-          title="Active Customers"
-          value={metrics.customers.total.toString()}
           change={metrics.customers.growth}
           icon={<Users className="h-4 w-4 text-purple-600" />}
           subtitle={`${metrics.customers.new} new, ${metrics.customers.returning} returning`}
+          title="Active Customers"
+          value={metrics.customers.total.toString()}
         />
 
         <MetricCard
-          title="Avg Order Value"
-          value={formatCurrency(metrics.conversion.averageOrderValue)}
           icon={<TrendingUp className="h-4 w-4 text-orange-600" />}
           subtitle={`${metrics.conversion.repeatCustomerRate.toFixed(1)}% repeat customers`}
+          title="Avg Order Value"
+          value={formatCurrency(metrics.conversion.averageOrderValue)}
         />
       </div>
 
       {/* Analytics Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
+      <Tabs className="space-y-6" defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
@@ -263,7 +263,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent className="space-y-6" value="overview">
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -326,7 +326,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         </TabsContent>
 
         {/* Products Tab */}
-        <TabsContent value="products" className="space-y-6">
+        <TabsContent className="space-y-6" value="products">
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -355,7 +355,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                       </div>
                       <div className="text-right">
                         <p className="font-medium">{formatCurrency(category.revenue)}</p>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {((category.revenue / metrics.revenue.total) * 100).toFixed(1)}%
                         </Badge>
                       </div>
@@ -386,7 +386,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         </TabsContent>
 
         {/* Customers Tab */}
-        <TabsContent value="customers" className="space-y-6">
+        <TabsContent className="space-y-6" value="customers">
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -449,7 +449,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         </TabsContent>
 
         {/* Orders Tab */}
-        <TabsContent value="orders" className="space-y-6">
+        <TabsContent className="space-y-6" value="orders">
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>

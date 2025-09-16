@@ -63,7 +63,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9">
+      <Button className="h-9 w-9" size="icon" variant="ghost">
         <Monitor className="h-4 w-4" />
       </Button>
     )
@@ -78,7 +78,7 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        <Button className="h-9 w-9" size="icon" variant="ghost">
           {getIcon()}
           <span className="sr-only">Toggle theme</span>
         </Button>

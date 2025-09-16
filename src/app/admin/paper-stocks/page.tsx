@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Save, Package, Droplets, Layers, Copy, X, Check } from 'lucide-react'
+import { Plus, Edit, Trash2, Package, Palette, Square } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,6 +10,14 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -17,109 +25,74 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
+import { CoatingCreationModal } from '@/components/admin/coating-creation-modal'
+import { SidesCreationModal } from '@/components/admin/sides-creation-modal'
 import toast from '@/lib/toast'
 
 interface CoatingOption {
   id: string
-  label: string
-  enabled: boolean
+  name: string
+  description: string | null
 }
 
 interface SidesOption {
   id: string
-  label: string
-  enabled: boolean
-  multiplier: number
-}
-
-interface MaterialType {
-  id: string
-  name: string
-  basePrice: number // Price per square inch
-  shippingWeight: number // Weight per 1000 sheets
-  isActive: boolean
-  
-  // Available coatings for this paper stock
-  coatings: CoatingOption[]
-  
-  // Available sides options with multipliers
-  sidesOptions: SidesOption[]
-  
-  // Defaults
-  defaultCoating: string
-  defaultSides: string
-}
-
-// These will be fetched from API
-interface ApiCoatingOption {
-  id: string
-  name: string
-  description: string | null
-  additionalCost: number | null
-}
-
-interface ApiSidesOption {
-  id: string
   name: string
   code: string
   description: string | null
+}
+
+interface PaperStockSidesRelation {
+  sidesOptionId: string
+  priceMultiplier: number
+  isEnabled: boolean
+}
+
+interface PaperStockCoatingRelation {
+  coatingId: string
   isDefault: boolean
 }
 
-export default function MaterialTypesPage() {
-  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([])
+interface PaperStock {
+  id: string
+  name: string
+  weight: number
+  pricePerSqInch: number
+  tooltipText: string | null
+  isActive: boolean
+  paperStockCoatings: (PaperStockCoatingRelation & { coating: CoatingOption })[]
+  paperStockSides: (PaperStockSidesRelation & { sidesOption: SidesOption })[]
+  productsCount?: number
+}
+
+export default function PaperStocksPage() {
+  const [paperStocks, setPaperStocks] = useState<PaperStock[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingMaterial, setEditingMaterial] = useState<MaterialType | null>(null)
-  const [coatingOptions, setCoatingOptions] = useState<ApiCoatingOption[]>([])
-  const [sidesOptions, setSidesOptions] = useState<ApiSidesOption[]>([])
-  
-  // States for adding new options inline
-  const [addingCoating, setAddingCoating] = useState(false)
-  const [newCoating, setNewCoating] = useState({ name: '', additionalCost: '' })
-  const [addingSides, setAddingSides] = useState(false)
-  const [newSides, setNewSides] = useState({ name: '', code: '', multiplier: '1.0' })
-  
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [editingStock, setEditingStock] = useState<PaperStock | null>(null)
+  const [deletingStock, setDeletingStock] = useState<PaperStock | null>(null)
+  const [allCoatingOptions, setAllCoatingOptions] = useState<CoatingOption[]>([])
+  const [allSidesOptions, setAllSidesOptions] = useState<SidesOption[]>([])
+  const [coatingModalOpen, setCoatingModalOpen] = useState(false)
+  const [sidesModalOpen, setSidesModalOpen] = useState(false)
+
   // Form state
-  const [formData, setFormData] = useState<{
-    name: string
-    basePrice: number
-    shippingWeight: number
-    coatings: CoatingOption[]
-    sidesOptions: SidesOption[]
-    defaultCoating: string
-    defaultSides: string
-    isActive: boolean
-  }>({
+  const [formData, setFormData] = useState({
     name: '',
-    basePrice: 0.00001234,
-    shippingWeight: 0.5,
-    coatings: coatingOptions.map(c => ({ 
-      id: c.id, 
-      label: c.name, 
-      enabled: true 
-    })),
-    sidesOptions: sidesOptions.map(s => ({ 
-      id: s.id,
-      label: s.name,
-      enabled: true, 
-      multiplier: 1.0
-    })),
-    defaultCoating: coatingOptions[0]?.id || '',
-    defaultSides: sidesOptions.find(s => s.isDefault)?.id || sidesOptions[0]?.id || '',
-    isActive: true
+    weight: 0.0015,
+    pricePerSqInch: 0.0015,
+    tooltipText: '',
+    isActive: true,
+    selectedCoatings: [] as string[],
+    defaultCoating: '' as string,
+    selectedSides: [] as string[],
+    sidesMultipliers: {} as Record<string, number>
   })
 
   useEffect(() => {
-    fetchMaterialTypes()
+    fetchPaperStocks()
     fetchOptions()
   }, [])
 
@@ -129,28 +102,42 @@ export default function MaterialTypesPage() {
         fetch('/api/coating-options'),
         fetch('/api/sides-options')
       ])
-      
+
       if (coatingsRes.ok) {
         const coatingsData = await coatingsRes.json()
-        setCoatingOptions(coatingsData)
+        setAllCoatingOptions(coatingsData)
       }
-      
+
       if (sidesRes.ok) {
         const sidesData = await sidesRes.json()
-        setSidesOptions(sidesData)
+        setAllSidesOptions(sidesData)
       }
     } catch (error) {
       console.error('Error fetching options:', error)
     }
   }
 
-  const fetchMaterialTypes = async () => {
+  const fetchPaperStocks = async () => {
     try {
       const response = await fetch('/api/paper-stocks')
       if (!response.ok) throw new Error('Failed to fetch paper stocks')
-      
+
       const data = await response.json()
-      setMaterialTypes(data)
+
+      // Transform API response to match our interface
+      const transformedStocks = data.map((stock: any) => ({
+        id: stock.id,
+        name: stock.name,
+        weight: stock.weight || 0.0015,
+        pricePerSqInch: stock.pricePerSqInch || 0.0015,
+        tooltipText: stock.tooltipText,
+        isActive: stock.isActive,
+        paperStockCoatings: stock.paperStockCoatings || [],
+        paperStockSides: stock.paperStockSides || [],
+        productsCount: stock.productPaperStocks?.length || 0
+      }))
+
+      setPaperStocks(transformedStocks)
     } catch (error) {
       console.error('Error fetching paper stocks:', error)
       toast.error('Failed to load paper stocks')
@@ -159,121 +146,33 @@ export default function MaterialTypesPage() {
     }
   }
 
-  const handleOpenDialog = (material?: MaterialType) => {
-    if (material) {
-      setEditingMaterial(material)
-      setFormData({
-        name: material.name,
-        basePrice: material.basePrice,
-        shippingWeight: material.shippingWeight,
-        coatings: coatingOptions.map(c => {
-          const materialCoating = material.coatings.find(mc => mc.id === c.id)
-          return {
-            id: c.id,
-            label: c.name,
-            enabled: materialCoating?.enabled || false
-          }
-        }),
-        sidesOptions: sidesOptions.map(s => {
-          const materialSide = material.sidesOptions.find(ms => ms.id === s.id)
-          return {
-            id: s.id,
-            label: s.name,
-            enabled: materialSide?.enabled || false,
-            multiplier: materialSide?.multiplier || 1.0
-          }
-        }),
-        defaultCoating: material.defaultCoating,
-        defaultSides: material.defaultSides,
-        isActive: material.isActive
-      })
-    } else {
-      setEditingMaterial(null)
-      setFormData({
-        name: '',
-        basePrice: 0.00001234,
-        shippingWeight: 0.5,
-        coatings: coatingOptions.map(c => ({ 
-          id: c.id, 
-          label: c.name, 
-          enabled: true 
-        })),
-        sidesOptions: sidesOptions.map(s => ({ 
-          id: s.id,
-          label: s.name,
-          enabled: true, 
-          multiplier: 1.0
-        })),
-        defaultCoating: coatingOptions[0]?.id || '',
-        defaultSides: sidesOptions.find(s => s.isDefault)?.id || sidesOptions[0]?.id || '',
-        isActive: true
-      })
-    }
-    setDialogOpen(true)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-  const handleCoatingToggle = (coatingId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      coatings: prev.coatings.map(c => 
-        c.id === coatingId ? { ...c, enabled: !c.enabled } : c
-      )
-    }))
-  }
-
-  const handleSidesToggle = (sidesId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      sidesOptions: prev.sidesOptions.map(s => 
-        s.id === sidesId ? { ...s, enabled: !s.enabled } : s
-      )
-    }))
-  }
-
-  const handleSidesMultiplier = (sidesId: string, multiplier: number) => {
-    setFormData(prev => ({
-      ...prev,
-      sidesOptions: prev.sidesOptions.map(s => 
-        s.id === sidesId ? { ...s, multiplier } : s
-      )
-    }))
-  }
-
-  const handleSubmit = async () => {
     try {
-      // Validate at least one coating and sides option is selected
-      const hasCoating = formData.coatings.some(c => c.enabled)
-      const hasSides = formData.sidesOptions.some(s => s.enabled)
-      
-      if (!hasCoating) {
-        toast.error('Please select at least one coating option')
-        return
-      }
-      
-      if (!hasSides) {
-        toast.error('Please select at least one sides option')
-        return
-      }
+      const url = editingStock ? `/api/paper-stocks/${editingStock.id}` : '/api/paper-stocks'
+      const method = editingStock ? 'PUT' : 'POST'
 
-      const paperStockData = {
+      const payload = {
         name: formData.name,
-        basePrice: formData.basePrice,
-        shippingWeight: formData.shippingWeight,
+        weight: formData.weight,
+        pricePerSqInch: formData.pricePerSqInch,
+        tooltipText: formData.tooltipText,
         isActive: formData.isActive,
-        coatings: formData.coatings.filter(c => c.enabled),
-        sidesOptions: formData.sidesOptions.filter(s => s.enabled),
-        defaultCoating: formData.defaultCoating,
-        defaultSides: formData.defaultSides
+        coatings: formData.selectedCoatings.map(coatingId => ({
+          id: coatingId,
+          isDefault: coatingId === formData.defaultCoating
+        })),
+        sidesOptions: formData.selectedSides.map(sidesId => ({
+          id: sidesId,
+          multiplier: formData.sidesMultipliers[sidesId] || 1.0
+        }))
       }
 
-      const url = editingMaterial 
-        ? `/api/paper-stocks/${editingMaterial.id}`
-        : '/api/paper-stocks'
-      
       const response = await fetch(url, {
-        method: editingMaterial ? 'PUT' : 'POST',
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(paperStockData)
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
@@ -281,583 +180,534 @@ export default function MaterialTypesPage() {
         throw new Error(error.error || 'Failed to save paper stock')
       }
 
-      toast.success(editingMaterial ? 'Paper stock updated' : 'Paper stock created')
+      toast.success(editingStock ? 'Paper stock updated' : 'Paper stock created')
       setDialogOpen(false)
-      fetchMaterialTypes() // Refresh the list
+      resetForm()
+      fetchPaperStocks()
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save paper stock')
+      toast.error(error.message)
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this paper stock?')) {
-      try {
-        const response = await fetch(`/api/paper-stocks/${id}`, {
-          method: 'DELETE'
-        })
+  const handleEdit = (stock: PaperStock) => {
+    setEditingStock(stock)
 
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Failed to delete paper stock')
-        }
+    // Extract coating data
+    const selectedCoatings = stock.paperStockCoatings.map(pc => pc.coatingId)
+    const defaultCoating = stock.paperStockCoatings.find(pc => pc.isDefault)?.coatingId || ''
 
-        toast.success('Paper stock deleted')
-        fetchMaterialTypes() // Refresh the list
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to delete paper stock')
-      }
-    }
-  }
+    // Extract sides data and multipliers
+    const selectedSides = stock.paperStockSides.map(ps => ps.sidesOptionId)
+    const sidesMultipliers = stock.paperStockSides.reduce((acc, ps) => {
+      acc[ps.sidesOptionId] = ps.priceMultiplier
+      return acc
+    }, {} as Record<string, number>)
 
-  const handleDuplicate = (material: MaterialType) => {
-    // Open the dialog with duplicated data for editing as a new paper stock
-    setEditingMaterial(null) // This is a new material, not editing
     setFormData({
-      name: `${material.name} (Copy)`,
-      basePrice: material.basePrice,
-      shippingWeight: material.shippingWeight,
-      coatings: material.coatings,
-      sidesOptions: material.sidesOptions,
-      defaultCoating: material.defaultCoating,
-      defaultSides: material.defaultSides,
-      isActive: material.isActive
+      name: stock.name,
+      weight: stock.weight,
+      pricePerSqInch: stock.pricePerSqInch,
+      tooltipText: stock.tooltipText || '',
+      isActive: stock.isActive,
+      selectedCoatings,
+      defaultCoating,
+      selectedSides,
+      sidesMultipliers
     })
     setDialogOpen(true)
-    toast.success('Paper stock duplicated. Please review and save.')
   }
 
-  const calculateSamplePrice = (basePrice: number, multiplier: number = 1.0) => {
-    // 4x6 = 24 sq inches, 500 quantity
-    return (basePrice * 24 * 500 * multiplier).toFixed(2)
+  const handleDelete = async () => {
+    if (!deletingStock) return
+
+    try {
+      const response = await fetch(`/api/paper-stocks/${deletingStock.id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete paper stock')
+      }
+
+      toast.success('Paper stock deleted')
+      setDeleteDialogOpen(false)
+      setDeletingStock(null)
+      fetchPaperStocks()
+    } catch (error: any) {
+      toast.error(error.message)
+    }
+  }
+
+  const resetForm = () => {
+    setEditingStock(null)
+    setFormData({
+      name: '',
+      weight: 0.0015,
+      pricePerSqInch: 0.0015,
+      tooltipText: '',
+      isActive: true,
+      selectedCoatings: [],
+      defaultCoating: '',
+      selectedSides: [],
+      sidesMultipliers: {}
+    })
+  }
+
+  const openDeleteDialog = (stock: PaperStock) => {
+    setDeletingStock(stock)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleCoatingCreated = (newCoating: CoatingOption) => {
+    // Add to the list of available coating options
+    setAllCoatingOptions(prev => [...prev, newCoating])
+
+    // Auto-select the new coating and set as default if it's the first one
+    setFormData(prev => ({
+      ...prev,
+      selectedCoatings: [...prev.selectedCoatings, newCoating.id],
+      defaultCoating: prev.selectedCoatings.length === 0 ? newCoating.id : prev.defaultCoating
+    }))
+  }
+
+  const handleSidesCreated = (newSides: SidesOption) => {
+    // Add to the list of available sides options
+    setAllSidesOptions(prev => [...prev, newSides])
+
+    // Auto-select the new sides option with default multiplier
+    setFormData(prev => ({
+      ...prev,
+      selectedSides: [...prev.selectedSides, newSides.id],
+      sidesMultipliers: {
+        ...prev.sidesMultipliers,
+        [newSides.id]: 1.0
+      }
+    }))
+  }
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Material Type Management</h1>
-          <p className="text-muted-foreground">
-            Configure material types with coatings and sides options
-          </p>
-        </div>
-        <Button onClick={() => handleOpenDialog()}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Material Type
-        </Button>
+    <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Paper Stocks</h1>
+        <p className="text-gray-600 mt-2">
+          Manage paper stocks with coating and side options
+        </p>
       </div>
 
-      <div className="grid gap-4">
-        {loading ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Loading material types...
-            </CardContent>
-          </Card>
-        ) : materialTypes.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              No material types configured. Click "Add Material Type" to get started.
-            </CardContent>
-          </Card>
-        ) : (
-          materialTypes.map((material) => (
-            <Card key={material.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <CardTitle className="text-xl">{material.name}</CardTitle>
-                      <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-                        <span>Base: ${material.basePrice.toFixed(8)}/sq in</span>
-                        <span>•</span>
-                        <span>Shipping: {material.shippingWeight} lbs/1000</span>
-                        <span>•</span>
-                        <span>Sample (4x6, 500qty): ${calculateSamplePrice(material.basePrice)}</span>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Paper Stock Management</CardTitle>
+              <CardDescription>
+                Create and manage paper stocks with available coating and side options
+              </CardDescription>
+            </div>
+            <Button onClick={() => {
+              resetForm()
+              setDialogOpen(true)
+            }}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Paper Stock
+            </Button>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent className="max-w-4xl max-h-[90vh]">
+                <form onSubmit={handleSubmit}>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingStock ? 'Edit Paper Stock' : 'Create Paper Stock'}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {editingStock
+                        ? 'Update the paper stock details and options'
+                        : 'Add a new paper stock with coating and side options'}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-6 py-4 max-h-[65vh] overflow-y-auto">
+                    {/* Basic Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Basic Information</h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Name *</Label>
+                          <Input
+                            required
+                            id="name"
+                            placeholder="e.g., 16pt C2S Cardstock"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="weight">Weight (for shipping) *</Label>
+                          <Input
+                            required
+                            id="weight"
+                            type="number"
+                            step="0.0001"
+                            min="0"
+                            placeholder="0.0015"
+                            value={formData.weight}
+                            onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Numeric weight used for shipping rate calculations
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="pricePerSqInch">Price per Square Inch ($)</Label>
+                          <Input
+                            id="pricePerSqInch"
+                            type="number"
+                            step="0.0001"
+                            min="0"
+                            value={formData.pricePerSqInch}
+                            onChange={(e) => setFormData({ ...formData, pricePerSqInch: parseFloat(e.target.value) || 0 })}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tooltipText">Description</Label>
+                        <Textarea
+                          id="tooltipText"
+                          placeholder="Optional description for this paper stock"
+                          rows={3}
+                          value={formData.tooltipText}
+                          onChange={(e) => setFormData({ ...formData, tooltipText: e.target.value })}
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={formData.isActive}
+                          id="isActive"
+                          onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                        />
+                        <Label htmlFor="isActive">Active</Label>
+                      </div>
+                    </div>
+
+                    {/* Coating Options */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                          <Palette className="h-5 w-5" />
+                          Available Coating Options
+                        </h3>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCoatingModalOpen(true)}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Custom
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {allCoatingOptions.map((coating) => (
+                          <div key={coating.id} className="border rounded-lg p-3">
+                            <div className="flex items-start space-x-3">
+                              <Checkbox
+                                id={`coating-${coating.id}`}
+                                checked={formData.selectedCoatings.includes(coating.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData({
+                                      ...formData,
+                                      selectedCoatings: [...formData.selectedCoatings, coating.id],
+                                      // Set as default if it's the first coating selected
+                                      defaultCoating: formData.selectedCoatings.length === 0 ? coating.id : formData.defaultCoating
+                                    })
+                                  } else {
+                                    setFormData({
+                                      ...formData,
+                                      selectedCoatings: formData.selectedCoatings.filter(id => id !== coating.id),
+                                      // Clear default if this was the default coating
+                                      defaultCoating: formData.defaultCoating === coating.id ? '' : formData.defaultCoating
+                                    })
+                                  }
+                                }}
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`coating-${coating.id}`} className="font-medium">
+                                    {coating.name}
+                                  </Label>
+                                  {formData.defaultCoating === coating.id && (
+                                    <Badge variant="secondary" className="text-xs">DEFAULT</Badge>
+                                  )}
+                                </div>
+                                {coating.description && (
+                                  <div className="text-sm text-gray-500 mt-1">{coating.description}</div>
+                                )}
+                                {formData.selectedCoatings.includes(coating.id) && (
+                                  <div className="mt-2">
+                                    <label className="flex items-center space-x-2 text-sm">
+                                      <input
+                                        type="radio"
+                                        name="defaultCoating"
+                                        checked={formData.defaultCoating === coating.id}
+                                        onChange={() => setFormData({ ...formData, defaultCoating: coating.id })}
+                                        className="w-4 h-4"
+                                      />
+                                      <span>Set as default coating</span>
+                                    </label>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Side Options */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                          <Square className="h-5 w-5" />
+                          Available Side Options
+                        </h3>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSidesModalOpen(true)}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Custom
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {allSidesOptions.map((sides) => (
+                          <div key={sides.id} className="border rounded-lg p-3">
+                            <div className="flex items-start space-x-3">
+                              <Checkbox
+                                id={`sides-${sides.id}`}
+                                checked={formData.selectedSides.includes(sides.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData({
+                                      ...formData,
+                                      selectedSides: [...formData.selectedSides, sides.id],
+                                      // Set default multiplier if not already set
+                                      sidesMultipliers: {
+                                        ...formData.sidesMultipliers,
+                                        [sides.id]: formData.sidesMultipliers[sides.id] || 1.0
+                                      }
+                                    })
+                                  } else {
+                                    const { [sides.id]: removed, ...remainingMultipliers } = formData.sidesMultipliers
+                                    setFormData({
+                                      ...formData,
+                                      selectedSides: formData.selectedSides.filter(id => id !== sides.id),
+                                      sidesMultipliers: remainingMultipliers
+                                    })
+                                  }
+                                }}
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor={`sides-${sides.id}`} className="font-medium">
+                                    {sides.name}
+                                  </Label>
+                                  {formData.selectedSides.includes(sides.id) && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {(formData.sidesMultipliers[sides.id] || 1.0).toFixed(1)}x
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-sm text-gray-500 mt-1">
+                                  Code: {sides.code}
+                                </div>
+                                {sides.description && (
+                                  <div className="text-sm text-gray-500">{sides.description}</div>
+                                )}
+                                {formData.selectedSides.includes(sides.id) && (
+                                  <div className="mt-2">
+                                    <Label htmlFor={`multiplier-${sides.id}`} className="text-sm">
+                                      Price Multiplier:
+                                    </Label>
+                                    <Input
+                                      id={`multiplier-${sides.id}`}
+                                      type="number"
+                                      step="0.1"
+                                      min="0.1"
+                                      max="10"
+                                      value={formData.sidesMultipliers[sides.id] || 1.0}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value) || 1.0
+                                        setFormData({
+                                          ...formData,
+                                          sidesMultipliers: {
+                                            ...formData.sidesMultipliers,
+                                            [sides.id]: value
+                                          }
+                                        })
+                                      }}
+                                      className="w-24 h-8 text-sm mt-1"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={material.isActive ? 'default' : 'secondary'}>
-                      {material.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      title="Edit"
-                      variant="ghost"
-                      onClick={() => handleOpenDialog(material)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      title="Duplicate"
-                      variant="ghost"
-                      onClick={() => handleDuplicate(material)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      title="Delete"
-                      variant="ghost"
-                      onClick={() => handleDelete(material.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Coatings */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Droplets className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="font-semibold text-sm">Available Coatings</h4>
-                    </div>
-                    <div className="space-y-1">
-                      {material.coatings.map((coating) => (
-                        <div key={coating.id} className="flex items-center gap-2">
-                          <Badge 
-                            className="text-xs"
-                            variant={material.defaultCoating === coating.id ? 'default' : 'outline'}
-                          >
-                            {coating.label}
-                            {material.defaultCoating === coating.id && ' (Default)'}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Sides Options */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Layers className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="font-semibold text-sm">Sides Options</h4>
-                    </div>
-                    <div className="space-y-1">
-                      {material.sidesOptions.map((side) => (
-                        <div key={side.id} className="flex items-center justify-between">
-                          <Badge 
-                            className="text-xs"
-                            variant={material.defaultSides === side.id ? 'default' : 'outline'}
-                          >
-                            {side.label}
-                            {material.defaultSides === side.id && ' (Default)'}
-                          </Badge>
-                          {side.multiplier !== 1.0 && (
-                            <span className="text-xs font-mono text-muted-foreground">
-                              {side.multiplier}x
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">
+                      {editingStock ? 'Update' : 'Create'}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {paperStocks.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No paper stocks created yet. Click "Add Paper Stock" to create your first one.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Weight (shipping)</TableHead>
+                  <TableHead className="text-center">Price/sq in</TableHead>
+                  <TableHead className="text-center">Coatings</TableHead>
+                  <TableHead className="text-center">Sides</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paperStocks.map((stock) => (
+                  <TableRow key={stock.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{stock.name}</div>
+                        {stock.tooltipText && (
+                          <div className="text-sm text-gray-500">{stock.tooltipText}</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{stock.weight.toFixed(4)}</TableCell>
+                    <TableCell className="text-center">
+                      ${stock.pricePerSqInch.toFixed(4)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {stock.paperStockCoatings.length > 0 ? (
+                          stock.paperStockCoatings.map((pc) => (
+                            <Badge key={pc.coating.id} variant="outline" className="text-xs">
+                              {pc.coating.name}
+                              {pc.isDefault && <span className="ml-1 font-bold">★</span>}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-gray-400">None</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {stock.paperStockSides.length > 0 ? (
+                          stock.paperStockSides.map((ps) => (
+                            <Badge key={ps.sidesOption.id} variant="outline" className="text-xs">
+                              {ps.sidesOption.name} ({ps.priceMultiplier}x)
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-gray-400">None</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={stock.isActive ? "default" : "secondary"}>
+                        {stock.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(stock)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          disabled={(stock.productsCount ?? 0) > 0}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openDeleteDialog(stock)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Create/Edit Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      {/* Delete Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingMaterial ? 'Edit Material Type' : 'Create Material Type'}
-            </DialogTitle>
+            <DialogTitle>Delete Paper Stock</DialogTitle>
             <DialogDescription>
-              Configure the material type details, available coatings, and sides options
+              Are you sure you want to delete "{deletingStock?.name}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-
-          <div className="space-y-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Basic Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Material Type Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g., 12pt Card Stock"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="shippingWeight">Shipping Weight (lbs/1000)</Label>
-                  <Input
-                    id="shippingWeight"
-                    step="0.01"
-                    type="number"
-                    value={formData.shippingWeight}
-                    onChange={(e) => setFormData(prev => ({ ...prev, shippingWeight: parseFloat(e.target.value) }))}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="basePrice">Base Price (per square inch)</Label>
-                <Input
-                  id="basePrice"
-                  step="0.00000001"
-                  type="number"
-                  value={formData.basePrice}
-                  onChange={(e) => setFormData(prev => ({ ...prev, basePrice: parseFloat(e.target.value) }))}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Sample: 4x6 @ 500qty = ${calculateSamplePrice(formData.basePrice)}
-                </p>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Coating Options */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Droplets className="h-4 w-4" />
-                  Coating Options
-                </h3>
-                <Button
-                  disabled={addingCoating}
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setAddingCoating(true)
-                    setNewCoating({ name: '', additionalCost: '' })
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="space-y-3">
-                {formData.coatings.map((coating) => (
-                  <div key={coating.id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Checkbox
-                        checked={coating.enabled}
-                        id={`coating-${coating.id}`}
-                        onCheckedChange={() => handleCoatingToggle(coating.id)}
-                      />
-                      <Label 
-                        className="cursor-pointer"
-                        htmlFor={`coating-${coating.id}`}
-                      >
-                        {coating.label}
-                      </Label>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={async () => {
-                        if (confirm(`Delete coating option "${coating.label}"?`)) {
-                          try {
-                            const response = await fetch(`/api/coating-options/${coating.id}`, {
-                              method: 'DELETE'
-                            })
-                            if (response.ok) {
-                              setCoatingOptions(prev => prev.filter(c => c.id !== coating.id))
-                              setFormData(prev => ({
-                                ...prev,
-                                coatings: prev.coatings.filter(c => c.id !== coating.id)
-                              }))
-                              toast.success('Coating option deleted')
-                            } else {
-                              const error = await response.json()
-                              toast.error(error.error || 'Cannot delete coating option')
-                            }
-                          } catch (error) {
-                            toast.error('Failed to delete coating option')
-                          }
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-                
-                {/* New Coating Input */}
-                {addingCoating && (
-                  <div className="flex items-center gap-2 p-2 border rounded">
-                    <Checkbox disabled checked={true} />
-                    <Input
-                      className="flex-1"
-                      placeholder="Coating name"
-                      value={newCoating.name}
-                      onChange={(e) => setNewCoating(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                    <Input
-                      className="w-24"
-                      placeholder="Cost"
-                      step="0.01"
-                      type="number"
-                      value={newCoating.additionalCost}
-                      onChange={(e) => setNewCoating(prev => ({ ...prev, additionalCost: e.target.value }))}
-                    />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={async () => {
-                        if (newCoating.name.trim()) {
-                          try {
-                            const response = await fetch('/api/coating-options', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                name: newCoating.name.trim(),
-                                additionalCost: newCoating.additionalCost ? parseFloat(newCoating.additionalCost) : null
-                              })
-                            })
-                            if (response.ok) {
-                              const created = await response.json()
-                              setCoatingOptions(prev => [...prev, created])
-                              setFormData(prev => ({
-                                ...prev,
-                                coatings: [...prev.coatings, { id: created.id, label: created.name, enabled: true }]
-                              }))
-                              setAddingCoating(false)
-                              toast.success('Coating option added')
-                            }
-                          } catch (error) {
-                            toast.error('Failed to add coating option')
-                          }
-                        }
-                      }}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setAddingCoating(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="defaultCoating">Default Coating</Label>
-                <Select
-                  value={formData.defaultCoating}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, defaultCoating: value }))}
-                >
-                  <SelectTrigger id="defaultCoating">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formData.coatings.filter(c => c.enabled).map((coating) => (
-                      <SelectItem key={coating.id} value={coating.id}>
-                        {coating.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Sides Options */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
-                  Sides Options
-                </h3>
-                <Button
-                  disabled={addingSides}
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setAddingSides(true)
-                    setNewSides({ name: '', code: '', multiplier: '1.0' })
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="space-y-3">
-                {formData.sidesOptions.map((side) => (
-                  <div key={side.id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Checkbox
-                        checked={side.enabled}
-                        id={`sides-${side.id}`}
-                        onCheckedChange={() => handleSidesToggle(side.id)}
-                      />
-                      <Label 
-                        className="cursor-pointer"
-                        htmlFor={`sides-${side.id}`}
-                      >
-                        {side.label}
-                      </Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm">Multiplier:</Label>
-                      <Input
-                        className="w-20"
-                        disabled={!side.enabled}
-                        step="0.05"
-                        type="number"
-                        value={side.multiplier}
-                        onChange={(e) => handleSidesMultiplier(side.id, parseFloat(e.target.value) || 1.0)}
-                      />
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={async () => {
-                          if (confirm(`Delete sides option "${side.label}"?`)) {
-                            try {
-                              const response = await fetch(`/api/sides-options/${side.id}`, {
-                                method: 'DELETE'
-                              })
-                              if (response.ok) {
-                                setSidesOptions(prev => prev.filter(s => s.id !== side.id))
-                                setFormData(prev => ({
-                                  ...prev,
-                                  sidesOptions: prev.sidesOptions.filter(s => s.id !== side.id)
-                                }))
-                                toast.success('Sides option deleted')
-                              } else {
-                                const error = await response.json()
-                                toast.error(error.error || 'Cannot delete sides option')
-                              }
-                            } catch (error) {
-                              toast.error('Failed to delete sides option')
-                            }
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                
-                {/* New Sides Input */}
-                {addingSides && (
-                  <div className="flex items-center gap-2 p-2 border rounded">
-                    <Checkbox disabled checked={true} />
-                    <Input
-                      className="flex-1"
-                      placeholder="Sides name"
-                      value={newSides.name}
-                      onChange={(e) => setNewSides(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                    <Input
-                      className="w-24"
-                      placeholder="Code"
-                      value={newSides.code}
-                      onChange={(e) => setNewSides(prev => ({ ...prev, code: e.target.value }))}
-                    />
-                    <Input
-                      className="w-24"
-                      placeholder="Multiplier"
-                      step="0.05"
-                      type="number"
-                      value={newSides.multiplier}
-                      onChange={(e) => setNewSides(prev => ({ ...prev, multiplier: e.target.value }))}
-                    />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={async () => {
-                        if (newSides.name.trim() && newSides.code.trim()) {
-                          try {
-                            const response = await fetch('/api/sides-options', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                name: newSides.name.trim(),
-                                code: newSides.code.trim(),
-                                isDefault: false
-                              })
-                            })
-                            if (response.ok) {
-                              const created = await response.json()
-                              setSidesOptions(prev => [...prev, created])
-                              setFormData(prev => ({
-                                ...prev,
-                                sidesOptions: [...prev.sidesOptions, { 
-                                  id: created.id, 
-                                  label: created.name, 
-                                  enabled: true,
-                                  multiplier: parseFloat(newSides.multiplier) || 1.0
-                                }]
-                              }))
-                              setAddingSides(false)
-                              toast.success('Sides option added')
-                            }
-                          } catch (error) {
-                            toast.error('Failed to add sides option')
-                          }
-                        }
-                      }}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setAddingSides(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="defaultSides">Default Sides Option</Label>
-                <Select
-                  value={formData.defaultSides}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, defaultSides: value }))}
-                >
-                  <SelectTrigger id="defaultSides">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formData.sidesOptions.filter(s => s.enabled).map((side) => (
-                      <SelectItem key={side.id} value={side.id}>
-                        {side.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Active Status */}
-            <div className="flex items-center justify-between">
-              <Label htmlFor="isActive">Active Status</Label>
-              <Switch
-                checked={formData.isActive}
-                id="isActive"
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
-              />
-            </div>
-          </div>
-
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>
-              <Save className="mr-2 h-4 w-4" />
-              {editingMaterial ? 'Update' : 'Create'} Material Type
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Coating Creation Modal */}
+      <CoatingCreationModal
+        open={coatingModalOpen}
+        onOpenChange={setCoatingModalOpen}
+        onCoatingCreated={handleCoatingCreated}
+      />
+
+      {/* Sides Creation Modal */}
+      <SidesCreationModal
+        open={sidesModalOpen}
+        onOpenChange={setSidesModalOpen}
+        onSidesCreated={handleSidesCreated}
+      />
     </div>
   )
 }

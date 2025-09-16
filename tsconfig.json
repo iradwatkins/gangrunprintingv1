@@ -37,6 +37,7 @@
     "**/*.spec.tsx",
     "prisma/seed*.ts",
     "prisma/seed*.js",
-    ".next/**"
+    ".next/**",
+    "trash/**"
   ]
 }

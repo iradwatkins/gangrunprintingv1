@@ -76,7 +76,7 @@ export default function MonitoringPage() {
           <h1 className="text-3xl font-bold tracking-tight">System Monitoring</h1>
           <p className="text-muted-foreground">Real-time system health and performance metrics</p>
         </div>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" variant="outline">
           <Activity className="h-4 w-4" />
           Refresh
         </Button>
@@ -142,15 +142,16 @@ export default function MonitoringPage() {
       </div>
 
       {/* Detailed Monitoring */}
-      <Tabs defaultValue="performance" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="performance">
         <TabsList>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="errors">Errors</TabsTrigger>
           <TabsTrigger value="database">Database</TabsTrigger>
+          <TabsTrigger value="logs">Logs</TabsTrigger>
           <TabsTrigger value="alerts">Alerts</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="performance" className="space-y-4">
+        <TabsContent className="space-y-4" value="performance">
           <Card>
             <CardHeader>
               <CardTitle>Performance Metrics</CardTitle>
@@ -190,7 +191,7 @@ export default function MonitoringPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="errors" className="space-y-4">
+        <TabsContent className="space-y-4" value="errors">
           <Card>
             <CardHeader>
               <CardTitle>Error Monitoring</CardTitle>
@@ -206,7 +207,7 @@ export default function MonitoringPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="database" className="space-y-4">
+        <TabsContent className="space-y-4" value="database">
           <Card>
             <CardHeader>
               <CardTitle>Database Health</CardTitle>
@@ -239,7 +240,52 @@ export default function MonitoringPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="alerts" className="space-y-4">
+        <TabsContent className="space-y-4" value="logs">
+          <Card>
+            <CardHeader>
+              <CardTitle>System Logs</CardTitle>
+              <CardDescription>Recent system activity and application logs</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2">
+                  <div className="text-sm font-medium">Recent Activity</div>
+                  <Button size="sm" variant="outline">Export Logs</Button>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline">INFO</Badge>
+                      <span className="text-sm">Application started successfully</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">2 minutes ago</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline">INFO</Badge>
+                      <span className="text-sm">Database connection established</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">2 minutes ago</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline">INFO</Badge>
+                      <span className="text-sm">Cache cleared successfully</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">15 minutes ago</span>
+                  </div>
+                </div>
+                {!isLoading && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-muted-foreground">Showing recent logs. For detailed logs, check the server console.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent className="space-y-4" value="alerts">
           <Card>
             <CardHeader>
               <CardTitle>System Alerts</CardTitle>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { sendMagicLink } from '@/lib/auth'
 import { z } from 'zod'
 

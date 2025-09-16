@@ -280,10 +280,10 @@ function ColorCard({ color, currentTheme }: { color: ColorInfo; currentTheme: st
               {color.cssVar}
             </code>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(color.cssVar)}
               className="h-6 w-6 p-0"
+              size="sm"
+              variant="ghost"
+              onClick={() => copyToClipboard(color.cssVar)}
             >
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             </Button>
@@ -293,10 +293,10 @@ function ColorCard({ color, currentTheme }: { color: ColorInfo; currentTheme: st
               {currentValue}
             </code>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(currentValue)}
               className="h-6 w-6 p-0"
+              size="sm"
+              variant="ghost"
+              onClick={() => copyToClipboard(currentValue)}
             >
               {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             </Button>
@@ -388,10 +388,10 @@ export default function ThemeColors() {
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Theme:</span>
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
                 className="gap-2"
+                size="sm"
+                variant="outline"
+                onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
               >
                 {currentTheme === 'dark' ? (
                   <>
@@ -421,16 +421,16 @@ export default function ThemeColors() {
             <div className="space-y-3">
               <div className="flex gap-2">
                 <Input
+                  className="flex-1"
+                  disabled={isImporting}
                   placeholder="https://tweakcn.com/r/themes/..."
                   value={importUrl}
                   onChange={(e) => setImportUrl(e.target.value)}
-                  className="flex-1"
-                  disabled={isImporting}
                 />
                 <Button
-                  onClick={handleImportTheme}
-                  disabled={isImporting || !importUrl.trim()}
                   className="gap-2 min-w-[120px]"
+                  disabled={isImporting || !importUrl.trim()}
+                  onClick={handleImportTheme}
                 >
                   {isImporting ? (
                     <>

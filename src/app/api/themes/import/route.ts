@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { themeManager } from '@/lib/theme-manager';
 import { validateRequest } from '@/lib/auth';
 import { ThemeImporter } from '@/lib/theme-importer';

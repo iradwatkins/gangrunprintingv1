@@ -22,7 +22,7 @@ export function PaymentSettingsForm() {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label>Stripe Public Key</Label>
-          <Input type="password" defaultValue="pk_test_..." />
+          <Input defaultValue="pk_test_..." type="password" />
         </div>
 
         <div className="space-y-2">

@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/table'
 import toast from '@/lib/toast'
 
-interface MaterialType {
+interface PaperStock {
   id: string
   name: string
   basePrice: number
@@ -65,10 +65,10 @@ interface ProductConfig {
   id: string
   name: string
   sku: string
-  selectedMaterialTypes: string[]
+  selectedPaperStocks: string[]
   selectedSizes: string[]
   selectedQuantities: string[]
-  defaultMaterialType: string
+  defaultPaperStock: string
   defaultSize: string
   defaultQuantity: string
 }
@@ -80,7 +80,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
   const [saving, setSaving] = useState(false)
   
   const [product, setProduct] = useState<ProductConfig | null>(null)
-  const [availableMaterialTypes, setAvailableMaterialTypes] = useState<MaterialType[]>([])
+  const [availablePaperStocks, setAvailablePaperStocks] = useState<PaperStock[]>([])
   const [availableSizes, setAvailableSizes] = useState<Size[]>([])
   const [availableQuantities, setAvailableQuantities] = useState<Quantity[]>([])
 
@@ -95,26 +95,28 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         id: id,
         name: 'Standard Flyers',
         sku: 'FLY-001',
-        selectedMaterialTypes: [],
+        selectedPaperStocks: [],
         selectedSizes: ['1', '2', '3'],
         selectedQuantities: ['1', '2', '3', '4'],
-        defaultMaterialType: '',
+        defaultPaperStock: '',
         defaultSize: '1',
         defaultQuantity: '3'
       }
 
-      // Load material types from localStorage (central management)
-      const storedMaterials = localStorage.getItem('materialTypes')
-      const materials: MaterialType[] = storedMaterials ? JSON.parse(storedMaterials) : []
-      
-      // Only show active materials
-      const activeMaterials = materials.filter(m => m.isActive)
-      setAvailableMaterialTypes(activeMaterials)
-      
-      // Set selected materials if any
-      if (activeMaterials.length > 0) {
-        mockProduct.selectedMaterialTypes = activeMaterials.map(m => m.id)
-        mockProduct.defaultMaterialType = activeMaterials[0].id
+      // Load paper stocks from API
+      const res = await fetch('/api/paper-stocks')
+      if (res.ok) {
+        const paperStocks: PaperStock[] = await res.json()
+
+        // Only show active paper stocks
+        const activePaperStocks = paperStocks.filter(ps => ps.isActive)
+        setAvailablePaperStocks(activePaperStocks)
+
+        // Set selected paper stocks if any
+        if (activePaperStocks.length > 0) {
+          mockProduct.selectedPaperStocks = activePaperStocks.map(ps => ps.id)
+          mockProduct.defaultPaperStock = activePaperStocks[0].id
+        }
       }
 
       const mockSizes: Size[] = [
@@ -145,17 +147,17 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
     }
   }
 
-  const handleMaterialToggle = (materialId: string) => {
+  const handlePaperStockToggle = (paperStockId: string) => {
     if (!product) return
     
-    const isSelected = product.selectedMaterialTypes.includes(materialId)
+    const isSelected = product.selectedPaperStocks.includes(paperStockId)
     if (isSelected) {
       // Remove if it's not the only one selected
-      if (product.selectedMaterialTypes.length > 1) {
+      if (product.selectedPaperStocks.length > 1) {
         setProduct({
           ...product,
-          selectedMaterialTypes: product.selectedMaterialTypes.filter(id => id !== materialId),
-          defaultMaterialType: product.defaultMaterialType === materialId ? product.selectedMaterialTypes.find(id => id !== materialId) || '' : product.defaultMaterialType
+          selectedPaperStocks: product.selectedPaperStocks.filter(id => id !== paperStockId),
+          defaultPaperStock: product.defaultPaperStock === paperStockId ? product.selectedPaperStocks.find(id => id !== paperStockId) || '' : product.defaultPaperStock
         })
       } else {
         toast.error('At least one material type must be selected')
@@ -164,8 +166,8 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
       // Add
       setProduct({
         ...product,
-        selectedMaterialTypes: [...product.selectedMaterialTypes, materialId],
-        defaultMaterialType: product.selectedMaterialTypes.length === 0 ? materialId : product.defaultMaterialType
+        selectedPaperStocks: [...product.selectedPaperStocks, paperStockId],
+        defaultPaperStock: product.selectedPaperStocks.length === 0 ? paperStockId : product.defaultPaperStock
       })
     }
   }
@@ -216,11 +218,11 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
     }
   }
 
-  const handleSetDefault = (type: 'material' | 'size' | 'quantity', id: string) => {
+  const handleSetDefault = (type: 'paperStock' | 'size' | 'quantity', id: string) => {
     if (!product) return
     
-    if (type === 'material') {
-      setProduct({ ...product, defaultMaterialType: id })
+    if (type === 'paperStock') {
+      setProduct({ ...product, defaultPaperStock: id })
     } else if (type === 'size') {
       setProduct({ ...product, defaultSize: id })
     } else {
@@ -274,7 +276,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
       <Tabs className="space-y-4" defaultValue="material">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="material">
-            Material Types ({product.selectedMaterialTypes.length})
+            Paper Stocks ({product.selectedPaperStocks.length})
           </TabsTrigger>
           <TabsTrigger value="sizes">
             Sizes ({product.selectedSizes.length})
@@ -287,10 +289,10 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         <TabsContent value="material">
           <Card>
             <CardHeader>
-              <CardTitle>Material Type Configuration</CardTitle>
+              <CardTitle>Paper Stock Configuration</CardTitle>
               <CardDescription>
                 Select which material types are available for this product.
-                Material types are managed centrally in the Material Types section.
+                Paper stocks are managed centrally in the Paper Stocks section.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -310,37 +312,37 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-12">Active</TableHead>
-                      <TableHead>Material Type</TableHead>
+                      <TableHead>Paper Stock</TableHead>
                       <TableHead>Base Price/sq in</TableHead>
                       <TableHead>Available Options</TableHead>
                       <TableHead>Default</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {availableMaterialTypes.map((material) => {
-                      const isSelected = product.selectedMaterialTypes.includes(material.id)
-                      const isDefault = product.defaultMaterialType === material.id
-                      const samplePrice = (material.basePrice * 24 * 500).toFixed(2)
-                      
+                    {availablePaperStocks.map((paperStock) => {
+                      const isSelected = product.selectedPaperStocks.includes(paperStock.id)
+                      const isDefault = product.defaultPaperStock === paperStock.id
+                      const samplePrice = (paperStock.basePrice * 24 * 500).toFixed(2)
+
                       return (
-                        <TableRow key={material.id}>
+                        <TableRow key={paperStock.id}>
                           <TableCell>
                             <Checkbox
                               checked={isSelected}
-                              onCheckedChange={() => handleMaterialToggle(material.id)}
+                              onCheckedChange={() => handlePaperStockToggle(paperStock.id)}
                             />
                           </TableCell>
-                          <TableCell className="font-medium">{material.name}</TableCell>
+                          <TableCell className="font-medium">{paperStock.name}</TableCell>
                           <TableCell className="font-mono text-sm">
-                            ${material.basePrice.toFixed(8)}
+                            ${paperStock.basePrice.toFixed(8)}
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               <Badge className="text-xs" variant="outline">
-                                {material.coatings.length} coatings
+                                {paperStock.coatings.length} coatings
                               </Badge>
                               <Badge className="text-xs" variant="outline">
-                                {material.sidesOptions.length} sides
+                                {paperStock.sidesOptions.length} sides
                               </Badge>
                             </div>
                           </TableCell>
@@ -352,7 +354,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  onClick={() => handleSetDefault('material', material.id)}
+                                  onClick={() => handleSetDefault('paperStock', paperStock.id)}
                                 >
                                   Set Default
                                 </Button>
@@ -493,14 +495,14 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Selected Material Types:</p>
+            <p className="text-sm font-medium mb-2">Selected Paper Stocks:</p>
             <div className="flex flex-wrap gap-2">
-              {product.selectedMaterialTypes.map(id => {
-                const material = availableMaterialTypes.find(m => m.id === id)
-                return material ? (
-                  <Badge key={id} variant={id === product.defaultMaterialType ? 'default' : 'secondary'}>
-                    {material.name}
-                    {id === product.defaultMaterialType && ' (Default)'}
+              {product.selectedPaperStocks.map(id => {
+                const paperStock = availablePaperStocks.find(ps => ps.id === id)
+                return paperStock ? (
+                  <Badge key={id} variant={id === product.defaultPaperStock ? 'default' : 'secondary'}>
+                    {paperStock.name}
+                    {id === product.defaultPaperStock && ' (Default)'}
                   </Badge>
                 ) : null
               })}

@@ -292,7 +292,7 @@ export default function EmailBuilderPage() {
 
         <div className="flex gap-2">
           {campaignId && campaign?.status === 'DRAFT' && (
-            <Button onClick={handleSendCampaign} className="bg-green-600 hover:bg-green-700">
+            <Button className="bg-green-600 hover:bg-green-700" onClick={handleSendCampaign}>
               <Send className="w-4 h-4 mr-2" />
               Send Campaign
             </Button>
@@ -305,8 +305,8 @@ export default function EmailBuilderPage() {
         {template && (
           <EmailBuilder
             template={template}
-            onSave={handleSave}
             onPreview={handlePreview}
+            onSave={handleSave}
           />
         )}
       </div>
@@ -323,8 +323,8 @@ export default function EmailBuilderPage() {
 
           <div className="border rounded-lg overflow-hidden">
             <iframe
-              srcDoc={previewHtml}
               className="w-full h-96"
+              srcDoc={previewHtml}
               title="Email Preview"
             />
           </div>

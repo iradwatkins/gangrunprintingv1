@@ -306,22 +306,22 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
   return (
     <div className="space-y-4">
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
           ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary'}
         `}
+        onClick={() => fileInputRef.current?.click()}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <input
           ref={fileInputRef}
-          type="file"
           multiple
           accept="image/*"
-          onChange={handleFileInput}
           className="hidden"
+          type="file"
+          onChange={handleFileInput}
         />
         <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-sm font-medium">

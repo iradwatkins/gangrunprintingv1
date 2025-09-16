@@ -65,7 +65,7 @@ describe('Base Price Formula Compliance Tests', () => {
   }
 
   describe('EXACT FORMULA VERIFICATION', () => {
-    test('Formula: Base Paper Price × Size × Quantity × Sides Multiplier', () => {
+    test('Formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)', () => {
       const input: PricingInput = {
         sizeSelection: 'standard',
         standardSize: testSizes[0], // 4x6 = 24
@@ -83,7 +83,7 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.size).toBe(24)
       expect(result.breakdown.quantity).toBe(5000)
       expect(result.breakdown.sidesMultiplier).toBe(1.0)
-      expect(result.basePrice).toBeCloseTo(175, 2) // 0.00145833333 × 24 × 5000 × 1.0 = 175
+      expect(result.basePrice).toBeCloseTo(175, 2) // ((0.00145833333 × 1.0) × 24 × 5000) = 175
     })
   })
 
@@ -157,7 +157,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.quantity).toBe(250) // Uses calculationValue, not displayValue
-      expect(result.basePrice).toBeCloseTo(24, 2) // 0.002 × 24 × 250 × 1.0 = 12
+      expect(result.basePrice).toBeCloseTo(24, 2) // ((0.002 × 1.0) × 24 × 250) = 12
     })
 
     test('Standard quantity >= 5000 uses exact displayed value', () => {
@@ -174,7 +174,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.quantity).toBe(5000) // Uses displayValue (same as calculationValue)
-      expect(result.basePrice).toBeCloseTo(240, 2) // 0.002 × 24 × 5000 × 1.0 = 240
+      expect(result.basePrice).toBeCloseTo(240, 2) // ((0.002 × 1.0) × 24 × 5000) = 240
     })
 
     test('Quantity adjustment override (adjustmentValue takes precedence)', () => {
@@ -191,7 +191,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.quantity).toBe(1100) // Uses adjustmentValue
-      expect(result.basePrice).toBeCloseTo(26.4, 2) // 0.001 × 24 × 1100 × 1.0 = 26.4
+      expect(result.basePrice).toBeCloseTo(26.4, 2) // ((0.001 × 1.0) × 24 × 1100) = 26.4
     })
 
     test('Custom quantity uses exact input value', () => {
@@ -208,7 +208,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.quantity).toBe(750)
-      expect(result.basePrice).toBeCloseTo(18, 2) // 0.001 × 24 × 750 × 1.0 = 18
+      expect(result.basePrice).toBeCloseTo(18, 2) // ((0.001 × 1.0) × 24 × 750) = 18
     })
 
     test('Customers NEVER see adjustment values (this is tested via API)', () => {
@@ -250,7 +250,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.sidesMultiplier).toBe(1.75)
-      expect(result.basePrice).toBeCloseTo(420, 2) // 0.002 × 24 × 5000 × 1.75 = 420
+      expect(result.basePrice).toBeCloseTo(420, 2) // ((0.002 × 1.75) × 24 × 5000) = 420
     })
 
     test('Exception paper (text) single-sided = 1.0 multiplier', () => {
@@ -268,7 +268,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.sidesMultiplier).toBe(1.0)
-      expect(result.basePrice).toBeCloseTo(240, 2) // 0.002 × 24 × 5000 × 1.0 = 240
+      expect(result.basePrice).toBeCloseTo(240, 2) // ((0.002 × 1.0) × 24 × 5000) = 240
     })
 
     test('Regular paper (cardstock) double-sided = 1.0 multiplier', () => {
@@ -285,7 +285,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.sidesMultiplier).toBe(1.0) // NOT 1.75 for cardstock
-      expect(result.basePrice).toBeCloseTo(240, 2) // 0.002 × 24 × 5000 × 1.0 = 240
+      expect(result.basePrice).toBeCloseTo(240, 2) // ((0.002 × 1.0) × 24 × 5000) = 240
     })
 
     test('Regular paper (cardstock) single-sided = 1.0 multiplier', () => {
@@ -302,7 +302,7 @@ describe('Base Price Formula Compliance Tests', () => {
       const result = engine.calculateBasePrice(input)
 
       expect(result.breakdown.sidesMultiplier).toBe(1.0)
-      expect(result.basePrice).toBeCloseTo(240, 2) // 0.002 × 24 × 5000 × 1.0 = 240
+      expect(result.basePrice).toBeCloseTo(240, 2) // ((0.002 × 1.0) × 24 × 5000) = 240
     })
   })
 
@@ -324,7 +324,7 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.size).toBe(24)
       expect(result.breakdown.quantity).toBe(5000)
       expect(result.breakdown.sidesMultiplier).toBe(1.0)
-      expect(result.basePrice).toBeCloseTo(175, 2) // 0.00145833333 × 24 × 5000 × 1.0 = 175
+      expect(result.basePrice).toBeCloseTo(175, 2) // ((0.00145833333 × 1.0) × 24 × 5000) = 175
     })
 
     test('Scenario 2: Custom size + Standard quantity + Double-sided text paper', () => {
@@ -346,7 +346,7 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.size).toBe(24) // 4 × 6
       expect(result.breakdown.quantity).toBe(250) // Adjusted value
       expect(result.breakdown.sidesMultiplier).toBe(1.75) // Text paper exception
-      expect(result.basePrice).toBeCloseTo(21, 2) // 0.002 × 24 × 250 × 1.75 = 21
+      expect(result.basePrice).toBeCloseTo(21, 2) // ((0.002 × 1.75) × 24 × 250) = 21
     })
 
     test('Scenario 3: Standard size + Custom quantity + Single-sided cardstock', () => {
@@ -366,7 +366,7 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.size).toBe(25) // Pre-calculated value
       expect(result.breakdown.quantity).toBe(3000) // Custom value
       expect(result.breakdown.sidesMultiplier).toBe(1.0)
-      expect(result.basePrice).toBeCloseTo(75, 2) // 0.001 × 25 × 3000 × 1.0 = 75
+      expect(result.basePrice).toBeCloseTo(75, 2) // ((0.001 × 1.0) × 25 × 3000) = 75
     })
 
     test('Scenario 4: Custom size + Custom quantity + Double-sided cardstock (multiplier = 1.0)', () => {
@@ -387,7 +387,7 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.size).toBe(54) // 6 × 9
       expect(result.breakdown.quantity).toBe(1500)
       expect(result.breakdown.sidesMultiplier).toBe(1.0) // Cardstock double-sided = 1.0
-      expect(result.basePrice).toBeCloseTo(121.5, 2) // 0.0015 × 54 × 1500 × 1.0 = 121.5
+      expect(result.basePrice).toBeCloseTo(121.5, 2) // ((0.0015 × 1.0) × 54 × 1500) = 121.5
     })
   })
 

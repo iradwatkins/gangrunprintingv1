@@ -37,29 +37,29 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      <Tabs defaultValue="brand" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="brand">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="brand" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="brand">
             <Palette className="h-4 w-4" />
             Brand Colors
           </TabsTrigger>
-          <TabsTrigger value="typography" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="typography">
             <Layout className="h-4 w-4" />
             Typography
           </TabsTrigger>
-          <TabsTrigger value="logos" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="logos">
             <Image className="h-4 w-4" />
             Logos & Assets
           </TabsTrigger>
-          <TabsTrigger value="layout" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="layout">
             <Layout className="h-4 w-4" />
             Layout
           </TabsTrigger>
-          <TabsTrigger value="custom" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="custom">
             <Code className="h-4 w-4" />
             Custom CSS
           </TabsTrigger>
-          <TabsTrigger value="email" className="flex items-center gap-2">
+          <TabsTrigger className="flex items-center gap-2" value="email">
             <Mail className="h-4 w-4" />
             Email Themes
           </TabsTrigger>
@@ -68,7 +68,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Editor Panel */}
           <div className="lg:col-span-2 space-y-4">
-            <TabsContent value="brand" className="mt-0">
+            <TabsContent className="mt-0" value="brand">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="typography" className="mt-0">
+            <TabsContent className="mt-0" value="typography">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="logos" className="mt-0">
+            <TabsContent className="mt-0" value="logos">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="layout" className="mt-0">
+            <TabsContent className="mt-0" value="layout">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="custom" className="mt-0">
+            <TabsContent className="mt-0" value="custom">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="email" className="mt-0">
+            <TabsContent className="mt-0" value="email">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

@@ -233,7 +233,7 @@ export function DeviceMonitor() {
 export function InteractionMonitor() {
   useEffect(() => {
     let interactionCount = 0;
-    let sessionStart = Date.now();
+    const sessionStart = Date.now();
 
     const trackInteraction = (type: string) => {
       interactionCount++;
@@ -291,7 +291,7 @@ export function InteractionMonitor() {
 export function ErrorRateMonitor() {
   useEffect(() => {
     let errorCount = 0;
-    let sessionStart = Date.now();
+    const sessionStart = Date.now();
 
     const handleError = (event: ErrorEvent) => {
       errorCount++;

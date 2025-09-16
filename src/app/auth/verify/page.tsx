@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 
 function getErrorTitle(errorCode: string): string {
   switch (errorCode) {
@@ -71,12 +72,12 @@ async function VerifyContent({ searchParams }: VerifyPageProps) {
         <p className="text-gray-600 mb-6">
           {errorMessage}
         </p>
-        <a
+        <Link
+          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
           href="/auth/signin"
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
         >
           Request New Magic Link
-        </a>
+        </Link>
       </div>
     </div>
   )

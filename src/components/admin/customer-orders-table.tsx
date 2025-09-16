@@ -162,10 +162,10 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            className="pl-8"
             placeholder="Search orders..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
           />
         </div>
       </div>
@@ -215,8 +215,8 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
                   <TableRow key={order.id}>
                     <TableCell>
                       <Link
-                        href={`/admin/orders/${order.id}`}
                         className="font-medium hover:underline"
+                        href={`/admin/orders/${order.id}`}
                       >
                         {order.orderNumber}
                       </Link>
@@ -245,7 +245,7 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button className="h-8 w-8 p-0" variant="ghost">
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>

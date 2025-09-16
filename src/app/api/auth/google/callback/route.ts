@@ -2,10 +2,8 @@ import { google, type GoogleUser } from "@/lib/google-oauth";
 import { cookies } from "next/headers";
 import { OAuth2RequestError, decodeIdToken } from "arctic";
 import { lucia } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { type NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   console.log("=== GOOGLE OAUTH CALLBACK START ===");

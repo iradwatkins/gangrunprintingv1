@@ -27,8 +27,8 @@ export function ColorPicker({ value, onChange, className }: ColorPickerProps) {
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
             className="w-full justify-start text-left font-normal"
+            variant="outline"
           >
             <div
               className="w-4 h-4 rounded mr-2 border"
@@ -44,9 +44,9 @@ export function ColorPicker({ value, onChange, className }: ColorPickerProps) {
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium">Hex:</span>
               <HexColorInput
+                className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded"
                 color={value}
                 onChange={onChange}
-                className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded"
               />
             </div>
 
