@@ -6,7 +6,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install dependencies for native modules
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat python3 make g++ openssl openssl-dev
 
 # Copy package files
 COPY package*.json ./
@@ -30,7 +30,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Install runtime dependencies
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 
 # Create app user
 RUN addgroup -g 1001 -S nodejs && \
@@ -51,9 +51,9 @@ RUN mkdir -p /app/uploads && \
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 3002
 
-ENV PORT=3000
+ENV PORT=3002
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
 
