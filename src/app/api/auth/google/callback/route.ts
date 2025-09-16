@@ -34,9 +34,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       hasStoredCodeVerifier: !!storedCodeVerifier,
       stateMatches: state === storedState
     });
-    return NextResponse.redirect(
-      new URL("/auth/signin?error=invalid_request", request.url)
-    );
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
+    return NextResponse.redirect(`${baseUrl}/auth/signin?error=invalid_request`);
   }
 
   try {
@@ -242,23 +241,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Redirect based on user role
     const redirectUrl = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
+    const fullRedirectUrl = `${baseUrl}${redirectUrl}`;
     console.log("=== GOOGLE OAUTH SUCCESS ===");
-    console.log("Redirecting to:", redirectUrl);
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    console.log("Redirecting to:", fullRedirectUrl);
+    return NextResponse.redirect(fullRedirectUrl);
 
   } catch (error) {
     console.error("=== GOOGLE OAUTH ERROR ===");
     console.error("Error details:", error);
     console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
+
     if (error instanceof OAuth2RequestError) {
-      return NextResponse.redirect(
-        new URL("/auth/signin?error=oauth_error", request.url)
-      );
+      return NextResponse.redirect(`${baseUrl}/auth/signin?error=oauth_error`);
     }
 
-    return NextResponse.redirect(
-      new URL("/auth/signin?error=server_error", request.url)
-    );
+    return NextResponse.redirect(`${baseUrl}/auth/signin?error=server_error`);
   }
 }
