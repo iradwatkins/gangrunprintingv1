@@ -25,24 +25,12 @@ export async function GET(
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: {
-              include: {
-                quantities: {
-                  orderBy: { amount: 'asc' }
-                }
-              }
-            }
+            quantityGroup: true
           }
         },
         productSizeGroups: {
           include: {
-            sizeGroup: {
-              include: {
-                sizes: {
-                  orderBy: { width: 'asc' }
-                }
-              }
-            }
+            sizeGroup: true
           }
         },
         productAddOns: {

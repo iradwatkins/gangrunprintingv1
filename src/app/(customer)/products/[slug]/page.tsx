@@ -380,7 +380,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               )}
 
               {/* Quantity */}
-              {product.productQuantityGroups.length > 0 && (
+              {product?.productQuantityGroups?.length > 0 && product.productQuantityGroups[0]?.quantityGroup?.values && (
                 <div>
                   <Label className="text-base mb-3 block">Quantity</Label>
                   <Select value={selectedQuantity.toString()} onValueChange={(v) => setSelectedQuantity(parseInt(v))}>
@@ -388,9 +388,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.productQuantityGroups[0].quantityGroup.quantities.map((qty) => (
-                        <SelectItem key={qty.amount} value={qty.amount.toString()}>
-                          {qty.amount.toLocaleString()} - ${qty.price.toFixed(2)}
+                      {JSON.parse(product.productQuantityGroups[0].quantityGroup.values || '[]').map((qty: any) => (
+                        <SelectItem key={qty.amount || qty} value={(qty.amount || qty).toString()}>
+                          {(qty.amount || qty).toLocaleString()} {qty.price ? `- $${qty.price.toFixed(2)}` : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -399,7 +399,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               )}
 
               {/* Size */}
-              {product.productSizeGroups.length > 0 && (
+              {product?.productSizeGroups?.length > 0 && product.productSizeGroups[0]?.sizeGroup?.values && (
                 <div>
                   <Label className="text-base mb-3 block">Size</Label>
                   <Select value={selectedSize} onValueChange={setSelectedSize}>
@@ -407,10 +407,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.productSizeGroups[0].sizeGroup.sizes.map((size, index) => (
+                      {JSON.parse(product.productSizeGroups[0].sizeGroup.values || '[]').map((size: any, index: number) => (
                         <SelectItem key={index} value={index.toString()}>
-                          {size.width}"×{size.height}"
-                          {size.price > 0 && ` (+$${size.price})`}
+                          {size.width || size.name || size}×{size.height || ''}
+                          {size.price && size.price > 0 && ` (+$${size.price})`}
                         </SelectItem>
                       ))}
                     </SelectContent>
