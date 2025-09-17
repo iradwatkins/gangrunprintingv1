@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Badge } from '@/components/ui/badge'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator } from 'lucide-react'
 
@@ -36,8 +37,11 @@ export default function NewProductPage() {
     isFeatured: false,
     images: [],
 
+    // Paper Stocks - Multiple selection with default
+    selectedPaperStocks: [] as string[], // Multiple paper stock IDs
+    defaultPaperStock: '', // Single default paper stock ID
+
     // Single selections
-    selectedPaperStock: '', // Single paper stock ID
     selectedQuantity: '', // Single quantity ID
     selectedSize: '', // Single size ID
 
@@ -81,15 +85,7 @@ export default function NewProductPage() {
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
-
-      if (paperRes.ok) {
-        const paperData = await paperRes.json()
-        setPaperStocks(paperData)
-        // Set first paper stock as default
-        if (paperData.length > 0) {
-          setFormData(prev => ({ ...prev, selectedPaperStock: paperData[0].id }))
-        }
-      }
+      if (paperRes.ok) setPaperStocks(await paperRes.json())
 
       if (qtyRes.ok) {
         const qtyData = await qtyRes.json()
@@ -115,6 +111,28 @@ export default function NewProductPage() {
     }
   }
 
+  const handlePaperStockToggle = (stockId: string, checked: boolean) => {
+    if (checked) {
+      const newSelectedStocks = [...formData.selectedPaperStocks, stockId]
+      setFormData({
+        ...formData,
+        selectedPaperStocks: newSelectedStocks,
+        // Auto-set as default if it's the first paper stock selected
+        defaultPaperStock: formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock
+      })
+    } else {
+      const newSelectedStocks = formData.selectedPaperStocks.filter(id => id !== stockId)
+      setFormData({
+        ...formData,
+        selectedPaperStocks: newSelectedStocks,
+        // Clear default if this was the default paper stock
+        defaultPaperStock: formData.defaultPaperStock === stockId ?
+          (newSelectedStocks.length > 0 ? newSelectedStocks[0] : '') :
+          formData.defaultPaperStock
+      })
+    }
+  }
+
   const testPrice = async () => {
     setTesting(true)
     try {
@@ -124,7 +142,8 @@ export default function NewProductPage() {
         body: JSON.stringify({
           basePrice: formData.basePrice,
           setupFee: formData.setupFee,
-          paperStock: formData.selectedPaperStock,
+          paperStocks: formData.selectedPaperStocks,
+          defaultPaperStock: formData.defaultPaperStock,
           quantity: formData.selectedQuantity,
           size: formData.selectedSize,
           addOns: formData.selectedAddOns
@@ -150,8 +169,13 @@ export default function NewProductPage() {
       return
     }
 
-    if (!formData.selectedPaperStock) {
-      toast.error('Please select a paper stock')
+    if (formData.selectedPaperStocks.length === 0) {
+      toast.error('Please select at least one paper stock')
+      return
+    }
+
+    if (!formData.defaultPaperStock) {
+      toast.error('Please set a default paper stock')
       return
     }
 
@@ -285,7 +309,7 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Quantity Options - MOVED UP */}
+      {/* Quantity Options - Single selection */}
       <Card>
         <CardHeader>
           <CardTitle>Quantity Option (Choose One) *</CardTitle>
@@ -308,36 +332,60 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Paper Stock - Now as dropdown */}
+      {/* Paper Stock - Multiple selection with default */}
       <Card>
         <CardHeader>
-          <CardTitle>Paper Stock *</CardTitle>
+          <CardTitle>Paper Stock Options *</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Select
-            value={formData.selectedPaperStock}
-            onValueChange={(value) => setFormData({...formData, selectedPaperStock: value})}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select paper stock" />
-            </SelectTrigger>
-            <SelectContent>
-              {paperStocks.map(stock => (
-                <SelectItem key={stock.id} value={stock.id}>
-                  {stock.name} - {stock.weight}pt (${stock.pricePerSqInch}/sq in)
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {formData.selectedPaperStock && (
-            <p className="text-sm text-muted-foreground mt-2">
-              This will be the default paper stock. Customers can select different options on the frontend.
-            </p>
-          )}
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Select available paper stocks for this product. One must be set as default.
+            Customers will see these options in a dropdown on the frontend, with the default pre-selected.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {paperStocks.map(stock => (
+              <div key={stock.id} className="border rounded-lg p-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id={`stock-${stock.id}`}
+                    checked={formData.selectedPaperStocks.includes(stock.id)}
+                    onCheckedChange={(checked) => handlePaperStockToggle(stock.id, checked as boolean)}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`stock-${stock.id}`} className="font-medium cursor-pointer">
+                        {stock.name} - {stock.weight}pt
+                      </Label>
+                      {formData.defaultPaperStock === stock.id && (
+                        <Badge variant="secondary" className="text-xs">DEFAULT</Badge>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      ${stock.pricePerSqInch}/sq in
+                    </div>
+                    {formData.selectedPaperStocks.includes(stock.id) && (
+                      <div className="mt-2">
+                        <label className="flex items-center space-x-2 text-sm cursor-pointer">
+                          <input
+                            type="radio"
+                            name="defaultPaperStock"
+                            checked={formData.defaultPaperStock === stock.id}
+                            onChange={() => setFormData({ ...formData, defaultPaperStock: stock.id })}
+                            className="w-4 h-4"
+                          />
+                          <span>Set as default paper stock</span>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
-      {/* Size Options - Changed to radio */}
+      {/* Size Options - Single selection */}
       <Card>
         <CardHeader>
           <CardTitle>Size Option (Choose One) *</CardTitle>
@@ -360,7 +408,7 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Add-on Options - Keep as checkboxes */}
+      {/* Add-on Options - Multiple selection */}
       <Card>
         <CardHeader>
           <CardTitle>Add-on Options (Choose Multiple)</CardTitle>
