@@ -62,20 +62,16 @@ export default function NewProductPage() {
     fetchData()
   }, [])
 
-  // Auto-generate SKU when name and category change
+  // Auto-generate SKU like URL slug when name changes
   useEffect(() => {
-    if (formData.name && formData.categoryId) {
-      const category = categories.find(c => c.id === formData.categoryId)
-      if (category) {
-        const categoryCode = category.name.substring(0, 2).toUpperCase()
-        const nameCode = formData.name.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, '')
-        const year = new Date().getFullYear()
-        const random = Math.random().toString(36).substring(2, 6).toUpperCase()
-        const sku = `${categoryCode}-${nameCode}-${year}-${random}`
-        setFormData(prev => ({ ...prev, sku }))
-      }
+    if (formData.name) {
+      const sku = formData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+      setFormData(prev => ({ ...prev, sku }))
     }
-  }, [formData.name, formData.categoryId, categories])
+  }, [formData.name])
 
   const fetchData = async () => {
     try {
