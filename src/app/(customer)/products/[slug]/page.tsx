@@ -121,12 +121,18 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           setSelectedPaperStock(defaultPaper.paperStock.id)
         }
 
-        if (data.product.productQuantityGroups.length > 0 && data.product.productQuantityGroups[0].quantityGroup.quantities.length > 0) {
-          setSelectedQuantity(data.product.productQuantityGroups[0].quantityGroup.quantities[0].amount)
+        if (data.product.productQuantityGroups.length > 0 && data.product.productQuantityGroups[0].quantityGroup.values) {
+          const quantities = JSON.parse(data.product.productQuantityGroups[0].quantityGroup.values || '[]')
+          if (quantities.length > 0) {
+            setSelectedQuantity(quantities[0].amount || quantities[0])
+          }
         }
 
-        if (data.product.productSizeGroups.length > 0 && data.product.productSizeGroups[0].sizeGroup.sizes.length > 0) {
-          setSelectedSize('0') // First size option
+        if (data.product.productSizeGroups.length > 0 && data.product.productSizeGroups[0].sizeGroup.values) {
+          const sizes = JSON.parse(data.product.productSizeGroups[0].sizeGroup.values || '[]')
+          if (sizes.length > 0) {
+            setSelectedSize('0') // First size option
+          }
         }
 
       } catch (err) {
