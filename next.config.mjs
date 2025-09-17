@@ -4,6 +4,9 @@ const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Output configuration for standalone deployment
+  output: 'standalone',
+
   // Enable experimental features for App Router
   experimental: {
     optimizeCss: true,

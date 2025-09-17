@@ -5,7 +5,7 @@ let minioClient: Minio.Client | null = null
 let initAttempted = false
 let initError: Error | null = null
 
-function getMinioClient(): Minio.Client {
+export function getMinioClient(): Minio.Client {
   // Return existing client if already initialized
   if (minioClient) {
     return minioClient

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { minioClient } from '@/lib/minio'
+import { getMinioClient } from '@/lib/minio'
 
 export async function GET(
   request: NextRequest,
@@ -14,7 +14,8 @@ export async function GET(
 
     const bucketName = 'gangrun-uploads'
 
-    const stream = await minioClient.getObject(bucketName, path)
+    const client = getMinioClient()
+    const stream = await client.getObject(bucketName, path)
 
     const chunks: Buffer[] = []
     for await (const chunk of stream) {
