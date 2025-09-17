@@ -155,7 +155,7 @@ function SortableImageItem({ image, index, onRemove, onEdit, onSetPrimary }: any
   )
 }
 
-export function ProductImageUpload({ images, onImagesChange, productId }: ProductImageUploadProps) {
+export function ProductImageUpload({ images = [], onImagesChange, productId }: ProductImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [editingImage, setEditingImage] = useState<{ index: number; image: ProductImage } | null>(null)
   const [editForm, setEditForm] = useState({ alt: '', caption: '' })
@@ -173,15 +173,16 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
   const handleFiles = async (files: File[]) => {
     if (files.length === 0) return
 
+    const safeImages = images || []
     const newImages: ProductImage[] = Array.from(files).map((file, index) => ({
       url: URL.createObjectURL(file),
       file,
-      isPrimary: images.length === 0 && index === 0,
-      sortOrder: images.length + index,
+      isPrimary: safeImages.length === 0 && index === 0,
+      sortOrder: safeImages.length + index,
       uploading: true,
     }))
 
-    onImagesChange([...images, ...newImages])
+    onImagesChange([...safeImages, ...newImages])
 
     // Upload images to R2
     for (let i = 0; i < files.length; i++) {
@@ -203,8 +204,8 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
         const data = await res.json()
         
         // Update the image with the uploaded URL
-        onImagesChange(prev => prev.map((img, idx) => {
-          if (idx === images.length + i) {
+        onImagesChange(prev => (prev || []).map((img, idx) => {
+          if (idx === safeImages.length + i) {
             return {
               ...img,
               url: data.url,
@@ -217,7 +218,7 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
       } catch (error) {
         toast.error(`Failed to upload image ${i + 1}`)
         // Remove the failed image
-        onImagesChange(prev => prev.filter((_, idx) => idx !== images.length + i))
+        onImagesChange(prev => (prev || []).filter((_, idx) => idx !== safeImages.length + i))
       }
     }
   }
@@ -252,10 +253,11 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
     const { active, over } = event
 
     if (active.id !== over.id) {
-      const oldIndex = images.findIndex(img => img.url === active.id)
-      const newIndex = images.findIndex(img => img.url === over.id)
-      
-      const newImages = arrayMove(images, oldIndex, newIndex).map((img, idx) => ({
+      const safeImages = images || []
+      const oldIndex = safeImages.findIndex(img => img.url === active.id)
+      const newIndex = safeImages.findIndex(img => img.url === over.id)
+
+      const newImages = arrayMove(safeImages, oldIndex, newIndex).map((img, idx) => ({
         ...img,
         sortOrder: idx
       }))
@@ -265,16 +267,18 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
   }
 
   const handleRemove = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index)
+    const safeImages = images || []
+    const newImages = safeImages.filter((_, i) => i !== index)
     // If removed image was primary, make first image primary
-    if (images[index].isPrimary && newImages.length > 0) {
+    if (safeImages[index]?.isPrimary && newImages.length > 0) {
       newImages[0].isPrimary = true
     }
     onImagesChange(newImages)
   }
 
   const handleSetPrimary = (index: number) => {
-    const newImages = images.map((img, i) => ({
+    const safeImages = images || []
+    const newImages = safeImages.map((img, i) => ({
       ...img,
       isPrimary: i === index
     }))
@@ -282,23 +286,29 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
   }
 
   const handleEdit = (index: number) => {
-    const image = images[index]
-    setEditForm({
-      alt: image.alt || '',
-      caption: image.caption || ''
-    })
-    setEditingImage({ index, image })
+    const safeImages = images || []
+    const image = safeImages[index]
+    if (image) {
+      setEditForm({
+        alt: image.alt || '',
+        caption: image.caption || ''
+      })
+      setEditingImage({ index, image })
+    }
   }
 
   const handleSaveEdit = () => {
     if (editingImage) {
-      const newImages = [...images]
-      newImages[editingImage.index] = {
-        ...newImages[editingImage.index],
-        alt: editForm.alt,
-        caption: editForm.caption
+      const safeImages = images || []
+      const newImages = [...safeImages]
+      if (newImages[editingImage.index]) {
+        newImages[editingImage.index] = {
+          ...newImages[editingImage.index],
+          alt: editForm.alt,
+          caption: editForm.caption
+        }
+        onImagesChange(newImages)
       }
-      onImagesChange(newImages)
       setEditingImage(null)
     }
   }
@@ -332,10 +342,10 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
         </p>
       </div>
 
-      {images.length > 0 && (
+      {(images || []).length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label>Product Images ({images.length})</Label>
+            <Label>Product Images ({(images || []).length})</Label>
             <p className="text-sm text-muted-foreground">
               Drag to reorder • Click star to set primary
             </p>
@@ -347,11 +357,11 @@ export function ProductImageUpload({ images, onImagesChange, productId }: Produc
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={images.map(img => img.url)}
+              items={(images || []).map(img => img.url)}
               strategy={verticalListSortingStrategy}
             >
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {images.map((image, index) => (
+                {(images || []).map((image, index) => (
                   <SortableImageItem
                     key={image.url}
                     id={image.url}
