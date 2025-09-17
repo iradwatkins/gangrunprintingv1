@@ -21,7 +21,7 @@ interface Product {
   name: string
   slug: string
   sku: string
-  category: {
+  ProductCategory: {
     id: string
     name: string
   }
@@ -30,24 +30,24 @@ interface Product {
   isActive: boolean
   isFeatured: boolean
   gangRunEligible: boolean
-  images: Array<{
+  ProductImage: Array<{
     id: string
     url: string
     isPrimary: boolean
   }>
-  paperStocks: Array<{
+  productPaperStocks: Array<{
     paperStock: {
       id: string
       name: string
-      coating: string
-      sides: string
+      coating?: string
+      sides?: string
     }
     isDefault: boolean
   }>
   _count: {
-    images: number
-    paperStocks: number
-    options: number
+    ProductImage: number
+    productPaperStocks: number
+    ProductOption: number
   }
 }
 
@@ -198,7 +198,7 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter(p => p._count.images > 0).length}
+              {products.filter(p => p._count?.ProductImage > 0).length}
             </div>
             <p className="text-xs text-muted-foreground">Have product images</p>
           </CardContent>
@@ -242,7 +242,7 @@ export default function ProductsPage() {
                   <TableRow key={product.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {product.images.length > 0 ? (
+                        {product.ProductImage?.length > 0 ? (
                           <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center">
                             <ImageIcon className="h-5 w-5 text-gray-500" />
                           </div>
@@ -258,15 +258,15 @@ export default function ProductsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                    <TableCell>{product.category?.name || 'Uncategorized'}</TableCell>
+                    <TableCell>{product.ProductCategory?.name || 'Uncategorized'}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm">{product._count.paperStocks} stocks</span>
-                        {product.paperStocks[0] && (
+                        <span className="text-sm">{product._count?.productPaperStocks || 0} stocks</span>
+                        {product.productPaperStocks?.[0] && (
                           <span className="text-xs text-muted-foreground">
-                            Default: {product.paperStocks[0].paperStock.name}
-                            {product.paperStocks[0].paperStock.coating !== 'None' && 
-                              ` (${product.paperStocks[0].paperStock.coating})`}
+                            Default: {product.productPaperStocks[0].paperStock.name}
+                            {product.productPaperStocks[0].paperStock.coating && product.productPaperStocks[0].paperStock.coating !== 'None' &&
+                              ` (${product.productPaperStocks[0].paperStock.coating})`}
                           </span>
                         )}
                       </div>
