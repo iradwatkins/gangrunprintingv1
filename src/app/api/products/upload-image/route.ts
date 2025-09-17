@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage, validateImage } from '@/lib/minio-products'
+import { validateRequest } from '@/lib/auth'
 
 // POST /api/products/upload-image - Upload product image
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
