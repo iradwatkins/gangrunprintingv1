@@ -109,51 +109,81 @@ export function useApiBundle<T extends Record<string, any>>(
   const [errors, setErrors] = useState<Record<keyof T, string | null>>({} as Record<keyof T, string | null>)
 
   const fetchAll = useCallback(async () => {
+    console.log('🚀 useApiBundle: Starting fetchAll with urls:', Object.keys(urls))
     setLoading(true)
 
     const validUrls = Object.entries(urls).filter(([, url]) => url && options.enabled !== false)
+    console.log('✅ useApiBundle: Valid URLs:', validUrls.map(([key, url]) => `${key}: ${url}`))
 
     if (validUrls.length === 0) {
+      console.log('⚠️ useApiBundle: No valid URLs found, stopping')
       setLoading(false)
       return
     }
 
-    // Fetch all URLs in parallel
-    const results = await Promise.allSettled(
-      validUrls.map(async ([key, url]) => {
-        try {
-          const result = await cachedFetch(url as string, {
-            ttl: options.ttl,
-            skipCache: options.skipCache
-          })
-          return { key, result, error: null }
-        } catch (error) {
-          return {
-            key,
-            result: null,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        }
+    console.log('🔄 useApiBundle: Fetching all URLs in parallel...')
+
+    // Add timeout wrapper for each fetch
+    const fetchWithTimeout = async (key: string, url: string) => {
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`Request timeout for ${key}`)), 10000)
+      )
+
+      const fetchPromise = cachedFetch(url as string, {
+        ttl: options.ttl,
+        skipCache: options.skipCache
       })
+
+      try {
+        const result = await Promise.race([fetchPromise, timeoutPromise])
+        console.log(`✅ useApiBundle: Successfully fetched ${key}`)
+        return { key, result, error: null }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        console.error(`❌ useApiBundle: Error fetching ${key}:`, errorMessage)
+        return {
+          key,
+          result: null,
+          error: errorMessage
+        }
+      }
+    }
+
+    // Fetch all URLs in parallel with timeout
+    const results = await Promise.allSettled(
+      validUrls.map(([key, url]) => fetchWithTimeout(key, url))
     )
 
     const newData: Partial<T> = {}
     const newErrors: Record<keyof T, string | null> = {} as Record<keyof T, string | null>
 
+    console.log('🔍 useApiBundle: Processing results...')
+
     results.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         const { key, result: data, error } = result.value
         if (error) {
+          console.log(`❌ useApiBundle: ${key} failed with error:`, error)
           newErrors[key as keyof T] = error
         } else {
+          console.log(`✅ useApiBundle: ${key} succeeded with data length:`, Array.isArray(data) ? data.length : 'N/A')
           newData[key as keyof T] = data
           newErrors[key as keyof T] = null
         }
       } else {
         const key = validUrls[index][0] as keyof T
-        newErrors[key] = result.reason?.message || 'Unknown error'
+        const errorMessage = result.reason?.message || 'Unknown error'
+        console.log(`❌ useApiBundle: ${key} promise rejected:`, errorMessage)
+        newErrors[key] = errorMessage
       }
     })
+
+    const successCount = Object.values(newData).filter(Boolean).length
+    const errorCount = Object.values(newErrors).filter(Boolean).length
+
+    console.log(`🏁 useApiBundle: Completed! Success: ${successCount}, Errors: ${errorCount}`)
+    console.log('📊 useApiBundle: Final data keys:', Object.keys(newData))
+    console.log('📊 useApiBundle: Final errors:', newErrors)
 
     setData(newData)
     setErrors(newErrors)
