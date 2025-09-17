@@ -38,9 +38,9 @@ export async function GET(request: NextRequest) {
         PricingTier: {
           orderBy: { minQuantity: 'asc' }
         },
-        productQuantities: {
+        productQuantityGroups: {
           include: {
-            standardQuantity: true
+            quantityGroup: true
           }
         },
         productSizes: {
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
             ProductImage: true,
             productPaperStocks: true,
             ProductOption: true,
-            productQuantities: true,
+            productQuantityGroups: true,
             productSizes: true,
             productAddOns: true
           }
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       images = [],
       selectedPaperStocks = [],
       defaultPaperStock,
-      selectedQuantity,
+      selectedQuantityGroup,
       selectedSize,
       selectedAddOns = [],
       productionTime = 3,
@@ -162,12 +162,10 @@ export async function POST(request: NextRequest) {
           }))
         } : undefined,
 
-        // Create quantity association (single)
-        productQuantities: selectedQuantity ? {
+        // Create quantity group association
+        productQuantityGroups: selectedQuantityGroup ? {
           create: {
-            standardQuantityId: selectedQuantity,
-            isDefault: true,
-            isActive: true
+            quantityGroupId: selectedQuantityGroup
           }
         } : undefined,
 
@@ -196,9 +194,9 @@ export async function POST(request: NextRequest) {
             paperStock: true
           }
         },
-        productQuantities: {
+        productQuantityGroups: {
           include: {
-            standardQuantity: true
+            quantityGroup: true
           }
         },
         productSizes: {
