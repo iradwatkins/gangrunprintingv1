@@ -6,8 +6,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { useCart } from '@/contexts/cart-context'
+import { CartItemImages } from './cart-item-images'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export function CartDrawer() {
   const {
@@ -64,16 +64,7 @@ export function CartDrawer() {
                 {items.map((item) => (
                   <div key={item.id} className="border rounded-lg p-4">
                     <div className="flex gap-4">
-                      {item.image && (
-                        <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
-                          <Image
-                            fill
-                            alt={item.productName}
-                            className="object-cover"
-                            src={item.image}
-                          />
-                        </div>
-                      )}
+                      <CartItemImages item={item} />
                       <div className="flex-1 space-y-1">
                         <h4 className="font-semibold text-sm">{item.productName}</h4>
                         <div className="text-xs text-muted-foreground space-y-0.5">
