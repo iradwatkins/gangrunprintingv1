@@ -1,0 +1,21 @@
+{
+  "name": "Test Product API",
+  "sku": "test-product-api",
+  "categoryId": "business-cards",
+  "description": "Testing the product creation API",
+  "shortDescription": "",
+  "isActive": true,
+  "isFeatured": false,
+  "images": [],
+  "selectedPaperStocks": ["cmfmved0f000013pxt2616umy"],
+  "defaultPaperStock": "cmfmved0f000013pxt2616umy",
+  "selectedQuantityGroup": "cmfk2y9d0000u10ij4f2rvy3g",
+  "selectedSizeGroup": "cmfk2y9bs000k10ij4vmmgkgf",
+  "selectedAddOns": [],
+  "productionTime": 3,
+  "rushAvailable": false,
+  "rushDays": 1,
+  "rushFee": 0,
+  "basePrice": 49.99,
+  "setupFee": 25.00
+}
