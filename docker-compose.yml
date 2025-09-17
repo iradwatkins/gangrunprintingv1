@@ -72,7 +72,7 @@ services:
     volumes:
       - uploads:/app/uploads
       - print_files:/app/print-files
-      - ./public:/app/public:ro
+      - ./public:/app/public
       - ./prisma:/app/prisma:ro
     networks:
       - web_network
