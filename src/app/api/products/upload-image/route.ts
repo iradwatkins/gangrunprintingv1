@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage, validateImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 // Set max body size to 20MB for image uploads
 export const maxDuration = 30 // 30 seconds timeout
@@ -48,8 +49,47 @@ export async function POST(request: NextRequest) {
       file.type
     )
 
+    // Save to database if productId is provided
+    let dbImage = null
+    if (productId) {
+      try {
+        // Get current highest sort order for this product
+        const maxSortOrder = await prisma.productImage.findFirst({
+          where: { productId },
+          orderBy: { sortOrder: 'desc' },
+          select: { sortOrder: true }
+        })
+
+        // Check if this is the first image (should be primary)
+        const existingImagesCount = await prisma.productImage.count({
+          where: { productId }
+        })
+
+        dbImage = await prisma.productImage.create({
+          data: {
+            productId,
+            url: uploadedImage.url,
+            thumbnailUrl: uploadedImage.thumbnailUrl,
+            mimeType: file.type,
+            fileSize: buffer.length,
+            sortOrder: (maxSortOrder?.sortOrder || 0) + 1,
+            isPrimary: existingImagesCount === 0, // First image is primary
+            alt: `Product image for ${file.name}`,
+            caption: ''
+          }
+        })
+      } catch (dbError) {
+        console.error('Database save error:', dbError)
+        // Continue anyway - image is uploaded to storage
+      }
+    }
+
     return NextResponse.json({
       ...uploadedImage,
+      id: dbImage?.id,
+      productId: dbImage?.productId,
+      sortOrder: dbImage?.sortOrder,
+      isPrimary: dbImage?.isPrimary,
       success: true,
       timestamp: new Date().toISOString()
     }, { status: 200 })
