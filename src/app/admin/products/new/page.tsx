@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator } from 'lucide-react'
 
@@ -35,17 +36,13 @@ export default function NewProductPage() {
     isFeatured: false,
     images: [],
 
-    // Paper Stock
-    selectedPaperStocks: [] as string[],
+    // Single selections
+    selectedPaperStock: '', // Single paper stock ID
+    selectedQuantity: '', // Single quantity ID
+    selectedSize: '', // Single size ID
 
-    // Quantities
-    selectedQuantities: [] as string[],
-
-    // Sizes
-    selectedSizes: [] as string[],
-
-    // Add-ons
-    selectedAddOns: [] as string[],
+    // Multiple selections
+    selectedAddOns: [] as string[], // Multiple add-ons
 
     // Turnaround
     productionTime: 3,
@@ -84,9 +81,34 @@ export default function NewProductPage() {
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
-      if (paperRes.ok) setPaperStocks(await paperRes.json())
-      if (qtyRes.ok) setQuantities(await qtyRes.json())
-      if (sizeRes.ok) setSizes(await sizeRes.json())
+
+      if (paperRes.ok) {
+        const paperData = await paperRes.json()
+        setPaperStocks(paperData)
+        // Set first paper stock as default
+        if (paperData.length > 0) {
+          setFormData(prev => ({ ...prev, selectedPaperStock: paperData[0].id }))
+        }
+      }
+
+      if (qtyRes.ok) {
+        const qtyData = await qtyRes.json()
+        setQuantities(qtyData)
+        // Set first quantity as default
+        if (qtyData.length > 0) {
+          setFormData(prev => ({ ...prev, selectedQuantity: qtyData[0].id }))
+        }
+      }
+
+      if (sizeRes.ok) {
+        const sizeData = await sizeRes.json()
+        setSizes(sizeData)
+        // Set first size as default
+        if (sizeData.length > 0) {
+          setFormData(prev => ({ ...prev, selectedSize: sizeData[0].id }))
+        }
+      }
+
       if (addOnRes.ok) setAddOns(await addOnRes.json())
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -102,9 +124,9 @@ export default function NewProductPage() {
         body: JSON.stringify({
           basePrice: formData.basePrice,
           setupFee: formData.setupFee,
-          paperStocks: formData.selectedPaperStocks,
-          quantities: formData.selectedQuantities,
-          sizes: formData.selectedSizes,
+          paperStock: formData.selectedPaperStock,
+          quantity: formData.selectedQuantity,
+          size: formData.selectedSize,
           addOns: formData.selectedAddOns
         })
       })
@@ -125,6 +147,21 @@ export default function NewProductPage() {
   const handleSubmit = async () => {
     if (!formData.name || !formData.sku || !formData.categoryId) {
       toast.error('Please fill in all required fields')
+      return
+    }
+
+    if (!formData.selectedPaperStock) {
+      toast.error('Please select a paper stock')
+      return
+    }
+
+    if (!formData.selectedQuantity) {
+      toast.error('Please select a quantity option')
+      return
+    }
+
+    if (!formData.selectedSize) {
+      toast.error('Please select a size option')
       return
     }
 
@@ -248,94 +285,92 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Paper Stock */}
+      {/* Quantity Options - MOVED UP */}
       <Card>
         <CardHeader>
-          <CardTitle>Paper Stock</CardTitle>
+          <CardTitle>Quantity Option (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {paperStocks.map(stock => (
-              <div key={stock.id} className="flex items-center gap-2">
-                <Checkbox
-                  checked={formData.selectedPaperStocks.includes(stock.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData({...formData, selectedPaperStocks: [...formData.selectedPaperStocks, stock.id]})
-                    } else {
-                      setFormData({...formData, selectedPaperStocks: formData.selectedPaperStocks.filter(id => id !== stock.id)})
-                    }
-                  }}
-                />
-                <Label className="cursor-pointer">{stock.name}</Label>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quantity Options */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quantity Options</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-4">
+          <RadioGroup
+            value={formData.selectedQuantity}
+            onValueChange={(value) => setFormData({...formData, selectedQuantity: value})}
+            className="grid grid-cols-4 gap-4"
+          >
             {quantities.map(qty => (
               <div key={qty.id} className="flex items-center gap-2">
-                <Checkbox
-                  checked={formData.selectedQuantities.includes(qty.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData({...formData, selectedQuantities: [...formData.selectedQuantities, qty.id]})
-                    } else {
-                      setFormData({...formData, selectedQuantities: formData.selectedQuantities.filter(id => id !== qty.id)})
-                    }
-                  }}
-                />
-                <Label className="cursor-pointer">{qty.displayValue}</Label>
+                <RadioGroupItem value={qty.id} id={`qty-${qty.id}`} />
+                <Label htmlFor={`qty-${qty.id}`} className="cursor-pointer font-normal">
+                  {qty.displayValue}
+                </Label>
               </div>
             ))}
-          </div>
+          </RadioGroup>
         </CardContent>
       </Card>
 
-      {/* Size Options */}
+      {/* Paper Stock - Now as dropdown */}
       <Card>
         <CardHeader>
-          <CardTitle>Size Options</CardTitle>
+          <CardTitle>Paper Stock *</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-4 gap-4">
-            {sizes.map(size => (
-              <div key={size.id} className="flex items-center gap-2">
-                <Checkbox
-                  checked={formData.selectedSizes.includes(size.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData({...formData, selectedSizes: [...formData.selectedSizes, size.id]})
-                    } else {
-                      setFormData({...formData, selectedSizes: formData.selectedSizes.filter(id => id !== size.id)})
-                    }
-                  }}
-                />
-                <Label className="cursor-pointer">{size.name}</Label>
-              </div>
-            ))}
-          </div>
+          <Select
+            value={formData.selectedPaperStock}
+            onValueChange={(value) => setFormData({...formData, selectedPaperStock: value})}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select paper stock" />
+            </SelectTrigger>
+            <SelectContent>
+              {paperStocks.map(stock => (
+                <SelectItem key={stock.id} value={stock.id}>
+                  {stock.name} - {stock.weight}pt (${stock.pricePerSqInch}/sq in)
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {formData.selectedPaperStock && (
+            <p className="text-sm text-muted-foreground mt-2">
+              This will be the default paper stock. Customers can select different options on the frontend.
+            </p>
+          )}
         </CardContent>
       </Card>
 
-      {/* Add-on Options */}
+      {/* Size Options - Changed to radio */}
       <Card>
         <CardHeader>
-          <CardTitle>Add-on Options</CardTitle>
+          <CardTitle>Size Option (Choose One) *</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={formData.selectedSize}
+            onValueChange={(value) => setFormData({...formData, selectedSize: value})}
+            className="grid grid-cols-4 gap-4"
+          >
+            {sizes.map(size => (
+              <div key={size.id} className="flex items-center gap-2">
+                <RadioGroupItem value={size.id} id={`size-${size.id}`} />
+                <Label htmlFor={`size-${size.id}`} className="cursor-pointer font-normal">
+                  {size.name}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      {/* Add-on Options - Keep as checkboxes */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Add-on Options (Choose Multiple)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             {addOns.filter(addon => addon.isActive).map(addon => (
               <div key={addon.id} className="flex items-center gap-2">
                 <Checkbox
+                  id={`addon-${addon.id}`}
                   checked={formData.selectedAddOns.includes(addon.id)}
                   onCheckedChange={(checked) => {
                     if (checked) {
@@ -345,7 +380,9 @@ export default function NewProductPage() {
                     }
                   }}
                 />
-                <Label className="cursor-pointer">{addon.name}</Label>
+                <Label htmlFor={`addon-${addon.id}`} className="cursor-pointer font-normal">
+                  {addon.name}
+                </Label>
               </div>
             ))}
           </div>
