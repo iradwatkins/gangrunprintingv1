@@ -168,8 +168,8 @@ const nextConfig = {
     } : false
   },
 
-  // Output configuration
-  output: 'standalone',
+  // Output configuration - commented out to fix static file serving
+  // output: 'standalone',
 
   // Exclude problematic routes from build temporarily
   async generateBuildId() {
