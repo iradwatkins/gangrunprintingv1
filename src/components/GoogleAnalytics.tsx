@@ -1,32 +1,39 @@
 'use client'
 
-import Script from 'next/script'
+import { useEffect } from 'react'
 
 export default function GoogleAnalytics() {
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+
+  useEffect(() => {
+    if (!GA_MEASUREMENT_ID) return
+
+    // Load GA script manually to avoid preload issues
+    const script = document.createElement('script')
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+    script.async = true
+    script.onload = () => {
+      // Initialize GA when script loads
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag
+      gtag('js', new Date());
+      gtag('config', GA_MEASUREMENT_ID, {
+        page_path: window.location.pathname,
+      });
+    }
+
+    // Only load if not already loaded
+    if (!document.querySelector(`script[src*="gtag/js"]`)) {
+      document.head.appendChild(script)
+    }
+  }, [GA_MEASUREMENT_ID])
 
   if (!GA_MEASUREMENT_ID) {
     return null
   }
 
-  return (
-    <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="lazyOnload"
-      />
-      <Script id="google-analytics" strategy="lazyOnload">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA_MEASUREMENT_ID}', {
-            page_path: window.location.pathname,
-          });
-        `}
-      </Script>
-    </>
-  )
+  return null
 }
 
 // Event tracking utilities
