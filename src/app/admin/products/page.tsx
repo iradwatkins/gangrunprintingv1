@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Image as ImageIcon, Package } from 'lucide-react'
+import { Plus, Edit, Trash2, Image as ImageIcon, Package, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -304,14 +304,20 @@ export default function ProductsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
+                        <Link href={`/products/${product.slug}`} target="_blank">
+                          <Button size="sm" variant="ghost" title="View Product">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
                         <Link href={`/admin/products/${product.id}/edit`}>
-                          <Button size="sm" variant="ghost">
+                          <Button size="sm" variant="ghost" title="Edit Product">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Button
                           size="sm"
                           variant="ghost"
+                          title="Delete Product"
                           onClick={() => handleDelete(product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
