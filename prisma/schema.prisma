@@ -304,7 +304,7 @@ model ProductCategory {
 }
 
 model ProductImage {
-  id           String   @id
+  id           String   @id @default(cuid())
   productId    String
   url          String
   thumbnailUrl String?
@@ -317,7 +317,7 @@ model ProductImage {
   fileSize     Int?
   mimeType     String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @updatedAt
   Product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])

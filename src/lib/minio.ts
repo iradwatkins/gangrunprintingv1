@@ -19,11 +19,11 @@ function getMinioClient(): Minio.Client {
   initAttempted = true
 
   try {
-    // Only initialize when actually needed
+    // Server connects to localhost, but we'll handle public URLs separately
     minioClient = new Minio.Client({
-      endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+      endPoint: 'localhost',
       port: parseInt(process.env.MINIO_PORT || '9000'),
-      useSSL: process.env.MINIO_USE_SSL === 'true',
+      useSSL: false,
       accessKey: process.env.MINIO_ACCESS_KEY || process.env.MINIO_ROOT_USER || 'minioadmin',
       secretKey: process.env.MINIO_SECRET_KEY || process.env.MINIO_ROOT_PASSWORD || 'minioadmin',
     })
@@ -104,12 +104,9 @@ export async function uploadFile(
       meta
     )
 
-    // Generate a presigned URL for accessing the file
-    const url = await client.presignedGetObject(
-      bucket,
-      objectName,
-      24 * 60 * 60 * 7 // 7 days expiry
-    )
+    // Generate public URL using the public endpoint
+    const publicEndpoint = process.env.MINIO_PUBLIC_ENDPOINT || 'https://gangrunprinting.com/minio'
+    const url = `${publicEndpoint}/${bucket}/${objectName}`
 
     return {
       objectName,
@@ -124,12 +121,9 @@ export async function uploadFile(
 
 export async function getFileUrl(objectName: string) {
   try {
-    const client = getMinioClient()
-    const url = await client.presignedGetObject(
-      BUCKET_NAME,
-      objectName,
-      24 * 60 * 60 // 24 hours expiry
-    )
+    // Generate public URL using the public endpoint
+    const publicEndpoint = process.env.MINIO_PUBLIC_ENDPOINT || 'https://gangrunprinting.com/minio'
+    const url = `${publicEndpoint}/${BUCKET_NAME}/${objectName}`
     return url
   } catch (error) {
     console.error('Error getting file URL:', error)

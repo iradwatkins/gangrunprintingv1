@@ -21,6 +21,8 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const productId = formData.get('productId') as string | null
+    const isPrimary = formData.get('isPrimary') === 'true'
+    const sortOrder = parseInt(formData.get('sortOrder') as string) || 0
 
     if (!file) {
       return NextResponse.json(
@@ -72,8 +74,8 @@ export async function POST(request: NextRequest) {
             thumbnailUrl: uploadedImage.thumbnailUrl,
             mimeType: file.type,
             fileSize: buffer.length,
-            sortOrder: (maxSortOrder?.sortOrder || 0) + 1,
-            isPrimary: existingImagesCount === 0, // First image is primary
+            sortOrder: sortOrder !== undefined ? sortOrder : (maxSortOrder?.sortOrder || 0) + 1,
+            isPrimary: isPrimary !== undefined ? isPrimary : existingImagesCount === 0,
             alt: `Product image for ${file.name}`,
             caption: ''
           }
