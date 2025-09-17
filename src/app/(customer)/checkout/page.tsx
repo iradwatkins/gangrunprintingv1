@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CheckoutItemImages } from '@/components/checkout/checkout-item-images'
+import { PaymentMethods } from '@/components/checkout/payment-methods'
+import { SquareCardPayment } from '@/components/checkout/square-card-payment'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
@@ -17,6 +20,8 @@ export default function CheckoutPage() {
   const { items, subtotal, tax, shipping: _shipping, total: _total, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
   const [sameAsShipping, setSameAsShipping] = useState(true)
+  const [paymentStep, setPaymentStep] = useState<'info' | 'payment' | 'card'>('info')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -34,6 +39,10 @@ export default function CheckoutPage() {
     shippingMethod: 'standard'
   })
 
+  // Square configuration (these should come from environment variables)
+  const SQUARE_APPLICATION_ID = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || 'sandbox-sq0idb-YOUR_APP_ID'
+  const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || 'YOUR_LOCATION_ID'
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -43,48 +52,56 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (items.length === 0) {
       toast.error('Your cart is empty')
       router.push('/cart')
       return
     }
 
+    // Validate form data
+    if (!formData.email || !formData.firstName || !formData.lastName ||
+        !formData.phone || !formData.address || !formData.city ||
+        !formData.state || !formData.zipCode) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+
+    // Move to payment selection
+    setPaymentStep('payment')
+  }
+
+  const handlePaymentMethodSelect = async (method: string) => {
+    setSelectedPaymentMethod(method)
     setIsProcessing(true)
 
     try {
-      // Prepare checkout data
-      const checkoutData = {
-        cartItems: items,
-        customerInfo: {
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          company: formData.company,
-          phone: formData.phone
-        },
-        shippingAddress: {
-          street: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          country: 'US'
-        },
-        billingAddress: sameAsShipping ? null : {
-          street: formData.billingAddress,
-          city: formData.billingCity,
-          state: formData.billingState,
-          zipCode: formData.billingZipCode,
-          country: 'US'
-        },
-        shippingMethod: formData.shippingMethod,
-        subtotal,
-        tax,
-        shipping: formData.shippingMethod === 'express' ? 25.00 : 10.00,
-        total: subtotal + tax + (formData.shippingMethod === 'express' ? 25.00 : 10.00)
+      if (method === 'card') {
+        // Show inline card payment
+        setPaymentStep('card')
+        setIsProcessing(false)
+        return
       }
 
-      // Create Square checkout session
+      if (method === 'square') {
+        // Use existing Square checkout flow
+        await processSquareCheckout()
+      } else {
+        // Handle other payment methods (CashApp, PayPal)
+        toast.error(`${method} payment is coming soon!`)
+        setIsProcessing(false)
+      }
+    } catch (error) {
+      console.error('Payment method selection error:', error)
+      toast.error('Failed to initialize payment. Please try again.')
+      setIsProcessing(false)
+    }
+  }
+
+  const processSquareCheckout = async () => {
+    try {
+      const checkoutData = createCheckoutData()
+
       const response = await fetch('/api/checkout/create-payment', {
         method: 'POST',
         headers: {
@@ -96,26 +113,85 @@ export default function CheckoutPage() {
       const result = await response.json()
 
       if (result.success && result.checkoutUrl) {
-        // Store order info in session storage for success page
         sessionStorage.setItem('lastOrder', JSON.stringify({
           orderNumber: result.orderNumber,
           orderId: result.orderId,
           total: checkoutData.total
         }))
 
-        // Clear cart
         clearCart()
-        
-        // Redirect to Square checkout
         window.location.href = result.checkoutUrl
       } else {
         throw new Error(result.error || 'Failed to create checkout session')
       }
     } catch (error) {
-      console.error('Checkout error:', error)
-      toast.error('Failed to process checkout. Please try again.')
-      setIsProcessing(false)
+      console.error('Square checkout error:', error)
+      throw error
     }
+  }
+
+  const createCheckoutData = () => {
+    const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
+    const total = subtotal + tax + shippingCost
+
+    return {
+      cartItems: items,
+      customerInfo: {
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        company: formData.company,
+        phone: formData.phone
+      },
+      shippingAddress: {
+        street: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: 'US'
+      },
+      billingAddress: sameAsShipping ? null : {
+        street: formData.billingAddress,
+        city: formData.billingCity,
+        state: formData.billingState,
+        zipCode: formData.billingZipCode,
+        country: 'US'
+      },
+      shippingMethod: formData.shippingMethod,
+      subtotal,
+      tax,
+      shipping: shippingCost,
+      total
+    }
+  }
+
+  const handleCardPaymentSuccess = (result: any) => {
+    toast.success('Payment processed successfully!')
+
+    // Store success info
+    sessionStorage.setItem('lastOrder', JSON.stringify({
+      orderNumber: result.orderNumber || `GRP-${Date.now()}`,
+      orderId: result.orderId || result.payment?.id,
+      total: orderTotal
+    }))
+
+    clearCart()
+    router.push('/checkout/success')
+  }
+
+  const handleCardPaymentError = (error: string) => {
+    toast.error(error)
+    setIsProcessing(false)
+  }
+
+  const handleBackToPayment = () => {
+    setPaymentStep('payment')
+    setSelectedPaymentMethod('')
+  }
+
+  const handleBackToInfo = () => {
+    setPaymentStep('info')
+    setSelectedPaymentMethod('')
   }
 
   const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
@@ -366,72 +442,135 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Order Summary */}
+          {/* Order Summary / Payment */}
           <div>
             <div className="border rounded-lg p-6 sticky top-4">
-              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-              
-              {/* Cart Items */}
-              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                {items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <div className="flex-1">
-                      <p className="font-medium">{item.productName}</p>
-                      <p className="text-muted-foreground">Qty: {item.quantity}</p>
+              {paymentStep === 'info' && (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+
+                  {/* Cart Items */}
+                  <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                    {items.map((item) => (
+                      <div key={item.id} className="border-b border-border/50 pb-3 last:border-b-0">
+                        <div className="flex justify-between text-sm">
+                          <div className="flex-1">
+                            <p className="font-medium">{item.productName}</p>
+                            <p className="text-muted-foreground">Qty: {item.quantity}</p>
+                            {/* Customer Design Preview */}
+                            <CheckoutItemImages item={item} />
+                            {/* Item options */}
+                            {(item.options.size || item.options.paperStock) && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {item.options.size && <span>Size: {item.options.size}</span>}
+                                {item.options.size && item.options.paperStock && <span> • </span>}
+                                {item.options.paperStock && <span>Paper: {item.options.paperStock}</span>}
+                              </div>
+                            )}
+                          </div>
+                          <span className="font-medium">${item.subtotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2 mb-4 border-t pt-4">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span>${subtotal.toFixed(2)}</span>
                     </div>
-                    <span>${item.subtotal.toFixed(2)}</span>
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span>${shippingCost.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tax</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="border-t pt-2 font-semibold">
+                      <div className="flex justify-between text-lg">
+                        <span>Total</span>
+                        <span>${orderTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-              
-              <div className="space-y-2 mb-4 border-t pt-4">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>${shippingCost.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="border-t pt-2 font-semibold">
-                  <div className="flex justify-between text-lg">
-                    <span>Total</span>
-                    <span>${orderTotal.toFixed(2)}</span>
+
+                  <Button
+                    className="w-full"
+                    disabled={isProcessing}
+                    size="lg"
+                    type="submit"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="mr-2 h-5 w-5" />
+                        Continue to Payment
+                      </>
+                    )}
+                  </Button>
+
+                  <div className="mt-4 flex items-center justify-center text-sm text-muted-foreground">
+                    <Lock className="mr-1 h-4 w-4" />
+                    Secure checkout powered by Square
                   </div>
-                </div>
-              </div>
 
-              <Button 
-                className="w-full"
-                disabled={isProcessing} 
-                size="lg"
-                type="submit"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-5 w-5" />
-                    Pay with Square
-                  </>
-                )}
-              </Button>
+                  <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
+                    <p>By placing this order, you agree to our Terms of Service and Privacy Policy.</p>
+                  </div>
+                </>
+              )}
 
-              <div className="mt-4 flex items-center justify-center text-sm text-muted-foreground">
-                <Lock className="mr-1 h-4 w-4" />
-                Secure checkout powered by Square
-              </div>
+              {paymentStep === 'payment' && (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleBackToInfo}
+                      className="p-2"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <h2 className="text-xl font-semibold">Payment Method</h2>
+                  </div>
 
-              <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                <p>By placing this order, you agree to our Terms of Service and Privacy Policy.</p>
-              </div>
+                  <PaymentMethods
+                    total={orderTotal}
+                    isProcessing={isProcessing}
+                    onPaymentMethodSelect={handlePaymentMethodSelect}
+                  />
+                </>
+              )}
+
+              {paymentStep === 'card' && (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleBackToPayment}
+                      className="p-2"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <h2 className="text-xl font-semibold">Card Payment</h2>
+                  </div>
+
+                  <SquareCardPayment
+                    applicationId={SQUARE_APPLICATION_ID}
+                    locationId={SQUARE_LOCATION_ID}
+                    total={orderTotal}
+                    onPaymentSuccess={handleCardPaymentSuccess}
+                    onPaymentError={handleCardPaymentError}
+                    onBack={handleBackToPayment}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>

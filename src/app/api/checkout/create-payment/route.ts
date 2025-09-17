@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 import { type CartItem } from '@/lib/cart-types'
 
 export async function POST(request: NextRequest) {
