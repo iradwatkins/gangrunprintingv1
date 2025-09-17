@@ -13,9 +13,11 @@ import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useApiBundle } from '@/hooks/use-api'
 import toast from '@/lib/toast'
-import { ArrowLeft, Save, Loader2, Calculator } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw } from 'lucide-react'
 
 export default function NewProductPage() {
   const router = useRouter()
@@ -37,6 +39,20 @@ export default function NewProductPage() {
   const quantityGroups = apiData.quantityGroups || []
   const sizeGroups = apiData.sizeGroups || []
   const addOns = apiData.addOns || []
+
+  // Debug logging to track component state
+  useEffect(() => {
+    console.log('🎯 NewProductPage: Component state update')
+    console.log('📊 Loading state:', apiLoading)
+    console.log('📊 Data state:', {
+      categories: categories.length,
+      paperStocks: paperStocks.length,
+      quantityGroups: quantityGroups.length,
+      sizeGroups: sizeGroups.length,
+      addOns: addOns.length
+    })
+    console.log('📊 Errors state:', errors)
+  }, [apiLoading, categories.length, paperStocks.length, quantityGroups.length, sizeGroups.length, addOns.length, errors])
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -259,36 +275,152 @@ export default function NewProductPage() {
     }
   }
 
-  // Show loading state while fetching initial data
-  if (apiLoading) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Loading product data...</span>
+  // Loading skeleton component
+  const LoadingSkeleton = () => (
+    <div className="container mx-auto py-6 space-y-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-9 w-16" />
+          <Skeleton className="h-8 w-48" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-32" />
         </div>
       </div>
-    )
+
+      {/* Basic Info Card skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-40" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div>
+              <Skeleton className="h-4 w-16 mb-2" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div>
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+          <div>
+            <Skeleton className="h-4 w-32 mb-2" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Additional form section skeletons */}
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full mb-4" />
+            <div className="grid grid-cols-1 gap-3">
+              {[1, 2, 3].map((j) => (
+                <Skeleton key={j} className="h-16 w-full" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+
+  // Show loading state while fetching initial data
+  if (apiLoading) {
+    return <LoadingSkeleton />
   }
 
   // Show error state if critical data failed to load
   const criticalErrors = [errors.categories, errors.paperStocks, errors.quantityGroups, errors.sizeGroups].filter(Boolean)
   if (criticalErrors.length > 0) {
     return (
-      <div className="container mx-auto py-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Error Loading Product Data</h1>
-          <p className="text-muted-foreground mb-8">Some required data could not be loaded:</p>
-          <ul className="text-left max-w-md mx-auto space-y-2 mb-8">
-            {errors.categories && <li>• Categories: {errors.categories}</li>}
-            {errors.paperStocks && <li>• Paper Stocks: {errors.paperStocks}</li>}
-            {errors.quantityGroups && <li>• Quantity Groups: {errors.quantityGroups}</li>}
-            {errors.sizeGroups && <li>• Size Groups: {errors.sizeGroups}</li>}
-          </ul>
-          <Button onClick={() => window.location.reload()}>
-            Retry Loading
-          </Button>
+      <div className="container mx-auto py-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button size="sm" variant="ghost" onClick={() => router.push('/admin/products')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-3xl font-bold">Create Product</h1>
+          </div>
         </div>
+
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Failed to Load Required Data</AlertTitle>
+          <AlertDescription className="mt-2">
+            <p className="mb-4">
+              Some required data could not be loaded. This prevents the product creation form from working properly.
+            </p>
+            <div className="space-y-2 mb-4">
+              {errors.categories && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium">Categories:</span>
+                  <span>{errors.categories}</span>
+                </div>
+              )}
+              {errors.paperStocks && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium">Paper Stocks:</span>
+                  <span>{errors.paperStocks}</span>
+                </div>
+              )}
+              {errors.quantityGroups && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium">Quantity Groups:</span>
+                  <span>{errors.quantityGroups}</span>
+                </div>
+              )}
+              {errors.sizeGroups && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium">Size Groups:</span>
+                  <span>{errors.sizeGroups}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => window.location.reload()}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Retry Loading
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => router.push('/admin/products')}>
+                Return to Products
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+
+        {/* Show partial data that did load */}
+        {(categories.length > 0 || paperStocks.length > 0 || quantityGroups.length > 0 || sizeGroups.length > 0) && (
+          <Alert>
+            <AlertTitle>Partial Data Loaded</AlertTitle>
+            <AlertDescription>
+              <p className="mb-2">The following data loaded successfully:</p>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {categories.length > 0 && <div>✓ Categories: {categories.length} items</div>}
+                {paperStocks.length > 0 && <div>✓ Paper Stocks: {paperStocks.length} items</div>}
+                {quantityGroups.length > 0 && <div>✓ Quantity Groups: {quantityGroups.length} items</div>}
+                {sizeGroups.length > 0 && <div>✓ Size Groups: {sizeGroups.length} items</div>}
+                {addOns.length > 0 && <div>✓ Add-ons: {addOns.length} items</div>}
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     )
   }
