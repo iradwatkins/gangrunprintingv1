@@ -136,7 +136,7 @@ export default function NewProductPage() {
   const testPrice = async () => {
     setTesting(true)
     try {
-      const response = await fetch('/api/pricing/calculate-base', {
+      const response = await fetch('/api/products/test-price', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

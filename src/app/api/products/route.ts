@@ -38,14 +38,14 @@ export async function GET(request: NextRequest) {
         PricingTier: {
           orderBy: { minQuantity: 'asc' }
         },
-        productQuantityGroups: {
+        productQuantities: {
           include: {
-            quantityGroup: true
+            standardQuantity: true
           }
         },
-        productSizeGroups: {
+        productSizes: {
           include: {
-            sizeGroup: true
+            standardSize: true
           }
         },
         productAddOns: {
@@ -58,8 +58,8 @@ export async function GET(request: NextRequest) {
             ProductImage: true,
             productPaperStocks: true,
             ProductOption: true,
-            productQuantityGroups: true,
-            productSizeGroups: true,
+            productQuantities: true,
+            productSizes: true,
             productAddOns: true
           }
         }
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -93,27 +93,58 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
     const {
-      images,
-      paperStocks,
-      options,
-      pricingTiers,
-      quantityGroupId,
-      sizeGroupId,
-      ...productData
+      name,
+      sku,
+      categoryId,
+      description,
+      shortDescription,
+      isActive,
+      isFeatured,
+      images = [],
+      selectedPaperStocks = [],
+      defaultPaperStock,
+      selectedQuantity,
+      selectedSize,
+      selectedAddOns = [],
+      productionTime = 3,
+      rushAvailable = false,
+      rushDays,
+      rushFee,
+      basePrice = 0,
+      setupFee = 0
     } = data
+
+    // Generate slug from name
+    const slug = name.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
 
     // Create product with related data
     const product = await prisma.product.create({
       data: {
-        ...productData,
-        // Create images
-        ProductImage: images?.length > 0 ? {
+        name,
+        sku,
+        slug,
+        categoryId,
+        description,
+        shortDescription,
+        isActive,
+        isFeatured,
+        basePrice,
+        setupFee,
+        productionTime,
+        rushAvailable,
+        rushDays,
+        rushFee,
+
+        // Create images if provided
+        ProductImage: images.length > 0 ? {
           create: images.map((img: any, index: number) => ({
             url: img.url,
-            thumbnailUrl: img.thumbnailUrl,
-            alt: img.alt,
+            thumbnailUrl: img.thumbnailUrl || img.url,
+            alt: img.alt || name,
             caption: img.caption,
-            isPrimary: img.isPrimary,
+            isPrimary: img.isPrimary || index === 0,
             sortOrder: index,
             width: img.width,
             height: img.height,
@@ -121,52 +152,40 @@ export async function POST(request: NextRequest) {
             mimeType: img.mimeType
           }))
         } : undefined,
+
         // Create paper stock associations
-        productPaperStocks: paperStocks?.length > 0 ? {
-          create: paperStocks.map((ps: any) => ({
-            paperStockId: ps.paperStockId,
-            isDefault: ps.isDefault,
-            additionalCost: ps.additionalCost
+        productPaperStocks: selectedPaperStocks.length > 0 ? {
+          create: selectedPaperStocks.map((stockId: string) => ({
+            paperStockId: stockId,
+            isDefault: stockId === defaultPaperStock,
+            additionalCost: 0
           }))
         } : undefined,
-        // Create options with values
-        ProductOption: options?.length > 0 ? {
-          create: options.map((opt: any, index: number) => ({
-            name: opt.name,
-            type: opt.type,
-            required: opt.required,
-            sortOrder: index,
-            OptionValue: {
-              create: opt.values.map((val: any, valIndex: number) => ({
-                value: val.value,
-                label: val.label,
-                additionalPrice: val.additionalPrice,
-                isDefault: val.isDefault,
-                sortOrder: valIndex
-              }))
-            }
-          }))
-        } : undefined,
-        // Create pricing tiers
-        PricingTier: pricingTiers?.length > 0 ? {
-          create: pricingTiers.map((tier: any) => ({
-            minQuantity: tier.minQuantity,
-            maxQuantity: tier.maxQuantity,
-            pricePerUnit: tier.pricePerUnit,
-            discountPercentage: tier.discountPercentage
-          }))
-        } : undefined,
-        // Create quantity group association
-        productQuantityGroups: quantityGroupId ? {
+
+        // Create quantity association (single)
+        productQuantities: selectedQuantity ? {
           create: {
-            quantityGroupId: quantityGroupId
+            standardQuantityId: selectedQuantity,
+            isDefault: true,
+            isActive: true
           }
         } : undefined,
-        // Create size group association
-        productSizeGroups: sizeGroupId ? {
+
+        // Create size association (single)
+        productSizes: selectedSize ? {
           create: {
-            sizeGroupId: sizeGroupId
+            standardSizeId: selectedSize,
+            isDefault: true,
+            isActive: true
           }
+        } : undefined,
+
+        // Create add-on associations
+        productAddOns: selectedAddOns.length > 0 ? {
+          create: selectedAddOns.map((addOnId: string) => ({
+            addOnId,
+            isActive: true
+          }))
         } : undefined
       },
       include: {
@@ -177,19 +196,28 @@ export async function POST(request: NextRequest) {
             paperStock: true
           }
         },
-        ProductOption: {
+        productQuantities: {
           include: {
-            OptionValue: true
+            standardQuantity: true
           }
         },
-        PricingTier: true
+        productSizes: {
+          include: {
+            standardSize: true
+          }
+        },
+        productAddOns: {
+          include: {
+            addOn: true
+          }
+        }
       }
     })
 
     return NextResponse.json(product, { status: 201 })
   } catch (error: any) {
     console.error('Error creating product:', error)
-    
+
     // Check for unique constraint violations
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
@@ -200,7 +228,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to create product' },
+      { error: 'Failed to create product', details: error.message },
       { status: 500 }
     )
   }

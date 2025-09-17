@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  try {
+    const data = await request.json()
+    const {
+      basePrice = 0,
+      setupFee = 0,
+      paperStocks = [],
+      defaultPaperStock,
+      quantity,
+      size,
+      addOns = []
+    } = data
+
+    // Simple test calculation
+    // In production, this would use the actual pricing engine
+    let totalPrice = basePrice + setupFee
+
+    // Add a simple multiplier for demonstration
+    // This is just for testing - real calculation would be more complex
+    if (paperStocks.length > 0) {
+      totalPrice *= 1.1 // 10% for paper stock
+    }
+
+    if (quantity) {
+      totalPrice *= 1.05 // 5% for quantity selection
+    }
+
+    if (size) {
+      totalPrice *= 1.05 // 5% for size selection
+    }
+
+    // Add 15% for each add-on
+    totalPrice *= (1 + (addOns.length * 0.15))
+
+    return NextResponse.json({
+      success: true,
+      totalPrice: Math.round(totalPrice * 100) / 100, // Round to 2 decimal places
+      breakdown: {
+        basePrice,
+        setupFee,
+        paperStockCount: paperStocks.length,
+        hasQuantity: !!quantity,
+        hasSize: !!size,
+        addOnsCount: addOns.length
+      }
+    })
+
+  } catch (error) {
+    console.error('Error calculating test price:', error)
+    return NextResponse.json(
+      { error: 'Failed to calculate test price' },
+      { status: 500 }
+    )
+  }
+}
