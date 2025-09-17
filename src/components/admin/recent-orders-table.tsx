@@ -108,6 +108,9 @@ const statusConfig: Record<string, { label: string; variant: any; icon: any }> =
 export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
+  // Ensure orders is always an array to prevent .map errors
+  const safeOrders = orders || []
+
   const toggleOrderSelection = (orderId: string) => {
     setSelectedOrders(prev => 
       prev.includes(orderId) 
@@ -117,10 +120,10 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
   }
 
   const selectAllOrders = () => {
-    if (selectedOrders.length === orders.length) {
+    if (selectedOrders.length === safeOrders.length) {
       setSelectedOrders([])
     } else {
-      setSelectedOrders(orders.map(order => order.id))
+      setSelectedOrders(safeOrders.map(order => order.id))
     }
   }
 
@@ -195,7 +198,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((order) => (
+            {safeOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>
                   <input

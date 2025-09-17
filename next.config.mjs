@@ -9,7 +9,7 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['@radix-ui/react-icons'],
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: '20mb',
     },
   },
 

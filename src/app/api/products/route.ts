@@ -43,9 +43,9 @@ export async function GET(request: NextRequest) {
             quantityGroup: true
           }
         },
-        productSizes: {
+        productSizeGroups: {
           include: {
-            standardSize: true
+            sizeGroup: true
           }
         },
         productAddOns: {
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
             productPaperStocks: true,
             ProductOption: true,
             productQuantityGroups: true,
-            productSizes: true,
+            productSizeGroups: true,
             productAddOns: true
           }
         }
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       selectedPaperStocks = [],
       defaultPaperStock,
       selectedQuantityGroup,
-      selectedSize,
+      selectedSizeGroup,
       selectedAddOns = [],
       productionTime = 3,
       rushAvailable = false,
@@ -169,12 +169,10 @@ export async function POST(request: NextRequest) {
           }
         } : undefined,
 
-        // Create size association (single)
-        productSizes: selectedSize ? {
+        // Create size group association
+        productSizeGroups: selectedSizeGroup ? {
           create: {
-            standardSizeId: selectedSize,
-            isDefault: true,
-            isActive: true
+            sizeGroupId: selectedSizeGroup
           }
         } : undefined,
 
@@ -199,9 +197,9 @@ export async function POST(request: NextRequest) {
             quantityGroup: true
           }
         },
-        productSizes: {
+        productSizeGroups: {
           include: {
-            standardSize: true
+            sizeGroup: true
           }
         },
         productAddOns: {

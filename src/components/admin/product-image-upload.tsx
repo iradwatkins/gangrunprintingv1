@@ -173,7 +173,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   const handleFiles = async (files: File[]) => {
     if (files.length === 0) return
 
-    const safeImages = images || []
+    const safeImages = Array.isArray(images) ? images : []
     const newImages: ProductImage[] = Array.from(files).map((file, index) => ({
       url: URL.createObjectURL(file),
       file,
@@ -199,26 +199,41 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
           body: formData,
         })
 
-        if (!res.ok) throw new Error('Upload failed')
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ error: 'Upload failed' }))
+          throw new Error(errorData.error || 'Upload failed')
+        }
 
         const data = await res.json()
-        
+
+        // Validate response data
+        if (!data || !data.url) {
+          throw new Error('Invalid response from upload service')
+        }
+
         // Update the image with the uploaded URL
-        onImagesChange(prev => (prev || []).map((img, idx) => {
-          if (idx === safeImages.length + i) {
-            return {
-              ...img,
-              url: data.url,
-              thumbnailUrl: data.thumbnailUrl,
-              uploading: false,
+        onImagesChange(prev => {
+          const currentImages = Array.isArray(prev) ? prev : []
+          return currentImages.map((img, idx) => {
+            if (idx === safeImages.length + i) {
+              return {
+                ...img,
+                url: data.url,
+                thumbnailUrl: data.thumbnailUrl || data.url,
+                uploading: false,
+              }
             }
-          }
-          return img
-        }))
+            return img
+          })
+        })
       } catch (error) {
-        toast.error(`Failed to upload image ${i + 1}`)
-        // Remove the failed image
-        onImagesChange(prev => (prev || []).filter((_, idx) => idx !== safeImages.length + i))
+        console.error('Image upload error:', error)
+        toast.error(`Failed to upload image ${i + 1}: ${error.message}`)
+        // Remove the failed image safely
+        onImagesChange(prev => {
+          const currentImages = Array.isArray(prev) ? prev : []
+          return currentImages.filter((_, idx) => idx !== safeImages.length + i)
+        })
       }
     }
   }
@@ -253,21 +268,25 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
     const { active, over } = event
 
     if (active.id !== over.id) {
-      const safeImages = images || []
+      const safeImages = Array.isArray(images) ? images : []
       const oldIndex = safeImages.findIndex(img => img.url === active.id)
       const newIndex = safeImages.findIndex(img => img.url === over.id)
 
-      const newImages = arrayMove(safeImages, oldIndex, newIndex).map((img, idx) => ({
-        ...img,
-        sortOrder: idx
-      }))
-      
-      onImagesChange(newImages)
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newImages = arrayMove(safeImages, oldIndex, newIndex).map((img, idx) => ({
+          ...img,
+          sortOrder: idx
+        }))
+
+        onImagesChange(newImages)
+      }
     }
   }
 
   const handleRemove = (index: number) => {
-    const safeImages = images || []
+    const safeImages = Array.isArray(images) ? images : []
+    if (index < 0 || index >= safeImages.length) return
+
     const newImages = safeImages.filter((_, i) => i !== index)
     // If removed image was primary, make first image primary
     if (safeImages[index]?.isPrimary && newImages.length > 0) {
@@ -277,7 +296,9 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   }
 
   const handleSetPrimary = (index: number) => {
-    const safeImages = images || []
+    const safeImages = Array.isArray(images) ? images : []
+    if (index < 0 || index >= safeImages.length) return
+
     const newImages = safeImages.map((img, i) => ({
       ...img,
       isPrimary: i === index
@@ -286,7 +307,9 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   }
 
   const handleEdit = (index: number) => {
-    const safeImages = images || []
+    const safeImages = Array.isArray(images) ? images : []
+    if (index < 0 || index >= safeImages.length) return
+
     const image = safeImages[index]
     if (image) {
       setEditForm({
@@ -299,9 +322,9 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
 
   const handleSaveEdit = () => {
     if (editingImage) {
-      const safeImages = images || []
-      const newImages = [...safeImages]
-      if (newImages[editingImage.index]) {
+      const safeImages = Array.isArray(images) ? images : []
+      if (editingImage.index >= 0 && editingImage.index < safeImages.length) {
+        const newImages = [...safeImages]
         newImages[editingImage.index] = {
           ...newImages[editingImage.index],
           alt: editForm.alt,
@@ -342,10 +365,10 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
         </p>
       </div>
 
-      {(images || []).length > 0 && (
+      {Array.isArray(images) && images.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label>Product Images ({(images || []).length})</Label>
+            <Label>Product Images ({Array.isArray(images) ? images.length : 0})</Label>
             <p className="text-sm text-muted-foreground">
               Drag to reorder • Click star to set primary
             </p>
@@ -357,11 +380,11 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={(images || []).map(img => img.url)}
+              items={Array.isArray(images) ? images.map(img => img.url) : []}
               strategy={verticalListSortingStrategy}
             >
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {(images || []).map((image, index) => (
+                {Array.isArray(images) ? images.map((image, index) => (
                   <SortableImageItem
                     key={image.url}
                     id={image.url}
@@ -371,7 +394,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
                     onRemove={handleRemove}
                     onSetPrimary={handleSetPrimary}
                   />
-                ))}
+                )) : []}
               </div>
             </SortableContext>
           </DndContext>

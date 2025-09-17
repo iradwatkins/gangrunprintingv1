@@ -454,6 +454,17 @@ export function ProductWizard({ product }: ProductWizardProps) {
             </Button>
 
             <div className="flex items-center gap-2">
+              {currentStep < steps.length - 1 && (
+                <Button
+                  variant="outline"
+                  onClick={publishProduct}
+                  disabled={loading}
+                >
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Save Draft
+                </Button>
+              )}
+
               {currentStep < steps.length - 1 ? (
                 <Button
                   onClick={goToNextStep}

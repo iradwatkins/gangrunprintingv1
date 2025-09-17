@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       paperStocks = [],
       defaultPaperStock,
       quantityGroup,
-      size,
+      sizeGroup,
       addOns = []
     } = data
 
@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
       totalPrice *= 1.05 // 5% for quantity group selection
     }
 
-    if (size) {
-      totalPrice *= 1.05 // 5% for size selection
+    if (sizeGroup) {
+      totalPrice *= 1.05 // 5% for size group selection
     }
 
     // Add 15% for each add-on
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         setupFee,
         paperStockCount: paperStocks.length,
         hasQuantityGroup: !!quantityGroup,
-        hasSize: !!size,
+        hasSizeGroup: !!sizeGroup,
         addOnsCount: addOns.length
       }
     })
