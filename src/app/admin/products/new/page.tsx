@@ -22,7 +22,7 @@ export default function NewProductPage() {
   const [testing, setTesting] = useState(false)
   const [categories, setCategories] = useState<any[]>([])
   const [paperStocks, setPaperStocks] = useState<any[]>([])
-  const [quantities, setQuantities] = useState<any[]>([])
+  const [quantityGroups, setQuantityGroups] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
   const [addOns, setAddOns] = useState<any[]>([])
 
@@ -42,7 +42,7 @@ export default function NewProductPage() {
     defaultPaperStock: '', // Single default paper stock ID
 
     // Single selections
-    selectedQuantity: '', // Single quantity ID
+    selectedQuantityGroup: '', // Single quantity group ID
     selectedSize: '', // Single size ID
 
     // Multiple selections
@@ -89,10 +89,10 @@ export default function NewProductPage() {
 
       if (qtyRes.ok) {
         const qtyData = await qtyRes.json()
-        setQuantities(qtyData)
-        // Set first quantity as default
+        setQuantityGroups(qtyData)
+        // Set first quantity group as default
         if (qtyData.length > 0) {
-          setFormData(prev => ({ ...prev, selectedQuantity: qtyData[0].id }))
+          setFormData(prev => ({ ...prev, selectedQuantityGroup: qtyData[0].id }))
         }
       }
 
@@ -144,7 +144,7 @@ export default function NewProductPage() {
           setupFee: formData.setupFee,
           paperStocks: formData.selectedPaperStocks,
           defaultPaperStock: formData.defaultPaperStock,
-          quantity: formData.selectedQuantity,
+          quantityGroup: formData.selectedQuantityGroup,
           size: formData.selectedSize,
           addOns: formData.selectedAddOns
         })
@@ -179,8 +179,8 @@ export default function NewProductPage() {
       return
     }
 
-    if (!formData.selectedQuantity) {
-      toast.error('Please select a quantity option')
+    if (!formData.selectedQuantityGroup) {
+      toast.error('Please select a quantity group')
       return
     }
 
@@ -309,26 +309,53 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Quantity Options - Single selection */}
+      {/* Quantity Group - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Quantity Option (Choose One) *</CardTitle>
+          <CardTitle>Quantity Set (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
-          <RadioGroup
-            value={formData.selectedQuantity}
-            onValueChange={(value) => setFormData({...formData, selectedQuantity: value})}
-            className="grid grid-cols-4 gap-4"
-          >
-            {quantities.map(qty => (
-              <div key={qty.id} className="flex items-center gap-2">
-                <RadioGroupItem value={qty.id} id={`qty-${qty.id}`} />
-                <Label htmlFor={`qty-${qty.id}`} className="cursor-pointer font-normal">
-                  {qty.displayValue}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select a quantity set for this product. Customers will see the quantities from this set, with the default quantity pre-selected.
+            </p>
+            <RadioGroup
+              value={formData.selectedQuantityGroup}
+              onValueChange={(value) => setFormData({...formData, selectedQuantityGroup: value})}
+              className="space-y-3"
+            >
+              {quantityGroups.map(group => (
+                <div key={group.id} className="border rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <RadioGroupItem value={group.id} id={`group-${group.id}`} className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor={`group-${group.id}`} className="cursor-pointer font-medium text-base">
+                        {group.name}
+                      </Label>
+                      {group.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+                      )}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {group.valuesList?.map((value: string, index: number) => (
+                          <span
+                            key={index}
+                            className={`px-2 py-1 text-xs rounded ${
+                              value === group.defaultValue
+                                ? 'bg-primary text-primary-foreground font-medium'
+                                : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
+                            {value}
+                            {value === group.defaultValue && ' (default)'}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
         </CardContent>
       </Card>
 

@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             productSizes: true,
-            productQuantities: true
+            productQuantityGroups: true
           }
         }
       }
@@ -323,26 +323,39 @@ export async function GET(request: NextRequest) {
         isDefault: link.isDefault
       }))
 
-      // Get product-specific quantities
-      const productQuantityLinks = await prisma.productQuantity.findMany({
+      // Get product-specific quantity groups
+      const productQuantityGroupLinks = await prisma.productQuantityGroup.findMany({
         where: {
-          productId,
-          isActive: true
+          productId
         },
         include: {
-          standardQuantity: true
+          quantityGroup: true
         },
         orderBy: {
-          standardQuantity: {
+          quantityGroup: {
             sortOrder: 'asc'
           }
         }
       })
 
-      productQuantities = productQuantityLinks.map(link => ({
-        ...link.standardQuantity,
-        isDefault: link.isDefault
-      }))
+      // For each quantity group, parse the quantities and return them as individual options
+      productQuantities = productQuantityGroupLinks.flatMap(link => {
+        const group = link.quantityGroup
+        const valuesList = group.values.split(',').map(v => v.trim()).filter(v => v)
+
+        return valuesList.map((value, index) => ({
+          id: `${group.id}-${index}`, // Create unique ID for each quantity value
+          displayValue: value === 'custom' ? 'Custom' : parseInt(value) || value,
+          calculationValue: value === 'custom' ? null : parseInt(value) || null,
+          adjustmentValue: null,
+          sortOrder: index,
+          isActive: true,
+          isDefault: value === group.defaultValue,
+          groupId: group.id,
+          groupName: group.name,
+          isCustom: value.toLowerCase() === 'custom'
+        }))
+      })
     }
 
     return NextResponse.json({

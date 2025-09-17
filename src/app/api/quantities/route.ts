@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
-// GET /api/quantities - List all standard quantities
+// GET /api/quantities - List all quantity groups
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -13,22 +13,36 @@ export async function GET(request: NextRequest) {
       where.isActive = true
     }
 
-    const quantities = await prisma.standardQuantity.findMany({
+    const quantityGroups = await prisma.quantityGroup.findMany({
       where,
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
+      },
       orderBy: { sortOrder: 'asc' }
     })
 
-    return NextResponse.json(quantities)
+    // Process the groups to include parsed values list
+    const processedGroups = quantityGroups.map(group => ({
+      ...group,
+      valuesList: group.values.split(',').map(v => v.trim()).filter(v => v),
+      hasCustomOption: group.values.toLowerCase().includes('custom')
+    }))
+
+    return NextResponse.json(processedGroups)
   } catch (error) {
-    console.error('Error fetching quantities:', error)
+    console.error('Error fetching quantity groups:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch quantities' },
+      { error: 'Failed to fetch quantity groups' },
       { status: 500 }
     )
   }
 }
 
-// POST /api/quantities - Create a new standard quantity
+// POST /api/quantities - Create a new quantity group
 export async function POST(request: NextRequest) {
   try {
     const { user } = await validateRequest()
@@ -42,44 +56,50 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     const {
-      displayValue,
-      calculationValue,
-      adjustmentValue,
+      name,
+      description,
+      values,
+      defaultValue,
+      customMin,
+      customMax,
       sortOrder,
       isActive
     } = body
 
     // Validation
-    if (!displayValue || !calculationValue) {
+    if (!name || !values || !defaultValue) {
       return NextResponse.json(
-        { error: 'Display value and calculation value are required' },
+        { error: 'Name, values, and default value are required' },
         { status: 400 }
       )
     }
 
-    const quantity = await prisma.standardQuantity.create({
+    const quantityGroup = await prisma.quantityGroup.create({
       data: {
-        displayValue,
-        calculationValue,
-        adjustmentValue,
+        name,
+        description,
+        values,
+        defaultValue,
+        customMin,
+        customMax,
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true
       }
     })
 
-    return NextResponse.json(quantity, { status: 201 })
+    return NextResponse.json(quantityGroup, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating quantity:', error)
+    console.error('Error creating quantity group:', error)
 
     if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'A quantity with this display value already exists' },
+        { error: 'A quantity group with this name already exists' },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Failed to create quantity' },
+      { error: 'Failed to create quantity group' },
       { status: 500 }
     )
   }
