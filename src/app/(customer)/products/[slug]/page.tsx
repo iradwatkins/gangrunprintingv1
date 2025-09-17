@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
+import { useApi } from '@/hooks/use-api'
 import toast from '@/lib/toast'
 import Image from 'next/image'
 
@@ -98,52 +99,47 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [uploadingImages, setUploadingImages] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
-  // Fetch product data
+  // Use cached API for product data
+  const { data: productData, loading: productLoading, error: productError } = useApi<{ product: Product }>(
+    `/api/products/by-slug/${params.slug}`,
+    { ttl: 2 * 60 * 1000 } // 2 minutes cache
+  )
+
+  // Update local state when product data changes
   useEffect(() => {
-    async function fetchProduct() {
-      try {
-        setLoading(true)
-        const response = await fetch(`/api/products/by-slug/${params.slug}`)
+    if (productData?.product) {
+      setProduct(productData.product)
+      setError(null)
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Product not found')
-          }
-          throw new Error('Failed to load product')
+      // Set default selections
+      if (productData.product.productPaperStocks.length > 0) {
+        const defaultPaper = productData.product.productPaperStocks.find(p => p.isDefault) || productData.product.productPaperStocks[0]
+        setSelectedPaperStock(defaultPaper.paperStock.id)
+      }
+
+      if (productData.product.productQuantityGroups.length > 0 && productData.product.productQuantityGroups[0].quantityGroup.values) {
+        const quantities = JSON.parse(productData.product.productQuantityGroups[0].quantityGroup.values || '[]')
+        if (quantities.length > 0) {
+          setSelectedQuantity(quantities[0].amount || quantities[0])
         }
+      }
 
-        const data = await response.json()
-        setProduct(data.product)
-
-        // Set default selections
-        if (data.product.productPaperStocks.length > 0) {
-          const defaultPaper = data.product.productPaperStocks.find(p => p.isDefault) || data.product.productPaperStocks[0]
-          setSelectedPaperStock(defaultPaper.paperStock.id)
+      if (productData.product.productSizeGroups.length > 0 && productData.product.productSizeGroups[0].sizeGroup.values) {
+        const sizes = JSON.parse(productData.product.productSizeGroups[0].sizeGroup.values || '[]')
+        if (sizes.length > 0) {
+          setSelectedSize('0') // First size option
         }
-
-        if (data.product.productQuantityGroups.length > 0 && data.product.productQuantityGroups[0].quantityGroup.values) {
-          const quantities = JSON.parse(data.product.productQuantityGroups[0].quantityGroup.values || '[]')
-          if (quantities.length > 0) {
-            setSelectedQuantity(quantities[0].amount || quantities[0])
-          }
-        }
-
-        if (data.product.productSizeGroups.length > 0 && data.product.productSizeGroups[0].sizeGroup.values) {
-          const sizes = JSON.parse(data.product.productSizeGroups[0].sizeGroup.values || '[]')
-          if (sizes.length > 0) {
-            setSelectedSize('0') // First size option
-          }
-        }
-
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-      } finally {
-        setLoading(false)
       }
     }
+  }, [productData])
 
-    fetchProduct()
-  }, [params.slug])
+  // Update local loading and error state
+  useEffect(() => {
+    setLoading(productLoading)
+    if (productError) {
+      setError(productError)
+    }
+  }, [productLoading, productError])
 
   // Handle customer image upload
   const handleImageUpload = async (files: File[]) => {

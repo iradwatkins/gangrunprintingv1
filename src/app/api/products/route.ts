@@ -90,8 +90,13 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
+      console.error('Product creation auth check failed:', {
+        hasSession: !!session,
+        hasUser: !!user,
+        userRole: user?.role
+      })
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Admin access required' },
         { status: 401 }
       )
     }
@@ -217,13 +222,34 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(product, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating product:', error)
+    console.error('Error creating product:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    })
 
     // Check for unique constraint violations
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
       return NextResponse.json(
         { error: `A product with this ${field} already exists` },
+        { status: 400 }
+      )
+    }
+
+    // Check for foreign key constraint violations
+    if (error.code === 'P2003') {
+      return NextResponse.json(
+        { error: 'Invalid reference: One or more selected items do not exist', details: error.meta },
+        { status: 400 }
+      )
+    }
+
+    // Check for required field violations
+    if (error.code === 'P2012') {
+      return NextResponse.json(
+        { error: 'Missing required fields', details: error.meta },
         { status: 400 }
       )
     }

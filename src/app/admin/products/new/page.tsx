@@ -13,18 +13,30 @@ import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Badge } from '@/components/ui/badge'
+import { useApiBundle } from '@/hooks/use-api'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator } from 'lucide-react'
 
 export default function NewProductPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
   const [testing, setTesting] = useState(false)
-  const [categories, setCategories] = useState<any[]>([])
-  const [paperStocks, setPaperStocks] = useState<any[]>([])
-  const [quantityGroups, setQuantityGroups] = useState<any[]>([])
-  const [sizeGroups, setSizeGroups] = useState<any[]>([])
-  const [addOns, setAddOns] = useState<any[]>([])
+  // Use bundled API fetching with caching and deduplication
+  const { data: apiData, loading: apiLoading, errors } = useApiBundle({
+    categories: '/api/product-categories',
+    paperStocks: '/api/paper-stocks',
+    quantityGroups: '/api/quantities',
+    sizeGroups: '/api/sizes',
+    addOns: '/api/add-ons'
+  }, { ttl: 5 * 60 * 1000 }) // 5 minutes cache
+
+  const categories = apiData.categories || []
+  const paperStocks = apiData.paperStocks || []
+  const quantityGroups = apiData.quantityGroups || []
+  const sizeGroups = apiData.sizeGroups || []
+  const addOns = apiData.addOns || []
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -59,10 +71,6 @@ export default function NewProductPage() {
     setupFee: 0,
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   // Auto-generate SKU like URL slug when name changes
   useEffect(() => {
     if (formData.name) {
@@ -74,42 +82,18 @@ export default function NewProductPage() {
     }
   }, [formData.name])
 
-  const fetchData = async () => {
-    try {
-      const [catRes, paperRes, qtyRes, sizeRes, addOnRes] = await Promise.all([
-        fetch('/api/product-categories'),
-        fetch('/api/paper-stocks'),
-        fetch('/api/quantities'),
-        fetch('/api/sizes'),
-        fetch('/api/add-ons')
-      ])
-
-      if (catRes.ok) setCategories(await catRes.json())
-      if (paperRes.ok) setPaperStocks(await paperRes.json())
-
-      if (qtyRes.ok) {
-        const qtyData = await qtyRes.json()
-        setQuantityGroups(qtyData)
-        // Set first quantity group as default
-        if (qtyData.length > 0) {
-          setFormData(prev => ({ ...prev, selectedQuantityGroup: qtyData[0].id }))
-        }
-      }
-
-      if (sizeRes.ok) {
-        const sizeData = await sizeRes.json()
-        setSizeGroups(sizeData)
-        // Set first size group as default
-        if (sizeData.length > 0) {
-          setFormData(prev => ({ ...prev, selectedSizeGroup: sizeData[0].id }))
-        }
-      }
-
-      if (addOnRes.ok) setAddOns(await addOnRes.json())
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
+  // Set default selections when data loads
+  useEffect(() => {
+    if (quantityGroups.length > 0 && !formData.selectedQuantityGroup) {
+      setFormData(prev => ({ ...prev, selectedQuantityGroup: quantityGroups[0].id }))
     }
-  }
+  }, [quantityGroups, formData.selectedQuantityGroup])
+
+  useEffect(() => {
+    if (sizeGroups.length > 0 && !formData.selectedSizeGroup) {
+      setFormData(prev => ({ ...prev, selectedSizeGroup: sizeGroups[0].id }))
+    }
+  }, [sizeGroups, formData.selectedSizeGroup])
 
   const handlePaperStockToggle = (stockId: string, checked: boolean) => {
     if (checked) {
@@ -191,23 +175,122 @@ export default function NewProductPage() {
 
     setLoading(true)
     try {
+      // Step 1: Create product without images
+      const productData = { ...formData, images: [] }
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(productData)
       })
 
-      if (response.ok) {
-        toast.success('Product created successfully')
-        router.push('/admin/products')
-      } else {
+      if (!response.ok) {
         throw new Error('Failed to create product')
       }
+
+      const product = await response.json()
+
+      // Step 2: Upload images with productId if any images were selected
+      if (formData.images && formData.images.length > 0) {
+        setUploadingImages(true)
+        setUploadProgress(`Uploading ${formData.images.length} image(s)...`)
+
+        let uploadErrors = []
+        let successCount = 0
+
+        const imageUploadPromises = formData.images.map(async (image, index) => {
+          // If image has a file property, it needs to be uploaded
+          if (image.file) {
+            try {
+              setUploadProgress(`Uploading image ${index + 1} of ${formData.images.length}...`)
+
+              const uploadFormData = new FormData()
+              uploadFormData.append('file', image.file)
+              uploadFormData.append('productId', product.id)
+              uploadFormData.append('isPrimary', String(index === 0))
+              uploadFormData.append('sortOrder', String(index))
+
+              const uploadRes = await fetch('/api/products/upload-image', {
+                method: 'POST',
+                body: uploadFormData
+              })
+
+              if (!uploadRes.ok) {
+                const errorText = await uploadRes.text()
+                throw new Error(`Image ${index + 1} upload failed: ${errorText}`)
+              }
+
+              // Clean up blob URL after successful upload
+              if (image.url.startsWith('blob:')) {
+                URL.revokeObjectURL(image.url)
+              }
+
+              successCount++
+              setUploadProgress(`Uploaded ${successCount} of ${formData.images.length} images`)
+              return await uploadRes.json()
+            } catch (error) {
+              console.error(`Failed to upload image ${index + 1}:`, error)
+              uploadErrors.push(error.message)
+              return null
+            }
+          }
+          return null
+        })
+
+        const results = await Promise.allSettled(imageUploadPromises)
+        setUploadingImages(false)
+        setUploadProgress('')
+
+        // Check if any uploads failed
+        const failedCount = uploadErrors.length
+        if (failedCount > 0) {
+          toast.error(`${failedCount} image(s) failed to upload. Product created without some images.`)
+        } else if (successCount > 0) {
+          toast.success(`Successfully uploaded ${successCount} image(s)`)
+        }
+      }
+
+      toast.success('Product created successfully')
+      router.push('/admin/products')
     } catch (error) {
       toast.error('Failed to create product')
+      console.error('Product creation error:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading state while fetching initial data
+  if (apiLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading product data...</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state if critical data failed to load
+  const criticalErrors = [errors.categories, errors.paperStocks, errors.quantityGroups, errors.sizeGroups].filter(Boolean)
+  if (criticalErrors.length > 0) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Product Data</h1>
+          <p className="text-muted-foreground mb-8">Some required data could not be loaded:</p>
+          <ul className="text-left max-w-md mx-auto space-y-2 mb-8">
+            {errors.categories && <li>• Categories: {errors.categories}</li>}
+            {errors.paperStocks && <li>• Paper Stocks: {errors.paperStocks}</li>}
+            {errors.quantityGroups && <li>• Quantity Groups: {errors.quantityGroups}</li>}
+            {errors.sizeGroups && <li>• Size Groups: {errors.sizeGroups}</li>}
+          </ul>
+          <Button onClick={() => window.location.reload()}>
+            Retry Loading
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -225,9 +308,11 @@ export default function NewProductPage() {
             {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calculator className="h-4 w-4" />}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            <span className="ml-2">Save Product</span>
+          <Button onClick={handleSubmit} disabled={loading || uploadingImages}>
+            {(loading || uploadingImages) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            <span className="ml-2">
+              {uploadingImages ? uploadProgress : loading ? 'Saving...' : 'Save Product'}
+            </span>
           </Button>
         </div>
       </div>
@@ -239,7 +324,7 @@ export default function NewProductPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div data-testid="product-name">
               <Label htmlFor="name">Product Name *</Label>
               <Input
                 id="name"

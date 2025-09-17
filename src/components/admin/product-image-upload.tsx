@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -55,6 +55,7 @@ interface ProductImage {
   sortOrder: number
   file?: File
   uploading?: boolean
+  isBlobUrl?: boolean
 }
 
 interface ProductImageUploadProps {
@@ -160,6 +161,18 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   const [editingImage, setEditingImage] = useState<{ index: number; image: ProductImage } | null>(null)
   const [editForm, setEditForm] = useState({ alt: '', caption: '' })
 
+  // Cleanup blob URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      const safeImages = Array.isArray(images) ? images : []
+      safeImages.forEach(image => {
+        if (image.isBlobUrl && image.url.startsWith('blob:')) {
+          URL.revokeObjectURL(image.url)
+        }
+      })
+    }
+  }, [])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -174,68 +187,80 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
     if (files.length === 0) return
 
     const safeImages = Array.isArray(images) ? images : []
-    const newImages: ProductImage[] = Array.from(files).map((file, index) => ({
-      url: URL.createObjectURL(file),
-      file,
-      isPrimary: safeImages.length === 0 && index === 0,
-      sortOrder: safeImages.length + index,
-      uploading: true,
-    }))
+    const newImages: ProductImage[] = Array.from(files).map((file, index) => {
+      const blobUrl = URL.createObjectURL(file)
+
+      return {
+        url: blobUrl,
+        file,
+        isPrimary: safeImages.length === 0 && index === 0,
+        sortOrder: safeImages.length + index,
+        uploading: false,
+        isBlobUrl: true, // Mark as blob URL for cleanup
+      }
+    })
 
     onImagesChange([...safeImages, ...newImages])
 
-    // Upload images to R2
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      const formData = new FormData()
-      formData.append('file', file)
-      if (productId) {
+    // Only upload immediately if we have a productId (editing existing product)
+    if (productId) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const formData = new FormData()
+        formData.append('file', file)
         formData.append('productId', productId)
-      }
 
-      try {
-        const res = await fetch('/api/products/upload-image', {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({ error: 'Upload failed' }))
-          throw new Error(errorData.error || 'Upload failed')
-        }
-
-        const data = await res.json()
-
-        // Validate response data
-        if (!data || !data.url) {
-          throw new Error('Invalid response from upload service')
-        }
-
-        // Update the image with the uploaded URL
-        onImagesChange(prev => {
-          const currentImages = Array.isArray(prev) ? prev : []
-          return currentImages.map((img, idx) => {
-            if (idx === safeImages.length + i) {
-              return {
-                ...img,
-                url: data.url,
-                thumbnailUrl: data.thumbnailUrl || data.url,
-                uploading: false,
-              }
-            }
-            return img
+        try {
+          const res = await fetch('/api/products/upload-image', {
+            method: 'POST',
+            body: formData,
           })
-        })
-      } catch (error) {
-        console.error('Image upload error:', error)
-        toast.error(`Failed to upload image ${i + 1}: ${error.message}`)
-        // Remove the failed image safely
-        onImagesChange(prev => {
-          const currentImages = Array.isArray(prev) ? prev : []
-          return currentImages.filter((_, idx) => idx !== safeImages.length + i)
-        })
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ error: 'Upload failed' }))
+            throw new Error(errorData.error || 'Upload failed')
+          }
+
+          const data = await res.json()
+
+          // Validate response data
+          if (!data || !data.url) {
+            throw new Error('Invalid response from upload service')
+          }
+
+          // Update the image with the uploaded URL and clean up blob
+          onImagesChange(prev => {
+            const currentImages = Array.isArray(prev) ? prev : []
+            return currentImages.map((img, idx) => {
+              if (idx === safeImages.length + i) {
+                // Clean up blob URL if it exists
+                if (img.isBlobUrl && img.url.startsWith('blob:')) {
+                  URL.revokeObjectURL(img.url)
+                }
+                return {
+                  ...img,
+                  url: data.url,
+                  thumbnailUrl: data.thumbnailUrl || data.url,
+                  uploading: false,
+                  isBlobUrl: false,
+                  file: undefined, // Remove file reference after upload
+                }
+              }
+              return img
+            })
+          })
+        } catch (error) {
+          console.error('Image upload error:', error)
+          toast.error(`Failed to upload image ${i + 1}: ${error.message}`)
+          // Remove the failed image safely
+          onImagesChange(prev => {
+            const currentImages = Array.isArray(prev) ? prev : []
+            return currentImages.filter((_, idx) => idx !== safeImages.length + i)
+          })
+        }
       }
     }
+    // For new products, images will be uploaded after product creation
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -286,6 +311,13 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   const handleRemove = (index: number) => {
     const safeImages = Array.isArray(images) ? images : []
     if (index < 0 || index >= safeImages.length) return
+
+    const imageToRemove = safeImages[index]
+
+    // Clean up blob URL if it exists
+    if (imageToRemove?.isBlobUrl && imageToRemove.url.startsWith('blob:')) {
+      URL.revokeObjectURL(imageToRemove.url)
+    }
 
     const newImages = safeImages.filter((_, i) => i !== index)
     // If removed image was primary, make first image primary
