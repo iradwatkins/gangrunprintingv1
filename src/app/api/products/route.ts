@@ -12,8 +12,13 @@ export async function GET(request: NextRequest) {
 
     const where: any = {}
     if (categoryId) where.categoryId = categoryId
-    if (isActive !== null) where.isActive = isActive === 'true'
-    if (gangRunEligible !== null) where.gangRunEligible = gangRunEligible === 'true'
+    // Only add isActive filter if explicitly provided in query params
+    if (isActive !== null && isActive !== undefined) {
+      where.isActive = isActive === 'true'
+    }
+    if (gangRunEligible !== null && gangRunEligible !== undefined) {
+      where.gangRunEligible = gangRunEligible === 'true'
+    }
 
     const products = await prisma.product.findMany({
       where,
