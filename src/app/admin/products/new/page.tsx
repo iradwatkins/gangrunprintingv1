@@ -23,7 +23,7 @@ export default function NewProductPage() {
   const [categories, setCategories] = useState<any[]>([])
   const [paperStocks, setPaperStocks] = useState<any[]>([])
   const [quantityGroups, setQuantityGroups] = useState<any[]>([])
-  const [sizes, setSizes] = useState<any[]>([])
+  const [sizeGroups, setSizeGroups] = useState<any[]>([])
   const [addOns, setAddOns] = useState<any[]>([])
 
   const [formData, setFormData] = useState({
@@ -43,7 +43,7 @@ export default function NewProductPage() {
 
     // Single selections
     selectedQuantityGroup: '', // Single quantity group ID
-    selectedSize: '', // Single size ID
+    selectedSizeGroup: '', // Single size group ID
 
     // Multiple selections
     selectedAddOns: [] as string[], // Multiple add-ons
@@ -98,10 +98,10 @@ export default function NewProductPage() {
 
       if (sizeRes.ok) {
         const sizeData = await sizeRes.json()
-        setSizes(sizeData)
-        // Set first size as default
+        setSizeGroups(sizeData)
+        // Set first size group as default
         if (sizeData.length > 0) {
-          setFormData(prev => ({ ...prev, selectedSize: sizeData[0].id }))
+          setFormData(prev => ({ ...prev, selectedSizeGroup: sizeData[0].id }))
         }
       }
 
@@ -145,7 +145,7 @@ export default function NewProductPage() {
           paperStocks: formData.selectedPaperStocks,
           defaultPaperStock: formData.defaultPaperStock,
           quantityGroup: formData.selectedQuantityGroup,
-          size: formData.selectedSize,
+          sizeGroup: formData.selectedSizeGroup,
           addOns: formData.selectedAddOns
         })
       })
@@ -184,8 +184,8 @@ export default function NewProductPage() {
       return
     }
 
-    if (!formData.selectedSize) {
-      toast.error('Please select a size option')
+    if (!formData.selectedSizeGroup) {
+      toast.error('Please select a size group')
       return
     }
 
@@ -319,42 +319,60 @@ export default function NewProductPage() {
             <p className="text-sm text-muted-foreground">
               Select a quantity set for this product. Customers will see the quantities from this set, with the default quantity pre-selected.
             </p>
-            <RadioGroup
-              value={formData.selectedQuantityGroup}
-              onValueChange={(value) => setFormData({...formData, selectedQuantityGroup: value})}
-              className="space-y-3"
-            >
-              {quantityGroups.map(group => (
-                <div key={group.id} className="border rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <RadioGroupItem value={group.id} id={`group-${group.id}`} className="mt-1" />
-                    <div className="flex-1">
-                      <Label htmlFor={`group-${group.id}`} className="cursor-pointer font-medium text-base">
-                        {group.name}
-                      </Label>
-                      {group.description && (
-                        <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
-                      )}
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {group.valuesList?.map((value: string, index: number) => (
+            <div>
+              <Label htmlFor="quantity-group">Quantity Set</Label>
+              <Select
+                value={formData.selectedQuantityGroup}
+                onValueChange={(value) => setFormData({...formData, selectedQuantityGroup: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select quantity set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quantityGroups.map(group => (
+                    <SelectItem key={group.id} value={group.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{group.name}</span>
+                        {group.description && (
+                          <span className="text-xs text-muted-foreground">{group.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected quantity group */}
+            {formData.selectedQuantityGroup && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedGroup = quantityGroups.find(g => g.id === formData.selectedQuantityGroup)
+                  if (!selectedGroup) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedGroup.valuesList?.map((value: string, index: number) => (
                           <span
                             key={index}
                             className={`px-2 py-1 text-xs rounded ${
-                              value === group.defaultValue
+                              value === selectedGroup.defaultValue
                                 ? 'bg-primary text-primary-foreground font-medium'
-                                : 'bg-muted text-muted-foreground'
+                                : 'bg-background text-foreground border'
                             }`}
                           >
                             {value}
-                            {value === group.defaultValue && ' (default)'}
+                            {value === selectedGroup.defaultValue && ' (default)'}
                           </span>
                         ))}
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </RadioGroup>
+                  )
+                })()}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -412,26 +430,76 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Size Options - Single selection */}
+      {/* Size Group - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Size Option (Choose One) *</CardTitle>
+          <CardTitle>Size Set (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
-          <RadioGroup
-            value={formData.selectedSize}
-            onValueChange={(value) => setFormData({...formData, selectedSize: value})}
-            className="grid grid-cols-4 gap-4"
-          >
-            {sizes.map(size => (
-              <div key={size.id} className="flex items-center gap-2">
-                <RadioGroupItem value={size.id} id={`size-${size.id}`} />
-                <Label htmlFor={`size-${size.id}`} className="cursor-pointer font-normal">
-                  {size.name}
-                </Label>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select a size set for this product. Customers will see the sizes from this set, with the default size pre-selected.
+            </p>
+            <div>
+              <Label htmlFor="size-group">Size Set</Label>
+              <Select
+                value={formData.selectedSizeGroup}
+                onValueChange={(value) => setFormData({...formData, selectedSizeGroup: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select size set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sizeGroups.map(group => (
+                    <SelectItem key={group.id} value={group.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{group.name}</span>
+                        {group.description && (
+                          <span className="text-xs text-muted-foreground">{group.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected size group */}
+            {formData.selectedSizeGroup && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedGroup = sizeGroups.find(g => g.id === formData.selectedSizeGroup)
+                  if (!selectedGroup) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedGroup.valuesList?.map((value: string, index: number) => (
+                          <span
+                            key={index}
+                            className={`px-2 py-1 text-xs rounded ${
+                              value === selectedGroup.defaultValue
+                                ? 'bg-primary text-primary-foreground font-medium'
+                                : 'bg-background text-foreground border'
+                            }`}
+                          >
+                            {value}
+                            {value === selectedGroup.defaultValue && ' (default)'}
+                          </span>
+                        ))}
+                      </div>
+                      {selectedGroup.hasCustomOption && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Custom dimensions: {selectedGroup.customMinWidth}"×{selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×{selectedGroup.customMaxHeight}"
+                        </p>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
-            ))}
-          </RadioGroup>
+            )}
+          </div>
         </CardContent>
       </Card>
 

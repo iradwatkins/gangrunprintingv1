@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
-// GET /api/sizes - List all standard sizes
+// GET /api/sizes - List all size groups
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -13,22 +13,36 @@ export async function GET(request: NextRequest) {
       where.isActive = true
     }
 
-    const sizes = await prisma.standardSize.findMany({
+    const sizeGroups = await prisma.sizeGroup.findMany({
       where,
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
+      },
       orderBy: { sortOrder: 'asc' }
     })
 
-    return NextResponse.json(sizes)
+    // Process the groups to include parsed values list
+    const processedGroups = sizeGroups.map(group => ({
+      ...group,
+      valuesList: group.values.split(',').map(v => v.trim()).filter(v => v),
+      hasCustomOption: group.values.toLowerCase().includes('custom')
+    }))
+
+    return NextResponse.json(processedGroups)
   } catch (error) {
-    console.error('Error fetching sizes:', error)
+    console.error('Error fetching size groups:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch sizes' },
+      { error: 'Failed to fetch size groups' },
       { status: 500 }
     )
   }
 }
 
-// POST /api/sizes - Create a new standard size
+// POST /api/sizes - Create a new size group
 export async function POST(request: NextRequest) {
   try {
     const { user } = await validateRequest()
@@ -43,47 +57,76 @@ export async function POST(request: NextRequest) {
 
     const {
       name,
-      displayName,
-      width,
-      height,
-      preCalculatedValue,
+      description,
+      values,
+      defaultValue,
+      customMinWidth,
+      customMaxWidth,
+      customMinHeight,
+      customMaxHeight,
       sortOrder,
       isActive
     } = body
 
     // Validation
-    if (!name || !displayName || !width || !height || !preCalculatedValue) {
+    if (!name || !values || !defaultValue) {
       return NextResponse.json(
-        { error: 'All size fields are required' },
+        { error: 'Name, values, and default value are required' },
         { status: 400 }
       )
     }
 
-    const size = await prisma.standardSize.create({
+    // Validate that defaultValue exists in values
+    const valuesList = values.split(',').map((v: string) => v.trim()).filter((v: string) => v)
+    if (!valuesList.includes(defaultValue)) {
+      return NextResponse.json(
+        { error: 'Default value must exist in the values list' },
+        { status: 400 }
+      )
+    }
+
+    const sizeGroup = await prisma.sizeGroup.create({
       data: {
         name,
-        displayName,
-        width,
-        height,
-        preCalculatedValue,
+        description,
+        values,
+        defaultValue,
+        customMinWidth,
+        customMaxWidth,
+        customMinHeight,
+        customMaxHeight,
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true
+      },
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
       }
     })
 
-    return NextResponse.json(size, { status: 201 })
+    // Process the group to include parsed values list
+    const processedGroup = {
+      ...sizeGroup,
+      valuesList: sizeGroup.values.split(',').map(v => v.trim()).filter(v => v),
+      hasCustomOption: sizeGroup.values.toLowerCase().includes('custom')
+    }
+
+    return NextResponse.json(processedGroup, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating size:', error)
+    console.error('Error creating size group:', error)
 
     if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'A size with this name already exists' },
+        { error: 'A size group with this name already exists' },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Failed to create size' },
+      { error: 'Failed to create size group' },
       { status: 500 }
     )
   }

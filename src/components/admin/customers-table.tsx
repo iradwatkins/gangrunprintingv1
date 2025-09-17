@@ -53,8 +53,11 @@ export function CustomersTable({ customers }: CustomersTableProps) {
   const [sortBy, setSortBy] = useState<'name' | 'spent' | 'orders' | 'date'>('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
+  // Ensure customers is always an array to prevent errors
+  const safeCustomers = customers || []
+
   // Filter customers based on search
-  const filteredCustomers = customers.filter(customer => 
+  const filteredCustomers = safeCustomers.filter(customer => 
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   )

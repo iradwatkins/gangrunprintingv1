@@ -69,6 +69,8 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Note: This API still uses StandardSize for backwards compatibility
+      // Size group relationships are handled at the product level
       standardSize = await prisma.standardSize.findUnique({
         where: { id: data.standardSizeId }
       })
