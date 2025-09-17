@@ -24,17 +24,20 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set('x-correlation-id', correlationId);
   requestHeaders.set('x-request-timestamp', Date.now().toString());
 
-  // Resolve tenant context
-  const tenantContext = await resolveTenantContext(hostname);
+  // Temporarily disable tenant resolution in middleware to fix Edge Runtime Prisma issue
+  // TODO: Move tenant resolution to API routes or use edge-compatible database client
+  const tenantContext = {
+    tenant: null,
+    locale: 'en',
+    isSubdomain: false,
+    isCustomDomain: false,
+    baseDomain: 'gangrunprinting.com'
+  };
 
-  // Add tenant context to headers
-  if (tenantContext.tenant) {
-    requestHeaders.set('x-tenant-id', tenantContext.tenant.id);
-    requestHeaders.set('x-tenant-slug', tenantContext.tenant.slug);
-    requestHeaders.set('x-tenant-locale', tenantContext.locale);
-    requestHeaders.set('x-tenant-timezone', tenantContext.tenant.timezone);
-    requestHeaders.set('x-tenant-currency', tenantContext.tenant.currency);
-  }
+  // Add default tenant context to headers
+  requestHeaders.set('x-tenant-locale', tenantContext.locale);
+  requestHeaders.set('x-tenant-timezone', 'America/Chicago');
+  requestHeaders.set('x-tenant-currency', 'USD');
 
   // Track API route if it's an API call
   const isApiRoute = pathname.startsWith('/api');
