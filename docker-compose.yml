@@ -10,6 +10,8 @@ services:
     container_name: gangrunprinting_app
     ports:
       - "3002:3002"
+    env_file:
+      - .env
     environment:
       # Node.js settings
       - NODE_ENV=production
