@@ -42,7 +42,15 @@ services:
       - SQUARE_WEBHOOK_SIGNATURE_KEY=${SQUARE_WEBHOOK_SIGNATURE_KEY}
       - NEXT_PUBLIC_SQUARE_APPLICATION_ID=${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
       - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
-      # Cloudflare R2 Storage
+      # MinIO Storage (Docker networking)
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-gangrun_minio_access}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-gangrun_minio_secret_2024}
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET_NAME=gangrun-products
+
+      # Cloudflare R2 Storage (fallback)
       - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}

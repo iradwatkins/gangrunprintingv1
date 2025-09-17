@@ -54,8 +54,9 @@ export const uploadProductImage = async (buffer: Buffer, fileName: string, mimeT
     const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
     const objectName = `products/${timestamp}-${cleanFileName}`;
 
-    // Upload to MinIO
+    // Upload to MinIO - use explicit bucket signature
     const uploadResult = await uploadFile(
+      'gangrun-products',
       objectName,
       buffer,
       {
