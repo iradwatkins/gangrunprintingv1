@@ -1,23 +1,35 @@
-type CacheEntry = {
-  data: any
+type CacheEntry<T = unknown> = {
+  data: T
   timestamp: number
   expiresAt: number
 }
 
-type PendingRequest = {
-  promise: Promise<any>
+type PendingRequest<T = unknown> = {
+  promise: Promise<T>
   timestamp: number
 }
 
 class ApiCache {
-  private cache = new Map<string, CacheEntry>()
-  private pendingRequests = new Map<string, PendingRequest>()
+  private cache = new Map<string, CacheEntry<unknown>>()
+  private pendingRequests = new Map<string, PendingRequest<unknown>>()
   private readonly DEFAULT_TTL = 5 * 60 * 1000 // 5 minutes
   private readonly PENDING_REQUEST_TIMEOUT = 30 * 1000 // 30 seconds
+  private cleanupInterval: NodeJS.Timeout | null = null
 
   constructor() {
     // Clean up expired cache entries every minute
-    setInterval(() => this.cleanupExpired(), 60 * 1000)
+    // Store the interval ID so it can be cleared later
+    this.cleanupInterval = setInterval(() => this.cleanupExpired(), 60 * 1000)
+  }
+
+  // Method to properly cleanup resources
+  destroy() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval)
+      this.cleanupInterval = null
+    }
+    this.cache.clear()
+    this.pendingRequests.clear()
   }
 
   private cleanupExpired() {
@@ -51,13 +63,13 @@ class ApiCache {
     // Check if we have a valid cached entry
     const cached = this.cache.get(key)
     if (cached && cached.expiresAt > now) {
-      return cached.data
+      return cached.data as T
     }
 
     // Check if there's already a pending request for this key
     const pending = this.pendingRequests.get(key)
     if (pending && now - pending.timestamp < this.PENDING_REQUEST_TIMEOUT) {
-      return pending.promise
+      return pending.promise as Promise<T>
     }
 
     // Make the actual request
@@ -159,6 +171,12 @@ export async function cachedFetch<T>(
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
+
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Invalid response format')
+    }
+
     return response.json()
   }
 

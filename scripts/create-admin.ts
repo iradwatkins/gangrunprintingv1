@@ -5,8 +5,18 @@ const prisma = new PrismaClient()
 
 async function createAdminUser() {
   try {
-    const email = 'iradwatkins@gmail.com'
-    const password = 'Iw2006js!'
+    // Get credentials from environment variables
+    const email = process.env.ADMIN_EMAIL || 'iradwatkins@gmail.com'
+    const password = process.env.ADMIN_PASSWORD
+
+    // Validate that password is provided
+    if (!password) {
+      console.error('❌ Error: ADMIN_PASSWORD environment variable is not set')
+      console.log('Please set ADMIN_PASSWORD in your .env file or as an environment variable')
+      console.log('Example: ADMIN_PASSWORD=your_secure_password npm run create-admin')
+      process.exit(1)
+    }
+
     const hashedPassword = await bcrypt.hash(password, 12)
 
     // Check if user already exists
@@ -39,10 +49,11 @@ async function createAdminUser() {
       console.log('✅ Created new admin user:', newUser.email)
     }
 
-    console.log('\n📧 Admin Login Credentials:')
+    console.log('\n📧 Admin Created Successfully:')
     console.log('Email:', email)
-    console.log('Password:', password)
+    console.log('Role: ADMIN')
     console.log('\n🔗 Login URL: https://gangrunprinting.com/admin/login')
+    console.log('\n🔒 Note: Use the password you provided via ADMIN_PASSWORD environment variable')
 
   } catch (error) {
     console.error('❌ Error creating admin user:', error)

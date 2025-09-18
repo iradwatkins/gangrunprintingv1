@@ -68,15 +68,38 @@ export function useApi<T>(
 
   // Fetch data on mount and when dependencies change
   useEffect(() => {
-    if (!loading) {
-      fetchData().finally(() => setLoading(false))
+    // Use a local variable to track if the component is mounted
+    let isMounted = true
+
+    const performFetch = async () => {
+      if (!isMounted) return
+
+      setLoading(true)
+      try {
+        await fetchData()
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    performFetch()
+
+    // Cleanup function to prevent setting state on unmounted component
+    return () => {
+      isMounted = false
     }
   }, [fetchData])
 
   // Manual refetch function
   const refetch = useCallback(async () => {
-    await fetchData()
-    setLoading(false)
+    setLoading(true)
+    try {
+      await fetchData()
+    } finally {
+      setLoading(false)
+    }
   }, [fetchData])
 
   // Optimistic update function
@@ -109,9 +132,15 @@ export function useApiBundle<T extends Record<string, any>>(
   const [errors, setErrors] = useState<Record<keyof T, string | null>>({} as Record<keyof T, string | null>)
 
   const fetchAll = useCallback(async () => {
+    // Don't fetch if explicitly disabled
+    if (options.enabled === false) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
 
-    const validUrls = Object.entries(urls).filter(([, url]) => url && options.enabled !== false)
+    const validUrls = Object.entries(urls).filter(([, url]) => url)
 
     if (validUrls.length === 0) {
       setLoading(false)
@@ -194,8 +223,10 @@ export function useApiBundle<T extends Record<string, any>>(
   }, [urls, options.ttl])
 
   useEffect(() => {
-    fetchAll()
-  }, [fetchAll])
+    if (options.enabled !== false) {
+      fetchAll()
+    }
+  }, [fetchAll, options.enabled])
 
   return {
     data,
