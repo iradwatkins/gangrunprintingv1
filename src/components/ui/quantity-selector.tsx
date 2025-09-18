@@ -56,7 +56,12 @@ export function QuantitySelector({
     if (quantities.length === 0) {
       // Fetch quantities from API
       fetch('/api/quantities?active=true')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+          }
+          return res.json()
+        })
         .then(data => setDefaultQuantities(data))
         .catch(err => console.error('Failed to load quantities:', err))
     }

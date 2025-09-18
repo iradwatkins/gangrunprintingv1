@@ -77,6 +77,9 @@ export function NotificationPermission() {
       
       // Get the server's public VAPID key
       const response = await fetch('/api/notifications/vapid-public-key')
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
       const { publicKey } = await response.json()
       
       // Subscribe to push notifications

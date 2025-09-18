@@ -52,22 +52,16 @@ interface Product {
     quantityGroup: {
       id: string
       name: string
-      quantities: Array<{
-        amount: number
-        price: number
-      }>
+      values: string
+      defaultValue: string
     }
   }>
   productSizeGroups: Array<{
     sizeGroup: {
       id: string
       name: string
-      sizes: Array<{
-        width: number
-        height: number
-        unit: string
-        price: number
-      }>
+      values: string
+      defaultValue: string
     }
   }>
 }
@@ -118,14 +112,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       }
 
       if (productData.product.productQuantityGroups.length > 0 && productData.product.productQuantityGroups[0].quantityGroup.values) {
-        const quantities = JSON.parse(productData.product.productQuantityGroups[0].quantityGroup.values || '[]')
+        const quantities = productData.product.productQuantityGroups[0].quantityGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom')
         if (quantities.length > 0) {
-          setSelectedQuantity(quantities[0].amount || quantities[0])
+          setSelectedQuantity(parseInt(quantities[0]))
         }
       }
 
       if (productData.product.productSizeGroups.length > 0 && productData.product.productSizeGroups[0].sizeGroup.values) {
-        const sizes = JSON.parse(productData.product.productSizeGroups[0].sizeGroup.values || '[]')
+        const sizes = productData.product.productSizeGroups[0].sizeGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom')
         if (sizes.length > 0) {
           setSelectedSize('0') // First size option
         }
@@ -220,14 +214,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       price += paperStock.additionalCost
     }
 
-    // Add quantity-based pricing
-    const quantityGroup = product.productQuantityGroups[0]?.quantityGroup
-    if (quantityGroup) {
-      const quantity = quantityGroup.quantities.find(q => q.amount === selectedQuantity)
-      if (quantity) {
-        price = quantity.price
-      }
-    }
+    // Add quantity-based pricing (simplified - using base price)
+    // In a real implementation, you'd have a pricing table based on quantity
+    const quantityMultiplier = selectedQuantity >= 1000 ? 0.8 : selectedQuantity >= 500 ? 0.9 : 1.0
+    price = price * quantityMultiplier
 
     return price
   }
@@ -243,7 +233,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
     const selectedPaper = product.productPaperStocks.find(p => p.paperStock.id === selectedPaperStock)
     const sizeGroup = product.productSizeGroups[0]?.sizeGroup
-    const selectedSizeData = sizeGroup?.sizes[parseInt(selectedSize)] || null
+    const sizeValues = sizeGroup?.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom') || []
+    const selectedSizeData = sizeValues[parseInt(selectedSize)] || null
 
     addItem({
       productId: product.id,
@@ -254,7 +245,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       quantity: selectedQuantity,
       turnaround: `${product.productionTime} business days`,
       options: {
-        size: selectedSizeData ? `${selectedSizeData.width}"x${selectedSizeData.height}"` : 'Standard',
+        size: selectedSizeData || 'Standard',
         paperStock: selectedPaper?.paperStock.name,
         paperStockId: selectedPaperStock,
         sides: 'Double'
@@ -390,9 +381,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {JSON.parse(product.productQuantityGroups[0].quantityGroup.values || '[]').map((qty: any) => (
-                        <SelectItem key={qty.amount || qty} value={(qty.amount || qty).toString()}>
-                          {(qty.amount || qty).toLocaleString()} {qty.price ? `- $${qty.price.toFixed(2)}` : ''}
+                      {product.productQuantityGroups[0].quantityGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom').map((qty: string) => (
+                        <SelectItem key={qty} value={qty}>
+                          {parseInt(qty).toLocaleString()}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -409,10 +400,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {JSON.parse(product.productSizeGroups[0].sizeGroup.values || '[]').map((size: any, index: number) => (
+                      {product.productSizeGroups[0].sizeGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom').map((size: string, index: number) => (
                         <SelectItem key={index} value={index.toString()}>
-                          {size.width || size.name || size}×{size.height || ''}
-                          {size.price && size.price > 0 && ` (+$${size.price})`}
+                          {size}
                         </SelectItem>
                       ))}
                     </SelectContent>

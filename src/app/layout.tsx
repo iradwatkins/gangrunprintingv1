@@ -5,7 +5,8 @@ import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
-import { ComprehensivePerformanceMonitor } from '@/components/performance-monitor'
+// Use lazy-loaded performance monitor for better load times
+import { LazyPerformanceMonitor } from '@/components/performance-monitor-lazy'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
 
@@ -42,7 +43,7 @@ export default function RootLayout({
         <GoogleAnalytics />
         <ThemeInjector />
         <OfflineIndicator />
-        <ComprehensivePerformanceMonitor />
+        <LazyPerformanceMonitor />
         <ErrorBoundary name="RootLayout">
           <Providers>{children}</Providers>
           <InstallPrompt />

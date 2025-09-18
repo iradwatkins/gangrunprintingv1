@@ -61,6 +61,10 @@ export function ChatWidget() {
         })
       })
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
       const data = await response.json()
 
       const assistantMessage: Message = {
