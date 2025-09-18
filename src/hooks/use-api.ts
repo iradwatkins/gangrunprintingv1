@@ -52,17 +52,37 @@ export function useApi<T>(
         return
       } catch (err) {
         lastError = err instanceof Error ? err : new Error('Unknown error')
+
+        // Enhanced error logging for debugging
+        console.error(`useApi fetch attempt ${attempt + 1}/${retry} failed for ${url}:`, {
+          error: lastError.message,
+          attempt: attempt + 1,
+          url,
+          options: { ttl, skipCache, retry, retryDelay }
+        })
+
         attempt++
 
         if (attempt < retry) {
+          console.log(`Retrying ${url} in ${retryDelay * attempt}ms...`)
           // Wait before retrying
           await new Promise(resolve => setTimeout(resolve, retryDelay * attempt))
         }
       }
     }
 
-    // All retries failed
-    setError(lastError?.message || 'Failed to fetch data')
+    // All retries failed - provide detailed error message
+    const errorMessage = lastError?.message || 'Failed to fetch data'
+    const detailedError = `Failed to fetch ${url} after ${retry} attempts: ${errorMessage}`
+
+    console.error('useApi: All retries exhausted:', {
+      url,
+      attempts: retry,
+      finalError: errorMessage,
+      options: { ttl, skipCache, retry, retryDelay }
+    })
+
+    setError(detailedError)
     setData(null)
   }, [url, enabled, ttl, skipCache, retry, retryDelay])
 
@@ -150,7 +170,7 @@ export function useApiBundle<T extends Record<string, any>>(
     // Add timeout wrapper for each fetch
     const fetchWithTimeout = async (key: string, url: string) => {
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Request timeout for ${key}`)), 10000)
+        setTimeout(() => reject(new Error(`Request timeout for ${key} (${url})`)), 10000)
       )
 
       const fetchPromise = cachedFetch(url as string, {
@@ -160,14 +180,23 @@ export function useApiBundle<T extends Record<string, any>>(
 
       try {
         const result = await Promise.race([fetchPromise, timeoutPromise])
+        console.log(`useApiBundle: Successfully fetched ${key} from ${url}`)
         return { key, result, error: null }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        console.error(`useApiBundle: Error fetching ${key}:`, errorMessage)
+
+        // Enhanced error logging for debugging
+        console.error(`useApiBundle: Error fetching ${key} from ${url}:`, {
+          key,
+          url,
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined
+        })
+
         return {
           key,
           result: null,
-          error: errorMessage
+          error: `${key}: ${errorMessage}`
         }
       }
     }
