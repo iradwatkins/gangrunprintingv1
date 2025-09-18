@@ -110,21 +110,22 @@ export async function generateMagicLink(email: string): Promise<string> {
 }
 
 export async function sendMagicLink(email: string, name?: string): Promise<void> {
-  console.log('=== MAGIC LINK GENERATION DEBUG ===');
-  console.log('Generating magic link for email:', email);
+  // Debug logging disabled for production - uncomment for debugging
+  // console.log('=== MAGIC LINK GENERATION DEBUG ===');
+  // console.log('Generating magic link for email:', email);
 
   const token = await generateMagicLink(email);
-  console.log('Generated token:', token);
-  console.log('Token length:', token.length);
+  // console.log('Generated token:', token);
+  // console.log('Token length:', token.length);
 
   // Use API route for verification to properly handle cookies
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
   const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`;
 
-  console.log('Generated magic link:', magicLink);
-  console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+  // console.log('Generated magic link:', magicLink);
+  // console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
 
-  await resend.emails.send({
+  await resend().emails.send({
     from: 'GangRun Printing <noreply@gangrunprinting.com>',
     to: email,
     subject: 'Sign in to GangRun Printing',
@@ -140,18 +141,19 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
 }
 
 export async function verifyMagicLink(token: string, email: string) {
-  console.log('=== MAGIC LINK VERIFICATION DEBUG ===');
-  console.log('Received parameters:');
-  console.log('- Token:', token);
-  console.log('- Email:', email);
-  console.log('- Email length:', email?.length);
-  console.log('- Token length:', token?.length);
-  console.log('- Email encoded:', encodeURIComponent(email));
+  // Debug logging disabled for production - uncomment for debugging
+  // console.log('=== MAGIC LINK VERIFICATION DEBUG ===');
+  // console.log('Received parameters:');
+  // console.log('- Token:', token);
+  // console.log('- Email:', email);
+  // console.log('- Email length:', email?.length);
+  // console.log('- Token length:', token?.length);
+  // console.log('- Email encoded:', encodeURIComponent(email));
 
   // Input validation
   if (!token || typeof token !== 'string' || token.length !== 32) {
-    console.log('=== VALIDATION FAILED ===');
-    console.log('Invalid token format');
+    // console.log('=== VALIDATION FAILED ===');
+    // console.log('Invalid token format');
     throw new MagicLinkError(
       'INVALID_TOKEN_FORMAT',
       'Magic link token has invalid format',
@@ -160,8 +162,8 @@ export async function verifyMagicLink(token: string, email: string) {
   }
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
-    console.log('=== VALIDATION FAILED ===');
-    console.log('Invalid email format');
+    // console.log('=== VALIDATION FAILED ===');
+    // console.log('Invalid email format');
     throw new MagicLinkError(
       'INVALID_EMAIL_FORMAT',
       'Email has invalid format',
@@ -178,21 +180,21 @@ export async function verifyMagicLink(token: string, email: string) {
     }
   });
 
-  console.log('Database query result:');
-  console.log('- Token found:', !!verificationToken);
+  // console.log('Database query result:');
+  // console.log('- Token found:', !!verificationToken);
   if (verificationToken) {
-    console.log('- Token expires:', verificationToken.expires);
-    console.log('- Current time:', new Date());
-    console.log('- Is expired:', verificationToken.expires < new Date());
-    console.log('- Token identifier:', verificationToken.identifier);
-    console.log('- Token value:', verificationToken.token);
+    // console.log('- Token expires:', verificationToken.expires);
+    // console.log('- Current time:', new Date());
+    // console.log('- Is expired:', verificationToken.expires < new Date());
+    // console.log('- Token identifier:', verificationToken.identifier);
+    // console.log('- Token value:', verificationToken.token);
   } else {
-    console.log('- No token found with identifier:', email, 'and token:', token);
+    // console.log('- No token found with identifier:', email, 'and token:', token);
   }
 
   if (!verificationToken) {
-    console.log('=== VERIFICATION FAILED ===');
-    console.log('Reason: Token not found');
+    // console.log('=== VERIFICATION FAILED ===');
+    // console.log('Reason: Token not found');
     throw new MagicLinkError(
       'TOKEN_NOT_FOUND',
       'Magic link token not found in database',
@@ -201,8 +203,8 @@ export async function verifyMagicLink(token: string, email: string) {
   }
 
   if (verificationToken.expires < new Date()) {
-    console.log('=== VERIFICATION FAILED ===');
-    console.log('Reason: Token expired');
+    // console.log('=== VERIFICATION FAILED ===');
+    // console.log('Reason: Token expired');
     throw new MagicLinkError(
       'TOKEN_EXPIRED',
       'Magic link token has expired',
@@ -210,7 +212,7 @@ export async function verifyMagicLink(token: string, email: string) {
     );
   }
 
-  console.log('=== VERIFICATION SUCCESSFUL ===');
+  // console.log('=== VERIFICATION SUCCESSFUL ===');
 
   // Delete the used token with error handling
   try {
@@ -222,7 +224,7 @@ export async function verifyMagicLink(token: string, email: string) {
         }
       }
     });
-    console.log('Token successfully deleted from database');
+    // console.log('Token successfully deleted from database');
   } catch (deleteError) {
     console.error('Warning: Failed to delete verification token:', deleteError);
     // Don't throw here - user should still be able to authenticate even if cleanup fails
@@ -236,7 +238,7 @@ export async function verifyMagicLink(token: string, email: string) {
     });
 
     if (!user) {
-      console.log('Creating new user for email:', email);
+      // console.log('Creating new user for email:', email);
 
       // Special handling for admin email
       const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER';
@@ -250,9 +252,9 @@ export async function verifyMagicLink(token: string, email: string) {
         }
       });
 
-      console.log('New user created with ID:', user.id);
+      // console.log('New user created with ID:', user.id);
     } else {
-      console.log('Existing user found, updating verification status');
+      // console.log('Existing user found, updating verification status');
 
       // Mark email as verified
       user = await prisma.user.update({
@@ -260,7 +262,7 @@ export async function verifyMagicLink(token: string, email: string) {
         data: { emailVerified: true }
       });
 
-      console.log('User verification status updated');
+      // console.log('User verification status updated');
     }
   } catch (userError) {
     console.error('Database error during user lookup/creation:', userError);
@@ -283,7 +285,7 @@ export async function verifyMagicLink(token: string, email: string) {
       sessionCookie.attributes
     );
 
-    console.log('Session created successfully:', session.id);
+    // console.log('Session created successfully:', session.id);
   } catch (sessionError) {
     console.error('Failed to create session:', sessionError);
     throw new MagicLinkError(

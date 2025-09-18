@@ -4,8 +4,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Output configuration for standalone deployment
-  output: 'standalone',
+  // Output configuration for standalone deployment - disabled to fix PM2 compatibility
+  // output: 'standalone',
 
   // Enable experimental features for App Router
   experimental: {
@@ -99,7 +99,10 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+            // Note: 'unsafe-inline' is required for Google Analytics gtag initialization
+            // 'unsafe-eval' is required for Next.js development mode and some third-party scripts
+            // Consider implementing nonce-based CSP in the future for better security
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;"
           }
         ]
       },
@@ -171,7 +174,7 @@ const nextConfig = {
     } : false
   },
 
-  // Output configuration - commented out to fix static file serving
+  // Output configuration - disabled to maintain PM2 compatibility
   // output: 'standalone',
 
   // Exclude problematic routes from build temporarily
@@ -179,14 +182,22 @@ const nextConfig = {
     return 'production-build-' + Date.now();
   },
 
-  // TypeScript configuration - temporarily ignore errors for production
+  // TypeScript configuration
+  // WARNING: ignoreBuildErrors was enabled - this should be fixed
+  // Uncomment the line below ONLY if absolutely necessary for emergency deployments
+  // typescript: { ignoreBuildErrors: true },
   typescript: {
-    ignoreBuildErrors: true
+    // Set to false to ensure type safety in production
+    ignoreBuildErrors: false
   },
 
-  // ESLint configuration - temporarily ignore errors for production
+  // ESLint configuration
+  // WARNING: ignoreDuringBuilds was enabled - this should be fixed
+  // Uncomment the line below ONLY if absolutely necessary for emergency deployments
+  // eslint: { ignoreDuringBuilds: true },
   eslint: {
-    ignoreDuringBuilds: true
+    // Set to false to ensure code quality in production
+    ignoreDuringBuilds: false
   }
 };
 
