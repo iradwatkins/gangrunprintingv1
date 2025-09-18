@@ -117,12 +117,39 @@
 - **Solution**: Created API route handler at `/api/auth/verify`
 - **Details**: See `/docs/bmad/fixes/magic-link-authentication-fix.md`
 
+### ✅ FIXED: Product Creation Page Not Loading (2025-09-18)
+- **Issue**: `/admin/products/new` returning 404 errors and not loading
+- **Symptom**: Page appears completely blank with no console errors
+- **Root Cause**: Multiple duplicate/backup files in same route directory causing Next.js routing conflicts
+- **Files Found**: `debug-page.tsx`, `fixed-page.tsx`, `page-backup.tsx`, `page-broken-backup.tsx`
+- **Solution**: **REMOVE ALL BACKUP FILES** from route directories - keep only `page.tsx`
+- **Key Lesson**: Next.js gets confused by multiple `.tsx` files in route directories, even with different names
+- **Prevention**: Never leave backup/debug files in `/app/` route directories - move to `/docs/` or delete entirely
+
 ## REMEMBER
 - **NEVER** touch SteppersLife.com or any of its resources
 - **NEVER** use Dokploy, Clerk, Convex, or Supabase
 - **ALWAYS** use Docker Compose for deployments
 - **ALWAYS** use the existing Lucia Auth implementation
 - **ALWAYS** ensure isolation from existing applications
+
+## 🔍 TROUBLESHOOTING CHECKLIST - CHECK THIS FIRST!
+
+### 1. Page Not Loading / 404 Errors
+- **CHECK**: Are there backup/debug files in the route directory?
+- **ACTION**: Remove ALL files except `page.tsx` from `/app/` route directories
+- **FILES TO DELETE**: `*-backup.tsx`, `*-debug.tsx`, `*-broken.tsx`, `*-fixed.tsx`
+- **NEVER**: Leave multiple `.tsx` files in route directories
+
+### 2. Before Creating New Pages
+- **FIRST**: Check if existing page just needs cleanup
+- **INVESTIGATE**: Look for duplicate files causing conflicts
+- **CLEAN**: Remove backup files before diagnosing "broken" pages
+
+### 3. Next.js Route Conflicts
+- **SYMPTOM**: Page returns 404 but file exists
+- **CAUSE**: Multiple `.tsx` files in same route directory
+- **FIX**: Keep only the main `page.tsx` file
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
