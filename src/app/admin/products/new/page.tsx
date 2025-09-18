@@ -40,19 +40,6 @@ export default function NewProductPage() {
   const sizeGroups = apiData.sizeGroups || []
   const addOns = apiData.addOns || []
 
-  // Debug logging to track component state
-  useEffect(() => {
-    console.log('🎯 NewProductPage: Component state update')
-    console.log('📊 Loading state:', apiLoading)
-    console.log('📊 Data state:', {
-      categories: categories.length,
-      paperStocks: paperStocks.length,
-      quantityGroups: quantityGroups.length,
-      sizeGroups: sizeGroups.length,
-      addOns: addOns.length
-    })
-    console.log('📊 Errors state:', errors)
-  }, [apiLoading, categories.length, paperStocks.length, quantityGroups.length, sizeGroups.length, addOns.length, errors])
 
   const [formData, setFormData] = useState({
     // Basic Info

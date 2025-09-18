@@ -19,17 +19,13 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (isLoading && !isRedirecting) {
-        console.log('⏰ AdminAuthWrapper: Auth check timed out, redirecting to signin')
         setIsRedirecting(true)
         router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
       }
     }, 10000) // 10 second timeout
 
     const checkAdminAuth = async () => {
-      console.log('🔍 AdminAuthWrapper: Starting authentication check...')
-
       try {
-        console.log('🌐 AdminAuthWrapper: Fetching /api/auth/me...')
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           headers: {
@@ -37,43 +33,34 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
           }
         })
 
-        console.log('📡 AdminAuthWrapper: Response status:', response.status, response.statusText)
-        console.log('🍪 AdminAuthWrapper: Response headers:', Object.fromEntries(response.headers.entries()))
-
         if (!response.ok) {
-          console.log('❌ AdminAuthWrapper: Response not OK, redirecting to signin')
           setIsRedirecting(true)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
           return
         }
 
         const userData = await response.json()
-        console.log('📋 AdminAuthWrapper: Response data:', userData)
 
         if (!userData.user) {
-          console.log('❌ AdminAuthWrapper: No user data, redirecting to signin')
           setIsRedirecting(true)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
           return
         }
 
         if (userData.user.role !== 'ADMIN') {
-          console.log('❌ AdminAuthWrapper: User not admin, redirecting home')
           setIsRedirecting(true)
           router.push('/?error=unauthorized')
           return
         }
 
         // User is authenticated and is an admin
-        console.log('✅ AdminAuthWrapper: Authentication successful, setting authorized state')
         setUser(userData.user)
         setIsAuthorized(true)
       } catch (error) {
-        console.error('❌ AdminAuthWrapper: Auth check failed:', error)
+        console.error('AdminAuthWrapper: Auth check failed:', error)
         setIsRedirecting(true)
         router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
       } finally {
-        console.log('🏁 AdminAuthWrapper: Setting loading to false')
         clearTimeout(timeout)
         setIsLoading(false)
       }
