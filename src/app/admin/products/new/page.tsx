@@ -15,7 +15,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useApiBundle } from '@/hooks/use-api'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw } from 'lucide-react'
 
@@ -26,22 +25,14 @@ export default function NewProductPage() {
   const [uploadProgress, setUploadProgress] = useState('')
   const [testing, setTesting] = useState(false)
 
-  // Fetch data immediately - we're already authenticated via layout wrapper
-  const { data: apiData, loading: apiLoading, errors } = useApiBundle({
-    categories: '/api/product-categories',
-    paperStocks: '/api/paper-stocks',
-    quantityGroups: '/api/quantities',
-    sizeGroups: '/api/sizes',
-    addOns: '/api/add-ons'
-  }, {
-    ttl: 5 * 60 * 1000 // 5 minutes cache
-  })
-
-  const categories = apiData.categories || []
-  const paperStocks = apiData.paperStocks || []
-  const quantityGroups = apiData.quantityGroups || []
-  const sizeGroups = apiData.sizeGroups || []
-  const addOns = apiData.addOns || []
+  // Data state - simple fetch pattern like paper-stocks page
+  const [categories, setCategories] = useState([])
+  const [paperStocks, setPaperStocks] = useState([])
+  const [quantityGroups, setQuantityGroups] = useState([])
+  const [sizeGroups, setSizeGroups] = useState([])
+  const [addOns, setAddOns] = useState([])
+  const [apiLoading, setApiLoading] = useState(true)
+  const [errors, setErrors] = useState({})
 
 
   const [formData, setFormData] = useState({
@@ -76,6 +67,90 @@ export default function NewProductPage() {
     basePrice: 0,
     setupFee: 0,
   })
+
+  // Fetch data on component mount - simple pattern like paper-stocks page
+  useEffect(() => {
+    fetchAllData()
+  }, [])
+
+  const fetchAllData = async () => {
+    try {
+      setApiLoading(true)
+      const [
+        categoriesRes,
+        paperStocksRes,
+        quantitiesRes,
+        sizesRes,
+        addOnsRes
+      ] = await Promise.all([
+        fetch('/api/product-categories'),
+        fetch('/api/paper-stocks'),
+        fetch('/api/quantities'),
+        fetch('/api/sizes'),
+        fetch('/api/add-ons')
+      ])
+
+      const newErrors = {}
+
+      // Handle categories
+      if (categoriesRes.ok) {
+        const data = await categoriesRes.json()
+        setCategories(data)
+      } else {
+        newErrors.categories = 'Failed to load categories'
+        console.error('Failed to fetch categories:', categoriesRes.status)
+      }
+
+      // Handle paper stocks
+      if (paperStocksRes.ok) {
+        const data = await paperStocksRes.json()
+        setPaperStocks(data)
+      } else {
+        newErrors.paperStocks = 'Failed to load paper stocks'
+        console.error('Failed to fetch paper stocks:', paperStocksRes.status)
+      }
+
+      // Handle quantity groups
+      if (quantitiesRes.ok) {
+        const data = await quantitiesRes.json()
+        setQuantityGroups(data)
+      } else {
+        newErrors.quantityGroups = 'Failed to load quantity groups'
+        console.error('Failed to fetch quantity groups:', quantitiesRes.status)
+      }
+
+      // Handle size groups
+      if (sizesRes.ok) {
+        const data = await sizesRes.json()
+        setSizeGroups(data)
+      } else {
+        newErrors.sizeGroups = 'Failed to load size groups'
+        console.error('Failed to fetch size groups:', sizesRes.status)
+      }
+
+      // Handle add-ons
+      if (addOnsRes.ok) {
+        const data = await addOnsRes.json()
+        setAddOns(data)
+      } else {
+        newErrors.addOns = 'Failed to load add-ons'
+        console.error('Failed to fetch add-ons:', addOnsRes.status)
+      }
+
+      setErrors(newErrors)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      setErrors({
+        categories: 'Network error',
+        paperStocks: 'Network error',
+        quantityGroups: 'Network error',
+        sizeGroups: 'Network error',
+        addOns: 'Network error'
+      })
+    } finally {
+      setApiLoading(false)
+    }
+  }
 
   // Auto-generate SKU like URL slug when name changes
   useEffect(() => {

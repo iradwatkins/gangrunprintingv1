@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
-import { useApi } from '@/hooks/use-api'
 import toast from '@/lib/toast'
 import Image from 'next/image'
 
@@ -93,47 +92,60 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [uploadingImages, setUploadingImages] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
-  // Use cached API for product data
-  const { data: productData, loading: productLoading, error: productError } = useApi<{ product: Product }>(
-    `/api/products/by-slug/${params.slug}`,
-    { ttl: 2 * 60 * 1000 } // 2 minutes cache
-  )
-
-  // Update local state when product data changes
+  // Fetch product data with simple pattern - no complex caching
   useEffect(() => {
-    if (productData?.product) {
-      setProduct(productData.product)
-      setError(null)
+    const fetchProductData = async () => {
+      try {
+        console.log(`Fetching product data for slug: ${params.slug}`)
+        setLoading(true)
+        setError(null)
 
-      // Set default selections
-      if (productData.product.productPaperStocks.length > 0) {
-        const defaultPaper = productData.product.productPaperStocks.find(p => p.isDefault) || productData.product.productPaperStocks[0]
-        setSelectedPaperStock(defaultPaper.paperStock.id)
-      }
+        const response = await fetch(`/api/products/by-slug/${params.slug}`)
 
-      if (productData.product.productQuantityGroups.length > 0 && productData.product.productQuantityGroups[0].quantityGroup.values) {
-        const quantities = productData.product.productQuantityGroups[0].quantityGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom')
-        if (quantities.length > 0) {
-          setSelectedQuantity(parseInt(quantities[0]))
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(`Failed to fetch product: ${response.status} - ${errorText}`)
         }
-      }
 
-      if (productData.product.productSizeGroups.length > 0 && productData.product.productSizeGroups[0].sizeGroup.values) {
-        const sizes = productData.product.productSizeGroups[0].sizeGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom')
-        if (sizes.length > 0) {
-          setSelectedSize('0') // First size option
+        const data = await response.json()
+        console.log('Product data received:', data)
+
+        if (data?.product) {
+          setProduct(data.product)
+
+          // Set default selections
+          if (data.product.productPaperStocks?.length > 0) {
+            const defaultPaper = data.product.productPaperStocks.find((p: any) => p.isDefault) || data.product.productPaperStocks[0]
+            setSelectedPaperStock(defaultPaper.paperStock.id)
+          }
+
+          if (data.product.productQuantityGroups?.length > 0 && data.product.productQuantityGroups[0].quantityGroup?.values) {
+            const quantities = data.product.productQuantityGroups[0].quantityGroup.values.split(',').map((v: string) => v.trim()).filter((v: string) => v && v !== 'custom')
+            if (quantities.length > 0) {
+              setSelectedQuantity(parseInt(quantities[0]))
+            }
+          }
+
+          if (data.product.productSizeGroups?.length > 0 && data.product.productSizeGroups[0].sizeGroup?.values) {
+            const sizes = data.product.productSizeGroups[0].sizeGroup.values.split(',').map((v: string) => v.trim()).filter((v: string) => v && v !== 'custom')
+            if (sizes.length > 0) {
+              setSelectedSize('0') // First size option
+            }
+          }
+        } else {
+          throw new Error('Product not found in response')
         }
+      } catch (err) {
+        console.error('Error fetching product:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load product')
+        setProduct(null)
+      } finally {
+        setLoading(false)
       }
     }
-  }, [productData])
 
-  // Update local loading and error state
-  useEffect(() => {
-    setLoading(productLoading)
-    if (productError) {
-      setError(productError)
-    }
-  }, [productLoading, productError])
+    fetchProductData()
+  }, [params.slug])
 
   // Handle customer image upload
   const handleImageUpload = async (files: File[]) => {
@@ -260,12 +272,24 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     openCart()
   }
 
+  // Debug information in development
+  useEffect(() => {
+    console.log('Product Page State:', {
+      loading,
+      error,
+      productExists: !!product,
+      productName: product?.name,
+      slug: params.slug
+    })
+  }, [loading, error, product, params.slug])
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Loading product...</span>
+          <span className="ml-2 mt-4">Loading product...</span>
+          <span className="text-xs text-muted-foreground mt-2">Slug: {params.slug}</span>
         </div>
       </div>
     )
@@ -275,8 +299,17 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
-          <p className="text-muted-foreground mb-8">{error || 'The requested product could not be found'}</p>
+          <h1 className="text-2xl font-bold mb-4">Product Loading Error</h1>
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p className="text-red-700 font-medium">Error Details:</p>
+              <p className="text-red-600 text-sm mt-2">{error || 'The requested product could not be found'}</p>
+              <div className="mt-4 text-left text-xs text-gray-600">
+                <p>Slug: {params.slug}</p>
+                <p>Endpoint: /api/products/by-slug/{params.slug}</p>
+              </div>
+            </div>
+          </div>
           <Link href="/products">
             <Button size="lg">Browse Products</Button>
           </Link>
