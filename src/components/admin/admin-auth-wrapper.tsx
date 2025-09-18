@@ -23,24 +23,6 @@ const AuthContext = createContext<AuthContextType>({
 export const useAdminAuth = () => useContext(AuthContext)
 
 export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
-  // TEMPORARILY DISABLED FOR TESTING - DO NOT DEPLOY TO PRODUCTION
-  // This bypasses all authentication to test form rendering
-  const mockUser = {
-    id: 'test-admin',
-    email: 'admin@gangrunprinting.com',
-    role: 'ADMIN',
-    name: 'Test Admin'
-  }
-
-  return (
-    <AuthContext.Provider value={{ user: mockUser, isLoading: false, isAuthorized: true }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-// Original authentication code - RESTORE BEFORE PRODUCTION
-export function AdminAuthWrapperOriginal({ children }: AdminAuthWrapperProps) {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
