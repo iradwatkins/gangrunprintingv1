@@ -1,12 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 
 interface AdminAuthWrapperProps {
   children: React.ReactNode
 }
+
+interface AuthContextType {
+  user: any | null
+  isLoading: boolean
+  isAuthorized: boolean
+}
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isLoading: true,
+  isAuthorized: false
+})
+
+export const useAdminAuth = () => useContext(AuthContext)
 
 export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
   const router = useRouter()
@@ -19,22 +33,27 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
     // Set a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (isLoading && !isRedirecting) {
+        console.error('AdminAuthWrapper: Authentication check timed out after 10 seconds')
         setIsRedirecting(true)
         router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
       }
     }, 10000) // 10 second timeout
 
     const checkAdminAuth = async () => {
+      console.log('AdminAuthWrapper: Starting authentication check')
       try {
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
-          }
+          },
+          cache: 'no-store' // Prevent caching of auth status
         })
 
         if (!response.ok) {
+          console.log('AdminAuthWrapper: Auth check failed - response not ok')
           setIsRedirecting(true)
+          setIsLoading(false)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
           return
         }
@@ -42,27 +61,32 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         const userData = await response.json()
 
         if (!userData.user) {
+          console.log('AdminAuthWrapper: No user data found')
           setIsRedirecting(true)
+          setIsLoading(false)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
           return
         }
 
         if (userData.user.role !== 'ADMIN') {
+          console.log('AdminAuthWrapper: User is not an admin')
           setIsRedirecting(true)
+          setIsLoading(false)
           router.push('/?error=unauthorized')
           return
         }
 
         // User is authenticated and is an admin
+        console.log('AdminAuthWrapper: User authenticated as admin:', userData.user.email)
         setUser(userData.user)
         setIsAuthorized(true)
+        clearTimeout(timeout)
+        setIsLoading(false)
       } catch (error) {
         console.error('AdminAuthWrapper: Auth check failed:', error)
         setIsRedirecting(true)
-        router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
-      } finally {
-        clearTimeout(timeout)
         setIsLoading(false)
+        router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
       }
     }
 
@@ -70,7 +94,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
 
     // Cleanup timeout on unmount
     return () => clearTimeout(timeout)
-  }, [router])
+  }, [])
 
   // Show loading state while checking auth
   if (isLoading) {
@@ -109,6 +133,10 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
     )
   }
 
-  // User is authorized admin, show the admin interface
-  return <>{children}</>
+  // User is authorized admin, show the admin interface with context
+  return (
+    <AuthContext.Provider value={{ user, isLoading: false, isAuthorized: true }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }

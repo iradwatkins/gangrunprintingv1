@@ -65,7 +65,12 @@ export function SizeSelector({
     if (sizes.length === 0) {
       // Fetch sizes from API
       fetch('/api/sizes?active=true')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+          }
+          return res.json()
+        })
         .then(data => setDefaultSizes(data))
         .catch(err => console.error('Failed to load sizes:', err))
     }

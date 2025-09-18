@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 // GET /api/add-ons - List all add-ons
 export async function GET(request: NextRequest) {
@@ -32,6 +33,14 @@ export async function GET(request: NextRequest) {
 // POST /api/add-ons - Create a new add-on
 export async function POST(request: NextRequest) {
   try {
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     
     const {
