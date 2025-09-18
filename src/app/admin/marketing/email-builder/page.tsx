@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { EmailBuilder, type EmailTemplate } from '@/components/marketing/email-builder'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,7 +23,7 @@ interface Campaign {
   status: string
 }
 
-export default function EmailBuilderPage() {
+function EmailBuilderPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const campaignId = searchParams.get('campaignId')
@@ -331,5 +331,17 @@ export default function EmailBuilderPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+export default function EmailBuilderPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">Loading email builder...</div>
+      </div>
+    }>
+      <EmailBuilderPageContent />
+    </Suspense>
   )
 }

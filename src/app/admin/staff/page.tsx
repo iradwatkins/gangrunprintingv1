@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -89,7 +89,7 @@ function getPermissionsForRole(role: string): string[] {
   return permissions[role] || []
 }
 
-export default function StaffPage() {
+function StaffPageContent() {
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab') || 'members'
 
@@ -379,5 +379,17 @@ export default function StaffPage() {
         </TabsContent>
       </Tabs>
     </div>
+  )
+}
+
+export default function StaffPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">Loading staff data...</div>
+      </div>
+    }>
+      <StaffPageContent />
+    </Suspense>
   )
 }
