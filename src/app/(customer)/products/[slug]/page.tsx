@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import Image from 'next/image'
+import { responseToJsonSafely } from '@/lib/safe-json'
 
 interface ProductImage {
   id: string
@@ -107,7 +108,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           throw new Error(`Failed to fetch product: ${response.status} - ${errorText}`)
         }
 
-        const data = await response.json()
+        // Use safe JSON parsing to handle BOM and other issues
+        const data = await responseToJsonSafely<{ success: boolean; product: Product }>(response, `product-${params.slug}`)
         console.log('Product data received:', data)
 
         if (data?.product) {
@@ -167,11 +169,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         })
 
         if (!response.ok) {
-          const errorData = await response.json()
+          const errorData = await responseToJsonSafely<any>(response, 'upload-error')
           throw new Error(errorData.error || 'Upload failed')
         }
 
-        const data = await response.json()
+        const data = await responseToJsonSafely<any>(response, 'upload-customer-image')
 
         setCustomerImages(prev => [...prev, {
           id: data.id,
