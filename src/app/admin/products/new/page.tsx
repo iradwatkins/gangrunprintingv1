@@ -17,6 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw } from 'lucide-react'
+import { responseToJsonSafely } from '@/lib/safe-json'
 
 export default function NewProductPage() {
   const router = useRouter()
@@ -216,7 +217,7 @@ export default function NewProductPage() {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        const result = await responseToJsonSafely<any>(response, 'test-price')
         toast.success(`Test Price: $${result.totalPrice.toFixed(2)}`)
       } else {
         toast.error('Failed to calculate price')
@@ -268,7 +269,7 @@ export default function NewProductPage() {
         throw new Error('Failed to create product')
       }
 
-      const product = await response.json()
+      const product = await responseToJsonSafely<any>(response, 'create-product')
 
       // Step 2: Upload images with productId if any images were selected
       if (formData.images && formData.images.length > 0) {
