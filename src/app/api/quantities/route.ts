@@ -1,12 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { transformQuantityGroups } from '@/lib/utils/quantity-transformer'
 
 // GET /api/quantities - List all quantity groups
+// Optional query params:
+//   - active=true: Only return active groups
+//   - format=selector: Return transformed data for quantity selector component
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const activeOnly = searchParams.get('active') === 'true'
+    const format = searchParams.get('format')
 
     const where: any = {}
     if (activeOnly) {
@@ -35,6 +40,13 @@ export async function GET(request: NextRequest) {
       hasCustomOption: group.values.toLowerCase().includes('custom'),
     }))
 
+    // If format=selector, return transformed data for quantity selector component
+    if (format === 'selector') {
+      const transformedQuantities = transformQuantityGroups(processedGroups)
+      return NextResponse.json(transformedQuantities)
+    }
+
+    // Default: return quantity groups for admin interface
     return NextResponse.json(processedGroups)
   } catch (error) {
     console.error('Error fetching quantity groups:', error)
