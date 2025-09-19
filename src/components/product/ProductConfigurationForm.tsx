@@ -185,12 +185,12 @@ export default function ProductConfigurationForm({
             const selectedPaper = data.paperStocks.find((p: any) => p.id === newConfig.paperStock)
             if (selectedPaper) {
               // Set default coating
-              const defaultCoating = selectedPaper.paperStockCoatings.find((c: any) => c.isDefault)
-              newConfig.coating = defaultCoating?.coatingId || selectedPaper.paperStockCoatings[0]?.coatingId || ''
+              const defaultCoating = selectedPaper.coatings.find((c: any) => c.isDefault)
+              newConfig.coating = defaultCoating?.id || selectedPaper.coatings[0]?.id || ''
 
               // Set default sides (first enabled option)
-              const firstEnabledSide = selectedPaper.paperStockSides.find((s: any) => s.isEnabled)
-              newConfig.sides = firstEnabledSide?.sidesOptionId || ''
+              const firstEnabledSide = selectedPaper.sides.find((s: any) => s.isDefault)
+              newConfig.sides = firstEnabledSide?.id || selectedPaper.sides[0]?.id || ''
             }
           }
 
