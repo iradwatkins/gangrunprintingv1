@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 // Simple static configuration for testing
 const SIMPLE_CONFIG = {
@@ -228,7 +229,7 @@ const SIMPLE_CONFIG = {
   }
 }
 
-// GET /api/products/[id]/configuration - Simplified version
+// GET /api/products/[id]/configuration - Fetch turnaround times from database
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -243,28 +244,113 @@ export async function GET(
       )
     }
 
-    // For now, return static configuration
-    // This ensures we always get a response without database issues
-    console.log(`[Simplified Config API] Returning config for product: ${productId}`)
+    // Try to fetch turnaround times from database
+    let turnaroundTimes = SIMPLE_CONFIG.turnaroundTimes // Default fallback
 
-    return NextResponse.json(SIMPLE_CONFIG, {
+    try {
+      // Fetch the default turnaround time set for this product
+      const productTurnaroundTimeSet = await prisma.productTurnaroundTimeSet.findFirst({
+        where: {
+          productId,
+          isDefault: true
+        },
+        include: {
+          turnaroundTimeSet: {
+            include: {
+              turnaroundTimeItems: {
+                include: {
+                  turnaroundTime: true
+                },
+                orderBy: {
+                  sortOrder: 'asc'
+                }
+              }
+            }
+          }
+        }
+      })
+
+      // If no default set, try to get any assigned set
+      const assignedSet = productTurnaroundTimeSet || await prisma.productTurnaroundTimeSet.findFirst({
+        where: { productId },
+        include: {
+          turnaroundTimeSet: {
+            include: {
+              turnaroundTimeItems: {
+                include: {
+                  turnaroundTime: true
+                },
+                orderBy: {
+                  sortOrder: 'asc'
+                }
+              }
+            }
+          }
+        }
+      })
+
+      if (assignedSet?.turnaroundTimeSet?.turnaroundTimeItems) {
+        // Map the database turnaround times to the API format
+        turnaroundTimes = assignedSet.turnaroundTimeSet.turnaroundTimeItems.map((item, index) => {
+          const tt = item.turnaroundTime
+          return {
+            id: `turnaround_${index + 1}`,
+            name: tt.name,
+            displayName: tt.displayName,
+            description: tt.description || '',
+            daysMin: tt.daysMin,
+            daysMax: tt.daysMax || tt.daysMin,
+            pricingModel: tt.pricingModel,
+            basePrice: tt.basePrice,
+            priceMultiplier: tt.priceMultiplier,
+            requiresNoCoating: tt.requiresNoCoating,
+            restrictedCoatings: tt.restrictedCoatings || [],
+            isDefault: item.isDefault || (index === 0) // First one is default if none specified
+          }
+        })
+
+        console.log(`[Config API] Loaded ${turnaroundTimes.length} turnaround times from set "${assignedSet.turnaroundTimeSet.name}" for product: ${productId}`)
+      } else {
+        console.log(`[Config API] No turnaround time set assigned, using default hardcoded values for product: ${productId}`)
+      }
+    } catch (dbError) {
+      console.error('[Config API] Database error fetching turnaround times:', dbError)
+      // Continue with hardcoded fallback
+    }
+
+    // Build the configuration object with dynamic turnaround times
+    const config = {
+      ...SIMPLE_CONFIG,
+      turnaroundTimes
+    }
+
+    // Update the defaults to use the first turnaround time if available
+    if (turnaroundTimes.length > 0) {
+      const defaultTurnaround = turnaroundTimes.find(t => t.isDefault) || turnaroundTimes[0]
+      config.defaults = {
+        ...SIMPLE_CONFIG.defaults,
+        turnaround: defaultTurnaround.id
+      }
+    }
+
+    return NextResponse.json(config, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60',
-        'X-API-Version': 'simplified-v1',
+        'X-API-Version': 'v2-dynamic',
         'X-Product-Id': productId
       }
     })
   } catch (error) {
-    console.error('[Simplified Config API] Error:', error)
+    console.error('[Config API] Error:', error)
 
     // Even on error, return the static config
     return NextResponse.json(SIMPLE_CONFIG, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Version': 'simplified-v1-fallback'
+        'X-API-Version': 'v1-fallback'
       }
     })
   }
