@@ -131,11 +131,15 @@ export default function SimpleConfigurationForm({
 
   // Fetch configuration data
   useEffect(() => {
+    console.log('🔄 SimpleConfigurationForm useEffect triggered with productId:', productId)
+    console.log('🔄 productId type:', typeof productId)
+    console.log('🔄 productId truthy:', !!productId)
+
     async function fetchConfiguration() {
       try {
         setLoading(true)
         setError(null)
-        console.log('Fetching configuration for product:', productId)
+        console.log('📡 Starting fetch for productId:', productId)
 
         const response = await fetch(`/api/products/${productId}/configuration`, {
           method: 'GET',
@@ -145,17 +149,22 @@ export default function SimpleConfigurationForm({
           },
         })
 
+        console.log('📡 Response status:', response.status)
+        console.log('📡 Response ok:', response.ok)
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
 
         const data: SimpleConfigData = await response.json()
-        console.log('Configuration data received:', data)
+        console.log('✅ Configuration data received:', data)
+        console.log('✅ Turnaround times count:', data.turnaroundTimes?.length || 0)
+        console.log('✅ Add-ons count:', data.addons?.length || 0)
 
         setConfigData(data)
 
         // Set defaults
-        setConfiguration({
+        const newConfig = {
           quantity: data.defaults.quantity || data.quantities[0]?.id || '',
           size: data.defaults.size || data.sizes[0]?.id || '',
           paper: data.defaults.paper || data.paperStocks[0]?.id || '',
@@ -164,17 +173,24 @@ export default function SimpleConfigurationForm({
           turnaround: data.defaults.turnaround || data.turnaroundTimes[0]?.id || '',
           uploadedFiles: [],
           selectedAddons: data.defaults.addons || [],
-        })
+        }
+        console.log('✅ Setting default configuration:', newConfig)
+        setConfiguration(newConfig)
       } catch (err) {
-        console.error('Failed to fetch configuration:', err)
+        console.error('❌ Failed to fetch configuration:', err)
         setError(err instanceof Error ? err.message : 'Failed to load configuration')
       } finally {
+        console.log('🏁 Setting loading to false')
         setLoading(false)
       }
     }
 
     if (productId) {
+      console.log('✅ ProductId exists, starting fetch...')
       fetchConfiguration()
+    } else {
+      console.log('❌ ProductId is missing, skipping fetch')
+      console.log('❌ ProductId value:', productId)
     }
   }, [productId])
 
