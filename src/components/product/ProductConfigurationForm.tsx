@@ -17,6 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import TurnaroundTimeSelector from './TurnaroundTimeSelector'
+import AddonAccordion from './AddonAccordion'
 
 // Types for configuration data
 interface PaperStock {
@@ -44,6 +46,32 @@ interface PaperStock {
   }>
 }
 
+interface TurnaroundTime {
+  id: string
+  name: string
+  displayName: string
+  description?: string
+  daysMin: number
+  daysMax?: number
+  pricingModel: 'FLAT' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM'
+  basePrice: number
+  priceMultiplier: number
+  requiresNoCoating: boolean
+  restrictedCoatings: string[]
+  isDefault: boolean
+}
+
+interface Addon {
+  id: string
+  name: string
+  description: string
+  pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT'
+  price: number
+  priceDisplay: string
+  isDefault: boolean
+  additionalTurnaroundDays: number
+}
+
 interface ConfigurationData {
   quantities: Array<{
     id: string
@@ -59,12 +87,16 @@ interface ConfigurationData {
     preCalculatedValue: number
   }>
   paperStocks: PaperStock[]
+  turnaroundTimes: TurnaroundTime[]
+  addons: Addon[]
   defaults: {
     quantity?: string
     size?: string
     paper?: string
     coating?: string
     sides?: string
+    turnaround?: string
+    addons?: string[]
   }
 }
 
@@ -75,6 +107,8 @@ interface ProductConfiguration {
   sides: string
   paperStock: string
   coating: string
+  turnaround: string
+  selectedAddons: string[]
 }
 
 interface ProductConfigurationFormProps {
@@ -104,6 +138,8 @@ export default function ProductConfigurationForm({
     sides: '',
     paperStock: '',
     coating: '',
+    turnaround: '',
+    selectedAddons: [],
   })
 
   // Fetch configuration data
@@ -138,18 +174,20 @@ export default function ProductConfigurationForm({
             paperStock: data.defaults.paper || data.paperStocks[0]?.id || '',
             sides: '',
             coating: '',
+            turnaround: data.defaults.turnaround || data.turnaroundTimes?.[0]?.id || '',
+            selectedAddons: data.defaults.addons || [],
           }
 
           // Set default sides and coating based on selected paper
           if (newConfig.paperStock && data.paperStocks) {
-            const selectedPaper = data.paperStocks.find(p => p.id === newConfig.paperStock)
+            const selectedPaper = data.paperStocks.find((p: any) => p.id === newConfig.paperStock)
             if (selectedPaper) {
               // Set default coating
-              const defaultCoating = selectedPaper.paperStockCoatings.find(c => c.isDefault)
+              const defaultCoating = selectedPaper.paperStockCoatings.find((c: any) => c.isDefault)
               newConfig.coating = defaultCoating?.coatingId || selectedPaper.paperStockCoatings[0]?.coatingId || ''
 
               // Set default sides (first enabled option)
-              const firstEnabledSide = selectedPaper.paperStockSides.find(s => s.isEnabled)
+              const firstEnabledSide = selectedPaper.paperStockSides.find((s: any) => s.isEnabled)
               newConfig.sides = firstEnabledSide?.sidesOptionId || ''
             }
           }
@@ -161,7 +199,8 @@ export default function ProductConfigurationForm({
                            newConfig.size &&
                            newConfig.sides &&
                            newConfig.paperStock &&
-                           newConfig.coating
+                           newConfig.coating &&
+                           newConfig.turnaround
 
           onConfigurationChange?.(newConfig, Boolean(isComplete))
         }
@@ -312,11 +351,12 @@ export default function ProductConfigurationForm({
            configuration.size &&
            configuration.sides &&
            configuration.paperStock &&
-           configuration.coating
+           configuration.coating &&
+           configuration.turnaround
   }
 
   // Handle other configuration changes
-  const handleConfigChange = (field: keyof ProductConfiguration, value: string) => {
+  const handleConfigChange = (field: keyof ProductConfiguration, value: string | boolean | string[]) => {
     const newConfig = { ...configuration, [field]: value }
     setConfiguration(newConfig)
 
@@ -325,7 +365,53 @@ export default function ProductConfigurationForm({
                      newConfig.size &&
                      newConfig.sides &&
                      newConfig.paperStock &&
-                     newConfig.coating
+                     newConfig.coating &&
+                     newConfig.turnaround
+
+    onConfigurationChange?.(newConfig, Boolean(isComplete))
+  }
+
+  // Handle turnaround changes
+  const handleTurnaroundChange = (turnaroundId: string) => {
+    if (!configData) return
+
+    const selectedTurnaround = configData.turnaroundTimes.find(t => t.id === turnaroundId)
+    let newConfig = { ...configuration, turnaround: turnaroundId }
+
+    // If turnaround requires no coating, force coating to "No Coating" if available
+    if (selectedTurnaround?.requiresNoCoating) {
+      const selectedPaper = configData.paperStocks.find((p: any) => p.id === configuration.paperStock)
+      const noCoatingOption = selectedPaper?.paperStockCoatings.find((c: any) => c.coating.name === 'No Coating')
+      if (noCoatingOption) {
+        newConfig = { ...newConfig, coating: noCoatingOption.coatingId }
+      }
+    }
+
+    setConfiguration(newConfig)
+
+    // Check if configuration is complete
+    const isComplete = newConfig.quantity &&
+                     newConfig.size &&
+                     newConfig.sides &&
+                     newConfig.paperStock &&
+                     newConfig.coating &&
+                     newConfig.turnaround
+
+    onConfigurationChange?.(newConfig, Boolean(isComplete))
+  }
+
+  // Handle addon changes
+  const handleAddonChange = (selectedAddonIds: string[]) => {
+    const newConfig = { ...configuration, selectedAddons: selectedAddonIds }
+    setConfiguration(newConfig)
+
+    // Check if configuration is complete
+    const isComplete = newConfig.quantity &&
+                     newConfig.size &&
+                     newConfig.sides &&
+                     newConfig.paperStock &&
+                     newConfig.coating &&
+                     newConfig.turnaround
 
     onConfigurationChange?.(newConfig, Boolean(isComplete))
   }
@@ -528,6 +614,30 @@ export default function ProductConfigurationForm({
             </SelectContent>
           </Select>
         </div>
+
+        {/* Add-ons & Upgrades Section */}
+        {configData.addons && configData.addons.length > 0 && (
+          <AddonAccordion
+            addons={configData.addons}
+            selectedAddons={configuration.selectedAddons}
+            onAddonChange={handleAddonChange}
+            turnaroundTimes={configData.turnaroundTimes}
+            disabled={loading}
+          />
+        )}
+
+        {/* Turnaround Time Selection */}
+        {configData.turnaroundTimes && configData.turnaroundTimes.length > 0 && (
+          <TurnaroundTimeSelector
+            turnaroundTimes={configData.turnaroundTimes}
+            selectedTurnaroundId={configuration.turnaround}
+            onTurnaroundChange={handleTurnaroundChange}
+            baseProductPrice={calculatePrice || 0}
+            quantity={configData.quantities.find(q => q.id === configuration.quantity)?.calculationValue || 1}
+            currentCoating={configuration.coating}
+            disabled={loading}
+          />
+        )}
       </div>
     </TooltipProvider>
   )

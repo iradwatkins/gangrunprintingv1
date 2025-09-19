@@ -21,10 +21,19 @@ interface Addon {
   additionalTurnaroundDays: number
 }
 
+interface TurnaroundTime {
+  id: string
+  displayName: string
+  description?: string
+  daysMin: number
+  daysMax?: number
+}
+
 interface AddonAccordionProps {
   addons: Addon[]
   selectedAddons: string[]
   onAddonChange: (addonIds: string[]) => void
+  turnaroundTimes?: TurnaroundTime[]
   disabled?: boolean
 }
 
@@ -32,6 +41,7 @@ export default function AddonAccordion({
   addons,
   selectedAddons,
   onAddonChange,
+  turnaroundTimes = [],
   disabled = false
 }: AddonAccordionProps) {
   const handleAddonToggle = (addonId: string, checked: boolean) => {
@@ -76,6 +86,24 @@ export default function AddonAccordion({
               <p className="text-sm text-gray-600 mb-4">
                 Enhance your order with professional add-ons. Select any combination that meets your needs.
               </p>
+
+              {/* Available Turnaround Times Info */}
+              {turnaroundTimes && turnaroundTimes.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">Available Turnaround Times:</h4>
+                  <div className="text-xs text-blue-800 space-y-1">
+                    {turnaroundTimes.map((turnaround) => (
+                      <div key={turnaround.id} className="flex justify-between">
+                        <span>{turnaround.displayName}</span>
+                        <span>{turnaround.daysMin}{turnaround.daysMax && turnaround.daysMax !== turnaround.daysMin ? `-${turnaround.daysMax}` : ''} days</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-blue-700 mt-2 italic">
+                    Select your turnaround time below in the Print Turnaround section
+                  </p>
+                </div>
+              )}
 
               <div className="grid gap-4">
                 {addons.map((addon) => {
