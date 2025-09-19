@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import { ProductImageGallery } from './ProductImageGallery'
-import ProductConfigurationForm from './ProductConfigurationForm'
+import SimpleConfigurationForm from './SimpleConfigurationForm'
 
 interface ProductImage {
   id: string
@@ -281,127 +281,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* Product Configuration Form - Updated Component */}
-              <ProductConfigurationForm
+              {/* Simple Configuration Form - Already includes turnaround times, add-ons, and file upload in correct order */}
+              <SimpleConfigurationForm
                 productId={product.id}
-                basePrice={product.basePrice}
-                setupFee={product.setupFee}
-                onConfigurationChange={handleConfigurationChange}
-                onPriceChange={handlePriceChange}
+                onConfigurationChange={(config, price) => {
+                  handleConfigurationChange(config, true)
+                  handlePriceChange(price)
+                }}
               />
-
-              {/* Customer File Upload - Moved here to be above turnaround times */}
-              <div>
-                <Label className="text-sm font-semibold text-gray-800 uppercase tracking-wide mb-3 block">UPLOAD YOUR DESIGN</Label>
-
-                {/* Upload Area */}
-                <div className="border-2 border-dashed rounded-lg p-4 mb-4">
-                  <Input
-                    multiple
-                    accept=".pdf,.ai,.psd,.jpg,.jpeg,.png,.svg"
-                    className="hidden"
-                    id="customer-files"
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        handleImageUpload(Array.from(e.target.files))
-                      }
-                    }}
-                  />
-                  <Label
-                    className="cursor-pointer flex flex-col items-center justify-center"
-                    htmlFor="customer-files"
-                  >
-                    <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      Click to upload or drag and drop
-                    </span>
-                    <span className="text-xs text-muted-foreground mt-1">
-                      PDF, AI, PSD, JPG, PNG, SVG (max. 10MB each)
-                    </span>
-                  </Label>
-                </div>
-
-                {/* Uploaded Images */}
-                {(customerImages.length > 0 || uploadingImages.length > 0) && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Uploaded Files</Label>
-                    <div className="space-y-2">
-                      {customerImages.map((image) => (
-                        <div
-                          key={image.id}
-                          className="flex items-center gap-3 p-3 border rounded-lg"
-                        >
-                          {image.thumbnailUrl ? (
-                            <Image
-                              alt={image.fileName}
-                              className="w-12 h-12 object-cover rounded"
-                              height={48}
-                              src={image.thumbnailUrl}
-                              width={48}
-                            />
-                          ) : (
-                            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                              <Upload className="h-6 w-6 text-gray-400" />
-                            </div>
-                          )}
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{image.fileName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {(image.fileSize / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDeleteImage(image.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-
-                      {uploadingImages.map((file, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-3 p-3 border rounded-lg opacity-50"
-                        >
-                          <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">Uploading...</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Add to Cart Button - Positioned after everything */}
-              <div className="border-t pt-6">
-                <Button
-                  className="w-full"
-                  disabled={customerImages.length === 0 || isUploading || !isConfigurationComplete}
-                  size="lg"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart
-                </Button>
-                {customerImages.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center mt-2">
-                    Please upload your design file to continue
-                  </p>
-                )}
-                {!isConfigurationComplete && customerImages.length > 0 && (
-                  <p className="text-sm text-muted-foreground text-center mt-2">
-                    Please complete your product configuration
-                  </p>
-                )}
-              </div>
             </TabsContent>
 
             <TabsContent className="space-y-4" value="specifications">
