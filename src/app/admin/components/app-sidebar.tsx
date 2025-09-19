@@ -96,6 +96,10 @@ const data = {
           url: '/admin/paper-stocks',
         },
         {
+          title: 'Paper Stock Sets',
+          url: '/admin/paper-stock-sets',
+        },
+        {
           title: 'Quantities',
           url: '/admin/quantities',
         },

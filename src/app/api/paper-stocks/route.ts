@@ -17,7 +17,7 @@ export async function GET() {
             sidesOption: true,
           },
         },
-        productPaperStocks: true,
+        paperStockSetItems: true,
       },
     })
 
@@ -69,7 +69,7 @@ export async function GET() {
         isActive: stock.isActive,
         paperStockCoatings: stock.paperStockCoatings,
         paperStockSides: stock.paperStockSides,
-        productsCount: stock.productPaperStocks.length,
+        productsCount: stock.paperStockSetItems.length,
       }
     })
 

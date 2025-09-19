@@ -1,0 +1,239 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+
+// Schema for updating a paper stock set
+const updatePaperStockSetSchema = z.object({
+  name: z.string().min(1, 'Name is required').optional(),
+  description: z.string().nullable().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+  isActive: z.boolean().optional(),
+  paperStocks: z.array(z.object({
+    id: z.string(),
+    isDefault: z.boolean().default(false),
+    sortOrder: z.number().int().min(0).default(0)
+  })).optional()
+})
+
+// GET - Get a single paper stock set
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const group = await prisma.paperStockSet.findUnique({
+      where: { id: params.id },
+      include: {
+        paperStockItems: {
+          include: {
+            paperStock: {
+              include: {
+                paperStockCoatings: {
+                  include: {
+                    coating: true
+                  }
+                },
+                paperStockSides: {
+                  include: {
+                    sidesOption: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            sortOrder: 'asc'
+          }
+        }
+      }
+    })
+
+    if (!group) {
+      return NextResponse.json(
+        { error: 'Paper stock set not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(group)
+  } catch (error) {
+    console.error('Error fetching paper stock set:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch paper stock set' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT - Update a paper stock set
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const body = await request.json()
+    const validatedData = updatePaperStockSetSchema.parse(body)
+
+    // Check if group exists
+    const existingGroup = await prisma.paperStockSet.findUnique({
+      where: { id: params.id }
+    })
+
+    if (!existingGroup) {
+      return NextResponse.json(
+        { error: 'Paper stock set not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check if new name already exists (if changing name)
+    if (validatedData.name && validatedData.name !== existingGroup.name) {
+      const nameExists = await prisma.paperStockSet.findUnique({
+        where: { name: validatedData.name }
+      })
+
+      if (nameExists) {
+        return NextResponse.json(
+          { error: 'A paper stock set with this name already exists' },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Update the group in a transaction
+    const updatedGroup = await prisma.$transaction(async (tx) => {
+      // Update basic group info
+      const group = await tx.paperStockSet.update({
+        where: { id: params.id },
+        data: {
+          name: validatedData.name,
+          description: validatedData.description,
+          sortOrder: validatedData.sortOrder,
+          isActive: validatedData.isActive
+        }
+      })
+
+      // If paper stocks are provided, update them
+      if (validatedData.paperStocks !== undefined) {
+        // Delete existing paper stock items
+        await tx.paperStockSetItem.deleteMany({
+          where: { paperStockSetId: params.id }
+        })
+
+        // Create new paper stock items
+        if (validatedData.paperStocks.length > 0) {
+          // Ensure exactly one item is marked as default
+          let paperStocksWithDefault = [...validatedData.paperStocks]
+          const defaultStocks = paperStocksWithDefault.filter(s => s.isDefault)
+
+          if (defaultStocks.length === 0) {
+            // No default set, make the first one default
+            paperStocksWithDefault[0].isDefault = true
+          } else if (defaultStocks.length > 1) {
+            // Multiple defaults set, keep only the first one as default
+            paperStocksWithDefault = paperStocksWithDefault.map((stock, index) => ({
+              ...stock,
+              isDefault: stock === defaultStocks[0]
+            }))
+          }
+
+          await tx.paperStockSetItem.createMany({
+            data: paperStocksWithDefault.map((stock, index) => ({
+              paperStockSetId: params.id,
+              paperStockId: stock.id,
+              isDefault: stock.isDefault,
+              sortOrder: stock.sortOrder || index
+            }))
+          })
+        }
+      }
+
+      // Return the updated group with all relations
+      return await tx.paperStockSet.findUnique({
+        where: { id: params.id },
+        include: {
+          paperStockItems: {
+            include: {
+              paperStock: {
+                include: {
+                  paperStockCoatings: {
+                    include: {
+                      coating: true
+                    }
+                  },
+                  paperStockSides: {
+                    include: {
+                      sidesOption: true
+                    }
+                  }
+                }
+              }
+            },
+            orderBy: {
+              sortOrder: 'asc'
+            }
+          }
+        }
+      })
+    })
+
+    return NextResponse.json(updatedGroup)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation error', details: error.errors },
+        { status: 400 }
+      )
+    }
+
+    console.error('Error updating paper stock set:', error)
+    return NextResponse.json(
+      { error: 'Failed to update paper stock set' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Delete a paper stock set
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Check if group exists
+    const group = await prisma.paperStockSet.findUnique({
+      where: { id: params.id },
+      include: {
+        productPaperStockSets: true
+      }
+    })
+
+    if (!group) {
+      return NextResponse.json(
+        { error: 'Paper stock set not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check if group is being used by any products
+    if (group.productPaperStockSets.length > 0) {
+      return NextResponse.json(
+        { error: 'Cannot delete paper stock set that is assigned to products' },
+        { status: 400 }
+      )
+    }
+
+    // Delete the group (cascade will handle paperStockSetItems)
+    await prisma.paperStockSet.delete({
+      where: { id: params.id }
+    })
+
+    return NextResponse.json({ message: 'Paper stock set deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting paper stock set:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete paper stock set' },
+      { status: 500 }
+    )
+  }
+}

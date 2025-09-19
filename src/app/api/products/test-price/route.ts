@@ -6,8 +6,7 @@ export async function POST(request: NextRequest) {
     const {
       basePrice = 0,
       setupFee = 0,
-      paperStocks = [],
-      defaultPaperStock,
+      paperStockSetId,
       quantityGroup,
       sizeGroup,
       addOns = [],
@@ -19,8 +18,8 @@ export async function POST(request: NextRequest) {
 
     // Add a simple multiplier for demonstration
     // This is just for testing - real calculation would be more complex
-    if (paperStocks.length > 0) {
-      totalPrice *= 1.1 // 10% for paper stock
+    if (paperStockSetId) {
+      totalPrice *= 1.1 // 10% for paper stock set
     }
 
     if (quantityGroup) {
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
       breakdown: {
         basePrice,
         setupFee,
-        paperStockCount: paperStocks.length,
+        hasPaperStockSet: !!paperStockSetId,
         hasQuantityGroup: !!quantityGroup,
         hasSizeGroup: !!sizeGroup,
         addOnsCount: addOns.length,

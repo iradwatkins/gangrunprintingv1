@@ -33,8 +33,7 @@ const createProductSchema = z
         })
       )
       .default([]),
-    selectedPaperStocks: z.array(z.string().cuid()).min(1),
-    defaultPaperStock: z.string().cuid(),
+    paperStockSetId: z.string().cuid('Paper stock set ID must be valid'),
     selectedQuantityGroup: z.string().cuid(),
     selectedSizeGroup: z.string().cuid(),
     selectedAddOns: z.array(z.string().cuid()).default([]),
@@ -44,10 +43,6 @@ const createProductSchema = z
     rushFee: z.number().min(0).max(10000).optional().nullable(),
     basePrice: z.number().min(0).max(100000).default(0),
     setupFee: z.number().min(0).max(10000).default(0),
-  })
-  .refine((data) => data.selectedPaperStocks.includes(data.defaultPaperStock), {
-    message: 'Default paper stock must be selected',
-    path: ['defaultPaperStock'],
   })
 
 // GET /api/products - List all products
@@ -75,9 +70,17 @@ export async function GET(request: NextRequest) {
         ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStocks: {
+        productPaperStockSets: {
           include: {
-            paperStock: true,
+            paperStockSet: {
+              include: {
+                paperStockItems: {
+                  include: {
+                    paperStock: true,
+                  },
+                },
+              },
+            },
           },
         },
         ProductOption: {
@@ -109,7 +112,7 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             ProductImage: true,
-            productPaperStocks: true,
+            productPaperStockSets: true,
             ProductOption: true,
             productQuantityGroups: true,
             productSizeGroups: true,
@@ -184,8 +187,7 @@ export async function POST(request: NextRequest) {
       isActive,
       isFeatured,
       images,
-      selectedPaperStocks,
-      defaultPaperStock,
+      paperStockSetId,
       selectedQuantityGroup,
       selectedSizeGroup,
       selectedAddOns,
@@ -200,9 +202,9 @@ export async function POST(request: NextRequest) {
 
     console.log(`[${requestId}] Step 3: Validating foreign keys...`)
     try {
-      const [category, paperStocks, quantityGroup, sizeGroup, addOns] = await Promise.all([
+      const [category, paperStockSet, quantityGroup, sizeGroup, addOns] = await Promise.all([
         prisma.productCategory.findUnique({ where: { id: categoryId } }),
-        prisma.paperStock.findMany({ where: { id: { in: selectedPaperStocks } } }),
+        prisma.paperStockSet.findUnique({ where: { id: paperStockSetId } }),
         prisma.quantityGroup.findUnique({ where: { id: selectedQuantityGroup } }),
         prisma.sizeGroup.findUnique({ where: { id: selectedSizeGroup } }),
         selectedAddOns.length > 0
@@ -213,10 +215,9 @@ export async function POST(request: NextRequest) {
       if (!category) {
         return NextResponse.json({ error: `Category not found: ${categoryId}` }, { status: 400 })
       }
-      if (paperStocks.length !== selectedPaperStocks.length) {
-        const missing = selectedPaperStocks.filter((id) => !paperStocks.find((ps) => ps.id === id))
+      if (!paperStockSet) {
         return NextResponse.json(
-          { error: `Paper stocks not found: ${missing.join(', ')}` },
+          { error: `Paper stock set not found: ${paperStockSetId}` },
           { status: 400 }
         )
       }
@@ -290,17 +291,13 @@ export async function POST(request: NextRequest) {
                   }
                 : undefined,
 
-            // Create paper stock associations
-            productPaperStocks:
-              selectedPaperStocks.length > 0
-                ? {
-                    create: selectedPaperStocks.map((stockId: string) => ({
-                      paperStockId: stockId,
-                      isDefault: stockId === defaultPaperStock,
-                      additionalCost: 0,
-                    })),
-                  }
-                : undefined,
+            // Create paper stock set association
+            productPaperStockSets: {
+              create: {
+                paperStockSetId: paperStockSetId,
+                isDefault: true,
+              },
+            },
 
             // Create quantity group association
             productQuantityGroups: selectedQuantityGroup
@@ -333,9 +330,17 @@ export async function POST(request: NextRequest) {
           include: {
             ProductCategory: true,
             ProductImage: true,
-            productPaperStocks: {
+            productPaperStockSets: {
               include: {
-                paperStock: true,
+                paperStockSet: {
+                  include: {
+                    paperStockItems: {
+                      include: {
+                        paperStock: true,
+                      },
+                    },
+                  },
+                },
               },
             },
             productQuantityGroups: {

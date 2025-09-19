@@ -18,22 +18,29 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
-import Image from 'next/image'
+import { ProductImageGallery } from './ProductImageGallery'
 
 interface ProductImage {
   id: string
   url: string
   thumbnailUrl?: string
+  largeUrl?: string
+  mediumUrl?: string
+  webpUrl?: string
+  blurDataUrl?: string
   alt?: string
+  caption?: string
   isPrimary: boolean
   sortOrder: number
+  width?: number
+  height?: number
 }
 
 interface Product {
   id: string
   name: string
   slug: string
-  description: string
+  description: string | null
   shortDescription?: string
   basePrice: number
   setupFee: number
@@ -44,14 +51,23 @@ interface Product {
     name: string
   }
   ProductImage: ProductImage[]
-  productPaperStocks: Array<{
-    paperStock: {
+  productPaperStockSets: Array<{
+    paperStockSet: {
       id: string
       name: string
       description?: string
+      paperStockItems: Array<{
+        id: string
+        paperStock: {
+          id: string
+          name: string
+          description?: string
+        }
+        isDefault: boolean
+        sortOrder: number
+      }>
     }
     isDefault: boolean
-    additionalCost: number
   }>
   productQuantityGroups: Array<{
     quantityGroup: {
@@ -89,11 +105,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const { addItem, openCart } = useCart()
 
   // Product configuration state
-  const [selectedPaperStock, setSelectedPaperStock] = useState<string>(
-    product.productPaperStocks.find((p) => p.isDefault)?.paperStock.id ||
-      product.productPaperStocks[0]?.paperStock.id ||
-      ''
-  )
+  const [selectedPaperStock, setSelectedPaperStock] = useState<string>(() => {
+    if (product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems) {
+      const defaultItem = product.productPaperStockSets[0].paperStockSet.paperStockItems.find(item => item.isDefault)
+      return defaultItem?.paperStock.id || product.productPaperStockSets[0].paperStockSet.paperStockItems[0]?.paperStock.id || ''
+    }
+    return ''
+  })
 
   const [selectedQuantity, setSelectedQuantity] = useState<number>(() => {
     if (product.productQuantityGroups?.[0]?.quantityGroup?.values) {
@@ -199,11 +217,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     let price = product.basePrice
 
     // Add paper stock cost
-    const paperStock = product.productPaperStocks.find(
-      (p) => p.paperStock.id === selectedPaperStock
-    )
-    if (paperStock) {
-      price += paperStock.additionalCost
+    if (product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems) {
+      const paperStockItem = product.productPaperStockSets[0].paperStockSet.paperStockItems.find(
+        (item) => item.paperStock.id === selectedPaperStock
+      )
+      // Note: paperStockItems don't have additionalCost, price calculation would be based on paperStock.pricePerSqInch
+      // This would need to be implemented based on actual pricing logic
     }
 
     // Add quantity-based pricing (simplified)
@@ -220,8 +239,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       return
     }
 
-    const selectedPaper = product.productPaperStocks.find(
-      (p) => p.paperStock.id === selectedPaperStock
+    const selectedPaper = product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems.find(
+      (item) => item.paperStock.id === selectedPaperStock
     )
     const sizeGroup = product.productSizeGroups[0]?.sizeGroup
     const sizeValues =
@@ -250,15 +269,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       fileSize: customerImages[0]?.fileSize,
       image:
         product.ProductImage.find((img) => img.isPrimary)?.thumbnailUrl ||
+        product.ProductImage[0]?.thumbnailUrl ||
         product.ProductImage[0]?.url,
     })
 
     toast.success('Product added to cart!')
     openCart()
   }
-
-  const primaryImage = product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
-  const galleryImages = product.ProductImage.sort((a, b) => a.sortOrder - b.sortOrder)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -271,39 +288,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       </Link>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Product Images */}
+        {/* Product Images - Now using optimized gallery */}
         <div>
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
-            {primaryImage ? (
-              <Image
-                alt={primaryImage.alt || product.name}
-                className="w-full h-full object-cover"
-                height={600}
-                src={primaryImage.url}
-                width={600}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-muted-foreground">No image available</span>
-              </div>
-            )}
-          </div>
-
-          {galleryImages.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {galleryImages.map((image) => (
-                <div key={image.id} className="aspect-square bg-gray-100 rounded overflow-hidden">
-                  <Image
-                    alt={image.alt || `${product.name} image`}
-                    className="w-full h-full object-cover cursor-pointer hover:opacity-80"
-                    height={150}
-                    src={image.thumbnailUrl || image.url}
-                    width={150}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <ProductImageGallery
+            images={product.ProductImage}
+            productName={product.name}
+            productCategory={product.ProductCategory.name}
+            showThumbnails={true}
+            enableZoom={true}
+            enableLightbox={true}
+          />
         </div>
 
         {/* Product Details */}
@@ -330,7 +324,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             <TabsContent className="space-y-6" value="customize">
               {/* Paper Type */}
-              {product.productPaperStocks.length > 0 && (
+              {product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems?.length > 0 && (
                 <div>
                   <Label className="text-base mb-3 block">Paper Type</Label>
                   <Select value={selectedPaperStock} onValueChange={setSelectedPaperStock}>
@@ -338,10 +332,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.productPaperStocks.map((item) => (
+                      {product.productPaperStockSets[0].paperStockSet.paperStockItems.map((item) => (
                         <SelectItem key={item.paperStock.id} value={item.paperStock.id}>
                           {item.paperStock.name}
-                          {item.additionalCost > 0 && ` (+$${item.additionalCost})`}
+                          {item.isDefault && ' (Default)'}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -14,11 +14,19 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStocks: {
+        productPaperStockSets: {
           include: {
-            paperStock: true,
+            paperStockSet: {
+              include: {
+                paperStockItems: {
+                  include: {
+                    paperStock: true,
+                  },
+                  orderBy: { sortOrder: 'asc' },
+                },
+              },
+            },
           },
-          orderBy: { id: 'asc' },
         },
         productQuantityGroups: {
           include: {

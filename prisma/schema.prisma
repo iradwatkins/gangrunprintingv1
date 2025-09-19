@@ -89,6 +89,35 @@ model PaperStock {
   productPaperStocks      ProductPaperStock[]
   vendorPaperStocks       VendorPaperStock[]
   paperException          PaperException?
+  paperStockSetItems      PaperStockSetItem[]
+}
+
+model PaperStockSet {
+  id              String  @id @default(cuid())
+  name            String  @unique
+  description     String?
+  sortOrder       Int     @default(0)
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  paperStockItems PaperStockSetItem[]
+  productPaperStockSets   ProductPaperStockSet[]
+}
+
+model PaperStockSetItem {
+  id               String  @id @default(cuid())
+  paperStockSetId  String
+  paperStockId     String
+  isDefault        Boolean @default(false)
+  sortOrder        Int     @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  paperStockSet    PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
+  paperStock       PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+
+  @@unique([paperStockSetId, paperStockId])
+  @@index([paperStockSetId])
+  @@index([paperStockId])
 }
 
 model CoatingOption {
@@ -160,6 +189,7 @@ model Product {
   ProductImage          ProductImage[]
   ProductOption         ProductOption[]
   productPaperStocks    ProductPaperStock[]
+  productPaperStockSets   ProductPaperStockSet[]
   productQuantityGroups ProductQuantityGroup[]
   productSizeGroups     ProductSizeGroup[]
   vendorProducts        VendorProduct[]
@@ -183,6 +213,22 @@ model ProductPaperStock {
   @@unique([productId, paperStockId])
   @@index([productId])
   @@index([paperStockId])
+}
+
+model ProductPaperStockSet {
+  id                String  @id @default(cuid())
+  productId         String
+  paperStockSetId   String
+  isDefault         Boolean @default(false)
+  sortOrder         Int     @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  paperStockSet     PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, paperStockSetId])
+  @@index([productId])
+  @@index([paperStockSetId])
 }
 
 model Order {

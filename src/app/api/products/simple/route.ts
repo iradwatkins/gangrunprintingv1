@@ -13,7 +13,7 @@ const simpleProductSchema = z.object({
   isFeatured: z.boolean().default(false),
 
   // Single selections - required
-  paperStockId: z.string().min(1, 'Paper stock is required'),
+  paperStockSetId: z.string().min(1, 'Paper stock set is required'),
   quantityGroupId: z.string().min(1, 'Quantity group is required'),
   sizeGroupId: z.string().min(1, 'Size group is required'),
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: 'Validation failed',
-            details: error.errors.map((err) => ({
+            details: error.errors.map((err: any) => ({
               field: err.path.join('.'),
               message: err.message,
             })),
@@ -90,12 +90,11 @@ export async function POST(request: NextRequest) {
         setupFee: validatedData.setupFee,
         productionTime: validatedData.productionTime,
 
-        // Create single paper stock relation
-        productPaperStocks: {
+        // Create single paper stock set relation
+        productPaperStockSets: {
           create: {
-            paperStockId: validatedData.paperStockId,
+            paperStockSetId: validatedData.paperStockSetId,
             isDefault: true,
-            additionalCost: 0,
           },
         },
 
@@ -115,9 +114,17 @@ export async function POST(request: NextRequest) {
       },
       include: {
         ProductCategory: true,
-        productPaperStocks: {
+        productPaperStockSets: {
           include: {
-            paperStock: true,
+            paperStockSet: {
+              include: {
+                paperStockItems: {
+                  include: {
+                    paperStock: true,
+                  },
+                },
+              },
+            },
           },
         },
         productQuantityGroups: {
