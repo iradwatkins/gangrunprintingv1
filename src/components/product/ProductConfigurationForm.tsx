@@ -111,13 +111,22 @@ export default function ProductConfigurationForm({
     const fetchConfigurationData = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/products/${productId}/configuration`)
+        const response = await fetch(`/api/products/${productId}/configuration`, {
+          // Add timeout to prevent hanging requests
+          signal: AbortSignal.timeout(10000) // 10 second timeout
+        })
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch configuration data')
+        if (!response.ok && response.status !== 200) {
+          throw new Error(`API returned ${response.status}`)
         }
 
         const data = await response.json()
+
+        // Check if we're using fallback data
+        if (data._isFallback) {
+          console.warn('Using fallback configuration:', data._message)
+        }
+
         setConfigData(data)
 
         // Set default values
