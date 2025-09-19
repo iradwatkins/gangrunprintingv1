@@ -1,4 +1,10 @@
-import { BasePriceEngine, type PricingInput, type StandardSize, type StandardQuantity, type PaperException } from '../base-price-engine'
+import {
+  BasePriceEngine,
+  type PricingInput,
+  type StandardSize,
+  type StandardQuantity,
+  type PaperException,
+} from '../base-price-engine'
 
 describe('Base Price Formula Compliance Tests', () => {
   let engine: BasePriceEngine
@@ -17,7 +23,7 @@ describe('Base Price Formula Compliance Tests', () => {
       height: 6,
       preCalculatedValue: 24, // 4 × 6 = 24
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       id: '2',
@@ -27,8 +33,8 @@ describe('Base Price Formula Compliance Tests', () => {
       height: 5,
       preCalculatedValue: 25, // 5 × 5 = 25
       sortOrder: 2,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   const testQuantities: StandardQuantity[] = [
@@ -37,14 +43,14 @@ describe('Base Price Formula Compliance Tests', () => {
       displayValue: 200,
       calculationValue: 250, // 25% adjustment for < 5000
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       id: '2',
       displayValue: 5000,
       calculationValue: 5000, // No adjustment for >= 5000
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       id: '3',
@@ -52,8 +58,8 @@ describe('Base Price Formula Compliance Tests', () => {
       calculationValue: 1050, // 5% adjustment for < 5000
       adjustmentValue: 1100, // Override adjustment
       sortOrder: 3,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   const textPaperException: PaperException = {
@@ -61,7 +67,7 @@ describe('Base Price Formula Compliance Tests', () => {
     paperStockId: 'text-paper-1',
     exceptionType: 'TEXT_PAPER',
     doubleSidedMultiplier: 1.75,
-    description: 'Text paper exception'
+    description: 'Text paper exception',
   }
 
   describe('EXACT FORMULA VERIFICATION', () => {
@@ -73,7 +79,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1], // 5000
         basePaperPrice: 0.00145833333,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -96,7 +102,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 1.0,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -114,7 +120,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 1.0,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -132,7 +138,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 1.0,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -151,7 +157,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[0], // displayValue: 200, calculationValue: 250
         basePaperPrice: 0.002,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -168,7 +174,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1], // displayValue: 5000, calculationValue: 5000
         basePaperPrice: 0.002,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -185,7 +191,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[2], // adjustmentValue: 1100 overrides calculationValue: 1050
         basePaperPrice: 0.001,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -202,7 +208,7 @@ describe('Base Price Formula Compliance Tests', () => {
         customQuantity: 750,
         basePaperPrice: 0.001,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -226,7 +232,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: qty,
         basePaperPrice: 1.0,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -244,7 +250,7 @@ describe('Base Price Formula Compliance Tests', () => {
         basePaperPrice: 0.002,
         sides: 'double',
         isExceptionPaper: true,
-        paperException: textPaperException
+        paperException: textPaperException,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -262,7 +268,7 @@ describe('Base Price Formula Compliance Tests', () => {
         basePaperPrice: 0.002,
         sides: 'single',
         isExceptionPaper: true,
-        paperException: textPaperException
+        paperException: textPaperException,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -279,7 +285,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0.002,
         sides: 'double',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -296,7 +302,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0.002,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -315,7 +321,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1], // 5000 (no adjustment for >=5000)
         basePaperPrice: 0.00145833333,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -337,7 +343,7 @@ describe('Base Price Formula Compliance Tests', () => {
         basePaperPrice: 0.002,
         sides: 'double',
         isExceptionPaper: true,
-        paperException: textPaperException
+        paperException: textPaperException,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -357,7 +363,7 @@ describe('Base Price Formula Compliance Tests', () => {
         customQuantity: 3000,
         basePaperPrice: 0.001,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -378,7 +384,7 @@ describe('Base Price Formula Compliance Tests', () => {
         customQuantity: 1500,
         basePaperPrice: 0.0015,
         sides: 'double',
-        isExceptionPaper: false // Cardstock - no exception
+        isExceptionPaper: false, // Cardstock - no exception
       }
 
       const result = engine.calculateBasePrice(input)
@@ -403,7 +409,7 @@ describe('Base Price Formula Compliance Tests', () => {
           height: 6,
           preCalculatedValue: 24, // Key: pre-calculated value
           sortOrder: 1,
-          isActive: true
+          isActive: true,
         },
         quantitySelection: 'standard',
         standardQuantity: {
@@ -411,11 +417,11 @@ describe('Base Price Formula Compliance Tests', () => {
           displayValue: 5000,
           calculationValue: 5000,
           sortOrder: 1,
-          isActive: true
+          isActive: true,
         },
         basePaperPrice: 0.00145833333,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -439,14 +445,14 @@ describe('Base Price Formula Compliance Tests', () => {
         basePaperPrice: 0.002,
         sides: 'double',
         isExceptionPaper: true,
-        paperException: textPaperException
+        paperException: textPaperException,
       })
 
       const quickResult = engine.quickCalculatePrice(
         0.002, // basePaperPrice
-        24,    // preCalculatedSize
-        5000,  // calculationQuantity
-        true   // isDoubleSidedTextPaper
+        24, // preCalculatedSize
+        5000, // calculationQuantity
+        true // isDoubleSidedTextPaper
       )
 
       expect(quickResult).toBeCloseTo(fullResult.basePrice, 8)
@@ -462,7 +468,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0, // Invalid
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -479,7 +485,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0.001,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -496,7 +502,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0.001,
         sides: 'invalid' as any,
-        isExceptionPaper: false
+        isExceptionPaper: false,
       }
 
       const result = engine.calculateBasePrice(input)
@@ -515,7 +521,7 @@ describe('Base Price Formula Compliance Tests', () => {
         standardQuantity: testQuantities[1],
         basePaperPrice: 0.00145833333,
         sides: 'single',
-        isExceptionPaper: false
+        isExceptionPaper: false,
       })
 
       const formatted = engine.formatCalculationBreakdown(result)

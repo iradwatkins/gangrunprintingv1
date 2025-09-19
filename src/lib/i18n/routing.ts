@@ -1,4 +1,4 @@
-import { defineRouting } from 'next-intl/routing';
+import { defineRouting } from 'next-intl/routing'
 
 export const routing = defineRouting({
   // A list of all locales that are supported
@@ -9,15 +9,15 @@ export const routing = defineRouting({
 
   // The prefix for the default locale
   localePrefix: {
-    mode: 'as-needed'
+    mode: 'as-needed',
   },
 
   // Domain-based routing (for multi-tenant)
   domains: [
     {
       domain: 'gangrunprinting.com',
-      defaultLocale: 'en'
-    }
+      defaultLocale: 'en',
+    },
     // Additional domains will be added dynamically
   ],
 
@@ -26,24 +26,24 @@ export const routing = defineRouting({
     '/': '/',
     '/about': {
       en: '/about',
-      es: '/acerca-de'
+      es: '/acerca-de',
     },
     '/products': {
       en: '/products',
-      es: '/productos'
+      es: '/productos',
     },
     '/contact': {
       en: '/contact',
-      es: '/contacto'
+      es: '/contacto',
     },
     '/admin': '/admin',
     '/auth/signin': {
       en: '/auth/signin',
-      es: '/auth/iniciar-sesion'
+      es: '/auth/iniciar-sesion',
     },
     '/auth/signup': {
       en: '/auth/signup',
-      es: '/auth/registrarse'
-    }
-  }
-});
+      es: '/auth/registrarse',
+    },
+  },
+})

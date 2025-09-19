@@ -8,7 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
@@ -95,7 +101,8 @@ function EditProductClient({ id }: { id: string }) {
 
         // Map paper stocks
         selectedPaperStocks: data.productPaperStocks?.map((ps: any) => ps.paperStockId) || [],
-        defaultPaperStock: data.productPaperStocks?.find((ps: any) => ps.isDefault)?.paperStockId || '',
+        defaultPaperStock:
+          data.productPaperStocks?.find((ps: any) => ps.isDefault)?.paperStockId || '',
 
         // Map quantity and size groups
         selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
@@ -129,7 +136,7 @@ function EditProductClient({ id }: { id: string }) {
         fetch('/api/paper-stocks'),
         fetch('/api/quantities'),
         fetch('/api/sizes'),
-        fetch('/api/add-ons')
+        fetch('/api/add-ons'),
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
@@ -149,17 +156,21 @@ function EditProductClient({ id }: { id: string }) {
         ...formData,
         selectedPaperStocks: newSelectedStocks,
         // Auto-set as default if it's the first paper stock selected
-        defaultPaperStock: formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock
+        defaultPaperStock:
+          formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock,
       })
     } else {
-      const newSelectedStocks = formData.selectedPaperStocks.filter(id => id !== stockId)
+      const newSelectedStocks = formData.selectedPaperStocks.filter((id) => id !== stockId)
       setFormData({
         ...formData,
         selectedPaperStocks: newSelectedStocks,
         // Clear default if this was the default paper stock
-        defaultPaperStock: formData.defaultPaperStock === stockId ?
-          (newSelectedStocks.length > 0 ? newSelectedStocks[0] : '') :
-          formData.defaultPaperStock
+        defaultPaperStock:
+          formData.defaultPaperStock === stockId
+            ? newSelectedStocks.length > 0
+              ? newSelectedStocks[0]
+              : ''
+            : formData.defaultPaperStock,
       })
     }
   }
@@ -177,8 +188,8 @@ function EditProductClient({ id }: { id: string }) {
           defaultPaperStock: formData.defaultPaperStock,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
-          addOns: formData.selectedAddOns
-        })
+          addOns: formData.selectedAddOns,
+        }),
       })
 
       if (response.ok) {
@@ -225,7 +236,7 @@ function EditProductClient({ id }: { id: string }) {
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
 
       if (response.ok) {
@@ -266,11 +277,15 @@ function EditProductClient({ id }: { id: string }) {
               View Product
             </Button>
           </Link>
-          <Button variant="outline" onClick={testPrice} disabled={testing}>
-            {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calculator className="h-4 w-4" />}
+          <Button disabled={testing} variant="outline" onClick={testPrice}>
+            {testing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Calculator className="h-4 w-4" />
+            )}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
+          <Button disabled={loading} onClick={handleSubmit}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             <span className="ml-2">Save Changes</span>
           </Button>
@@ -289,7 +304,7 @@ function EditProductClient({ id }: { id: string }) {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div>
@@ -297,20 +312,25 @@ function EditProductClient({ id }: { id: string }) {
               <Input
                 id="sku"
                 value={formData.sku}
-                onChange={(e) => setFormData({...formData, sku: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
               />
             </div>
           </div>
 
           <div>
             <Label htmlFor="category">Category *</Label>
-            <Select value={formData.categoryId} onValueChange={(value) => setFormData({...formData, categoryId: value})}>
+            <Select
+              value={formData.categoryId}
+              onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -320,9 +340,9 @@ function EditProductClient({ id }: { id: string }) {
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
               rows={3}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
 
@@ -330,7 +350,7 @@ function EditProductClient({ id }: { id: string }) {
             <Label>Product Images</Label>
             <ProductImageUpload
               images={formData.images}
-              onImagesChange={(images) => setFormData({...formData, images})}
+              onImagesChange={(images) => setFormData({ ...formData, images })}
             />
           </div>
 
@@ -338,14 +358,14 @@ function EditProductClient({ id }: { id: string }) {
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({...formData, isActive: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
               />
               <Label>Active</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isFeatured}
-                onCheckedChange={(checked) => setFormData({...formData, isFeatured: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
               />
               <Label>Featured</Label>
             </div>
@@ -361,19 +381,22 @@ function EditProductClient({ id }: { id: string }) {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a quantity set for this product. Customers will see the quantities from this set, with the default quantity pre-selected.
+              Select a quantity set for this product. Customers will see the quantities from this
+              set, with the default quantity pre-selected.
             </p>
             <div>
               <Label htmlFor="quantity-group">Quantity Set</Label>
               <Select
                 value={formData.selectedQuantityGroup}
-                onValueChange={(value) => setFormData({...formData, selectedQuantityGroup: value})}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedQuantityGroup: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select quantity set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {quantityGroups.map(group => (
+                  {quantityGroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{group.name}</span>
@@ -391,7 +414,9 @@ function EditProductClient({ id }: { id: string }) {
             {formData.selectedQuantityGroup && (
               <div className="border rounded-lg p-3 bg-muted/50">
                 {(() => {
-                  const selectedGroup = quantityGroups.find(g => g.id === formData.selectedQuantityGroup)
+                  const selectedGroup = quantityGroups.find(
+                    (g) => g.id === formData.selectedQuantityGroup
+                  )
                   if (!selectedGroup) return null
 
                   return (
@@ -428,39 +453,43 @@ function EditProductClient({ id }: { id: string }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Select available paper stocks for this product. One must be set as default.
-            Customers will see these options in a dropdown on the frontend, with the default pre-selected.
+            Select available paper stocks for this product. One must be set as default. Customers
+            will see these options in a dropdown on the frontend, with the default pre-selected.
           </p>
           <div className="grid grid-cols-1 gap-3">
-            {paperStocks.map(stock => (
+            {paperStocks.map((stock) => (
               <div key={stock.id} className="border rounded-lg p-3">
                 <div className="flex items-start space-x-3">
                   <Checkbox
-                    id={`stock-${stock.id}`}
                     checked={formData.selectedPaperStocks.includes(stock.id)}
-                    onCheckedChange={(checked) => handlePaperStockToggle(stock.id, checked as boolean)}
+                    id={`stock-${stock.id}`}
+                    onCheckedChange={(checked) =>
+                      handlePaperStockToggle(stock.id, checked as boolean)
+                    }
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor={`stock-${stock.id}`} className="font-medium cursor-pointer">
+                      <Label className="font-medium cursor-pointer" htmlFor={`stock-${stock.id}`}>
                         {stock.name} - {stock.weight}pt
                       </Label>
                       {formData.defaultPaperStock === stock.id && (
-                        <Badge variant="secondary" className="text-xs">DEFAULT</Badge>
+                        <Badge className="text-xs" variant="secondary">
+                          DEFAULT
+                        </Badge>
                       )}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      ${stock.pricePerSqInch}/sq in
-                    </div>
+                    <div className="text-sm text-gray-500">${stock.pricePerSqInch}/sq in</div>
                     {formData.selectedPaperStocks.includes(stock.id) && (
                       <div className="mt-2">
                         <label className="flex items-center space-x-2 text-sm cursor-pointer">
                           <input
-                            type="radio"
-                            name="defaultPaperStock"
                             checked={formData.defaultPaperStock === stock.id}
-                            onChange={() => setFormData({ ...formData, defaultPaperStock: stock.id })}
                             className="w-4 h-4"
+                            name="defaultPaperStock"
+                            type="radio"
+                            onChange={() =>
+                              setFormData({ ...formData, defaultPaperStock: stock.id })
+                            }
                           />
                           <span>Set as default paper stock</span>
                         </label>
@@ -482,19 +511,20 @@ function EditProductClient({ id }: { id: string }) {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a size set for this product. Customers will see the sizes from this set, with the default size pre-selected.
+              Select a size set for this product. Customers will see the sizes from this set, with
+              the default size pre-selected.
             </p>
             <div>
               <Label htmlFor="size-group">Size Set</Label>
               <Select
                 value={formData.selectedSizeGroup}
-                onValueChange={(value) => setFormData({...formData, selectedSizeGroup: value})}
+                onValueChange={(value) => setFormData({ ...formData, selectedSizeGroup: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select size set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {sizeGroups.map(group => (
+                  {sizeGroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{group.name}</span>
@@ -512,7 +542,7 @@ function EditProductClient({ id }: { id: string }) {
             {formData.selectedSizeGroup && (
               <div className="border rounded-lg p-3 bg-muted/50">
                 {(() => {
-                  const selectedGroup = sizeGroups.find(g => g.id === formData.selectedSizeGroup)
+                  const selectedGroup = sizeGroups.find((g) => g.id === formData.selectedSizeGroup)
                   if (!selectedGroup) return null
 
                   return (
@@ -535,7 +565,9 @@ function EditProductClient({ id }: { id: string }) {
                       </div>
                       {selectedGroup.hasCustomOption && (
                         <p className="text-xs text-muted-foreground mt-2">
-                          Custom dimensions: {selectedGroup.customMinWidth}"×{selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×{selectedGroup.customMaxHeight}"
+                          Custom dimensions: {selectedGroup.customMinWidth}"×
+                          {selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×
+                          {selectedGroup.customMaxHeight}"
                         </p>
                       )}
                     </div>
@@ -554,24 +586,32 @@ function EditProductClient({ id }: { id: string }) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            {addOns.filter(addon => addon.isActive).map(addon => (
-              <div key={addon.id} className="flex items-center gap-2">
-                <Checkbox
-                  id={`addon-${addon.id}`}
-                  checked={formData.selectedAddOns.includes(addon.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData({...formData, selectedAddOns: [...formData.selectedAddOns, addon.id]})
-                    } else {
-                      setFormData({...formData, selectedAddOns: formData.selectedAddOns.filter(id => id !== addon.id)})
-                    }
-                  }}
-                />
-                <Label htmlFor={`addon-${addon.id}`} className="cursor-pointer font-normal">
-                  {addon.name}
-                </Label>
-              </div>
-            ))}
+            {addOns
+              .filter((addon) => addon.isActive)
+              .map((addon) => (
+                <div key={addon.id} className="flex items-center gap-2">
+                  <Checkbox
+                    checked={formData.selectedAddOns.includes(addon.id)}
+                    id={`addon-${addon.id}`}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData({
+                          ...formData,
+                          selectedAddOns: [...formData.selectedAddOns, addon.id],
+                        })
+                      } else {
+                        setFormData({
+                          ...formData,
+                          selectedAddOns: formData.selectedAddOns.filter((id) => id !== addon.id),
+                        })
+                      }
+                    }}
+                  />
+                  <Label className="cursor-pointer font-normal" htmlFor={`addon-${addon.id}`}>
+                    {addon.name}
+                  </Label>
+                </div>
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -589,17 +629,21 @@ function EditProductClient({ id }: { id: string }) {
                 id="production"
                 type="number"
                 value={formData.productionTime}
-                onChange={(e) => setFormData({...formData, productionTime: parseInt(e.target.value) || 0})}
+                onChange={(e) =>
+                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
             <div>
               <Label htmlFor="base-price">Base Price ($)</Label>
               <Input
                 id="base-price"
-                type="number"
                 step="0.01"
+                type="number"
                 value={formData.basePrice}
-                onChange={(e) => setFormData({...formData, basePrice: parseFloat(e.target.value) || 0})}
+                onChange={(e) =>
+                  setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })
+                }
               />
             </div>
           </div>
@@ -608,7 +652,7 @@ function EditProductClient({ id }: { id: string }) {
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.rushAvailable}
-                onCheckedChange={(checked) => setFormData({...formData, rushAvailable: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, rushAvailable: checked })}
               />
               <Label>Rush Available</Label>
             </div>
@@ -617,20 +661,24 @@ function EditProductClient({ id }: { id: string }) {
                 <div className="flex items-center gap-2">
                   <Label>Rush Days:</Label>
                   <Input
-                    type="number"
                     className="w-20"
+                    type="number"
                     value={formData.rushDays}
-                    onChange={(e) => setFormData({...formData, rushDays: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rushDays: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <Label>Rush Fee ($):</Label>
                   <Input
-                    type="number"
-                    step="0.01"
                     className="w-24"
+                    step="0.01"
+                    type="number"
                     value={formData.rushFee}
-                    onChange={(e) => setFormData({...formData, rushFee: parseFloat(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rushFee: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
               </>

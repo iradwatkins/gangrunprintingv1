@@ -19,7 +19,7 @@ import {
   Search,
   Save,
   X,
-  Copy
+  Copy,
 } from 'lucide-react'
 import {
   Table,
@@ -65,14 +65,14 @@ const pricingModelIcons = {
   FLAT: <DollarSign className="h-4 w-4" />,
   PERCENTAGE: <Percent className="h-4 w-4" />,
   PER_UNIT: <Package className="h-4 w-4" />,
-  CUSTOM: <Settings className="h-4 w-4" />
+  CUSTOM: <Settings className="h-4 w-4" />,
 }
 
 const pricingModelLabels = {
   FLAT: 'Flat Fee',
   PERCENTAGE: 'Percentage',
   PER_UNIT: 'Per Unit',
-  CUSTOM: 'Custom'
+  CUSTOM: 'Custom',
 }
 
 export default function AddOnsPage() {
@@ -101,7 +101,7 @@ export default function AddOnsPage() {
     percentageAppliesTo: 'base_price',
     pricePerUnit: 0,
     unitName: 'piece',
-    customConfig: '{}'
+    customConfig: '{}',
   })
 
   useEffect(() => {
@@ -126,20 +126,20 @@ export default function AddOnsPage() {
   const handleSubmit = async () => {
     try {
       setSaving(true)
-      
+
       // Build configuration based on pricing model
       let configuration = {}
       if (formData.pricingModel === 'FLAT') {
         configuration = { price: formData.flatPrice }
       } else if (formData.pricingModel === 'PERCENTAGE') {
-        configuration = { 
+        configuration = {
           percentage: formData.percentage,
-          appliesTo: formData.percentageAppliesTo
+          appliesTo: formData.percentageAppliesTo,
         }
       } else if (formData.pricingModel === 'PER_UNIT') {
-        configuration = { 
+        configuration = {
           pricePerUnit: formData.pricePerUnit,
-          unitName: formData.unitName
+          unitName: formData.unitName,
         }
       } else {
         // Custom - parse JSON
@@ -151,13 +151,11 @@ export default function AddOnsPage() {
           return
         }
       }
-      
-      const url = editingAddOn 
-        ? `/api/add-ons/${editingAddOn.id}`
-        : '/api/add-ons'
-      
+
+      const url = editingAddOn ? `/api/add-ons/${editingAddOn.id}` : '/api/add-ons'
+
       const method = editingAddOn ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -170,10 +168,10 @@ export default function AddOnsPage() {
           additionalTurnaroundDays: formData.additionalTurnaroundDays,
           sortOrder: formData.sortOrder,
           isActive: formData.isActive,
-          adminNotes: formData.adminNotes || null
-        })
+          adminNotes: formData.adminNotes || null,
+        }),
       })
-      
+
       if (response.ok) {
         toast.success(editingAddOn ? 'Add-on updated successfully' : 'Add-on created successfully')
         setDialogOpen(false)
@@ -193,12 +191,12 @@ export default function AddOnsPage() {
 
   const handleDelete = async () => {
     if (!addOnToDelete) return
-    
+
     try {
       const response = await fetch(`/api/add-ons/${addOnToDelete.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
+
       if (response.ok) {
         toast.success('Add-on deleted successfully')
         setDeleteDialogOpen(false)
@@ -228,7 +226,7 @@ export default function AddOnsPage() {
       percentageAppliesTo: 'base_price',
       pricePerUnit: 0,
       unitName: 'piece',
-      customConfig: '{}'
+      customConfig: '{}',
     })
     setEditingAddOn(null)
   }
@@ -270,14 +268,14 @@ export default function AddOnsPage() {
       percentageAppliesTo,
       pricePerUnit,
       unitName,
-      customConfig
+      customConfig,
     })
     setDialogOpen(true)
   }
 
   const openEditDialog = (addOn: AddOn) => {
     setEditingAddOn(addOn)
-    
+
     // Parse configuration based on pricing model
     let flatPrice = 0
     let percentage = 0
@@ -285,7 +283,7 @@ export default function AddOnsPage() {
     let pricePerUnit = 0
     let unitName = 'piece'
     let customConfig = '{}'
-    
+
     if (addOn.pricingModel === 'FLAT') {
       flatPrice = addOn.configuration.price || 0
     } else if (addOn.pricingModel === 'PERCENTAGE') {
@@ -297,7 +295,7 @@ export default function AddOnsPage() {
     } else {
       customConfig = JSON.stringify(addOn.configuration, null, 2)
     }
-    
+
     setFormData({
       name: addOn.name,
       description: addOn.description || '',
@@ -312,7 +310,7 @@ export default function AddOnsPage() {
       percentageAppliesTo,
       pricePerUnit,
       unitName,
-      customConfig
+      customConfig,
     })
     setDialogOpen(true)
   }
@@ -322,9 +320,10 @@ export default function AddOnsPage() {
     setDeleteDialogOpen(true)
   }
 
-  const filteredAddOns = addOns.filter(addOn =>
-    addOn.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    addOn.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAddOns = addOns.filter(
+    (addOn) =>
+      addOn.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      addOn.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const formatPriceDisplay = (addOn: AddOn) => {
@@ -353,14 +352,14 @@ export default function AddOnsPage() {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>Add-ons Management</CardTitle>
-              <CardDescription>
-                Manage printing add-ons and their pricing models
-              </CardDescription>
+              <CardDescription>Manage printing add-ons and their pricing models</CardDescription>
             </div>
-            <Button onClick={() => {
-              resetForm()
-              setDialogOpen(true)
-            }}>
+            <Button
+              onClick={() => {
+                resetForm()
+                setDialogOpen(true)
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add New Add-on
             </Button>
@@ -381,7 +380,9 @@ export default function AddOnsPage() {
             <div className="text-center py-8">Loading add-ons...</div>
           ) : filteredAddOns.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              {searchTerm ? 'No add-ons found matching your search.' : 'No add-ons found. Create your first add-on to get started.'}
+              {searchTerm
+                ? 'No add-ons found matching your search.'
+                : 'No add-ons found. Create your first add-on to get started.'}
             </div>
           ) : (
             <div className="rounded-md border">
@@ -421,17 +422,13 @@ export default function AddOnsPage() {
                       </TableCell>
                       <TableCell>
                         {addOn.additionalTurnaroundDays > 0 ? (
-                          <Badge variant="secondary">
-                            +{addOn.additionalTurnaroundDays} days
-                          </Badge>
+                          <Badge variant="secondary">+{addOn.additionalTurnaroundDays} days</Badge>
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {addOn.sortOrder}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{addOn.sortOrder}</span>
                       </TableCell>
                       <TableCell>
                         <Badge variant={addOn.isActive ? 'default' : 'secondary'}>
@@ -442,17 +439,13 @@ export default function AddOnsPage() {
                         <div className="flex gap-2 justify-end">
                           <Button
                             size="sm"
+                            title="Duplicate"
                             variant="outline"
                             onClick={() => handleDuplicate(addOn)}
-                            title="Duplicate"
                           >
                             <Copy className="h-4 w-4" />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => openEditDialog(addOn)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => openEditDialog(addOn)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
@@ -477,12 +470,8 @@ export default function AddOnsPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {editingAddOn ? 'Edit Add-on' : 'Create New Add-on'}
-            </DialogTitle>
-            <DialogDescription>
-              Configure the add-on details and pricing model
-            </DialogDescription>
+            <DialogTitle>{editingAddOn ? 'Edit Add-on' : 'Create New Add-on'}</DialogTitle>
+            <DialogDescription>Configure the add-on details and pricing model</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -531,7 +520,9 @@ export default function AddOnsPage() {
               </Label>
               <Select
                 value={formData.pricingModel}
-                onValueChange={(value) => setFormData({ ...formData, pricingModel: value as AddOn['pricingModel'] })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, pricingModel: value as AddOn['pricingModel'] })
+                }
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
@@ -558,7 +549,9 @@ export default function AddOnsPage() {
                   step="0.01"
                   type="number"
                   value={formData.flatPrice}
-                  onChange={(e) => setFormData({ ...formData, flatPrice: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, flatPrice: parseFloat(e.target.value) || 0 })
+                  }
                 />
               </div>
             )}
@@ -576,7 +569,9 @@ export default function AddOnsPage() {
                     step="0.1"
                     type="number"
                     value={formData.percentage}
-                    onChange={(e) => setFormData({ ...formData, percentage: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, percentage: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -585,7 +580,9 @@ export default function AddOnsPage() {
                   </Label>
                   <Select
                     value={formData.percentageAppliesTo}
-                    onValueChange={(value) => setFormData({ ...formData, percentageAppliesTo: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, percentageAppliesTo: value })
+                    }
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue />
@@ -613,7 +610,9 @@ export default function AddOnsPage() {
                     step="0.01"
                     type="number"
                     value={formData.pricePerUnit}
-                    onChange={(e) => setFormData({ ...formData, pricePerUnit: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pricePerUnit: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -657,7 +656,12 @@ export default function AddOnsPage() {
                 placeholder="0"
                 type="number"
                 value={formData.additionalTurnaroundDays}
-                onChange={(e) => setFormData({ ...formData, additionalTurnaroundDays: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    additionalTurnaroundDays: parseInt(e.target.value) || 0,
+                  })
+                }
               />
             </div>
 
@@ -671,7 +675,9 @@ export default function AddOnsPage() {
                 placeholder="0"
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
 
@@ -736,7 +742,8 @@ export default function AddOnsPage() {
           <DialogHeader>
             <DialogTitle>Delete Add-on</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{addOnToDelete?.name}&quot;? This action cannot be undone.
+              Are you sure you want to delete &quot;{addOnToDelete?.name}&quot;? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -749,10 +756,7 @@ export default function AddOnsPage() {
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-            >
+            <Button variant="destructive" onClick={handleDelete}>
               Delete Add-on
             </Button>
           </DialogFooter>

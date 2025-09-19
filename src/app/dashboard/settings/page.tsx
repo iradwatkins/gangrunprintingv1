@@ -22,8 +22,8 @@ async function getUserSettings(userId: string) {
       smsOptIn: true,
       phoneNumber: true,
       createdAt: true,
-      role: true
-    }
+      role: true,
+    },
   })
 
   return user
@@ -45,15 +45,13 @@ export default async function SettingsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Account Settings
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Manage your account preferences and settings
           </p>
@@ -76,18 +74,18 @@ export default async function SettingsPage() {
                 <div>
                   <Label htmlFor="name">Full Name</Label>
                   <Input
-                    id="name"
                     defaultValue={userSettings?.name || ''}
+                    id="name"
                     placeholder="Enter your full name"
                   />
                 </div>
                 <div>
                   <Label htmlFor="email">Email Address</Label>
                   <Input
-                    id="email"
-                    type="email"
                     defaultValue={userSettings?.email || ''}
+                    id="email"
                     placeholder="Enter your email"
+                    type="email"
                   />
                   {userSettings?.emailVerified && (
                     <p className="text-sm text-green-600 mt-1">✓ Email verified</p>
@@ -97,10 +95,10 @@ export default async function SettingsPage() {
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
-                  id="phone"
-                  type="tel"
                   defaultValue={userSettings?.phoneNumber || ''}
+                  id="phone"
                   placeholder="Enter your phone number"
+                  type="tel"
                 />
               </div>
               <Button>
@@ -177,9 +175,7 @@ export default async function SettingsPage() {
                 <Shield className="h-5 w-5" />
                 Security Settings
               </CardTitle>
-              <CardDescription>
-                Manage your account security and privacy
-              </CardDescription>
+              <CardDescription>Manage your account security and privacy</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -189,7 +185,8 @@ export default async function SettingsPage() {
                   <span className="text-sm">Account Active</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Member since {new Date(userSettings?.createdAt || new Date()).toLocaleDateString()}
+                  Member since{' '}
+                  {new Date(userSettings?.createdAt || new Date()).toLocaleDateString()}
                 </p>
               </div>
 
@@ -221,18 +218,14 @@ export default async function SettingsPage() {
                 <CreditCard className="h-5 w-5" />
                 Payment & Billing
               </CardTitle>
-              <CardDescription>
-                Manage your payment methods and billing preferences
-              </CardDescription>
+              <CardDescription>Manage your payment methods and billing preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Default Payment Method</Label>
                 <div className="p-3 border rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    No payment methods saved
-                  </p>
-                  <Button variant="outline" className="mt-2">
+                  <p className="text-sm text-muted-foreground">No payment methods saved</p>
+                  <Button className="mt-2" variant="outline">
                     Add Payment Method
                   </Button>
                 </div>
@@ -254,9 +247,7 @@ export default async function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-red-600">Danger Zone</CardTitle>
-              <CardDescription>
-                Irreversible account actions
-              </CardDescription>
+              <CardDescription>Irreversible account actions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">

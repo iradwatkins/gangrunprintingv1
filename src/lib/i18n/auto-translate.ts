@@ -1,40 +1,40 @@
-import OpenAI from 'openai';
-import { PrismaClient } from '@prisma/client';
+import OpenAI from 'openai'
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+})
 
 export interface AutoTranslateOptions {
-  sourceLocale: string;
-  targetLocale: string;
-  context?: string;
-  model?: string;
-  temperature?: number;
+  sourceLocale: string
+  targetLocale: string
+  context?: string
+  model?: string
+  temperature?: number
 }
 
 export interface TranslationResult {
-  translatedText: string;
-  confidence: number;
-  model: string;
+  translatedText: string
+  confidence: number
+  model: string
   usage?: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
+    promptTokens: number
+    completionTokens: number
+    totalTokens: number
+  }
 }
 
 export class AutoTranslationService {
-  private static instance: AutoTranslationService;
+  private static instance: AutoTranslationService
 
   public static getInstance(): AutoTranslationService {
     if (!AutoTranslationService.instance) {
-      AutoTranslationService.instance = new AutoTranslationService();
+      AutoTranslationService.instance = new AutoTranslationService()
     }
-    return AutoTranslationService.instance;
+    return AutoTranslationService.instance
   }
 
   /**
@@ -44,48 +44,58 @@ export class AutoTranslationService {
     text: string,
     options: AutoTranslateOptions
   ): Promise<TranslationResult> {
-    const { sourceLocale, targetLocale, context, model = 'gpt-4o-mini', temperature = 0.3 } = options;
+    const {
+      sourceLocale,
+      targetLocale,
+      context,
+      model = 'gpt-4o-mini',
+      temperature = 0.3,
+    } = options
 
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OpenAI API key not configured');
+      throw new Error('OpenAI API key not configured')
     }
 
     // Build the translation prompt
-    const systemPrompt = this.buildSystemPrompt(sourceLocale, targetLocale, context);
-    const userPrompt = this.buildUserPrompt(text, sourceLocale, targetLocale);
+    const systemPrompt = this.buildSystemPrompt(sourceLocale, targetLocale, context)
+    const userPrompt = this.buildUserPrompt(text, sourceLocale, targetLocale)
 
     try {
       const completion = await openai.chat.completions.create({
         model,
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         temperature,
         max_tokens: 1000,
-        response_format: { type: 'json_object' }
-      });
+        response_format: { type: 'json_object' },
+      })
 
-      const response = completion.choices[0]?.message?.content;
+      const response = completion.choices[0]?.message?.content
       if (!response) {
-        throw new Error('No response from OpenAI');
+        throw new Error('No response from OpenAI')
       }
 
-      const result = JSON.parse(response);
+      const result = JSON.parse(response)
 
       return {
         translatedText: result.translation,
         confidence: result.confidence || 0.8,
         model,
-        usage: completion.usage ? {
-          promptTokens: completion.usage.prompt_tokens,
-          completionTokens: completion.usage.completion_tokens,
-          totalTokens: completion.usage.total_tokens,
-        } : undefined,
-      };
+        usage: completion.usage
+          ? {
+              promptTokens: completion.usage.prompt_tokens,
+              completionTokens: completion.usage.completion_tokens,
+              totalTokens: completion.usage.total_tokens,
+            }
+          : undefined,
+      }
     } catch (error) {
-      console.error('OpenAI translation error:', error);
-      throw new Error(`Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('OpenAI translation error:', error)
+      throw new Error(
+        `Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
@@ -109,10 +119,10 @@ export class AutoTranslationService {
         namespace,
         locale: targetLocale,
       },
-    });
+    })
 
     if (existing) {
-      return existing.id;
+      return existing.id
     }
 
     // Translate using OpenAI
@@ -120,7 +130,7 @@ export class AutoTranslationService {
       sourceLocale,
       targetLocale,
       context: context || `Translation for ${namespace}.${key}`,
-    });
+    })
 
     // Save translation to database
     const translation = await prisma.translation.create({
@@ -138,9 +148,9 @@ export class AutoTranslationService {
         translationModel: result.model,
         originalText: sourceText,
       },
-    });
+    })
 
-    return translation.id;
+    return translation.id
   }
 
   /**
@@ -152,15 +162,15 @@ export class AutoTranslationService {
     tenantId?: string,
     namespace?: string
   ): Promise<{
-    translated: number;
-    skipped: number;
-    errors: string[];
+    translated: number
+    skipped: number
+    errors: string[]
   }> {
     const results = {
       translated: 0,
       skipped: 0,
       errors: [] as string[],
-    };
+    }
 
     try {
       // Find all translations in source locale
@@ -171,7 +181,7 @@ export class AutoTranslationService {
           namespace: namespace || undefined,
           isApproved: true,
         },
-      });
+      })
 
       // Find existing translations in target locale
       const existingTargetKeys = await prisma.translation.findMany({
@@ -184,16 +194,14 @@ export class AutoTranslationService {
           key: true,
           namespace: true,
         },
-      });
+      })
 
-      const existingKeysSet = new Set(
-        existingTargetKeys.map(t => `${t.namespace}.${t.key}`)
-      );
+      const existingKeysSet = new Set(existingTargetKeys.map((t) => `${t.namespace}.${t.key}`))
 
       // Filter out already translated keys
       const missingTranslations = sourceTranslations.filter(
-        t => !existingKeysSet.has(`${t.namespace}.${t.key}`)
-      );
+        (t) => !existingKeysSet.has(`${t.namespace}.${t.key}`)
+      )
 
       // Translate each missing key
       for (const source of missingTranslations) {
@@ -206,26 +214,28 @@ export class AutoTranslationService {
             source.value,
             source.context,
             tenantId
-          );
-          results.translated++;
+          )
+          results.translated++
         } catch (error) {
-          console.error(`Error translating ${source.namespace}.${source.key}:`, error);
+          console.error(`Error translating ${source.namespace}.${source.key}:`, error)
           results.errors.push(
             `${source.namespace}.${source.key}: ${error instanceof Error ? error.message : 'Unknown error'}`
-          );
+          )
         }
 
         // Add delay to avoid rate limits
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100))
       }
 
-      results.skipped = sourceTranslations.length - missingTranslations.length;
+      results.skipped = sourceTranslations.length - missingTranslations.length
     } catch (error) {
-      console.error('Batch translation error:', error);
-      results.errors.push(`Batch operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Batch translation error:', error)
+      results.errors.push(
+        `Batch operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
 
-    return results;
+    return results
   }
 
   /**
@@ -240,7 +250,7 @@ export class AutoTranslationService {
       _count: {
         id: true,
       },
-    });
+    })
 
     const approvedStats = await prisma.translation.groupBy({
       by: ['locale'],
@@ -251,7 +261,7 @@ export class AutoTranslationService {
       _count: {
         id: true,
       },
-    });
+    })
 
     const autoStats = await prisma.translation.groupBy({
       by: ['locale'],
@@ -262,13 +272,13 @@ export class AutoTranslationService {
       _count: {
         id: true,
       },
-    });
+    })
 
     return {
       total: stats,
       approved: approvedStats,
       autoGenerated: autoStats,
-    };
+    }
   }
 
   /**
@@ -288,10 +298,10 @@ export class AutoTranslationService {
       ko: 'Korean',
       zh: 'Chinese',
       ar: 'Arabic',
-    };
+    }
 
-    const sourceLang = languageNames[sourceLocale as keyof typeof languageNames] || sourceLocale;
-    const targetLang = languageNames[targetLocale as keyof typeof languageNames] || targetLocale;
+    const sourceLang = languageNames[sourceLocale as keyof typeof languageNames] || sourceLocale
+    const targetLang = languageNames[targetLocale as keyof typeof languageNames] || targetLocale
 
     return `You are a professional translator specializing in web application localization.
 
@@ -311,7 +321,7 @@ Respond in JSON format with:
 {
   "translation": "the translated text",
   "confidence": 0.95 // your confidence level from 0.0 to 1.0
-}`;
+}`
   }
 
   /**
@@ -320,7 +330,7 @@ Respond in JSON format with:
   private buildUserPrompt(text: string, sourceLocale: string, targetLocale: string): string {
     return `Translate the following text from ${sourceLocale} to ${targetLocale}:
 
-"${text}"`;
+"${text}"`
   }
 
   /**
@@ -332,45 +342,45 @@ Respond in JSON format with:
     sourceLocale: string,
     targetLocale: string
   ): Promise<{
-    isValid: boolean;
-    confidence: number;
-    issues: string[];
+    isValid: boolean
+    confidence: number
+    issues: string[]
   }> {
-    const issues: string[] = [];
-    let confidence = 1.0;
+    const issues: string[] = []
+    let confidence = 1.0
 
     // Check for obvious issues
     if (translatedText.length === 0) {
-      issues.push('Translation is empty');
-      confidence = 0;
+      issues.push('Translation is empty')
+      confidence = 0
     }
 
     if (translatedText === originalText && sourceLocale !== targetLocale) {
-      issues.push('Translation identical to source');
-      confidence *= 0.3;
+      issues.push('Translation identical to source')
+      confidence *= 0.3
     }
 
     // Check for preserved placeholders
-    const placeholderRegex = /\{\{[^}]+\}\}/g;
-    const originalPlaceholders = originalText.match(placeholderRegex) || [];
-    const translatedPlaceholders = translatedText.match(placeholderRegex) || [];
+    const placeholderRegex = /\{\{[^}]+\}\}/g
+    const originalPlaceholders = originalText.match(placeholderRegex) || []
+    const translatedPlaceholders = translatedText.match(placeholderRegex) || []
 
     if (originalPlaceholders.length !== translatedPlaceholders.length) {
-      issues.push('Placeholder count mismatch');
-      confidence *= 0.7;
+      issues.push('Placeholder count mismatch')
+      confidence *= 0.7
     }
 
     // Check for significant length differences (potential issue)
-    const lengthRatio = translatedText.length / originalText.length;
+    const lengthRatio = translatedText.length / originalText.length
     if (lengthRatio > 3 || lengthRatio < 0.3) {
-      issues.push('Unusual length difference');
-      confidence *= 0.8;
+      issues.push('Unusual length difference')
+      confidence *= 0.8
     }
 
     return {
       isValid: issues.length === 0,
       confidence,
       issues,
-    };
+    }
   }
 }

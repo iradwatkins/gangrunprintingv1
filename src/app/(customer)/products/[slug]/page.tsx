@@ -10,35 +10,35 @@ async function getProduct(slug: string) {
     const product = await prisma.product.findUnique({
       where: {
         slug: slug,
-        isActive: true
+        isActive: true,
       },
       include: {
         ProductCategory: true,
         ProductImage: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
         productPaperStocks: {
           include: {
-            paperStock: true
+            paperStock: true,
           },
-          orderBy: { id: 'asc' }
+          orderBy: { id: 'asc' },
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true
-          }
+            quantityGroup: true,
+          },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true
-          }
+            sizeGroup: true,
+          },
         },
         productAddOns: {
           include: {
-            addOn: true
-          }
-        }
-      }
+            addOn: true,
+          },
+        },
+      },
     })
 
     return product

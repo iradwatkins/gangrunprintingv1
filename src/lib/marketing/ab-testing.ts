@@ -64,10 +64,13 @@ export class ABTestingService {
       throw new Error('A/B test must have at least 2 variants')
     }
 
-    const trafficSplit = variants.reduce((acc, variant) => {
-      acc[variant.id] = variant.trafficPercentage
-      return acc
-    }, {} as Record<string, number>)
+    const trafficSplit = variants.reduce(
+      (acc, variant) => {
+        acc[variant.id] = variant.trafficPercentage
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     return await prisma.campaignABTest.create({
       data: {
@@ -137,9 +140,7 @@ export class ABTestingService {
 
     for (const variant of variants) {
       // Get sends for this variant
-      const variantSends = sends.filter((send: any) =>
-        send.trackingData?.variantId === variant.id
-      )
+      const variantSends = sends.filter((send: any) => send.trackingData?.variantId === variant.id)
 
       const sends_count = variantSends.length
       const opens = variantSends.filter((send: any) => send.openedAt).length
@@ -186,14 +187,19 @@ export class ABTestingService {
     // Determine winner
     const winner = this.determineWinner(results, abTest.winnerCriteria, abTest.confidence)
     if (winner) {
-      results.find(r => r.variantId === winner.variantId)!.isWinner = true
+      results.find((r) => r.variantId === winner.variantId)!.isWinner = true
     }
 
     // Calculate overall metrics
     const overallMetrics = {
-      openRate: totalSends > 0 ? (results.reduce((sum, r) => sum + r.opens, 0) / totalSends) * 100 : 0,
-      clickRate: totalSends > 0 ? (results.reduce((sum, r) => sum + r.clicks, 0) / totalSends) * 100 : 0,
-      conversionRate: totalSends > 0 ? (results.reduce((sum, r) => sum + r.conversions, 0) / totalSends) * 100 : 0,
+      openRate:
+        totalSends > 0 ? (results.reduce((sum, r) => sum + r.opens, 0) / totalSends) * 100 : 0,
+      clickRate:
+        totalSends > 0 ? (results.reduce((sum, r) => sum + r.clicks, 0) / totalSends) * 100 : 0,
+      conversionRate:
+        totalSends > 0
+          ? (results.reduce((sum, r) => sum + r.conversions, 0) / totalSends) * 100
+          : 0,
       revenue: results.reduce((sum, r) => sum + r.revenue, 0),
     }
 
@@ -251,8 +257,11 @@ export class ABTestingService {
       }
 
       // Calculate pooled standard error
-      const pooledRate = (controlRate * controlSize + variantRate * variantSize) / (controlSize + variantSize)
-      const standardError = Math.sqrt(pooledRate * (1 - pooledRate) * (1/controlSize + 1/variantSize))
+      const pooledRate =
+        (controlRate * controlSize + variantRate * variantSize) / (controlSize + variantSize)
+      const standardError = Math.sqrt(
+        pooledRate * (1 - pooledRate) * (1 / controlSize + 1 / variantSize)
+      )
 
       if (standardError === 0) {
         return { confidence: 0, significanceLevel: 0 }
@@ -282,7 +291,7 @@ export class ABTestingService {
     x = Math.abs(x) / Math.sqrt(2.0)
 
     const t = 1.0 / (1.0 + p * x)
-    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x)
+    const y = 1.0 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x)
 
     return 0.5 * (1.0 + sign * y)
   }
@@ -334,38 +343,58 @@ export class ABTestingService {
     const recommendations: string[] = []
 
     if (!winner) {
-      recommendations.push('No statistically significant winner found. Consider running the test longer or increasing sample size.')
+      recommendations.push(
+        'No statistically significant winner found. Consider running the test longer or increasing sample size.'
+      )
     } else {
-      recommendations.push(`Variant "${winner.name}" is the winner with ${winner.confidence.toFixed(1)}% confidence.`)
+      recommendations.push(
+        `Variant "${winner.name}" is the winner with ${winner.confidence.toFixed(1)}% confidence.`
+      )
 
-      const improvement = results.length > 1
-        ? ((this.getMetricValue(winner, 'open_rate') - this.getMetricValue(results.find(r => r.variantId !== winner.variantId)!, 'open_rate')) / this.getMetricValue(results.find(r => r.variantId !== winner.variantId)!, 'open_rate')) * 100
-        : 0
+      const improvement =
+        results.length > 1
+          ? ((this.getMetricValue(winner, 'open_rate') -
+              this.getMetricValue(
+                results.find((r) => r.variantId !== winner.variantId)!,
+                'open_rate'
+              )) /
+              this.getMetricValue(
+                results.find((r) => r.variantId !== winner.variantId)!,
+                'open_rate'
+              )) *
+            100
+          : 0
 
       if (improvement > 0) {
-        recommendations.push(`This represents a ${improvement.toFixed(1)}% improvement over the control.`)
+        recommendations.push(
+          `This represents a ${improvement.toFixed(1)}% improvement over the control.`
+        )
       }
     }
 
     // Check sample sizes
-    const smallSamples = results.filter(r => r.sends < 100)
+    const smallSamples = results.filter((r) => r.sends < 100)
     if (smallSamples.length > 0) {
-      recommendations.push('Some variants have small sample sizes. Consider running the test longer for more reliable results.')
+      recommendations.push(
+        'Some variants have small sample sizes. Consider running the test longer for more reliable results.'
+      )
     }
 
     // Check for high confidence but small effect size
     if (winner && winner.confidence > 95) {
-      const otherResults = results.filter(r => r.variantId !== winner.variantId)
-      const maxOtherRate = Math.max(...otherResults.map(r => this.getMetricValue(r, 'open_rate')))
+      const otherResults = results.filter((r) => r.variantId !== winner.variantId)
+      const maxOtherRate = Math.max(...otherResults.map((r) => this.getMetricValue(r, 'open_rate')))
       const winnerRate = this.getMetricValue(winner, 'open_rate')
 
       if ((winnerRate - maxOtherRate) / maxOtherRate < 0.05) {
-        recommendations.push('While statistically significant, the practical difference is small. Consider the implementation effort.')
+        recommendations.push(
+          'While statistically significant, the practical difference is small. Consider the implementation effort.'
+        )
       }
     }
 
     // Duration recommendations
-    const hasResults = results.some(r => r.sends > 0)
+    const hasResults = results.some((r) => r.sends > 0)
     if (!hasResults) {
       recommendations.push('Test is too new. Wait for more data before making decisions.')
     }
@@ -429,7 +458,7 @@ export class ABTestingService {
 
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
 

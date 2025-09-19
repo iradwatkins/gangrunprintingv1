@@ -15,9 +15,7 @@ export function IntegrationSettingsForm() {
           <Webhook className="h-5 w-5" />
           Integration Settings
         </CardTitle>
-        <CardDescription>
-          Configure third-party integrations and API connections
-        </CardDescription>
+        <CardDescription>Configure third-party integrations and API connections</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

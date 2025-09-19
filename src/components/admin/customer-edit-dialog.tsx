@@ -45,7 +45,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
     email: customer.email,
     phone: customer.phone || '',
     role: customer.role,
-    notes: ''
+    notes: '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +54,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
 
     try {
       // TODO: Implement customer update API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Mock delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
       setOpen(false)
     } catch (error) {
       console.error('Failed to update customer:', error)
@@ -64,9 +64,9 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
   }
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -81,9 +81,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Edit Customer</DialogTitle>
-          <DialogDescription>
-            Update customer information and settings
-          </DialogDescription>
+          <DialogDescription>Update customer information and settings</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -110,9 +108,13 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Status:</span>
                 {customer.emailVerified ? (
-                  <Badge className="text-xs" variant="default">Verified</Badge>
+                  <Badge className="text-xs" variant="default">
+                    Verified
+                  </Badge>
                 ) : (
-                  <Badge className="text-xs" variant="secondary">Unverified</Badge>
+                  <Badge className="text-xs" variant="secondary">
+                    Unverified
+                  </Badge>
                 )}
               </div>
             </div>
@@ -130,7 +132,10 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
 
             <div className="grid gap-2">
               <Label htmlFor="role">Customer Type</Label>
-              <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
+              <Select
+                value={formData.role}
+                onValueChange={(value) => handleInputChange('role', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

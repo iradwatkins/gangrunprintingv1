@@ -37,18 +37,22 @@ export function useOrderUpdates(orderId: string | null) {
     eventSource.onmessage = (event) => {
       try {
         const data: OrderUpdate = JSON.parse(event.data)
-        
+
         if (data.type === 'connected') {
           console.log('Connected to order updates:', data)
         } else if (data.type === 'update') {
           setLatestUpdate(data)
-          setUpdates(prev => [...prev, data])
-          
+          setUpdates((prev) => [...prev, data])
+
           // Show notification for status changes
-          if (data.order?.status && 'Notification' in window && Notification.permission === 'granted') {
+          if (
+            data.order?.status &&
+            'Notification' in window &&
+            Notification.permission === 'granted'
+          ) {
             new Notification('Order Update', {
               body: `Your order status has changed to: ${data.order.status}`,
-              icon: '/icon-192x192.png'
+              icon: '/icon-192x192.png',
             })
           }
         }
@@ -61,7 +65,7 @@ export function useOrderUpdates(orderId: string | null) {
       console.error('SSE connection error:', err)
       setError('Connection lost. Retrying...')
       setIsConnected(false)
-      
+
       // Retry connection after 5 seconds
       setTimeout(() => {
         eventSource.close()
@@ -97,6 +101,6 @@ export function useOrderUpdates(orderId: string | null) {
     latestUpdate,
     isConnected,
     error,
-    clearUpdates
+    clearUpdates,
   }
 }

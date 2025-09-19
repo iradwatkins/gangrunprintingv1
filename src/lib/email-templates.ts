@@ -20,7 +20,9 @@ export function getOrderConfirmationEmail(orderData: {
     zip?: string
   }
 }) {
-  const itemsHtml = orderData.items.map(item => `
+  const itemsHtml = orderData.items
+    .map(
+      (item) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
         <strong>${item.name}</strong>
@@ -30,7 +32,9 @@ export function getOrderConfirmationEmail(orderData: {
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(item.price / 100).toFixed(2)}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${((item.price * item.quantity) / 100).toFixed(2)}</td>
     </tr>
-  `).join('')
+  `
+    )
+    .join('')
 
   return {
     subject: `Order Confirmation - ${orderData.orderNumber} | GangRun Printing`,
@@ -103,7 +107,9 @@ export function getOrderConfirmationEmail(orderData: {
         </table>
       </div>
       
-      ${orderData.shippingAddress ? `
+      ${
+        orderData.shippingAddress
+          ? `
       <!-- Shipping Address -->
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin-top: 0; color: #111827;">Shipping Address</h3>
@@ -112,7 +118,9 @@ export function getOrderConfirmationEmail(orderData: {
           ${orderData.shippingAddress.city || ''}, ${orderData.shippingAddress.state || ''} ${orderData.shippingAddress.zip || ''}
         </p>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
       
       <!-- CTA Buttons -->
       <div style="text-align: center; margin: 30px 0;">
@@ -151,7 +159,7 @@ Order Details:
 ${orderData.estimatedDelivery ? `- Estimated Delivery: ${orderData.estimatedDelivery}` : ''}
 
 Order Items:
-${orderData.items.map(item => `- ${item.name} x${item.quantity} - $${(item.price * item.quantity / 100).toFixed(2)}`).join('\n')}
+${orderData.items.map((item) => `- ${item.name} x${item.quantity} - $${((item.price * item.quantity) / 100).toFixed(2)}`).join('\n')}
 
 Order Summary:
 - Subtotal: $${(orderData.subtotal / 100).toFixed(2)}
@@ -159,18 +167,22 @@ Order Summary:
 - Shipping: $${(orderData.shipping / 100).toFixed(2)}
 - Total: $${(orderData.total / 100).toFixed(2)}
 
-${orderData.shippingAddress ? `
+${
+  orderData.shippingAddress
+    ? `
 Shipping Address:
 ${orderData.shippingAddress.street || ''}
 ${orderData.shippingAddress.city || ''}, ${orderData.shippingAddress.state || ''} ${orderData.shippingAddress.zip || ''}
-` : ''}
+`
+    : ''
+}
 
 Track your order: https://gangrunprinting.com/track?order=${orderData.orderNumber}
 
 Questions? Contact us at support@gangrunprinting.com or call (123) 456-7890
 
 © ${new Date().getFullYear()} GangRun Printing. All rights reserved.
-    `
+    `,
   }
 }
 
@@ -184,29 +196,31 @@ export function getOrderStatusUpdateEmail(orderData: {
   const statusMessages: Record<string, { title: string; message: string }> = {
     PROCESSING: {
       title: 'Your Order is Being Processed',
-      message: 'Our team has started working on your order. We\'ll notify you once it\'s ready for shipping.'
+      message:
+        "Our team has started working on your order. We'll notify you once it's ready for shipping.",
     },
     PRINTING: {
       title: 'Your Order is Being Printed',
-      message: 'Your order is currently in production. Our printing team is working to ensure the highest quality.'
+      message:
+        'Your order is currently in production. Our printing team is working to ensure the highest quality.',
     },
     READY_FOR_PICKUP: {
       title: 'Your Order is Ready for Pickup',
-      message: 'Great news! Your order is ready for pickup at our location.'
+      message: 'Great news! Your order is ready for pickup at our location.',
     },
     SHIPPED: {
       title: 'Your Order Has Shipped',
-      message: `Your order is on its way! ${orderData.trackingNumber ? `Track your package with tracking number: ${orderData.trackingNumber}` : ''}`
+      message: `Your order is on its way! ${orderData.trackingNumber ? `Track your package with tracking number: ${orderData.trackingNumber}` : ''}`,
     },
     DELIVERED: {
       title: 'Your Order Has Been Delivered',
-      message: 'Your order has been successfully delivered. We hope you love your prints!'
-    }
+      message: 'Your order has been successfully delivered. We hope you love your prints!',
+    },
   }
 
   const statusInfo = statusMessages[orderData.status] || {
     title: 'Order Status Update',
-    message: `Your order status has been updated to: ${orderData.status}`
+    message: `Your order status has been updated to: ${orderData.status}`,
   }
 
   return {
@@ -272,6 +286,6 @@ ${orderData.trackingNumber ? `Tracking Number: ${orderData.trackingNumber}` : ''
 Track your order: https://gangrunprinting.com/track?order=${orderData.orderNumber}
 
 Questions? Contact us at support@gangrunprinting.com
-    `
+    `,
   }
 }

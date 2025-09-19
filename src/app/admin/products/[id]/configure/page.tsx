@@ -10,12 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
   TableBody,
@@ -78,7 +73,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  
+
   const [product, setProduct] = useState<ProductConfig | null>(null)
   const [availablePaperStocks, setAvailablePaperStocks] = useState<PaperStock[]>([])
   const [availableSizes, setAvailableSizes] = useState<Size[]>([])
@@ -100,7 +95,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         selectedQuantities: ['1', '2', '3', '4'],
         defaultPaperStock: '',
         defaultSize: '1',
-        defaultQuantity: '3'
+        defaultQuantity: '3',
       }
 
       // Load paper stocks from API
@@ -109,12 +104,12 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         const paperStocks: PaperStock[] = await res.json()
 
         // Only show active paper stocks
-        const activePaperStocks = paperStocks.filter(ps => ps.isActive)
+        const activePaperStocks = paperStocks.filter((ps) => ps.isActive)
         setAvailablePaperStocks(activePaperStocks)
 
         // Set selected paper stocks if any
         if (activePaperStocks.length > 0) {
-          mockProduct.selectedPaperStocks = activePaperStocks.map(ps => ps.id)
+          mockProduct.selectedPaperStocks = activePaperStocks.map((ps) => ps.id)
           mockProduct.defaultPaperStock = activePaperStocks[0].id
         }
       }
@@ -124,7 +119,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         { id: '2', displayName: '5x7', width: 5, height: 7, squareInches: 35 },
         { id: '3', displayName: '8.5x11', width: 8.5, height: 11, squareInches: 93.5 },
         { id: '4', displayName: '8.5x14', width: 8.5, height: 14, squareInches: 119 },
-        { id: '5', displayName: '11x17', width: 11, height: 17, squareInches: 187 }
+        { id: '5', displayName: '11x17', width: 11, height: 17, squareInches: 187 },
       ]
 
       const mockQuantities: Quantity[] = [
@@ -133,7 +128,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
         { id: '3', value: 500, isDefault: true },
         { id: '4', value: 1000, isDefault: false },
         { id: '5', value: 2500, isDefault: false },
-        { id: '6', value: 5000, isDefault: false }
+        { id: '6', value: 5000, isDefault: false },
       ]
 
       setProduct(mockProduct)
@@ -149,15 +144,18 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
 
   const handlePaperStockToggle = (paperStockId: string) => {
     if (!product) return
-    
+
     const isSelected = product.selectedPaperStocks.includes(paperStockId)
     if (isSelected) {
       // Remove if it's not the only one selected
       if (product.selectedPaperStocks.length > 1) {
         setProduct({
           ...product,
-          selectedPaperStocks: product.selectedPaperStocks.filter(id => id !== paperStockId),
-          defaultPaperStock: product.defaultPaperStock === paperStockId ? product.selectedPaperStocks.find(id => id !== paperStockId) || '' : product.defaultPaperStock
+          selectedPaperStocks: product.selectedPaperStocks.filter((id) => id !== paperStockId),
+          defaultPaperStock:
+            product.defaultPaperStock === paperStockId
+              ? product.selectedPaperStocks.find((id) => id !== paperStockId) || ''
+              : product.defaultPaperStock,
         })
       } else {
         toast.error('At least one material type must be selected')
@@ -167,21 +165,25 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
       setProduct({
         ...product,
         selectedPaperStocks: [...product.selectedPaperStocks, paperStockId],
-        defaultPaperStock: product.selectedPaperStocks.length === 0 ? paperStockId : product.defaultPaperStock
+        defaultPaperStock:
+          product.selectedPaperStocks.length === 0 ? paperStockId : product.defaultPaperStock,
       })
     }
   }
 
   const handleSizeToggle = (sizeId: string) => {
     if (!product) return
-    
+
     const isSelected = product.selectedSizes.includes(sizeId)
     if (isSelected) {
       if (product.selectedSizes.length > 1) {
         setProduct({
           ...product,
-          selectedSizes: product.selectedSizes.filter(id => id !== sizeId),
-          defaultSize: product.defaultSize === sizeId ? product.selectedSizes.find(id => id !== sizeId) || '' : product.defaultSize
+          selectedSizes: product.selectedSizes.filter((id) => id !== sizeId),
+          defaultSize:
+            product.defaultSize === sizeId
+              ? product.selectedSizes.find((id) => id !== sizeId) || ''
+              : product.defaultSize,
         })
       } else {
         toast.error('At least one size must be selected')
@@ -190,21 +192,24 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
       setProduct({
         ...product,
         selectedSizes: [...product.selectedSizes, sizeId],
-        defaultSize: product.selectedSizes.length === 0 ? sizeId : product.defaultSize
+        defaultSize: product.selectedSizes.length === 0 ? sizeId : product.defaultSize,
       })
     }
   }
 
   const handleQuantityToggle = (qtyId: string) => {
     if (!product) return
-    
+
     const isSelected = product.selectedQuantities.includes(qtyId)
     if (isSelected) {
       if (product.selectedQuantities.length > 1) {
         setProduct({
           ...product,
-          selectedQuantities: product.selectedQuantities.filter(id => id !== qtyId),
-          defaultQuantity: product.defaultQuantity === qtyId ? product.selectedQuantities.find(id => id !== qtyId) || '' : product.defaultQuantity
+          selectedQuantities: product.selectedQuantities.filter((id) => id !== qtyId),
+          defaultQuantity:
+            product.defaultQuantity === qtyId
+              ? product.selectedQuantities.find((id) => id !== qtyId) || ''
+              : product.defaultQuantity,
         })
       } else {
         toast.error('At least one quantity must be selected')
@@ -213,14 +218,14 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
       setProduct({
         ...product,
         selectedQuantities: [...product.selectedQuantities, qtyId],
-        defaultQuantity: product.selectedQuantities.length === 0 ? qtyId : product.defaultQuantity
+        defaultQuantity: product.selectedQuantities.length === 0 ? qtyId : product.defaultQuantity,
       })
     }
   }
 
   const handleSetDefault = (type: 'paperStock' | 'size' | 'quantity', id: string) => {
     if (!product) return
-    
+
     if (type === 'paperStock') {
       setProduct({ ...product, defaultPaperStock: id })
     } else if (type === 'size') {
@@ -234,7 +239,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
     setSaving(true)
     try {
       // Would save to API
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       toast.success('Product configuration saved')
       router.push('/admin/products')
     } catch (error) {
@@ -278,9 +283,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
           <TabsTrigger value="material">
             Paper Stocks ({product.selectedPaperStocks.length})
           </TabsTrigger>
-          <TabsTrigger value="sizes">
-            Sizes ({product.selectedSizes.length})
-          </TabsTrigger>
+          <TabsTrigger value="sizes">Sizes ({product.selectedSizes.length})</TabsTrigger>
           <TabsTrigger value="quantities">
             Quantities ({product.selectedQuantities.length})
           </TabsTrigger>
@@ -291,8 +294,8 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
             <CardHeader>
               <CardTitle>Paper Stock Configuration</CardTitle>
               <CardDescription>
-                Select which material types are available for this product.
-                Paper stocks are managed centrally in the Paper Stocks section.
+                Select which material types are available for this product. Paper stocks are managed
+                centrally in the Paper Stocks section.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -302,9 +305,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                     No material types found. Please create material types first.
                   </p>
                   <Button asChild>
-                    <Link href="/admin/paper-stocks">
-                      Go to Material Management
-                    </Link>
+                    <Link href="/admin/paper-stocks">Go to Material Management</Link>
                   </Button>
                 </div>
               ) : (
@@ -347,8 +348,8 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                             </div>
                           </TableCell>
                           <TableCell>
-                            {isSelected && (
-                              isDefault ? (
+                            {isSelected &&
+                              (isDefault ? (
                                 <Badge className="bg-green-100 text-green-800">Default</Badge>
                               ) : (
                                 <Button
@@ -358,8 +359,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                                 >
                                   Set Default
                                 </Button>
-                              )
-                            )}
+                              ))}
                           </TableCell>
                         </TableRow>
                       )
@@ -375,9 +375,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
           <Card>
             <CardHeader>
               <CardTitle>Size Configuration</CardTitle>
-              <CardDescription>
-                Select which sizes are available for this product
-              </CardDescription>
+              <CardDescription>Select which sizes are available for this product</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -394,7 +392,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                   {availableSizes.map((size) => {
                     const isSelected = product.selectedSizes.includes(size.id)
                     const isDefault = product.defaultSize === size.id
-                    
+
                     return (
                       <TableRow key={size.id}>
                         <TableCell>
@@ -404,11 +402,13 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                           />
                         </TableCell>
                         <TableCell className="font-medium">{size.displayName}</TableCell>
-                        <TableCell>{size.width}" × {size.height}"</TableCell>
+                        <TableCell>
+                          {size.width}" × {size.height}"
+                        </TableCell>
                         <TableCell>{size.squareInches} sq in</TableCell>
                         <TableCell>
-                          {isSelected && (
-                            isDefault ? (
+                          {isSelected &&
+                            (isDefault ? (
                               <Badge className="bg-green-100 text-green-800">Default</Badge>
                             ) : (
                               <Button
@@ -418,8 +418,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                               >
                                 Set Default
                               </Button>
-                            )
-                          )}
+                            ))}
                         </TableCell>
                       </TableRow>
                     )
@@ -451,7 +450,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                   {availableQuantities.map((qty) => {
                     const isSelected = product.selectedQuantities.includes(qty.id)
                     const isDefault = product.defaultQuantity === qty.id
-                    
+
                     return (
                       <TableRow key={qty.id}>
                         <TableCell>
@@ -460,12 +459,10 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                             onCheckedChange={() => handleQuantityToggle(qty.id)}
                           />
                         </TableCell>
-                        <TableCell className="font-medium">
-                          {qty.value.toLocaleString()}
-                        </TableCell>
+                        <TableCell className="font-medium">{qty.value.toLocaleString()}</TableCell>
                         <TableCell>
-                          {isSelected && (
-                            isDefault ? (
+                          {isSelected &&
+                            (isDefault ? (
                               <Badge className="bg-green-100 text-green-800">Default</Badge>
                             ) : (
                               <Button
@@ -475,8 +472,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
                               >
                                 Set Default
                               </Button>
-                            )
-                          )}
+                            ))}
                         </TableCell>
                       </TableRow>
                     )
@@ -497,10 +493,13 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
           <div>
             <p className="text-sm font-medium mb-2">Selected Paper Stocks:</p>
             <div className="flex flex-wrap gap-2">
-              {product.selectedPaperStocks.map(id => {
-                const paperStock = availablePaperStocks.find(ps => ps.id === id)
+              {product.selectedPaperStocks.map((id) => {
+                const paperStock = availablePaperStocks.find((ps) => ps.id === id)
                 return paperStock ? (
-                  <Badge key={id} variant={id === product.defaultPaperStock ? 'default' : 'secondary'}>
+                  <Badge
+                    key={id}
+                    variant={id === product.defaultPaperStock ? 'default' : 'secondary'}
+                  >
                     {paperStock.name}
                     {id === product.defaultPaperStock && ' (Default)'}
                   </Badge>
@@ -508,12 +507,12 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
               })}
             </div>
           </div>
-          
+
           <div>
             <p className="text-sm font-medium mb-2">Selected Sizes:</p>
             <div className="flex flex-wrap gap-2">
-              {product.selectedSizes.map(id => {
-                const size = availableSizes.find(s => s.id === id)
+              {product.selectedSizes.map((id) => {
+                const size = availableSizes.find((s) => s.id === id)
                 return size ? (
                   <Badge key={id} variant={id === product.defaultSize ? 'default' : 'secondary'}>
                     {size.displayName}
@@ -523,14 +522,17 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
               })}
             </div>
           </div>
-          
+
           <div>
             <p className="text-sm font-medium mb-2">Selected Quantities:</p>
             <div className="flex flex-wrap gap-2">
-              {product.selectedQuantities.map(id => {
-                const qty = availableQuantities.find(q => q.id === id)
+              {product.selectedQuantities.map((id) => {
+                const qty = availableQuantities.find((q) => q.id === id)
                 return qty ? (
-                  <Badge key={id} variant={id === product.defaultQuantity ? 'default' : 'secondary'}>
+                  <Badge
+                    key={id}
+                    variant={id === product.defaultQuantity ? 'default' : 'secondary'}
+                  >
                     {qty.value.toLocaleString()}
                     {id === product.defaultQuantity && ' (Default)'}
                   </Badge>

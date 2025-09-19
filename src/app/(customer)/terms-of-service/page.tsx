@@ -5,7 +5,9 @@ export default function TermsOfServicePage() {
     <div className="min-h-screen py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
-        <p className="text-muted-foreground mb-8">Effective Date: {new Date().toLocaleDateString()}</p>
+        <p className="text-muted-foreground mb-8">
+          Effective Date: {new Date().toLocaleDateString()}
+        </p>
 
         <div className="space-y-8">
           <Card>
@@ -14,8 +16,9 @@ export default function TermsOfServicePage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                By accessing or using GangRun Printing's services, you agree to be bound by these 
-                Terms of Service. If you do not agree to these terms, please do not use our services.
+                By accessing or using GangRun Printing's services, you agree to be bound by these
+                Terms of Service. If you do not agree to these terms, please do not use our
+                services.
               </p>
             </CardContent>
           </Card>
@@ -25,7 +28,9 @@ export default function TermsOfServicePage() {
               <CardTitle>2. Services</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
-              <p>GangRun Printing provides custom printing services including but not limited to:</p>
+              <p>
+                GangRun Printing provides custom printing services including but not limited to:
+              </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Business cards, flyers, and brochures</li>
                 <li>Banners and signage</li>
@@ -114,8 +119,8 @@ export default function TermsOfServicePage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                Our liability is limited to the amount paid for the specific order. We are not 
-                liable for indirect, incidental, or consequential damages. We are not responsible 
+                Our liability is limited to the amount paid for the specific order. We are not
+                liable for indirect, incidental, or consequential damages. We are not responsible
                 for errors in customer-provided content.
               </p>
             </CardContent>
@@ -142,7 +147,7 @@ export default function TermsOfServicePage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                We reserve the right to modify these terms at any time. Continued use of our 
+                We reserve the right to modify these terms at any time. Continued use of our
                 services after changes constitutes acceptance of the modified terms.
               </p>
             </CardContent>
@@ -154,8 +159,8 @@ export default function TermsOfServicePage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                These terms are governed by the laws of Texas, United States. Any disputes shall 
-                be resolved in the courts of Harris County, Texas.
+                These terms are governed by the laws of Texas, United States. Any disputes shall be
+                resolved in the courts of Harris County, Texas.
               </p>
             </CardContent>
           </Card>

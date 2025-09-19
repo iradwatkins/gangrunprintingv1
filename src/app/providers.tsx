@@ -24,12 +24,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        disableTransitionOnChange
-        enableSystem
-        attribute="class"
-        defaultTheme="system"
-      >
+      <ThemeProvider disableTransitionOnChange enableSystem attribute="class" defaultTheme="system">
         <CartProvider>
           {children}
           <CartDrawer />

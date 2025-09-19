@@ -19,7 +19,7 @@ import {
   ChevronDown,
   ChevronRight,
   Maximize2,
-  Layers
+  Layers,
 } from 'lucide-react'
 import {
   Table,
@@ -44,11 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import toast from '@/lib/toast'
 
 interface SizeGroup {
@@ -93,7 +89,7 @@ export default function SizesPage() {
     customMinHeight: 1,
     customMaxHeight: 96,
     sortOrder: 0,
-    isActive: true
+    isActive: true,
   })
 
   useEffect(() => {
@@ -118,25 +114,23 @@ export default function SizesPage() {
   const handleSubmit = async () => {
     try {
       setSaving(true)
-      
+
       if (!formData.name || !formData.values || !formData.defaultValue) {
         toast.error('Name, values, and default value are required')
         setSaving(false)
         return
       }
-      
-      const url = editingGroup 
-        ? `/api/sizes/${editingGroup.id}`
-        : '/api/sizes'
-      
+
+      const url = editingGroup ? `/api/sizes/${editingGroup.id}` : '/api/sizes'
+
       const method = editingGroup ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
-      
+
       if (response.ok) {
         toast.success(editingGroup ? 'Group updated successfully' : 'Group created successfully')
         setDialogOpen(false)
@@ -156,14 +150,14 @@ export default function SizesPage() {
 
   const handleDelete = async () => {
     if (!groupToDelete) return
-    
+
     try {
       const response = await fetch(`/api/sizes/${groupToDelete.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
+
       const data = await response.json()
-      
+
       if (response.ok) {
         toast.success('Group deleted successfully')
         setDeleteDialogOpen(false)
@@ -189,7 +183,7 @@ export default function SizesPage() {
       customMinHeight: 1,
       customMaxHeight: 96,
       sortOrder: 0,
-      isActive: true
+      isActive: true,
     })
     setEditingGroup(null)
   }
@@ -206,7 +200,7 @@ export default function SizesPage() {
       customMinHeight: group.customMinHeight || 1,
       customMaxHeight: group.customMaxHeight || 96,
       sortOrder: group.sortOrder,
-      isActive: group.isActive
+      isActive: group.isActive,
     })
     setDialogOpen(true)
   }
@@ -228,7 +222,7 @@ export default function SizesPage() {
       customMinHeight: group.customMinHeight || 1,
       customMaxHeight: group.customMaxHeight || 96,
       sortOrder: group.sortOrder,
-      isActive: group.isActive
+      isActive: group.isActive,
     })
     setDialogOpen(true)
   }
@@ -244,7 +238,10 @@ export default function SizesPage() {
   }
 
   const parseValuesList = (values: string) => {
-    return values.split(',').map(v => v.trim()).filter(v => v)
+    return values
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v)
   }
 
   const hasCustomOption = (values: string) => {
@@ -270,14 +267,14 @@ export default function SizesPage() {
                 <Layers className="h-5 w-5" />
                 Sizes Management
               </CardTitle>
-              <CardDescription>
-                Create and manage size options for products
-              </CardDescription>
+              <CardDescription>Create and manage size options for products</CardDescription>
             </div>
-            <Button onClick={() => {
-              resetForm()
-              setDialogOpen(true)
-            }}>
+            <Button
+              onClick={() => {
+                resetForm()
+                setDialogOpen(true)
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Sizes
             </Button>
@@ -371,7 +368,7 @@ export default function SizesPage() {
                             <Label className="text-sm font-medium">Sizes:</Label>
                             <div className="flex flex-wrap gap-2 mt-2">
                               {group.valuesList?.map((value, index) => (
-                                <Badge 
+                                <Badge
                                   key={index}
                                   className="text-sm"
                                   variant={value === group.defaultValue ? 'default' : 'outline'}
@@ -389,10 +386,12 @@ export default function SizesPage() {
                               <Label className="text-sm font-medium">Custom Size Limits:</Label>
                               <div className="grid grid-cols-2 gap-4 mt-2">
                                 <div className="text-sm text-muted-foreground">
-                                  <span className="font-medium">Width:</span> {group.customMinWidth || 1}" - {group.customMaxWidth || 96}"
+                                  <span className="font-medium">Width:</span>{' '}
+                                  {group.customMinWidth || 1}" - {group.customMaxWidth || 96}"
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  <span className="font-medium">Height:</span> {group.customMinHeight || 1}" - {group.customMaxHeight || 96}"
+                                  <span className="font-medium">Height:</span>{' '}
+                                  {group.customMinHeight || 1}" - {group.customMaxHeight || 96}"
                                 </div>
                               </div>
                             </div>
@@ -412,11 +411,10 @@ export default function SizesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingGroup ? 'Edit Sizes' : 'Create New Sizes'}
-            </DialogTitle>
+            <DialogTitle>{editingGroup ? 'Edit Sizes' : 'Create New Sizes'}</DialogTitle>
             <DialogDescription>
-              Enter comma-separated sizes (e.g., "2x3.5" for 2" × 3.5"). Include "custom" to allow user input.
+              Enter comma-separated sizes (e.g., "2x3.5" for 2" × 3.5"). Include "custom" to allow
+              user input.
             </DialogDescription>
           </DialogHeader>
 
@@ -498,7 +496,9 @@ export default function SizesPage() {
                     step="0.25"
                     type="number"
                     value={formData.customMinWidth}
-                    onChange={(e) => setFormData({ ...formData, customMinWidth: parseFloat(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customMinWidth: parseFloat(e.target.value) || 1 })
+                    }
                   />
                   <Label className="text-right" htmlFor="customMaxWidth">
                     Max Width
@@ -510,7 +510,9 @@ export default function SizesPage() {
                     step="0.25"
                     type="number"
                     value={formData.customMaxWidth}
-                    onChange={(e) => setFormData({ ...formData, customMaxWidth: parseFloat(e.target.value) || 96 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customMaxWidth: parseFloat(e.target.value) || 96 })
+                    }
                   />
                 </div>
 
@@ -525,7 +527,9 @@ export default function SizesPage() {
                     step="0.25"
                     type="number"
                     value={formData.customMinHeight}
-                    onChange={(e) => setFormData({ ...formData, customMinHeight: parseFloat(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customMinHeight: parseFloat(e.target.value) || 1 })
+                    }
                   />
                   <Label className="text-right" htmlFor="customMaxHeight">
                     Max Height
@@ -537,7 +541,12 @@ export default function SizesPage() {
                     step="0.25"
                     type="number"
                     value={formData.customMaxHeight}
-                    onChange={(e) => setFormData({ ...formData, customMaxHeight: parseFloat(e.target.value) || 96 })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        customMaxHeight: parseFloat(e.target.value) || 96,
+                      })
+                    }
                   />
                 </div>
               </>
@@ -553,7 +562,9 @@ export default function SizesPage() {
                 placeholder="0"
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
 
@@ -605,7 +616,7 @@ export default function SizesPage() {
           <DialogHeader>
             <DialogTitle>Delete Sizes</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{groupToDelete?.name}"? 
+              Are you sure you want to delete "{groupToDelete?.name}"?
               {groupToDelete?._count.products && groupToDelete._count.products > 0 && (
                 <span className="block mt-2 text-red-500">
                   Warning: This group is being used by {groupToDelete._count.products} product(s).
@@ -623,10 +634,7 @@ export default function SizesPage() {
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-            >
+            <Button variant="destructive" onClick={handleDelete}>
               Delete
             </Button>
           </DialogFooter>

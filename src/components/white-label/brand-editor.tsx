@@ -1,75 +1,81 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useTheme } from '@/components/white-label/theme-provider';
-import { useTenantInfo } from '@/components/tenants/tenant-provider';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ColorPicker } from '@/components/ui/color-picker';
-import { ImageUpload } from '@/components/ui/image-upload';
-import { CodeEditor } from '@/components/ui/code-editor';
-import { useToast } from '@/hooks/use-toast';
-import { Save, RefreshCw, Eye, Copy, Download, Upload } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { useTheme } from '@/components/white-label/theme-provider'
+import { useTenantInfo } from '@/components/tenants/tenant-provider'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ColorPicker } from '@/components/ui/color-picker'
+import { ImageUpload } from '@/components/ui/image-upload'
+import { CodeEditor } from '@/components/ui/code-editor'
+import { useToast } from '@/hooks/use-toast'
+import { Save, RefreshCw, Eye, Copy, Download, Upload } from 'lucide-react'
 
 interface BrandEditorProps {
-  section: 'colors' | 'typography' | 'logos' | 'layout' | 'custom' | 'email';
+  section: 'colors' | 'typography' | 'logos' | 'layout' | 'custom' | 'email'
 }
 
 interface BrandConfig {
   // Colors
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
+  primaryColor: string
+  secondaryColor: string
+  accentColor: string
+  backgroundColor: string
+  textColor: string
 
   // Typography
-  primaryFont: string;
-  secondaryFont: string;
-  fontSize: string;
-  fontWeight: string;
-  lineHeight: string;
+  primaryFont: string
+  secondaryFont: string
+  fontSize: string
+  fontWeight: string
+  lineHeight: string
 
   // Layout
-  borderRadius: string;
-  spacing: string;
-  containerWidth: string;
-  headerHeight: string;
+  borderRadius: string
+  spacing: string
+  containerWidth: string
+  headerHeight: string
 
   // Branding
-  logoUrl: string;
-  logoText: string;
-  faviconUrl: string;
-  brandName: string;
+  logoUrl: string
+  logoText: string
+  faviconUrl: string
+  brandName: string
 
   // Custom
-  customCss: string;
-  customJs: string;
+  customCss: string
+  customJs: string
 
   // Email
-  emailHeaderLogo: string;
-  emailFooterText: string;
+  emailHeaderLogo: string
+  emailFooterText: string
   emailColors: {
-    header: string;
-    headerText: string;
-    footer: string;
-    footerText: string;
-    button: string;
-    buttonText: string;
-  };
+    header: string
+    headerText: string
+    footer: string
+    footerText: string
+    button: string
+    buttonText: string
+  }
 }
 
 export function BrandEditor({ section }: BrandEditorProps) {
-  const { theme } = useTheme();
-  const tenant = useTenantInfo();
-  const { toast } = useToast();
+  const { theme } = useTheme()
+  const tenant = useTenantInfo()
+  const { toast } = useToast()
 
   const [config, setConfig] = useState<BrandConfig>({
     primaryColor: '#3b82f6',
@@ -102,34 +108,34 @@ export function BrandEditor({ section }: BrandEditorProps) {
       button: '#f59e0b',
       buttonText: '#ffffff',
     },
-  });
+  })
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
+  const [previewMode, setPreviewMode] = useState(false)
 
   // Load existing configuration
   useEffect(() => {
-    loadBrandConfig();
-  }, [tenant]);
+    loadBrandConfig()
+  }, [tenant])
 
   const loadBrandConfig = async () => {
-    if (!tenant) return;
+    if (!tenant) return
 
     try {
-      const response = await fetch(`/api/admin/brand-config/${tenant.id}`);
+      const response = await fetch(`/api/admin/brand-config/${tenant.id}`)
       if (response.ok) {
-        const data = await response.json();
-        setConfig(prev => ({ ...prev, ...data.config }));
+        const data = await response.json()
+        setConfig((prev) => ({ ...prev, ...data.config }))
       }
     } catch (error) {
-      console.error('Error loading brand config:', error);
+      console.error('Error loading brand config:', error)
     }
-  };
+  }
 
   const saveBrandConfig = async () => {
-    if (!tenant) return;
+    if (!tenant) return
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const response = await fetch(`/api/admin/brand-config/${tenant.id}`, {
         method: 'PUT',
@@ -137,27 +143,27 @@ export function BrandEditor({ section }: BrandEditorProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ config }),
-      });
+      })
 
       if (response.ok) {
         toast({
           title: 'Success',
           description: 'Brand configuration saved successfully',
-        });
+        })
       } else {
-        throw new Error('Failed to save configuration');
+        throw new Error('Failed to save configuration')
       }
     } catch (error) {
-      console.error('Error saving brand config:', error);
+      console.error('Error saving brand config:', error)
       toast({
         title: 'Error',
         description: 'Failed to save brand configuration',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const resetToDefaults = () => {
     setConfig({
@@ -191,55 +197,55 @@ export function BrandEditor({ section }: BrandEditorProps) {
         button: '#f59e0b',
         buttonText: '#ffffff',
       },
-    });
-  };
+    })
+  }
 
   const exportConfig = () => {
-    const dataStr = JSON.stringify(config, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const dataStr = JSON.stringify(config, null, 2)
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
 
-    const exportFileDefaultName = `${tenant?.slug || 'brand'}-theme-config.json`;
+    const exportFileDefaultName = `${tenant?.slug || 'brand'}-theme-config.json`
 
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
+    const linkElement = document.createElement('a')
+    linkElement.setAttribute('href', dataUri)
+    linkElement.setAttribute('download', exportFileDefaultName)
+    linkElement.click()
+  }
 
   const importConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const file = event.target.files?.[0]
+    if (!file) return
 
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const importedConfig = JSON.parse(e.target?.result as string);
-        setConfig(prev => ({ ...prev, ...importedConfig }));
+        const importedConfig = JSON.parse(e.target?.result as string)
+        setConfig((prev) => ({ ...prev, ...importedConfig }))
         toast({
           title: 'Success',
           description: 'Configuration imported successfully',
-        });
+        })
       } catch (error) {
         toast({
           title: 'Error',
           description: 'Failed to import configuration',
           variant: 'destructive',
-        });
+        })
       }
-    };
-    reader.readAsText(file);
-  };
+    }
+    reader.readAsText(file)
+  }
 
   const updateConfig = (key: keyof BrandConfig, value: any) => {
-    setConfig(prev => ({ ...prev, [key]: value }));
-  };
+    setConfig((prev) => ({ ...prev, [key]: value }))
+  }
 
   const updateEmailColor = (key: keyof BrandConfig['emailColors'], value: string) => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      emailColors: { ...prev.emailColors, [key]: value }
-    }));
-  };
+      emailColors: { ...prev.emailColors, [key]: value },
+    }))
+  }
 
   return (
     <div className="space-y-6">
@@ -282,37 +288,36 @@ export function BrandEditor({ section }: BrandEditorProps) {
       </div>
 
       {/* Section Content */}
-      {section === 'colors' && (
-        <ColorsSection config={config} updateConfig={updateConfig} />
-      )}
+      {section === 'colors' && <ColorsSection config={config} updateConfig={updateConfig} />}
 
       {section === 'typography' && (
         <TypographySection config={config} updateConfig={updateConfig} />
       )}
 
-      {section === 'logos' && (
-        <LogosSection config={config} updateConfig={updateConfig} />
-      )}
+      {section === 'logos' && <LogosSection config={config} updateConfig={updateConfig} />}
 
-      {section === 'layout' && (
-        <LayoutSection config={config} updateConfig={updateConfig} />
-      )}
+      {section === 'layout' && <LayoutSection config={config} updateConfig={updateConfig} />}
 
-      {section === 'custom' && (
-        <CustomSection config={config} updateConfig={updateConfig} />
-      )}
+      {section === 'custom' && <CustomSection config={config} updateConfig={updateConfig} />}
 
       {section === 'email' && (
-        <EmailSection config={config} updateConfig={updateConfig} updateEmailColor={updateEmailColor} />
+        <EmailSection
+          config={config}
+          updateConfig={updateConfig}
+          updateEmailColor={updateEmailColor}
+        />
       )}
     </div>
-  );
+  )
 }
 
 // Colors Section
-function ColorsSection({ config, updateConfig }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
+function ColorsSection({
+  config,
+  updateConfig,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
 }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -369,18 +374,30 @@ function ColorsSection({ config, updateConfig }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Typography Section
-function TypographySection({ config, updateConfig }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
+function TypographySection({
+  config,
+  updateConfig,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
 }) {
   const fontOptions = [
-    'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins',
-    'Source Sans Pro', 'Nunito', 'Raleway', 'Ubuntu', 'Work Sans'
-  ];
+    'Inter',
+    'Roboto',
+    'Open Sans',
+    'Lato',
+    'Montserrat',
+    'Poppins',
+    'Source Sans Pro',
+    'Nunito',
+    'Raleway',
+    'Ubuntu',
+    'Work Sans',
+  ]
 
   return (
     <div className="space-y-6">
@@ -392,26 +409,36 @@ function TypographySection({ config, updateConfig }: {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="primaryFont">Primary Font</Label>
-            <Select value={config.primaryFont} onValueChange={(value) => updateConfig('primaryFont', value)}>
+            <Select
+              value={config.primaryFont}
+              onValueChange={(value) => updateConfig('primaryFont', value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {fontOptions.map(font => (
-                  <SelectItem key={font} value={font}>{font}</SelectItem>
+                {fontOptions.map((font) => (
+                  <SelectItem key={font} value={font}>
+                    {font}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="secondaryFont">Secondary Font</Label>
-            <Select value={config.secondaryFont} onValueChange={(value) => updateConfig('secondaryFont', value)}>
+            <Select
+              value={config.secondaryFont}
+              onValueChange={(value) => updateConfig('secondaryFont', value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {fontOptions.map(font => (
-                  <SelectItem key={font} value={font}>{font}</SelectItem>
+                {fontOptions.map((font) => (
+                  <SelectItem key={font} value={font}>
+                    {font}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -435,7 +462,10 @@ function TypographySection({ config, updateConfig }: {
           </div>
           <div>
             <Label htmlFor="fontWeight">Font Weight</Label>
-            <Select value={config.fontWeight} onValueChange={(value) => updateConfig('fontWeight', value)}>
+            <Select
+              value={config.fontWeight}
+              onValueChange={(value) => updateConfig('fontWeight', value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -459,13 +489,16 @@ function TypographySection({ config, updateConfig }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Logos Section
-function LogosSection({ config, updateConfig }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
+function LogosSection({
+  config,
+  updateConfig,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
 }) {
   return (
     <div className="space-y-6">
@@ -511,13 +544,16 @@ function LogosSection({ config, updateConfig }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Layout Section
-function LayoutSection({ config, updateConfig }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
+function LayoutSection({
+  config,
+  updateConfig,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
 }) {
   return (
     <div className="space-y-6">
@@ -562,13 +598,16 @@ function LayoutSection({ config, updateConfig }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Custom Section
-function CustomSection({ config, updateConfig }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
+function CustomSection({
+  config,
+  updateConfig,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
 }) {
   return (
     <div className="space-y-6">
@@ -602,14 +641,18 @@ function CustomSection({ config, updateConfig }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 // Email Section
-function EmailSection({ config, updateConfig, updateEmailColor }: {
-  config: BrandConfig;
-  updateConfig: (key: keyof BrandConfig, value: any) => void;
-  updateEmailColor: (key: keyof BrandConfig['emailColors'], value: string) => void;
+function EmailSection({
+  config,
+  updateConfig,
+  updateEmailColor,
+}: {
+  config: BrandConfig
+  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateEmailColor: (key: keyof BrandConfig['emailColors'], value: string) => void
 }) {
   return (
     <div className="space-y-6">
@@ -689,5 +732,5 @@ function EmailSection({ config, updateConfig, updateEmailColor }: {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

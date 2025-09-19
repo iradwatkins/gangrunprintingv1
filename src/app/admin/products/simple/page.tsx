@@ -8,7 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
@@ -52,7 +58,7 @@ export default function SimpleProductPage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
-      setFormData(prev => ({ ...prev, sku }))
+      setFormData((prev) => ({ ...prev, sku }))
     }
   }, [formData.name])
 
@@ -64,7 +70,7 @@ export default function SimpleProductPage() {
         fetch('/api/product-categories'),
         fetch('/api/paper-stocks'),
         fetch('/api/quantities'),
-        fetch('/api/sizes')
+        fetch('/api/sizes'),
       ])
 
       if (catRes.ok) {
@@ -90,7 +96,6 @@ export default function SimpleProductPage() {
         setSizeGroups(data)
         console.log('Size groups loaded:', data.length)
       }
-
     } catch (error) {
       console.error('Error fetching dropdown data:', error)
       toast.error('Failed to load form data')
@@ -103,8 +108,13 @@ export default function SimpleProductPage() {
     e.preventDefault()
 
     // Basic validation
-    if (!formData.name || !formData.categoryId || !formData.paperStockId ||
-        !formData.quantityGroupId || !formData.sizeGroupId) {
+    if (
+      !formData.name ||
+      !formData.categoryId ||
+      !formData.paperStockId ||
+      !formData.quantityGroupId ||
+      !formData.sizeGroupId
+    ) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -116,7 +126,7 @@ export default function SimpleProductPage() {
       const response = await fetch('/api/products/simple', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
 
       const result = await response.json()
@@ -128,7 +138,6 @@ export default function SimpleProductPage() {
 
       toast.success('Product created successfully!')
       router.push('/admin/products')
-
     } catch (error: any) {
       console.error('Error creating product:', error)
       toast.error(error.message || 'Failed to create product')
@@ -151,8 +160,11 @@ export default function SimpleProductPage() {
   }
 
   // Check if we have the required data
-  const hasRequiredData = categories.length > 0 && paperStocks.length > 0 &&
-                          quantityGroups.length > 0 && sizeGroups.length > 0
+  const hasRequiredData =
+    categories.length > 0 &&
+    paperStocks.length > 0 &&
+    quantityGroups.length > 0 &&
+    sizeGroups.length > 0
 
   if (!hasRequiredData) {
     return (
@@ -177,11 +189,7 @@ export default function SimpleProductPage() {
     <div className="container mx-auto py-6 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => router.push('/admin/products')}
-          >
+          <Button size="sm" variant="ghost" onClick={() => router.push('/admin/products')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -199,32 +207,27 @@ export default function SimpleProductPage() {
             <div>
               <Label htmlFor="name">Product Name *</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="e.g., Standard Business Cards"
                 required
+                id="name"
+                placeholder="e.g., Standard Business Cards"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
             {/* SKU (auto-generated) */}
             <div>
               <Label htmlFor="sku">SKU (auto-generated)</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                readOnly
-                className="bg-muted"
-              />
+              <Input readOnly className="bg-muted" id="sku" value={formData.sku} />
             </div>
 
             {/* Category */}
             <div>
               <Label htmlFor="category">Category *</Label>
               <Select
-                value={formData.categoryId}
-                onValueChange={(value) => setFormData({...formData, categoryId: value})}
                 required
+                value={formData.categoryId}
+                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
@@ -243,9 +246,9 @@ export default function SimpleProductPage() {
             <div>
               <Label htmlFor="paperStock">Paper Stock *</Label>
               <Select
-                value={formData.paperStockId}
-                onValueChange={(value) => setFormData({...formData, paperStockId: value})}
                 required
+                value={formData.paperStockId}
+                onValueChange={(value) => setFormData({ ...formData, paperStockId: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select paper stock" />
@@ -264,9 +267,9 @@ export default function SimpleProductPage() {
             <div>
               <Label htmlFor="quantityGroup">Quantity Options *</Label>
               <Select
-                value={formData.quantityGroupId}
-                onValueChange={(value) => setFormData({...formData, quantityGroupId: value})}
                 required
+                value={formData.quantityGroupId}
+                onValueChange={(value) => setFormData({ ...formData, quantityGroupId: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select quantity group" />
@@ -285,9 +288,9 @@ export default function SimpleProductPage() {
             <div>
               <Label htmlFor="sizeGroup">Size Options *</Label>
               <Select
-                value={formData.sizeGroupId}
-                onValueChange={(value) => setFormData({...formData, sizeGroupId: value})}
                 required
+                value={formData.sizeGroupId}
+                onValueChange={(value) => setFormData({ ...formData, sizeGroupId: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select size group" />
@@ -307,10 +310,10 @@ export default function SimpleProductPage() {
               <Label htmlFor="description">Description (optional)</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                rows={3}
                 placeholder="Product description..."
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
 
@@ -319,10 +322,12 @@ export default function SimpleProductPage() {
               <Label htmlFor="productionTime">Production Time (days)</Label>
               <Input
                 id="productionTime"
-                type="number"
                 min="1"
+                type="number"
                 value={formData.productionTime}
-                onChange={(e) => setFormData({...formData, productionTime: parseInt(e.target.value) || 3})}
+                onChange={(e) =>
+                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 3 })
+                }
               />
             </div>
 
@@ -331,14 +336,14 @@ export default function SimpleProductPage() {
               <div className="flex items-center gap-2">
                 <Switch
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({...formData, isActive: checked})}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                 />
                 <Label>Active</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
                   checked={formData.isFeatured}
-                  onCheckedChange={(checked) => setFormData({...formData, isFeatured: checked})}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
                 />
                 <Label>Featured</Label>
               </div>
@@ -346,7 +351,7 @@ export default function SimpleProductPage() {
 
             {/* Submit Button */}
             <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={loading}>
+              <Button disabled={loading} type="submit">
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />

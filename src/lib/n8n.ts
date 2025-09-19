@@ -33,16 +33,16 @@ export class N8NClient {
         event,
         data,
         timestamp: new Date().toISOString(),
-        source: 'gangrunprinting'
+        source: 'gangrunprinting',
       }
 
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(this.apiKey && { 'X-N8N-API-Key': this.apiKey })
+          ...(this.apiKey && { 'X-N8N-API-Key': this.apiKey }),
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -52,13 +52,13 @@ export class N8NClient {
       const result = await response.json()
       return {
         success: true,
-        data: result
+        data: result,
       }
     } catch (error) {
       console.error('N8N webhook error:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   }
@@ -74,10 +74,10 @@ export class N8NClient {
         productName: item.productName,
         quantity: item.quantity,
         price: item.price / 100,
-        options: item.options
+        options: item.options,
       })),
       status: order.status,
-      createdAt: order.createdAt
+      createdAt: order.createdAt,
     })
   }
 
@@ -89,7 +89,7 @@ export class N8NClient {
       previousStatus,
       newStatus: order.status,
       customerEmail: order.email,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     })
   }
 
@@ -102,7 +102,7 @@ export class N8NClient {
       paymentMethod: paymentDetails.method || 'card',
       transactionId: paymentDetails.transactionId,
       customerEmail: order.email,
-      receivedAt: new Date().toISOString()
+      receivedAt: new Date().toISOString(),
     })
   }
 
@@ -115,7 +115,7 @@ export class N8NClient {
       carrier: trackingInfo.carrier,
       estimatedDelivery: trackingInfo.estimatedDelivery,
       customerEmail: order.email,
-      shippedAt: new Date().toISOString()
+      shippedAt: new Date().toISOString(),
     })
   }
 
@@ -128,7 +128,7 @@ export class N8NClient {
       fileSize: fileInfo.size,
       fileType: fileInfo.type,
       uploadedBy: fileInfo.uploadedBy || order.email,
-      uploadedAt: new Date().toISOString()
+      uploadedAt: new Date().toISOString(),
     })
   }
 
@@ -141,7 +141,7 @@ export class N8NClient {
       issueDescription: issue.description,
       severity: issue.severity || 'medium',
       customerEmail: order.email,
-      detectedAt: new Date().toISOString()
+      detectedAt: new Date().toISOString(),
     })
   }
 
@@ -153,7 +153,7 @@ export class N8NClient {
       vendorId: vendor.id,
       vendorName: vendor.name,
       vendorEmail: vendor.email,
-      assignedAt: new Date().toISOString()
+      assignedAt: new Date().toISOString(),
     })
   }
 
@@ -165,7 +165,7 @@ export class N8NClient {
       notificationType: notification.type,
       recipient: order.email,
       subject: notification.subject,
-      scheduledAt: new Date().toISOString()
+      scheduledAt: new Date().toISOString(),
     })
   }
 
@@ -178,7 +178,7 @@ export class N8NClient {
       totalRevenue: reportData.totalRevenue,
       pendingOrders: reportData.pendingOrders,
       issues: reportData.issues,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     })
   }
 
@@ -190,7 +190,7 @@ export class N8NClient {
       currentStock,
       minimumStock: product.minimumStock || 10,
       sku: product.sku,
-      alertedAt: new Date().toISOString()
+      alertedAt: new Date().toISOString(),
     })
   }
 }
@@ -204,7 +204,7 @@ export const N8NWorkflows = {
   async onOrderCreated(orderId: string) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { OrderItem: true }
+      include: { OrderItem: true },
     })
     if (order) {
       await n8nClient.triggerOrderCreated(order)
@@ -213,7 +213,7 @@ export const N8NWorkflows = {
 
   async onOrderStatusChanged(orderId: string, previousStatus: string) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerOrderStatusUpdate(order, previousStatus)
@@ -222,7 +222,7 @@ export const N8NWorkflows = {
 
   async onPaymentReceived(orderId: string, paymentDetails: any) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerPaymentReceived(order, paymentDetails)
@@ -231,7 +231,7 @@ export const N8NWorkflows = {
 
   async onOrderShipped(orderId: string, trackingInfo: any) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerOrderShipped(order, trackingInfo)
@@ -241,7 +241,7 @@ export const N8NWorkflows = {
   // File management workflows
   async onFileUploaded(orderId: string, fileInfo: any) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerFileUploaded(order, fileInfo)
@@ -251,7 +251,7 @@ export const N8NWorkflows = {
   // Issue management workflows
   async onIssueDetected(orderId: string, issue: any) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerOrderIssue(order, issue)
@@ -262,7 +262,7 @@ export const N8NWorkflows = {
   async onVendorAssigned(orderId: string, vendorId: string) {
     const [order, vendor] = await Promise.all([
       prisma.order.findUnique({ where: { id: orderId } }),
-      prisma.vendor.findUnique({ where: { id: vendorId } })
+      prisma.vendor.findUnique({ where: { id: vendorId } }),
     ])
     if (order && vendor) {
       await n8nClient.triggerVendorAssignment(order, vendor)
@@ -272,7 +272,7 @@ export const N8NWorkflows = {
   // Notification workflows
   async sendCustomerNotification(orderId: string, notification: any) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
     if (order) {
       await n8nClient.triggerCustomerNotification(order, notification)
@@ -283,7 +283,7 @@ export const N8NWorkflows = {
   async generateDailyReport() {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
+
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
@@ -292,27 +292,27 @@ export const N8NWorkflows = {
         where: {
           createdAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
+            lt: tomorrow,
+          },
+        },
       }),
       prisma.order.count({
         where: {
           status: 'DELIVERED',
           updatedAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
+            lt: tomorrow,
+          },
+        },
       }),
       prisma.order.findMany({
         where: {
           createdAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
-      })
+            lt: tomorrow,
+          },
+        },
+      }),
     ])
 
     const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0) / 100
@@ -320,9 +320,9 @@ export const N8NWorkflows = {
     const pendingOrders = await prisma.order.count({
       where: {
         status: {
-          in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING']
-        }
-      }
+          in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING'],
+        },
+      },
     })
 
     await n8nClient.triggerDailyReport({
@@ -330,7 +330,7 @@ export const N8NWorkflows = {
       ordersCompleted,
       totalRevenue,
       pendingOrders,
-      issues: []
+      issues: [],
     })
-  }
+  },
 }

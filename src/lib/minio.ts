@@ -96,13 +96,7 @@ export async function uploadFile(
       await client.makeBucket(bucket, 'us-east-1')
     }
 
-    await client.putObject(
-      bucket,
-      objectName,
-      buffer,
-      buffer.length,
-      meta
-    )
+    await client.putObject(bucket, objectName, buffer, buffer.length, meta)
 
     // Generate public URL using the public endpoint
     const publicEndpoint = process.env.MINIO_PUBLIC_ENDPOINT || 'https://gangrunprinting.com/minio'
@@ -197,7 +191,11 @@ export async function initializeBuckets() {
   }
 }
 
-export async function getPresignedUploadUrl(bucket: string, objectName: string, expiry: number = 3600) {
+export async function getPresignedUploadUrl(
+  bucket: string,
+  objectName: string,
+  expiry: number = 3600
+) {
   try {
     const client = getMinioClient()
     const url = await client.presignedPutObject(bucket, objectName, expiry)
@@ -208,7 +206,11 @@ export async function getPresignedUploadUrl(bucket: string, objectName: string, 
   }
 }
 
-export async function getPresignedDownloadUrl(bucket: string, objectName: string, expiry: number = 3600) {
+export async function getPresignedDownloadUrl(
+  bucket: string,
+  objectName: string,
+  expiry: number = 3600
+) {
   try {
     const client = getMinioClient()
     const url = await client.presignedGetObject(bucket, objectName, expiry)

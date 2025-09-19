@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
       where: { id: orderId },
       include: {
         OrderItem: true,
-        user: true
-      }
+        user: true,
+      },
     })
 
     if (!order) {
@@ -20,8 +20,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare email content
-    const itemsList = order.OrderItem.map((item: any) => 
-      `<li>${item.productName} - Qty: ${item.quantity} - $${item.price.toFixed(2)}</li>`
+    const itemsList = order.OrderItem.map(
+      (item: any) =>
+        `<li>${item.productName} - Qty: ${item.quantity} - $${item.price.toFixed(2)}</li>`
     ).join('')
 
     const emailHtml = `
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       from: process.env.SENDGRID_FROM_EMAIL || 'orders@gangrunprinting.com',
       subject: `Order Confirmation - ${orderNumber}`,
       text: `Thank you for your order! Your order number is ${orderNumber}. You can track your order at ${process.env.NEXTAUTH_URL}/account/orders`,
-      html: emailHtml
+      html: emailHtml,
     }
 
     await sgMail.send(msg)
@@ -119,17 +120,13 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         type: 'ORDER_CONFIRMED',
         sent: true,
-        sentAt: new Date()
-      }
+        sentAt: new Date(),
+      },
     })
 
     return NextResponse.json({ success: true, message: 'Confirmation email sent' })
-
   } catch (error) {
     console.error('Error sending confirmation email:', error)
-    return NextResponse.json(
-      { error: 'Failed to send confirmation email' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to send confirmation email' }, { status: 500 })
   }
 }

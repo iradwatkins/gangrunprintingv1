@@ -15,9 +15,7 @@ export function ShippingSettingsForm() {
           <Truck className="h-5 w-5" />
           Shipping Configuration
         </CardTitle>
-        <CardDescription>
-          Configure shipping methods and delivery options
-        </CardDescription>
+        <CardDescription>Configure shipping methods and delivery options</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

@@ -140,7 +140,7 @@ export default function SegmentsPage() {
 
       if (response.ok) {
         const segment = await response.json()
-        setSegments(prev => [segment, ...prev])
+        setSegments((prev) => [segment, ...prev])
         setShowCreateDialog(false)
         setNewSegment({
           name: '',
@@ -176,7 +176,7 @@ export default function SegmentsPage() {
       })
 
       if (response.ok) {
-        setSegments(prev => prev.filter(s => s.id !== segmentId))
+        setSegments((prev) => prev.filter((s) => s.id !== segmentId))
       }
     } catch (error) {
       console.error('Error deleting segment:', error)
@@ -184,23 +184,21 @@ export default function SegmentsPage() {
   }
 
   const addRule = () => {
-    setNewSegment(prev => ({
+    setNewSegment((prev) => ({
       ...prev,
       rules: [...prev.rules, { field: '', operator: '', value: '', type: 'user' }],
     }))
   }
 
   const updateRule = (index: number, updates: Partial<SegmentRule>) => {
-    setNewSegment(prev => ({
+    setNewSegment((prev) => ({
       ...prev,
-      rules: prev.rules.map((rule, i) =>
-        i === index ? { ...rule, ...updates } : rule
-      ),
+      rules: prev.rules.map((rule, i) => (i === index ? { ...rule, ...updates } : rule)),
     }))
   }
 
   const removeRule = (index: number) => {
-    setNewSegment(prev => ({
+    setNewSegment((prev) => ({
       ...prev,
       rules: prev.rules.filter((_, i) => i !== index),
     }))
@@ -241,7 +239,7 @@ export default function SegmentsPage() {
                   <Input
                     placeholder="Enter segment name"
                     value={newSegment.name}
-                    onChange={(e) => setNewSegment(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setNewSegment((prev) => ({ ...prev, name: e.target.value }))}
                   />
                 </div>
               </div>
@@ -252,7 +250,9 @@ export default function SegmentsPage() {
                   placeholder="Describe this segment"
                   rows={2}
                   value={newSegment.description}
-                  onChange={(e) => setNewSegment(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSegment((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
 
@@ -266,7 +266,7 @@ export default function SegmentsPage() {
                         <Select
                           value={rule.field}
                           onValueChange={(value) => {
-                            const field = FIELD_OPTIONS.find(f => f.value === value)
+                            const field = FIELD_OPTIONS.find((f) => f.value === value)
                             updateRule(index, { field: value, type: field?.type as any })
                           }}
                         >
@@ -313,20 +313,12 @@ export default function SegmentsPage() {
 
                       <div className="flex gap-1">
                         {newSegment.rules.length > 1 && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => removeRule(index)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => removeRule(index)}>
                             Remove
                           </Button>
                         )}
                         {index === newSegment.rules.length - 1 && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={addRule}
-                          >
+                          <Button size="sm" variant="outline" onClick={addRule}>
                             Add
                           </Button>
                         )}
@@ -372,9 +364,7 @@ export default function SegmentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Segments</p>
-                <p className="text-3xl font-bold">
-                  {segments.filter(s => s.isActive).length}
-                </p>
+                <p className="text-3xl font-bold">{segments.filter((s) => s.isActive).length}</p>
               </div>
               <Users className="w-8 h-8 text-green-500" />
             </div>
@@ -400,9 +390,7 @@ export default function SegmentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Dynamic Segments</p>
-                <p className="text-3xl font-bold">
-                  {segments.filter(s => s.isDynamic).length}
-                </p>
+                <p className="text-3xl font-bold">{segments.filter((s) => s.isDynamic).length}</p>
               </div>
               <RefreshCw className="w-8 h-8 text-orange-500" />
             </div>
@@ -414,9 +402,7 @@ export default function SegmentsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Customer Segments</CardTitle>
-          <CardDescription>
-            Manage your customer segmentation rules and criteria
-          </CardDescription>
+          <CardDescription>Manage your customer segmentation rules and criteria</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -437,10 +423,7 @@ export default function SegmentsPage() {
                     <div className="flex flex-col items-center gap-2">
                       <Target className="w-8 h-8 text-gray-400" />
                       <p className="text-gray-500">No segments found</p>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowCreateDialog(true)}
-                      >
+                      <Button variant="outline" onClick={() => setShowCreateDialog(true)}>
                         Create your first segment
                       </Button>
                     </div>
@@ -479,9 +462,7 @@ export default function SegmentsPage() {
                         {segment.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {new Date(segment.lastUpdated).toLocaleDateString()}
-                    </TableCell>
+                    <TableCell>{new Date(segment.lastUpdated).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -501,9 +482,7 @@ export default function SegmentsPage() {
                           </DropdownMenuItem>
 
                           {segment.isDynamic && (
-                            <DropdownMenuItem
-                              onClick={() => handleRefreshSegment(segment.id)}
-                            >
+                            <DropdownMenuItem onClick={() => handleRefreshSegment(segment.id)}>
                               <RefreshCw className="mr-2 h-4 w-4" />
                               Refresh
                             </DropdownMenuItem>
@@ -514,9 +493,7 @@ export default function SegmentsPage() {
                             Analytics
                           </DropdownMenuItem>
 
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteSegment(segment.id)}
-                          >
+                          <DropdownMenuItem onClick={() => handleDeleteSegment(segment.id)}>
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>

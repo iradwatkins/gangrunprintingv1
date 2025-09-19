@@ -4,78 +4,57 @@ import { deleteProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 
 // GET /api/products/[id] - Get single product
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-        const { id } = await params
+    const { id } = await params
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
         ProductCategory: true,
         ProductImage: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
         productPaperStocks: {
           include: {
-            paperStock: true
-          }
+            paperStock: true,
+          },
         },
         ProductOption: {
           include: {
             OptionValue: {
-              orderBy: { sortOrder: 'asc' }
-            }
+              orderBy: { sortOrder: 'asc' },
+            },
           },
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
         PricingTier: {
-          orderBy: { minQuantity: 'asc' }
-        }
-      }
+          orderBy: { minQuantity: 'asc' },
+        },
+      },
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     return NextResponse.json(product)
   } catch (error) {
     console.error('Error fetching product:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
   }
 }
 
 // PUT /api/products/[id] - Update product
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-        const { id } = await params
+    const { id } = await params
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await request.json()
-    const {
-      images,
-      paperStocks,
-      options,
-      pricingTiers,
-      ...productData
-    } = data
+    const { images, paperStocks, options, pricingTiers, ...productData } = data
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({
@@ -85,25 +64,22 @@ export async function PUT(
         productPaperStocks: true,
         ProductOption: {
           include: {
-            OptionValue: true
-          }
+            OptionValue: true,
+          },
         },
-        PricingTier: true
-      }
+        PricingTier: true,
+      },
     })
 
     if (!existingProduct) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     // Delete removed images from MinIO
-    const existingImageUrls = existingProduct.ProductImage.map(img => img.url)
+    const existingImageUrls = existingProduct.ProductImage.map((img) => img.url)
     const newImageUrls = images?.map((img: any) => img.url) || []
-    const imagesToDelete = existingImageUrls.filter(url => !newImageUrls.includes(url))
-    
+    const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
+
     for (const url of imagesToDelete) {
       try {
         await deleteProductImage(url)
@@ -126,78 +102,90 @@ export async function PUT(
         data: {
           ...productData,
           // Recreate images
-          ProductImage: images?.length > 0 ? {
-            create: images.map((img: any, index: number) => ({
-              url: img.url,
-              thumbnailUrl: img.thumbnailUrl,
-              alt: img.alt,
-              caption: img.caption,
-              isPrimary: img.isPrimary,
-              sortOrder: index,
-              width: img.width,
-              height: img.height,
-              fileSize: img.fileSize,
-              mimeType: img.mimeType
-            }))
-          } : undefined,
+          ProductImage:
+            images?.length > 0
+              ? {
+                  create: images.map((img: any, index: number) => ({
+                    url: img.url,
+                    thumbnailUrl: img.thumbnailUrl,
+                    alt: img.alt,
+                    caption: img.caption,
+                    isPrimary: img.isPrimary,
+                    sortOrder: index,
+                    width: img.width,
+                    height: img.height,
+                    fileSize: img.fileSize,
+                    mimeType: img.mimeType,
+                  })),
+                }
+              : undefined,
           // Recreate paper stock associations
-          productPaperStocks: paperStocks?.length > 0 ? {
-            create: paperStocks.map((ps: any) => ({
-              paperStockId: ps.paperStockId,
-              isDefault: ps.isDefault,
-              additionalCost: ps.additionalCost
-            }))
-          } : undefined,
+          productPaperStocks:
+            paperStocks?.length > 0
+              ? {
+                  create: paperStocks.map((ps: any) => ({
+                    paperStockId: ps.paperStockId,
+                    isDefault: ps.isDefault,
+                    additionalCost: ps.additionalCost,
+                  })),
+                }
+              : undefined,
           // Recreate options with values
-          ProductOption: options?.length > 0 ? {
-            create: options.map((opt: any, index: number) => ({
-              name: opt.name,
-              type: opt.type,
-              required: opt.required,
-              sortOrder: index,
-              OptionValue: {
-                create: opt.values.map((val: any, valIndex: number) => ({
-                  value: val.value,
-                  label: val.label,
-                  additionalPrice: val.additionalPrice,
-                  isDefault: val.isDefault,
-                  sortOrder: valIndex
-                }))
-              }
-            }))
-          } : undefined,
+          ProductOption:
+            options?.length > 0
+              ? {
+                  create: options.map((opt: any, index: number) => ({
+                    name: opt.name,
+                    type: opt.type,
+                    required: opt.required,
+                    sortOrder: index,
+                    OptionValue: {
+                      create: opt.values.map((val: any, valIndex: number) => ({
+                        value: val.value,
+                        label: val.label,
+                        additionalPrice: val.additionalPrice,
+                        isDefault: val.isDefault,
+                        sortOrder: valIndex,
+                      })),
+                    },
+                  })),
+                }
+              : undefined,
           // Recreate pricing tiers
-          PricingTier: pricingTiers?.length > 0 ? {
-            create: pricingTiers.map((tier: any) => ({
-              minQuantity: tier.minQuantity,
-              maxQuantity: tier.maxQuantity,
-              pricePerUnit: tier.pricePerUnit,
-              discountPercentage: tier.discountPercentage
-            }))
-          } : undefined
+          PricingTier:
+            pricingTiers?.length > 0
+              ? {
+                  create: pricingTiers.map((tier: any) => ({
+                    minQuantity: tier.minQuantity,
+                    maxQuantity: tier.maxQuantity,
+                    pricePerUnit: tier.pricePerUnit,
+                    discountPercentage: tier.discountPercentage,
+                  })),
+                }
+              : undefined,
         },
         include: {
           ProductCategory: true,
           ProductImage: true,
           productPaperStocks: {
             include: {
-              paperStock: true
-            }
+              paperStock: true,
+            },
           },
           ProductOption: {
             include: {
-              OptionValue: true
-            }
+              OptionValue: true,
+            },
           },
-          PricingTier: true
-        }
+          PricingTier: true,
+        },
       })
     })
 
     return NextResponse.json(product)
   } catch (error: any) {
     console.error('Error updating product:', error)
-    
+
     // Check for unique constraint violations
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
@@ -207,26 +195,17 @@ export async function PUT(
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
   }
 }
 
 // PATCH /api/products/[id] - Simple update product (for toggles, etc.)
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await request.json()
@@ -236,17 +215,14 @@ export async function PATCH(
       where: { id },
       data,
       include: {
-        ProductCategory: true
-      }
+        ProductCategory: true,
+      },
     })
 
     return NextResponse.json(product)
   } catch (error) {
     console.error('Error updating product:', error)
-    return NextResponse.json(
-      { error: 'Failed to update product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
   }
 }
 
@@ -256,28 +232,22 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-        const { id } = await params
+    const { id } = await params
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get product with images to delete from MinIO
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        ProductImage: true
-      }
+        ProductImage: true,
+      },
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     // Delete images from MinIO
@@ -291,18 +261,12 @@ export async function DELETE(
 
     // Delete product (cascade will handle relations)
     await prisma.product.delete({
-      where: { id }
+      where: { id },
     })
 
-    return NextResponse.json(
-      { message: 'Product deleted successfully' },
-      { status: 200 }
-    )
+    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 })
   } catch (error) {
     console.error('Error deleting product:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 })
   }
 }

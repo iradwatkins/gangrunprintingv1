@@ -34,10 +34,7 @@ export default function NewWorkflowPage() {
     <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="bg-white border-b px-6 py-4 flex items-center gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-        >
+        <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
@@ -50,10 +47,7 @@ export default function NewWorkflowPage() {
 
       {/* Workflow Designer */}
       <div className="flex-1">
-        <WorkflowDesigner
-          onPreview={handlePreview}
-          onSave={handleSave}
-        />
+        <WorkflowDesigner onPreview={handlePreview} onSave={handleSave} />
       </div>
     </div>
   )

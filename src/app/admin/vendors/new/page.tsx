@@ -3,13 +3,30 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Building, Phone, Mail, MapPin, Package, DollarSign, Clock, FileText } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Building,
+  Phone,
+  Mail,
+  MapPin,
+  Package,
+  DollarSign,
+  Clock,
+  FileText,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import toast from '@/lib/toast'
@@ -46,7 +63,7 @@ export default function NewVendorPage() {
     // Account Settings
     isActive: true,
     preferredPaymentMethod: 'check',
-    notes: ''
+    notes: '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,7 +105,7 @@ export default function NewVendorPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/vendors">
-            <Button variant="ghost" size="icon">
+            <Button size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -101,8 +118,10 @@ export default function NewVendorPage() {
           <Button variant="outline" onClick={() => router.push('/admin/vendors')}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Creating...' : (
+          <Button disabled={loading} onClick={handleSubmit}>
+            {loading ? (
+              'Creating...'
+            ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
                 Create Vendor
@@ -113,7 +132,7 @@ export default function NewVendorPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <Tabs defaultValue="basic" className="space-y-4">
+        <Tabs className="space-y-4" defaultValue="basic">
           <TabsList>
             <TabsTrigger value="basic">Basic Information</TabsTrigger>
             <TabsTrigger value="business">Business Details</TabsTrigger>
@@ -121,7 +140,7 @@ export default function NewVendorPage() {
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="basic" className="space-y-4">
+          <TabsContent className="space-y-4" value="basic">
             <Card>
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
@@ -132,21 +151,21 @@ export default function NewVendorPage() {
                   <div className="space-y-2">
                     <Label htmlFor="name">Contact Name *</Label>
                     <Input
+                      required
                       id="name"
                       placeholder="John Doe"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="companyName">Company Name *</Label>
                     <Input
+                      required
                       id="companyName"
                       placeholder="ABC Printing Supplies"
                       value={formData.companyName}
                       onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                      required
                     />
                   </div>
                 </div>
@@ -155,20 +174,20 @@ export default function NewVendorPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address *</Label>
                     <Input
+                      required
                       id="email"
-                      type="email"
                       placeholder="vendor@example.com"
+                      type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
                     <Input
                       id="phone"
-                      type="tel"
                       placeholder="(555) 123-4567"
+                      type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
@@ -179,8 +198,8 @@ export default function NewVendorPage() {
                   <Label htmlFor="website">Website</Label>
                   <Input
                     id="website"
-                    type="url"
                     placeholder="https://www.example.com"
+                    type="url"
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   />
@@ -237,7 +256,7 @@ export default function NewVendorPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="business" className="space-y-4">
+          <TabsContent className="space-y-4" value="business">
             <Card>
               <CardHeader>
                 <CardTitle>Business Information</CardTitle>
@@ -298,8 +317,8 @@ export default function NewVendorPage() {
                     <Label htmlFor="minimumOrder">Minimum Order Amount</Label>
                     <Input
                       id="minimumOrder"
-                      type="number"
                       placeholder="500.00"
+                      type="number"
                       value={formData.minimumOrder}
                       onChange={(e) => setFormData({ ...formData, minimumOrder: e.target.value })}
                     />
@@ -310,7 +329,9 @@ export default function NewVendorPage() {
                   <Label htmlFor="preferredPaymentMethod">Preferred Payment Method</Label>
                   <Select
                     value={formData.preferredPaymentMethod}
-                    onValueChange={(value) => setFormData({ ...formData, preferredPaymentMethod: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, preferredPaymentMethod: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select payment method" />
@@ -328,7 +349,7 @@ export default function NewVendorPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="services" className="space-y-4">
+          <TabsContent className="space-y-4" value="services">
             <Card>
               <CardHeader>
                 <CardTitle>Products & Services</CardTitle>
@@ -371,7 +392,7 @@ export default function NewVendorPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings" className="space-y-4">
+          <TabsContent className="space-y-4" value="settings">
             <Card>
               <CardHeader>
                 <CardTitle>Account Settings</CardTitle>
@@ -386,8 +407,8 @@ export default function NewVendorPage() {
                     </p>
                   </div>
                   <Switch
-                    id="isActive"
                     checked={formData.isActive}
+                    id="isActive"
                     onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                   />
                 </div>

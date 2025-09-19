@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table'
 
 const printJobs = [
   {
@@ -20,7 +20,7 @@ const printJobs = [
     gangRun: 'BC-Gang-04',
     status: 'prepress',
     priority: 'urgent',
-    deadline: '2024-01-16 14:00'
+    deadline: '2024-01-16 14:00',
   },
   {
     id: 'GR-2024-002',
@@ -29,7 +29,7 @@ const printJobs = [
     gangRun: 'FL-Gang-12',
     status: 'printing',
     priority: 'normal',
-    deadline: '2024-01-17 10:00'
+    deadline: '2024-01-17 10:00',
   },
   {
     id: 'GR-2024-003',
@@ -38,7 +38,7 @@ const printJobs = [
     gangRun: 'BR-Gang-08',
     status: 'finishing',
     priority: 'normal',
-    deadline: '2024-01-17 16:00'
+    deadline: '2024-01-17 16:00',
   },
   {
     id: 'GR-2024-004',
@@ -47,7 +47,7 @@ const printJobs = [
     gangRun: 'MN-Gang-02',
     status: 'ready',
     priority: 'urgent',
-    deadline: '2024-01-16 12:00'
+    deadline: '2024-01-16 12:00',
   },
   {
     id: 'GR-2024-005',
@@ -56,8 +56,8 @@ const printJobs = [
     gangRun: 'PC-Gang-15',
     status: 'prepress',
     priority: 'normal',
-    deadline: '2024-01-18 09:00'
-  }
+    deadline: '2024-01-18 09:00',
+  },
 ]
 
 const statusColors: Record<string, string> = {
@@ -65,7 +65,7 @@ const statusColors: Record<string, string> = {
   printing: 'bg-accent/10 text-accent-foreground',
   finishing: 'bg-secondary/10 text-secondary-foreground',
   ready: 'bg-primary/10 text-primary',
-  shipped: 'bg-muted text-muted-foreground'
+  shipped: 'bg-muted text-muted-foreground',
 }
 
 export function PrintQueueTable() {
@@ -78,9 +78,7 @@ export function PrintQueueTable() {
             <Button size="sm" variant="outline">
               Export CSV
             </Button>
-            <Button size="sm">
-              Add Job
-            </Button>
+            <Button size="sm">Add Job</Button>
           </div>
         </div>
       </CardHeader>
@@ -101,30 +99,20 @@ export function PrintQueueTable() {
           <TableBody>
             {printJobs.map((job) => (
               <TableRow key={job.id}>
-                <TableCell className="font-mono text-sm">
-                  {job.id}
-                </TableCell>
+                <TableCell className="font-mono text-sm">{job.id}</TableCell>
                 <TableCell>{job.customer}</TableCell>
                 <TableCell>{job.product}</TableCell>
                 <TableCell>
                   <Badge variant="outline">{job.gangRun}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className={statusColors[job.status]}>
-                    {job.status}
-                  </Badge>
+                  <Badge className={statusColors[job.status]}>{job.status}</Badge>
                 </TableCell>
                 <TableCell>
-                  {job.priority === 'urgent' && (
-                    <Badge variant="destructive">Urgent</Badge>
-                  )}
-                  {job.priority === 'normal' && (
-                    <Badge variant="secondary">Normal</Badge>
-                  )}
+                  {job.priority === 'urgent' && <Badge variant="destructive">Urgent</Badge>}
+                  {job.priority === 'normal' && <Badge variant="secondary">Normal</Badge>}
                 </TableCell>
-                <TableCell className="text-sm">
-                  {job.deadline}
-                </TableCell>
+                <TableCell className="text-sm">{job.deadline}</TableCell>
                 <TableCell>
                   <Button size="sm" variant="ghost">
                     View

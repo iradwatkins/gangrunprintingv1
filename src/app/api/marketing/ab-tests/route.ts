@@ -10,21 +10,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const {
-      campaignId,
-      name,
-      description,
-      testType,
-      variants,
-      winnerCriteria,
-      confidence,
-    } = await request.json()
+    const { campaignId, name, description, testType, variants, winnerCriteria, confidence } =
+      await request.json()
 
     if (!campaignId || !name || !testType || !variants || !winnerCriteria) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const abTest = await ABTestingService.createABTest(

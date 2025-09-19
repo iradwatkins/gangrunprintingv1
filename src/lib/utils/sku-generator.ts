@@ -9,46 +9,46 @@
 // Category codes mapping
 const CATEGORY_CODES: Record<string, string> = {
   'business-cards': 'BC',
-  'flyers': 'FLY',
-  'brochures': 'BRO',
-  'postcards': 'PC',
-  'banners': 'BAN',
-  'posters': 'POS',
-  'stickers': 'STK',
-  'labels': 'LBL',
-  'envelopes': 'ENV',
-  'letterheads': 'LH',
-  'notepads': 'NP',
-  'calendars': 'CAL',
-  'booklets': 'BKT',
-  'catalogs': 'CAT',
-  'menus': 'MNU',
-  'tickets': 'TKT',
-  'invitations': 'INV',
+  flyers: 'FLY',
+  brochures: 'BRO',
+  postcards: 'PC',
+  banners: 'BAN',
+  posters: 'POS',
+  stickers: 'STK',
+  labels: 'LBL',
+  envelopes: 'ENV',
+  letterheads: 'LH',
+  notepads: 'NP',
+  calendars: 'CAL',
+  booklets: 'BKT',
+  catalogs: 'CAT',
+  menus: 'MNU',
+  tickets: 'TKT',
+  invitations: 'INV',
   'greeting-cards': 'GC',
   'presentation-folders': 'PF',
   'door-hangers': 'DH',
-  'magnets': 'MAG',
+  magnets: 'MAG',
   'vinyl-banners': 'VB',
   'yard-signs': 'YS',
   'car-magnets': 'CM',
   'window-clings': 'WC',
   'roll-labels': 'RL',
-  'custom': 'CUS',
-  'other': 'OTH'
+  custom: 'CUS',
+  other: 'OTH',
 }
 
 // Product type codes
 const TYPE_CODES: Record<string, string> = {
-  'standard': 'STD',
-  'premium': 'PRM',
-  'luxury': 'LUX',
-  'economy': 'ECO',
-  'express': 'EXP',
-  'custom': 'CUS',
-  'sample': 'SMP',
-  'wholesale': 'WHL',
-  'retail': 'RTL'
+  standard: 'STD',
+  premium: 'PRM',
+  luxury: 'LUX',
+  economy: 'ECO',
+  express: 'EXP',
+  custom: 'CUS',
+  sample: 'SMP',
+  wholesale: 'WHL',
+  retail: 'RTL',
 }
 
 /**
@@ -71,13 +71,12 @@ export function generateSKU(
   let categoryCode = 'PRD' // Default product code
   if (cleanCategory) {
     // Try exact match first
-    categoryCode = CATEGORY_CODES[cleanCategory] ||
-                  // Try partial match
-                  Object.entries(CATEGORY_CODES).find(([key]) =>
-                    cleanCategory.includes(key)
-                  )?.[1] ||
-                  // Use first 3 letters of category
-                  cleanCategory.substring(0, 3).toUpperCase()
+    categoryCode =
+      CATEGORY_CODES[cleanCategory] ||
+      // Try partial match
+      Object.entries(CATEGORY_CODES).find(([key]) => cleanCategory.includes(key))?.[1] ||
+      // Use first 3 letters of category
+      cleanCategory.substring(0, 3).toUpperCase()
   } else if (productName) {
     // Try to extract category from product name
     const lowerName = productName.toLowerCase()
@@ -112,11 +111,12 @@ export function generateSKU(
  */
 export function generateSimpleSKU(productName: string): string {
   // Extract initials from product name
-  const initials = productName
-    .split(/[\s-]+/)
-    .map(word => word.charAt(0).toUpperCase())
-    .join('')
-    .substring(0, 4) || 'PROD'
+  const initials =
+    productName
+      .split(/[\s-]+/)
+      .map((word) => word.charAt(0).toUpperCase())
+      .join('')
+      .substring(0, 4) || 'PROD'
 
   // Get timestamp components
   const now = new Date()
@@ -139,7 +139,11 @@ export function generateSimpleSKU(productName: string): string {
  * @returns A custom SKU
  */
 export function generateCustomSKU(prefix: string, includeDate: boolean = true): string {
-  const cleanPrefix = prefix.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 6) || 'SKU'
+  const cleanPrefix =
+    prefix
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .substring(0, 6) || 'SKU'
 
   if (includeDate) {
     const date = new Date()
@@ -268,5 +272,5 @@ export default {
   generateCustomSKU,
   generateUniqueSKU,
   isValidSKU,
-  skuExists
+  skuExists,
 }

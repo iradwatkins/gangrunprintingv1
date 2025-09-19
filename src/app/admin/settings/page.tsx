@@ -33,7 +33,7 @@ import {
   Eye,
   EyeOff,
   Key,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { GeneralSettingsForm } from '@/components/admin/settings/general-settings-form'
 import { NotificationSettingsForm } from '@/components/admin/settings/notification-settings-form'

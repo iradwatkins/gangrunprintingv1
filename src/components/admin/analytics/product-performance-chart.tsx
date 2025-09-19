@@ -14,7 +14,7 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(value)
   }
 
@@ -24,12 +24,8 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
           <p className="text-sm font-medium">{label}</p>
-          <p className="text-sm text-blue-600">
-            Revenue: {formatCurrency(data.revenue)}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Orders: {data.orders}
-          </p>
+          <p className="text-sm text-blue-600">Revenue: {formatCurrency(data.revenue)}</p>
+          <p className="text-sm text-muted-foreground">Orders: {data.orders}</p>
         </div>
       )
     }
@@ -64,11 +60,7 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
             tickLine={false}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar
-            dataKey="revenue"
-            fill="hsl(var(--primary))"
-            radius={[4, 4, 0, 0]}
-          />
+          <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

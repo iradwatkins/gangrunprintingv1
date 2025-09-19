@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     // Verify N8N API key if configured
     const apiKey = request.headers.get('x-n8n-api-key')
     if (process.env.N8N_API_KEY && apiKey !== process.env.N8N_API_KEY) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await request.json()
@@ -21,34 +18,28 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'order.created':
         return await handleOrderCreated(orderId || orderNumber, payload)
-      
+
       case 'order.status.update':
         return await handleOrderStatusUpdate(orderId || orderNumber, payload)
-      
+
       case 'order.vendor.assign':
         return await handleVendorAssignment(orderId || orderNumber, payload)
-      
+
       case 'order.fulfillment.update':
         return await handleFulfillmentUpdate(orderId || orderNumber, payload)
-      
+
       case 'order.tracking.update':
         return await handleTrackingUpdate(orderId || orderNumber, payload)
-      
+
       case 'notification.send':
         return await handleNotificationSend(orderId || orderNumber, payload)
-      
+
       default:
-        return NextResponse.json(
-          { error: `Unknown action: ${action}` },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
     }
   } catch (error) {
     console.error('N8N webhook error:', error)
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }
 
@@ -63,8 +54,8 @@ export async function GET(request: NextRequest) {
       'order.vendor.assign',
       'order.fulfillment.update',
       'order.tracking.update',
-      'notification.send'
-    ]
+      'notification.send',
+    ],
   })
 }
 
@@ -81,13 +72,13 @@ async function handleOrderCreated(identifier: string, payload: any) {
     if (payload.autoAssignVendor) {
       const vendor = await prisma.vendor.findFirst({
         where: { isActive: true },
-        orderBy: { orders: { _count: 'asc' } } // Assign to vendor with least orders
+        orderBy: { orders: { _count: 'asc' } }, // Assign to vendor with least orders
       })
 
       if (vendor) {
         await prisma.order.update({
           where: { id: order.id },
-          data: { vendorId: vendor.id }
+          data: { vendorId: vendor.id },
         })
       }
     }
@@ -97,8 +88,8 @@ async function handleOrderCreated(identifier: string, payload: any) {
       order: {
         id: order.id,
         orderNumber: order.orderNumber,
-        status: order.status
-      }
+        status: order.status,
+      },
     })
   } catch (error) {
     console.error('Error handling order created:', error)
@@ -120,10 +111,12 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
       // Update order
       const updated = await tx.order.update({
         where: { id: order.id },
-        data: { 
+        data: {
           status: newStatus,
-          adminNotes: notes ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] ${notes}` : order.adminNotes
-        }
+          adminNotes: notes
+            ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] ${notes}`
+            : order.adminNotes,
+        },
       })
 
       // Add status history
@@ -134,17 +127,17 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
           fromStatus: order.status,
           toStatus: newStatus,
           notes,
-          changedBy: changedBy || 'N8N Automation'
-        }
+          changedBy: changedBy || 'N8N Automation',
+        },
       })
 
       // Create notification based on status
       const notificationTypes: Record<string, string> = {
-        'PAID': 'PAYMENT_RECEIVED',
-        'PROCESSING': 'ORDER_PROCESSING',
-        'SHIPPED': 'ORDER_SHIPPED',
-        'DELIVERED': 'ORDER_DELIVERED',
-        'REFUNDED': 'ORDER_REFUNDED'
+        PAID: 'PAYMENT_RECEIVED',
+        PROCESSING: 'ORDER_PROCESSING',
+        SHIPPED: 'ORDER_SHIPPED',
+        DELIVERED: 'ORDER_DELIVERED',
+        REFUNDED: 'ORDER_REFUNDED',
       }
 
       if (notificationTypes[newStatus]) {
@@ -153,8 +146,8 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
             id: `${order.orderNumber}-notif-${Date.now()}`,
             orderId: order.id,
             type: notificationTypes[newStatus] as any,
-            sent: false
-          }
+            sent: false,
+          },
         })
       }
 
@@ -166,8 +159,8 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
       order: {
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
-        status: updatedOrder.status
-      }
+        status: updatedOrder.status,
+      },
     })
   } catch (error) {
     console.error('Error updating order status:', error)
@@ -201,8 +194,10 @@ async function handleVendorAssignment(identifier: string, payload: any) {
       where: { id: order.id },
       data: {
         vendorId: vendor.id,
-        adminNotes: notes ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] Assigned to ${vendor.name}: ${notes}` : order.adminNotes
-      }
+        adminNotes: notes
+          ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] Assigned to ${vendor.name}: ${notes}`
+          : order.adminNotes,
+      },
     })
 
     // Send webhook to vendor's N8N if configured
@@ -218,9 +213,9 @@ async function handleVendorAssignment(identifier: string, payload: any) {
               referenceNumber: order.referenceNumber,
               items: await prisma.orderItem.findMany({ where: { orderId: order.id } }),
               total: order.total,
-              shippingAddress: order.shippingAddress
-            }
-          })
+              shippingAddress: order.shippingAddress,
+            },
+          }),
         })
       } catch (error) {
         console.error('Failed to notify vendor via N8N:', error)
@@ -232,8 +227,8 @@ async function handleVendorAssignment(identifier: string, payload: any) {
       order: {
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
-        vendorId: updatedOrder.vendorId
-      }
+        vendorId: updatedOrder.vendorId,
+      },
     })
   } catch (error) {
     console.error('Error assigning vendor:', error)
@@ -252,12 +247,12 @@ async function handleFulfillmentUpdate(identifier: string, payload: any) {
 
     // Map fulfillment status to order status
     const statusMap: Record<string, string> = {
-      'preparing': 'PRODUCTION',
-      'printing': 'PRINTING',
-      'quality_check': 'QUALITY_CHECK',
-      'packaging': 'PACKAGING',
-      'ready': 'READY_FOR_PICKUP',
-      'shipped': 'SHIPPED'
+      preparing: 'PRODUCTION',
+      printing: 'PRINTING',
+      quality_check: 'QUALITY_CHECK',
+      packaging: 'PACKAGING',
+      ready: 'READY_FOR_PICKUP',
+      shipped: 'SHIPPED',
     }
 
     const newStatus = statusMap[status] || order.status
@@ -266,8 +261,10 @@ async function handleFulfillmentUpdate(identifier: string, payload: any) {
       where: { id: order.id },
       data: {
         status: newStatus as any,
-        adminNotes: notes ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] Fulfillment: ${notes}` : order.adminNotes
-      }
+        adminNotes: notes
+          ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] Fulfillment: ${notes}`
+          : order.adminNotes,
+      },
     })
 
     return NextResponse.json({
@@ -275,8 +272,8 @@ async function handleFulfillmentUpdate(identifier: string, payload: any) {
       order: {
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
-        status: updatedOrder.status
-      }
+        status: updatedOrder.status,
+      },
     })
   } catch (error) {
     console.error('Error updating fulfillment:', error)
@@ -300,8 +297,8 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
         data: {
           trackingNumber,
           carrier: carrier?.toUpperCase() as any,
-          status: 'SHIPPED'
-        }
+          status: 'SHIPPED',
+        },
       })
 
       // Add status history
@@ -312,8 +309,8 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
           fromStatus: order.status,
           toStatus: 'SHIPPED',
           notes: `Tracking: ${trackingNumber} (${carrier})`,
-          changedBy: 'N8N Automation'
-        }
+          changedBy: 'N8N Automation',
+        },
       })
 
       // Create shipping notification
@@ -322,8 +319,8 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
           id: `${order.orderNumber}-ship-notif-${Date.now()}`,
           orderId: order.id,
           type: 'ORDER_SHIPPED',
-          sent: false
-        }
+          sent: false,
+        },
       })
 
       return updated
@@ -335,8 +332,8 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
         trackingNumber: updatedOrder.trackingNumber,
-        carrier: updatedOrder.carrier
-      }
+        carrier: updatedOrder.carrier,
+      },
     })
   } catch (error) {
     console.error('Error updating tracking:', error)
@@ -357,8 +354,8 @@ async function handleNotificationSend(identifier: string, payload: any) {
     const existingNotification = await prisma.notification.findFirst({
       where: {
         orderId: order.id,
-        type: type
-      }
+        type: type,
+      },
     })
 
     let notification
@@ -370,22 +367,22 @@ async function handleNotificationSend(identifier: string, payload: any) {
           id: `${order.orderNumber}-${type}-${Date.now()}`,
           orderId: order.id,
           type: type,
-          sent: false
-        }
+          sent: false,
+        },
       })
     }
 
     // Trigger notification processing
     // This would normally call the notification processor
     // For now, just mark it for processing
-    
+
     return NextResponse.json({
       success: true,
       notification: {
         id: notification.id,
         type: notification.type,
-        sent: notification.sent
-      }
+        sent: notification.sent,
+      },
     })
   } catch (error) {
     console.error('Error handling notification:', error)
@@ -397,13 +394,13 @@ async function handleNotificationSend(identifier: string, payload: any) {
 async function findOrder(identifier: string) {
   // Try to find by ID first
   let order = await prisma.order.findUnique({
-    where: { id: identifier }
+    where: { id: identifier },
   })
 
   // If not found, try by order number
   if (!order) {
     order = await prisma.order.findUnique({
-      where: { orderNumber: identifier }
+      where: { orderNumber: identifier },
     })
   }
 

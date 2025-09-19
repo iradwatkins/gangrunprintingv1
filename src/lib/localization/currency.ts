@@ -1,63 +1,63 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export interface CurrencyInfo {
-  code: string;
-  name: string;
-  symbol: string;
-  exchangeRate: number;
-  decimalPlaces: number;
-  thousandsSeparator: string;
-  decimalSeparator: string;
-  symbolPosition: 'before' | 'after';
-  countries: string[];
-  isActive: boolean;
+  code: string
+  name: string
+  symbol: string
+  exchangeRate: number
+  decimalPlaces: number
+  thousandsSeparator: string
+  decimalSeparator: string
+  symbolPosition: 'before' | 'after'
+  countries: string[]
+  isActive: boolean
 }
 
 export interface FormattedPrice {
-  amount: number;
-  currency: string;
-  formatted: string;
-  symbol: string;
+  amount: number
+  currency: string
+  formatted: string
+  symbol: string
 }
 
 export interface ExchangeRateInfo {
-  fromCurrency: string;
-  toCurrency: string;
-  rate: number;
-  lastUpdated: Date;
-  source: string;
+  fromCurrency: string
+  toCurrency: string
+  rate: number
+  lastUpdated: Date
+  source: string
 }
 
 export class CurrencyService {
-  private static instance: CurrencyService;
-  private currencyCache = new Map<string, CurrencyInfo>();
-  private exchangeRateCache = new Map<string, ExchangeRateInfo>();
-  private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+  private static instance: CurrencyService
+  private currencyCache = new Map<string, CurrencyInfo>()
+  private exchangeRateCache = new Map<string, ExchangeRateInfo>()
+  private readonly CACHE_TTL = 30 * 60 * 1000 // 30 minutes
 
   public static getInstance(): CurrencyService {
     if (!CurrencyService.instance) {
-      CurrencyService.instance = new CurrencyService();
+      CurrencyService.instance = new CurrencyService()
     }
-    return CurrencyService.instance;
+    return CurrencyService.instance
   }
 
   /**
    * Get currency information
    */
   async getCurrency(code: string): Promise<CurrencyInfo | null> {
-    const cacheKey = `currency:${code}`;
-    const cached = this.currencyCache.get(cacheKey);
+    const cacheKey = `currency:${code}`
+    const cached = this.currencyCache.get(cacheKey)
 
     if (cached) {
-      return cached;
+      return cached
     }
 
     try {
       const currency = await prisma.currency.findUnique({
         where: { code: code.toUpperCase() },
-      });
+      })
 
       if (currency) {
         const currencyInfo: CurrencyInfo = {
@@ -71,16 +71,16 @@ export class CurrencyService {
           symbolPosition: currency.symbolPosition as 'before' | 'after',
           countries: currency.countries,
           isActive: currency.isActive,
-        };
+        }
 
-        this.currencyCache.set(cacheKey, currencyInfo);
-        return currencyInfo;
+        this.currencyCache.set(cacheKey, currencyInfo)
+        return currencyInfo
       }
 
-      return null;
+      return null
     } catch (error) {
-      console.error('Error fetching currency:', error);
-      return null;
+      console.error('Error fetching currency:', error)
+      return null
     }
   }
 
@@ -92,9 +92,9 @@ export class CurrencyService {
       const currencies = await prisma.currency.findMany({
         where: { isActive: true },
         orderBy: { code: 'asc' },
-      });
+      })
 
-      return currencies.map(currency => ({
+      return currencies.map((currency) => ({
         code: currency.code,
         name: currency.name,
         symbol: currency.symbol,
@@ -105,10 +105,10 @@ export class CurrencyService {
         symbolPosition: currency.symbolPosition as 'before' | 'after',
         countries: currency.countries,
         isActive: currency.isActive,
-      }));
+      }))
     } catch (error) {
-      console.error('Error fetching currencies:', error);
-      return [];
+      console.error('Error fetching currencies:', error)
+      return []
     }
   }
 
@@ -119,13 +119,13 @@ export class CurrencyService {
     amount: number,
     currencyCode: string,
     options: {
-      showSymbol?: boolean;
-      locale?: string;
+      showSymbol?: boolean
+      locale?: string
     } = {}
   ): Promise<FormattedPrice> {
-    const { showSymbol = true, locale = 'en-US' } = options;
+    const { showSymbol = true, locale = 'en-US' } = options
 
-    const currency = await this.getCurrency(currencyCode);
+    const currency = await this.getCurrency(currencyCode)
     if (!currency) {
       // Fallback formatting
       return {
@@ -136,7 +136,7 @@ export class CurrencyService {
           currency: currencyCode,
         }).format(amount),
         symbol: '$', // Default fallback
-      };
+      }
     }
 
     const formattedNumber = this.formatNumber(
@@ -144,17 +144,17 @@ export class CurrencyService {
       currency.decimalPlaces,
       currency.thousandsSeparator,
       currency.decimalSeparator
-    );
+    )
 
-    let formatted: string;
+    let formatted: string
     if (showSymbol) {
       if (currency.symbolPosition === 'before') {
-        formatted = `${currency.symbol}${formattedNumber}`;
+        formatted = `${currency.symbol}${formattedNumber}`
       } else {
-        formatted = `${formattedNumber} ${currency.symbol}`;
+        formatted = `${formattedNumber} ${currency.symbol}`
       }
     } else {
-      formatted = formattedNumber;
+      formatted = formattedNumber
     }
 
     return {
@@ -162,34 +162,30 @@ export class CurrencyService {
       currency: currency.code,
       formatted,
       symbol: currency.symbol,
-    };
+    }
   }
 
   /**
    * Convert between currencies
    */
-  async convertCurrency(
-    amount: number,
-    fromCurrency: string,
-    toCurrency: string
-  ): Promise<number> {
+  async convertCurrency(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
     if (fromCurrency === toCurrency) {
-      return amount;
+      return amount
     }
 
-    const exchangeRate = await this.getExchangeRate(fromCurrency, toCurrency);
-    return amount * exchangeRate;
+    const exchangeRate = await this.getExchangeRate(fromCurrency, toCurrency)
+    return amount * exchangeRate
   }
 
   /**
    * Get exchange rate between two currencies
    */
   async getExchangeRate(fromCurrency: string, toCurrency: string): Promise<number> {
-    const cacheKey = `${fromCurrency}-${toCurrency}`;
-    const cached = this.exchangeRateCache.get(cacheKey);
+    const cacheKey = `${fromCurrency}-${toCurrency}`
+    const cached = this.exchangeRateCache.get(cacheKey)
 
     if (cached && Date.now() - cached.lastUpdated.getTime() < this.CACHE_TTL) {
-      return cached.rate;
+      return cached.rate
     }
 
     try {
@@ -205,7 +201,7 @@ export class CurrencyService {
         orderBy: {
           validFrom: 'desc',
         },
-      });
+      })
 
       // If no direct rate, try reverse rate
       if (!exchangeRate) {
@@ -220,7 +216,7 @@ export class CurrencyService {
           orderBy: {
             validFrom: 'desc',
           },
-        });
+        })
 
         if (exchangeRate) {
           const rateInfo: ExchangeRateInfo = {
@@ -229,9 +225,9 @@ export class CurrencyService {
             rate: 1 / exchangeRate.rate,
             lastUpdated: new Date(),
             source: exchangeRate.source,
-          };
-          this.exchangeRateCache.set(cacheKey, rateInfo);
-          return rateInfo.rate;
+          }
+          this.exchangeRateCache.set(cacheKey, rateInfo)
+          return rateInfo.rate
         }
       } else {
         const rateInfo: ExchangeRateInfo = {
@@ -240,16 +236,16 @@ export class CurrencyService {
           rate: exchangeRate.rate,
           lastUpdated: new Date(),
           source: exchangeRate.source,
-        };
-        this.exchangeRateCache.set(cacheKey, rateInfo);
-        return rateInfo.rate;
+        }
+        this.exchangeRateCache.set(cacheKey, rateInfo)
+        return rateInfo.rate
       }
 
       // If no rate found, try via USD
       if (fromCurrency !== 'USD' && toCurrency !== 'USD') {
-        const fromUsdRate = await this.getExchangeRate(fromCurrency, 'USD');
-        const toUsdRate = await this.getExchangeRate('USD', toCurrency);
-        const calculatedRate = fromUsdRate * toUsdRate;
+        const fromUsdRate = await this.getExchangeRate(fromCurrency, 'USD')
+        const toUsdRate = await this.getExchangeRate('USD', toCurrency)
+        const calculatedRate = fromUsdRate * toUsdRate
 
         const rateInfo: ExchangeRateInfo = {
           fromCurrency,
@@ -257,16 +253,16 @@ export class CurrencyService {
           rate: calculatedRate,
           lastUpdated: new Date(),
           source: 'calculated',
-        };
-        this.exchangeRateCache.set(cacheKey, rateInfo);
-        return calculatedRate;
+        }
+        this.exchangeRateCache.set(cacheKey, rateInfo)
+        return calculatedRate
       }
 
       // Fallback to 1:1 rate
-      return 1;
+      return 1
     } catch (error) {
-      console.error('Error getting exchange rate:', error);
-      return 1;
+      console.error('Error getting exchange rate:', error)
+      return 1
     }
   }
 
@@ -277,10 +273,10 @@ export class CurrencyService {
     try {
       // This would typically fetch from an external API like ExchangeRate-API, Fixer.io, etc.
       // For demo purposes, we'll use static rates
-      const rates = await this.fetchExchangeRatesFromAPI(baseCurrency);
+      const rates = await this.fetchExchangeRatesFromAPI(baseCurrency)
 
-      const now = new Date();
-      const validTo = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Valid for 24 hours
+      const now = new Date()
+      const validTo = new Date(now.getTime() + 24 * 60 * 60 * 1000) // Valid for 24 hours
 
       for (const [currency, rate] of Object.entries(rates)) {
         await prisma.exchangeRate.create({
@@ -292,13 +288,13 @@ export class CurrencyService {
             validFrom: now,
             validTo,
           },
-        });
+        })
       }
 
       // Clear cache to force refresh
-      this.exchangeRateCache.clear();
+      this.exchangeRateCache.clear()
     } catch (error) {
-      console.error('Error updating exchange rates:', error);
+      console.error('Error updating exchange rates:', error)
     }
   }
 
@@ -322,9 +318,9 @@ export class CurrencyService {
       'ko-KR': 'KRW',
       'zh-CN': 'CNY',
       'ru-RU': 'RUB',
-    };
+    }
 
-    return countryMappings[locale] || 'USD';
+    return countryMappings[locale] || 'USD'
   }
 
   /**
@@ -336,17 +332,17 @@ export class CurrencyService {
     thousandsSeparator: string,
     decimalSeparator: string
   ): string {
-    const fixed = number.toFixed(decimalPlaces);
-    const [integer, decimal] = fixed.split('.');
+    const fixed = number.toFixed(decimalPlaces)
+    const [integer, decimal] = fixed.split('.')
 
     // Add thousands separators
-    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator)
 
     if (decimalPlaces > 0 && decimal) {
-      return `${formattedInteger}${decimalSeparator}${decimal}`;
+      return `${formattedInteger}${decimalSeparator}${decimal}`
     }
 
-    return formattedInteger;
+    return formattedInteger
   }
 
   /**
@@ -364,11 +360,11 @@ export class CurrencyService {
       try {
         const response = await fetch(
           `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_RATE_API_KEY}/latest/${baseCurrency}`
-        );
-        const data = await response.json();
-        return data.conversion_rates;
+        )
+        const data = await response.json()
+        return data.conversion_rates
       } catch (error) {
-        console.error('Error fetching from exchange rate API:', error);
+        console.error('Error fetching from exchange rate API:', error)
       }
     }
 
@@ -389,59 +385,59 @@ export class CurrencyService {
       SGD: 1.35,
       NZD: 1.42,
       ZAR: 14.5,
-    };
+    }
   }
 
   /**
    * Get pricing rules for different regions
    */
   async getPricingRules(region: string): Promise<{
-    taxRate: number;
-    currency: string;
-    minimumPrice: number;
-    roundingRules: string;
+    taxRate: number
+    currency: string
+    minimumPrice: number
+    roundingRules: string
   }> {
     const rules: Record<string, any> = {
-      'US': {
+      US: {
         taxRate: 0.08, // 8% average sales tax
         currency: 'USD',
-        minimumPrice: 1.00,
+        minimumPrice: 1.0,
         roundingRules: 'nearest_cent',
       },
-      'EU': {
-        taxRate: 0.20, // 20% VAT
+      EU: {
+        taxRate: 0.2, // 20% VAT
         currency: 'EUR',
-        minimumPrice: 1.00,
+        minimumPrice: 1.0,
         roundingRules: 'nearest_cent',
       },
-      'GB': {
-        taxRate: 0.20, // 20% VAT
+      GB: {
+        taxRate: 0.2, // 20% VAT
         currency: 'GBP',
-        minimumPrice: 1.00,
+        minimumPrice: 1.0,
         roundingRules: 'nearest_penny',
       },
-      'CA': {
+      CA: {
         taxRate: 0.13, // HST
         currency: 'CAD',
-        minimumPrice: 1.00,
+        minimumPrice: 1.0,
         roundingRules: 'nearest_cent',
       },
-      'AU': {
-        taxRate: 0.10, // GST
+      AU: {
+        taxRate: 0.1, // GST
         currency: 'AUD',
-        minimumPrice: 1.00,
+        minimumPrice: 1.0,
         roundingRules: 'nearest_cent',
       },
-    };
+    }
 
-    return rules[region] || rules['US'];
+    return rules[region] || rules['US']
   }
 
   /**
    * Clear currency cache
    */
   clearCache(): void {
-    this.currencyCache.clear();
-    this.exchangeRateCache.clear();
+    this.currencyCache.clear()
+    this.exchangeRateCache.clear()
   }
 }

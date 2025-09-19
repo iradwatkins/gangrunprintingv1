@@ -85,14 +85,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   const getStatusColor = (status: string) => {
     const statusColors: Record<string, string> = {
-      'PENDING_PAYMENT': 'bg-yellow-100 text-yellow-800',
-      'PAID': 'bg-blue-100 text-blue-800',
-      'PROCESSING': 'bg-purple-100 text-purple-800',
-      'PRODUCTION': 'bg-indigo-100 text-indigo-800',
-      'SHIPPED': 'bg-green-100 text-green-800',
-      'DELIVERED': 'bg-green-100 text-green-800',
-      'CANCELLED': 'bg-red-100 text-red-800',
-      'REFUNDED': 'bg-gray-100 text-gray-800'
+      PENDING_PAYMENT: 'bg-yellow-100 text-yellow-800',
+      PAID: 'bg-blue-100 text-blue-800',
+      PROCESSING: 'bg-purple-100 text-purple-800',
+      PRODUCTION: 'bg-indigo-100 text-indigo-800',
+      SHIPPED: 'bg-green-100 text-green-800',
+      DELIVERED: 'bg-green-100 text-green-800',
+      CANCELLED: 'bg-red-100 text-red-800',
+      REFUNDED: 'bg-gray-100 text-gray-800',
     }
     return statusColors[status] || 'bg-gray-100 text-gray-800'
   }
@@ -118,7 +118,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Link 
+      <Link
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
         href="/account/orders"
       >
@@ -220,7 +220,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <CardContent>
           <div className="space-y-4">
             {order.OrderItem.map((item) => (
-              <div key={item.id} className="flex justify-between items-start pb-4 border-b last:border-0">
+              <div
+                key={item.id}
+                className="flex justify-between items-start pb-4 border-b last:border-0"
+              >
                 <div className="flex-1">
                   <h4 className="font-semibold">{item.productName}</h4>
                   <p className="text-sm text-muted-foreground">SKU: {item.productSku}</p>
@@ -276,7 +279,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div className="text-sm">
                 <p>{(order.shippingAddress as any).street}</p>
                 <p>
-                  {(order.shippingAddress as any).city}, {(order.shippingAddress as any).state} {(order.shippingAddress as any).zipCode}
+                  {(order.shippingAddress as any).city}, {(order.shippingAddress as any).state}{' '}
+                  {(order.shippingAddress as any).zipCode}
                 </p>
                 <p>{(order.shippingAddress as any).country || 'United States'}</p>
               </div>
@@ -293,7 +297,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div className="text-sm">
                 <p>{(order.billingAddress as any).street}</p>
                 <p>
-                  {(order.billingAddress as any).city}, {(order.billingAddress as any).state} {(order.billingAddress as any).zipCode}
+                  {(order.billingAddress as any).city}, {(order.billingAddress as any).state}{' '}
+                  {(order.billingAddress as any).zipCode}
                 </p>
                 <p>{(order.billingAddress as any).country || 'United States'}</p>
               </div>
@@ -310,9 +315,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           <Mail className="mr-2 h-4 w-4" />
           Contact Support
         </Button>
-        <Button>
-          Reorder Items
-        </Button>
+        <Button>Reorder Items</Button>
       </div>
     </div>
   )

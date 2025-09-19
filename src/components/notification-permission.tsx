@@ -17,17 +17,17 @@ export function NotificationPermission() {
     // Check current permission status
     if ('Notification' in window) {
       setPermission(Notification.permission)
-      
+
       // Check if user is already subscribed
       checkSubscription()
-      
+
       // Show prompt after user has been on site for 1 minute
       const timer = setTimeout(() => {
         if (Notification.permission === 'default') {
           setShowPrompt(true)
         }
       }, 60000)
-      
+
       return () => clearTimeout(timer)
     }
   }, [])
@@ -46,14 +46,14 @@ export function NotificationPermission() {
 
   const requestPermission = async () => {
     setLoading(true)
-    
+
     try {
       const result = await Notification.requestPermission()
       setPermission(result)
-      
+
       if (result === 'granted') {
         await subscribeUser()
-        toast.success('Notifications enabled! You\'ll receive updates about your orders.')
+        toast.success("Notifications enabled! You'll receive updates about your orders.")
       } else if (result === 'denied') {
         toast.error('Notifications blocked. You can enable them in your browser settings.')
       }
@@ -74,29 +74,29 @@ export function NotificationPermission() {
 
     try {
       const registration = await navigator.serviceWorker.ready
-      
+
       // Get the server's public VAPID key
       const response = await fetch('/api/notifications/vapid-public-key')
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
       const { publicKey } = await response.json()
-      
+
       // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey)
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
       })
-      
+
       // Send subscription to server
       await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(subscription)
+        body: JSON.stringify(subscription),
       })
-      
+
       setIsSubscribed(true)
     } catch (error) {
       console.error('Failed to subscribe:', error)
@@ -106,23 +106,23 @@ export function NotificationPermission() {
 
   const unsubscribeUser = async () => {
     setLoading(true)
-    
+
     try {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.getSubscription()
-      
+
       if (subscription) {
         await subscription.unsubscribe()
-        
+
         // Notify server
         await fetch('/api/notifications/unsubscribe', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ endpoint: subscription.endpoint })
+          body: JSON.stringify({ endpoint: subscription.endpoint }),
         })
-        
+
         setIsSubscribed(false)
         toast.success('Notifications disabled')
       }
@@ -135,18 +135,16 @@ export function NotificationPermission() {
   }
 
   const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4)
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/')
-    
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
-    
+
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i)
     }
-    
+
     return outputArray
   }
 
@@ -169,9 +167,7 @@ export function NotificationPermission() {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <CardDescription>
-            Get real-time notifications about your print orders
-          </CardDescription>
+          <CardDescription>Get real-time notifications about your print orders</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 mb-4 text-sm">
@@ -193,17 +189,10 @@ export function NotificationPermission() {
             </li>
           </ul>
           <div className="flex gap-2">
-            <Button
-              className="flex-1"
-              disabled={loading}
-              onClick={requestPermission}
-            >
+            <Button className="flex-1" disabled={loading} onClick={requestPermission}>
               Enable Notifications
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowPrompt(false)}
-            >
+            <Button variant="outline" onClick={() => setShowPrompt(false)}>
               Not Now
             </Button>
           </div>
@@ -217,9 +206,7 @@ export function NotificationPermission() {
     <Card>
       <CardHeader>
         <CardTitle>Push Notifications</CardTitle>
-        <CardDescription>
-          Manage your notification preferences for order updates
-        </CardDescription>
+        <CardDescription>Manage your notification preferences for order updates</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
@@ -234,17 +221,15 @@ export function NotificationPermission() {
                 {isSubscribed ? 'Notifications Enabled' : 'Notifications Disabled'}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isSubscribed 
-                  ? 'You\'ll receive updates about your orders' 
+                {isSubscribed
+                  ? "You'll receive updates about your orders"
                   : 'Enable to receive order updates'}
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            {permission === 'denied' && (
-              <Badge variant="destructive">Blocked</Badge>
-            )}
+            {permission === 'denied' && <Badge variant="destructive">Blocked</Badge>}
             <Button
               disabled={loading || permission === 'denied'}
               size="sm"
@@ -255,10 +240,11 @@ export function NotificationPermission() {
             </Button>
           </div>
         </div>
-        
+
         {permission === 'denied' && (
           <p className="text-sm text-destructive mt-4">
-            Notifications are blocked in your browser. Please enable them in your browser settings to receive order updates.
+            Notifications are blocked in your browser. Please enable them in your browser settings
+            to receive order updates.
           </p>
         )}
       </CardContent>
@@ -284,7 +270,7 @@ export function TestNotificationButton() {
       const response = await fetch('/api/notifications/test', {
         method: 'POST',
       })
-      
+
       if (response.ok) {
         toast.success('Test notification sent!')
       } else {

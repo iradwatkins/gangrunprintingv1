@@ -169,7 +169,7 @@ function EmailBuilderPageContent() {
 
         if (response.ok) {
           const newTemplate = await response.json()
-          setTemplate(prev => ({ ...prev!, id: newTemplate.id }))
+          setTemplate((prev) => ({ ...prev!, id: newTemplate.id }))
         }
       }
     } catch (error) {
@@ -189,42 +189,52 @@ function EmailBuilderPageContent() {
   const generateEmailHtml = (emailTemplate: EmailTemplate): string => {
     const { components, globalStyles } = emailTemplate
 
-    const componentsHtml = components.map(component => {
-      switch (component.type) {
-        case 'text':
-          return `<div style="${Object.entries(component.styles).map(([key, value]) => `${camelToKebab(key)}: ${value}`).join('; ')}">${component.content.text}</div>`
+    const componentsHtml = components
+      .map((component) => {
+        switch (component.type) {
+          case 'text':
+            return `<div style="${Object.entries(component.styles)
+              .map(([key, value]) => `${camelToKebab(key)}: ${value}`)
+              .join('; ')}">${component.content.text}</div>`
 
-        case 'image':
-          return `<div style="text-align: ${component.styles.textAlign}">
+          case 'image':
+            return `<div style="text-align: ${component.styles.textAlign}">
             <img src="${component.content.src}" alt="${component.content.alt}" style="width: ${component.content.width}; max-width: 100%; height: auto;" />
           </div>`
 
-        case 'button':
-          return `<div style="text-align: ${component.styles.textAlign}">
-            <a href="${component.content.url}" style="${Object.entries(component.styles).map(([key, value]) => `${camelToKebab(key)}: ${value}`).join('; ')}; text-decoration: none; display: inline-block;">
+          case 'button':
+            return `<div style="text-align: ${component.styles.textAlign}">
+            <a href="${component.content.url}" style="${Object.entries(component.styles)
+              .map(([key, value]) => `${camelToKebab(key)}: ${value}`)
+              .join('; ')}; text-decoration: none; display: inline-block;">
               ${component.content.text}
             </a>
           </div>`
 
-        case 'divider':
-          return `<div style="${Object.entries(component.styles).map(([key, value]) => `${camelToKebab(key)}: ${value}`).join('; ')}"></div>`
+          case 'divider':
+            return `<div style="${Object.entries(component.styles)
+              .map(([key, value]) => `${camelToKebab(key)}: ${value}`)
+              .join('; ')}"></div>`
 
-        case 'columns':
-          const columnWidth = 100 / component.content.columns
-          return `<table style="width: 100%; border-collapse: collapse;">
+          case 'columns':
+            const columnWidth = 100 / component.content.columns
+            return `<table style="width: 100%; border-collapse: collapse;">
             <tr>
-              ${Array.from({ length: component.content.columns }, (_, i) =>
-                `<td style="width: ${columnWidth}%; vertical-align: top; padding: 0 ${component.styles.gap ? parseInt(component.styles.gap) / 2 : 10}px;">
+              ${Array.from(
+                { length: component.content.columns },
+                (_, i) =>
+                  `<td style="width: ${columnWidth}%; vertical-align: top; padding: 0 ${component.styles.gap ? parseInt(component.styles.gap) / 2 : 10}px;">
                   Column ${i + 1}
                 </td>`
               ).join('')}
             </tr>
           </table>`
 
-        default:
-          return ''
-      }
-    }).join('')
+          default:
+            return ''
+        }
+      })
+      .join('')
 
     return `
       <!DOCTYPE html>
@@ -272,21 +282,20 @@ function EmailBuilderPageContent() {
       {/* Header */}
       <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-          >
+          <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
 
           <div>
             <h1 className="text-xl font-semibold">
-              {campaignId ? 'Edit Campaign' : templateId ? 'Edit Template' : 'Create Email Template'}
+              {campaignId
+                ? 'Edit Campaign'
+                : templateId
+                  ? 'Edit Template'
+                  : 'Create Email Template'}
             </h1>
-            {campaign && (
-              <p className="text-sm text-gray-600">{campaign.name}</p>
-            )}
+            {campaign && <p className="text-sm text-gray-600">{campaign.name}</p>}
           </div>
         </div>
 
@@ -303,11 +312,7 @@ function EmailBuilderPageContent() {
       {/* Email Builder */}
       <div className="flex-1">
         {template && (
-          <EmailBuilder
-            template={template}
-            onPreview={handlePreview}
-            onSave={handleSave}
-          />
+          <EmailBuilder template={template} onPreview={handlePreview} onSave={handleSave} />
         )}
       </div>
 
@@ -316,17 +321,11 @@ function EmailBuilderPageContent() {
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Email Preview</DialogTitle>
-            <DialogDescription>
-              This is how your email will appear to recipients
-            </DialogDescription>
+            <DialogDescription>This is how your email will appear to recipients</DialogDescription>
           </DialogHeader>
 
           <div className="border rounded-lg overflow-hidden">
-            <iframe
-              className="w-full h-96"
-              srcDoc={previewHtml}
-              title="Email Preview"
-            />
+            <iframe className="w-full h-96" srcDoc={previewHtml} title="Email Preview" />
           </div>
         </DialogContent>
       </Dialog>
@@ -336,11 +335,13 @@ function EmailBuilderPageContent() {
 
 export default function EmailBuilderPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-8">
-        <div className="text-center">Loading email builder...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">Loading email builder...</div>
+        </div>
+      }
+    >
       <EmailBuilderPageContent />
     </Suspense>
   )

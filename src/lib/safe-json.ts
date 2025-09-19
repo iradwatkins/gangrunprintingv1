@@ -6,7 +6,7 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
   try {
     // Remove BOM (Byte Order Mark) if present
     let cleanText = text
-    if (text.charCodeAt(0) === 0xFEFF) {
+    if (text.charCodeAt(0) === 0xfeff) {
       console.warn(`BOM character detected${context ? ` in ${context}` : ''}`)
       cleanText = text.slice(1)
     }
@@ -24,7 +24,11 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
     // Enhanced error reporting for JSON parsing issues
     const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error'
     const preview = text.substring(0, 200)
-    const charCodes = text.substring(0, 10).split('').map(c => c.charCodeAt(0)).join(', ')
+    const charCodes = text
+      .substring(0, 10)
+      .split('')
+      .map((c) => c.charCodeAt(0))
+      .join(', ')
 
     console.error('JSON Parse Error Details:', {
       context,
@@ -32,7 +36,7 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
       preview,
       charCodes,
       textLength: text.length,
-      startsWithBOM: text.charCodeAt(0) === 0xFEFF
+      startsWithBOM: text.charCodeAt(0) === 0xfeff,
     })
 
     throw new Error(`JSON parse error${context ? ` for ${context}` : ''}: ${errorMessage}`)
@@ -57,7 +61,10 @@ export async function safeFetch<T = any>(url: string, options?: RequestInit): Pr
 /**
  * Convert a Response object to JSON safely
  */
-export async function responseToJsonSafely<T = any>(response: Response, context?: string): Promise<T> {
+export async function responseToJsonSafely<T = any>(
+  response: Response,
+  context?: string
+): Promise<T> {
   const text = await response.text()
   return parseJsonSafely<T>(text, context || response.url)
 }

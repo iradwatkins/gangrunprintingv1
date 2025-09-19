@@ -24,7 +24,10 @@ function dispatch(action: { type: string; toast?: Toast; id?: string }) {
   })
 }
 
-function reducer(state: ToastState, action: { type: string; toast?: Toast; id?: string }): ToastState {
+function reducer(
+  state: ToastState,
+  action: { type: string; toast?: Toast; id?: string }
+): ToastState {
   switch (action.type) {
     case 'ADD_TOAST':
       return {

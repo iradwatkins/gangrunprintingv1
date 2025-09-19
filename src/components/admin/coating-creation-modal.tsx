@@ -29,10 +29,10 @@ interface CoatingCreationModalProps {
 export function CoatingCreationModal({
   open,
   onOpenChange,
-  onCoatingCreated
+  onCoatingCreated,
 }: CoatingCreationModalProps) {
   const [formData, setFormData] = useState({
-    name: ''
+    name: '',
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -53,7 +53,6 @@ export function CoatingCreationModal({
       newErrors.name = 'Coating name must be less than 50 characters'
     }
 
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -73,7 +72,7 @@ export function CoatingCreationModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name.trim()
+          name: formData.name.trim(),
         }),
       })
 
@@ -114,41 +113,34 @@ export function CoatingCreationModal({
               <Palette className="h-5 w-5" />
               Create New Coating Option
             </DialogTitle>
-            <DialogDescription>
-              Add a new coating option.
-            </DialogDescription>
+            <DialogDescription>Add a new coating option.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="coating-name">
-                Coating Name *
-              </Label>
+              <Label htmlFor="coating-name">Coating Name *</Label>
               <Input
-                id="coating-name"
                 required
+                className={errors.name ? 'border-red-500' : ''}
+                id="coating-name"
                 placeholder="e.g., High Gloss UV"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={errors.name ? 'border-red-500' : ''}
               />
-              {errors.name && (
-                <p className="text-sm text-red-600">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
             </div>
-
           </div>
 
           <DialogFooter>
             <Button
+              disabled={loading}
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button disabled={loading} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Coating
             </Button>

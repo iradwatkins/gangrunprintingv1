@@ -18,27 +18,27 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            products: true
-          }
-        }
+            products: true,
+          },
+        },
       },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     // Process the groups to include parsed values list
-    const processedGroups = sizeGroups.map(group => ({
+    const processedGroups = sizeGroups.map((group) => ({
       ...group,
-      valuesList: group.values.split(',').map(v => v.trim()).filter(v => v),
-      hasCustomOption: group.values.toLowerCase().includes('custom')
+      valuesList: group.values
+        .split(',')
+        .map((v) => v.trim())
+        .filter((v) => v),
+      hasCustomOption: group.values.toLowerCase().includes('custom'),
     }))
 
     return NextResponse.json(processedGroups)
   } catch (error) {
     console.error('Error fetching size groups:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch size groups' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch size groups' }, { status: 500 })
   }
 }
 
@@ -47,10 +47,7 @@ export async function POST(request: NextRequest) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -65,7 +62,7 @@ export async function POST(request: NextRequest) {
       customMinHeight,
       customMaxHeight,
       sortOrder,
-      isActive
+      isActive,
     } = body
 
     // Validation
@@ -77,7 +74,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate that defaultValue exists in values
-    const valuesList = values.split(',').map((v: string) => v.trim()).filter((v: string) => v)
+    const valuesList = values
+      .split(',')
+      .map((v: string) => v.trim())
+      .filter((v: string) => v)
     if (!valuesList.includes(defaultValue)) {
       return NextResponse.json(
         { error: 'Default value must exist in the values list' },
@@ -96,22 +96,25 @@ export async function POST(request: NextRequest) {
         customMinHeight,
         customMaxHeight,
         sortOrder: sortOrder || 0,
-        isActive: isActive !== undefined ? isActive : true
+        isActive: isActive !== undefined ? isActive : true,
       },
       include: {
         _count: {
           select: {
-            products: true
-          }
-        }
-      }
+            products: true,
+          },
+        },
+      },
     })
 
     // Process the group to include parsed values list
     const processedGroup = {
       ...sizeGroup,
-      valuesList: sizeGroup.values.split(',').map(v => v.trim()).filter(v => v),
-      hasCustomOption: sizeGroup.values.toLowerCase().includes('custom')
+      valuesList: sizeGroup.values
+        .split(',')
+        .map((v) => v.trim())
+        .filter((v) => v),
+      hasCustomOption: sizeGroup.values.toLowerCase().includes('custom'),
     }
 
     return NextResponse.json(processedGroup, { status: 201 })
@@ -125,9 +128,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create size group' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create size group' }, { status: 500 })
   }
 }

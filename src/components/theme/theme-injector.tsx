@@ -1,89 +1,89 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 interface ThemeConfig {
-  cssVariables: Record<string, string>;
-  darkModeVariables?: Record<string, string>;
-  customCSS?: string;
+  cssVariables: Record<string, string>
+  darkModeVariables?: Record<string, string>
+  customCSS?: string
 }
 
 export function ThemeInjector() {
-  const [theme, setTheme] = useState<ThemeConfig | null>(null);
+  const [theme, setTheme] = useState<ThemeConfig | null>(null)
 
   useEffect(() => {
     // Fetch active theme
-    fetchActiveTheme();
-  }, []);
+    fetchActiveTheme()
+  }, [])
 
   useEffect(() => {
     // Only apply custom theme if one exists and has valid variables
-    const hasValidTheme = theme && theme.cssVariables && Object.keys(theme.cssVariables).length > 0;
+    const hasValidTheme = theme && theme.cssVariables && Object.keys(theme.cssVariables).length > 0
 
     if (!hasValidTheme) {
       // Remove any existing custom theme styles to let defaults show through
-      const existingStyle = document.getElementById('custom-theme-styles');
+      const existingStyle = document.getElementById('custom-theme-styles')
       if (existingStyle && existingStyle.parentNode) {
-        existingStyle.parentNode.removeChild(existingStyle);
+        existingStyle.parentNode.removeChild(existingStyle)
       }
-      return;
+      return
     }
 
     // Create style element
-    const styleId = 'custom-theme-styles';
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+    const styleId = 'custom-theme-styles'
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement
 
     if (!styleElement) {
-      styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
+      styleElement = document.createElement('style')
+      styleElement.id = styleId
+      document.head.appendChild(styleElement)
     }
 
     // Generate CSS
-    let css = '';
+    let css = ''
 
     // Add :root variables
     if (theme.cssVariables && Object.keys(theme.cssVariables).length > 0) {
-      css += ':root {\n';
+      css += ':root {\n'
       for (const [key, value] of Object.entries(theme.cssVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Add .dark variables
     if (theme.darkModeVariables && Object.keys(theme.darkModeVariables).length > 0) {
-      css += '.dark {\n';
+      css += '.dark {\n'
       for (const [key, value] of Object.entries(theme.darkModeVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Add custom CSS
     if (theme.customCSS) {
-      css += theme.customCSS;
+      css += theme.customCSS
     }
 
     // Apply CSS
-    styleElement.textContent = css;
+    styleElement.textContent = css
 
     // Cleanup
     return () => {
       if (styleElement && styleElement.parentNode) {
-        styleElement.parentNode.removeChild(styleElement);
+        styleElement.parentNode.removeChild(styleElement)
       }
-    };
-  }, [theme]);
+    }
+  }, [theme])
 
   const fetchActiveTheme = async () => {
     try {
-      const response = await fetch('/api/themes/active');
+      const response = await fetch('/api/themes/active')
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         // Only set theme if we got valid data
         if (data && data.cssVariables) {
-          setTheme(data);
+          setTheme(data)
         }
       }
       // If response is not OK or theme is not found, leave theme as null
@@ -92,7 +92,7 @@ export function ThemeInjector() {
       // Silently fail and use default theme
       // console.error('Failed to fetch active theme:', error);
     }
-  };
+  }
 
-  return null;
+  return null
 }

@@ -18,27 +18,27 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            products: true
-          }
-        }
+            products: true,
+          },
+        },
       },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     // Process the groups to include parsed values list
-    const processedGroups = quantityGroups.map(group => ({
+    const processedGroups = quantityGroups.map((group) => ({
       ...group,
-      valuesList: group.values.split(',').map(v => v.trim()).filter(v => v),
-      hasCustomOption: group.values.toLowerCase().includes('custom')
+      valuesList: group.values
+        .split(',')
+        .map((v) => v.trim())
+        .filter((v) => v),
+      hasCustomOption: group.values.toLowerCase().includes('custom'),
     }))
 
     return NextResponse.json(processedGroups)
   } catch (error) {
     console.error('Error fetching quantity groups:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch quantity groups' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch quantity groups' }, { status: 500 })
   }
 }
 
@@ -47,24 +47,13 @@ export async function POST(request: NextRequest) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
 
-    const {
-      name,
-      description,
-      values,
-      defaultValue,
-      customMin,
-      customMax,
-      sortOrder,
-      isActive
-    } = body
+    const { name, description, values, defaultValue, customMin, customMax, sortOrder, isActive } =
+      body
 
     // Validation
     if (!name || !values || !defaultValue) {
@@ -83,8 +72,8 @@ export async function POST(request: NextRequest) {
         customMin,
         customMax,
         sortOrder: sortOrder || 0,
-        isActive: isActive !== undefined ? isActive : true
-      }
+        isActive: isActive !== undefined ? isActive : true,
+      },
     })
 
     return NextResponse.json(quantityGroup, { status: 201 })
@@ -98,9 +87,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create quantity group' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create quantity group' }, { status: 500 })
   }
 }

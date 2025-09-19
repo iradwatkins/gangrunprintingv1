@@ -32,7 +32,7 @@ const ALL_PERMISSIONS = [
   { id: 'view_analytics', label: 'View Analytics', category: 'Analytics' },
   { id: 'view_reports', label: 'View Reports', category: 'Reports' },
   { id: 'manage_settings', label: 'Manage Settings', category: 'Settings' },
-  { id: 'manage_payments', label: 'Manage Payments', category: 'Financial' }
+  { id: 'manage_payments', label: 'Manage Payments', category: 'Financial' },
 ]
 
 export function RolePermissionsTable({ roles }: RolePermissionsTableProps) {
@@ -53,9 +53,7 @@ export function RolePermissionsTable({ roles }: RolePermissionsTableProps) {
                   <Badge variant={role.name === 'ADMIN' ? 'default' : 'secondary'}>
                     {role.name}
                   </Badge>
-                  <p className="text-xs text-muted-foreground">
-                    {role.count} members
-                  </p>
+                  <p className="text-xs text-muted-foreground">{role.count} members</p>
                 </div>
               </TableHead>
             ))}
@@ -64,9 +62,7 @@ export function RolePermissionsTable({ roles }: RolePermissionsTableProps) {
         <TableBody>
           {ALL_PERMISSIONS.map((permission) => (
             <TableRow key={permission.id}>
-              <TableCell className="font-medium">
-                {permission.label}
-              </TableCell>
+              <TableCell className="font-medium">{permission.label}</TableCell>
               <TableCell>
                 <Badge className="text-xs" variant="outline">
                   {permission.category}

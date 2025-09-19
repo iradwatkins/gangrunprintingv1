@@ -17,7 +17,7 @@ import {
   XCircle,
   Calendar,
   Mail,
-  Phone
+  Phone,
 } from 'lucide-react'
 import { StaffTable } from '@/components/admin/staff/staff-table'
 import { RolePermissionsTable } from '@/components/admin/staff/role-permissions-table'
@@ -70,20 +70,10 @@ function getPermissionsForRole(role: string): string[] {
       'Manage Vendors',
       'Manage Marketing',
       'View Financial Reports',
-      'System Configuration'
+      'System Configuration',
     ],
-    STAFF: [
-      'View Users',
-      'Manage Products',
-      'Manage Orders',
-      'View Analytics',
-      'Customer Support'
-    ],
-    CUSTOMER: [
-      'View Products',
-      'Place Orders',
-      'View Order History'
-    ]
+    STAFF: ['View Users', 'Manage Products', 'Manage Orders', 'View Analytics', 'Customer Support'],
+    CUSTOMER: ['View Products', 'Place Orders', 'View Order History'],
   }
 
   return permissions[role] || []
@@ -97,10 +87,10 @@ function StaffPageContent() {
     staff: [],
     roles: [
       { name: 'ADMIN', count: 0, permissions: getPermissionsForRole('ADMIN') },
-      { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') }
+      { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') },
     ],
     stats: { total: 0, active: 0, pending: 0, admins: 0 },
-    recentActivity: []
+    recentActivity: [],
   })
   const [loading, setLoading] = useState(true)
 
@@ -125,12 +115,12 @@ function StaffPageContent() {
                 createdAt: new Date(),
                 lastLoginAt: new Date(),
                 isActive: true,
-                permissions: getPermissionsForRole('ADMIN')
-              }
+                permissions: getPermissionsForRole('ADMIN'),
+              },
             ],
             roles: [
               { name: 'ADMIN', count: 1, permissions: getPermissionsForRole('ADMIN') },
-              { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') }
+              { name: 'STAFF', count: 0, permissions: getPermissionsForRole('STAFF') },
             ],
             stats: { total: 1, active: 1, pending: 0, admins: 1 },
             recentActivity: [
@@ -140,9 +130,9 @@ function StaffPageContent() {
                 userName: 'Admin User',
                 action: 'Logged in',
                 timestamp: new Date(),
-                details: 'Successfully logged in'
-              }
-            ]
+                details: 'Successfully logged in',
+              },
+            ],
           })
         }
       } catch (error) {
@@ -159,7 +149,7 @@ function StaffPageContent() {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -168,7 +158,7 @@ function StaffPageContent() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -186,9 +176,7 @@ function StaffPageContent() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Staff Management</h1>
-          <p className="text-muted-foreground">
-            Manage team members, roles, and permissions
-          </p>
+          <p className="text-muted-foreground">Manage team members, roles, and permissions</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
@@ -208,9 +196,7 @@ function StaffPageContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.stats.total}</div>
-            <p className="text-xs text-muted-foreground">
-              {data.stats.admins} administrators
-            </p>
+            <p className="text-xs text-muted-foreground">{data.stats.admins} administrators</p>
           </CardContent>
         </Card>
 
@@ -221,9 +207,7 @@ function StaffPageContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{data.stats.active}</div>
-            <p className="text-xs text-muted-foreground">
-              Verified accounts
-            </p>
+            <p className="text-xs text-muted-foreground">Verified accounts</p>
           </CardContent>
         </Card>
 
@@ -234,9 +218,7 @@ function StaffPageContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{data.stats.pending}</div>
-            <p className="text-xs text-muted-foreground">
-              Awaiting verification
-            </p>
+            <p className="text-xs text-muted-foreground">Awaiting verification</p>
           </CardContent>
         </Card>
 
@@ -247,15 +229,13 @@ function StaffPageContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.stats.admins}</div>
-            <p className="text-xs text-muted-foreground">
-              Full access members
-            </p>
+            <p className="text-xs text-muted-foreground">Full access members</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs className="space-y-4" value={currentTab} defaultValue="members">
+      <Tabs className="space-y-4" defaultValue="members" value={currentTab}>
         <TabsList>
           <TabsTrigger value="members">Staff Members</TabsTrigger>
           <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
@@ -267,9 +247,7 @@ function StaffPageContent() {
           <Card>
             <CardHeader>
               <CardTitle>Staff Members</CardTitle>
-              <CardDescription>
-                Manage team members and their access levels
-              </CardDescription>
+              <CardDescription>Manage team members and their access levels</CardDescription>
             </CardHeader>
             <CardContent>
               {data.staff.length > 0 ? (
@@ -291,9 +269,7 @@ function StaffPageContent() {
             <Card>
               <CardHeader>
                 <CardTitle>Role Overview</CardTitle>
-                <CardDescription>
-                  Current role distribution and permissions
-                </CardDescription>
+                <CardDescription>Current role distribution and permissions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {data.roles.map((role) => (
@@ -323,9 +299,7 @@ function StaffPageContent() {
             <Card>
               <CardHeader>
                 <CardTitle>Permission Matrix</CardTitle>
-                <CardDescription>
-                  Detailed view of role permissions
-                </CardDescription>
+                <CardDescription>Detailed view of role permissions</CardDescription>
               </CardHeader>
               <CardContent>
                 {data.roles.length > 0 ? (
@@ -345,15 +319,16 @@ function StaffPageContent() {
           <Card>
             <CardHeader>
               <CardTitle>Activity Log</CardTitle>
-              <CardDescription>
-                Recent actions performed by staff members
-              </CardDescription>
+              <CardDescription>Recent actions performed by staff members</CardDescription>
             </CardHeader>
             <CardContent>
               {data.recentActivity.length > 0 ? (
                 <div className="space-y-4">
                   {data.recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between py-3 border-b">
+                    <div
+                      key={activity.id}
+                      className="flex items-center justify-between py-3 border-b"
+                    >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Badge variant="outline">{activity.action}</Badge>
@@ -371,7 +346,9 @@ function StaffPageContent() {
                 <div className="text-center py-8">
                   <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium">No recent activity</h3>
-                  <p className="text-muted-foreground">Activity will appear here as staff members perform actions</p>
+                  <p className="text-muted-foreground">
+                    Activity will appear here as staff members perform actions
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -384,11 +361,13 @@ function StaffPageContent() {
 
 export default function StaffPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center py-8">
-        <div className="text-center">Loading staff data...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">Loading staff data...</div>
+        </div>
+      }
+    >
       <StaffPageContent />
     </Suspense>
   )

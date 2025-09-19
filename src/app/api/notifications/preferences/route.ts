@@ -6,10 +6,7 @@ export async function GET(request: NextRequest) {
     const { user, session } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // In a real app, you'd fetch from database
@@ -17,19 +14,16 @@ export async function GET(request: NextRequest) {
     const defaultPreferences = {
       'order-updates': true,
       'shipping-updates': true,
-      'promotional': false,
-      'design-ready': true
+      promotional: false,
+      'design-ready': true,
     }
 
     return NextResponse.json({
-      preferences: defaultPreferences
+      preferences: defaultPreferences,
     })
   } catch (error) {
     console.error('Error getting notification preferences:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -38,19 +32,13 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { preferences } = await request.json()
 
     if (!preferences || typeof preferences !== 'object') {
-      return NextResponse.json(
-        { error: 'Invalid preferences data' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid preferences data' }, { status: 400 })
     }
 
     // In a real app, you'd save to database
@@ -59,13 +47,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      preferences
+      preferences,
     })
   } catch (error) {
     console.error('Error saving notification preferences:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const withProducts = searchParams.get('withProducts') === 'true'
     const activeOnly = searchParams.get('active') === 'true'
-    
+
     // Build where clause
     const where: any = {}
     if (activeOnly) {
@@ -17,33 +17,27 @@ export async function GET(request: NextRequest) {
     if (withProducts) {
       where.Product = {
         some: {
-          isActive: true
-        }
+          isActive: true,
+        },
       }
     }
-    
+
     const categories = await prisma.productCategory.findMany({
       where,
-      orderBy: [
-        { sortOrder: 'asc' },
-        { name: 'asc' }
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       include: {
         _count: {
           select: {
-            Product: true
-          }
-        }
-      }
+            Product: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch categories' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 })
   }
 }
 
@@ -52,17 +46,19 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await request.json()
-    
-    const slug = data.slug || data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+    const slug =
+      data.slug ||
+      data.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
     const categoryId = data.id || `cat_${slug.replace(/-/g, '_')}`
-    
+
     const category = await prisma.productCategory.create({
       data: {
         id: categoryId,
@@ -71,14 +67,14 @@ export async function POST(request: NextRequest) {
         description: data.description,
         sortOrder: data.sortOrder || 0,
         isActive: data.isActive ?? true,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json(category, { status: 201 })
   } catch (error: any) {
     console.error('Error creating category:', error)
-    
+
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
       return NextResponse.json(
@@ -87,9 +83,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create category' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 })
   }
 }

@@ -22,29 +22,29 @@ const notificationTypes = [
     title: 'Order Updates',
     description: 'Get notified when your order status changes',
     icon: '📦',
-    enabled: true
+    enabled: true,
   },
   {
     id: 'shipping-updates',
     title: 'Shipping Notifications',
     description: 'Track your package delivery status',
     icon: '🚚',
-    enabled: true
+    enabled: true,
   },
   {
     id: 'promotional',
     title: 'Promotions & Deals',
     description: 'Special offers and discounts',
     icon: '🎯',
-    enabled: false
+    enabled: false,
   },
   {
     id: 'design-ready',
     title: 'Design Approvals',
     description: 'When your custom designs are ready for review',
     icon: '🎨',
-    enabled: true
-  }
+    enabled: true,
+  },
 ]
 
 export default function NotificationPreferences() {
@@ -52,11 +52,11 @@ export default function NotificationPreferences() {
     permission: 'default',
     isSubscribed: false,
     isPushSupported: false,
-    isServiceWorkerRegistered: false
+    isServiceWorkerRegistered: false,
   })
 
   const [preferences, setPreferences] = useState(
-    Object.fromEntries(notificationTypes.map(type => [type.id, type.enabled]))
+    Object.fromEntries(notificationTypes.map((type) => [type.id, type.enabled]))
   )
 
   const [isLoading, setIsLoading] = useState(false)
@@ -72,11 +72,11 @@ export default function NotificationPreferences() {
     const isPushSupported = 'serviceWorker' in navigator && 'PushManager' in window
     const isServiceWorkerRegistered = !!navigator.serviceWorker?.controller
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       permission: Notification.permission,
       isPushSupported,
-      isServiceWorkerRegistered
+      isServiceWorkerRegistered,
     }))
 
     if (isPushSupported && isServiceWorkerRegistered) {
@@ -89,9 +89,9 @@ export default function NotificationPreferences() {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.getSubscription()
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        isSubscribed: !!subscription
+        isSubscribed: !!subscription,
       }))
     } catch (error) {
       console.error('Error checking subscription:', error)
@@ -115,7 +115,7 @@ export default function NotificationPreferences() {
       const response = await fetch('/api/notifications/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferences: newPreferences })
+        body: JSON.stringify({ preferences: newPreferences }),
       })
 
       if (response.ok) {
@@ -158,30 +158,29 @@ export default function NotificationPreferences() {
       // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey)
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
       })
 
       // Send subscription to server
       const subscribeResponse = await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscription)
+        body: JSON.stringify(subscription),
       })
 
       if (!subscribeResponse.ok) {
         throw new Error('Failed to register subscription')
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         permission: 'granted',
         isSubscribed: true,
-        isServiceWorkerRegistered: true
+        isServiceWorkerRegistered: true,
       }))
 
       setSuccess('Push notifications enabled successfully!')
       setTimeout(() => setSuccess(null), 3000)
-
     } catch (error: any) {
       setError(error.message || 'Failed to enable notifications')
       setTimeout(() => setError(null), 5000)
@@ -203,21 +202,20 @@ export default function NotificationPreferences() {
         await fetch('/api/notifications/unsubscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(subscription)
+          body: JSON.stringify(subscription),
         })
 
         // Unsubscribe locally
         await subscription.unsubscribe()
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        isSubscribed: false
+        isSubscribed: false,
       }))
 
       setSuccess('Push notifications disabled')
       setTimeout(() => setSuccess(null), 3000)
-
     } catch (error) {
       setError('Failed to disable notifications')
       setTimeout(() => setError(null), 3000)
@@ -240,7 +238,7 @@ export default function NotificationPreferences() {
   const togglePreference = (typeId: string) => {
     const newPreferences = {
       ...preferences,
-      [typeId]: !preferences[typeId]
+      [typeId]: !preferences[typeId],
     }
     setPreferences(newPreferences)
     savePreferences(newPreferences)
@@ -248,10 +246,8 @@ export default function NotificationPreferences() {
 
   // Helper function to convert VAPID key
   const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4)
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
 
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
@@ -272,7 +268,11 @@ export default function NotificationPreferences() {
     }
 
     if (state.isSubscribed) {
-      return <Badge className="bg-green-500" variant="default">Enabled</Badge>
+      return (
+        <Badge className="bg-green-500" variant="default">
+          Enabled
+        </Badge>
+      )
     }
 
     return <Badge variant="secondary">Disabled</Badge>
@@ -317,7 +317,8 @@ export default function NotificationPreferences() {
             <Alert>
               <Smartphone className="h-4 w-4" />
               <AlertDescription>
-                Push notifications are not supported in this browser. Try using Chrome, Firefox, or Safari.
+                Push notifications are not supported in this browser. Try using Chrome, Firefox, or
+                Safari.
               </AlertDescription>
             </Alert>
           )}
@@ -326,7 +327,8 @@ export default function NotificationPreferences() {
             <Alert variant="destructive">
               <BellOff className="h-4 w-4" />
               <AlertDescription>
-                Notifications are blocked. Please enable them in your browser settings and refresh the page.
+                Notifications are blocked. Please enable them in your browser settings and refresh
+                the page.
               </AlertDescription>
             </Alert>
           )}
@@ -357,7 +359,7 @@ export default function NotificationPreferences() {
                 )}
                 <Button
                   disabled={isLoading}
-                  variant={state.isSubscribed ? "outline" : "default"}
+                  variant={state.isSubscribed ? 'outline' : 'default'}
                   onClick={state.isSubscribed ? disableNotifications : enableNotifications}
                 >
                   {isLoading ? (
@@ -392,7 +394,10 @@ export default function NotificationPreferences() {
                 </h4>
                 <div className="space-y-3">
                   {notificationTypes.map((type) => (
-                    <div key={type.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={type.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center space-x-3">
                         <span className="text-lg">{type.icon}</span>
                         <div>

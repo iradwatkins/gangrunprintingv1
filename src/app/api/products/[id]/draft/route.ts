@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest, context: Context) {
 
     // Check if product exists and belongs to user (or user is admin)
     const existingProduct = await prisma.product.findUnique({
-      where: { id }
+      where: { id },
     })
 
     if (!existingProduct) {
@@ -35,16 +35,13 @@ export async function PUT(request: NextRequest, context: Context) {
         ...data,
         isDraft: true,
         updatedBy: user.id,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json(updatedProduct)
   } catch (error) {
     console.error('Error updating draft product:', error)
-    return NextResponse.json(
-      { error: 'Failed to update draft product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update draft product' }, { status: 500 })
   }
 }

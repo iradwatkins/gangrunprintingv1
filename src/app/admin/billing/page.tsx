@@ -13,26 +13,26 @@ export default function BillingPage() {
       title: 'Current Balance',
       value: '$12,456.78',
       icon: DollarSign,
-      description: 'Outstanding invoices'
+      description: 'Outstanding invoices',
     },
     {
       title: 'Monthly Revenue',
       value: '$34,567.89',
       icon: TrendingUp,
-      description: 'Last 30 days'
+      description: 'Last 30 days',
     },
     {
       title: 'Pending Payments',
       value: '23',
       icon: CreditCard,
-      description: 'Awaiting processing'
+      description: 'Awaiting processing',
     },
     {
       title: 'Invoices',
       value: '145',
       icon: FileText,
-      description: 'This month'
-    }
+      description: 'This month',
+    },
   ]
 
   return (
@@ -96,7 +96,9 @@ export default function BillingPage() {
                     <p className="text-sm text-gray-500">Connected</p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline">Configure</Button>
+                <Button size="sm" variant="outline">
+                  Configure
+                </Button>
               </div>
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">

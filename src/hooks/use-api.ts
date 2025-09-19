@@ -17,17 +17,8 @@ interface UseApiResult<T> {
   mutate: (newData: T) => void
 }
 
-export function useApi<T>(
-  url: string | null,
-  options: UseApiOptions = {}
-): UseApiResult<T> {
-  const {
-    enabled = true,
-    ttl,
-    skipCache = false,
-    retry = 3,
-    retryDelay = 1000
-  } = options
+export function useApi<T>(url: string | null, options: UseApiOptions = {}): UseApiResult<T> {
+  const { enabled = true, ttl, skipCache = false, retry = 3, retryDelay = 1000 } = options
 
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(false)
@@ -58,7 +49,7 @@ export function useApi<T>(
           error: lastError.message,
           attempt: attempt + 1,
           url,
-          options: { ttl, skipCache, retry, retryDelay }
+          options: { ttl, skipCache, retry, retryDelay },
         })
 
         attempt++
@@ -66,7 +57,7 @@ export function useApi<T>(
         if (attempt < retry) {
           console.log(`Retrying ${url} in ${retryDelay * attempt}ms...`)
           // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, retryDelay * attempt))
+          await new Promise((resolve) => setTimeout(resolve, retryDelay * attempt))
         }
       }
     }
@@ -79,7 +70,7 @@ export function useApi<T>(
       url,
       attempts: retry,
       finalError: errorMessage,
-      options: { ttl, skipCache, retry, retryDelay }
+      options: { ttl, skipCache, retry, retryDelay },
     })
 
     setError(detailedError)
@@ -132,7 +123,7 @@ export function useApi<T>(
     loading,
     error,
     refetch,
-    mutate
+    mutate,
   }
 }
 
@@ -149,7 +140,9 @@ export function useApiBundle<T extends Record<string, any>>(
 } {
   const [data, setData] = useState<Partial<T>>({})
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<Record<keyof T, string | null>>({} as Record<keyof T, string | null>)
+  const [errors, setErrors] = useState<Record<keyof T, string | null>>(
+    {} as Record<keyof T, string | null>
+  )
 
   const fetchAll = useCallback(async () => {
     // Don't fetch if explicitly disabled
@@ -175,7 +168,7 @@ export function useApiBundle<T extends Record<string, any>>(
 
       const fetchPromise = cachedFetch(url as string, {
         ttl: options.ttl,
-        skipCache: options.skipCache
+        skipCache: options.skipCache,
       })
 
       try {
@@ -190,13 +183,13 @@ export function useApiBundle<T extends Record<string, any>>(
           key,
           url,
           error: errorMessage,
-          stack: error instanceof Error ? error.stack : undefined
+          stack: error instanceof Error ? error.stack : undefined,
         })
 
         return {
           key,
           result: null,
-          error: `${key}: ${errorMessage}`
+          error: `${key}: ${errorMessage}`,
         }
       }
     }
@@ -231,25 +224,28 @@ export function useApiBundle<T extends Record<string, any>>(
     setLoading(false)
   }, [urls, options.enabled, options.ttl, options.skipCache])
 
-  const refetchSingle = useCallback(async (key: keyof T) => {
-    const url = urls[key]
-    if (!url) return
+  const refetchSingle = useCallback(
+    async (key: keyof T) => {
+      const url = urls[key]
+      if (!url) return
 
-    try {
-      const result = await cachedFetch(url, {
-        ttl: options.ttl,
-        skipCache: true // Force refresh for single refetch
-      })
+      try {
+        const result = await cachedFetch(url, {
+          ttl: options.ttl,
+          skipCache: true, // Force refresh for single refetch
+        })
 
-      setData(prev => ({ ...prev, [key]: result }))
-      setErrors(prev => ({ ...prev, [key]: null }))
-    } catch (error) {
-      setErrors(prev => ({
-        ...prev,
-        [key]: error instanceof Error ? error.message : 'Unknown error'
-      }))
-    }
-  }, [urls, options.ttl])
+        setData((prev) => ({ ...prev, [key]: result }))
+        setErrors((prev) => ({ ...prev, [key]: null }))
+      } catch (error) {
+        setErrors((prev) => ({
+          ...prev,
+          [key]: error instanceof Error ? error.message : 'Unknown error',
+        }))
+      }
+    },
+    [urls, options.ttl]
+  )
 
   useEffect(() => {
     if (options.enabled !== false) {
@@ -262,6 +258,6 @@ export function useApiBundle<T extends Record<string, any>>(
     loading,
     errors,
     refetch: fetchAll,
-    refetchSingle
+    refetchSingle,
   }
 }

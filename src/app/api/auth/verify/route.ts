@@ -11,9 +11,7 @@ export async function GET(request: NextRequest) {
   console.log('Email:', email)
 
   if (!token || !email) {
-    return NextResponse.redirect(
-      new URL('/auth/verify?error=missing_params', request.url)
-    )
+    return NextResponse.redirect(new URL('/auth/verify?error=missing_params', request.url))
   }
 
   try {
@@ -28,8 +26,6 @@ export async function GET(request: NextRequest) {
       errorCode = (error as any).code
     }
 
-    return NextResponse.redirect(
-      new URL(`/auth/verify?error=${errorCode}`, request.url)
-    )
+    return NextResponse.redirect(new URL(`/auth/verify?error=${errorCode}`, request.url))
   }
 }

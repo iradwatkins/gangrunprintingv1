@@ -148,7 +148,7 @@ export default function CampaignsPage() {
 
       if (response.ok) {
         const campaign = await response.json()
-        setCampaigns(prev => [campaign, ...prev])
+        setCampaigns((prev) => [campaign, ...prev])
         setShowCreateDialog(false)
         setNewCampaign({
           name: '',
@@ -192,16 +192,17 @@ export default function CampaignsPage() {
       })
 
       if (response.ok) {
-        setCampaigns(prev => prev.filter(c => c.id !== campaignId))
+        setCampaigns((prev) => prev.filter((c) => c.id !== campaignId))
       }
     } catch (error) {
       console.error('Error deleting campaign:', error)
     }
   }
 
-  const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         campaign.subject?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    const matchesSearch =
+      campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.subject?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter
     const matchesType = typeFilter === 'all' || campaign.type === typeFilter
 
@@ -242,7 +243,7 @@ export default function CampaignsPage() {
                 <Input
                   placeholder="Enter campaign name"
                   value={newCampaign.name}
-                  onChange={(e) => setNewCampaign(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setNewCampaign((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
 
@@ -250,7 +251,9 @@ export default function CampaignsPage() {
                 <Label>Campaign Type</Label>
                 <Select
                   value={newCampaign.type}
-                  onValueChange={(value) => setNewCampaign(prev => ({ ...prev, type: value as any }))}
+                  onValueChange={(value) =>
+                    setNewCampaign((prev) => ({ ...prev, type: value as any }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -269,7 +272,9 @@ export default function CampaignsPage() {
                     <Input
                       placeholder="Email subject"
                       value={newCampaign.subject}
-                      onChange={(e) => setNewCampaign(prev => ({ ...prev, subject: e.target.value }))}
+                      onChange={(e) =>
+                        setNewCampaign((prev) => ({ ...prev, subject: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -278,7 +283,9 @@ export default function CampaignsPage() {
                     <Input
                       placeholder="This appears in the inbox preview"
                       value={newCampaign.previewText}
-                      onChange={(e) => setNewCampaign(prev => ({ ...prev, previewText: e.target.value }))}
+                      onChange={(e) =>
+                        setNewCampaign((prev) => ({ ...prev, previewText: e.target.value }))
+                      }
                     />
                   </div>
                 </>
@@ -288,7 +295,9 @@ export default function CampaignsPage() {
                 <Label>Target Segment (Optional)</Label>
                 <Select
                   value={newCampaign.segmentId}
-                  onValueChange={(value) => setNewCampaign(prev => ({ ...prev, segmentId: value }))}
+                  onValueChange={(value) =>
+                    setNewCampaign((prev) => ({ ...prev, segmentId: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All customers" />
@@ -408,9 +417,7 @@ export default function CampaignsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={STATUS_COLORS[campaign.status]}>
-                          {campaign.status}
-                        </Badge>
+                        <Badge className={STATUS_COLORS[campaign.status]}>{campaign.status}</Badge>
                       </TableCell>
                       <TableCell>
                         {campaign.segment ? (
@@ -424,12 +431,8 @@ export default function CampaignsPage() {
                           <span className="text-gray-500">All customers</span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        {campaign._count?.sends || 0}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(campaign.createdAt).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell>{campaign._count?.sends || 0}</TableCell>
+                      <TableCell>{new Date(campaign.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -439,7 +442,9 @@ export default function CampaignsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => router.push(`/admin/marketing/campaigns/${campaign.id}`)}
+                              onClick={() =>
+                                router.push(`/admin/marketing/campaigns/${campaign.id}`)
+                              }
                             >
                               <Eye className="mr-2 h-4 w-4" />
                               View Details
@@ -447,7 +452,11 @@ export default function CampaignsPage() {
 
                             {campaign.type === 'EMAIL' && (
                               <DropdownMenuItem
-                                onClick={() => router.push(`/admin/marketing/email-builder?campaignId=${campaign.id}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/admin/marketing/email-builder?campaignId=${campaign.id}`
+                                  )
+                                }
                               >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Content
@@ -455,7 +464,9 @@ export default function CampaignsPage() {
                             )}
 
                             <DropdownMenuItem
-                              onClick={() => router.push(`/admin/marketing/campaigns/${campaign.id}/analytics`)}
+                              onClick={() =>
+                                router.push(`/admin/marketing/campaigns/${campaign.id}/analytics`)
+                              }
                             >
                               <BarChart3 className="mr-2 h-4 w-4" />
                               Analytics

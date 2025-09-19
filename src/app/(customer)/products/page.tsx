@@ -2,7 +2,17 @@
 
 import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, Filter, ChevronDown, Grid3x3, List, SlidersHorizontal, X, ArrowUpDown, Package } from 'lucide-react'
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  Grid3x3,
+  List,
+  SlidersHorizontal,
+  X,
+  ArrowUpDown,
+  Package,
+} from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,7 +35,12 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Slider } from '@/components/ui/slider'
 import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
@@ -42,10 +57,10 @@ const products = [
     turnaround: '3-5 business days',
     popular: true,
     sizes: ['Standard', 'Square', 'Mini'],
-    finishes: ['Matte', 'Gloss', 'UV Coating']
+    finishes: ['Matte', 'Gloss', 'UV Coating'],
   },
   {
-    id: '2', 
+    id: '2',
     name: 'Flyers & Brochures',
     category: 'Marketing Materials',
     description: 'Eye-catching flyers and brochures for your marketing campaigns',
@@ -54,7 +69,7 @@ const products = [
     turnaround: '5-7 business days',
     popular: false,
     sizes: ['8.5x11', '5.5x8.5', 'Tri-fold'],
-    finishes: ['Matte', 'Gloss']
+    finishes: ['Matte', 'Gloss'],
   },
   {
     id: '3',
@@ -66,7 +81,7 @@ const products = [
     turnaround: '3-5 business days',
     popular: true,
     sizes: ['11x17', '18x24', '24x36'],
-    finishes: ['Matte', 'Gloss']
+    finishes: ['Matte', 'Gloss'],
   },
   {
     id: '4',
@@ -78,7 +93,7 @@ const products = [
     turnaround: '5-7 business days',
     popular: false,
     sizes: ['2x4', '3x6', '4x8'],
-    finishes: ['Vinyl', 'Mesh']
+    finishes: ['Vinyl', 'Mesh'],
   },
   {
     id: '5',
@@ -90,7 +105,7 @@ const products = [
     turnaround: '7-10 business days',
     popular: true,
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    finishes: ['Screen Print', 'DTG']
+    finishes: ['Screen Print', 'DTG'],
   },
   {
     id: '6',
@@ -102,7 +117,7 @@ const products = [
     turnaround: '3-5 business days',
     popular: false,
     sizes: ['2x2', '3x3', 'Custom'],
-    finishes: ['Matte', 'Gloss', 'Clear']
+    finishes: ['Matte', 'Gloss', 'Clear'],
   },
   {
     id: '7',
@@ -114,7 +129,7 @@ const products = [
     turnaround: '3-5 business days',
     popular: false,
     sizes: ['4x6', '5x7', '6x9'],
-    finishes: ['Matte', 'Gloss', 'UV Coating']
+    finishes: ['Matte', 'Gloss', 'UV Coating'],
   },
   {
     id: '8',
@@ -126,8 +141,8 @@ const products = [
     turnaround: '5-7 business days',
     popular: false,
     sizes: ['18x24', '24x36'],
-    finishes: ['Corrugated Plastic']
-  }
+    finishes: ['Corrugated Plastic'],
+  },
 ]
 
 const categories = ['All', 'Marketing Materials', 'Large Format', 'Apparel']
@@ -135,7 +150,7 @@ const sortOptions = [
   { label: 'Featured', value: 'featured' },
   { label: 'Price: Low to High', value: 'price-asc' },
   { label: 'Price: High to Low', value: 'price-desc' },
-  { label: 'Name A-Z', value: 'name-asc' }
+  { label: 'Name A-Z', value: 'name-asc' },
 ]
 
 const turnaroundOptions = ['3-5 business days', '5-7 business days', '7-10 business days']
@@ -160,11 +175,11 @@ function ProductsPageContent() {
       // Map URL category to display category name
       const categoryMap: Record<string, string> = {
         'business-cards': 'Marketing Materials',
-        'flyers': 'Marketing Materials',
-        'banners': 'Large Format',
-        'stickers': 'Marketing Materials',
-        'apparel': 'Apparel',
-        'postcards': 'Marketing Materials'
+        flyers: 'Marketing Materials',
+        banners: 'Large Format',
+        stickers: 'Marketing Materials',
+        apparel: 'Apparel',
+        postcards: 'Marketing Materials',
       }
 
       const displayCategory = categoryMap[categoryParam]
@@ -175,14 +190,19 @@ function ProductsPageContent() {
   }, [searchParams])
 
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category)
-      const matchesTurnaround = selectedTurnarounds.length === 0 || selectedTurnarounds.includes(product.turnaround)
-      const matchesFinish = selectedFinishes.length === 0 || product.finishes.some(f => selectedFinishes.includes(f))
-      const matchesPrice = product.startingPrice >= priceRange[0] && product.startingPrice <= priceRange[1]
-      
+    return products.filter((product) => {
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory =
+        selectedCategories.length === 0 || selectedCategories.includes(product.category)
+      const matchesTurnaround =
+        selectedTurnarounds.length === 0 || selectedTurnarounds.includes(product.turnaround)
+      const matchesFinish =
+        selectedFinishes.length === 0 || product.finishes.some((f) => selectedFinishes.includes(f))
+      const matchesPrice =
+        product.startingPrice >= priceRange[0] && product.startingPrice <= priceRange[1]
+
       return matchesSearch && matchesCategory && matchesTurnaround && matchesFinish && matchesPrice
     })
   }, [searchQuery, selectedCategories, selectedTurnarounds, selectedFinishes, priceRange])
@@ -202,26 +222,20 @@ function ProductsPageContent() {
   }, [filteredProducts, sortBy])
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     )
   }
 
   const toggleTurnaround = (turnaround: string) => {
-    setSelectedTurnarounds(prev =>
-      prev.includes(turnaround)
-        ? prev.filter(t => t !== turnaround)
-        : [...prev, turnaround]
+    setSelectedTurnarounds((prev) =>
+      prev.includes(turnaround) ? prev.filter((t) => t !== turnaround) : [...prev, turnaround]
     )
   }
 
   const toggleFinish = (finish: string) => {
-    setSelectedFinishes(prev =>
-      prev.includes(finish)
-        ? prev.filter(f => f !== finish)
-        : [...prev, finish]
+    setSelectedFinishes((prev) =>
+      prev.includes(finish) ? prev.filter((f) => f !== finish) : [...prev, finish]
     )
   }
 
@@ -233,7 +247,11 @@ function ProductsPageContent() {
     setSearchQuery('')
   }
 
-  const activeFiltersCount = selectedCategories.length + selectedTurnarounds.length + selectedFinishes.length + (priceRange[0] > 0 || priceRange[1] < 200 ? 1 : 0)
+  const activeFiltersCount =
+    selectedCategories.length +
+    selectedTurnarounds.length +
+    selectedFinishes.length +
+    (priceRange[0] > 0 || priceRange[1] < 200 ? 1 : 0)
 
   const FilterContent = () => (
     <div className="space-y-6">
@@ -241,22 +259,24 @@ function ProductsPageContent() {
       <div>
         <h3 className="font-semibold mb-3">Categories</h3>
         <div className="space-y-2">
-          {categories.filter(c => c !== 'All').map(category => (
-            <div key={category} className="flex items-center space-x-2">
-              <Checkbox
-                checked={selectedCategories.includes(category)}
-                className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                id={`category-${category}`}
-                onCheckedChange={() => toggleCategory(category)}
-              />
-              <Label
-                className="text-sm font-normal cursor-pointer"
-                htmlFor={`category-${category}`}
-              >
-                {category}
-              </Label>
-            </div>
-          ))}
+          {categories
+            .filter((c) => c !== 'All')
+            .map((category) => (
+              <div key={category} className="flex items-center space-x-2">
+                <Checkbox
+                  checked={selectedCategories.includes(category)}
+                  className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  id={`category-${category}`}
+                  onCheckedChange={() => toggleCategory(category)}
+                />
+                <Label
+                  className="text-sm font-normal cursor-pointer"
+                  htmlFor={`category-${category}`}
+                >
+                  {category}
+                </Label>
+              </div>
+            ))}
         </div>
       </div>
 
@@ -283,7 +303,7 @@ function ProductsPageContent() {
       <div>
         <h3 className="font-semibold mb-3">Turnaround Time</h3>
         <div className="space-y-2">
-          {turnaroundOptions.map(turnaround => (
+          {turnaroundOptions.map((turnaround) => (
             <div key={turnaround} className="flex items-center space-x-2">
               <Checkbox
                 checked={selectedTurnarounds.includes(turnaround)}
@@ -306,7 +326,7 @@ function ProductsPageContent() {
       <div>
         <h3 className="font-semibold mb-3">Finish</h3>
         <div className="space-y-2">
-          {finishOptions.map(finish => (
+          {finishOptions.map((finish) => (
             <div key={finish} className="flex items-center space-x-2">
               <Checkbox
                 checked={selectedFinishes.includes(finish)}
@@ -314,10 +334,7 @@ function ProductsPageContent() {
                 id={`finish-${finish}`}
                 onCheckedChange={() => toggleFinish(finish)}
               />
-              <Label
-                className="text-sm font-normal cursor-pointer"
-                htmlFor={`finish-${finish}`}
-              >
+              <Label className="text-sm font-normal cursor-pointer" htmlFor={`finish-${finish}`}>
                 {finish}
               </Label>
             </div>
@@ -326,11 +343,7 @@ function ProductsPageContent() {
       </div>
 
       {activeFiltersCount > 0 && (
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={clearFilters}
-        >
+        <Button className="w-full" variant="outline" onClick={clearFilters}>
           Clear All Filters
         </Button>
       )}
@@ -380,9 +393,7 @@ function ProductsPageContent() {
               <SheetContent className="w-[300px]" side="left">
                 <SheetHeader>
                   <SheetTitle>Filters</SheetTitle>
-                  <SheetDescription>
-                    Refine your product search
-                  </SheetDescription>
+                  <SheetDescription>Refine your product search</SheetDescription>
                 </SheetHeader>
                 <div className="mt-6">
                   <FilterContent />
@@ -439,8 +450,12 @@ function ProductsPageContent() {
         {/* Active Filters Display */}
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2">
-            {selectedCategories.map(category => (
-              <Badge key={category} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
+            {selectedCategories.map((category) => (
+              <Badge
+                key={category}
+                className="bg-primary/10 text-primary border-primary/20"
+                variant="secondary"
+              >
                 {category}
                 <button
                   className="ml-2 hover:text-primary-foreground"
@@ -450,8 +465,12 @@ function ProductsPageContent() {
                 </button>
               </Badge>
             ))}
-            {selectedTurnarounds.map(turnaround => (
-              <Badge key={turnaround} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
+            {selectedTurnarounds.map((turnaround) => (
+              <Badge
+                key={turnaround}
+                className="bg-primary/10 text-primary border-primary/20"
+                variant="secondary"
+              >
                 {turnaround}
                 <button
                   className="ml-2 hover:text-primary-foreground"
@@ -461,8 +480,12 @@ function ProductsPageContent() {
                 </button>
               </Badge>
             ))}
-            {selectedFinishes.map(finish => (
-              <Badge key={finish} className="bg-primary/10 text-primary border-primary/20" variant="secondary">
+            {selectedFinishes.map((finish) => (
+              <Badge
+                key={finish}
+                className="bg-primary/10 text-primary border-primary/20"
+                variant="secondary"
+              >
                 {finish}
                 <button
                   className="ml-2 hover:text-primary-foreground"
@@ -495,9 +518,7 @@ function ProductsPageContent() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold">Filters</h2>
               {activeFiltersCount > 0 && (
-                <Badge className="bg-primary text-primary-foreground">
-                  {activeFiltersCount}
-                </Badge>
+                <Badge className="bg-primary text-primary-foreground">{activeFiltersCount}</Badge>
               )}
             </div>
             <FilterContent />
@@ -513,7 +534,13 @@ function ProductsPageContent() {
           </div>
 
           {isLoading ? (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'space-y-4'}>
+            <div
+              className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
+                  : 'space-y-4'
+              }
+            >
               {[...Array(6)].map((_, i) => (
                 <Card key={i} className="overflow-hidden">
                   <Skeleton className="aspect-square" />
@@ -528,10 +555,7 @@ function ProductsPageContent() {
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {sortedProducts.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.id}`}
-                >
+                <Link key={product.id} href={`/products/${product.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
                     <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
                       {product.popular && (
@@ -547,12 +571,8 @@ function ProductsPageContent() {
                       <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
                         {product.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {product.category}
-                      </p>
-                      <p className="text-sm mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+                      <p className="text-sm mb-3 line-clamp-2">{product.description}</p>
                       <div className="flex items-center justify-between">
                         <div>
                           <span className="text-sm text-muted-foreground">Starting at</span>
@@ -570,10 +590,7 @@ function ProductsPageContent() {
           ) : (
             <div className="space-y-4">
               {sortedProducts.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.id}`}
-                >
+                <Link key={product.id} href={`/products/${product.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
                     <div className="flex">
                       <div className="w-48 bg-gradient-to-br from-primary/10 to-primary/5 relative flex-shrink-0">
@@ -592,14 +609,10 @@ function ProductsPageContent() {
                             <h3 className="font-semibold text-xl mb-1 group-hover:text-primary transition-colors">
                               {product.name}
                             </h3>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {product.category}
-                            </p>
-                            <p className="text-sm mb-3">
-                              {product.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+                            <p className="text-sm mb-3">{product.description}</p>
                             <div className="flex flex-wrap gap-2 mb-3">
-                              {product.sizes.slice(0, 3).map(size => (
+                              {product.sizes.slice(0, 3).map((size) => (
                                 <Badge key={size} className="text-xs" variant="outline">
                                   {size}
                                 </Badge>
@@ -613,7 +626,9 @@ function ProductsPageContent() {
                           </div>
                           <div className="text-right ml-4">
                             <span className="text-sm text-muted-foreground">Starting at</span>
-                            <p className="text-2xl font-bold text-primary">${product.startingPrice}</p>
+                            <p className="text-2xl font-bold text-primary">
+                              ${product.startingPrice}
+                            </p>
                             <Badge className="mt-2" variant="outline">
                               {product.turnaround}
                             </Badge>
@@ -631,7 +646,9 @@ function ProductsPageContent() {
             <Card className="p-12">
               <div className="text-center">
                 <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No products found matching your criteria.</p>
+                <p className="text-muted-foreground mb-4">
+                  No products found matching your criteria.
+                </p>
                 <Button variant="outline" onClick={clearFilters}>
                   Clear Filters
                 </Button>
@@ -646,29 +663,31 @@ function ProductsPageContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-1 space-y-6">
-              <div className="h-8 bg-muted rounded animate-pulse" />
-              <div className="space-y-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-4 bg-muted rounded animate-pulse" />
-                ))}
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-1 space-y-6">
+                <div className="h-8 bg-muted rounded animate-pulse" />
+                <div className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-4 bg-muted rounded animate-pulse" />
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="lg:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-80 bg-muted rounded animate-pulse" />
-                ))}
+              <div className="lg:col-span-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-80 bg-muted rounded animate-pulse" />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ProductsPageContent />
     </Suspense>
   )

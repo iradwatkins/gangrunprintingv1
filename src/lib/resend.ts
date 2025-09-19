@@ -32,7 +32,7 @@ export async function sendEmail(template: EmailTemplate) {
       html: template.html,
       text: template.text,
       reply_to: template.replyTo,
-      attachments: template.attachments
+      attachments: template.attachments,
     })
 
     if (error) {
@@ -63,7 +63,7 @@ export const emailTemplates = {
         <p>We'll send you another email when your order ships.</p>
         <p>Best regards,<br>GangRun Printing Team</p>
       </div>
-    `
+    `,
   }),
 
   orderStatusUpdate: (order: any) => ({
@@ -80,7 +80,7 @@ export const emailTemplates = {
         <p>You can track your order at any time by logging into your account.</p>
         <p>Best regards,<br>GangRun Printing Team</p>
       </div>
-    `
+    `,
   }),
 
   quoteRequest: (quote: any) => ({
@@ -97,7 +97,7 @@ export const emailTemplates = {
         <p>Our team will review your request and send you a detailed quote within 24 hours.</p>
         <p>Best regards,<br>GangRun Printing Team</p>
       </div>
-    `
+    `,
   }),
 
   passwordReset: (resetUrl: string) => ({
@@ -114,7 +114,7 @@ export const emailTemplates = {
         <p>If you didn't request this, please ignore this email.</p>
         <p>Best regards,<br>GangRun Printing Team</p>
       </div>
-    `
+    `,
   }),
 
   welcomeEmail: (user: any) => ({
@@ -136,8 +136,8 @@ export const emailTemplates = {
         <p>If you have any questions, feel free to contact our support team.</p>
         <p>Best regards,<br>GangRun Printing Team</p>
       </div>
-    `
-  })
+    `,
+  }),
 }
 
 // Batch email sending

@@ -32,52 +32,168 @@ interface Permission {
 
 const AVAILABLE_PERMISSIONS: Permission[] = [
   // Dashboard
-  { id: 'view_dashboard', label: 'View Dashboard', description: 'Access to main dashboard', category: 'Dashboard' },
+  {
+    id: 'view_dashboard',
+    label: 'View Dashboard',
+    description: 'Access to main dashboard',
+    category: 'Dashboard',
+  },
 
   // Orders
-  { id: 'view_orders', label: 'View Orders', description: 'View order list and details', category: 'Orders' },
-  { id: 'manage_orders', label: 'Manage Orders', description: 'Create, edit, and update orders', category: 'Orders' },
-  { id: 'delete_orders', label: 'Delete Orders', description: 'Delete orders from system', category: 'Orders' },
+  {
+    id: 'view_orders',
+    label: 'View Orders',
+    description: 'View order list and details',
+    category: 'Orders',
+  },
+  {
+    id: 'manage_orders',
+    label: 'Manage Orders',
+    description: 'Create, edit, and update orders',
+    category: 'Orders',
+  },
+  {
+    id: 'delete_orders',
+    label: 'Delete Orders',
+    description: 'Delete orders from system',
+    category: 'Orders',
+  },
 
   // Customers
-  { id: 'view_customers', label: 'View Customers', description: 'View customer list and profiles', category: 'Customers' },
-  { id: 'manage_customers', label: 'Manage Customers', description: 'Create, edit customer accounts', category: 'Customers' },
-  { id: 'delete_customers', label: 'Delete Customers', description: 'Delete customer accounts', category: 'Customers' },
+  {
+    id: 'view_customers',
+    label: 'View Customers',
+    description: 'View customer list and profiles',
+    category: 'Customers',
+  },
+  {
+    id: 'manage_customers',
+    label: 'Manage Customers',
+    description: 'Create, edit customer accounts',
+    category: 'Customers',
+  },
+  {
+    id: 'delete_customers',
+    label: 'Delete Customers',
+    description: 'Delete customer accounts',
+    category: 'Customers',
+  },
 
   // Products
-  { id: 'view_products', label: 'View Products', description: 'View product catalog', category: 'Products' },
-  { id: 'manage_products', label: 'Manage Products', description: 'Create, edit products and pricing', category: 'Products' },
-  { id: 'delete_products', label: 'Delete Products', description: 'Remove products from catalog', category: 'Products' },
+  {
+    id: 'view_products',
+    label: 'View Products',
+    description: 'View product catalog',
+    category: 'Products',
+  },
+  {
+    id: 'manage_products',
+    label: 'Manage Products',
+    description: 'Create, edit products and pricing',
+    category: 'Products',
+  },
+  {
+    id: 'delete_products',
+    label: 'Delete Products',
+    description: 'Remove products from catalog',
+    category: 'Products',
+  },
 
   // Staff
-  { id: 'view_staff', label: 'View Staff', description: 'View staff members list', category: 'Staff' },
-  { id: 'manage_staff', label: 'Manage Staff', description: 'Create, edit staff accounts', category: 'Staff' },
-  { id: 'delete_staff', label: 'Delete Staff', description: 'Remove staff members', category: 'Staff' },
+  {
+    id: 'view_staff',
+    label: 'View Staff',
+    description: 'View staff members list',
+    category: 'Staff',
+  },
+  {
+    id: 'manage_staff',
+    label: 'Manage Staff',
+    description: 'Create, edit staff accounts',
+    category: 'Staff',
+  },
+  {
+    id: 'delete_staff',
+    label: 'Delete Staff',
+    description: 'Remove staff members',
+    category: 'Staff',
+  },
 
   // Analytics & Reports
-  { id: 'view_analytics', label: 'View Analytics', description: 'Access business analytics', category: 'Reports' },
-  { id: 'view_reports', label: 'View Reports', description: 'Generate and view reports', category: 'Reports' },
-  { id: 'export_data', label: 'Export Data', description: 'Export system data', category: 'Reports' },
+  {
+    id: 'view_analytics',
+    label: 'View Analytics',
+    description: 'Access business analytics',
+    category: 'Reports',
+  },
+  {
+    id: 'view_reports',
+    label: 'View Reports',
+    description: 'Generate and view reports',
+    category: 'Reports',
+  },
+  {
+    id: 'export_data',
+    label: 'Export Data',
+    description: 'Export system data',
+    category: 'Reports',
+  },
 
   // Settings
-  { id: 'view_settings', label: 'View Settings', description: 'View system settings', category: 'Settings' },
-  { id: 'manage_settings', label: 'Manage Settings', description: 'Modify system configuration', category: 'Settings' },
+  {
+    id: 'view_settings',
+    label: 'View Settings',
+    description: 'View system settings',
+    category: 'Settings',
+  },
+  {
+    id: 'manage_settings',
+    label: 'Manage Settings',
+    description: 'Modify system configuration',
+    category: 'Settings',
+  },
 
   // Financial
-  { id: 'view_payments', label: 'View Payments', description: 'View payment information', category: 'Financial' },
-  { id: 'manage_payments', label: 'Manage Payments', description: 'Process refunds and payments', category: 'Financial' },
+  {
+    id: 'view_payments',
+    label: 'View Payments',
+    description: 'View payment information',
+    category: 'Financial',
+  },
+  {
+    id: 'manage_payments',
+    label: 'Manage Payments',
+    description: 'Process refunds and payments',
+    category: 'Financial',
+  },
 ]
 
 const ROLE_TEMPLATES: Record<string, string[]> = {
   ADMIN: [
-    'view_dashboard', 'manage_orders', 'delete_orders', 'manage_customers', 'delete_customers',
-    'manage_products', 'delete_products', 'manage_staff', 'delete_staff', 'view_analytics',
-    'view_reports', 'export_data', 'manage_settings', 'manage_payments'
+    'view_dashboard',
+    'manage_orders',
+    'delete_orders',
+    'manage_customers',
+    'delete_customers',
+    'manage_products',
+    'delete_products',
+    'manage_staff',
+    'delete_staff',
+    'view_analytics',
+    'view_reports',
+    'export_data',
+    'manage_settings',
+    'manage_payments',
   ],
   STAFF: [
-    'view_dashboard', 'view_orders', 'manage_orders', 'view_customers', 'manage_customers',
-    'view_products', 'view_reports'
-  ]
+    'view_dashboard',
+    'view_orders',
+    'manage_orders',
+    'view_customers',
+    'manage_customers',
+    'view_products',
+    'view_reports',
+  ],
 }
 
 export function AddStaffDialog() {
@@ -88,23 +204,23 @@ export function AddStaffDialog() {
     email: '',
     role: '',
     permissions: [] as string[],
-    sendInvitation: true
+    sendInvitation: true,
   })
 
   const handleRoleChange = (role: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       role,
-      permissions: ROLE_TEMPLATES[role] || []
+      permissions: ROLE_TEMPLATES[role] || [],
     }))
   }
 
   const handlePermissionChange = (permissionId: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       permissions: checked
         ? [...prev.permissions, permissionId]
-        : prev.permissions.filter(id => id !== permissionId)
+        : prev.permissions.filter((id) => id !== permissionId),
     }))
   }
 
@@ -114,7 +230,7 @@ export function AddStaffDialog() {
 
     try {
       // TODO: Implement staff creation API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Mock delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
 
       // Reset form and close dialog
       setFormData({
@@ -122,7 +238,7 @@ export function AddStaffDialog() {
         email: '',
         role: '',
         permissions: [],
-        sendInvitation: true
+        sendInvitation: true,
       })
       setOpen(false)
     } catch (error) {
@@ -132,13 +248,16 @@ export function AddStaffDialog() {
     }
   }
 
-  const groupedPermissions = AVAILABLE_PERMISSIONS.reduce((groups, permission) => {
-    if (!groups[permission.category]) {
-      groups[permission.category] = []
-    }
-    groups[permission.category].push(permission)
-    return groups
-  }, {} as Record<string, Permission[]>)
+  const groupedPermissions = AVAILABLE_PERMISSIONS.reduce(
+    (groups, permission) => {
+      if (!groups[permission.category]) {
+        groups[permission.category] = []
+      }
+      groups[permission.category].push(permission)
+      return groups
+    },
+    {} as Record<string, Permission[]>
+  )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -151,9 +270,7 @@ export function AddStaffDialog() {
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Staff Member</DialogTitle>
-          <DialogDescription>
-            Create a new staff account with custom permissions
-          </DialogDescription>
+          <DialogDescription>Create a new staff account with custom permissions</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -169,7 +286,7 @@ export function AddStaffDialog() {
                   id="name"
                   placeholder="Enter full name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
 
@@ -181,7 +298,7 @@ export function AddStaffDialog() {
                   placeholder="Enter email address"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                 />
               </div>
             </div>
@@ -252,7 +369,7 @@ export function AddStaffDialog() {
                 checked={formData.sendInvitation}
                 id="sendInvitation"
                 onCheckedChange={(checked) =>
-                  setFormData(prev => ({ ...prev, sendInvitation: checked as boolean }))
+                  setFormData((prev) => ({ ...prev, sendInvitation: checked as boolean }))
                 }
               />
               <label

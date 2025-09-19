@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductSizes } from '../product-sizes'
 import { Ruler, Info } from 'lucide-react'
@@ -24,11 +18,7 @@ interface ProductSizeStepProps {
   onValidationChange: (isValid: boolean) => void
 }
 
-export function ProductSizeStep({
-  formData,
-  onUpdate,
-  onValidationChange,
-}: ProductSizeStepProps) {
+export function ProductSizeStep({ formData, onUpdate, onValidationChange }: ProductSizeStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -63,7 +53,7 @@ export function ProductSizeStep({
     onUpdate({
       useSizeGroup: data.useGroup,
       sizeGroupId: data.sizeGroupId || '',
-      sizeIds: data.sizeIds || []
+      sizeIds: data.sizeIds || [],
     })
   }
 
@@ -78,9 +68,7 @@ export function ProductSizeStep({
             </div>
             <div>
               <CardTitle>Size Configuration</CardTitle>
-              <CardDescription>
-                Set up the size options customers can choose from
-              </CardDescription>
+              <CardDescription>Set up the size options customers can choose from</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -90,13 +78,11 @@ export function ProductSizeStep({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Available Sizes</CardTitle>
-          <CardDescription>
-            Choose how customers will select sizes for this product
-          </CardDescription>
+          <CardDescription>Choose how customers will select sizes for this product</CardDescription>
         </CardHeader>
         <CardContent>
           {Object.keys(errors).length > 0 && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert className="mb-4" variant="destructive">
               <Info className="h-4 w-4" />
               <AlertDescription>
                 <ul className="space-y-1">
@@ -127,10 +113,21 @@ export function ProductSizeStep({
             <div className="p-4 bg-purple-50 rounded-lg">
               <h4 className="font-medium text-purple-900 mb-2">Best Practices</h4>
               <ul className="text-sm text-purple-800 space-y-1">
-                <li>• <strong>Size Groups:</strong> Use predefined groups for standard product categories</li>
-                <li>• <strong>Individual Selection:</strong> Choose specific sizes for specialized products</li>
-                <li>• <strong>Popular Sizes:</strong> Include the most commonly requested sizes</li>
-                <li>• <strong>Production Capability:</strong> Only offer sizes you can reliably produce</li>
+                <li>
+                  • <strong>Size Groups:</strong> Use predefined groups for standard product
+                  categories
+                </li>
+                <li>
+                  • <strong>Individual Selection:</strong> Choose specific sizes for specialized
+                  products
+                </li>
+                <li>
+                  • <strong>Popular Sizes:</strong> Include the most commonly requested sizes
+                </li>
+                <li>
+                  • <strong>Production Capability:</strong> Only offer sizes you can reliably
+                  produce
+                </li>
               </ul>
             </div>
 
@@ -166,7 +163,8 @@ export function ProductSizeStep({
                     </div>
                   ) : (
                     <div>
-                      <span className="font-medium">Individual Sizes:</span> {formData.sizeIds.length} selected
+                      <span className="font-medium">Individual Sizes:</span>{' '}
+                      {formData.sizeIds.length} selected
                     </div>
                   )}
                 </div>

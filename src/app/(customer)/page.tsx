@@ -1,11 +1,27 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Package, Clock, Shield, Star, CheckCircle, Zap, Users, TrendingUp } from 'lucide-react'
+import {
+  ArrowRight,
+  Package,
+  Clock,
+  Shield,
+  Star,
+  CheckCircle,
+  Zap,
+  Users,
+  TrendingUp,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 const productCategories = [
@@ -14,43 +30,43 @@ const productCategories = [
     description: 'Premium quality cards that make lasting impressions',
     image: '/images/products/business-cards.jpg',
     href: '/products?category=business-cards',
-    popular: true
+    popular: true,
   },
   {
     title: 'Flyers & Brochures',
     description: 'Eye-catching marketing materials for your campaigns',
     image: '/images/products/flyers.jpg',
     href: '/products?category=flyers',
-    popular: false
+    popular: false,
   },
   {
     title: 'Banners & Signs',
     description: 'Large format printing for maximum visibility',
     image: '/images/products/banners.jpg',
     href: '/products?category=banners',
-    popular: false
+    popular: false,
   },
   {
     title: 'Stickers & Labels',
     description: 'Custom die-cut stickers for any purpose',
     image: '/images/products/stickers.jpg',
     href: '/products?category=stickers',
-    popular: true
+    popular: true,
   },
   {
     title: 'Apparel',
     description: 'Custom printed t-shirts and merchandise',
     image: '/images/products/apparel.jpg',
     href: '/products?category=apparel',
-    popular: false
+    popular: false,
   },
   {
     title: 'Postcards',
     description: 'Direct mail and promotional postcards',
     image: '/images/products/postcards.jpg',
     href: '/products?category=postcards',
-    popular: false
-  }
+    popular: false,
+  },
 ]
 
 const featuredProducts = [
@@ -58,26 +74,26 @@ const featuredProducts = [
     name: 'Premium Business Cards',
     price: 'Starting at $29.99',
     image: '/images/business-cards.jpg',
-    badge: 'Most Popular'
+    badge: 'Most Popular',
   },
   {
     name: 'Custom Flyers',
     price: 'Starting at $49.99',
     image: '/images/flyers.jpg',
-    badge: 'Fast Turnaround'
+    badge: 'Fast Turnaround',
   },
   {
     name: 'Vinyl Banners',
     price: 'Starting at $89.99',
     image: '/images/banners.jpg',
-    badge: 'Durable'
+    badge: 'Durable',
   },
   {
     name: 'Die-Cut Stickers',
     price: 'Starting at $24.99',
     image: '/images/stickers.jpg',
-    badge: 'Waterproof'
-  }
+    badge: 'Waterproof',
+  },
 ]
 
 const testimonials = [
@@ -85,17 +101,19 @@ const testimonials = [
     name: 'Sarah Johnson',
     role: 'Marketing Director',
     company: 'Tech Solutions Inc.',
-    content: 'GangRun Printing exceeded our expectations! The quality is outstanding and delivery was faster than promised.',
+    content:
+      'GangRun Printing exceeded our expectations! The quality is outstanding and delivery was faster than promised.',
     rating: 5,
-    avatar: 'SJ'
+    avatar: 'SJ',
   },
   {
     name: 'Michael Chen',
     role: 'Small Business Owner',
-    company: 'Chen\'s Restaurant',
-    content: 'Best printing service I\'ve used. The colors are vibrant and the customer service is exceptional.',
+    company: "Chen's Restaurant",
+    content:
+      "Best printing service I've used. The colors are vibrant and the customer service is exceptional.",
     rating: 5,
-    avatar: 'MC'
+    avatar: 'MC',
   },
   {
     name: 'Emily Rodriguez',
@@ -103,8 +121,8 @@ const testimonials = [
     company: 'Elite Events',
     content: 'Our event materials looked absolutely professional. Will definitely order again!',
     rating: 5,
-    avatar: 'ER'
-  }
+    avatar: 'ER',
+  },
 ]
 
 export default function Home() {
@@ -125,8 +143,8 @@ export default function Home() {
                 <span className="text-primary"> Made Simple</span>
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground">
-                High-quality printing services with fast turnaround times. 
-                From business cards to banners, we bring your ideas to life.
+                High-quality printing services with fast turnaround times. From business cards to
+                banners, we bring your ideas to life.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild className="group" size="lg">
@@ -155,7 +173,10 @@ export default function Home() {
               <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 p-4 sm:p-6 md:p-8">
                   {['Business Cards', 'Flyers', 'Banners', 'Stickers'].map((item, i) => (
-                    <div key={i} className="bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 transform hover:scale-105 transition-transform">
+                    <div
+                      key={i}
+                      className="bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 transform hover:scale-105 transition-transform"
+                    >
                       <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded mb-1 sm:mb-2" />
                       <p className="text-xs sm:text-sm font-medium text-center">{item}</p>
                     </div>
@@ -197,7 +218,8 @@ export default function Home() {
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4">Choose Your Product</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Select from our wide range of printing products. Each category offers multiple customization options.
+              Select from our wide range of printing products. Each category offers multiple
+              customization options.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -206,7 +228,10 @@ export default function Home() {
                 <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer overflow-hidden">
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
                     {category.popular && (
-                      <Badge className="absolute top-3 right-3 z-10 bg-primary/10 text-primary border-primary/20" variant="secondary">
+                      <Badge
+                        className="absolute top-3 right-3 z-10 bg-primary/10 text-primary border-primary/20"
+                        variant="secondary"
+                      >
                         Popular
                       </Badge>
                     )}
@@ -253,9 +278,7 @@ export default function Home() {
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
                   <Card className="overflow-hidden">
                     <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative">
-                      <Badge className="absolute top-4 right-4 z-10">
-                        {product.badge}
-                      </Badge>
+                      <Badge className="absolute top-4 right-4 z-10">{product.badge}</Badge>
                       <div className="flex items-center justify-center h-full">
                         <Package className="h-20 w-20 text-primary/30" />
                       </div>
@@ -371,7 +394,8 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Choose from our wide selection of products and upload your design. Our team is ready to bring your vision to life.
+            Choose from our wide selection of products and upload your design. Our team is ready to
+            bring your vision to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild className="group" size="lg">
@@ -387,6 +411,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      </main>
+    </main>
   )
 }

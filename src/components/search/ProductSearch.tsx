@@ -53,8 +53,10 @@ export function ProductSearch({ className }: { className?: string }) {
   useEffect(() => {
     const newFilters: SearchFilters = {}
     if (searchParams.get('category')) newFilters.category = searchParams.get('category')!
-    if (searchParams.get('minPrice')) newFilters.minPrice = parseFloat(searchParams.get('minPrice')!)
-    if (searchParams.get('maxPrice')) newFilters.maxPrice = parseFloat(searchParams.get('maxPrice')!)
+    if (searchParams.get('minPrice'))
+      newFilters.minPrice = parseFloat(searchParams.get('minPrice')!)
+    if (searchParams.get('maxPrice'))
+      newFilters.maxPrice = parseFloat(searchParams.get('maxPrice')!)
     if (searchParams.get('sortBy')) newFilters.sortBy = searchParams.get('sortBy')!
     if (searchParams.get('inStock')) newFilters.inStock = searchParams.get('inStock') === 'true'
     setFilters(newFilters)
@@ -71,15 +73,12 @@ export function ProductSearch({ className }: { className?: string }) {
       const response = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery })
+        body: JSON.stringify({ query: searchQuery }),
       })
 
       if (response.ok) {
         const data = await response.json()
-        setSuggestions([
-          ...data.products,
-          ...data.categories
-        ])
+        setSuggestions([...data.products, ...data.categories])
       }
     } catch (error) {
       console.error('Error fetching suggestions:', error)
@@ -137,9 +136,9 @@ export function ProductSearch({ className }: { className?: string }) {
 
   // Handle filter changes
   const updateFilter = (key: keyof SearchFilters, value: any) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
@@ -240,9 +239,7 @@ export function ProductSearch({ className }: { className?: string }) {
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Search Filters</SheetTitle>
-              <SheetDescription>
-                Refine your search results
-              </SheetDescription>
+              <SheetDescription>Refine your search results</SheetDescription>
             </SheetHeader>
             <div className="mt-6 space-y-6">
               <SearchFiltersContent
@@ -256,11 +253,7 @@ export function ProductSearch({ className }: { className?: string }) {
 
         {/* Search button */}
         <Button disabled={isSearching} type="submit">
-          {isSearching ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            'Search'
-          )}
+          {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Search'}
         </Button>
       </form>
 
@@ -294,12 +287,7 @@ export function ProductSearch({ className }: { className?: string }) {
           </div>
 
           {Object.keys(filters).length > 0 && (
-            <Button
-              className="ml-auto"
-              size="sm"
-              variant="ghost"
-              onClick={clearFilters}
-            >
+            <Button className="ml-auto" size="sm" variant="ghost" onClick={clearFilters}>
               Clear Filters
             </Button>
           )}
@@ -313,7 +301,7 @@ export function ProductSearch({ className }: { className?: string }) {
 function SearchFiltersContent({
   filters,
   updateFilter,
-  clearFilters
+  clearFilters,
 }: {
   filters: SearchFilters
   updateFilter: (key: keyof SearchFilters, value: any) => void
@@ -364,7 +352,9 @@ function SearchFiltersContent({
             placeholder="Min"
             type="number"
             value={filters.minPrice || ''}
-            onChange={(e) => updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+            onChange={(e) =>
+              updateFilter('minPrice', e.target.value ? parseFloat(e.target.value) : undefined)
+            }
           />
           <span>to</span>
           <Input
@@ -372,7 +362,9 @@ function SearchFiltersContent({
             placeholder="Max"
             type="number"
             value={filters.maxPrice || ''}
-            onChange={(e) => updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)}
+            onChange={(e) =>
+              updateFilter('maxPrice', e.target.value ? parseFloat(e.target.value) : undefined)
+            }
           />
         </div>
       </div>
@@ -389,11 +381,7 @@ function SearchFiltersContent({
 
       {/* Clear Filters */}
       {Object.keys(filters).length > 0 && (
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={clearFilters}
-        >
+        <Button className="w-full" variant="outline" onClick={clearFilters}>
           Clear All Filters
         </Button>
       )}

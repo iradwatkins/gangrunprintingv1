@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductOptions } from '../product-options'
 import { Settings, Info, Plus } from 'lucide-react'
@@ -89,7 +83,7 @@ export function ProductOptionsStep({
         </CardHeader>
         <CardContent>
           {Object.keys(errors).length > 0 && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert className="mb-4" variant="destructive">
               <Info className="h-4 w-4" />
               <AlertDescription>
                 <ul className="space-y-1">
@@ -101,10 +95,7 @@ export function ProductOptionsStep({
             </Alert>
           )}
 
-          <ProductOptions
-            options={formData.options}
-            onOptionsChange={handleOptionsChange}
-          />
+          <ProductOptions options={formData.options} onOptionsChange={handleOptionsChange} />
         </CardContent>
       </Card>
 
@@ -125,7 +116,9 @@ export function ProductOptionsStep({
                   Dropdown menus for choosing from predefined values
                 </p>
                 <div className="text-xs text-gray-500 space-y-1">
-                  <p><strong>Examples:</strong></p>
+                  <p>
+                    <strong>Examples:</strong>
+                  </p>
                   <p>• Finish: Gloss, Matte, Satin</p>
                   <p>• Binding: Saddle Stitch, Perfect Bound</p>
                   <p>• Coating: UV, Aqueous, None</p>
@@ -137,11 +130,11 @@ export function ProductOptionsStep({
                   <Plus className="h-4 w-4" />
                   Checkbox Options
                 </h4>
-                <p className="text-sm text-gray-600 mb-2">
-                  Yes/No choices for additional services
-                </p>
+                <p className="text-sm text-gray-600 mb-2">Yes/No choices for additional services</p>
                 <div className="text-xs text-gray-500 space-y-1">
-                  <p><strong>Examples:</strong></p>
+                  <p>
+                    <strong>Examples:</strong>
+                  </p>
                   <p>• Rush Production (+$50)</p>
                   <p>• Folding Service (+$0.05/piece)</p>
                   <p>• Design Review (+$25)</p>
@@ -156,7 +149,9 @@ export function ProductOptionsStep({
                   Free text fields for custom requirements
                 </p>
                 <div className="text-xs text-gray-500 space-y-1">
-                  <p><strong>Examples:</strong></p>
+                  <p>
+                    <strong>Examples:</strong>
+                  </p>
                   <p>• Special Instructions</p>
                   <p>• Custom Text/Names</p>
                   <p>• Color Specifications</p>
@@ -169,7 +164,9 @@ export function ProductOptionsStep({
                   Numeric fields for quantities or measurements
                 </p>
                 <div className="text-xs text-gray-500 space-y-1">
-                  <p><strong>Examples:</strong></p>
+                  <p>
+                    <strong>Examples:</strong>
+                  </p>
                   <p>• Number of Colors</p>
                   <p>• Custom Dimensions</p>
                   <p>• Additional Copies</p>
@@ -190,10 +187,19 @@ export function ProductOptionsStep({
             <div className="p-4 bg-orange-50 rounded-lg">
               <h4 className="font-medium text-orange-900 mb-2">Option Strategy</h4>
               <ul className="text-sm text-orange-800 space-y-1">
-                <li>• <strong>Keep it Simple:</strong> Don't overwhelm customers with too many options</li>
-                <li>• <strong>Clear Pricing:</strong> Always specify additional costs for paid options</li>
-                <li>• <strong>Logical Order:</strong> Arrange options in the order customers would consider them</li>
-                <li>• <strong>Required vs Optional:</strong> Mark essential choices as required</li>
+                <li>
+                  • <strong>Keep it Simple:</strong> Don't overwhelm customers with too many options
+                </li>
+                <li>
+                  • <strong>Clear Pricing:</strong> Always specify additional costs for paid options
+                </li>
+                <li>
+                  • <strong>Logical Order:</strong> Arrange options in the order customers would
+                  consider them
+                </li>
+                <li>
+                  • <strong>Required vs Optional:</strong> Mark essential choices as required
+                </li>
               </ul>
             </div>
 
@@ -252,7 +258,8 @@ export function ProductOptionsStep({
               <Settings className="h-12 w-12 mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No Add-on Options Yet</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Add-on options are optional but can help increase order value and provide customers with more choices.
+                Add-on options are optional but can help increase order value and provide customers
+                with more choices.
               </p>
               <p className="text-xs text-gray-500">
                 You can always add options later from the product management page.

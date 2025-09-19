@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
-import { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useRef } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface ImageUploadProps {
-  value: string;
-  onChange: (url: string) => void;
-  className?: string;
-  accept?: string;
-  maxSize?: number; // in MB
+  value: string
+  onChange: (url: string) => void
+  className?: string
+  accept?: string
+  maxSize?: number // in MB
 }
 
 export function ImageUpload({
@@ -20,79 +20,79 @@ export function ImageUpload({
   onChange,
   className,
   accept = 'image/*',
-  maxSize = 5
+  maxSize = 5,
 }: ImageUploadProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) return
 
-    const file = files[0];
+    const file = files[0]
 
     // Validate file size
     if (file.size > maxSize * 1024 * 1024) {
-      alert(`File size must be less than ${maxSize}MB`);
-      return;
+      alert(`File size must be less than ${maxSize}MB`)
+      return
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
-      return;
+      alert('Please select an image file')
+      return
     }
 
-    setIsUploading(true);
+    setIsUploading(true)
 
     try {
       // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      formData.append('file', file)
 
       // Upload to your API endpoint
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
-        onChange(data.url);
+        const data = await response.json()
+        onChange(data.url)
       } else {
-        throw new Error('Upload failed');
+        throw new Error('Upload failed')
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      alert('Failed to upload image');
+      console.error('Upload error:', error)
+      alert('Failed to upload image')
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+    e.preventDefault()
+    setIsDragging(true)
+  }
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    e.preventDefault()
+    setIsDragging(false)
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFileSelect(e.dataTransfer.files);
-  };
+    e.preventDefault()
+    setIsDragging(false)
+    handleFileSelect(e.dataTransfer.files)
+  }
 
   const handleRemove = () => {
-    onChange('');
-  };
+    onChange('')
+  }
 
   const handleUrlInput = (url: string) => {
-    onChange(url);
-  };
+    onChange(url)
+  }
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -161,9 +161,7 @@ export function ImageUpload({
             </Button>
           </div>
 
-          <p className="text-xs text-gray-500">
-            Maximum file size: {maxSize}MB
-          </p>
+          <p className="text-xs text-gray-500">Maximum file size: {maxSize}MB</p>
         </div>
       </div>
 
@@ -179,5 +177,5 @@ export function ImageUpload({
         />
       </div>
     </div>
-  );
+  )
 }

@@ -1,38 +1,34 @@
 // Temporarily simplified - i18n disabled
-import { Suspense } from 'react';
-import { TranslationManager } from '@/components/admin/translation-manager';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Loading } from '@/components/ui/loading';
+import { Suspense } from 'react'
+import { TranslationManager } from '@/components/admin/translation-manager'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { Loading } from '@/components/ui/loading'
 
 // Force dynamic rendering for admin pages (requires authentication)
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: Promise<{locale: string}>;
-  searchParams: Promise<{[key: string]: string | string[] | undefined}>;
-};
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
 export default async function TranslationsPage({ params, searchParams }: Props) {
-  const { locale } = await params;
-  const search = await searchParams;
+  const { locale } = await params
+  const search = await searchParams
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Translation Management
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Translation Management</h1>
           <p className="text-muted-foreground mt-2">
             Manage translations across multiple languages and tenants
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">
-            Current Language: {locale.toUpperCase()}
-          </Badge>
+          <Badge variant="secondary">Current Language: {locale.toUpperCase()}</Badge>
         </div>
       </div>
 
@@ -49,9 +45,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Keys
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Total Keys</CardTitle>
                 <div className="h-4 w-4 rounded-full bg-blue-500" />
               </CardHeader>
               <CardContent>
@@ -63,9 +57,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Translated
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Translated</CardTitle>
                 <div className="h-4 w-4 rounded-full bg-green-500" />
               </CardHeader>
               <CardContent>
@@ -77,9 +69,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Missing
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Missing</CardTitle>
                 <div className="h-4 w-4 rounded-full bg-red-500" />
               </CardHeader>
               <CardContent>
@@ -91,9 +81,7 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Auto-Generated
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Auto-Generated</CardTitle>
                 <div className="h-4 w-4 rounded-full bg-orange-500" />
               </CardHeader>
               <CardContent>
@@ -184,26 +172,26 @@ export default async function TranslationsPage({ params, searchParams }: Props) 
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
 
 // Component stubs - these will be implemented in separate files
 function TranslationStats({ type }: { type: 'total' | 'translated' | 'missing' | 'auto' }) {
-  return <div className="text-2xl font-bold">Loading...</div>;
+  return <div className="text-2xl font-bold">Loading...</div>
 }
 
 function TranslationRequestManager() {
-  return <div>Translation Request Manager Component</div>;
+  return <div>Translation Request Manager Component</div>
 }
 
 function AutoTranslationManager() {
-  return <div>Auto Translation Manager Component</div>;
+  return <div>Auto Translation Manager Component</div>
 }
 
 function TranslationImportExport() {
-  return <div>Translation Import/Export Component</div>;
+  return <div>Translation Import/Export Component</div>
 }
 
 function TranslationSettings() {
-  return <div>Translation Settings Component</div>;
+  return <div>Translation Settings Component</div>
 }

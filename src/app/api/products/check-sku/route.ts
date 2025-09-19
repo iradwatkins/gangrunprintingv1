@@ -7,10 +7,7 @@ export async function GET(request: NextRequest) {
     const sku = searchParams.get('sku')
 
     if (!sku) {
-      return NextResponse.json(
-        { error: 'SKU parameter is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'SKU parameter is required' }, { status: 400 })
     }
 
     // Check if SKU exists in the database
@@ -18,25 +15,22 @@ export async function GET(request: NextRequest) {
       where: {
         sku: {
           equals: sku,
-          mode: 'insensitive' // Case-insensitive search
-        }
+          mode: 'insensitive', // Case-insensitive search
+        },
       },
       select: {
         id: true,
         sku: true,
-        name: true
-      }
+        name: true,
+      },
     })
 
     return NextResponse.json({
       exists: !!existingProduct,
-      product: existingProduct || null
+      product: existingProduct || null,
     })
   } catch (error) {
     console.error('Error checking SKU:', error)
-    return NextResponse.json(
-      { error: 'Failed to check SKU' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to check SKU' }, { status: 500 })
   }
 }

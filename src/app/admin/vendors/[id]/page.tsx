@@ -30,7 +30,7 @@ import {
   CheckCircle,
   AlertCircle,
   Star,
-  Activity
+  Activity,
 } from 'lucide-react'
 
 // Force dynamic rendering
@@ -45,20 +45,20 @@ async function getVendor(id: string) {
         orderBy: { createdAt: 'desc' },
         take: 50,
         include: {
-          user: true
-        }
+          user: true,
+        },
       },
       vendorProducts: {
         include: {
-          product: true
-        }
+          product: true,
+        },
       },
       vendorPaperStocks: {
         include: {
-          paperStock: true
-        }
-      }
-    }
+          paperStock: true,
+        },
+      },
+    },
   })
 
   return vendor
@@ -79,42 +79,42 @@ async function getVendorStats(vendorId: string) {
       total: true,
       status: true,
       createdAt: true,
-      updatedAt: true
-    }
+      updatedAt: true,
+    },
   })
 
   // Calculate stats
   const totalOrders = allOrders.length
-  const completedOrders = allOrders.filter(o =>
+  const completedOrders = allOrders.filter((o) =>
     ['DELIVERED', 'SHIPPED'].includes(o.status)
   ).length
-  const activeOrders = allOrders.filter(o =>
-    !['DELIVERED', 'CANCELLED', 'REFUNDED'].includes(o.status)
+  const activeOrders = allOrders.filter(
+    (o) => !['DELIVERED', 'CANCELLED', 'REFUNDED'].includes(o.status)
   ).length
-  const cancelledOrders = allOrders.filter(o =>
-    o.status === 'CANCELLED'
-  ).length
+  const cancelledOrders = allOrders.filter((o) => o.status === 'CANCELLED').length
 
   // Revenue calculations
   const totalRevenue = allOrders
-    .filter(o => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
+    .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
     .reduce((sum, o) => sum + o.total, 0)
 
-  const recentOrders = allOrders.filter(o =>
-    new Date(o.createdAt) >= thirtyDaysAgo
-  )
+  const recentOrders = allOrders.filter((o) => new Date(o.createdAt) >= thirtyDaysAgo)
   const recentRevenue = recentOrders
-    .filter(o => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
+    .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
     .reduce((sum, o) => sum + o.total, 0)
 
   // Calculate average turnaround time (simplified - in production would track actual fulfillment times)
-  const deliveredOrders = allOrders.filter(o => o.status === 'DELIVERED')
-  const avgTurnaround = deliveredOrders.length > 0
-    ? deliveredOrders.reduce((sum, o) => {
-        const days = Math.floor((new Date(o.updatedAt).getTime() - new Date(o.createdAt).getTime()) / (1000 * 60 * 60 * 24))
-        return sum + days
-      }, 0) / deliveredOrders.length
-    : 0
+  const deliveredOrders = allOrders.filter((o) => o.status === 'DELIVERED')
+  const avgTurnaround =
+    deliveredOrders.length > 0
+      ? deliveredOrders.reduce((sum, o) => {
+          const days = Math.floor(
+            (new Date(o.updatedAt).getTime() - new Date(o.createdAt).getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
+          return sum + days
+        }, 0) / deliveredOrders.length
+      : 0
 
   // Calculate performance metrics
   const completionRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0
@@ -130,7 +130,7 @@ async function getVendorStats(vendorId: string) {
     const endDate = new Date(startDate)
     endDate.setMonth(endDate.getMonth() + 1)
 
-    const monthOrders = allOrders.filter(o => {
+    const monthOrders = allOrders.filter((o) => {
       const orderDate = new Date(o.createdAt)
       return orderDate >= startDate && orderDate < endDate
     })
@@ -138,9 +138,10 @@ async function getVendorStats(vendorId: string) {
     monthlyData.push({
       month: startDate.toLocaleDateString('en-US', { month: 'short' }),
       orders: monthOrders.length,
-      revenue: monthOrders
-        .filter(o => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
-        .reduce((sum, o) => sum + o.total, 0) / 100
+      revenue:
+        monthOrders
+          .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
+          .reduce((sum, o) => sum + o.total, 0) / 100,
     })
   }
 
@@ -155,7 +156,7 @@ async function getVendorStats(vendorId: string) {
     completionRate: completionRate.toFixed(1),
     cancellationRate: cancellationRate.toFixed(1),
     monthlyData,
-    recentOrdersCount: recentOrders.length
+    recentOrdersCount: recentOrders.length,
   }
 }
 
@@ -169,15 +170,12 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   SHIPPED: { label: 'Shipped', color: 'bg-teal-100 text-teal-800' },
   DELIVERED: { label: 'Delivered', color: 'bg-emerald-100 text-emerald-800' },
   CANCELLED: { label: 'Cancelled', color: 'bg-gray-100 text-gray-800' },
-  REFUNDED: { label: 'Refunded', color: 'bg-red-100 text-red-800' }
+  REFUNDED: { label: 'Refunded', color: 'bg-red-100 text-red-800' },
 }
 
 export default async function VendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [vendor, stats] = await Promise.all([
-    getVendor(id),
-    getVendorStats(id)
-  ])
+  const [vendor, stats] = await Promise.all([getVendor(id), getVendorStats(id)])
 
   if (!vendor) {
     notFound()
@@ -200,9 +198,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
               <Factory className="h-8 w-8" />
               {vendor.name}
             </h1>
-            <p className="text-muted-foreground">
-              Vendor Performance & Management
-            </p>
+            <p className="text-muted-foreground">Vendor Performance & Management</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -257,9 +253,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.avgTurnaround} days</div>
-            <p className="text-xs text-muted-foreground">
-              Target: {vendor.turnaroundDays} days
-            </p>
+            <p className="text-xs text-muted-foreground">Target: {vendor.turnaroundDays} days</p>
           </CardContent>
         </Card>
 
@@ -293,13 +287,14 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                 <div className="w-16 text-sm font-medium">{month.month}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <div className="h-6 bg-primary rounded" style={{
-                      width: `${(month.orders / Math.max(...stats.monthlyData.map(m => m.orders))) * 100}%`,
-                      minWidth: '2px'
-                    }} />
-                    <span className="text-sm text-muted-foreground">
-                      {month.orders} orders
-                    </span>
+                    <div
+                      className="h-6 bg-primary rounded"
+                      style={{
+                        width: `${(month.orders / Math.max(...stats.monthlyData.map((m) => m.orders))) * 100}%`,
+                        minWidth: '2px',
+                      }}
+                    />
+                    <span className="text-sm text-muted-foreground">{month.orders} orders</span>
                   </div>
                 </div>
                 <div className="text-sm font-medium">${month.revenue.toFixed(0)}</div>
@@ -352,16 +347,10 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                           <TableCell className="font-medium">
                             {order.referenceNumber || order.orderNumber}
                           </TableCell>
+                          <TableCell>{order.user?.name || 'Guest'}</TableCell>
+                          <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            {order.user?.name || 'Guest'}
-                          </TableCell>
-                          <TableCell>
-                            {new Date(order.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={status.color}>
-                              {status.label}
-                            </Badge>
+                            <Badge className={status.color}>{status.label}</Badge>
                           </TableCell>
                           <TableCell className="text-right">
                             ${(order.total / 100).toFixed(2)}
@@ -421,8 +410,12 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     <Globe className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Website</p>
-                      <a className="text-sm text-blue-600 hover:underline" href={vendor.website} rel="noopener noreferrer"
-                         target="_blank">
+                      <a
+                        className="text-sm text-blue-600 hover:underline"
+                        href={vendor.website}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
                         {vendor.website}
                       </a>
                     </div>
@@ -442,8 +435,10 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     <div>
                       <p className="text-sm font-medium">Address</p>
                       <p className="text-sm text-muted-foreground">
-                        {address.street}<br />
-                        {address.city}, {address.state} {address.zip}<br />
+                        {address.street}
+                        <br />
+                        {address.city}, {address.state} {address.zip}
+                        <br />
                         {address.country}
                       </p>
                     </div>
@@ -454,7 +449,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                   <div>
                     <p className="text-sm font-medium">Supported Carriers</p>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {vendor.supportedCarriers.map(carrier => (
+                      {vendor.supportedCarriers.map((carrier) => (
                         <Badge key={carrier} className="text-xs" variant="secondary">
                           {carrier}
                         </Badge>
@@ -524,9 +519,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                   <TableBody>
                     {vendor.vendorProducts.map((vp) => (
                       <TableRow key={vp.id}>
-                        <TableCell className="font-medium">
-                          {vp.product.name}
-                        </TableCell>
+                        <TableCell className="font-medium">{vp.product.name}</TableCell>
                         <TableCell>{vp.product.sku}</TableCell>
                         <TableCell>{vp.vendorSku || '-'}</TableCell>
                         <TableCell>
@@ -576,9 +569,7 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
               {vendor.shippingCostFormula && (
                 <div>
                   <p className="text-sm font-medium mb-1">Shipping Cost Formula</p>
-                  <p className="text-sm text-muted-foreground">
-                    {vendor.shippingCostFormula}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{vendor.shippingCostFormula}</p>
                 </div>
               )}
 

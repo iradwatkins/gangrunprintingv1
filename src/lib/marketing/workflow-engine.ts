@@ -4,7 +4,7 @@ import {
   type WorkflowExecution,
   ExecutionStatus,
   CampaignType,
-  SendStatus
+  SendStatus,
 } from '@prisma/client'
 import { CampaignService } from './campaign-service'
 
@@ -198,7 +198,7 @@ export class WorkflowEngine {
     })
 
     // Start execution asynchronously
-    this.executeWorkflow(execution.id).catch(error => {
+    this.executeWorkflow(execution.id).catch((error) => {
       console.error('Workflow execution error:', error)
     })
 
@@ -228,7 +228,7 @@ export class WorkflowEngine {
 
     try {
       let currentStepIndex = execution.currentStep
-      const stepResults = execution.stepResults as any[] || []
+      const stepResults = (execution.stepResults as any[]) || []
 
       while (currentStepIndex < steps.length) {
         const step = steps[currentStepIndex]
@@ -251,7 +251,7 @@ export class WorkflowEngine {
 
         // Handle step result
         if (result.nextStep) {
-          currentStepIndex = steps.findIndex(s => s.id === result.nextStep)
+          currentStepIndex = steps.findIndex((s) => s.id === result.nextStep)
           if (currentStepIndex === -1) break
         } else if (result.wait) {
           // Schedule continuation
@@ -264,7 +264,10 @@ export class WorkflowEngine {
 
       await this.completeExecution(executionId, 'Workflow completed successfully')
     } catch (error) {
-      await this.failExecution(executionId, error instanceof Error ? error.message : 'Unknown error')
+      await this.failExecution(
+        executionId,
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     }
   }
 
@@ -442,19 +445,21 @@ export class WorkflowEngine {
           'Content-Type': 'application/json',
           ...settings.headers,
         },
-        body: settings.payload ? JSON.stringify({
-          ...settings.payload,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-          },
-          execution: {
-            id: execution.id,
-            workflowId: execution.workflowId,
-            triggerData: execution.triggerData,
-          },
-        }) : undefined,
+        body: settings.payload
+          ? JSON.stringify({
+              ...settings.payload,
+              user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+              },
+              execution: {
+                id: execution.id,
+                workflowId: execution.workflowId,
+                triggerData: execution.triggerData,
+              },
+            })
+          : undefined,
       })
 
       const responseData = await response.json()
@@ -488,7 +493,7 @@ export class WorkflowEngine {
     if (settings.action === 'add') {
       newTags = [...new Set([...currentTags, ...settings.tags])]
     } else {
-      newTags = currentTags.filter(tag => !settings.tags.includes(tag))
+      newTags = currentTags.filter((tag) => !settings.tags.includes(tag))
     }
 
     await prisma.user.update({
@@ -724,7 +729,7 @@ export class WorkflowEngine {
       },
       {
         name: 'Win-Back Campaign',
-        description: 'Re-engage customers who haven\'t ordered recently',
+        description: "Re-engage customers who haven't ordered recently",
         trigger: {
           type: 'condition' as const,
           condition: {
@@ -742,7 +747,7 @@ export class WorkflowEngine {
               subject: 'We miss you! Come back for special savings',
               content: {
                 type: 'html',
-                html: '<h1>We Miss You!</h1><p>Here\'s a special offer to welcome you back...</p>',
+                html: "<h1>We Miss You!</h1><p>Here's a special offer to welcome you back...</p>",
               },
             },
           },

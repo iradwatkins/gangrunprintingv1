@@ -150,7 +150,7 @@ const TRIGGER_TYPES = [
 
 // Custom Node Components
 function WorkflowStepNode({ data }: { data: any }) {
-  const stepType = STEP_TYPES.find(t => t.type === data.type)
+  const stepType = STEP_TYPES.find((t) => t.type === data.type)
   const Icon = stepType?.icon || Mail
 
   return (
@@ -250,7 +250,7 @@ function StepEditor({
   step: WorkflowStep
   onUpdate: (updates: Partial<WorkflowStep>) => void
 }) {
-  const stepType = STEP_TYPES.find(t => t.type === step.type)
+  const stepType = STEP_TYPES.find((t) => t.type === step.type)
 
   const updateSettings = (updates: any) => {
     onUpdate({ settings: { ...step.settings, ...updates } })
@@ -275,9 +275,11 @@ function StepEditor({
               placeholder="Email content (HTML)"
               rows={6}
               value={step.settings?.content?.html || ''}
-              onChange={(e) => updateSettings({
-                content: { html: e.target.value, type: 'html' }
-              })}
+              onChange={(e) =>
+                updateSettings({
+                  content: { html: e.target.value, type: 'html' },
+                })
+              }
             />
           </div>
 
@@ -357,9 +359,11 @@ function StepEditor({
             <Label>Condition Field</Label>
             <Select
               value={step.settings?.condition?.field || ''}
-              onValueChange={(value) => updateSettings({
-                condition: { ...step.settings?.condition, field: value }
-              })}
+              onValueChange={(value) =>
+                updateSettings({
+                  condition: { ...step.settings?.condition, field: value },
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select field" />
@@ -377,9 +381,11 @@ function StepEditor({
             <Label>Operator</Label>
             <Select
               value={step.settings?.condition?.operator || ''}
-              onValueChange={(value) => updateSettings({
-                condition: { ...step.settings?.condition, operator: value }
-              })}
+              onValueChange={(value) =>
+                updateSettings({
+                  condition: { ...step.settings?.condition, operator: value },
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select operator" />
@@ -399,9 +405,11 @@ function StepEditor({
             <Input
               placeholder="Condition value"
               value={step.settings?.condition?.value || ''}
-              onChange={(e) => updateSettings({
-                condition: { ...step.settings?.condition, value: e.target.value }
-              })}
+              onChange={(e) =>
+                updateSettings({
+                  condition: { ...step.settings?.condition, value: e.target.value },
+                })
+              }
             />
           </div>
         </div>
@@ -480,9 +488,14 @@ function StepEditor({
             <Input
               placeholder="tag1, tag2, tag3"
               value={(step.settings?.tags || []).join(', ')}
-              onChange={(e) => updateSettings({
-                tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
-              })}
+              onChange={(e) =>
+                updateSettings({
+                  tags: e.target.value
+                    .split(',')
+                    .map((t) => t.trim())
+                    .filter(Boolean),
+                })
+              }
             />
           </div>
         </div>
@@ -533,7 +546,7 @@ function TriggerEditor({
   trigger: WorkflowTrigger
   onUpdate: (updates: Partial<WorkflowTrigger>) => void
 }) {
-  const triggerType = TRIGGER_TYPES.find(t => t.type === trigger.type)
+  const triggerType = TRIGGER_TYPES.find((t) => t.type === trigger.type)
 
   switch (trigger.type) {
     case 'event':
@@ -567,9 +580,11 @@ function TriggerEditor({
             <Label>Schedule Type</Label>
             <Select
               value={trigger.schedule?.type || 'immediate'}
-              onValueChange={(value) => onUpdate({
-                schedule: { ...trigger.schedule, type: value as any }
-              })}
+              onValueChange={(value) =>
+                onUpdate({
+                  schedule: { ...trigger.schedule, type: value as any },
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -588,9 +603,11 @@ function TriggerEditor({
               <Input
                 type="number"
                 value={trigger.schedule?.delay || 0}
-                onChange={(e) => onUpdate({
-                  schedule: { ...trigger.schedule, delay: parseInt(e.target.value) }
-                })}
+                onChange={(e) =>
+                  onUpdate({
+                    schedule: { ...trigger.schedule, delay: parseInt(e.target.value) },
+                  })
+                }
               />
             </div>
           )}
@@ -601,9 +618,11 @@ function TriggerEditor({
               <Input
                 placeholder="0 9 * * *"
                 value={trigger.schedule?.recurringPattern || ''}
-                onChange={(e) => onUpdate({
-                  schedule: { ...trigger.schedule, recurringPattern: e.target.value }
-                })}
+                onChange={(e) =>
+                  onUpdate({
+                    schedule: { ...trigger.schedule, recurringPattern: e.target.value },
+                  })
+                }
               />
             </div>
           )}
@@ -617,9 +636,11 @@ function TriggerEditor({
             <Label>Condition Field</Label>
             <Select
               value={trigger.condition?.field || ''}
-              onValueChange={(value) => onUpdate({
-                condition: { ...trigger.condition, field: value }
-              })}
+              onValueChange={(value) =>
+                onUpdate({
+                  condition: { ...trigger.condition, field: value },
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select field" />
@@ -636,9 +657,11 @@ function TriggerEditor({
             <Label>Operator</Label>
             <Select
               value={trigger.condition?.operator || ''}
-              onValueChange={(value) => onUpdate({
-                condition: { ...trigger.condition, operator: value }
-              })}
+              onValueChange={(value) =>
+                onUpdate({
+                  condition: { ...trigger.condition, operator: value },
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select operator" />
@@ -656,9 +679,11 @@ function TriggerEditor({
             <Input
               placeholder="Condition value"
               value={trigger.condition?.value || ''}
-              onChange={(e) => onUpdate({
-                condition: { ...trigger.condition, value: e.target.value }
-              })}
+              onChange={(e) =>
+                onUpdate({
+                  condition: { ...trigger.condition, value: e.target.value },
+                })
+              }
             />
           </div>
         </div>
@@ -726,7 +751,7 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
   )
 
   const addStep = (stepType: string) => {
-    const stepTypeConfig = STEP_TYPES.find(t => t.type === stepType)
+    const stepTypeConfig = STEP_TYPES.find((t) => t.type === stepType)
     if (!stepTypeConfig) return
 
     const newStep: WorkflowStep = {
@@ -756,29 +781,32 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
       },
     }
 
-    setNodes(nds => [...nds, newNode])
+    setNodes((nds) => [...nds, newNode])
 
     // Add edge
-    const sourceId = currentWorkflow.steps.length === 0 ? 'trigger' : currentWorkflow.steps[currentWorkflow.steps.length - 1].id
+    const sourceId =
+      currentWorkflow.steps.length === 0
+        ? 'trigger'
+        : currentWorkflow.steps[currentWorkflow.steps.length - 1].id
     const newEdge = {
       id: `${sourceId}-${newStep.id}`,
       source: sourceId,
       target: newStep.id,
     }
 
-    setEdges(eds => [...eds, newEdge])
+    setEdges((eds) => [...eds, newEdge])
     setShowStepTypes(false)
   }
 
   function deleteStep(stepId: string) {
     const newWorkflow = {
       ...currentWorkflow,
-      steps: currentWorkflow.steps.filter(s => s.id !== stepId),
+      steps: currentWorkflow.steps.filter((s) => s.id !== stepId),
     }
 
     setCurrentWorkflow(newWorkflow)
-    setNodes(nds => nds.filter(n => n.id !== stepId))
-    setEdges(eds => eds.filter(e => e.source !== stepId && e.target !== stepId))
+    setNodes((nds) => nds.filter((n) => n.id !== stepId))
+    setEdges((eds) => eds.filter((e) => e.source !== stepId && e.target !== stepId))
 
     if (selectedElement === stepId) {
       setSelectedElement(null)
@@ -788,17 +816,15 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
   const updateStep = (stepId: string, updates: Partial<WorkflowStep>) => {
     const newWorkflow = {
       ...currentWorkflow,
-      steps: currentWorkflow.steps.map(s =>
-        s.id === stepId ? { ...s, ...updates } : s
-      ),
+      steps: currentWorkflow.steps.map((s) => (s.id === stepId ? { ...s, ...updates } : s)),
     }
 
     setCurrentWorkflow(newWorkflow)
 
     // Update node data
-    setNodes(nds => nds.map(n =>
-      n.id === stepId ? { ...n, data: { ...n.data, ...updates } } : n
-    ))
+    setNodes((nds) =>
+      nds.map((n) => (n.id === stepId ? { ...n, data: { ...n.data, ...updates } } : n))
+    )
   }
 
   const updateTrigger = (updates: Partial<WorkflowTrigger>) => {
@@ -810,15 +836,19 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
     setCurrentWorkflow(newWorkflow)
 
     // Update trigger node
-    setNodes(nds => nds.map(n =>
-      n.id === 'trigger' ? {
-        ...n,
-        data: { ...n.data, triggerType: updates.type || currentWorkflow.trigger.type }
-      } : n
-    ))
+    setNodes((nds) =>
+      nds.map((n) =>
+        n.id === 'trigger'
+          ? {
+              ...n,
+              data: { ...n.data, triggerType: updates.type || currentWorkflow.trigger.type },
+            }
+          : n
+      )
+    )
   }
 
-  const selectedStep = currentWorkflow.steps.find(s => s.id === selectedElement)
+  const selectedStep = currentWorkflow.steps.find((s) => s.id === selectedElement)
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -832,7 +862,9 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
                 <Label>Name</Label>
                 <Input
                   value={currentWorkflow.name}
-                  onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setCurrentWorkflow((prev) => ({ ...prev, name: e.target.value }))
+                  }
                 />
               </div>
 
@@ -841,7 +873,9 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
                 <Textarea
                   rows={3}
                   value={currentWorkflow.description || ''}
-                  onChange={(e) => setCurrentWorkflow(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setCurrentWorkflow((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -931,17 +965,12 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
                 </Select>
               </div>
 
-              <TriggerEditor
-                trigger={currentWorkflow.trigger}
-                onUpdate={updateTrigger}
-              />
+              <TriggerEditor trigger={currentWorkflow.trigger} onUpdate={updateTrigger} />
             </div>
           </>
         ) : selectedStep ? (
           <>
-            <h3 className="font-semibold mb-4">
-              Edit {selectedStep.name}
-            </h3>
+            <h3 className="font-semibold mb-4">Edit {selectedStep.name}</h3>
             <div className="space-y-4">
               <div>
                 <Label>Step Name</Label>

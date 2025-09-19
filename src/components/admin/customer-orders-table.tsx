@@ -33,7 +33,7 @@ import {
   XCircle,
   AlertCircle,
   DollarSign,
-  Printer
+  Printer,
 } from 'lucide-react'
 
 interface OrderItem {
@@ -62,43 +62,43 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    icon: Clock
+    icon: Clock,
   },
   PAID: {
     label: 'Paid',
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: DollarSign
+    icon: DollarSign,
   },
   PROCESSING: {
     label: 'Processing',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: Package
+    icon: Package,
   },
   PRINTING: {
     label: 'Printing',
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Printer
+    icon: Printer,
   },
   SHIPPED: {
     label: 'Shipped',
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
-    icon: Truck
+    icon: Truck,
   },
   DELIVERED: {
     label: 'Delivered',
     color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
   CANCELLED: {
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
-    icon: XCircle
+    icon: XCircle,
   },
   REFUNDED: {
     label: 'Refunded',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: AlertCircle
-  }
+    icon: AlertCircle,
+  },
 }
 
 export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
@@ -107,9 +107,10 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // Filter orders based on search
-  const filteredOrders = orders.filter(order =>
-    order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.status.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOrders = orders.filter(
+    (order) =>
+      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.status.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // Sort orders
@@ -135,14 +136,14 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount / 100)
   }
 
@@ -263,9 +264,7 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
                             Download Invoice
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            Edit Order
-                          </DropdownMenuItem>
+                          <DropdownMenuItem>Edit Order</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -283,9 +282,7 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
           <p>
             Showing {sortedOrders.length} of {orders.length} orders
           </p>
-          <p>
-            Total: {formatCurrency(sortedOrders.reduce((sum, order) => sum + order.total, 0))}
-          </p>
+          <p>Total: {formatCurrency(sortedOrders.reduce((sum, order) => sum + order.total, 0))}</p>
         </div>
       )}
     </div>

@@ -8,7 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 // import { ProductImageUpload } from '@/components/admin/product-image-upload' // Temporarily disabled
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -34,7 +40,6 @@ export default function NewProductPage() {
   const [addOns, setAddOns] = useState([])
   const [apiLoading, setApiLoading] = useState(true)
   const [errors, setErrors] = useState({})
-
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -77,19 +82,15 @@ export default function NewProductPage() {
   const fetchAllData = async () => {
     try {
       setApiLoading(true)
-      const [
-        categoriesRes,
-        paperStocksRes,
-        quantitiesRes,
-        sizesRes,
-        addOnsRes
-      ] = await Promise.all([
-        fetch('/api/product-categories'),
-        fetch('/api/paper-stocks'),
-        fetch('/api/quantities'),
-        fetch('/api/sizes'),
-        fetch('/api/add-ons')
-      ])
+      const [categoriesRes, paperStocksRes, quantitiesRes, sizesRes, addOnsRes] = await Promise.all(
+        [
+          fetch('/api/product-categories'),
+          fetch('/api/paper-stocks'),
+          fetch('/api/quantities'),
+          fetch('/api/sizes'),
+          fetch('/api/add-ons'),
+        ]
+      )
 
       const newErrors = {}
 
@@ -146,7 +147,7 @@ export default function NewProductPage() {
         paperStocks: 'Network error',
         quantityGroups: 'Network error',
         sizeGroups: 'Network error',
-        addOns: 'Network error'
+        addOns: 'Network error',
       })
     } finally {
       setApiLoading(false)
@@ -160,20 +161,20 @@ export default function NewProductPage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
-      setFormData(prev => ({ ...prev, sku }))
+      setFormData((prev) => ({ ...prev, sku }))
     }
   }, [formData.name])
 
   // Set default selections when data loads
   useEffect(() => {
     if (quantityGroups.length > 0 && !formData.selectedQuantityGroup) {
-      setFormData(prev => ({ ...prev, selectedQuantityGroup: quantityGroups[0].id }))
+      setFormData((prev) => ({ ...prev, selectedQuantityGroup: quantityGroups[0].id }))
     }
   }, [quantityGroups, formData.selectedQuantityGroup])
 
   useEffect(() => {
     if (sizeGroups.length > 0 && !formData.selectedSizeGroup) {
-      setFormData(prev => ({ ...prev, selectedSizeGroup: sizeGroups[0].id }))
+      setFormData((prev) => ({ ...prev, selectedSizeGroup: sizeGroups[0].id }))
     }
   }, [sizeGroups, formData.selectedSizeGroup])
 
@@ -184,17 +185,21 @@ export default function NewProductPage() {
         ...formData,
         selectedPaperStocks: newSelectedStocks,
         // Auto-set as default if it's the first paper stock selected
-        defaultPaperStock: formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock
+        defaultPaperStock:
+          formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock,
       })
     } else {
-      const newSelectedStocks = formData.selectedPaperStocks.filter(id => id !== stockId)
+      const newSelectedStocks = formData.selectedPaperStocks.filter((id) => id !== stockId)
       setFormData({
         ...formData,
         selectedPaperStocks: newSelectedStocks,
         // Clear default if this was the default paper stock
-        defaultPaperStock: formData.defaultPaperStock === stockId ?
-          (newSelectedStocks.length > 0 ? newSelectedStocks[0] : '') :
-          formData.defaultPaperStock
+        defaultPaperStock:
+          formData.defaultPaperStock === stockId
+            ? newSelectedStocks.length > 0
+              ? newSelectedStocks[0]
+              : ''
+            : formData.defaultPaperStock,
       })
     }
   }
@@ -212,8 +217,8 @@ export default function NewProductPage() {
           defaultPaperStock: formData.defaultPaperStock,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
-          addOns: formData.selectedAddOns
-        })
+          addOns: formData.selectedAddOns,
+        }),
       })
 
       if (response.ok) {
@@ -271,7 +276,7 @@ export default function NewProductPage() {
       sizeGroupId: formData.selectedSizeGroup,
       basePrice: formData.basePrice || 0,
       setupFee: formData.setupFee || 0,
-      productionTime: formData.productionTime || 3
+      productionTime: formData.productionTime || 3,
     }
 
     console.log('Sending simplified data:', simplifiedData)
@@ -281,7 +286,7 @@ export default function NewProductPage() {
       const response = await fetch('/api/products/simple', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(simplifiedData)
+        body: JSON.stringify(simplifiedData),
       })
 
       const responseText = await response.text()
@@ -397,7 +402,12 @@ export default function NewProductPage() {
   }
 
   // Show error state if critical data failed to load
-  const criticalErrors = [errors.categories, errors.paperStocks, errors.quantityGroups, errors.sizeGroups].filter(Boolean)
+  const criticalErrors = [
+    errors.categories,
+    errors.paperStocks,
+    errors.quantityGroups,
+    errors.sizeGroups,
+  ].filter(Boolean)
   if (criticalErrors.length > 0) {
     return (
       <div className="container mx-auto py-6 space-y-6">
@@ -416,7 +426,8 @@ export default function NewProductPage() {
           <AlertTitle>Failed to Load Required Data</AlertTitle>
           <AlertDescription className="mt-2">
             <p className="mb-4">
-              Some required data could not be loaded. This prevents the product creation form from working properly.
+              Some required data could not be loaded. This prevents the product creation form from
+              working properly.
             </p>
             <div className="space-y-2 mb-4">
               {errors.categories && (
@@ -457,7 +468,10 @@ export default function NewProductPage() {
         </Alert>
 
         {/* Show partial data that did load */}
-        {(categories.length > 0 || paperStocks.length > 0 || quantityGroups.length > 0 || sizeGroups.length > 0) && (
+        {(categories.length > 0 ||
+          paperStocks.length > 0 ||
+          quantityGroups.length > 0 ||
+          sizeGroups.length > 0) && (
           <Alert>
             <AlertTitle>Partial Data Loaded</AlertTitle>
             <AlertDescription>
@@ -465,7 +479,9 @@ export default function NewProductPage() {
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {categories.length > 0 && <div>✓ Categories: {categories.length} items</div>}
                 {paperStocks.length > 0 && <div>✓ Paper Stocks: {paperStocks.length} items</div>}
-                {quantityGroups.length > 0 && <div>✓ Quantity Groups: {quantityGroups.length} items</div>}
+                {quantityGroups.length > 0 && (
+                  <div>✓ Quantity Groups: {quantityGroups.length} items</div>
+                )}
                 {sizeGroups.length > 0 && <div>✓ Size Groups: {sizeGroups.length} items</div>}
                 {addOns.length > 0 && <div>✓ Add-ons: {addOns.length} items</div>}
               </div>
@@ -487,12 +503,20 @@ export default function NewProductPage() {
           <h1 className="text-3xl font-bold">Create Product</h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={testPrice} disabled={testing}>
-            {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calculator className="h-4 w-4" />}
+          <Button disabled={testing} variant="outline" onClick={testPrice}>
+            {testing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Calculator className="h-4 w-4" />
+            )}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button onClick={handleSubmit} disabled={loading || uploadingImages}>
-            {(loading || uploadingImages) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          <Button disabled={loading || uploadingImages} onClick={handleSubmit}>
+            {loading || uploadingImages ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
             <span className="ml-2">
               {uploadingImages ? uploadProgress : loading ? 'Saving...' : 'Save Product'}
             </span>
@@ -512,29 +536,29 @@ export default function NewProductPage() {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div>
               <Label htmlFor="sku">SKU</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                readOnly
-                className="bg-muted"
-              />
+              <Input readOnly className="bg-muted" id="sku" value={formData.sku} />
             </div>
           </div>
 
           <div>
             <Label htmlFor="category">Category *</Label>
-            <Select value={formData.categoryId} onValueChange={(value) => setFormData({...formData, categoryId: value})}>
+            <Select
+              value={formData.categoryId}
+              onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -544,9 +568,9 @@ export default function NewProductPage() {
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
               rows={3}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
 
@@ -554,8 +578,8 @@ export default function NewProductPage() {
             <Label>Product Images</Label>
             <div className="border-2 border-dashed rounded-lg p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Image upload temporarily simplified while we fix core functionality.
-                Products can be created without images and images can be added later.
+                Image upload temporarily simplified while we fix core functionality. Products can be
+                created without images and images can be added later.
               </p>
             </div>
           </div>
@@ -564,14 +588,14 @@ export default function NewProductPage() {
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({...formData, isActive: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
               />
               <Label>Active</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isFeatured}
-                onCheckedChange={(checked) => setFormData({...formData, isFeatured: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
               />
               <Label>Featured</Label>
             </div>
@@ -587,19 +611,22 @@ export default function NewProductPage() {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a quantity set for this product. Customers will see the quantities from this set, with the default quantity pre-selected.
+              Select a quantity set for this product. Customers will see the quantities from this
+              set, with the default quantity pre-selected.
             </p>
             <div>
               <Label htmlFor="quantity-group">Quantity Set</Label>
               <Select
                 value={formData.selectedQuantityGroup}
-                onValueChange={(value) => setFormData({...formData, selectedQuantityGroup: value})}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedQuantityGroup: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select quantity set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {quantityGroups.map(group => (
+                  {quantityGroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{group.name}</span>
@@ -617,7 +644,9 @@ export default function NewProductPage() {
             {formData.selectedQuantityGroup && (
               <div className="border rounded-lg p-3 bg-muted/50">
                 {(() => {
-                  const selectedGroup = quantityGroups.find(g => g.id === formData.selectedQuantityGroup)
+                  const selectedGroup = quantityGroups.find(
+                    (g) => g.id === formData.selectedQuantityGroup
+                  )
                   if (!selectedGroup) return null
 
                   return (
@@ -654,39 +683,43 @@ export default function NewProductPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Select available paper stocks for this product. One must be set as default.
-            Customers will see these options in a dropdown on the frontend, with the default pre-selected.
+            Select available paper stocks for this product. One must be set as default. Customers
+            will see these options in a dropdown on the frontend, with the default pre-selected.
           </p>
           <div className="grid grid-cols-1 gap-3">
-            {paperStocks.map(stock => (
+            {paperStocks.map((stock) => (
               <div key={stock.id} className="border rounded-lg p-3">
                 <div className="flex items-start space-x-3">
                   <Checkbox
-                    id={`stock-${stock.id}`}
                     checked={formData.selectedPaperStocks.includes(stock.id)}
-                    onCheckedChange={(checked) => handlePaperStockToggle(stock.id, checked as boolean)}
+                    id={`stock-${stock.id}`}
+                    onCheckedChange={(checked) =>
+                      handlePaperStockToggle(stock.id, checked as boolean)
+                    }
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor={`stock-${stock.id}`} className="font-medium cursor-pointer">
+                      <Label className="font-medium cursor-pointer" htmlFor={`stock-${stock.id}`}>
                         {stock.name} - {stock.weight}pt
                       </Label>
                       {formData.defaultPaperStock === stock.id && (
-                        <Badge variant="secondary" className="text-xs">DEFAULT</Badge>
+                        <Badge className="text-xs" variant="secondary">
+                          DEFAULT
+                        </Badge>
                       )}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      ${stock.pricePerSqInch}/sq in
-                    </div>
+                    <div className="text-sm text-gray-500">${stock.pricePerSqInch}/sq in</div>
                     {formData.selectedPaperStocks.includes(stock.id) && (
                       <div className="mt-2">
                         <label className="flex items-center space-x-2 text-sm cursor-pointer">
                           <input
-                            type="radio"
-                            name="defaultPaperStock"
                             checked={formData.defaultPaperStock === stock.id}
-                            onChange={() => setFormData({ ...formData, defaultPaperStock: stock.id })}
                             className="w-4 h-4"
+                            name="defaultPaperStock"
+                            type="radio"
+                            onChange={() =>
+                              setFormData({ ...formData, defaultPaperStock: stock.id })
+                            }
                           />
                           <span>Set as default paper stock</span>
                         </label>
@@ -708,19 +741,20 @@ export default function NewProductPage() {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a size set for this product. Customers will see the sizes from this set, with the default size pre-selected.
+              Select a size set for this product. Customers will see the sizes from this set, with
+              the default size pre-selected.
             </p>
             <div>
               <Label htmlFor="size-group">Size Set</Label>
               <Select
                 value={formData.selectedSizeGroup}
-                onValueChange={(value) => setFormData({...formData, selectedSizeGroup: value})}
+                onValueChange={(value) => setFormData({ ...formData, selectedSizeGroup: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select size set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {sizeGroups.map(group => (
+                  {sizeGroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{group.name}</span>
@@ -738,7 +772,7 @@ export default function NewProductPage() {
             {formData.selectedSizeGroup && (
               <div className="border rounded-lg p-3 bg-muted/50">
                 {(() => {
-                  const selectedGroup = sizeGroups.find(g => g.id === formData.selectedSizeGroup)
+                  const selectedGroup = sizeGroups.find((g) => g.id === formData.selectedSizeGroup)
                   if (!selectedGroup) return null
 
                   return (
@@ -761,7 +795,9 @@ export default function NewProductPage() {
                       </div>
                       {selectedGroup.hasCustomOption && (
                         <p className="text-xs text-muted-foreground mt-2">
-                          Custom dimensions: {selectedGroup.customMinWidth}"×{selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×{selectedGroup.customMaxHeight}"
+                          Custom dimensions: {selectedGroup.customMinWidth}"×
+                          {selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×
+                          {selectedGroup.customMaxHeight}"
                         </p>
                       )}
                     </div>
@@ -780,24 +816,32 @@ export default function NewProductPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            {addOns.filter(addon => addon.isActive).map(addon => (
-              <div key={addon.id} className="flex items-center gap-2">
-                <Checkbox
-                  id={`addon-${addon.id}`}
-                  checked={formData.selectedAddOns.includes(addon.id)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData({...formData, selectedAddOns: [...formData.selectedAddOns, addon.id]})
-                    } else {
-                      setFormData({...formData, selectedAddOns: formData.selectedAddOns.filter(id => id !== addon.id)})
-                    }
-                  }}
-                />
-                <Label htmlFor={`addon-${addon.id}`} className="cursor-pointer font-normal">
-                  {addon.name}
-                </Label>
-              </div>
-            ))}
+            {addOns
+              .filter((addon) => addon.isActive)
+              .map((addon) => (
+                <div key={addon.id} className="flex items-center gap-2">
+                  <Checkbox
+                    checked={formData.selectedAddOns.includes(addon.id)}
+                    id={`addon-${addon.id}`}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData({
+                          ...formData,
+                          selectedAddOns: [...formData.selectedAddOns, addon.id],
+                        })
+                      } else {
+                        setFormData({
+                          ...formData,
+                          selectedAddOns: formData.selectedAddOns.filter((id) => id !== addon.id),
+                        })
+                      }
+                    }}
+                  />
+                  <Label className="cursor-pointer font-normal" htmlFor={`addon-${addon.id}`}>
+                    {addon.name}
+                  </Label>
+                </div>
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -815,17 +859,21 @@ export default function NewProductPage() {
                 id="production"
                 type="number"
                 value={formData.productionTime}
-                onChange={(e) => setFormData({...formData, productionTime: parseInt(e.target.value) || 0})}
+                onChange={(e) =>
+                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
             <div>
               <Label htmlFor="base-price">Base Price ($)</Label>
               <Input
                 id="base-price"
-                type="number"
                 step="0.01"
+                type="number"
                 value={formData.basePrice}
-                onChange={(e) => setFormData({...formData, basePrice: parseFloat(e.target.value) || 0})}
+                onChange={(e) =>
+                  setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })
+                }
               />
             </div>
           </div>
@@ -834,7 +882,7 @@ export default function NewProductPage() {
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.rushAvailable}
-                onCheckedChange={(checked) => setFormData({...formData, rushAvailable: checked})}
+                onCheckedChange={(checked) => setFormData({ ...formData, rushAvailable: checked })}
               />
               <Label>Rush Available</Label>
             </div>
@@ -843,20 +891,24 @@ export default function NewProductPage() {
                 <div className="flex items-center gap-2">
                   <Label>Rush Days:</Label>
                   <Input
-                    type="number"
                     className="w-20"
+                    type="number"
                     value={formData.rushDays}
-                    onChange={(e) => setFormData({...formData, rushDays: parseInt(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rushDays: parseInt(e.target.value) || 0 })
+                    }
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <Label>Rush Fee ($):</Label>
                   <Input
-                    type="number"
-                    step="0.01"
                     className="w-24"
+                    step="0.01"
+                    type="number"
                     value={formData.rushFee}
-                    onChange={(e) => setFormData({...formData, rushFee: parseFloat(e.target.value) || 0})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rushFee: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
               </>

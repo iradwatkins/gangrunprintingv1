@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { CampaignService } from '@/lib/marketing/campaign-service'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
@@ -20,17 +17,11 @@ export async function GET(
     return NextResponse.json(campaign)
   } catch (error) {
     console.error('Error fetching campaign:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
@@ -43,17 +34,11 @@ export async function PUT(
     return NextResponse.json(campaign)
   } catch (error) {
     console.error('Error updating campaign:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
@@ -65,9 +50,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting campaign:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,38 +1,32 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { format } from '@/lib/date';
-import { 
-  Package, 
-  RefreshCw, 
-  Eye, 
-  Filter, 
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { format } from '@/lib/date'
+import {
+  Package,
+  RefreshCw,
+  Eye,
+  Filter,
   Search,
   Calendar,
   FileText,
   Download,
-  ChevronRight
-} from 'lucide-react';
-import { TrackingButton } from '@/components/tracking/tracking-button';
-import { type Carrier } from '@prisma/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  ChevronRight,
+} from 'lucide-react'
+import { TrackingButton } from '@/components/tracking/tracking-button'
+import { type Carrier } from '@prisma/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -40,225 +34,213 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { type DateRange } from 'react-day-picker';
-import { useToast } from '@/hooks/use-toast';
-import { getStatusInfo } from '@/lib/order-management';
-import { OrderStatus } from '@prisma/client';
+} from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import { type DateRange } from 'react-day-picker'
+import { useToast } from '@/hooks/use-toast'
+import { getStatusInfo } from '@/lib/order-management'
+import { OrderStatus } from '@prisma/client'
 
 interface Order {
-  id: string;
-  referenceNumber?: string;
-  orderNumber: string;
-  status: OrderStatus;
-  total: number;
-  createdAt: string;
-  updatedAt: string;
-  trackingNumber?: string;
-  carrier?: Carrier;
+  id: string
+  referenceNumber?: string
+  orderNumber: string
+  status: OrderStatus
+  total: number
+  createdAt: string
+  updatedAt: string
+  trackingNumber?: string
+  carrier?: Carrier
   OrderItem: Array<{
-    productName: string;
-    quantity: number;
-    price: number;
-  }>;
+    productName: string
+    quantity: number
+    price: number
+  }>
   File?: Array<{
-    id: string;
-    filename: string;
-    fileUrl: string;
-  }>;
+    id: string
+    filename: string
+    fileUrl: string
+  }>
 }
 
 interface Quote {
-  id: string;
-  quoteNumber: string;
-  status: string;
-  validUntil: string;
-  pricing: any;
-  createdAt: string;
-  productDetails: any;
+  id: string
+  quoteNumber: string
+  status: string
+  validUntil: string
+  pricing: any
+  createdAt: string
+  productDetails: any
 }
 
 export default function OrderHistory() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('orders');
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const router = useRouter()
+  const { toast } = useToast()
+  const [activeTab, setActiveTab] = useState('orders')
+  const [orders, setOrders] = useState<Order[]>([])
+  const [quotes, setQuotes] = useState<Quote[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
 
   useEffect(() => {
-    fetchData();
-  }, [activeTab]);
+    fetchData()
+  }, [activeTab])
 
   const fetchData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       if (activeTab === 'orders') {
-        const response = await fetch('/api/orders');
+        const response = await fetch('/api/orders')
         if (response.ok) {
-          const data = await response.json();
-          setOrders(data);
+          const data = await response.json()
+          setOrders(data)
         }
       } else if (activeTab === 'quotes') {
-        const response = await fetch('/api/quotes');
+        const response = await fetch('/api/quotes')
         if (response.ok) {
-          const data = await response.json();
-          setQuotes(data);
+          const data = await response.json()
+          setQuotes(data)
         }
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data:', error)
       toast({
         title: 'Error',
         description: 'Failed to load data',
-        variant: 'destructive'
-      });
+        variant: 'destructive',
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleReorder = async (orderId: string) => {
     try {
       const response = await fetch('/api/orders/reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId })
-      });
+        body: JSON.stringify({ orderId }),
+      })
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         toast({
           title: 'Success',
-          description: 'Order data loaded. Redirecting to cart...'
-        });
+          description: 'Order data loaded. Redirecting to cart...',
+        })
         // Store reorder data in session storage
-        sessionStorage.setItem('reorderData', JSON.stringify(data.reorderData));
+        sessionStorage.setItem('reorderData', JSON.stringify(data.reorderData))
         // Redirect to cart or product page
-        router.push('/cart');
+        router.push('/cart')
       } else {
         toast({
           title: 'Error',
           description: 'Failed to load order data',
-          variant: 'destructive'
-        });
+          variant: 'destructive',
+        })
       }
     } catch (error) {
-      console.error('Error reordering:', error);
+      console.error('Error reordering:', error)
       toast({
         title: 'Error',
         description: 'Failed to process reorder',
-        variant: 'destructive'
-      });
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   const handleConvertQuote = async (quoteId: string) => {
     try {
       const response = await fetch('/api/quotes', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: quoteId, convertToOrder: true })
-      });
+        body: JSON.stringify({ id: quoteId, convertToOrder: true }),
+      })
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         toast({
           title: 'Success',
-          description: `Quote converted to order ${data.orderNumber}`
-        });
-        router.push(`/orders/${data.orderId}`);
+          description: `Quote converted to order ${data.orderNumber}`,
+        })
+        router.push(`/orders/${data.orderId}`)
       } else {
-        const error = await response.json();
+        const error = await response.json()
         toast({
           title: 'Error',
           description: error.error || 'Failed to convert quote',
-          variant: 'destructive'
-        });
+          variant: 'destructive',
+        })
       }
     } catch (error) {
-      console.error('Error converting quote:', error);
+      console.error('Error converting quote:', error)
       toast({
         title: 'Error',
         description: 'Failed to convert quote',
-        variant: 'destructive'
-      });
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // Filter logic
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
       order.referenceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.OrderItem.some(item => 
+      order.OrderItem.some((item) =>
         item.productName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
-    const orderDate = new Date(order.createdAt);
-    const matchesDate = !dateRange || (
-      dateRange.from && orderDate >= dateRange.from &&
-      (!dateRange.to || orderDate <= dateRange.to)
-    );
-    
-    return matchesSearch && matchesStatus && matchesDate;
-  });
+      )
 
-  const filteredQuotes = quotes.filter(quote => {
-    const matchesSearch = 
-      quote.quoteNumber.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const quoteDate = new Date(quote.createdAt);
-    const matchesDate = !dateRange || (
-      dateRange.from && quoteDate >= dateRange.from &&
-      (!dateRange.to || quoteDate <= dateRange.to)
-    );
-    
-    return matchesSearch && matchesDate;
-  });
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter
+
+    const orderDate = new Date(order.createdAt)
+    const matchesDate =
+      !dateRange ||
+      (dateRange.from &&
+        orderDate >= dateRange.from &&
+        (!dateRange.to || orderDate <= dateRange.to))
+
+    return matchesSearch && matchesStatus && matchesDate
+  })
+
+  const filteredQuotes = quotes.filter((quote) => {
+    const matchesSearch = quote.quoteNumber.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const quoteDate = new Date(quote.createdAt)
+    const matchesDate =
+      !dateRange ||
+      (dateRange.from &&
+        quoteDate >= dateRange.from &&
+        (!dateRange.to || quoteDate <= dateRange.to))
+
+    return matchesSearch && matchesDate
+  })
 
   const getQuoteStatusBadge = (quote: Quote) => {
-    const isExpired = new Date(quote.validUntil) < new Date();
+    const isExpired = new Date(quote.validUntil) < new Date()
     if (isExpired && quote.status !== 'CONVERTED') {
-      return <Badge variant="destructive">Expired</Badge>;
+      return <Badge variant="destructive">Expired</Badge>
     }
-    
+
     const statusColors: Record<string, string> = {
-      'DRAFT': 'secondary',
-      'SENT': 'default',
-      'VIEWED': 'default',
-      'ACCEPTED': 'success',
-      'REJECTED': 'destructive',
-      'EXPIRED': 'destructive',
-      'CONVERTED': 'success'
-    };
-    
-    return (
-      <Badge variant={statusColors[quote.status] as any || 'default'}>
-        {quote.status}
-      </Badge>
-    );
-  };
+      DRAFT: 'secondary',
+      SENT: 'default',
+      VIEWED: 'default',
+      ACCEPTED: 'success',
+      REJECTED: 'destructive',
+      EXPIRED: 'destructive',
+      CONVERTED: 'success',
+    }
+
+    return <Badge variant={(statusColors[quote.status] as any) || 'default'}>{quote.status}</Badge>
+  }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <div className="flex justify-center items-center h-64">Loading...</div>
   }
 
   return (
@@ -281,7 +263,7 @@ export default function OrderHistory() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
+
               {activeTab === 'orders' && (
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[150px]">
@@ -289,7 +271,7 @@ export default function OrderHistory() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
-                    {Object.values(OrderStatus).map(status => (
+                    {Object.values(OrderStatus).map((status) => (
                       <SelectItem key={status} value={status}>
                         {getStatusInfo(status).label}
                       </SelectItem>
@@ -324,12 +306,8 @@ export default function OrderHistory() {
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
-              <TabsTrigger value="orders">
-                Orders ({filteredOrders.length})
-              </TabsTrigger>
-              <TabsTrigger value="quotes">
-                Quotes ({filteredQuotes.length})
-              </TabsTrigger>
+              <TabsTrigger value="orders">Orders ({filteredOrders.length})</TabsTrigger>
+              <TabsTrigger value="quotes">Quotes ({filteredQuotes.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent className="mt-4" value="orders">
@@ -347,7 +325,7 @@ export default function OrderHistory() {
                 </TableHeader>
                 <TableBody>
                   {filteredOrders.map((order) => {
-                    const statusInfo = getStatusInfo(order.status);
+                    const statusInfo = getStatusInfo(order.status)
                     return (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
@@ -365,9 +343,7 @@ export default function OrderHistory() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {format(new Date(order.createdAt), 'MMM dd, yyyy')}
-                        </TableCell>
+                        <TableCell>{format(new Date(order.createdAt), 'MMM dd, yyyy')}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
                             {order.OrderItem.slice(0, 2).map((item, idx) => (
@@ -390,9 +366,7 @@ export default function OrderHistory() {
                         <TableCell>${order.total.toFixed(2)}</TableCell>
                         <TableCell>
                           {order.File && order.File.length > 0 ? (
-                            <Badge variant="outline">
-                              {order.File.length} files
-                            </Badge>
+                            <Badge variant="outline">{order.File.length} files</Badge>
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}
@@ -416,25 +390,19 @@ export default function OrderHistory() {
                                 <RefreshCw className="h-4 w-4" />
                               </Button>
                             )}
-                            <Button
-                              size="sm"
-                              title="Download Invoice"
-                              variant="ghost"
-                            >
+                            <Button size="sm" title="Download Invoice" variant="ghost">
                               <Download className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
                       </TableRow>
-                    );
+                    )
                   })}
                 </TableBody>
               </Table>
-              
+
               {filteredOrders.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No orders found
-                </div>
+                <div className="text-center py-8 text-muted-foreground">No orders found</div>
               )}
             </TabsContent>
 
@@ -453,21 +421,11 @@ export default function OrderHistory() {
                 <TableBody>
                   {filteredQuotes.map((quote) => (
                     <TableRow key={quote.id}>
-                      <TableCell className="font-medium">
-                        {quote.quoteNumber}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(quote.createdAt), 'MMM dd, yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(quote.validUntil), 'MMM dd, yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        {getQuoteStatusBadge(quote)}
-                      </TableCell>
-                      <TableCell>
-                        ${quote.pricing?.total?.toFixed(2) || '0.00'}
-                      </TableCell>
+                      <TableCell className="font-medium">{quote.quoteNumber}</TableCell>
+                      <TableCell>{format(new Date(quote.createdAt), 'MMM dd, yyyy')}</TableCell>
+                      <TableCell>{format(new Date(quote.validUntil), 'MMM dd, yyyy')}</TableCell>
+                      <TableCell>{getQuoteStatusBadge(quote)}</TableCell>
+                      <TableCell>${quote.pricing?.total?.toFixed(2) || '0.00'}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
@@ -477,8 +435,7 @@ export default function OrderHistory() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          {quote.status === 'SENT' && 
-                           new Date(quote.validUntil) > new Date() && (
+                          {quote.status === 'SENT' && new Date(quote.validUntil) > new Date() && (
                             <Button
                               size="sm"
                               title="Convert to Order"
@@ -494,11 +451,9 @@ export default function OrderHistory() {
                   ))}
                 </TableBody>
               </Table>
-              
+
               {filteredQuotes.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No quotes found
-                </div>
+                <div className="text-center py-8 text-muted-foreground">No quotes found</div>
               )}
             </TabsContent>
           </Tabs>
@@ -509,11 +464,11 @@ export default function OrderHistory() {
         <CardHeader>
           <CardTitle>File Retention Policy</CardTitle>
           <CardDescription>
-            Your uploaded files are retained for 1 year from the order date. 
-            Files older than 1 year are automatically removed from our servers.
+            Your uploaded files are retained for 1 year from the order date. Files older than 1 year
+            are automatically removed from our servers.
           </CardDescription>
         </CardHeader>
       </Card>
     </div>
-  );
+  )
 }

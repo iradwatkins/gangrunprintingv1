@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-import { 
+import {
   Printer,
   Layers,
   Clock,
@@ -20,16 +20,16 @@ import {
   CheckCircle,
   AlertCircle,
   TrendingUp,
-  ShoppingCart
+  ShoppingCart,
 } from 'lucide-react'
 
 async function getDashboardData() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  
+
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  
+
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
   const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
   const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0)
@@ -37,66 +37,66 @@ async function getDashboardData() {
   // Get today's revenue
   const todayRevenue = await prisma.order.aggregate({
     _sum: {
-      total: true
+      total: true,
     },
     where: {
       createdAt: {
         gte: today,
-        lt: tomorrow
+        lt: tomorrow,
       },
       status: {
-        notIn: ['CANCELLED', 'REFUNDED']
-      }
-    }
+        notIn: ['CANCELLED', 'REFUNDED'],
+      },
+    },
   })
 
   // Get month's revenue
   const monthRevenue = await prisma.order.aggregate({
     _sum: {
-      total: true
+      total: true,
     },
     where: {
       createdAt: {
-        gte: startOfMonth
+        gte: startOfMonth,
       },
       status: {
-        notIn: ['CANCELLED', 'REFUNDED']
-      }
-    }
+        notIn: ['CANCELLED', 'REFUNDED'],
+      },
+    },
   })
 
   // Get last month's revenue for comparison
   const lastMonthRevenue = await prisma.order.aggregate({
     _sum: {
-      total: true
+      total: true,
     },
     where: {
       createdAt: {
         gte: startOfLastMonth,
-        lte: endOfLastMonth
+        lte: endOfLastMonth,
       },
       status: {
-        notIn: ['CANCELLED', 'REFUNDED']
-      }
-    }
+        notIn: ['CANCELLED', 'REFUNDED'],
+      },
+    },
   })
 
   // Get pending orders count
   const pendingOrders = await prisma.order.count({
     where: {
       status: {
-        in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING']
-      }
-    }
+        in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING'],
+      },
+    },
   })
 
   // Get urgent orders (orders in processing)
   const urgentOrders = await prisma.order.count({
     where: {
       status: {
-        in: ['PAID', 'PROCESSING', 'PRINTING']
-      }
-    }
+        in: ['PAID', 'PROCESSING', 'PRINTING'],
+      },
+    },
   })
 
   // Get today's completed orders
@@ -105,9 +105,9 @@ async function getDashboardData() {
       status: 'DELIVERED',
       updatedAt: {
         gte: today,
-        lt: tomorrow
-      }
-    }
+        lt: tomorrow,
+      },
+    },
   })
 
   // Get total orders today
@@ -115,27 +115,27 @@ async function getDashboardData() {
     where: {
       createdAt: {
         gte: today,
-        lt: tomorrow
-      }
-    }
+        lt: tomorrow,
+      },
+    },
   })
 
   // Get recent orders
   const recentOrders = await prisma.order.findMany({
     take: 10,
     orderBy: {
-      createdAt: 'desc'
+      createdAt: 'desc',
     },
     include: {
-      OrderItem: true
-    }
+      OrderItem: true,
+    },
   })
 
   // Get total customers
   const totalCustomers = await prisma.user.count({
     where: {
-      role: 'CUSTOMER'
-    }
+      role: 'CUSTOMER',
+    },
   })
 
   // Get new customers this month
@@ -143,31 +143,31 @@ async function getDashboardData() {
     where: {
       role: 'CUSTOMER',
       createdAt: {
-        gte: startOfMonth
-      }
-    }
+        gte: startOfMonth,
+      },
+    },
   })
 
   // Get recently added products instead of low stock (no inventory field in schema)
   const recentProducts = await prisma.product.findMany({
     where: {
-      isActive: true
+      isActive: true,
     },
     orderBy: {
-      createdAt: 'desc'
+      createdAt: 'desc',
     },
-    take: 5
+    take: 5,
   })
 
   // Calculate revenue change percentage
-  const revenueChange = lastMonthRevenue._sum.total 
-    ? ((monthRevenue._sum.total || 0) - (lastMonthRevenue._sum.total || 0)) / (lastMonthRevenue._sum.total || 1) * 100
+  const revenueChange = lastMonthRevenue._sum.total
+    ? (((monthRevenue._sum.total || 0) - (lastMonthRevenue._sum.total || 0)) /
+        (lastMonthRevenue._sum.total || 1)) *
+      100
     : 0
 
   // Calculate completion rate
-  const completionRate = ordersToday > 0 
-    ? (completedToday / ordersToday) * 100 
-    : 100
+  const completionRate = ordersToday > 0 ? (completedToday / ordersToday) * 100 : 100
 
   return {
     todayRevenue: todayRevenue._sum.total || 0,
@@ -181,7 +181,7 @@ async function getDashboardData() {
     recentOrders,
     totalCustomers,
     newCustomersThisMonth,
-    recentProducts
+    recentProducts,
   }
 }
 
@@ -192,15 +192,13 @@ export default async function AdminDashboard() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          {new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+          {new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
           })}
         </p>
       </div>
@@ -253,9 +251,7 @@ export default async function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{data.pendingOrders}</p>
-              <p className="text-sm text-muted-foreground">
-                Pending orders
-              </p>
+              <p className="text-sm text-muted-foreground">Pending orders</p>
             </CardContent>
           </Card>
         </Link>
@@ -269,9 +265,7 @@ export default async function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Manage products & inventory
-              </p>
+              <p className="text-sm text-muted-foreground">Manage products & inventory</p>
             </CardContent>
           </Card>
         </Link>
@@ -286,9 +280,7 @@ export default async function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{data.totalCustomers}</p>
-              <p className="text-sm text-muted-foreground">
-                Total customers
-              </p>
+              <p className="text-sm text-muted-foreground">Total customers</p>
             </CardContent>
           </Card>
         </Link>
@@ -302,9 +294,7 @@ export default async function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                View detailed reports
-              </p>
+              <p className="text-sm text-muted-foreground">View detailed reports</p>
             </CardContent>
           </Card>
         </Link>

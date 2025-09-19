@@ -13,33 +13,39 @@ async function getUpcomingData(userId: string) {
     where: {
       userId,
       status: {
-        in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING', 'PRODUCTION', 'QUALITY_CHECK', 'PACKAGING', 'SHIPPED']
-      }
+        in: [
+          'PENDING_PAYMENT',
+          'PAID',
+          'PROCESSING',
+          'PRINTING',
+          'PRODUCTION',
+          'QUALITY_CHECK',
+          'PACKAGING',
+          'SHIPPED',
+        ],
+      },
     },
-    orderBy: [
-      { createdAt: 'desc' },
-      { status: 'asc' }
-    ],
+    orderBy: [{ createdAt: 'desc' }, { status: 'asc' }],
     include: {
       OrderItem: {
         include: {
           orderItemAddOns: {
             include: {
-              addOn: true
-            }
-          }
-        }
-      }
-    }
+              addOn: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   // Calculate estimated delivery dates (adding production time to order date)
-  const upcomingWithEstimates = upcomingOrders.map(order => {
+  const upcomingWithEstimates = upcomingOrders.map((order) => {
     const createdDate = new Date(order.createdAt)
     const estimatedDelivery = new Date(createdDate)
 
     // Add default production time (can be customized based on order items)
-    let productionDays = 3 // Default production time
+    const productionDays = 3 // Default production time
 
     // Add shipping time
     const shippingDays = 2
@@ -49,8 +55,13 @@ async function getUpcomingData(userId: string) {
     return {
       ...order,
       estimatedDelivery,
-      isOverdue: new Date() > estimatedDelivery && order.status !== 'SHIPPED' && order.status !== 'DELIVERED',
-      daysUntilDelivery: Math.ceil((estimatedDelivery.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+      isOverdue:
+        new Date() > estimatedDelivery &&
+        order.status !== 'SHIPPED' &&
+        order.status !== 'DELIVERED',
+      daysUntilDelivery: Math.ceil(
+        (estimatedDelivery.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      ),
     }
   })
 
@@ -59,14 +70,22 @@ async function getUpcomingData(userId: string) {
 
 function getStatusInfo(status: string) {
   const statusMap = {
-    'PENDING_PAYMENT': { color: 'bg-yellow-100 text-yellow-800', icon: AlertCircle, text: 'Pending Payment' },
-    'PAID': { color: 'bg-blue-100 text-blue-800', icon: CheckCircle2, text: 'Paid' },
-    'PROCESSING': { color: 'bg-purple-100 text-purple-800', icon: Clock, text: 'Processing' },
-    'PRINTING': { color: 'bg-indigo-100 text-indigo-800', icon: Package, text: 'Printing' },
-    'PRODUCTION': { color: 'bg-orange-100 text-orange-800', icon: Package, text: 'In Production' },
-    'QUALITY_CHECK': { color: 'bg-teal-100 text-teal-800', icon: CheckCircle2, text: 'Quality Check' },
-    'PACKAGING': { color: 'bg-cyan-100 text-cyan-800', icon: Package, text: 'Packaging' },
-    'SHIPPED': { color: 'bg-green-100 text-green-800', icon: Package, text: 'Shipped' },
+    PENDING_PAYMENT: {
+      color: 'bg-yellow-100 text-yellow-800',
+      icon: AlertCircle,
+      text: 'Pending Payment',
+    },
+    PAID: { color: 'bg-blue-100 text-blue-800', icon: CheckCircle2, text: 'Paid' },
+    PROCESSING: { color: 'bg-purple-100 text-purple-800', icon: Clock, text: 'Processing' },
+    PRINTING: { color: 'bg-indigo-100 text-indigo-800', icon: Package, text: 'Printing' },
+    PRODUCTION: { color: 'bg-orange-100 text-orange-800', icon: Package, text: 'In Production' },
+    QUALITY_CHECK: {
+      color: 'bg-teal-100 text-teal-800',
+      icon: CheckCircle2,
+      text: 'Quality Check',
+    },
+    PACKAGING: { color: 'bg-cyan-100 text-cyan-800', icon: Package, text: 'Packaging' },
+    SHIPPED: { color: 'bg-green-100 text-green-800', icon: Package, text: 'Shipped' },
   }
   return statusMap[status as keyof typeof statusMap] || statusMap['PROCESSING']
 }
@@ -87,15 +106,13 @@ export default async function UpcomingPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Upcoming Orders
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Upcoming Orders</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Track your orders in progress and upcoming deliveries
           </p>
@@ -110,11 +127,13 @@ export default async function UpcomingPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {upcomingOrders.filter(order => ['PROCESSING', 'PRINTING', 'PRODUCTION'].includes(order.status)).length}
+                {
+                  upcomingOrders.filter((order) =>
+                    ['PROCESSING', 'PRINTING', 'PRODUCTION'].includes(order.status)
+                  ).length
+                }
               </div>
-              <p className="text-xs text-muted-foreground">
-                Currently being processed
-              </p>
+              <p className="text-xs text-muted-foreground">Currently being processed</p>
             </CardContent>
           </Card>
 
@@ -125,11 +144,9 @@ export default async function UpcomingPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {upcomingOrders.filter(order => order.status === 'SHIPPED').length}
+                {upcomingOrders.filter((order) => order.status === 'SHIPPED').length}
               </div>
-              <p className="text-xs text-muted-foreground">
-                On the way to you
-              </p>
+              <p className="text-xs text-muted-foreground">On the way to you</p>
             </CardContent>
           </Card>
 
@@ -140,11 +157,9 @@ export default async function UpcomingPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {upcomingOrders.filter(order => order.status === 'PENDING_PAYMENT').length}
+                {upcomingOrders.filter((order) => order.status === 'PENDING_PAYMENT').length}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Awaiting payment
-              </p>
+              <p className="text-xs text-muted-foreground">Awaiting payment</p>
             </CardContent>
           </Card>
         </div>
@@ -156,9 +171,7 @@ export default async function UpcomingPage() {
               <Calendar className="h-5 w-5" />
               Order Timeline
             </CardTitle>
-            <CardDescription>
-              Your orders with estimated delivery dates
-            </CardDescription>
+            <CardDescription>Your orders with estimated delivery dates</CardDescription>
           </CardHeader>
           <CardContent>
             {upcomingOrders.length > 0 ? (
@@ -194,20 +207,16 @@ export default async function UpcomingPage() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-medium">
-                            Estimated Delivery
-                          </p>
+                          <p className="text-sm font-medium">Estimated Delivery</p>
                           <p className="text-lg font-semibold">
                             {order.estimatedDelivery.toLocaleDateString()}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {order.daysUntilDelivery > 0 ? (
-                              `${order.daysUntilDelivery} days`
-                            ) : order.daysUntilDelivery === 0 ? (
-                              'Today'
-                            ) : (
-                              `${Math.abs(order.daysUntilDelivery)} days overdue`
-                            )}
+                            {order.daysUntilDelivery > 0
+                              ? `${order.daysUntilDelivery} days`
+                              : order.daysUntilDelivery === 0
+                                ? 'Today'
+                                : `${Math.abs(order.daysUntilDelivery)} days overdue`}
                           </p>
                         </div>
                       </div>
@@ -215,7 +224,10 @@ export default async function UpcomingPage() {
                       {/* Order Items */}
                       <div className="space-y-2 mb-4">
                         {order.OrderItem.map((item, index) => (
-                          <div key={index} className="flex items-center justify-between text-sm p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                          <div
+                            key={index}
+                            className="flex items-center justify-between text-sm p-2 bg-gray-50 dark:bg-gray-800 rounded"
+                          >
                             <span>{item.productName}</span>
                             <span>Qty: {item.quantity}</span>
                           </div>
@@ -235,11 +247,7 @@ export default async function UpcomingPage() {
                             </Button>
                           </Link>
                         )}
-                        {order.status === 'PENDING_PAYMENT' && (
-                          <Button size="sm">
-                            Pay Now
-                          </Button>
-                        )}
+                        {order.status === 'PENDING_PAYMENT' && <Button size="sm">Pay Now</Button>}
                       </div>
                     </div>
                   )
@@ -253,9 +261,7 @@ export default async function UpcomingPage() {
                   You don't have any orders in progress right now.
                 </p>
                 <Link href="/products">
-                  <Button>
-                    Start Shopping
-                  </Button>
+                  <Button>Start Shopping</Button>
                 </Link>
               </div>
             )}

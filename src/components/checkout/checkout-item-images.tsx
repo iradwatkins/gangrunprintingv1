@@ -27,9 +27,7 @@ export function CheckoutItemImages({ item }: CheckoutItemImagesProps) {
 
       setIsLoading(true)
       try {
-        const response = await fetch(
-          `/api/products/customer-images?productId=${item.productId}`
-        )
+        const response = await fetch(`/api/products/customer-images?productId=${item.productId}`)
 
         if (response.ok) {
           const data = await response.json()
@@ -64,9 +62,7 @@ export function CheckoutItemImages({ item }: CheckoutItemImagesProps) {
         {/* Show file info */}
         <div className="text-xs text-primary">
           <span className="font-medium">Your Design:</span>{' '}
-          <span className="truncate max-w-[120px] inline-block">
-            {customerImages[0].fileName}
-          </span>
+          <span className="truncate max-w-[120px] inline-block">{customerImages[0].fileName}</span>
           {customerImages.length > 1 && (
             <span className="ml-1">+{customerImages.length - 1} more</span>
           )}
@@ -80,12 +76,7 @@ export function CheckoutItemImages({ item }: CheckoutItemImagesProps) {
     return (
       <div className="flex items-center gap-2 mt-1">
         <div className="relative w-8 h-8 rounded border overflow-hidden">
-          <Image
-            fill
-            alt={item.productName}
-            className="object-cover"
-            src={item.image}
-          />
+          <Image fill alt={item.productName} className="object-cover" src={item.image} />
         </div>
         <span className="text-xs text-muted-foreground">Product image</span>
       </div>

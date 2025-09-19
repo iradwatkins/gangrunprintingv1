@@ -16,29 +16,15 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     const data = await request.json()
-    
-    const {
-      items,
-      email,
-      name,
-      phone,
-      shippingAddress,
-      billingAddress,
-      shippingMethod
-    } = data
+
+    const { items, email, name, phone, shippingAddress, billingAddress, shippingMethod } = data
 
     if (!items || items.length === 0) {
-      return NextResponse.json(
-        { error: 'No items in cart' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No items in cart' }, { status: 400 })
     }
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
     // Calculate totals
@@ -48,7 +34,7 @@ export async function POST(request: NextRequest) {
       productSku: item.sku || 'CUSTOM',
       quantity: item.quantity,
       price: item.price,
-      options: item.options || {}
+      options: item.options || {},
     }))
 
     for (const item of orderItems) {
@@ -58,10 +44,10 @@ export async function POST(request: NextRequest) {
     // Calculate tax (8.25% for Texas)
     const taxRate = 0.0825
     const tax = Math.round(subtotal * taxRate)
-    
+
     // Calculate shipping
     const shipping = shippingMethod === 'express' ? 2500 : 1000 // $25 or $10
-    
+
     // Calculate total
     const total = subtotal + tax + shipping
 
@@ -87,8 +73,8 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity.toString(),
         basePriceMoney: {
           amount: BigInt(Math.round(item.price)),
-          currency: 'USD'
-        }
+          currency: 'USD',
+        },
       }))
 
       // Add shipping as a line item
@@ -97,20 +83,22 @@ export async function POST(request: NextRequest) {
         quantity: '1',
         basePriceMoney: {
           amount: BigInt(shipping),
-          currency: 'USD'
-        }
+          currency: 'USD',
+        },
       })
 
       const squareOrderResult = await createSquareOrder({
         referenceId: orderNumber,
         customerId: squareCustomerId,
         lineItems: squareLineItems,
-        taxes: [{
-          name: 'Sales Tax',
-          percentage: (taxRate * 100).toString()
-        }]
+        taxes: [
+          {
+            name: 'Sales Tax',
+            percentage: (taxRate * 100).toString(),
+          },
+        ],
       })
-      
+
       squareOrderId = squareOrderResult.id
     } catch (error) {
       console.error('Failed to create Square order:', error)
@@ -142,20 +130,20 @@ export async function POST(request: NextRequest) {
             productSku: item.productSku,
             quantity: item.quantity,
             price: item.price,
-            options: item.options
-          }))
+            options: item.options,
+          })),
         },
         StatusHistory: {
           create: {
             id: `${orderNumber}-status-${Date.now()}`,
             toStatus: 'PENDING_PAYMENT',
-            changedBy: email
-          }
-        }
+            changedBy: email,
+          },
+        },
       },
       include: {
-        OrderItem: true
-      }
+        OrderItem: true,
+      },
     })
 
     // Trigger N8N workflow for order creation
@@ -177,20 +165,20 @@ export async function POST(request: NextRequest) {
           name: item.productName,
           quantity: item.quantity,
           price: item.price,
-          options: item.options
+          options: item.options,
         })),
         subtotal,
         tax,
         shipping,
         total,
-        shippingAddress
+        shippingAddress,
       })
 
       await sendEmail({
         to: email,
         subject: emailData.subject,
         html: emailData.html,
-        text: emailData.text
+        text: emailData.text,
       })
 
       console.log(`Order confirmation email sent to ${email}`)
@@ -205,7 +193,7 @@ export async function POST(request: NextRequest) {
         amount: total,
         orderNumber: order.orderNumber,
         email,
-        items: squareLineItems
+        items: squareLineItems,
       })
 
       if (checkoutResult.url) {
@@ -213,8 +201,8 @@ export async function POST(request: NextRequest) {
         await prisma.order.update({
           where: { id: order.id },
           data: {
-            squareOrderId: checkoutResult.orderId || squareOrderId
-          }
+            squareOrderId: checkoutResult.orderId || squareOrderId,
+          },
         })
 
         return NextResponse.json({
@@ -222,9 +210,9 @@ export async function POST(request: NextRequest) {
           order: {
             id: order.id,
             orderNumber: order.orderNumber,
-            total: order.total
+            total: order.total,
           },
-          checkoutUrl: checkoutResult.url
+          checkoutUrl: checkoutResult.url,
         })
       }
     } catch (error) {
@@ -239,16 +227,13 @@ export async function POST(request: NextRequest) {
         id: order.id,
         orderNumber: order.orderNumber,
         total: order.total,
-        email: order.email
+        email: order.email,
       },
-      message: 'Order created. Payment processing temporarily unavailable. We will contact you shortly.'
+      message:
+        'Order created. Payment processing temporarily unavailable. We will contact you shortly.',
     })
-
   } catch (error) {
     console.error('Checkout error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process checkout' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process checkout' }, { status: 500 })
   }
 }

@@ -19,7 +19,7 @@ import {
   ChevronDown,
   ChevronRight,
   Package2,
-  Layers
+  Layers,
 } from 'lucide-react'
 import {
   Table,
@@ -44,11 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import toast from '@/lib/toast'
 
 interface QuantityGroup {
@@ -89,7 +85,7 @@ export default function QuantitiesPage() {
     customMin: 1,
     customMax: 100000,
     sortOrder: 0,
-    isActive: true
+    isActive: true,
   })
 
   useEffect(() => {
@@ -114,25 +110,23 @@ export default function QuantitiesPage() {
   const handleSubmit = async () => {
     try {
       setSaving(true)
-      
+
       if (!formData.name || !formData.values || !formData.defaultValue) {
         toast.error('Name, values, and default value are required')
         setSaving(false)
         return
       }
-      
-      const url = editingGroup 
-        ? `/api/quantities/${editingGroup.id}`
-        : '/api/quantities'
-      
+
+      const url = editingGroup ? `/api/quantities/${editingGroup.id}` : '/api/quantities'
+
       const method = editingGroup ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
-      
+
       if (response.ok) {
         toast.success(editingGroup ? 'Group updated successfully' : 'Group created successfully')
         setDialogOpen(false)
@@ -152,14 +146,14 @@ export default function QuantitiesPage() {
 
   const handleDelete = async () => {
     if (!groupToDelete) return
-    
+
     try {
       const response = await fetch(`/api/quantities/${groupToDelete.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
+
       const data = await response.json()
-      
+
       if (response.ok) {
         toast.success('Group deleted successfully')
         setDeleteDialogOpen(false)
@@ -183,7 +177,7 @@ export default function QuantitiesPage() {
       customMin: 1,
       customMax: 100000,
       sortOrder: 0,
-      isActive: true
+      isActive: true,
     })
     setEditingGroup(null)
   }
@@ -198,7 +192,7 @@ export default function QuantitiesPage() {
       customMin: group.customMin || 1,
       customMax: group.customMax || 100000,
       sortOrder: group.sortOrder,
-      isActive: group.isActive
+      isActive: group.isActive,
     })
     setDialogOpen(true)
   }
@@ -218,7 +212,7 @@ export default function QuantitiesPage() {
       customMin: group.customMin || 1,
       customMax: group.customMax || 100000,
       sortOrder: group.sortOrder,
-      isActive: group.isActive
+      isActive: group.isActive,
     })
     setDialogOpen(true)
   }
@@ -234,7 +228,10 @@ export default function QuantitiesPage() {
   }
 
   const parseValuesList = (values: string) => {
-    return values.split(',').map(v => v.trim()).filter(v => v)
+    return values
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v)
   }
 
   const hasCustomOption = (values: string) => {
@@ -251,14 +248,14 @@ export default function QuantitiesPage() {
                 <Layers className="h-5 w-5" />
                 Quantities Management
               </CardTitle>
-              <CardDescription>
-                Create and manage quantity options for products
-              </CardDescription>
+              <CardDescription>Create and manage quantity options for products</CardDescription>
             </div>
-            <Button onClick={() => {
-              resetForm()
-              setDialogOpen(true)
-            }}>
+            <Button
+              onClick={() => {
+                resetForm()
+                setDialogOpen(true)
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Quantities
             </Button>
@@ -352,7 +349,7 @@ export default function QuantitiesPage() {
                             <Label className="text-sm font-medium">Values:</Label>
                             <div className="flex flex-wrap gap-2 mt-2">
                               {group.valuesList?.map((value, index) => (
-                                <Badge 
+                                <Badge
                                   key={index}
                                   className="text-sm"
                                   variant={value === group.defaultValue ? 'default' : 'outline'}
@@ -369,8 +366,8 @@ export default function QuantitiesPage() {
                             <div>
                               <Label className="text-sm font-medium">Custom Range:</Label>
                               <p className="text-sm text-muted-foreground mt-1">
-                                Min: {group.customMin?.toLocaleString() || 'No limit'} - 
-                                Max: {group.customMax?.toLocaleString() || 'No limit'}
+                                Min: {group.customMin?.toLocaleString() || 'No limit'} - Max:{' '}
+                                {group.customMax?.toLocaleString() || 'No limit'}
                               </p>
                             </div>
                           )}
@@ -389,9 +386,7 @@ export default function QuantitiesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingGroup ? 'Edit Quantities' : 'Create New Quantities'}
-            </DialogTitle>
+            <DialogTitle>{editingGroup ? 'Edit Quantities' : 'Create New Quantities'}</DialogTitle>
             <DialogDescription>
               Enter comma-separated values. Include "custom" to allow user input.
             </DialogDescription>
@@ -471,7 +466,9 @@ export default function QuantitiesPage() {
                     placeholder="Minimum value for custom input"
                     type="number"
                     value={formData.customMin}
-                    onChange={(e) => setFormData({ ...formData, customMin: parseInt(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customMin: parseInt(e.target.value) || 1 })
+                    }
                   />
                 </div>
 
@@ -485,7 +482,9 @@ export default function QuantitiesPage() {
                     placeholder="Maximum value for custom input"
                     type="number"
                     value={formData.customMax}
-                    onChange={(e) => setFormData({ ...formData, customMax: parseInt(e.target.value) || 100000 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customMax: parseInt(e.target.value) || 100000 })
+                    }
                   />
                 </div>
               </>
@@ -501,7 +500,9 @@ export default function QuantitiesPage() {
                 placeholder="0"
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
 
@@ -553,7 +554,7 @@ export default function QuantitiesPage() {
           <DialogHeader>
             <DialogTitle>Delete Quantities</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{groupToDelete?.name}"? 
+              Are you sure you want to delete "{groupToDelete?.name}"?
               {groupToDelete?._count.products && groupToDelete._count.products > 0 && (
                 <span className="block mt-2 text-red-500">
                   Warning: This group is being used by {groupToDelete._count.products} product(s).
@@ -571,10 +572,7 @@ export default function QuantitiesPage() {
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-            >
+            <Button variant="destructive" onClick={handleDelete}>
               Delete
             </Button>
           </DialogFooter>

@@ -14,7 +14,7 @@ interface ChartData {
 export function OrdersOverviewChart({ data }: { data?: ChartData }) {
   // Simple bar chart implementation using CSS
   const maxValue = Math.max(...(data?.datasets[0]?.data || [1]))
-  
+
   return (
     <Card>
       <CardHeader>
@@ -25,11 +25,11 @@ export function OrdersOverviewChart({ data }: { data?: ChartData }) {
           {data?.labels.map((label, index) => {
             const value = data.datasets[0]?.data[index] || 0
             const height = (value / maxValue) * 100
-            
+
             return (
               <div key={label} className="flex-1 flex flex-col items-center">
                 <div className="w-full bg-gray-200 rounded-t relative" style={{ height: '200px' }}>
-                  <div 
+                  <div
                     className="absolute bottom-0 w-full bg-blue-500 rounded-t transition-all hover:bg-blue-600"
                     style={{ height: `${height}%` }}
                     title={`${label}: ${value}`}

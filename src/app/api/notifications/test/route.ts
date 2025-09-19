@@ -6,10 +6,7 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // For now, we'll use a mock subscription since we don't have user subscriptions stored yet
@@ -18,8 +15,8 @@ export async function POST(request: NextRequest) {
       endpoint: 'https://fcm.googleapis.com/fcm/send/test',
       keys: {
         p256dh: 'test-key',
-        auth: 'test-auth'
-      }
+        auth: 'test-auth',
+      },
     }
 
     const payload = JSON.stringify({
@@ -29,15 +26,15 @@ export async function POST(request: NextRequest) {
       badge: '/favicon-100x100.png',
       data: {
         url: '/',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       },
       actions: [
         {
           action: 'view',
           title: 'View',
-          icon: '/icon-view.png'
-        }
-      ]
+          icon: '/icon-view.png',
+        },
+      ],
     })
 
     console.log('Mock push notification prepared:', payload)
@@ -45,13 +42,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Test notification prepared (mock)',
-      payload: JSON.parse(payload)
+      payload: JSON.parse(payload),
     })
   } catch (error) {
     console.error('Error sending test notification:', error)
-    return NextResponse.json(
-      { error: 'Failed to send test notification' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to send test notification' }, { status: 500 })
   }
 }

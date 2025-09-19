@@ -1,6 +1,6 @@
-import { cache } from 'react';
-import type { TenantInfo, TenantContext } from './resolver';
-import { prisma } from '@/lib/prisma';
+import { cache } from 'react'
+import type { TenantInfo, TenantContext } from './resolver'
+import { prisma } from '@/lib/prisma'
 
 // Default tenant configuration for static generation
 const DEFAULT_TENANT: TenantInfo = {
@@ -17,13 +17,13 @@ const DEFAULT_TENANT: TenantInfo = {
     logoText: 'GangRun Printing',
     faviconUrl: '/favicon-100x100.png',
     primaryColor: '#007bff',
-    secondaryColor: '#6c757d'
+    secondaryColor: '#6c757d',
   },
   locales: ['en', 'es'],
   defaultLocale: 'en',
   timezone: 'America/Chicago',
-  currency: 'USD'
-};
+  currency: 'USD',
+}
 
 // Static tenant context for build time
 const STATIC_TENANT_CONTEXT: TenantContext = {
@@ -31,8 +31,8 @@ const STATIC_TENANT_CONTEXT: TenantContext = {
   locale: 'en',
   isSubdomain: false,
   isCustomDomain: false,
-  baseDomain: 'gangrunprinting.com'
-};
+  baseDomain: 'gangrunprinting.com',
+}
 
 /**
  * Get static tenant info for build-time generation
@@ -41,12 +41,12 @@ const STATIC_TENANT_CONTEXT: TenantContext = {
 export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> => {
   // During build, always return default tenant
   if (process.env.NODE_ENV === 'production' && !process.env.NEXT_RUNTIME) {
-    return DEFAULT_TENANT;
+    return DEFAULT_TENANT
   }
 
   // If no slug provided, return default
   if (!slug) {
-    return DEFAULT_TENANT;
+    return DEFAULT_TENANT
   }
 
   // Try to fetch from database if available
@@ -54,15 +54,15 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
     const tenant = await prisma.tenant.findFirst({
       where: {
         slug,
-        isActive: true
+        isActive: true,
       },
       include: {
         brands: {
           where: { isDefault: true },
-          take: 1
-        }
-      }
-    });
+          take: 1,
+        },
+      },
+    })
 
     if (tenant) {
       return {
@@ -78,15 +78,15 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         locales: tenant.locales,
         defaultLocale: tenant.defaultLocale,
         timezone: tenant.timezone,
-        currency: tenant.currency
-      };
+        currency: tenant.currency,
+      }
     }
   } catch (error) {
-    console.error('Error fetching static tenant:', error);
+    console.error('Error fetching static tenant:', error)
   }
 
-  return DEFAULT_TENANT;
-});
+  return DEFAULT_TENANT
+})
 
 /**
  * Get static tenant context for build-time generation
@@ -97,21 +97,21 @@ export async function getStaticTenantContext(locale?: string): Promise<TenantCon
   if (process.env.NODE_ENV === 'production' && !process.env.NEXT_RUNTIME) {
     return {
       ...STATIC_TENANT_CONTEXT,
-      locale: locale || STATIC_TENANT_CONTEXT.locale
-    };
+      locale: locale || STATIC_TENANT_CONTEXT.locale,
+    }
   }
 
   // For development or runtime, try to get tenant from environment
-  const tenantSlug = process.env.NEXT_PUBLIC_TENANT_SLUG || 'gangrun';
-  const tenant = await getStaticTenant(tenantSlug);
+  const tenantSlug = process.env.NEXT_PUBLIC_TENANT_SLUG || 'gangrun'
+  const tenant = await getStaticTenant(tenantSlug)
 
   return {
     tenant,
     locale: locale || tenant.defaultLocale,
     isSubdomain: false,
     isCustomDomain: false,
-    baseDomain: process.env.NEXT_PUBLIC_DOMAIN || 'gangrunprinting.com'
-  };
+    baseDomain: process.env.NEXT_PUBLIC_DOMAIN || 'gangrunprinting.com',
+  }
 }
 
 /**
@@ -120,7 +120,7 @@ export async function getStaticTenantContext(locale?: string): Promise<TenantCon
 export function isStaticGeneration(): boolean {
   // During build, NEXT_RUNTIME is undefined
   // At runtime, it's either 'nodejs' or 'edge'
-  return process.env.NODE_ENV === 'production' && !process.env.NEXT_RUNTIME;
+  return process.env.NODE_ENV === 'production' && !process.env.NEXT_RUNTIME
 }
 
 /**
@@ -133,24 +133,24 @@ export async function getUniversalTenantContext(
 ): Promise<TenantContext> {
   // Force static context if requested or during build
   if (useStatic || isStaticGeneration()) {
-    return getStaticTenantContext(locale);
+    return getStaticTenantContext(locale)
   }
 
   // Try to use dynamic context (with headers) at runtime
   try {
     // Only import getCurrentTenant when needed to avoid build issues
-    const { getCurrentTenant } = await import('./resolver');
-    const dynamicContext = await getCurrentTenant();
+    const { getCurrentTenant } = await import('./resolver')
+    const dynamicContext = await getCurrentTenant()
 
     if (dynamicContext) {
-      return dynamicContext;
+      return dynamicContext
     }
   } catch (error) {
-    console.log('Dynamic tenant resolution not available, using static context');
+    console.log('Dynamic tenant resolution not available, using static context')
   }
 
   // Fallback to static context
-  return getStaticTenantContext(locale);
+  return getStaticTenantContext(locale)
 }
 
-export { DEFAULT_TENANT, STATIC_TENANT_CONTEXT };
+export { DEFAULT_TENANT, STATIC_TENANT_CONTEXT }

@@ -20,16 +20,13 @@ export async function POST(request: NextRequest) {
         isDraft: true,
         createdBy: user.id,
         updatedBy: user.id,
-      }
+      },
     })
 
     return NextResponse.json(draftProduct)
   } catch (error) {
     console.error('Error creating draft product:', error)
-    return NextResponse.json(
-      { error: 'Failed to create draft product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create draft product' }, { status: 500 })
   }
 }
 
@@ -44,25 +41,22 @@ export async function GET(request: NextRequest) {
     const draftProducts = await prisma.product.findMany({
       where: {
         isDraft: true,
-        createdBy: user.id
+        createdBy: user.id,
       },
       include: {
         ProductCategory: true,
         ProductImage: {
-          orderBy: { sortOrder: 'asc' }
-        }
+          orderBy: { sortOrder: 'asc' },
+        },
       },
       orderBy: {
-        updatedAt: 'desc'
-      }
+        updatedAt: 'desc',
+      },
     })
 
     return NextResponse.json(draftProducts)
   } catch (error) {
     console.error('Error fetching draft products:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch draft products' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch draft products' }, { status: 500 })
   }
 }

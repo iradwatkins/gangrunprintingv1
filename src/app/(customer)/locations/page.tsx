@@ -23,7 +23,7 @@ import {
   Navigation,
   Package,
   Truck,
-  Info
+  Info,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -39,9 +39,9 @@ const retailLocations = [
     phone: '(312) 929-3376',
     hours: {
       'Monday - Friday': '1:00pm to 9:00pm',
-      'Saturday - Sunday': 'Closed'
+      'Saturday - Sunday': 'Closed',
     },
-    type: 'retail'
+    type: 'retail',
   },
   {
     id: 'chicago-western',
@@ -53,10 +53,10 @@ const retailLocations = [
     phone: '(773) 819-7613',
     hours: {
       'Monday - Friday': '1:00pm to 9:00pm',
-      'Saturday - Sunday': 'Closed'
+      'Saturday - Sunday': 'Closed',
     },
-    type: 'retail'
-  }
+    type: 'retail',
+  },
 ]
 
 // Air cargo locations data (abbreviated for space - full list would include all locations)
@@ -73,8 +73,8 @@ const airCargoLocations = [
     zip: '12110',
     hours: {
       'Mon-Fri': '5:00am-9:00pm',
-      'Sat-Sun': 'Closed'
-    }
+      'Sat-Sun': 'Closed',
+    },
   },
   {
     id: 'atlanta',
@@ -87,8 +87,8 @@ const airCargoLocations = [
     zip: '30354',
     hours: {
       'Mon-Fri': '5:00am-12:00am',
-      'Sat-Sun': '5:00am-11:00pm'
-    }
+      'Sat-Sun': '5:00am-11:00pm',
+    },
   },
   {
     id: 'austin',
@@ -101,9 +101,9 @@ const airCargoLocations = [
     zip: '78719',
     hours: {
       'Mon-Fri': '4:30am-1:30am',
-      'Sat': '5:30am-9:00pm',
-      'Sun': '4:30am-9:00pm'
-    }
+      Sat: '5:30am-9:00pm',
+      Sun: '4:30am-9:00pm',
+    },
   },
   {
     id: 'boston',
@@ -116,9 +116,9 @@ const airCargoLocations = [
     zip: '02128',
     hours: {
       'Mon-Fri': '4:30am-12:00am',
-      'Sat': '5:00am-7:00pm',
-      'Sun': '5:00am-5:00pm'
-    }
+      Sat: '5:00am-7:00pm',
+      Sun: '5:00am-5:00pm',
+    },
   },
   {
     id: 'chicago-mdw',
@@ -131,9 +131,9 @@ const airCargoLocations = [
     zip: '60638',
     hours: {
       'Mon-Fri': '4:30am-12:00am',
-      'Sat': '5:00am-10:00pm',
-      'Sun': '5:00am-10:00pm'
-    }
+      Sat: '5:00am-10:00pm',
+      Sun: '5:00am-10:00pm',
+    },
   },
   {
     id: 'dallas',
@@ -146,9 +146,9 @@ const airCargoLocations = [
     zip: '75235',
     hours: {
       'Mon-Fri': '4:30am-1:30am',
-      'Sat': '4:30am-12:00am',
-      'Sun': '4:30am-1:30am'
-    }
+      Sat: '4:30am-12:00am',
+      Sun: '4:30am-1:30am',
+    },
   },
   {
     id: 'denver',
@@ -161,8 +161,8 @@ const airCargoLocations = [
     zip: '80249',
     hours: {
       'Mon-Sat': '4:30am-12:00am',
-      'Sun': '5:00am-12:00am'
-    }
+      Sun: '5:00am-12:00am',
+    },
   },
   {
     id: 'houston-hobby',
@@ -174,11 +174,11 @@ const airCargoLocations = [
     state: 'TX',
     zip: '77061',
     hours: {
-      'Mon': '4:00am-12:00am',
+      Mon: '4:00am-12:00am',
       'Tue-Fri': 'Open 24 hours',
-      'Sat': '12:00am-12:00am',
-      'Sun': '5:00am-12:00am'
-    }
+      Sat: '12:00am-12:00am',
+      Sun: '5:00am-12:00am',
+    },
   },
   {
     id: 'las-vegas',
@@ -191,8 +191,8 @@ const airCargoLocations = [
     zip: '89119',
     hours: {
       'Mon-Fri': '4:30am-11:30pm',
-      'Sat-Sun': '6:00am-9:30pm'
-    }
+      'Sat-Sun': '6:00am-9:30pm',
+    },
   },
   {
     id: 'los-angeles',
@@ -204,11 +204,11 @@ const airCargoLocations = [
     state: 'CA',
     zip: '90045',
     hours: {
-      'Mon': '4:30am-12:00am',
+      Mon: '4:30am-12:00am',
       'Tue-Fri': 'Open 24 hours',
-      'Sat': '12:00am-12:00am',
-      'Sun': '5:00am-12:00am'
-    }
+      Sat: '12:00am-12:00am',
+      Sun: '5:00am-12:00am',
+    },
   },
   {
     id: 'miami',
@@ -221,8 +221,8 @@ const airCargoLocations = [
     state: 'FL',
     zip: '33126',
     hours: {
-      'Mon-Sun': '6:00am-6:00pm'
-    }
+      'Mon-Sun': '6:00am-6:00pm',
+    },
   },
   {
     id: 'new-york-lga',
@@ -235,11 +235,11 @@ const airCargoLocations = [
     state: 'NY',
     zip: '11371',
     hours: {
-      'Mon': '5:00am-12:00am',
+      Mon: '5:00am-12:00am',
       'Tue-Thu': 'Open 24 hours',
-      'Fri': '12:00am-12:00am',
-      'Sat-Sun': '5:00am-11:00pm'
-    }
+      Fri: '12:00am-12:00am',
+      'Sat-Sun': '5:00am-11:00pm',
+    },
   },
   {
     id: 'orlando',
@@ -252,8 +252,8 @@ const airCargoLocations = [
     zip: '32827',
     hours: {
       'Mon-Fri': '5:00am-1:00am',
-      'Sat-Sun': '6:00am-11:00pm'
-    }
+      'Sat-Sun': '6:00am-11:00pm',
+    },
   },
   {
     id: 'philadelphia',
@@ -266,8 +266,8 @@ const airCargoLocations = [
     zip: '19153',
     hours: {
       'Mon-Fri': '5:00am-1:00am',
-      'Sat-Sun': '6:00am-2:00pm'
-    }
+      'Sat-Sun': '6:00am-2:00pm',
+    },
   },
   {
     id: 'phoenix',
@@ -280,9 +280,9 @@ const airCargoLocations = [
     zip: '85034',
     hours: {
       'Mon-Fri': '4:15am-1:30am',
-      'Sat': '5:00am-12:45am',
-      'Sun': '5:00am-1:30am'
-    }
+      Sat: '5:00am-12:45am',
+      Sun: '5:00am-1:30am',
+    },
   },
   {
     id: 'san-francisco',
@@ -295,9 +295,9 @@ const airCargoLocations = [
     zip: '94128',
     hours: {
       'Mon-Fri': '5:30am-12:00am',
-      'Sat': '5:30am-9:00pm',
-      'Sun': '10:00am-6:00pm'
-    }
+      Sat: '5:30am-9:00pm',
+      Sun: '10:00am-6:00pm',
+    },
   },
   {
     id: 'seattle',
@@ -310,9 +310,9 @@ const airCargoLocations = [
     zip: '98158',
     hours: {
       'Mon-Fri': '5:00am-12:00am',
-      'Sat-Sun': '6:00am-10:00pm'
-    }
-  }
+      'Sat-Sun': '6:00am-10:00pm',
+    },
+  },
 ]
 
 export default function LocationsPage() {
@@ -323,15 +323,16 @@ export default function LocationsPage() {
   // Get unique states from all locations
   const states = useMemo(() => {
     const allStates = new Set<string>()
-    retailLocations.forEach(loc => allStates.add(loc.state))
-    airCargoLocations.forEach(loc => allStates.add(loc.state))
+    retailLocations.forEach((loc) => allStates.add(loc.state))
+    airCargoLocations.forEach((loc) => allStates.add(loc.state))
     return Array.from(allStates).sort()
   }, [])
 
   // Filter locations based on search and state
   const filteredRetailLocations = useMemo(() => {
-    return retailLocations.filter(location => {
-      const matchesSearch = searchQuery === '' ||
+    return retailLocations.filter((location) => {
+      const matchesSearch =
+        searchQuery === '' ||
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -344,8 +345,9 @@ export default function LocationsPage() {
   }, [searchQuery, selectedState])
 
   const filteredAirCargoLocations = useMemo(() => {
-    return airCargoLocations.filter(location => {
-      const matchesSearch = searchQuery === '' ||
+    return airCargoLocations.filter((location) => {
+      const matchesSearch =
+        searchQuery === '' ||
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -358,7 +360,7 @@ export default function LocationsPage() {
     })
   }, [searchQuery, selectedState])
 
-  const LocationCard = ({ location, type }: { location: any, type: 'retail' | 'cargo' }) => (
+  const LocationCard = ({ location, type }: { location: any; type: 'retail' | 'cargo' }) => (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between">
@@ -388,7 +390,9 @@ export default function LocationsPage() {
           <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
           <div className="text-sm">
             <p>{location.address}</p>
-            <p>{location.city}, {location.state} {location.zip}</p>
+            <p>
+              {location.city}, {location.state} {location.zip}
+            </p>
           </div>
         </div>
 
@@ -443,7 +447,8 @@ export default function LocationsPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Pickup Locations</h1>
             <p className="text-lg md:text-xl opacity-90">
-              Convenient pickup options for your printing orders - retail locations and nationwide air cargo
+              Convenient pickup options for your printing orders - retail locations and nationwide
+              air cargo
             </p>
           </div>
         </div>
@@ -458,8 +463,9 @@ export default function LocationsPage() {
               <div className="space-y-2">
                 <p className="font-medium">Fast & Affordable Shipping Options</p>
                 <p className="text-sm text-muted-foreground">
-                  Get your printing products shipped to any air cargo pickup location for as little as $1 per pound.
-                  Orders can be available for pickup as early as the same day printing is completed!
+                  Get your printing products shipped to any air cargo pickup location for as little
+                  as $1 per pound. Orders can be available for pickup as early as the same day
+                  printing is completed!
                 </p>
               </div>
             </div>
@@ -484,8 +490,10 @@ export default function LocationsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All States</SelectItem>
-                {states.map(state => (
-                  <SelectItem key={state} value={state}>{state}</SelectItem>
+                {states.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -519,7 +527,7 @@ export default function LocationsPage() {
             ) : (
               <>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                  {filteredRetailLocations.map(location => (
+                  {filteredRetailLocations.map((location) => (
                     <LocationCard key={location.id} location={location} type="retail" />
                   ))}
                 </div>
@@ -549,7 +557,7 @@ export default function LocationsPage() {
             ) : (
               <div className="space-y-8">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredAirCargoLocations.map(location => (
+                  {filteredAirCargoLocations.map((location) => (
                     <LocationCard key={location.id} location={location} type="cargo" />
                   ))}
                 </div>
@@ -564,9 +572,9 @@ export default function LocationsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">
-                      We partner with Southwest Airlines Cargo to offer pickup at over 100 locations nationwide.
-                      This is a sample of available locations. For a complete list or to find the location nearest to you,
-                      please contact our customer service team.
+                      We partner with Southwest Airlines Cargo to offer pickup at over 100 locations
+                      nationwide. This is a sample of available locations. For a complete list or to
+                      find the location nearest to you, please contact our customer service team.
                     </p>
                     <div className="flex gap-3">
                       <Button asChild>
@@ -609,7 +617,8 @@ export default function LocationsPage() {
                     <div>
                       <p className="font-medium mb-1">Address</p>
                       <p className="text-sm text-muted-foreground">
-                        Gang Run Printing Corporate Office<br />
+                        Gang Run Printing Corporate Office
+                        <br />
                         Chicago, Illinois
                       </p>
                     </div>
@@ -619,7 +628,8 @@ export default function LocationsPage() {
                     <div>
                       <p className="font-medium mb-1">Contact</p>
                       <p className="text-sm text-muted-foreground">
-                        Main: 1-877-GANGRUN<br />
+                        Main: 1-877-GANGRUN
+                        <br />
                         Email: info@gangrunprinting.com
                       </p>
                     </div>
@@ -631,8 +641,10 @@ export default function LocationsPage() {
                     <div>
                       <p className="font-medium mb-1">Production Hours</p>
                       <p className="text-sm text-muted-foreground">
-                        Monday - Friday: 8:00 AM - 6:00 PM CST<br />
-                        Saturday: 9:00 AM - 2:00 PM CST<br />
+                        Monday - Friday: 8:00 AM - 6:00 PM CST
+                        <br />
+                        Saturday: 9:00 AM - 2:00 PM CST
+                        <br />
                         Sunday: Closed
                       </p>
                     </div>
@@ -642,9 +654,10 @@ export default function LocationsPage() {
                     <div>
                       <p className="font-medium mb-1">Shipping Options</p>
                       <p className="text-sm text-muted-foreground">
-                        • Same-day local delivery<br />
-                        • Next-day air cargo<br />
-                        • Standard ground shipping
+                        • Same-day local delivery
+                        <br />
+                        • Next-day air cargo
+                        <br />• Standard ground shipping
                       </p>
                     </div>
                   </div>

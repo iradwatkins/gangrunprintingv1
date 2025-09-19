@@ -6,7 +6,6 @@ import { MapPin, Plus } from 'lucide-react'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function AddressesPage() {
-
   return (
     <AccountWrapper>
       <div className="max-w-4xl">

@@ -12,11 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Bell,
@@ -31,7 +27,7 @@ import {
   CheckCircle,
   Clock,
   Trash2,
-  Settings
+  Settings,
 } from 'lucide-react'
 
 interface Notification {
@@ -51,14 +47,14 @@ const NOTIFICATION_ICONS = {
   payment: DollarSign,
   customer: Users,
   inventory: Package,
-  system: AlertTriangle
+  system: AlertTriangle,
 }
 
 const PRIORITY_COLORS = {
   low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
   medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
   high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-  urgent: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+  urgent: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
 }
 
 export function NotificationsDropdown() {
@@ -78,7 +74,7 @@ export function NotificationsDropdown() {
         timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
         read: false,
         actionUrl: '/admin/orders/ord-001',
-        actionLabel: 'View Order'
+        actionLabel: 'View Order',
       },
       {
         id: '2',
@@ -89,7 +85,7 @@ export function NotificationsDropdown() {
         timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
         read: false,
         actionUrl: '/admin/orders/ord-002',
-        actionLabel: 'View Payment'
+        actionLabel: 'View Payment',
       },
       {
         id: '3',
@@ -100,7 +96,7 @@ export function NotificationsDropdown() {
         timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
         read: true,
         actionUrl: '/admin/inventory',
-        actionLabel: 'Manage Inventory'
+        actionLabel: 'Manage Inventory',
       },
       {
         id: '4',
@@ -111,7 +107,7 @@ export function NotificationsDropdown() {
         timestamp: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
         read: true,
         actionUrl: '/admin/customers',
-        actionLabel: 'View Customer'
+        actionLabel: 'View Customer',
       },
       {
         id: '5',
@@ -120,12 +116,12 @@ export function NotificationsDropdown() {
         title: 'System Backup Complete',
         message: 'Daily backup completed successfully',
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        read: true
-      }
+        read: true,
+      },
     ]
 
     setNotifications(mockNotifications)
-    setUnreadCount(mockNotifications.filter(n => !n.read).length)
+    setUnreadCount(mockNotifications.filter((n) => !n.read).length)
 
     // Simulate real-time notifications
     const interval = setInterval(() => {
@@ -138,40 +134,36 @@ export function NotificationsDropdown() {
         timestamp: new Date(),
         read: false,
         actionUrl: '/admin/orders',
-        actionLabel: 'View Order'
+        actionLabel: 'View Order',
       }
 
-      setNotifications(prev => [newNotification, ...prev.slice(0, 9)]) // Keep latest 10
-      setUnreadCount(prev => prev + 1)
+      setNotifications((prev) => [newNotification, ...prev.slice(0, 9)]) // Keep latest 10
+      setUnreadCount((prev) => prev + 1)
     }, 30000) // Every 30 seconds
 
     return () => clearInterval(interval)
   }, [])
 
   const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id
-          ? { ...notification, read: true }
-          : notification
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
       )
     )
-    setUnreadCount(prev => Math.max(0, prev - 1))
+    setUnreadCount((prev) => Math.max(0, prev - 1))
   }
 
   const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, read: true }))
-    )
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })))
     setUnreadCount(0)
   }
 
   const deleteNotification = (id: string) => {
-    setNotifications(prev => {
-      const filtered = prev.filter(n => n.id !== id)
-      const deletedNotification = prev.find(n => n.id === id)
+    setNotifications((prev) => {
+      const filtered = prev.filter((n) => n.id !== id)
+      const deletedNotification = prev.find((n) => n.id === id)
       if (deletedNotification && !deletedNotification.read) {
-        setUnreadCount(count => Math.max(0, count - 1))
+        setUnreadCount((count) => Math.max(0, count - 1))
       }
       return filtered
     })
@@ -210,12 +202,7 @@ export function NotificationsDropdown() {
           <h3 className="font-medium">Notifications</h3>
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
-              <Button
-                className="text-xs"
-                size="sm"
-                variant="ghost"
-                onClick={markAllAsRead}
-              >
+              <Button className="text-xs" size="sm" variant="ghost" onClick={markAllAsRead}>
                 Mark all read
               </Button>
             )}
@@ -266,17 +253,13 @@ export function NotificationsDropdown() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-medium truncate">
-                            {notification.title}
-                          </p>
+                          <p className="text-sm font-medium truncate">{notification.title}</p>
                           {!notification.read && (
                             <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
                           )}
                         </div>
 
-                        <p className="text-xs text-muted-foreground mb-2">
-                          {notification.message}
-                        </p>
+                        <p className="text-xs text-muted-foreground mb-2">{notification.message}</p>
 
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">
@@ -350,7 +333,7 @@ export function NotificationsDropdown() {
 // Notification Toast Component for individual notifications
 export function NotificationToast({
   notification,
-  onDismiss
+  onDismiss,
 }: {
   notification: Notification
   onDismiss: () => void
@@ -391,12 +374,7 @@ export function NotificationToast({
           )}
         </div>
 
-        <Button
-          className="h-6 w-6 p-0"
-          size="sm"
-          variant="ghost"
-          onClick={onDismiss}
-        >
+        <Button className="h-6 w-6 p-0" size="sm" variant="ghost" onClick={onDismiss}>
           <X className="h-3 w-3" />
         </Button>
       </div>

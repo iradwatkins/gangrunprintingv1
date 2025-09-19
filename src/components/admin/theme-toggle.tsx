@@ -21,7 +21,9 @@ export function ThemeToggle() {
       setTheme(stored)
       applyTheme(stored)
     } else {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
       applyTheme(systemTheme)
     }
   }, [])
@@ -42,9 +44,12 @@ export function ThemeToggle() {
 
   const applyTheme = (newTheme: 'light' | 'dark' | 'system') => {
     const root = document.documentElement
-    const effectiveTheme = newTheme === 'system'
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : newTheme
+    const effectiveTheme =
+      newTheme === 'system'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+        : newTheme
 
     if (effectiveTheme === 'dark') {
       root.classList.add('dark')

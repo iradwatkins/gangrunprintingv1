@@ -21,7 +21,7 @@ export function CartDrawer() {
     subtotal,
     tax,
     shipping,
-    total
+    total,
   } = useCart()
 
   return (
@@ -147,11 +147,7 @@ export function CartDrawer() {
                     Proceed to Checkout
                   </Link>
                 </Button>
-                <Button
-                  className="w-full"
-                  variant="outline"
-                  onClick={closeCart}
-                >
+                <Button className="w-full" variant="outline" onClick={closeCart}>
                   Continue Shopping
                 </Button>
               </div>

@@ -6,12 +6,13 @@ import dynamic from 'next/dynamic'
 
 // Lazy load the performance monitor
 const ComprehensivePerformanceMonitor = dynamic(
-  () => import('@/components/performance-monitor').then(mod => ({
-    default: mod.ComprehensivePerformanceMonitor
-  })),
+  () =>
+    import('@/components/performance-monitor').then((mod) => ({
+      default: mod.ComprehensivePerformanceMonitor,
+    })),
   {
     ssr: false,
-    loading: () => null
+    loading: () => null,
   }
 )
 
@@ -21,10 +22,11 @@ export function LazyPerformanceMonitor() {
 
   useEffect(() => {
     // Skip performance monitoring on auth pages and admin login
-    const isAuthPage = pathname.includes('/auth/') ||
-                      pathname.includes('/signin') ||
-                      pathname.includes('/signup') ||
-                      pathname.includes('/login')
+    const isAuthPage =
+      pathname.includes('/auth/') ||
+      pathname.includes('/signin') ||
+      pathname.includes('/signup') ||
+      pathname.includes('/login')
 
     // Only load performance monitor after initial render and not on auth pages
     if (!isAuthPage) {

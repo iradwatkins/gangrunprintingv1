@@ -157,7 +157,7 @@ export const cache = {
 export const cacheKeys = {
   // Product cache keys
   product: (id: string) => `product:${id}`,
-  productList: (category?: string) => category ? `products:category:${category}` : 'products:all',
+  productList: (category?: string) => (category ? `products:category:${category}` : 'products:all'),
   productSearch: (query: string) => `products:search:${query}`,
 
   // Order cache keys
@@ -222,7 +222,7 @@ export async function checkRateLimit(
   return {
     allowed: count <= limit,
     remaining: Math.max(0, limit - count),
-    resetAt: Date.now() + (ttl * 1000),
+    resetAt: Date.now() + ttl * 1000,
   }
 }
 

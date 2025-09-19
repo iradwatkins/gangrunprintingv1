@@ -93,7 +93,9 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
       />
 
       {/* Main Content Area */}
-      <div className={`transition-all duration-300 ${isDesktopSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
+      <div
+        className={`transition-all duration-300 ${isDesktopSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}
+      >
         {/* Header */}
         <header className="h-16 border-b bg-background flex items-center px-4 lg:px-6">
           {/* Desktop sidebar toggle */}
@@ -111,9 +113,7 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
         </header>
 
         {/* Page Content */}
-        <main className="p-4 lg:p-6">
-          {children}
-        </main>
+        <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>
   )

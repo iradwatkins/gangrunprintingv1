@@ -8,18 +8,15 @@ export async function GET(request: NextRequest) {
     // Verify cron secret if configured
     const authHeader = request.headers.get('authorization')
     if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
+
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
-    
+
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
 
@@ -33,16 +30,16 @@ export async function GET(request: NextRequest) {
       weeklyOrders,
       monthlyOrders,
       activeCustomers,
-      newCustomers
+      newCustomers,
     ] = await Promise.all([
       // Today's new orders
       prisma.order.count({
         where: {
           createdAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
+            lt: tomorrow,
+          },
+        },
       }),
       // Today's completed orders
       prisma.order.count({
@@ -50,81 +47,80 @@ export async function GET(request: NextRequest) {
           status: 'DELIVERED',
           updatedAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
+            lt: tomorrow,
+          },
+        },
       }),
       // Pending orders
       prisma.order.count({
         where: {
           status: {
-            in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING', 'READY_FOR_PICKUP']
-          }
-        }
+            in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING', 'READY_FOR_PICKUP'],
+          },
+        },
       }),
       // Today's orders with details
       prisma.order.findMany({
         where: {
           createdAt: {
             gte: today,
-            lt: tomorrow
-          }
+            lt: tomorrow,
+          },
         },
         include: {
-          OrderItem: true
-        }
+          OrderItem: true,
+        },
       }),
       // Yesterday's orders for comparison
       prisma.order.findMany({
         where: {
           createdAt: {
             gte: yesterday,
-            lt: today
-          }
-        }
+            lt: today,
+          },
+        },
       }),
       // This week's orders
       prisma.order.count({
         where: {
           createdAt: {
-            gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-          }
-        }
+            gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
       }),
       // This month's orders
       prisma.order.count({
         where: {
           createdAt: {
-            gte: new Date(today.getFullYear(), today.getMonth(), 1)
-          }
-        }
+            gte: new Date(today.getFullYear(), today.getMonth(), 1),
+          },
+        },
       }),
       // Active customers (placed orders in last 30 days)
       prisma.order.groupBy({
         by: ['email'],
         where: {
           createdAt: {
-            gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
-          }
-        }
+            gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000),
+          },
+        },
       }),
       // New customers today
       prisma.customer.count({
         where: {
           createdAt: {
             gte: today,
-            lt: tomorrow
-          }
-        }
-      })
+            lt: tomorrow,
+          },
+        },
+      }),
     ])
 
     // Calculate revenue
     const todaysRevenue = todaysOrders.reduce((sum, order) => sum + order.total, 0) / 100
     const yesterdaysRevenue = yesterdaysOrders.reduce((sum, order) => sum + order.total, 0) / 100
-    const revenueChange = yesterdaysRevenue > 0 
-      ? ((todaysRevenue - yesterdaysRevenue) / yesterdaysRevenue) * 100 
-      : 0
+    const revenueChange =
+      yesterdaysRevenue > 0 ? ((todaysRevenue - yesterdaysRevenue) / yesterdaysRevenue) * 100 : 0
 
     // Find orders with issues
     const ordersWithIssues = await prisma.order.findMany({
@@ -133,41 +129,44 @@ export async function GET(request: NextRequest) {
           {
             status: 'PAYMENT_FAILED',
             updatedAt: {
-              gte: yesterday
-            }
+              gte: yesterday,
+            },
           },
           {
             adminNotes: {
-              contains: 'issue'
+              contains: 'issue',
             },
             updatedAt: {
-              gte: yesterday
-            }
-          }
-        ]
+              gte: yesterday,
+            },
+          },
+        ],
       },
       select: {
         orderNumber: true,
         status: true,
-        adminNotes: true
-      }
+        adminNotes: true,
+      },
     })
 
     // Top products today
-    const productStats = todaysOrders.reduce((acc, order) => {
-      order.OrderItem.forEach(item => {
-        if (!acc[item.productName]) {
-          acc[item.productName] = {
-            name: item.productName,
-            quantity: 0,
-            revenue: 0
+    const productStats = todaysOrders.reduce(
+      (acc, order) => {
+        order.OrderItem.forEach((item) => {
+          if (!acc[item.productName]) {
+            acc[item.productName] = {
+              name: item.productName,
+              quantity: 0,
+              revenue: 0,
+            }
           }
-        }
-        acc[item.productName].quantity += item.quantity
-        acc[item.productName].revenue += (item.price * item.quantity) / 100
-      })
-      return acc
-    }, {} as Record<string, any>)
+          acc[item.productName].quantity += item.quantity
+          acc[item.productName].revenue += (item.price * item.quantity) / 100
+        })
+        return acc
+      },
+      {} as Record<string, any>
+    )
 
     const topProducts = Object.values(productStats)
       .sort((a, b) => b.revenue - a.revenue)
@@ -187,11 +186,11 @@ export async function GET(request: NextRequest) {
       activeCustomers: activeCustomers.length,
       newCustomers,
       topProducts,
-      issues: ordersWithIssues.map(order => ({
+      issues: ordersWithIssues.map((order) => ({
         orderNumber: order.orderNumber,
         status: order.status,
-        notes: order.adminNotes
-      }))
+        notes: order.adminNotes,
+      })),
     }
 
     // Trigger N8N daily report workflow
@@ -207,19 +206,15 @@ export async function GET(request: NextRequest) {
       date: reportData.date,
       orders: ordersCreated,
       revenue: todaysRevenue,
-      pending: ordersPending
+      pending: ordersPending,
     })
 
     return NextResponse.json({
       success: true,
-      report: reportData
+      report: reportData,
     })
-
   } catch (error) {
     console.error('Daily report error:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate daily report' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate daily report' }, { status: 500 })
   }
 }

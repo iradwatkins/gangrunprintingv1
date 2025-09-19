@@ -24,25 +24,25 @@ async function getUserProfile(userId: string) {
       updatedAt: true,
       role: true,
       marketingOptIn: true,
-      smsOptIn: true
-    }
+      smsOptIn: true,
+    },
   })
 
   // Get user's order statistics
   const orderStats = await prisma.order.aggregate({
     where: {
       userId,
-      status: { notIn: ['CANCELLED', 'REFUNDED'] }
+      status: { notIn: ['CANCELLED', 'REFUNDED'] },
     },
     _count: true,
     _sum: {
-      total: true
-    }
+      total: true,
+    },
   })
 
   return {
     user,
-    orderStats
+    orderStats,
   }
 }
 
@@ -50,7 +50,7 @@ function getInitials(name: string | null) {
   if (!name) return 'U'
   return name
     .split(' ')
-    .map(part => part.charAt(0))
+    .map((part) => part.charAt(0))
     .join('')
     .toUpperCase()
     .slice(0, 2)
@@ -72,15 +72,13 @@ export default async function ProfilePage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Profile
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Manage your personal information and account details
           </p>
@@ -91,59 +89,46 @@ export default async function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Profile Overview</CardTitle>
-              <CardDescription>
-                Your account information and status
-              </CardDescription>
+              <CardDescription>Your account information and status</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-6">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={userProfile?.image || ''} alt={userProfile?.name || 'User'} />
+                  <AvatarImage alt={userProfile?.name || 'User'} src={userProfile?.image || ''} />
                   <AvatarFallback className="text-lg">
                     {getInitials(userProfile?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-semibold">
-                      {userProfile?.name || 'No name set'}
-                    </h2>
-                    <Badge variant="secondary" className="capitalize">
+                    <h2 className="text-2xl font-semibold">{userProfile?.name || 'No name set'}</h2>
+                    <Badge className="capitalize" variant="secondary">
                       {userProfile?.role.toLowerCase()}
                     </Badge>
                     {userProfile?.emailVerified && (
-                      <Badge className="bg-green-100 text-green-800">
-                        Verified
-                      </Badge>
+                      <Badge className="bg-green-100 text-green-800">Verified</Badge>
                     )}
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    {userProfile?.email}
-                  </p>
+                  <p className="text-muted-foreground mb-4">{userProfile?.email}</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-2xl font-bold">
-                        {orderStats._count || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Total Orders
-                      </div>
+                      <div className="text-2xl font-bold">{orderStats._count || 0}</div>
+                      <div className="text-sm text-muted-foreground">Total Orders</div>
                     </div>
                     <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="text-2xl font-bold">
                         ${((orderStats._sum.total || 0) / 100).toFixed(2)}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Total Spent
-                      </div>
+                      <div className="text-sm text-muted-foreground">Total Spent</div>
                     </div>
                     <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="text-2xl font-bold">
-                        {Math.floor((new Date().getTime() - new Date(userProfile?.createdAt || 0).getTime()) / (1000 * 60 * 60 * 24))}
+                        {Math.floor(
+                          (new Date().getTime() - new Date(userProfile?.createdAt || 0).getTime()) /
+                            (1000 * 60 * 60 * 24)
+                        )}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Days Active
-                      </div>
+                      <div className="text-sm text-muted-foreground">Days Active</div>
                     </div>
                   </div>
                 </div>
@@ -158,25 +143,23 @@ export default async function ProfilePage() {
                 <User className="h-5 w-5" />
                 Personal Information
               </CardTitle>
-              <CardDescription>
-                Update your personal details
-              </CardDescription>
+              <CardDescription>Update your personal details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
-                    id="firstName"
                     defaultValue={userProfile?.name?.split(' ')[0] || ''}
+                    id="firstName"
                     placeholder="Enter your first name"
                   />
                 </div>
                 <div>
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
-                    id="lastName"
                     defaultValue={userProfile?.name?.split(' ').slice(1).join(' ') || ''}
+                    id="lastName"
                     placeholder="Enter your last name"
                   />
                 </div>
@@ -184,10 +167,10 @@ export default async function ProfilePage() {
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <Input
-                  id="email"
-                  type="email"
                   defaultValue={userProfile?.email || ''}
+                  id="email"
                   placeholder="Enter your email"
+                  type="email"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
                   {userProfile?.emailVerified ? (
@@ -200,10 +183,10 @@ export default async function ProfilePage() {
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
-                  id="phone"
-                  type="tel"
                   defaultValue={userProfile?.phoneNumber || ''}
+                  id="phone"
                   placeholder="Enter your phone number"
+                  type="tel"
                 />
               </div>
               <Button>
@@ -220,9 +203,7 @@ export default async function ProfilePage() {
                 <Calendar className="h-5 w-5" />
                 Account Information
               </CardTitle>
-              <CardDescription>
-                Your account details and membership information
-              </CardDescription>
+              <CardDescription>Your account details and membership information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -232,7 +213,7 @@ export default async function ProfilePage() {
                     {new Date(userProfile?.createdAt || 0).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
-                      day: 'numeric'
+                      day: 'numeric',
                     })}
                   </p>
                 </div>
@@ -242,7 +223,7 @@ export default async function ProfilePage() {
                     {new Date(userProfile?.updatedAt || 0).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
-                      day: 'numeric'
+                      day: 'numeric',
                     })}
                   </p>
                 </div>
@@ -267,14 +248,12 @@ export default async function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Profile Actions</CardTitle>
-              <CardDescription>
-                Manage your profile and account settings
-              </CardDescription>
+              <CardDescription>Manage your profile and account settings</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Link href="/dashboard/settings">
-                  <Button variant="outline" className="w-full justify-start h-auto p-4">
+                  <Button className="w-full justify-start h-auto p-4" variant="outline">
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <Edit className="h-4 w-4" />
@@ -288,7 +267,7 @@ export default async function ProfilePage() {
                 </Link>
 
                 <Link href="/account/addresses">
-                  <Button variant="outline" className="w-full justify-start h-auto p-4">
+                  <Button className="w-full justify-start h-auto p-4" variant="outline">
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <MapPin className="h-4 w-4" />
@@ -302,7 +281,7 @@ export default async function ProfilePage() {
                 </Link>
 
                 <Link href="/dashboard/orders">
-                  <Button variant="outline" className="w-full justify-start h-auto p-4">
+                  <Button className="w-full justify-start h-auto p-4" variant="outline">
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <Mail className="h-4 w-4" />
@@ -316,7 +295,7 @@ export default async function ProfilePage() {
                 </Link>
 
                 <Link href="/dashboard/payments">
-                  <Button variant="outline" className="w-full justify-start h-auto p-4">
+                  <Button className="w-full justify-start h-auto p-4" variant="outline">
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <Phone className="h-4 w-4" />

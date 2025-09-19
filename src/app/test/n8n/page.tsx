@@ -8,9 +8,15 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { 
+import {
   Workflow,
   CheckCircle,
   XCircle,
@@ -25,7 +31,7 @@ import {
   Bell,
   BarChart,
   Users,
-  Activity
+  Activity,
 } from 'lucide-react'
 
 interface TestResult {
@@ -43,7 +49,7 @@ export default function N8NTestPage() {
   const [customPayload, setCustomPayload] = useState('')
 
   const addResult = (result: TestResult) => {
-    setResults(prev => [result, ...prev].slice(0, 15))
+    setResults((prev) => [result, ...prev].slice(0, 15))
   }
 
   // Test N8N webhook endpoint status
@@ -52,18 +58,18 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n')
       const data = await response.json()
-      
+
       addResult({
         success: response.ok,
         message: 'N8N webhook endpoint status',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -76,15 +82,15 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
         body: JSON.stringify({
           action: 'order.created',
           orderNumber,
-          autoAssignVendor: true
-        })
+          autoAssignVendor: true,
+        }),
       })
 
       const data = await response.json()
@@ -92,13 +98,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: 'Order created workflow triggered',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -111,17 +117,17 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
         body: JSON.stringify({
           action: 'order.status.update',
           orderNumber,
           newStatus,
           notes: `Status updated to ${newStatus} via N8N test`,
-          changedBy: 'Test Interface'
-        })
+          changedBy: 'Test Interface',
+        }),
       })
 
       const data = await response.json()
@@ -129,13 +135,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: `Status update to ${newStatus}`,
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -148,16 +154,16 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
         body: JSON.stringify({
           action: 'order.vendor.assign',
           orderNumber,
           vendorName: vendorId || 'Test Vendor',
-          notes: 'Assigned via N8N test interface'
-        })
+          notes: 'Assigned via N8N test interface',
+        }),
       })
 
       const data = await response.json()
@@ -165,13 +171,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: 'Vendor assignment workflow',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -184,17 +190,17 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
         body: JSON.stringify({
           action: 'order.tracking.update',
           orderNumber,
           trackingNumber: '1Z999AA10123456784',
           carrier: 'FEDEX',
-          trackingUrl: 'https://fedex.com/track/1Z999AA10123456784'
-        })
+          trackingUrl: 'https://fedex.com/track/1Z999AA10123456784',
+        }),
       })
 
       const data = await response.json()
@@ -202,13 +208,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: 'Tracking update workflow',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -221,16 +227,16 @@ export default function N8NTestPage() {
     try {
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
         body: JSON.stringify({
           action: 'notification.send',
           orderNumber,
           type,
-          force: true
-        })
+          force: true,
+        }),
       })
 
       const data = await response.json()
@@ -238,13 +244,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: `${type} notification workflow`,
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -257,7 +263,7 @@ export default function N8NTestPage() {
       addResult({
         success: false,
         message: 'Please enter a custom payload',
-        timestamp: new Date()
+        timestamp: new Date(),
       })
       return
     }
@@ -267,11 +273,11 @@ export default function N8NTestPage() {
       const payload = JSON.parse(customPayload)
       const response = await fetch('/api/webhooks/n8n', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || ''
+          'x-n8n-api-key': process.env.NEXT_PUBLIC_N8N_API_KEY || '',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
 
       const data = await response.json()
@@ -279,13 +285,13 @@ export default function N8NTestPage() {
         success: response.ok,
         message: 'Custom webhook payload',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Invalid JSON'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -352,10 +358,10 @@ export default function N8NTestPage() {
                   <TabsTrigger value="notify">Notify</TabsTrigger>
                   <TabsTrigger value="custom">Custom</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent className="space-y-4" value="order">
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={testWebhookStatus}
@@ -367,12 +373,8 @@ export default function N8NTestPage() {
                     )}
                     Check Webhook Status
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
-                    disabled={loading}
-                    onClick={testOrderCreated}
-                  >
+
+                  <Button className="w-full" disabled={loading} onClick={testOrderCreated}>
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -380,9 +382,9 @@ export default function N8NTestPage() {
                     )}
                     Order Created
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={testVendorAssignment}
@@ -394,9 +396,9 @@ export default function N8NTestPage() {
                     )}
                     Assign Vendor
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={testTrackingUpdate}
@@ -409,19 +411,19 @@ export default function N8NTestPage() {
                     Update Tracking
                   </Button>
                 </TabsContent>
-                
+
                 <TabsContent className="space-y-4" value="status">
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     onClick={() => testStatusUpdate('PAID')}
                   >
                     <DollarSign className="mr-2 h-4 w-4" />
                     Payment Received
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testStatusUpdate('PROCESSING')}
@@ -429,9 +431,9 @@ export default function N8NTestPage() {
                     <Clock className="mr-2 h-4 w-4" />
                     Processing
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testStatusUpdate('PRINTING')}
@@ -439,9 +441,9 @@ export default function N8NTestPage() {
                     <FileText className="mr-2 h-4 w-4" />
                     In Production
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testStatusUpdate('SHIPPED')}
@@ -450,19 +452,19 @@ export default function N8NTestPage() {
                     Shipped
                   </Button>
                 </TabsContent>
-                
+
                 <TabsContent className="space-y-4" value="notify">
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     onClick={() => testNotificationSend('ORDER_CONFIRMED')}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Order Confirmation
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testNotificationSend('PAYMENT_RECEIVED')}
@@ -470,9 +472,9 @@ export default function N8NTestPage() {
                     <Bell className="mr-2 h-4 w-4" />
                     Payment Received
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testNotificationSend('ORDER_SHIPPED')}
@@ -480,9 +482,9 @@ export default function N8NTestPage() {
                     <Bell className="mr-2 h-4 w-4" />
                     Shipment Notification
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={() => testNotificationSend('ORDER_DELIVERED')}
@@ -491,26 +493,30 @@ export default function N8NTestPage() {
                     Delivery Confirmation
                   </Button>
                 </TabsContent>
-                
+
                 <TabsContent className="space-y-4" value="custom">
                   <div>
                     <Label htmlFor="payload">Custom JSON Payload</Label>
                     <Textarea
                       className="font-mono text-sm"
                       id="payload"
-                      placeholder={JSON.stringify({
-                        action: 'custom.action',
-                        orderNumber: 'GRP-12345',
-                        data: {}
-                      }, null, 2)}
+                      placeholder={JSON.stringify(
+                        {
+                          action: 'custom.action',
+                          orderNumber: 'GRP-12345',
+                          data: {},
+                        },
+                        null,
+                        2
+                      )}
                       rows={8}
                       value={customPayload}
                       onChange={(e) => setCustomPayload(e.target.value)}
                     />
                   </div>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading || !customPayload}
                     onClick={testCustomWebhook}
                   >
@@ -558,28 +564,23 @@ export default function N8NTestPage() {
             ) : (
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
                 {results.map((result, index) => (
-                  <div 
-                    key={index} 
-                    className="border rounded-lg p-3 space-y-2"
-                  >
+                  <div key={index} className="border rounded-lg p-3 space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(result.success)}
-                        <span className="font-medium">
-                          {result.message}
-                        </span>
+                        <span className="font-medium">{result.message}</span>
                       </div>
                       <Badge variant={result.success ? 'default' : 'destructive'}>
                         {result.success ? 'Success' : 'Failed'}
                       </Badge>
                     </div>
-                    
+
                     {result.data && (
                       <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
                         {JSON.stringify(result.data, null, 2)}
                       </pre>
                     )}
-                    
+
                     <p className="text-xs text-muted-foreground">
                       {result.timestamp.toLocaleTimeString()}
                     </p>

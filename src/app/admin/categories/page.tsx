@@ -8,17 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search,
-  ArrowUpDown,
-  Save,
-  Package,
-  Eye,
-  EyeOff
-} from 'lucide-react'
+import { Plus, Edit, Trash2, Search, ArrowUpDown, Save, Package, Eye, EyeOff } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -67,7 +57,7 @@ export default function CategoriesPage() {
     slug: '',
     description: '',
     sortOrder: 0,
-    isActive: true
+    isActive: true,
   })
 
   useEffect(() => {
@@ -92,28 +82,30 @@ export default function CategoriesPage() {
   const handleSubmit = async () => {
     try {
       setSaving(true)
-      
+
       // Validation
       if (!formData.name) {
         toast.error('Name is required')
         setSaving(false)
         return
       }
-      
-      const url = editingCategory 
+
+      const url = editingCategory
         ? `/api/product-categories/${editingCategory.id}`
         : '/api/product-categories'
-      
+
       const method = editingCategory ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
-      
+
       if (response.ok) {
-        toast.success(editingCategory ? 'Category updated successfully' : 'Category created successfully')
+        toast.success(
+          editingCategory ? 'Category updated successfully' : 'Category created successfully'
+        )
         setDialogOpen(false)
         resetForm()
         fetchCategories()
@@ -131,12 +123,12 @@ export default function CategoriesPage() {
 
   const handleDelete = async () => {
     if (!categoryToDelete) return
-    
+
     try {
       const response = await fetch(`/api/product-categories/${categoryToDelete.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
-      
+
       if (response.ok) {
         const result = await response.json()
         toast.success(result.message || 'Category deleted successfully')
@@ -158,7 +150,7 @@ export default function CategoriesPage() {
       slug: '',
       description: '',
       sortOrder: 0,
-      isActive: true
+      isActive: true,
     })
     setEditingCategory(null)
   }
@@ -170,7 +162,7 @@ export default function CategoriesPage() {
       slug: category.slug,
       description: category.description || '',
       sortOrder: category.sortOrder,
-      isActive: category.isActive
+      isActive: category.isActive,
     })
     setDialogOpen(true)
   }
@@ -191,13 +183,14 @@ export default function CategoriesPage() {
     setFormData({
       ...formData,
       name,
-      slug: !editingCategory ? generateSlug(name) : formData.slug
+      slug: !editingCategory ? generateSlug(name) : formData.slug,
     })
   }
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.slug.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      category.slug.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -211,10 +204,12 @@ export default function CategoriesPage() {
                 Manage product categories for your printing services
               </CardDescription>
             </div>
-            <Button onClick={() => {
-              resetForm()
-              setDialogOpen(true)
-            }}>
+            <Button
+              onClick={() => {
+                resetForm()
+                setDialogOpen(true)
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add New Category
             </Button>
@@ -239,7 +234,9 @@ export default function CategoriesPage() {
             <div className="text-center py-8">Loading categories...</div>
           ) : filteredCategories.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              {searchTerm ? 'No categories found matching your search.' : 'No categories found. Create your first category to get started.'}
+              {searchTerm
+                ? 'No categories found matching your search.'
+                : 'No categories found. Create your first category to get started.'}
             </div>
           ) : (
             <div className="rounded-md border">
@@ -264,13 +261,9 @@ export default function CategoriesPage() {
                 <TableBody>
                   {filteredCategories.map((category) => (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">
-                        {category.name}
-                      </TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell>
                       <TableCell>
-                        <code className="text-sm bg-muted px-2 py-1 rounded">
-                          {category.slug}
-                        </code>
+                        <code className="text-sm bg-muted px-2 py-1 rounded">{category.slug}</code>
                       </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground line-clamp-2">
@@ -283,12 +276,10 @@ export default function CategoriesPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="text-sm text-muted-foreground">
-                          {category.sortOrder}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{category.sortOrder}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge 
+                        <Badge
                           className="flex items-center gap-1 w-fit"
                           variant={category.isActive ? 'default' : 'secondary'}
                         >
@@ -327,9 +318,9 @@ export default function CategoriesPage() {
 
           {/* Summary */}
           <div className="mt-4 text-sm text-muted-foreground">
-            Total: {categories.length} categories • 
-            Active: {categories.filter(c => c.isActive).length} • 
-            With Products: {categories.filter(c => c._count?.Product && c._count.Product > 0).length}
+            Total: {categories.length} categories • Active:{' '}
+            {categories.filter((c) => c.isActive).length} • With Products:{' '}
+            {categories.filter((c) => c._count?.Product && c._count.Product > 0).length}
           </div>
         </CardContent>
       </Card>
@@ -338,12 +329,8 @@ export default function CategoriesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingCategory ? 'Edit Category' : 'Create New Category'}
-            </DialogTitle>
-            <DialogDescription>
-              Configure the category details
-            </DialogDescription>
+            <DialogTitle>{editingCategory ? 'Edit Category' : 'Create New Category'}</DialogTitle>
+            <DialogDescription>Configure the category details</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -397,7 +384,9 @@ export default function CategoriesPage() {
                 placeholder="0"
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
 
@@ -452,8 +441,8 @@ export default function CategoriesPage() {
               Are you sure you want to delete &quot;{categoryToDelete?.name}&quot;?
               {categoryToDelete?._count?.Product && categoryToDelete._count.Product > 0 && (
                 <span className="block mt-2 text-amber-600">
-                  This category has {categoryToDelete._count.Product} product(s). 
-                  It will be deactivated instead of deleted.
+                  This category has {categoryToDelete._count.Product} product(s). It will be
+                  deactivated instead of deleted.
                 </span>
               )}
             </DialogDescription>
@@ -468,13 +457,11 @@ export default function CategoriesPage() {
             >
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-            >
-              {categoryToDelete?._count?.Product && categoryToDelete._count.Product > 0 
-                ? 'Deactivate' 
-                : 'Delete'} Category
+            <Button variant="destructive" onClick={handleDelete}>
+              {categoryToDelete?._count?.Product && categoryToDelete._count.Product > 0
+                ? 'Deactivate'
+                : 'Delete'}{' '}
+              Category
             </Button>
           </DialogFooter>
         </DialogContent>

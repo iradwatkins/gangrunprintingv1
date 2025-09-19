@@ -36,17 +36,18 @@ export default function CheckoutPage() {
     billingCity: '',
     billingState: '',
     billingZipCode: '',
-    shippingMethod: 'standard'
+    shippingMethod: 'standard',
   })
 
   // Square configuration (these should come from environment variables)
-  const SQUARE_APPLICATION_ID = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || 'sandbox-sq0idb-YOUR_APP_ID'
+  const SQUARE_APPLICATION_ID =
+    process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || 'sandbox-sq0idb-YOUR_APP_ID'
   const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || 'YOUR_LOCATION_ID'
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     })
   }
 
@@ -60,9 +61,16 @@ export default function CheckoutPage() {
     }
 
     // Validate form data
-    if (!formData.email || !formData.firstName || !formData.lastName ||
-        !formData.phone || !formData.address || !formData.city ||
-        !formData.state || !formData.zipCode) {
+    if (
+      !formData.email ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.phone ||
+      !formData.address ||
+      !formData.city ||
+      !formData.state ||
+      !formData.zipCode
+    ) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -105,19 +113,22 @@ export default function CheckoutPage() {
       const response = await fetch('/api/checkout/create-payment', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(checkoutData)
+        body: JSON.stringify(checkoutData),
       })
 
       const result = await response.json()
 
       if (result.success && result.checkoutUrl) {
-        sessionStorage.setItem('lastOrder', JSON.stringify({
-          orderNumber: result.orderNumber,
-          orderId: result.orderId,
-          total: checkoutData.total
-        }))
+        sessionStorage.setItem(
+          'lastOrder',
+          JSON.stringify({
+            orderNumber: result.orderNumber,
+            orderId: result.orderId,
+            total: checkoutData.total,
+          })
+        )
 
         clearCart()
         window.location.href = result.checkoutUrl
@@ -131,7 +142,7 @@ export default function CheckoutPage() {
   }
 
   const createCheckoutData = () => {
-    const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
+    const shippingCost = formData.shippingMethod === 'express' ? 25.0 : 10.0
     const total = subtotal + tax + shippingCost
 
     return {
@@ -141,27 +152,29 @@ export default function CheckoutPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         company: formData.company,
-        phone: formData.phone
+        phone: formData.phone,
       },
       shippingAddress: {
         street: formData.address,
         city: formData.city,
         state: formData.state,
         zipCode: formData.zipCode,
-        country: 'US'
+        country: 'US',
       },
-      billingAddress: sameAsShipping ? null : {
-        street: formData.billingAddress,
-        city: formData.billingCity,
-        state: formData.billingState,
-        zipCode: formData.billingZipCode,
-        country: 'US'
-      },
+      billingAddress: sameAsShipping
+        ? null
+        : {
+            street: formData.billingAddress,
+            city: formData.billingCity,
+            state: formData.billingState,
+            zipCode: formData.billingZipCode,
+            country: 'US',
+          },
       shippingMethod: formData.shippingMethod,
       subtotal,
       tax,
       shipping: shippingCost,
-      total
+      total,
     }
   }
 
@@ -169,11 +182,14 @@ export default function CheckoutPage() {
     toast.success('Payment processed successfully!')
 
     // Store success info
-    sessionStorage.setItem('lastOrder', JSON.stringify({
-      orderNumber: result.orderNumber || `GRP-${Date.now()}`,
-      orderId: result.orderId || result.payment?.id,
-      total: orderTotal
-    }))
+    sessionStorage.setItem(
+      'lastOrder',
+      JSON.stringify({
+        orderNumber: result.orderNumber || `GRP-${Date.now()}`,
+        orderId: result.orderId || result.payment?.id,
+        total: orderTotal,
+      })
+    )
 
     clearCart()
     router.push('/checkout/success')
@@ -194,7 +210,7 @@ export default function CheckoutPage() {
     setSelectedPaymentMethod('')
   }
 
-  const shippingCost = formData.shippingMethod === 'express' ? 25.00 : 10.00
+  const shippingCost = formData.shippingMethod === 'express' ? 25.0 : 10.0
   const orderTotal = subtotal + tax + shippingCost
 
   if (items.length === 0) {
@@ -202,9 +218,7 @@ export default function CheckoutPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-8">
-            Add items to your cart before checking out
-          </p>
+          <p className="text-muted-foreground mb-8">Add items to your cart before checking out</p>
           <Link href="/products">
             <Button size="lg">Browse Products</Button>
           </Link>
@@ -215,7 +229,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6" href="/cart">
+      <Link
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
+        href="/cart"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Cart
       </Link>
@@ -353,7 +370,7 @@ export default function CheckoutPage() {
                   </Label>
                 </div>
               </div>
-              
+
               {!sameAsShipping && (
                 <div className="space-y-4">
                   <div>
@@ -408,9 +425,9 @@ export default function CheckoutPage() {
             {/* Shipping Method */}
             <div className="border rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Shipping Method</h2>
-              <RadioGroup 
+              <RadioGroup
                 value={formData.shippingMethod}
-                onValueChange={(value) => setFormData({...formData, shippingMethod: value})}
+                onValueChange={(value) => setFormData({ ...formData, shippingMethod: value })}
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -464,7 +481,9 @@ export default function CheckoutPage() {
                               <div className="text-xs text-muted-foreground mt-1">
                                 {item.options.size && <span>Size: {item.options.size}</span>}
                                 {item.options.size && item.options.paperStock && <span> • </span>}
-                                {item.options.paperStock && <span>Paper: {item.options.paperStock}</span>}
+                                {item.options.paperStock && (
+                                  <span>Paper: {item.options.paperStock}</span>
+                                )}
                               </div>
                             )}
                           </div>
@@ -495,12 +514,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full"
-                    disabled={isProcessing}
-                    size="lg"
-                    type="submit"
-                  >
+                  <Button className="w-full" disabled={isProcessing} size="lg" type="submit">
                     {isProcessing ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -520,7 +534,9 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                    <p>By placing this order, you agree to our Terms of Service and Privacy Policy.</p>
+                    <p>
+                      By placing this order, you agree to our Terms of Service and Privacy Policy.
+                    </p>
                   </div>
                 </>
               )}
@@ -528,20 +544,15 @@ export default function CheckoutPage() {
               {paymentStep === 'payment' && (
                 <>
                   <div className="flex items-center gap-2 mb-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleBackToInfo}
-                      className="p-2"
-                    >
+                    <Button className="p-2" size="sm" variant="ghost" onClick={handleBackToInfo}>
                       <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <h2 className="text-xl font-semibold">Payment Method</h2>
                   </div>
 
                   <PaymentMethods
-                    total={orderTotal}
                     isProcessing={isProcessing}
+                    total={orderTotal}
                     onPaymentMethodSelect={handlePaymentMethodSelect}
                   />
                 </>
@@ -550,12 +561,7 @@ export default function CheckoutPage() {
               {paymentStep === 'card' && (
                 <>
                   <div className="flex items-center gap-2 mb-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleBackToPayment}
-                      className="p-2"
-                    >
+                    <Button className="p-2" size="sm" variant="ghost" onClick={handleBackToPayment}>
                       <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <h2 className="text-xl font-semibold">Card Payment</h2>
@@ -565,9 +571,9 @@ export default function CheckoutPage() {
                     applicationId={SQUARE_APPLICATION_ID}
                     locationId={SQUARE_LOCATION_ID}
                     total={orderTotal}
-                    onPaymentSuccess={handleCardPaymentSuccess}
-                    onPaymentError={handleCardPaymentError}
                     onBack={handleBackToPayment}
+                    onPaymentError={handleCardPaymentError}
+                    onPaymentSuccess={handleCardPaymentSuccess}
                   />
                 </>
               )}

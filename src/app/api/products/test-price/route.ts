@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       defaultPaperStock,
       quantityGroup,
       sizeGroup,
-      addOns = []
+      addOns = [],
     } = data
 
     // Simple test calculation
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add 15% for each add-on
-    totalPrice *= (1 + (addOns.length * 0.15))
+    totalPrice *= 1 + addOns.length * 0.15
 
     return NextResponse.json({
       success: true,
@@ -43,15 +43,11 @@ export async function POST(request: NextRequest) {
         paperStockCount: paperStocks.length,
         hasQuantityGroup: !!quantityGroup,
         hasSizeGroup: !!sizeGroup,
-        addOnsCount: addOns.length
-      }
+        addOnsCount: addOns.length,
+      },
     })
-
   } catch (error) {
     console.error('Error calculating test price:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate test price' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate test price' }, { status: 500 })
   }
 }

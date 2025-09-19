@@ -5,7 +5,6 @@ import { Download } from 'lucide-react'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function DownloadsPage() {
-
   return (
     <AccountWrapper>
       <div className="max-w-4xl">

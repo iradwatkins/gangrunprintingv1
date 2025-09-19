@@ -49,8 +49,8 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           vendorId: selectedVendorId,
-          notes: notes
-        })
+          notes: notes,
+        }),
       })
 
       if (response.ok) {
@@ -79,7 +79,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
     try {
       const response = await fetch(`/api/orders/${order.id}/notify-vendor`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (response.ok) {
@@ -99,7 +99,9 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
   const currentVendor = order.vendor
 
   // Check if order is in a state where vendor can be assigned
-  const canAssignVendor = ['PAID', 'PROCESSING', 'PRINTING', 'QUALITY_CHECK', 'PACKAGING'].includes(order.status)
+  const canAssignVendor = ['PAID', 'PROCESSING', 'PRINTING', 'QUALITY_CHECK', 'PACKAGING'].includes(
+    order.status
+  )
 
   if (!canAssignVendor && !currentVendor) {
     return (
@@ -168,12 +170,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
             >
               Change Vendor
             </Button>
-            <Button
-              disabled={isNotifying}
-              size="sm"
-              variant="outline"
-              onClick={notifyVendor}
-            >
+            <Button disabled={isNotifying} size="sm" variant="outline" onClick={notifyVendor}>
               {isNotifying ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -186,15 +183,9 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
         <div className="space-y-3">
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              No vendor assigned yet
-            </AlertDescription>
+            <AlertDescription>No vendor assigned yet</AlertDescription>
           </Alert>
-          <Button
-            className="w-full"
-            size="sm"
-            onClick={() => setIsDialogOpen(true)}
-          >
+          <Button className="w-full" size="sm" onClick={() => setIsDialogOpen(true)}>
             Assign Vendor
           </Button>
         </div>
@@ -206,23 +197,18 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
             <DialogTitle>
               {currentVendor ? 'Change Vendor Assignment' : 'Assign Vendor'}
             </DialogTitle>
-            <DialogDescription>
-              Select a vendor to fulfill this order
-            </DialogDescription>
+            <DialogDescription>Select a vendor to fulfill this order</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
               <Label htmlFor="vendor">Select Vendor</Label>
-              <Select
-                value={selectedVendorId}
-                onValueChange={setSelectedVendorId}
-              >
+              <Select value={selectedVendorId} onValueChange={setSelectedVendorId}>
                 <SelectTrigger id="vendor">
                   <SelectValue placeholder="Choose a vendor..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {vendors.map(vendor => (
+                  {vendors.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
                       <div className="flex items-center justify-between w-full">
                         <span>{vendor.name}</span>
@@ -239,7 +225,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
             {selectedVendorId && (
               <div className="p-3 bg-muted rounded-lg text-sm">
                 {(() => {
-                  const vendor = vendors.find(v => v.id === selectedVendorId)
+                  const vendor = vendors.find((v) => v.id === selectedVendorId)
                   if (!vendor) return null
                   return (
                     <div className="space-y-2">

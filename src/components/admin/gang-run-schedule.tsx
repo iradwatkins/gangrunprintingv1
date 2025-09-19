@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 
 const gangRuns = [
   {
@@ -8,29 +8,29 @@ const gangRuns = [
     type: 'Business Cards',
     slots: { used: 8, total: 10 },
     status: 'filling',
-    scheduledTime: '14:00'
+    scheduledTime: '14:00',
   },
   {
     id: 'FL-Gang-12',
     type: 'Flyers 4x6',
     slots: { used: 6, total: 8 },
     status: 'ready',
-    scheduledTime: '15:30'
+    scheduledTime: '15:30',
   },
   {
     id: 'BR-Gang-08',
     type: 'Brochures',
     slots: { used: 4, total: 6 },
     status: 'filling',
-    scheduledTime: '16:00'
+    scheduledTime: '16:00',
   },
   {
     id: 'PC-Gang-15',
     type: 'Postcards',
     slots: { used: 10, total: 10 },
     status: 'ready',
-    scheduledTime: '17:00'
-  }
+    scheduledTime: '17:00',
+  },
 ]
 
 export function GangRunSchedule() {
@@ -51,20 +51,17 @@ export function GangRunSchedule() {
                 <Badge variant={gang.status === 'ready' ? 'default' : 'secondary'}>
                   {gang.status}
                 </Badge>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {gang.scheduledTime}
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">{gang.scheduledTime}</p>
               </div>
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-sm">
                 <span>Capacity</span>
-                <span>{gang.slots.used}/{gang.slots.total} slots</span>
+                <span>
+                  {gang.slots.used}/{gang.slots.total} slots
+                </span>
               </div>
-              <Progress 
-                className="h-2" 
-                value={(gang.slots.used / gang.slots.total) * 100}
-              />
+              <Progress className="h-2" value={(gang.slots.used / gang.slots.total) * 100} />
             </div>
           </div>
         ))}

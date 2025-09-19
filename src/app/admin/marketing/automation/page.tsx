@@ -107,7 +107,7 @@ export default function AutomationPage() {
       })
 
       if (response.ok) {
-        setWorkflows(prev => prev.filter(w => w.id !== workflowId))
+        setWorkflows((prev) => prev.filter((w) => w.id !== workflowId))
       }
     } catch (error) {
       console.error('Error deleting workflow:', error)
@@ -165,9 +165,7 @@ export default function AutomationPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Workflows</p>
-                <p className="text-3xl font-bold">
-                  {workflows.filter(w => w.isActive).length}
-                </p>
+                <p className="text-3xl font-bold">{workflows.filter((w) => w.isActive).length}</p>
               </div>
               <Play className="w-8 h-8 text-green-500" />
             </div>
@@ -195,9 +193,10 @@ export default function AutomationPage() {
                 <p className="text-sm font-medium text-gray-600">Avg Steps</p>
                 <p className="text-3xl font-bold">
                   {workflows.length > 0
-                    ? Math.round(workflows.reduce((sum, w) => sum + w.steps.length, 0) / workflows.length)
-                    : 0
-                  }
+                    ? Math.round(
+                        workflows.reduce((sum, w) => sum + w.steps.length, 0) / workflows.length
+                      )
+                    : 0}
                 </p>
               </div>
               <Clock className="w-8 h-8 text-orange-500" />
@@ -210,9 +209,7 @@ export default function AutomationPage() {
       <Card>
         <CardHeader>
           <CardTitle>Automation Workflows</CardTitle>
-          <CardDescription>
-            Manage your automated marketing workflows
-          </CardDescription>
+          <CardDescription>Manage your automated marketing workflows</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -255,14 +252,10 @@ export default function AutomationPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm">
-                        {getTriggerLabel(workflow.trigger)}
-                      </div>
+                      <div className="text-sm">{getTriggerLabel(workflow.trigger)}</div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">
-                        {workflow.steps.length} steps
-                      </Badge>
+                      <Badge variant="outline">{workflow.steps.length} steps</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -275,12 +268,8 @@ export default function AutomationPage() {
                         {workflow.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {workflow._count?.executions || 0}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(workflow.updatedAt).toLocaleDateString()}
-                    </TableCell>
+                    <TableCell>{workflow._count?.executions || 0}</TableCell>
+                    <TableCell>{new Date(workflow.updatedAt).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -290,14 +279,18 @@ export default function AutomationPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => router.push(`/admin/marketing/automation/${workflow.id}`)}
+                            onClick={() =>
+                              router.push(`/admin/marketing/automation/${workflow.id}`)
+                            }
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             View Details
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
-                            onClick={() => router.push(`/admin/marketing/automation/${workflow.id}/edit`)}
+                            onClick={() =>
+                              router.push(`/admin/marketing/automation/${workflow.id}/edit`)
+                            }
                           >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit Workflow
@@ -320,15 +313,15 @@ export default function AutomationPage() {
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
-                            onClick={() => router.push(`/admin/marketing/automation/${workflow.id}/analytics`)}
+                            onClick={() =>
+                              router.push(`/admin/marketing/automation/${workflow.id}/analytics`)
+                            }
                           >
                             <BarChart3 className="mr-2 h-4 w-4" />
                             Analytics
                           </DropdownMenuItem>
 
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteWorkflow(workflow.id)}
-                          >
+                          <DropdownMenuItem onClick={() => handleDeleteWorkflow(workflow.id)}>
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>
@@ -347,9 +340,7 @@ export default function AutomationPage() {
       <Card>
         <CardHeader>
           <CardTitle>Quick Start Templates</CardTitle>
-          <CardDescription>
-            Get started quickly with pre-built workflow templates
-          </CardDescription>
+          <CardDescription>Get started quickly with pre-built workflow templates</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -32,10 +32,7 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
       console.log('Auth check failed:', { session: !!session, user: !!user, role: user?.role })
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
     console.log('Auth check passed')
 
@@ -46,10 +43,7 @@ export async function POST(request: NextRequest) {
       console.log('Received data:', JSON.stringify(rawData, null, 2))
     } catch (error) {
       console.error('JSON parse error:', error)
-      return NextResponse.json(
-        { error: 'Invalid JSON in request body' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 })
     }
 
     // Validate with simple schema
@@ -60,18 +54,18 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Validation error:', error)
       if (error instanceof z.ZodError) {
-        return NextResponse.json({
-          error: 'Validation failed',
-          details: error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message
-          }))
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: 'Validation failed',
+            details: error.errors.map((err) => ({
+              field: err.path.join('.'),
+              message: err.message,
+            })),
+          },
+          { status: 400 }
+        )
       }
-      return NextResponse.json(
-        { error: 'Data validation failed' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Data validation failed' }, { status: 400 })
     }
 
     // Generate slug from name
@@ -101,49 +95,48 @@ export async function POST(request: NextRequest) {
           create: {
             paperStockId: validatedData.paperStockId,
             isDefault: true,
-            additionalCost: 0
-          }
+            additionalCost: 0,
+          },
         },
 
         // Create single quantity group relation
         productQuantityGroups: {
           create: {
-            quantityGroupId: validatedData.quantityGroupId
-          }
+            quantityGroupId: validatedData.quantityGroupId,
+          },
         },
 
         // Create single size group relation
         productSizeGroups: {
           create: {
-            sizeGroupId: validatedData.sizeGroupId
-          }
-        }
+            sizeGroupId: validatedData.sizeGroupId,
+          },
+        },
       },
       include: {
         ProductCategory: true,
         productPaperStocks: {
           include: {
-            paperStock: true
-          }
+            paperStock: true,
+          },
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true
-          }
+            quantityGroup: true,
+          },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true
-          }
-        }
-      }
+            sizeGroup: true,
+          },
+        },
+      },
     })
 
     console.log('Product created successfully:', product.id)
     console.log('=== SIMPLE PRODUCT CREATE SUCCESS ===')
 
     return NextResponse.json(product, { status: 201 })
-
   } catch (error: any) {
     console.error('=== SIMPLE PRODUCT CREATE ERROR ===')
     console.error('Error:', error)
@@ -167,7 +160,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Failed to create product',
-        details: error.message
+        details: error.message,
       },
       { status: 500 }
     )

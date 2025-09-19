@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductPaperStocks } from '../product-paper-stocks'
 import { FileText, Info } from 'lucide-react'
@@ -42,7 +36,7 @@ export function ProductPaperStockStep({
     }
 
     // Check if at least one paper stock is set as default
-    const hasDefault = formData.paperStocks.some(stock => stock.isDefault)
+    const hasDefault = formData.paperStocks.some((stock) => stock.isDefault)
     if (formData.paperStocks.length > 0 && !hasDefault) {
       newErrors.defaultPaper = 'One paper stock must be set as the default option'
     }
@@ -85,7 +79,7 @@ export function ProductPaperStockStep({
         </CardHeader>
         <CardContent>
           {Object.keys(errors).length > 0 && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert className="mb-4" variant="destructive">
               <Info className="h-4 w-4" />
               <AlertDescription>
                 <ul className="space-y-1">
@@ -114,10 +108,22 @@ export function ProductPaperStockStep({
             <div className="p-4 bg-blue-50 rounded-lg">
               <h4 className="font-medium text-blue-900 mb-2">Paper Stock Best Practices</h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• <strong>Default Option:</strong> Choose the most popular or cost-effective option as default</li>
-                <li>• <strong>Variety:</strong> Offer 2-5 options to give customers choice without overwhelming them</li>
-                <li>• <strong>Pricing:</strong> Ensure paper stock pricing is properly configured in the paper stocks management</li>
-                <li>• <strong>Availability:</strong> Only include paper stocks that are readily available from your suppliers</li>
+                <li>
+                  • <strong>Default Option:</strong> Choose the most popular or cost-effective
+                  option as default
+                </li>
+                <li>
+                  • <strong>Variety:</strong> Offer 2-5 options to give customers choice without
+                  overwhelming them
+                </li>
+                <li>
+                  • <strong>Pricing:</strong> Ensure paper stock pricing is properly configured in
+                  the paper stocks management
+                </li>
+                <li>
+                  • <strong>Availability:</strong> Only include paper stocks that are readily
+                  available from your suppliers
+                </li>
               </ul>
             </div>
 
@@ -126,7 +132,8 @@ export function ProductPaperStockStep({
                 <h4 className="font-medium text-gray-900 mb-2">Current Selection Summary</h4>
                 <div className="space-y-2">
                   <div className="text-sm">
-                    <span className="font-medium">Total Options:</span> {formData.paperStocks.length}
+                    <span className="font-medium">Total Options:</span>{' '}
+                    {formData.paperStocks.length}
                   </div>
                   {formData.paperStocks.map((stock, index) => (
                     <div key={index} className="text-sm text-gray-600 flex items-center gap-2">

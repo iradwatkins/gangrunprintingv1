@@ -12,8 +12,8 @@ export async function POST(request: NextRequest) {
       where: { id: orderId },
       include: {
         OrderItem: true,
-        user: true
-      }
+        user: true,
+      },
     })
 
     if (!order) {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     const formattedTrackingNumber = formatTrackingNumber(order.carrier, order.trackingNumber)
 
     // Prepare email content
-    const itemsList = order.OrderItem.map((item: any) => 
-      `<li>${item.productName} - Qty: ${item.quantity}</li>`
+    const itemsList = order.OrderItem.map(
+      (item: any) => `<li>${item.productName} - Qty: ${item.quantity}</li>`
     ).join('')
 
     const emailHtml = `
@@ -92,10 +92,14 @@ export async function POST(request: NextRequest) {
             
             <h3>Shipping Address:</h3>
             <p>
-              ${order.shippingAddress && typeof order.shippingAddress === 'object' ? `
+              ${
+                order.shippingAddress && typeof order.shippingAddress === 'object'
+                  ? `
                 ${(order.shippingAddress as any).street}<br>
                 ${(order.shippingAddress as any).city}, ${(order.shippingAddress as any).state} ${(order.shippingAddress as any).zipCode}
-              ` : 'Address on file'}
+              `
+                  : 'Address on file'
+              }
             </p>
             
             <h3>What to Expect:</h3>
@@ -133,7 +137,7 @@ export async function POST(request: NextRequest) {
       from: process.env.SENDGRID_FROM_EMAIL || 'shipping@gangrunprinting.com',
       subject: `Your Order Has Shipped - ${order.referenceNumber || order.orderNumber}`,
       text: `Your order ${order.referenceNumber || order.orderNumber} has shipped! Track your package with ${getCarrierName(order.carrier)}: ${formattedTrackingNumber}. Track at: ${trackingInfo.trackingUrl}`,
-      html: emailHtml
+      html: emailHtml,
     }
 
     await sgMail.send(msg)
@@ -145,17 +149,13 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         type: 'ORDER_SHIPPED',
         sent: true,
-        sentAt: new Date()
-      }
+        sentAt: new Date(),
+      },
     })
 
     return NextResponse.json({ success: true, message: 'Tracking email sent' })
-
   } catch (error) {
     console.error('Error sending tracking email:', error)
-    return NextResponse.json(
-      { error: 'Failed to send tracking email' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to send tracking email' }, { status: 500 })
   }
 }

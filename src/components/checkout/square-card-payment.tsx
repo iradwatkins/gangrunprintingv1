@@ -27,7 +27,7 @@ export function SquareCardPayment({
   total,
   onPaymentSuccess,
   onPaymentError,
-  onBack
+  onBack,
 }: SquareCardPaymentProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -68,22 +68,22 @@ export function SquareCardPayment({
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
               color: '#374151',
               '::placeholder': {
-                color: '#9CA3AF'
-              }
+                color: '#9CA3AF',
+              },
             },
             '.input-container': {
               borderRadius: '6px',
               borderColor: '#D1D5DB',
-              borderWidth: '1px'
+              borderWidth: '1px',
             },
             '.input-container.is-focus': {
               borderColor: '#3B82F6',
-              borderWidth: '2px'
+              borderWidth: '2px',
             },
             '.input-container.is-error': {
-              borderColor: '#EF4444'
-            }
-          }
+              borderColor: '#EF4444',
+            },
+          },
         })
 
         await cardInstance.attach('#card-container')
@@ -121,13 +121,13 @@ export function SquareCardPayment({
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             sourceId: result.token,
             amount: Math.round(total * 100), // Convert to cents
-            currency: 'USD'
-          })
+            currency: 'USD',
+          }),
         })
 
         const paymentResult = await response.json()
@@ -183,13 +183,11 @@ export function SquareCardPayment({
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Card Details
-            </label>
+            <label className="block text-sm font-medium mb-2">Card Details</label>
             <div
-              id="card-container"
               ref={cardContainerRef}
               className="min-h-[60px] p-3 border rounded-md bg-background"
+              id="card-container"
             >
               {/* Square card form will be injected here */}
             </div>
@@ -205,19 +203,10 @@ export function SquareCardPayment({
             </div>
 
             <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={onBack}
-                disabled={isProcessing}
-              >
+              <Button className="flex-1" disabled={isProcessing} variant="outline" onClick={onBack}>
                 Back
               </Button>
-              <Button
-                className="flex-1"
-                onClick={handlePayment}
-                disabled={isProcessing}
-              >
+              <Button className="flex-1" disabled={isProcessing} onClick={handlePayment}>
                 {isProcessing ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

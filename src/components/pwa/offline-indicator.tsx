@@ -15,7 +15,7 @@ export function OfflineIndicator() {
     const handleOnline = () => {
       setIsOnline(true)
       setShowReconnected(true)
-      
+
       // Hide reconnected message after 3 seconds
       setTimeout(() => {
         setShowReconnected(false)
@@ -52,14 +52,12 @@ export function OfflineIndicator() {
           </Alert>
         </div>
       )}
-      
+
       {showReconnected && (
         <div className="fixed top-0 left-0 right-0 z-50 animate-in slide-in-from-top-2">
           <Alert className="rounded-none border-0 bg-green-500 text-white">
             <Wifi className="h-4 w-4" />
-            <AlertDescription className="font-medium">
-              You're back online!
-            </AlertDescription>
+            <AlertDescription className="font-medium">You're back online!</AlertDescription>
           </Alert>
         </div>
       )}

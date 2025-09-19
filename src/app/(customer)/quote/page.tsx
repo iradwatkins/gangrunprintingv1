@@ -26,7 +26,7 @@ import {
   Upload,
   FileText,
   Calculator,
-  Zap
+  Zap,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -45,7 +45,7 @@ export default function QuotePage() {
     turnaround: 'standard',
     finishing: [] as string[],
     message: '',
-    files: [] as File[]
+    files: [] as File[],
   })
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -57,7 +57,7 @@ export default function QuotePage() {
     { value: 'gangrun', label: 'Gang Run Printing' },
     { value: 'largeformat', label: 'Large Format Printing' },
     { value: 'packaging', label: 'Packaging & Labels' },
-    { value: 'support', label: 'Customer Support' }
+    { value: 'support', label: 'Customer Support' },
   ]
 
   const projectTypes = [
@@ -69,7 +69,7 @@ export default function QuotePage() {
     'Posters',
     'Stickers/Labels',
     'Packaging',
-    'Other'
+    'Other',
   ]
 
   const finishingOptions = [
@@ -80,7 +80,7 @@ export default function QuotePage() {
     { id: 'emboss', label: 'Embossing' },
     { id: 'die', label: 'Die Cutting' },
     { id: 'perforation', label: 'Perforation' },
-    { id: 'binding', label: 'Binding' }
+    { id: 'binding', label: 'Binding' },
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,33 +88,33 @@ export default function QuotePage() {
     setLoading(true)
 
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
     setSubmitted(true)
     setLoading(false)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }))
   }
 
   const handleFinishingChange = (optionId: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       finishing: checked
         ? [...prev.finishing, optionId]
-        : prev.finishing.filter(id => id !== optionId)
+        : prev.finishing.filter((id) => id !== optionId),
     }))
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        files: Array.from(e.target.files!)
+        files: Array.from(e.target.files!),
       }))
     }
   }
@@ -131,36 +131,42 @@ export default function QuotePage() {
                 </div>
                 <h2 className="text-3xl font-bold mb-4">Quote Request Received!</h2>
                 <p className="text-lg text-muted-foreground mb-8">
-                  Thank you for your interest in Gang Run Printing. Our team will review your request
-                  and get back to you within 2-4 business hours with a detailed quote.
+                  Thank you for your interest in Gang Run Printing. Our team will review your
+                  request and get back to you within 2-4 business hours with a detailed quote.
                 </p>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Quote Reference: <span className="font-mono font-bold">GRP-{Date.now().toString(36).toUpperCase()}</span>
+                    Quote Reference:{' '}
+                    <span className="font-mono font-bold">
+                      GRP-{Date.now().toString(36).toUpperCase()}
+                    </span>
                   </p>
                   <div className="flex gap-4 justify-center">
                     <Button asChild>
                       <Link href="/products">Browse Products</Link>
                     </Button>
-                    <Button variant="outline" onClick={() => {
-                      setSubmitted(false)
-                      setFormData({
-                        department: '',
-                        firstName: '',
-                        lastName: '',
-                        company: '',
-                        email: '',
-                        phone: '',
-                        projectType: '',
-                        quantity: '',
-                        size: '',
-                        paperType: '',
-                        turnaround: 'standard',
-                        finishing: [],
-                        message: '',
-                        files: []
-                      })
-                    }}>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSubmitted(false)
+                        setFormData({
+                          department: '',
+                          firstName: '',
+                          lastName: '',
+                          company: '',
+                          email: '',
+                          phone: '',
+                          projectType: '',
+                          quantity: '',
+                          size: '',
+                          paperType: '',
+                          turnaround: 'standard',
+                          finishing: [],
+                          message: '',
+                          files: [],
+                        })
+                      }}
+                    >
                       Submit Another Quote
                     </Button>
                   </div>
@@ -181,7 +187,8 @@ export default function QuotePage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Get a Custom Quote</h1>
             <p className="text-lg md:text-xl opacity-90">
-              Professional printing solutions tailored to your needs. Get competitive pricing in minutes.
+              Professional printing solutions tailored to your needs. Get competitive pricing in
+              minutes.
             </p>
           </div>
         </div>
@@ -242,7 +249,8 @@ export default function QuotePage() {
           <CardHeader>
             <CardTitle className="text-2xl">Quote Request Form</CardTitle>
             <CardDescription>
-              Fill out the form below with your project details and we'll provide a custom quote within 2-4 business hours.
+              Fill out the form below with your project details and we'll provide a custom quote
+              within 2-4 business hours.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -252,7 +260,7 @@ export default function QuotePage() {
                 <Label htmlFor="department">Department *</Label>
                 <Select
                   value={formData.department}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, department: value }))}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, department: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="-- Select One --" />
@@ -337,7 +345,9 @@ export default function QuotePage() {
                   <Label htmlFor="projectType">Project Type *</Label>
                   <Select
                     value={formData.projectType}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, projectType: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, projectType: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select project type" />
@@ -392,7 +402,9 @@ export default function QuotePage() {
                   <Label>Turnaround Time</Label>
                   <RadioGroup
                     value={formData.turnaround}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, turnaround: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, turnaround: value }))
+                    }
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem id="standard" value="standard" />
@@ -436,7 +448,8 @@ export default function QuotePage() {
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
                   <Label className="cursor-pointer" htmlFor="files">
-                    <span className="text-primary hover:underline">Click to upload</span> or drag and drop
+                    <span className="text-primary hover:underline">Click to upload</span> or drag
+                    and drop
                   </Label>
                   <Input
                     multiple
@@ -486,7 +499,16 @@ export default function QuotePage() {
                   Estimated response time: 2-4 business hours
                 </div>
                 <Button
-                  disabled={loading || !formData.department || !formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.projectType || !formData.quantity}
+                  disabled={
+                    loading ||
+                    !formData.department ||
+                    !formData.firstName ||
+                    !formData.lastName ||
+                    !formData.email ||
+                    !formData.phone ||
+                    !formData.projectType ||
+                    !formData.quantity
+                  }
                   size="lg"
                   type="submit"
                 >
@@ -512,7 +534,8 @@ export default function QuotePage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Need it fast? We offer rush printing services with same-day and next-day options available for most products.
+                Need it fast? We offer rush printing services with same-day and next-day options
+                available for most products.
               </p>
             </CardContent>
           </Card>
@@ -523,7 +546,8 @@ export default function QuotePage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Gang run printing allows us to offer premium quality at wholesale prices. Volume discounts available.
+                Gang run printing allows us to offer premium quality at wholesale prices. Volume
+                discounts available.
               </p>
             </CardContent>
           </Card>
@@ -534,7 +558,8 @@ export default function QuotePage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Our print specialists are here to help optimize your files and ensure the best results for your project.
+                Our print specialists are here to help optimize your files and ensure the best
+                results for your project.
               </p>
             </CardContent>
           </Card>

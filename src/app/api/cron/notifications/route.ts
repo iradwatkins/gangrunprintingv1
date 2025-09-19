@@ -9,26 +9,20 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization')
     if (process.env.CRON_SECRET) {
       if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        )
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
     }
-    
+
     await processPendingNotifications()
-    
+
     return NextResponse.json({
       success: true,
       message: 'Notifications processed',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
   } catch (error) {
     console.error('Cron job error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process notifications' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 })
   }
 }
 

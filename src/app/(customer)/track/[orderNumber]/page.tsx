@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { 
+import {
   Package,
   Truck,
   CheckCircle,
@@ -13,7 +13,7 @@ import {
   MapPin,
   Calendar,
   DollarSign,
-  FileText
+  FileText,
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -32,7 +32,7 @@ const statusSteps = [
   { key: 'PRINTING', label: 'In Production', icon: Printer },
   { key: 'READY_FOR_PICKUP', label: 'Ready', icon: CheckCircle },
   { key: 'SHIPPED', label: 'Shipped', icon: Truck },
-  { key: 'DELIVERED', label: 'Delivered', icon: CheckCircle }
+  { key: 'DELIVERED', label: 'Delivered', icon: CheckCircle },
 ]
 
 const statusConfig: Record<string, { color: string; bgColor: string }> = {
@@ -44,22 +44,22 @@ const statusConfig: Record<string, { color: string; bgColor: string }> = {
   SHIPPED: { color: 'text-indigo-600', bgColor: 'bg-indigo-100' },
   DELIVERED: { color: 'text-green-600', bgColor: 'bg-green-100' },
   CANCELLED: { color: 'text-red-600', bgColor: 'bg-red-100' },
-  REFUNDED: { color: 'text-gray-600', bgColor: 'bg-gray-100' }
+  REFUNDED: { color: 'text-gray-600', bgColor: 'bg-gray-100' },
 }
 
 async function getOrderDetails(orderNumber: string) {
   const order = await prisma.order.findFirst({
     where: {
-      orderNumber: orderNumber.toUpperCase()
+      orderNumber: orderNumber.toUpperCase(),
     },
     include: {
       OrderItem: true,
       StatusHistory: {
         orderBy: {
-          createdAt: 'desc'
-        }
-      }
-    }
+          createdAt: 'desc',
+        },
+      },
+    },
   })
 
   return order
@@ -73,16 +73,14 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
     notFound()
   }
 
-  const currentStepIndex = statusSteps.findIndex(step => step.key === order.status)
+  const currentStepIndex = statusSteps.findIndex((step) => step.key === order.status)
   const config = statusConfig[order.status] || { color: 'text-gray-600', bgColor: 'bg-gray-100' }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Track Your Order</h1>
-        <p className="text-muted-foreground">
-          Order #{order.orderNumber}
-        </p>
+        <p className="text-muted-foreground">Order #{order.orderNumber}</p>
       </div>
 
       {/* Current Status Card */}
@@ -104,32 +102,36 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
           {/* Progress Steps */}
           <div className="relative">
             <div className="absolute left-0 top-5 w-full h-0.5 bg-gray-200">
-              <div 
+              <div
                 className="h-full bg-primary transition-all duration-500"
                 style={{ width: `${(currentStepIndex / (statusSteps.length - 1)) * 100}%` }}
               />
             </div>
-            
+
             <div className="relative flex justify-between">
               {statusSteps.map((step, index) => {
                 const Icon = step.icon
                 const isActive = index <= currentStepIndex
                 const isCurrent = step.key === order.status
-                
+
                 return (
                   <div key={step.key} className="flex flex-col items-center">
-                    <div className={`
+                    <div
+                      className={`
                       w-10 h-10 rounded-full flex items-center justify-center
                       ${isActive ? 'bg-primary text-primary-foreground' : 'bg-gray-200 text-gray-400'}
                       ${isCurrent ? 'ring-4 ring-primary/20' : ''}
                       transition-all duration-300
-                    `}>
+                    `}
+                    >
                       <Icon className="h-5 w-5" />
                     </div>
-                    <span className={`
+                    <span
+                      className={`
                       mt-2 text-xs text-center max-w-[80px]
                       ${isActive ? 'text-foreground font-medium' : 'text-muted-foreground'}
-                    `}>
+                    `}
+                    >
                       {step.label}
                     </span>
                   </div>
@@ -195,8 +197,10 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
               <div className="space-y-1">
                 <p>{(order.shippingAddress as any).name || order.email}</p>
                 <p className="text-muted-foreground">
-                  {(order.shippingAddress as any).street}<br />
-                  {(order.shippingAddress as any).city}, {(order.shippingAddress as any).state} {(order.shippingAddress as any).zip}
+                  {(order.shippingAddress as any).street}
+                  <br />
+                  {(order.shippingAddress as any).city}, {(order.shippingAddress as any).state}{' '}
+                  {(order.shippingAddress as any).zip}
                 </p>
               </div>
             ) : (
@@ -224,14 +228,12 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
                     <p className="font-medium">{item.productName}</p>
                     {item.options && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        {Object.entries(item.options as any).map(([key, value]) => 
-                          `${key}: ${value}`
-                        ).join(' • ')}
+                        {Object.entries(item.options as any)
+                          .map(([key, value]) => `${key}: ${value}`)
+                          .join(' • ')}
                       </p>
                     )}
-                    <p className="text-sm mt-1">
-                      Quantity: {item.quantity}
-                    </p>
+                    <p className="text-sm mt-1">Quantity: {item.quantity}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-medium">
@@ -287,15 +289,11 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
                 <div key={history.id} className="flex items-start gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
                   <div className="flex-1">
-                    <p className="font-medium">
-                      {history.toStatus.replace(/_/g, ' ')}
-                    </p>
+                    <p className="font-medium">{history.toStatus.replace(/_/g, ' ')}</p>
                     <p className="text-sm text-muted-foreground">
                       {new Date(history.createdAt).toLocaleString()}
                     </p>
-                    {history.notes && (
-                      <p className="text-sm mt-1">{history.notes}</p>
-                    )}
+                    {history.notes && <p className="text-sm mt-1">{history.notes}</p>}
                   </div>
                 </div>
               ))}

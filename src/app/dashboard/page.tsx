@@ -3,7 +3,18 @@ import { validateRequest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Package, ShoppingCart, CheckCircle, Clock, FileText, Calendar, Bell, User, CreditCard, Star } from 'lucide-react'
+import {
+  Package,
+  ShoppingCart,
+  CheckCircle,
+  Clock,
+  FileText,
+  Calendar,
+  Bell,
+  User,
+  CreditCard,
+  Star,
+} from 'lucide-react'
 import Link from 'next/link'
 
 async function getUserDashboardData(userId: string) {
@@ -13,64 +24,73 @@ async function getUserDashboardData(userId: string) {
       name: true,
       email: true,
       createdAt: true,
-      role: true
-    }
+      role: true,
+    },
   })
 
   // Get comprehensive user data including products they've created/ordered
-  const [totalOrders, inProgressOrders, completedOrders, recentOrders, savedItems] = await Promise.all([
-    // Total orders count
-    prisma.order.count({
-      where: { userId }
-    }),
-    // In progress orders count
-    prisma.order.count({
-      where: {
-        userId,
-        status: {
-          in: ['PENDING_PAYMENT', 'PAID', 'PROCESSING', 'PRINTING', 'PRODUCTION', 'QUALITY_CHECK', 'PACKAGING']
-        }
-      }
-    }),
-    // Completed orders count
-    prisma.order.count({
-      where: {
-        userId,
-        status: {
-          in: ['DELIVERED', 'READY_FOR_PICKUP']
-        }
-      }
-    }),
-    // Recent orders with full details
-    prisma.order.findMany({
-      where: { userId },
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        OrderItem: {
-          include: {
-            orderItemAddOns: {
-              include: {
-                addOn: true
-              }
-            }
-          }
-        }
-      }
-    }),
-    // Get any saved/favorited items (using orders as proxy for now)
-    prisma.order.findMany({
-      where: {
-        userId,
-        status: 'DELIVERED'
-      },
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        OrderItem: true
-      }
-    })
-  ])
+  const [totalOrders, inProgressOrders, completedOrders, recentOrders, savedItems] =
+    await Promise.all([
+      // Total orders count
+      prisma.order.count({
+        where: { userId },
+      }),
+      // In progress orders count
+      prisma.order.count({
+        where: {
+          userId,
+          status: {
+            in: [
+              'PENDING_PAYMENT',
+              'PAID',
+              'PROCESSING',
+              'PRINTING',
+              'PRODUCTION',
+              'QUALITY_CHECK',
+              'PACKAGING',
+            ],
+          },
+        },
+      }),
+      // Completed orders count
+      prisma.order.count({
+        where: {
+          userId,
+          status: {
+            in: ['DELIVERED', 'READY_FOR_PICKUP'],
+          },
+        },
+      }),
+      // Recent orders with full details
+      prisma.order.findMany({
+        where: { userId },
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          OrderItem: {
+            include: {
+              orderItemAddOns: {
+                include: {
+                  addOn: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      // Get any saved/favorited items (using orders as proxy for now)
+      prisma.order.findMany({
+        where: {
+          userId,
+          status: 'DELIVERED',
+        },
+        take: 3,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          OrderItem: true,
+        },
+      }),
+    ])
 
   return {
     user,
@@ -78,7 +98,7 @@ async function getUserDashboardData(userId: string) {
     inProgressOrders,
     completedOrders,
     recentOrders,
-    savedItems
+    savedItems,
   }
 }
 
@@ -96,9 +116,7 @@ export default async function DashboardPage() {
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Welcome back, {dashboardData.user?.name || dashboardData.user?.email}
           </p>
@@ -112,10 +130,10 @@ export default async function DashboardPage() {
               <ShoppingCart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold" data-testid="total-orders">{dashboardData.totalOrders}</div>
-              <p className="text-xs text-muted-foreground">
-                All time orders
-              </p>
+              <div className="text-2xl font-bold" data-testid="total-orders">
+                {dashboardData.totalOrders}
+              </div>
+              <p className="text-xs text-muted-foreground">All time orders</p>
             </CardContent>
           </Card>
 
@@ -126,9 +144,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{dashboardData.inProgressOrders}</div>
-              <p className="text-xs text-muted-foreground">
-                Currently processing
-              </p>
+              <p className="text-xs text-muted-foreground">Currently processing</p>
             </CardContent>
           </Card>
 
@@ -139,9 +155,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{dashboardData.completedOrders}</div>
-              <p className="text-xs text-muted-foreground">
-                Successfully delivered
-              </p>
+              <p className="text-xs text-muted-foreground">Successfully delivered</p>
             </CardContent>
           </Card>
 
@@ -152,9 +166,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{dashboardData.savedItems.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Favorited products
-              </p>
+              <p className="text-xs text-muted-foreground">Favorited products</p>
             </CardContent>
           </Card>
         </div>
@@ -175,9 +187,14 @@ export default async function DashboardPage() {
                 {dashboardData.recentOrders.length > 0 ? (
                   <div className="space-y-4">
                     {dashboardData.recentOrders.map((order) => (
-                      <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div
+                        key={order.id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex-1">
-                          <p className="font-medium">Order #{order.referenceNumber || order.orderNumber}</p>
+                          <p className="font-medium">
+                            Order #{order.referenceNumber || order.orderNumber}
+                          </p>
                           <p className="text-sm text-muted-foreground">
                             {order.OrderItem.length} item(s) • ${(order.total / 100).toFixed(2)}
                           </p>
@@ -186,11 +203,18 @@ export default async function DashboardPage() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                              order.status === 'PROCESSING' || order.status === 'PRINTING' ? 'bg-blue-100 text-blue-800' :
-                              order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' :
-                              'bg-gray-100 text-gray-800'}`}>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            ${
+                              order.status === 'DELIVERED'
+                                ? 'bg-green-100 text-green-800'
+                                : order.status === 'PROCESSING' || order.status === 'PRINTING'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : order.status === 'SHIPPED'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
                             {order.status.replace(/_/g, ' ')}
                           </span>
                           <Link href={`/dashboard/orders/${order.id}`}>
@@ -223,37 +247,37 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link href="/dashboard/upcoming">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
                     Upcoming Orders
                   </Button>
                 </Link>
                 <Link href="/dashboard/saved">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <Star className="h-4 w-4 mr-2" />
                     Saved Items
                   </Button>
                 </Link>
                 <Link href="/dashboard/payments">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <CreditCard className="h-4 w-4 mr-2" />
                     Payment History
                   </Button>
                 </Link>
                 <Link href="/dashboard/notifications">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <Bell className="h-4 w-4 mr-2" />
                     Notifications
                   </Button>
                 </Link>
                 <Link href="/dashboard/profile">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <User className="h-4 w-4 mr-2" />
                     Profile Settings
                   </Button>
                 </Link>
                 <Link href="/dashboard/settings">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button className="w-full justify-start" variant="outline">
                     <FileText className="h-4 w-4 mr-2" />
                     Account Settings
                   </Button>
@@ -273,7 +297,8 @@ export default async function DashboardPage() {
                     <span className="text-sm">Account Active</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Member since {new Date(dashboardData.user?.createdAt || new Date()).toLocaleDateString()}
+                    Member since{' '}
+                    {new Date(dashboardData.user?.createdAt || new Date()).toLocaleDateString()}
                   </p>
                   {dashboardData.user?.role === 'ADMIN' && (
                     <div className="mt-3 pt-3 border-t">

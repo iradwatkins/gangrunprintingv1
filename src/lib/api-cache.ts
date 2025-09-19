@@ -14,7 +14,7 @@ function parseJsonSafely<T>(text: string, url: string): T {
   try {
     // Remove BOM (Byte Order Mark) if present
     let cleanText = text
-    if (text.charCodeAt(0) === 0xFEFF) {
+    if (text.charCodeAt(0) === 0xfeff) {
       console.warn(`BOM character detected in response from ${url}`)
       cleanText = text.slice(1)
     }
@@ -27,17 +27,23 @@ function parseJsonSafely<T>(text: string, url: string): T {
     // Enhanced error reporting for JSON parsing issues
     const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error'
     const preview = text.substring(0, 100)
-    const charCodes = text.substring(0, 10).split('').map(c => c.charCodeAt(0)).join(', ')
+    const charCodes = text
+      .substring(0, 10)
+      .split('')
+      .map((c) => c.charCodeAt(0))
+      .join(', ')
 
     console.error('JSON Parse Error Details:', {
       url,
       error: errorMessage,
       preview,
       charCodes,
-      textLength: text.length
+      textLength: text.length,
     })
 
-    throw new Error(`JSON parse error for ${url}: ${errorMessage}. Preview: "${preview}" (char codes: ${charCodes})`)
+    throw new Error(
+      `JSON parse error for ${url}: ${errorMessage}. Preview: "${preview}" (char codes: ${charCodes})`
+    )
   }
 }
 
@@ -110,7 +116,7 @@ class ApiCache {
     // Store as pending request
     this.pendingRequests.set(key, {
       promise,
-      timestamp: now
+      timestamp: now,
     })
 
     try {
@@ -120,7 +126,7 @@ class ApiCache {
       this.cache.set(key, {
         data,
         timestamp: now,
-        expiresAt: now + ttl
+        expiresAt: now + ttl,
       })
 
       return data
@@ -145,7 +151,9 @@ class ApiCache {
       } catch {
         errorText = 'Unable to read error response'
       }
-      throw new Error(`HTTP ${response.status}: ${response.statusText} (URL: ${url}) Response: ${errorText.substring(0, 200)}`)
+      throw new Error(
+        `HTTP ${response.status}: ${response.statusText} (URL: ${url}) Response: ${errorText.substring(0, 200)}`
+      )
     }
 
     const contentType = response.headers.get('content-type')
@@ -157,7 +165,9 @@ class ApiCache {
       } catch {
         responseText = 'Unable to read response'
       }
-      throw new Error(`Invalid response format for ${url}. Expected JSON, got: ${contentType}. Content: ${responseText.substring(0, 200)}`)
+      throw new Error(
+        `Invalid response format for ${url}. Expected JSON, got: ${contentType}. Content: ${responseText.substring(0, 200)}`
+      )
     }
 
     return parseJsonSafely(await response.text(), url)
@@ -193,8 +203,8 @@ class ApiCache {
         key,
         timestamp: entry.timestamp,
         expiresAt: entry.expiresAt,
-        age: Date.now() - entry.timestamp
-      }))
+        age: Date.now() - entry.timestamp,
+      })),
     }
   }
 }
@@ -222,7 +232,9 @@ export async function cachedFetch<T>(
       } catch {
         errorText = 'Unable to read error response'
       }
-      throw new Error(`HTTP ${response.status}: ${response.statusText} (URL: ${url}) Response: ${errorText.substring(0, 200)}`)
+      throw new Error(
+        `HTTP ${response.status}: ${response.statusText} (URL: ${url}) Response: ${errorText.substring(0, 200)}`
+      )
     }
 
     const contentType = response.headers.get('content-type')
@@ -234,7 +246,9 @@ export async function cachedFetch<T>(
       } catch {
         responseText = 'Unable to read response'
       }
-      throw new Error(`Invalid response format for ${url}. Expected JSON, got: ${contentType}. Content: ${responseText.substring(0, 200)}`)
+      throw new Error(
+        `Invalid response format for ${url}. Expected JSON, got: ${contentType}. Content: ${responseText.substring(0, 200)}`
+      )
     }
 
     // Use the same safe JSON parsing

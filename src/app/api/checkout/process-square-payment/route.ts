@@ -7,19 +7,10 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
     const body = await request.json()
 
-    const {
-      sourceId,
-      amount,
-      currency = 'USD',
-      orderId,
-      orderNumber
-    } = body
+    const { sourceId, amount, currency = 'USD', orderId, orderNumber } = body
 
     if (!sourceId || !amount) {
-      return NextResponse.json(
-        { error: 'Missing required payment details' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required payment details' }, { status: 400 })
     }
 
     // TODO: Implement Square Payments API integration
@@ -56,15 +47,14 @@ export async function POST(request: NextRequest) {
       status: 'COMPLETED',
       receiptUrl: '#',
       orderId: orderId,
-      orderNumber: orderNumber
+      orderNumber: orderNumber,
     }
 
     return NextResponse.json({
       success: true,
       payment: mockPaymentResult,
-      message: 'Payment processed successfully'
+      message: 'Payment processed successfully',
     })
-
   } catch (error) {
     console.error('Square payment processing error:', error)
 

@@ -42,7 +42,7 @@ export default function SimpleProductsPage() {
             slug: product.slug,
             description: product.description || 'High-quality printing product',
             basePrice: product.basePrice,
-            isActive: product.isActive
+            isActive: product.isActive,
           }))
 
         setProducts(activeProducts)
@@ -77,7 +77,7 @@ export default function SimpleProductsPage() {
             <div className="text-center text-red-600">
               <h2 className="text-xl font-semibold mb-2">Error Loading Products</h2>
               <p>{error}</p>
-              <Button onClick={() => window.location.reload()} className="mt-4">
+              <Button className="mt-4" onClick={() => window.location.reload()}>
                 Try Again
               </Button>
             </div>
@@ -115,9 +115,7 @@ export default function SimpleProductsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    {product.description}
-                  </p>
+                  <p className="text-muted-foreground">{product.description}</p>
 
                   <div className="flex justify-between items-center">
                     <div>
@@ -129,8 +127,8 @@ export default function SimpleProductsPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Link href={`/products/${product.slug}`} className="flex-1">
-                      <Button variant="outline" className="w-full">
+                    <Link className="flex-1" href={`/products/${product.slug}`}>
+                      <Button className="w-full" variant="outline">
                         View Details
                       </Button>
                     </Link>
@@ -154,9 +152,7 @@ export default function SimpleProductsPage() {
             <p className="text-muted-foreground mb-4">
               Our team is here to help you find the perfect printing solution
             </p>
-            <Button variant="outline">
-              Contact Support
-            </Button>
+            <Button variant="outline">Contact Support</Button>
           </CardContent>
         </Card>
       </div>

@@ -44,7 +44,7 @@ export default function FlyerProductPage() {
   const [selectedSides, setSelectedSides] = useState<string>('')
   const [selectedQuantity, setSelectedQuantity] = useState(500)
   const [calculatedPrice, setCalculatedPrice] = useState(0)
-  
+
   // Load paper stocks from API
   useEffect(() => {
     const fetchPaperStocks = async () => {
@@ -52,7 +52,7 @@ export default function FlyerProductPage() {
         const res = await fetch('/api/paper-stocks')
         if (res.ok) {
           const paperStocks: PaperStock[] = await res.json()
-          const activeStocks = paperStocks.filter(ps => ps.isActive)
+          const activeStocks = paperStocks.filter((ps) => ps.isActive)
           setPaperStocks(activeStocks)
 
           // Set default selections
@@ -78,25 +78,29 @@ export default function FlyerProductPage() {
     { value: 2500, basePrice: 124.95 },
     { value: 5000, basePrice: 199.95 },
   ]
-  
+
   // Get current selected paper stock
-  const currentPaperStock = paperStocks.find(ps => ps.id === selectedPaperStock)
+  const currentPaperStock = paperStocks.find((ps) => ps.id === selectedPaperStock)
 
   // Calculate price whenever options change
   useEffect(() => {
     if (currentPaperStock) {
-      const selectedSide = currentPaperStock.sidesOptions.find(s => s.id === selectedSides)
-      const quantity = quantityOptions.find(q => q.value === selectedQuantity)
-      
+      const selectedSide = currentPaperStock.sidesOptions.find((s) => s.id === selectedSides)
+      const quantity = quantityOptions.find((q) => q.value === selectedQuantity)
+
       if (selectedSide && quantity) {
         // Base price calculation: basePrice * size * quantity * sides multiplier
         const sizeInSquareInches = 24 // 4x6
-        const baseCost = currentPaperStock.basePrice * sizeInSquareInches * selectedQuantity * selectedSide.multiplier
-        
+        const baseCost =
+          currentPaperStock.basePrice *
+          sizeInSquareInches *
+          selectedQuantity *
+          selectedSide.multiplier
+
         // Add markup for retail pricing
         const markupMultiplier = 3.5 // 350% markup for retail
         const retailPrice = baseCost * markupMultiplier
-        
+
         setCalculatedPrice(Math.round(retailPrice * 100) / 100)
       }
     }
@@ -158,9 +162,7 @@ export default function FlyerProductPage() {
               <div className="text-center">
                 <p className="text-sm opacity-90">Your Price</p>
                 <p className="text-4xl font-bold">${calculatedPrice.toFixed(2)}</p>
-                <p className="text-sm opacity-90 mt-2">
-                  {selectedQuantity} flyers • 4" x 6"
-                </p>
+                <p className="text-sm opacity-90 mt-2">{selectedQuantity} flyers • 4" x 6"</p>
               </div>
             </CardContent>
           </Card>
@@ -171,14 +173,17 @@ export default function FlyerProductPage() {
               <CardTitle className="text-lg">Paper Stock</CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={selectedPaperStock} onValueChange={(value) => {
-                setSelectedPaperStock(value)
-                const paperStock = paperStocks.find(ps => ps.id === value)
-                if (paperStock) {
-                  setSelectedCoating(paperStock.defaultCoating)
-                  setSelectedSides(paperStock.defaultSides)
-                }
-              }}>
+              <RadioGroup
+                value={selectedPaperStock}
+                onValueChange={(value) => {
+                  setSelectedPaperStock(value)
+                  const paperStock = paperStocks.find((ps) => ps.id === value)
+                  if (paperStock) {
+                    setSelectedCoating(paperStock.defaultCoating)
+                    setSelectedSides(paperStock.defaultSides)
+                  }
+                }}
+              >
                 {paperStocks.map((paperStock) => (
                   <div key={paperStock.id} className="flex items-center justify-between py-2">
                     <div className="flex items-center space-x-2">
@@ -211,7 +216,9 @@ export default function FlyerProductPage() {
                         <Label className="cursor-pointer" htmlFor={`coating-${coating.id}`}>
                           {coating.label}
                           {coating.id === currentPaperStock.defaultCoating && (
-                            <Badge className="ml-2" variant="secondary">Default</Badge>
+                            <Badge className="ml-2" variant="secondary">
+                              Default
+                            </Badge>
                           )}
                         </Label>
                       </div>
@@ -242,7 +249,9 @@ export default function FlyerProductPage() {
                             </Badge>
                           )}
                           {sides.id === currentPaperStock.defaultSides && (
-                            <Badge className="ml-2" variant="secondary">Default</Badge>
+                            <Badge className="ml-2" variant="secondary">
+                              Default
+                            </Badge>
                           )}
                         </Label>
                       </div>
@@ -259,7 +268,10 @@ export default function FlyerProductPage() {
               <CardTitle className="text-lg">Select Quantity</CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={selectedQuantity.toString()} onValueChange={(v) => setSelectedQuantity(parseInt(v))}>
+              <RadioGroup
+                value={selectedQuantity.toString()}
+                onValueChange={(v) => setSelectedQuantity(parseInt(v))}
+              >
                 {quantityOptions.map((qty) => (
                   <div key={qty.value} className="flex items-center justify-between py-2">
                     <div className="flex items-center space-x-2">
@@ -267,7 +279,9 @@ export default function FlyerProductPage() {
                       <Label className="cursor-pointer" htmlFor={`qty-${qty.value}`}>
                         {qty.value.toLocaleString()}
                         {qty.isPopular && (
-                          <Badge className="ml-2" variant="secondary">Most Popular</Badge>
+                          <Badge className="ml-2" variant="secondary">
+                            Most Popular
+                          </Badge>
                         )}
                       </Label>
                     </div>

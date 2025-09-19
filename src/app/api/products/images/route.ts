@@ -14,24 +14,18 @@ export async function GET(request: NextRequest) {
     const productId = searchParams.get('productId')
 
     if (!productId) {
-      return NextResponse.json(
-        { error: 'Product ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
     }
 
     const images = await prisma.productImage.findMany({
       where: { productId },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     return NextResponse.json({ images }, { status: 200 })
   } catch (error) {
     console.error('Error fetching images:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch images' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 })
   }
 }
 
@@ -47,26 +41,23 @@ export async function PUT(request: NextRequest) {
     const { imageId, alt, caption, isPrimary, sortOrder } = body
 
     if (!imageId) {
-      return NextResponse.json(
-        { error: 'Image ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Image ID is required' }, { status: 400 })
     }
 
     // If setting as primary, unset other primary images for this product
     if (isPrimary) {
       const image = await prisma.productImage.findUnique({
         where: { id: imageId },
-        select: { productId: true }
+        select: { productId: true },
       })
 
       if (image) {
         await prisma.productImage.updateMany({
           where: {
             productId: image.productId,
-            id: { not: imageId }
+            id: { not: imageId },
           },
-          data: { isPrimary: false }
+          data: { isPrimary: false },
         })
       }
     }
@@ -78,20 +69,20 @@ export async function PUT(request: NextRequest) {
         ...(caption !== undefined && { caption }),
         ...(isPrimary !== undefined && { isPrimary }),
         ...(sortOrder !== undefined && { sortOrder }),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
-    return NextResponse.json({
-      image: updatedImage,
-      success: true
-    }, { status: 200 })
+    return NextResponse.json(
+      {
+        image: updatedImage,
+        success: true,
+      },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Error updating image:', error)
-    return NextResponse.json(
-      { error: 'Failed to update image' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update image' }, { status: 500 })
   }
 }
 
@@ -107,40 +98,34 @@ export async function DELETE(request: NextRequest) {
     const imageId = searchParams.get('imageId')
 
     if (!imageId) {
-      return NextResponse.json(
-        { error: 'Image ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Image ID is required' }, { status: 400 })
     }
 
     // Get image details before deletion
     const image = await prisma.productImage.findUnique({
-      where: { id: imageId }
+      where: { id: imageId },
     })
 
     if (!image) {
-      return NextResponse.json(
-        { error: 'Image not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 })
     }
 
     // Delete from database
     await prisma.productImage.delete({
-      where: { id: imageId }
+      where: { id: imageId },
     })
 
     // If deleted image was primary, make first remaining image primary
     if (image.isPrimary) {
       const firstImage = await prisma.productImage.findFirst({
         where: { productId: image.productId },
-        orderBy: { sortOrder: 'asc' }
+        orderBy: { sortOrder: 'asc' },
       })
 
       if (firstImage) {
         await prisma.productImage.update({
           where: { id: firstImage.id },
-          data: { isPrimary: true }
+          data: { isPrimary: true },
         })
       }
     }
@@ -148,15 +133,15 @@ export async function DELETE(request: NextRequest) {
     // TODO: Also delete from MinIO storage
     // await deleteProductImage(image.objectName)
 
-    return NextResponse.json({
-      success: true,
-      deletedImageId: imageId
-    }, { status: 200 })
+    return NextResponse.json(
+      {
+        success: true,
+        deletedImageId: imageId,
+      },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Error deleting image:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete image' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete image' }, { status: 500 })
   }
 }

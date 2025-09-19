@@ -2,17 +2,14 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/add-ons/[id] - Get a single add-on
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-        const { id } = await params
+    const { id } = await params
     const addOn = await prisma.addOn.findUnique({
       where: { id },
       include: {
         subOptions: {
-          orderBy: { displayOrder: 'asc' }
+          orderBy: { displayOrder: 'asc' },
         },
         productAddOns: {
           include: {
@@ -20,40 +17,31 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                slug: true
-              }
-            }
-          }
-        }
-      }
+                slug: true,
+              },
+            },
+          },
+        },
+      },
     })
-    
+
     if (!addOn) {
-      return NextResponse.json(
-        { error: 'Add-on not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Add-on not found' }, { status: 404 })
     }
-    
+
     return NextResponse.json(addOn)
   } catch (error) {
     console.error('Error fetching add-on:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch add-on' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch add-on' }, { status: 500 })
   }
 }
 
 // PUT /api/add-ons/[id] - Update an add-on
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
-    
+
     const {
       name,
       description,
@@ -64,9 +52,9 @@ export async function PUT(
       sortOrder,
       isActive,
       adminNotes,
-      subOptions
+      subOptions,
     } = body
-    
+
     // Update add-on
     const addOn = await prisma.addOn.update({
       where: { id },
@@ -79,17 +67,17 @@ export async function PUT(
         additionalTurnaroundDays,
         sortOrder,
         isActive,
-        adminNotes
-      }
+        adminNotes,
+      },
     })
-    
+
     // Handle sub-options update if provided
     if (subOptions !== undefined) {
       // Delete existing sub-options
       await prisma.addOnSubOption.deleteMany({
-        where: { addOnId: id }
+        where: { addOnId: id },
       })
-      
+
       // Create new sub-options
       if (subOptions.length > 0) {
         await prisma.addOnSubOption.createMany({
@@ -102,29 +90,26 @@ export async function PUT(
             isRequired: option.isRequired || false,
             affectsPricing: option.affectsPricing || false,
             tooltipText: option.tooltipText,
-            displayOrder: option.displayOrder || 0
-          }))
+            displayOrder: option.displayOrder || 0,
+          })),
         })
       }
     }
-    
+
     // Fetch updated add-on with sub-options
     const updatedAddOn = await prisma.addOn.findUnique({
       where: { id },
       include: {
         subOptions: {
-          orderBy: { displayOrder: 'asc' }
-        }
-      }
+          orderBy: { displayOrder: 'asc' },
+        },
+      },
     })
-    
+
     return NextResponse.json(updatedAddOn)
   } catch (error) {
     console.error('Error updating add-on:', error)
-    return NextResponse.json(
-      { error: 'Failed to update add-on' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update add-on' }, { status: 500 })
   }
 }
 
@@ -137,33 +122,30 @@ export async function DELETE(
     const { id } = await params
     // Check if add-on is in use by any products
     const productCount = await prisma.productAddOn.count({
-      where: { addOnId: id }
+      where: { addOnId: id },
     })
-    
+
     if (productCount > 0) {
       // Soft delete - just deactivate
       const addOn = await prisma.addOn.update({
         where: { id },
-        data: { isActive: false }
+        data: { isActive: false },
       })
-      
+
       return NextResponse.json({
         message: 'Add-on deactivated (in use by products)',
-        addOn
+        addOn,
       })
     }
-    
+
     // Hard delete if not in use
     await prisma.addOn.delete({
-      where: { id }
+      where: { id },
     })
-    
+
     return NextResponse.json({ message: 'Add-on deleted successfully' })
   } catch (error) {
     console.error('Error deleting add-on:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete add-on' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete add-on' }, { status: 500 })
   }
 }

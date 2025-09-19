@@ -1,62 +1,62 @@
-import { type TenantInfo } from '@/lib/tenants/resolver';
+import { type TenantInfo } from '@/lib/tenants/resolver'
 
 export interface ThemeConfig {
   // Colors
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
+  primaryColor: string
+  secondaryColor: string
+  accentColor: string
+  backgroundColor: string
+  textColor: string
 
   // Typography
-  primaryFont: string;
-  secondaryFont: string;
-  fontSize: string;
+  primaryFont: string
+  secondaryFont: string
+  fontSize: string
 
   // Layout
-  borderRadius: string;
-  spacing: string;
+  borderRadius: string
+  spacing: string
 
   // Branding
-  logoUrl?: string;
-  logoText?: string;
-  faviconUrl?: string;
+  logoUrl?: string
+  logoText?: string
+  faviconUrl?: string
 
   // Custom CSS
-  customCss?: string;
-  customJs?: string;
+  customCss?: string
+  customJs?: string
 
   // Email branding
-  emailHeaderLogo?: string;
-  emailFooterText?: string;
-  emailColors?: Record<string, string>;
+  emailHeaderLogo?: string
+  emailFooterText?: string
+  emailColors?: Record<string, string>
 }
 
 export interface CompiledTheme {
-  cssVariables: Record<string, string>;
-  cssClasses: string;
-  customCss: string;
-  fonts: string[];
+  cssVariables: Record<string, string>
+  cssClasses: string
+  customCss: string
+  fonts: string[]
 }
 
 export class ThemeEngine {
-  private static instance: ThemeEngine;
+  private static instance: ThemeEngine
 
   public static getInstance(): ThemeEngine {
     if (!ThemeEngine.instance) {
-      ThemeEngine.instance = new ThemeEngine();
+      ThemeEngine.instance = new ThemeEngine()
     }
-    return ThemeEngine.instance;
+    return ThemeEngine.instance
   }
 
   /**
    * Generate theme from tenant branding configuration
    */
   generateTheme(tenant: TenantInfo | null): CompiledTheme {
-    const branding = tenant?.branding;
+    const branding = tenant?.branding
 
     if (!branding) {
-      return this.getDefaultTheme();
+      return this.getDefaultTheme()
     }
 
     const config: ThemeConfig = {
@@ -78,36 +78,36 @@ export class ThemeEngine {
       emailHeaderLogo: branding.emailHeaderLogo,
       emailFooterText: branding.emailFooterText,
       emailColors: branding.emailColors,
-    };
+    }
 
-    return this.compileTheme(config);
+    return this.compileTheme(config)
   }
 
   /**
    * Compile theme configuration into CSS variables and classes
    */
   compileTheme(config: ThemeConfig): CompiledTheme {
-    const cssVariables = this.generateCSSVariables(config);
-    const cssClasses = this.generateCSSClasses(config);
-    const fonts = this.extractFonts(config);
+    const cssVariables = this.generateCSSVariables(config)
+    const cssClasses = this.generateCSSClasses(config)
+    const fonts = this.extractFonts(config)
 
     return {
       cssVariables,
       cssClasses,
       customCss: config.customCss || '',
       fonts,
-    };
+    }
   }
 
   /**
    * Generate CSS variables from theme config
    */
   private generateCSSVariables(config: ThemeConfig): Record<string, string> {
-    const { h: primaryH, s: primaryS, l: primaryL } = this.hexToHsl(config.primaryColor);
-    const { h: secondaryH, s: secondaryS, l: secondaryL } = this.hexToHsl(config.secondaryColor);
-    const { h: accentH, s: accentS, l: accentL } = this.hexToHsl(config.accentColor);
-    const { h: bgH, s: bgS, l: bgL } = this.hexToHsl(config.backgroundColor);
-    const { h: textH, s: textS, l: textL } = this.hexToHsl(config.textColor);
+    const { h: primaryH, s: primaryS, l: primaryL } = this.hexToHsl(config.primaryColor)
+    const { h: secondaryH, s: secondaryS, l: secondaryL } = this.hexToHsl(config.secondaryColor)
+    const { h: accentH, s: accentS, l: accentL } = this.hexToHsl(config.accentColor)
+    const { h: bgH, s: bgS, l: bgL } = this.hexToHsl(config.backgroundColor)
+    const { h: textH, s: textS, l: textL } = this.hexToHsl(config.textColor)
 
     return {
       // Primary color scale
@@ -158,7 +158,7 @@ export class ThemeEngine {
       '--success-foreground': '0 0% 98%',
       '--warning': '38 92% 50%',
       '--warning-foreground': '0 0% 9%',
-    };
+    }
   }
 
   /**
@@ -245,24 +245,28 @@ export class ThemeEngine {
         border-color: hsl(var(--ring));
         box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
       }
-    `;
+    `
   }
 
   /**
    * Extract required fonts from configuration
    */
   private extractFonts(config: ThemeConfig): string[] {
-    const fonts = new Set<string>();
+    const fonts = new Set<string>()
 
     if (config.primaryFont && config.primaryFont !== 'system-ui') {
-      fonts.add(config.primaryFont);
+      fonts.add(config.primaryFont)
     }
 
-    if (config.secondaryFont && config.secondaryFont !== 'system-ui' && config.secondaryFont !== config.primaryFont) {
-      fonts.add(config.secondaryFont);
+    if (
+      config.secondaryFont &&
+      config.secondaryFont !== 'system-ui' &&
+      config.secondaryFont !== config.primaryFont
+    ) {
+      fonts.add(config.secondaryFont)
     }
 
-    return Array.from(fonts);
+    return Array.from(fonts)
   }
 
   /**
@@ -270,44 +274,50 @@ export class ThemeEngine {
    */
   private hexToHsl(hex: string): { h: number; s: number; l: number } {
     // Remove # if present
-    hex = hex.replace('#', '');
+    hex = hex.replace('#', '')
 
     // Convert to RGB
-    const r = parseInt(hex.substr(0, 2), 16) / 255;
-    const g = parseInt(hex.substr(2, 2), 16) / 255;
-    const b = parseInt(hex.substr(4, 2), 16) / 255;
+    const r = parseInt(hex.substr(0, 2), 16) / 255
+    const g = parseInt(hex.substr(2, 2), 16) / 255
+    const b = parseInt(hex.substr(4, 2), 16) / 255
 
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0;
-    let s = 0;
-    const l = (max + min) / 2;
+    const max = Math.max(r, g, b)
+    const min = Math.min(r, g, b)
+    let h = 0
+    let s = 0
+    const l = (max + min) / 2
 
     if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      const d = max - min
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
 
       switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0)
+          break
+        case g:
+          h = (b - r) / d + 2
+          break
+        case b:
+          h = (r - g) / d + 4
+          break
       }
-      h /= 6;
+      h /= 6
     }
 
     return {
       h: Math.round(h * 360),
       s: Math.round(s * 100),
       l: Math.round(l * 100),
-    };
+    }
   }
 
   /**
    * Get contrasting color (black or white) for readability
    */
   private getContrastColor(hex: string): string {
-    const { l } = this.hexToHsl(hex);
-    return l > 50 ? '0 0% 9%' : '0 0% 98%';
+    const { l } = this.hexToHsl(hex)
+    return l > 50 ? '0 0% 9%' : '0 0% 98%'
   }
 
   /**
@@ -325,69 +335,75 @@ export class ThemeEngine {
       fontSize: '16px',
       borderRadius: '8px',
       spacing: '16px',
-    };
+    }
 
-    return this.compileTheme(defaultConfig);
+    return this.compileTheme(defaultConfig)
   }
 
   /**
    * Validate theme configuration
    */
   validateTheme(config: ThemeConfig): { isValid: boolean; errors: string[] } {
-    const errors: string[] = [];
+    const errors: string[] = []
 
     // Validate colors
-    const colorFields = ['primaryColor', 'secondaryColor', 'accentColor', 'backgroundColor', 'textColor'];
+    const colorFields = [
+      'primaryColor',
+      'secondaryColor',
+      'accentColor',
+      'backgroundColor',
+      'textColor',
+    ]
     for (const field of colorFields) {
-      const color = config[field as keyof ThemeConfig] as string;
+      const color = config[field as keyof ThemeConfig] as string
       if (!this.isValidHexColor(color)) {
-        errors.push(`Invalid color format for ${field}: ${color}`);
+        errors.push(`Invalid color format for ${field}: ${color}`)
       }
     }
 
     // Validate fonts
     if (!config.primaryFont) {
-      errors.push('Primary font is required');
+      errors.push('Primary font is required')
     }
 
     // Validate numeric values
     if (!this.isValidCSSSize(config.fontSize)) {
-      errors.push(`Invalid font size: ${config.fontSize}`);
+      errors.push(`Invalid font size: ${config.fontSize}`)
     }
 
     if (!this.isValidCSSSize(config.borderRadius)) {
-      errors.push(`Invalid border radius: ${config.borderRadius}`);
+      errors.push(`Invalid border radius: ${config.borderRadius}`)
     }
 
     if (!this.isValidCSSSize(config.spacing)) {
-      errors.push(`Invalid spacing: ${config.spacing}`);
+      errors.push(`Invalid spacing: ${config.spacing}`)
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-    };
+    }
   }
 
   /**
    * Check if a string is a valid hex color
    */
   private isValidHexColor(color: string): boolean {
-    return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+    return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)
   }
 
   /**
    * Check if a string is a valid CSS size value
    */
   private isValidCSSSize(size: string): boolean {
-    return /^\d+(\.\d+)?(px|em|rem|%|vw|vh)$/.test(size);
+    return /^\d+(\.\d+)?(px|em|rem|%|vw|vh)$/.test(size)
   }
 
   /**
    * Generate CSS for email templates
    */
   generateEmailCSS(config: ThemeConfig): string {
-    const emailColors = config.emailColors || {};
+    const emailColors = config.emailColors || {}
 
     return `
       <style>
@@ -430,6 +446,6 @@ export class ThemeEngine {
           width: auto;
         }
       </style>
-    `;
+    `
   }
 }

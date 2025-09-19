@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation'
 function SuccessContent() {
   const searchParams = useSearchParams()
   const [orderInfo, setOrderInfo] = useState<any>(null)
-  
+
   useEffect(() => {
     // Get order info from session storage or query params
     const storedOrder = sessionStorage.getItem('lastOrder')
@@ -33,7 +33,8 @@ function SuccessContent() {
         <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
         <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
         <p className="text-lg text-muted-foreground mb-8">
-          Thank you for your order. We&apos;ve received your payment and will begin processing your items shortly.
+          Thank you for your order. We&apos;ve received your payment and will begin processing your
+          items shortly.
         </p>
 
         <div className="border rounded-lg p-6 mb-8 bg-muted/50">
@@ -60,7 +61,9 @@ function SuccessContent() {
               </div>
               <div>
                 <p className="font-medium">Design Review</p>
-                <p className="text-sm text-muted-foreground">Our team will review your files within 24 hours</p>
+                <p className="text-sm text-muted-foreground">
+                  Our team will review your files within 24 hours
+                </p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -69,7 +72,9 @@ function SuccessContent() {
               </div>
               <div>
                 <p className="font-medium">Production</p>
-                <p className="text-sm text-muted-foreground">Your order will enter production once approved</p>
+                <p className="text-sm text-muted-foreground">
+                  Your order will enter production once approved
+                </p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -78,7 +83,9 @@ function SuccessContent() {
               </div>
               <div>
                 <p className="font-medium">Shipping</p>
-                <p className="text-sm text-muted-foreground">We&apos;ll notify you when your order ships</p>
+                <p className="text-sm text-muted-foreground">
+                  We&apos;ll notify you when your order ships
+                </p>
               </div>
             </div>
           </div>
@@ -86,9 +93,7 @@ function SuccessContent() {
 
         <div className="flex gap-4 justify-center mt-8">
           <Link href="/track">
-            <Button size="lg">
-              Track Your Order
-            </Button>
+            <Button size="lg">Track Your Order</Button>
           </Link>
           <Link href="/products">
             <Button size="lg" variant="outline">
@@ -110,11 +115,13 @@ function SuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
       <SuccessContent />
     </Suspense>
   )
