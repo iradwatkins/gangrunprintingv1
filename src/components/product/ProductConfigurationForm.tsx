@@ -148,17 +148,22 @@ export default function ProductConfigurationForm({
   useEffect(() => {
     const fetchConfigurationData = async () => {
       try {
+        console.log('🔄 Starting ProductConfigurationForm fetch for:', productId)
         setLoading(true)
         const response = await fetch(`/api/products/${productId}/configuration`, {
           // Add timeout to prevent hanging requests
           signal: AbortSignal.timeout(10000) // 10 second timeout
         })
 
+        console.log('📡 API Response status:', response.status)
         if (!response.ok && response.status !== 200) {
           throw new Error(`API returned ${response.status}`)
         }
 
         const data = await response.json()
+        console.log('📦 API Data received:', Object.keys(data))
+        console.log('🕒 Turnaround times:', data.turnaroundTimes?.length || 0)
+        console.log('🔧 Add-ons:', data.addons?.length || 0)
 
         // Check if we're using fallback data
         if (data._isFallback) {
@@ -166,9 +171,11 @@ export default function ProductConfigurationForm({
         }
 
         setConfigData(data)
+        console.log('✅ setConfigData called')
 
         // Set default values
         if (data.defaults) {
+          console.log('🎯 Setting up default configuration...')
           const newConfig = {
             quantity: data.defaults.quantity || data.quantities[0]?.id || '',
             size: data.defaults.size || data.sizes[0]?.id || '',
@@ -179,6 +186,7 @@ export default function ProductConfigurationForm({
             turnaround: data.defaults.turnaround || data.turnaroundTimes?.[0]?.id || '',
             selectedAddons: data.defaults.addons || [],
           }
+          console.log('🔧 New config created:', newConfig)
 
           // Set default sides and coating based on selected paper
           if (newConfig.paperStock && data.paperStocks) {
@@ -205,11 +213,13 @@ export default function ProductConfigurationForm({
                            newConfig.turnaround
 
           onConfigurationChange?.(newConfig, Boolean(isComplete))
+          console.log('🎉 Configuration setup complete!')
         }
       } catch (err) {
-        console.error('Error fetching configuration data:', err)
+        console.error('❌ Error in ProductConfigurationForm:', err)
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
+        console.log('🏁 Finally block reached - setting loading to false')
         setLoading(false)
       }
     }
