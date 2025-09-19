@@ -197,7 +197,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   // Handle add to cart
   const handleAddToCart = () => {
-    if (customerImages.length === 0) {
+    if (!productConfiguration || !productConfiguration.uploadedFiles || productConfiguration.uploadedFiles.length === 0) {
       toast.error('Please upload your design file')
       return
     }
@@ -207,24 +207,26 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       return
     }
 
+    const uploadedFile = productConfiguration.uploadedFiles[0]
+
     addItem({
       productId: product.id,
       productName: product.name,
       productSlug: product.slug,
-      sku: `${product.slug}-${productConfiguration.paperStock}-${productConfiguration.quantity}`,
+      sku: `${product.slug}-${productConfiguration.paper}-${productConfiguration.quantity}`,
       price: calculatedPrice,
       quantity: parseInt(productConfiguration.quantity) || 1,
       turnaround: `${product.productionTime} business days`,
       options: {
         size: productConfiguration.size || 'Standard',
-        paperStock: productConfiguration.paperStock,
-        paperStockId: productConfiguration.paperStock,
+        paperStock: productConfiguration.paper,
+        paperStockId: productConfiguration.paper,
         sides: productConfiguration.sides,
         coating: productConfiguration.coating,
       },
-      fileUrl: customerImages[0]?.url,
-      fileName: customerImages[0]?.fileName,
-      fileSize: customerImages[0]?.fileSize,
+      fileUrl: uploadedFile?.thumbnailUrl || '',
+      fileName: uploadedFile?.originalName || '',
+      fileSize: uploadedFile?.size || 0,
       image:
         product.ProductImage.find((img) => img.isPrimary)?.thumbnailUrl ||
         product.ProductImage[0]?.thumbnailUrl ||
@@ -333,7 +335,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsContent>
           </Tabs>
 
-          {/* Price Display */}
+          {/* Price Display and Cart Button */}
           <div className="border-t pt-6">
             <div className="flex items-end justify-between mb-4">
               <div>
@@ -350,6 +352,23 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {product.productionTime} days
               </Badge>
             </div>
+
+            {/* Add to Cart Button */}
+            <Button
+              onClick={handleAddToCart}
+              size="lg"
+              className="w-full"
+              disabled={!productConfiguration?.uploadedFiles?.length || !isConfigurationComplete}
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              Add to Cart
+            </Button>
+
+            {!productConfiguration?.uploadedFiles?.length && (
+              <p className="text-sm text-destructive text-center mt-2">
+                Please upload your design file before adding to cart
+              </p>
+            )}
           </div>
         </div>
       </div>
