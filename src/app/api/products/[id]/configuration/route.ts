@@ -6,6 +6,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const productId = params.id
 
+    if (!productId) {
+      return NextResponse.json(
+        { error: 'Product ID is required' },
+        { status: 400 }
+      )
+    }
+
     // Fetch product with all related configuration data
     const product = await prisma.product.findUnique({
       where: {
@@ -211,6 +218,29 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json(configurationData, { status: 200 })
   } catch (error) {
     console.error('Error fetching product configuration:', error)
+
+    // Check for specific Prisma errors
+    if (error instanceof Error) {
+      if (error.message.includes('P2002')) {
+        return NextResponse.json(
+          { error: 'Database constraint violation' },
+          { status: 400 }
+        )
+      }
+      if (error.message.includes('P2025')) {
+        return NextResponse.json(
+          { error: 'Record not found' },
+          { status: 404 }
+        )
+      }
+      // Log the full error in production for debugging
+      console.error('Full error details:', {
+        message: error.message,
+        stack: error.stack,
+        productId: params.id
+      })
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch product configuration' },
       { status: 500 }
