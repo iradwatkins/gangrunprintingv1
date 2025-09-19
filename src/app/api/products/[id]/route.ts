@@ -61,7 +61,7 @@ export async function PUT(
   try {
         const { id } = await params
     const { user, session } = await validateRequest()
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -214,6 +214,42 @@ export async function PUT(
   }
 }
 
+// PATCH /api/products/[id] - Simple update product (for toggles, etc.)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const data = await request.json()
+
+    // Update product with simple fields
+    const product = await prisma.product.update({
+      where: { id },
+      data,
+      include: {
+        ProductCategory: true
+      }
+    })
+
+    return NextResponse.json(product)
+  } catch (error) {
+    console.error('Error updating product:', error)
+    return NextResponse.json(
+      { error: 'Failed to update product' },
+      { status: 500 }
+    )
+  }
+}
+
 // DELETE /api/products/[id] - Delete product
 export async function DELETE(
   request: NextRequest,
@@ -222,7 +258,7 @@ export async function DELETE(
   try {
         const { id } = await params
     const { user, session } = await validateRequest()
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

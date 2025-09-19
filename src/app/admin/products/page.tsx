@@ -145,12 +145,20 @@ export default function ProductsPage() {
             Manage your print products and configurations
           </p>
         </div>
-        <Link href="/admin/products/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/products/simple">
+            <Button variant="outline">
+              <Plus className="mr-2 h-4 w-4" />
+              Simple Create
+            </Button>
+          </Link>
+          <Link href="/admin/products/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Full Create
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
