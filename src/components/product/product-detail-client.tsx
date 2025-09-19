@@ -15,10 +15,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import { ProductImageGallery } from './ProductImageGallery'
+import ProductConfigurationForm from './ProductConfigurationForm'
 
 interface ProductImage {
   id: string
@@ -41,7 +43,7 @@ interface Product {
   name: string
   slug: string
   description: string | null
-  shortDescription?: string
+  shortDescription: string | null
   basePrice: number
   setupFee: number
   productionTime: number
@@ -104,40 +106,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const router = useRouter()
   const { addItem, openCart } = useCart()
 
-  // Product configuration state
-  const [selectedPaperStock, setSelectedPaperStock] = useState<string>(() => {
-    if (product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems) {
-      const defaultItem = product.productPaperStockSets[0].paperStockSet.paperStockItems.find(item => item.isDefault)
-      return defaultItem?.paperStock.id || product.productPaperStockSets[0].paperStockSet.paperStockItems[0]?.paperStock.id || ''
-    }
-    return ''
-  })
-
-  const [selectedQuantity, setSelectedQuantity] = useState<number>(() => {
-    if (product.productQuantityGroups?.[0]?.quantityGroup?.values) {
-      const quantities = product.productQuantityGroups[0].quantityGroup.values
-        .split(',')
-        .map((v) => v.trim())
-        .filter((v) => v && v !== 'custom')
-      if (quantities.length > 0) {
-        return parseInt(quantities[0])
-      }
-    }
-    return 100
-  })
-
-  const [selectedSize, setSelectedSize] = useState<string>(() => {
-    if (product.productSizeGroups?.[0]?.sizeGroup?.values) {
-      const sizes = product.productSizeGroups[0].sizeGroup.values
-        .split(',')
-        .map((v) => v.trim())
-        .filter((v) => v && v !== 'custom')
-      if (sizes.length > 0) {
-        return '0'
-      }
-    }
-    return '0'
-  })
+  // Product configuration state - now managed by ProductConfigurationForm
+  const [productConfiguration, setProductConfiguration] = useState<any>(null)
+  const [isConfigurationComplete, setIsConfigurationComplete] = useState(false)
+  const [calculatedPrice, setCalculatedPrice] = useState<number>(product.basePrice)
 
   // Customer image upload state
   const [customerImages, setCustomerImages] = useState<CustomerImage[]>([])
@@ -212,24 +184,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     }
   }
 
-  // Calculate price
-  const calculatePrice = () => {
-    let price = product.basePrice
+  // Handle configuration changes from ProductConfigurationForm
+  const handleConfigurationChange = (config: any, isComplete: boolean) => {
+    setProductConfiguration(config)
+    setIsConfigurationComplete(isComplete)
+  }
 
-    // Add paper stock cost
-    if (product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems) {
-      const paperStockItem = product.productPaperStockSets[0].paperStockSet.paperStockItems.find(
-        (item) => item.paperStock.id === selectedPaperStock
-      )
-      // Note: paperStockItems don't have additionalCost, price calculation would be based on paperStock.pricePerSqInch
-      // This would need to be implemented based on actual pricing logic
-    }
-
-    // Add quantity-based pricing (simplified)
-    const quantityMultiplier = selectedQuantity >= 1000 ? 0.8 : selectedQuantity >= 500 ? 0.9 : 1.0
-    price = price * quantityMultiplier
-
-    return price
+  // Handle price changes from ProductConfigurationForm
+  const handlePriceChange = (price: number) => {
+    setCalculatedPrice(price)
   }
 
   // Handle add to cart
@@ -239,30 +202,25 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       return
     }
 
-    const selectedPaper = product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems.find(
-      (item) => item.paperStock.id === selectedPaperStock
-    )
-    const sizeGroup = product.productSizeGroups[0]?.sizeGroup
-    const sizeValues =
-      sizeGroup?.values
-        .split(',')
-        .map((v) => v.trim())
-        .filter((v) => v && v !== 'custom') || []
-    const selectedSizeData = sizeValues[parseInt(selectedSize)] || null
+    if (!isConfigurationComplete || !productConfiguration) {
+      toast.error('Please complete your product configuration')
+      return
+    }
 
     addItem({
       productId: product.id,
       productName: product.name,
       productSlug: product.slug,
-      sku: `${product.slug}-${selectedPaperStock}-${selectedQuantity}`,
-      price: calculatePrice(),
-      quantity: selectedQuantity,
+      sku: `${product.slug}-${productConfiguration.paperStock}-${productConfiguration.quantity}`,
+      price: calculatedPrice,
+      quantity: parseInt(productConfiguration.quantity) || 1,
       turnaround: `${product.productionTime} business days`,
       options: {
-        size: selectedSizeData || 'Standard',
-        paperStock: selectedPaper?.paperStock.name,
-        paperStockId: selectedPaperStock,
-        sides: 'Double',
+        size: productConfiguration.size || 'Standard',
+        paperStock: productConfiguration.paperStock,
+        paperStockId: productConfiguration.paperStock,
+        sides: productConfiguration.sides,
+        coating: productConfiguration.coating,
       },
       fileUrl: customerImages[0]?.url,
       fileName: customerImages[0]?.fileName,
@@ -323,76 +281,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* Paper Type */}
-              {product.productPaperStockSets?.[0]?.paperStockSet?.paperStockItems?.length > 0 && (
-                <div>
-                  <Label className="text-base mb-3 block">Paper Type</Label>
-                  <Select value={selectedPaperStock} onValueChange={setSelectedPaperStock}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.productPaperStockSets[0].paperStockSet.paperStockItems.map((item) => (
-                        <SelectItem key={item.paperStock.id} value={item.paperStock.id}>
-                          {item.paperStock.name}
-                          {item.isDefault && ' (Default)'}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Quantity */}
-              {product?.productQuantityGroups?.length > 0 &&
-                product.productQuantityGroups[0]?.quantityGroup?.values && (
-                  <div>
-                    <Label className="text-base mb-3 block">Quantity</Label>
-                    <Select
-                      value={selectedQuantity.toString()}
-                      onValueChange={(v) => setSelectedQuantity(parseInt(v))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {product.productQuantityGroups[0].quantityGroup.values
-                          .split(',')
-                          .map((v) => v.trim())
-                          .filter((v) => v && v !== 'custom')
-                          .map((qty: string) => (
-                            <SelectItem key={qty} value={qty}>
-                              {parseInt(qty).toLocaleString()}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-              {/* Size */}
-              {product?.productSizeGroups?.length > 0 &&
-                product.productSizeGroups[0]?.sizeGroup?.values && (
-                  <div>
-                    <Label className="text-base mb-3 block">Size</Label>
-                    <Select value={selectedSize} onValueChange={setSelectedSize}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {product.productSizeGroups[0].sizeGroup.values
-                          .split(',')
-                          .map((v) => v.trim())
-                          .filter((v) => v && v !== 'custom')
-                          .map((size: string, index: number) => (
-                            <SelectItem key={index} value={index.toString()}>
-                              {size}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+              {/* Product Configuration Form - New Component */}
+              <ProductConfigurationForm
+                productId={product.id}
+                basePrice={product.basePrice}
+                setupFee={product.setupFee}
+                onConfigurationChange={handleConfigurationChange}
+                onPriceChange={handlePriceChange}
+              />
 
               {/* Customer File Upload */}
               <div>
@@ -532,10 +428,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <div className="flex items-end justify-between mb-4">
               <div>
                 <span className="text-sm text-muted-foreground">Total Price</span>
-                <p className="text-3xl font-bold">${calculatePrice().toFixed(2)}</p>
+                <p className="text-3xl font-bold">${calculatedPrice.toFixed(2)}</p>
                 {product.setupFee > 0 && (
                   <p className="text-sm text-muted-foreground">
-                    + ${product.setupFee.toFixed(2)} setup fee
+                    Includes ${product.setupFee.toFixed(2)} setup fee
                   </p>
                 )}
               </div>
@@ -546,7 +442,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
             <Button
               className="w-full"
-              disabled={customerImages.length === 0 || isUploading}
+              disabled={customerImages.length === 0 || isUploading || !isConfigurationComplete}
               size="lg"
               onClick={handleAddToCart}
             >
@@ -556,6 +452,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {customerImages.length === 0 && (
               <p className="text-sm text-muted-foreground text-center mt-2">
                 Please upload your design file to continue
+              </p>
+            )}
+            {!isConfigurationComplete && customerImages.length > 0 && (
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                Please complete your product configuration
               </p>
             )}
           </div>
