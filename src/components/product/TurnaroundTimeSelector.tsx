@@ -89,7 +89,18 @@ export default function TurnaroundTimeSelector({
 
   // Don't render if no turnaround times available
   if (!turnaroundTimes || turnaroundTimes.length === 0) {
-    return null
+    return (
+      <div className="space-y-3">
+        <Label className="text-base font-medium">
+          Print Turnaround
+        </Label>
+        <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            Turnaround options are currently unavailable. Please contact support if this persists.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

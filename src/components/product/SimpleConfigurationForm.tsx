@@ -603,11 +603,11 @@ export default function SimpleConfigurationForm({
 
       {/* Turnaround Time Selection */}
       <TurnaroundTimeSelector
-        turnaroundTimes={configData.turnaroundTimes || []}
+        turnaroundTimes={configData?.turnaroundTimes || []}
         selectedTurnaroundId={configuration.turnaround}
         onTurnaroundChange={handleTurnaroundChange}
         baseProductPrice={calculateBasePrice(configuration)}
-        quantity={configData.quantities.find(q => q.id === configuration.quantity)?.value || 1}
+        quantity={configData?.quantities?.find(q => q.id === configuration.quantity)?.value || 1}
         currentCoating={configuration.coating}
         disabled={loading}
       />
