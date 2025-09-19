@@ -75,8 +75,8 @@ interface Addon {
 interface ConfigurationData {
   quantities: Array<{
     id: string
-    displayValue: number
-    calculationValue: number
+    value: number
+    label: string
   }>
   sizes: Array<{
     id: string
@@ -84,7 +84,9 @@ interface ConfigurationData {
     displayName: string
     width: number
     height: number
-    preCalculatedValue: number
+    squareInches: number
+    priceMultiplier: number
+    isDefault: boolean
   }>
   paperStocks: PaperStock[]
   turnaroundTimes: TurnaroundTime[]
@@ -633,7 +635,7 @@ export default function ProductConfigurationForm({
             selectedTurnaroundId={configuration.turnaround}
             onTurnaroundChange={handleTurnaroundChange}
             baseProductPrice={calculatePrice || 0}
-            quantity={configData.quantities.find(q => q.id === configuration.quantity)?.calculationValue || 1}
+            quantity={configData.quantities.find(q => q.id === configuration.quantity)?.value || 1}
             currentCoating={configuration.coating}
             disabled={loading}
           />
