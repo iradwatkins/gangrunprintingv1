@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import FileUploadZone from './FileUploadZone'
+import AddonAccordion from './AddonAccordion'
+import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 
 // Simplified types
 interface SimpleConfigData {
@@ -46,12 +48,38 @@ interface SimpleConfigData {
       isDefault: boolean
     }>
   }>
+  addons: Array<{
+    id: string
+    name: string
+    description: string
+    pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT'
+    price: number
+    priceDisplay: string
+    isDefault: boolean
+    additionalTurnaroundDays: number
+  }>
+  turnaroundTimes: Array<{
+    id: string
+    name: string
+    displayName: string
+    description?: string
+    daysMin: number
+    daysMax?: number
+    pricingModel: 'FLAT' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM'
+    basePrice: number
+    priceMultiplier: number
+    requiresNoCoating: boolean
+    restrictedCoatings: string[]
+    isDefault: boolean
+  }>
   defaults: {
     quantity: string
     size: string
     paper: string
     coating: string
     sides: string
+    addons: string[]
+    turnaround: string
   }
 }
 
@@ -71,7 +99,9 @@ interface SimpleProductConfiguration {
   paper: string
   coating: string
   sides: string
+  turnaround: string
   uploadedFiles: UploadedFile[]
+  selectedAddons: string[]
 }
 
 interface SimpleConfigurationFormProps {
@@ -94,7 +124,9 @@ export default function SimpleConfigurationForm({
     paper: '',
     coating: '',
     sides: '',
+    turnaround: '',
     uploadedFiles: [],
+    selectedAddons: [],
   })
 
   // Fetch configuration data
@@ -129,7 +161,9 @@ export default function SimpleConfigurationForm({
           paper: data.defaults.paper || data.paperStocks[0]?.id || '',
           coating: data.defaults.coating || data.paperStocks[0]?.coatings[0]?.id || '',
           sides: data.defaults.sides || data.paperStocks[0]?.sides[0]?.id || '',
+          turnaround: data.defaults.turnaround || data.turnaroundTimes[0]?.id || '',
           uploadedFiles: [],
+          selectedAddons: data.defaults.addons || [],
         })
       } catch (err) {
         console.error('Failed to fetch configuration:', err)
@@ -166,7 +200,102 @@ export default function SimpleConfigurationForm({
     const coatingMultiplier = coatingOption.priceMultiplier
     const sidesMultiplier = sidesOption.priceMultiplier
 
-    return quantity * basePrice * sizeMultiplier * coatingMultiplier * sidesMultiplier
+    // Calculate base product price
+    const baseProductPrice = quantity * basePrice * sizeMultiplier * coatingMultiplier * sidesMultiplier
+
+    // Calculate addon costs
+    let addonCosts = 0
+    if (config.selectedAddons && config.selectedAddons.length > 0) {
+      config.selectedAddons.forEach(addonId => {
+        const addon = configData.addons?.find(a => a.id === addonId)
+        if (addon) {
+          switch (addon.pricingModel) {
+            case 'FIXED_FEE':
+              addonCosts += addon.price
+              break
+            case 'PERCENTAGE':
+              addonCosts += baseProductPrice * addon.price
+              break
+            case 'PER_UNIT':
+              addonCosts += quantity * addon.price
+              break
+          }
+        }
+      })
+    }
+
+    const subtotalWithAddons = baseProductPrice + addonCosts
+
+    // Calculate turnaround costs
+    const turnaroundOption = configData.turnaroundTimes?.find(t => t.id === config.turnaround)
+    let finalPrice = subtotalWithAddons
+
+    if (turnaroundOption) {
+      switch (turnaroundOption.pricingModel) {
+        case 'FLAT':
+          finalPrice = subtotalWithAddons + turnaroundOption.basePrice
+          break
+        case 'PERCENTAGE':
+          finalPrice = subtotalWithAddons * turnaroundOption.priceMultiplier
+          break
+        case 'PER_UNIT':
+          finalPrice = subtotalWithAddons + (quantity * turnaroundOption.basePrice)
+          break
+        default:
+          finalPrice = subtotalWithAddons
+      }
+    }
+
+    return finalPrice
+  }
+
+  // Calculate base price without turnaround (for TurnaroundTimeSelector)
+  const calculateBasePrice = (config: SimpleProductConfiguration): number => {
+    if (!configData) return 0
+
+    const quantityOption = configData.quantities.find(q => q.id === config.quantity)
+    const sizeOption = configData.sizes.find(s => s.id === config.size)
+    const paperOption = configData.paperStocks.find(p => p.id === config.paper)
+
+    if (!quantityOption || !sizeOption || !paperOption) return 0
+
+    // Find coating and sides options for the selected paper
+    const coatingOption = paperOption.coatings.find(c => c.id === config.coating)
+    const sidesOption = paperOption.sides.find(s => s.id === config.sides)
+
+    if (!coatingOption || !sidesOption) return 0
+
+    const quantity = quantityOption.value
+    const basePrice = paperOption.pricePerUnit
+    const sizeMultiplier = sizeOption.priceMultiplier
+    const coatingMultiplier = coatingOption.priceMultiplier
+    const sidesMultiplier = sidesOption.priceMultiplier
+
+    // Calculate base product price
+    const baseProductPrice = quantity * basePrice * sizeMultiplier * coatingMultiplier * sidesMultiplier
+
+    // Calculate addon costs
+    let addonCosts = 0
+    if (config.selectedAddons && config.selectedAddons.length > 0) {
+      config.selectedAddons.forEach(addonId => {
+        const addon = configData.addons?.find(a => a.id === addonId)
+        if (addon) {
+          switch (addon.pricingModel) {
+            case 'FIXED_FEE':
+              addonCosts += addon.price
+              break
+            case 'PERCENTAGE':
+              addonCosts += baseProductPrice * addon.price
+              break
+            case 'PER_UNIT':
+              addonCosts += quantity * addon.price
+              break
+          }
+        }
+      })
+    }
+
+    return baseProductPrice + addonCosts
   }
 
   // Handle configuration changes
@@ -199,6 +328,36 @@ export default function SimpleConfigurationForm({
     const newConfig = { ...configuration, uploadedFiles: files }
     setConfiguration(newConfig)
 
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle addon changes
+  const handleAddonChange = (selectedAddonIds: string[]) => {
+    const newConfig = { ...configuration, selectedAddons: selectedAddonIds }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle turnaround changes
+  const handleTurnaroundChange = (turnaroundId: string) => {
+    if (!configData) return
+
+    const selectedTurnaround = configData.turnaroundTimes.find(t => t.id === turnaroundId)
+    let newConfig = { ...configuration, turnaround: turnaroundId }
+
+    // If turnaround requires no coating, force coating to "No Coating" if available
+    if (selectedTurnaround?.requiresNoCoating) {
+      const selectedPaper = configData.paperStocks.find(p => p.id === configuration.paper)
+      const noCoatingOption = selectedPaper?.coatings.find(c => c.name === 'No Coating')
+      if (noCoatingOption) {
+        newConfig = { ...newConfig, coating: noCoatingOption.id }
+      }
+    }
+
+    setConfiguration(newConfig)
     const price = calculatePrice(newConfig)
     onConfigurationChange?.(newConfig, price)
   }
@@ -405,6 +564,25 @@ export default function SimpleConfigurationForm({
         )
       })()}
 
+      {/* Turnaround Time Selection */}
+      <TurnaroundTimeSelector
+        turnaroundTimes={configData.turnaroundTimes || []}
+        selectedTurnaroundId={configuration.turnaround}
+        onTurnaroundChange={handleTurnaroundChange}
+        baseProductPrice={calculateBasePrice(configuration)}
+        quantity={configData.quantities.find(q => q.id === configuration.quantity)?.value || 1}
+        currentCoating={configuration.coating}
+        disabled={loading}
+      />
+
+      {/* Add-ons & Upgrades Section */}
+      <AddonAccordion
+        addons={configData.addons || []}
+        selectedAddons={configuration.selectedAddons}
+        onAddonChange={handleAddonChange}
+        disabled={loading}
+      />
+
       {/* File Upload Section */}
       <div className="space-y-3">
         <Label className="text-base font-medium">
@@ -466,9 +644,52 @@ export default function SimpleConfigurationForm({
             )
           })()}
           <div>
+            Turnaround: {configData.turnaroundTimes?.find(t => t.id === configuration.turnaround)?.displayName || 'None'}
+            {(() => {
+              const selectedTurnaround = configData.turnaroundTimes?.find(t => t.id === configuration.turnaround)
+              if (selectedTurnaround && selectedTurnaround.priceMultiplier !== 1.0) {
+                return (
+                  <span className="ml-1 text-xs text-gray-500">
+                    ({selectedTurnaround.priceMultiplier.toFixed(2)}x)
+                  </span>
+                )
+              }
+              if (selectedTurnaround?.requiresNoCoating) {
+                return (
+                  <span className="ml-1 text-xs text-orange-600">
+                    (No coating required)
+                  </span>
+                )
+              }
+              return null
+            })()}
+          </div>
+          <div>
             Files: {configuration.uploadedFiles.length === 0
               ? 'No files uploaded'
               : `${configuration.uploadedFiles.length} file${configuration.uploadedFiles.length > 1 ? 's' : ''} uploaded`
+            }
+          </div>
+          <div>
+            Add-ons: {configuration.selectedAddons.length === 0
+              ? 'None selected'
+              : (
+                <div className="mt-1 space-y-1">
+                  {configuration.selectedAddons.map(addonId => {
+                    const addon = configData.addons?.find(a => a.id === addonId)
+                    return addon ? (
+                      <div key={addonId} className="text-xs text-gray-600 ml-2">
+                        • {addon.name} - {addon.priceDisplay}
+                        {addon.additionalTurnaroundDays > 0 && (
+                          <span className="text-amber-600 ml-1">
+                            (+{addon.additionalTurnaroundDays} day{addon.additionalTurnaroundDays > 1 ? 's' : ''})
+                          </span>
+                        )}
+                      </div>
+                    ) : null
+                  })}
+                </div>
+              )
             }
           </div>
           <div className="font-medium pt-2 border-t">

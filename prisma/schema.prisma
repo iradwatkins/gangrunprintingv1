@@ -196,6 +196,7 @@ model Product {
   pricingConfig         ProductPricingConfig?
   productSizes          ProductSize[]
   productQuantities     ProductQuantity[]
+  productTurnaroundTimeSets ProductTurnaroundTimeSet[]
 
   @@index([categoryId])
   @@index([slug])
@@ -1577,4 +1578,87 @@ model ProductQuantity {
   @@unique([productId, standardQuantityId])
   @@index([productId])
   @@index([standardQuantityId])
+}
+
+// ==========================================
+// TURNAROUND TIME SYSTEM
+// ==========================================
+
+model TurnaroundTime {
+  id                    String      @id @default(cuid())
+  name                  String      // "Economy", "Fast", "Faster", "Fastest"
+  displayName           String      // "Economy (2-4 Days)"
+  description           String?     // "Standard processing time"
+  daysMin               Int         // 2
+  daysMax               Int?        // 4 (null for same-day)
+  pricingModel          PricingModel @default(FLAT) // FLAT, PERCENTAGE, PER_UNIT, CUSTOM
+  basePrice             Float       @default(0) // Base surcharge
+  priceMultiplier       Float       @default(1.0) // For percentage model
+  isActive              Boolean     @default(true)
+  sortOrder             Int         @default(0)
+
+  // Special constraints (e.g., "WITH NO COATING")
+  requiresNoCoating     Boolean     @default(false)
+  restrictedCoatings    String[]    @default([])
+  restrictedOptions     Json?       // Other restrictions
+
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  // Relations
+  turnaroundTimeSetItems TurnaroundTimeSetItem[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model TurnaroundTimeSet {
+  id                    String   @id @default(cuid())
+  name                  String   @unique // "Standard Posters", "Business Cards"
+  description           String?
+  isActive              Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  turnaroundTimeItems         TurnaroundTimeSetItem[]
+  productTurnaroundTimeSets   ProductTurnaroundTimeSet[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model TurnaroundTimeSetItem {
+  id                    String   @id @default(cuid())
+  turnaroundTimeSetId   String
+  turnaroundTimeId      String
+  isDefault             Boolean  @default(false)
+  sortOrder             Int      @default(0)
+  priceOverride         Float?   // Override base price for this set
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  turnaroundTimeSet     TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
+  turnaroundTime        TurnaroundTime @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
+
+  @@unique([turnaroundTimeSetId, turnaroundTimeId])
+  @@index([turnaroundTimeSetId])
+  @@index([turnaroundTimeId])
+}
+
+model ProductTurnaroundTimeSet {
+  id                    String   @id @default(cuid())
+  productId             String
+  turnaroundTimeSetId   String
+  isDefault             Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  product               Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  turnaroundTimeSet     TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, turnaroundTimeSetId])
+  @@index([productId])
+  @@index([turnaroundTimeSetId])
 }
