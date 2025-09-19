@@ -17,11 +17,19 @@ async function getProduct(slug: string) {
         ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStocks: {
+        productPaperStockSets: {
           include: {
-            paperStock: true,
+            paperStockSet: {
+              include: {
+                paperStockItems: {
+                  include: {
+                    paperStock: true,
+                  },
+                  orderBy: { sortOrder: 'asc' },
+                },
+              },
+            },
           },
-          orderBy: { id: 'asc' },
         },
         productQuantityGroups: {
           include: {

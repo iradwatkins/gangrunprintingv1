@@ -14,9 +14,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStocks: {
+        productPaperStockSets: {
           include: {
-            paperStock: true,
+            paperStockSet: {
+              include: {
+                paperStockItems: {
+                  include: {
+                    paperStock: true,
+                  },
+                },
+              },
+            },
           },
         },
         ProductOption: {
@@ -54,14 +62,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const data = await request.json()
-    const { images, paperStocks, options, pricingTiers, ...productData } = data
+    const { images, paperStockSetId, options, pricingTiers, ...productData } = data
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: {
         ProductImage: true,
-        productPaperStocks: true,
+        productPaperStockSets: true,
         ProductOption: {
           include: {
             OptionValue: true,
@@ -92,7 +100,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const product = await prisma.$transaction(async (tx) => {
       // Delete existing relations
       await tx.productImage.deleteMany({ where: { productId: id } })
-      await tx.productPaperStock.deleteMany({ where: { productId: id } })
+      await tx.productPaperStockSet.deleteMany({ where: { productId: id } })
       await tx.productOption.deleteMany({ where: { productId: id } })
       await tx.pricingTier.deleteMany({ where: { productId: id } })
 
@@ -119,15 +127,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                   })),
                 }
               : undefined,
-          // Recreate paper stock associations
-          productPaperStocks:
-            paperStocks?.length > 0
+          // Recreate paper stock set association
+          productPaperStockSets:
+            paperStockSetId
               ? {
-                  create: paperStocks.map((ps: any) => ({
-                    paperStockId: ps.paperStockId,
-                    isDefault: ps.isDefault,
-                    additionalCost: ps.additionalCost,
-                  })),
+                  create: {
+                    paperStockSetId: paperStockSetId,
+                    isDefault: true,
+                  },
                 }
               : undefined,
           // Recreate options with values
@@ -167,9 +174,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           ProductCategory: true,
           ProductImage: true,
-          productPaperStocks: {
+          productPaperStockSets: {
             include: {
-              paperStock: true,
+              paperStockSet: {
+                include: {
+                  paperStockItems: {
+                    include: {
+                      paperStock: true,
+                    },
+                  },
+                },
+              },
             },
           },
           ProductOption: {

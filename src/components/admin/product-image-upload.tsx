@@ -47,6 +47,10 @@ interface ProductImage {
   id?: string
   url: string
   thumbnailUrl?: string
+  largeUrl?: string
+  mediumUrl?: string
+  webpUrl?: string
+  blurDataUrl?: string
   alt?: string
   caption?: string
   isPrimary: boolean
@@ -54,6 +58,8 @@ interface ProductImage {
   file?: File
   uploading?: boolean
   isBlobUrl?: boolean
+  width?: number
+  height?: number
 }
 
 interface ProductImageUploadProps {
@@ -164,6 +170,10 @@ export function ProductImageUpload({
   )
   const [editForm, setEditForm] = useState({ alt: '', caption: '' })
 
+  // Maximum images allowed (1 primary + 3 additional)
+  const MAX_IMAGES = 4
+  const canAddMore = images.length < MAX_IMAGES
+
   // Cleanup blob URLs when component unmounts
   useEffect(() => {
     return () => {
@@ -190,7 +200,22 @@ export function ProductImageUpload({
     if (files.length === 0) return
 
     const safeImages = Array.isArray(images) ? images : []
-    const newImages: ProductImage[] = Array.from(files).map((file, index) => {
+
+    // Check if we can add more images
+    const remainingSlots = MAX_IMAGES - safeImages.length
+    if (remainingSlots <= 0) {
+      toast.error(`Maximum ${MAX_IMAGES} images allowed (1 primary + 3 additional)`)
+      return
+    }
+
+    // Limit files to available slots
+    const filesToProcess = Array.from(files).slice(0, remainingSlots)
+
+    if (files.length > filesToProcess.length) {
+      toast.warning(`Only ${remainingSlots} image(s) can be added. Maximum is ${MAX_IMAGES} total.`)
+    }
+
+    const newImages: ProductImage[] = filesToProcess.map((file, index) => {
       const blobUrl = URL.createObjectURL(file)
 
       return {
@@ -244,6 +269,13 @@ export function ProductImageUpload({
                   ...img,
                   url: data.url,
                   thumbnailUrl: data.thumbnailUrl || data.url,
+                  largeUrl: data.largeUrl,
+                  mediumUrl: data.mediumUrl,
+                  webpUrl: data.webpUrl,
+                  blurDataUrl: data.blurDataUrl,
+                  alt: data.alt,
+                  width: data.width,
+                  height: data.height,
                   uploading: false,
                   isBlobUrl: false,
                   file: undefined, // Remove file reference after upload
@@ -376,13 +408,14 @@ export function ProductImageUpload({
     <div className="space-y-4">
       <div
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary'}
+          border-2 border-dashed rounded-lg p-8 text-center transition-colors
+          ${!canAddMore ? 'border-muted-foreground/10 bg-muted/50 cursor-not-allowed' :
+            isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary cursor-pointer'}
         `}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => canAddMore && fileInputRef.current?.click()}
         onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDragOver={canAddMore ? handleDragOver : undefined}
+        onDrop={canAddMore ? handleDrop : undefined}
       >
         <input
           ref={fileInputRef}
@@ -390,21 +423,46 @@ export function ProductImageUpload({
           accept="image/*"
           className="hidden"
           type="file"
+          disabled={!canAddMore}
           onChange={handleFileInput}
         />
-        <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-sm font-medium">
-          {isDragActive ? 'Drop images here' : 'Drag & drop images here, or click to select'}
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">
-          Supports JPEG, PNG, WebP, GIF (max 10MB per file)
-        </p>
+        <Upload className={`mx-auto h-12 w-12 mb-4 ${!canAddMore ? 'text-muted-foreground/30' : 'text-muted-foreground'}`} />
+        {canAddMore ? (
+          <>
+            <p className="text-sm font-medium">
+              {isDragActive ? 'Drop images here' : 'Drag & drop images here, or click to select'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Supports JPEG, PNG, WebP, GIF (max 10MB per file)
+            </p>
+            <p className="text-xs text-primary mt-1 font-medium">
+              {images.length} of {MAX_IMAGES} images uploaded
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm font-medium text-muted-foreground">
+              Maximum number of images reached
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              {MAX_IMAGES} images maximum (1 primary + 3 additional)
+            </p>
+          </>
+        )}
       </div>
 
       {Array.isArray(images) && images.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label>Product Images ({Array.isArray(images) ? images.length : 0})</Label>
+            <div className="flex items-center gap-2">
+              <Label>Product Images ({Array.isArray(images) ? images.length : 0}/{MAX_IMAGES})</Label>
+              {images.find(img => img.isPrimary) && (
+                <Badge variant="default" className="text-xs">
+                  <Star className="h-3 w-3 mr-1 fill-current" />
+                  Primary Set
+                </Badge>
+              )}
+            </div>
             <p className="text-sm text-muted-foreground">
               Drag to reorder • Click star to set primary
             </p>

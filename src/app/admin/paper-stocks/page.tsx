@@ -134,7 +134,7 @@ export default function PaperStocksPage() {
         isActive: stock.isActive,
         paperStockCoatings: stock.paperStockCoatings || [],
         paperStockSides: stock.paperStockSides || [],
-        productsCount: stock.productPaperStocks?.length || 0,
+        productsCount: stock.paperStockSetItems?.length || 0,
       }))
 
       setPaperStocks(transformedStocks)

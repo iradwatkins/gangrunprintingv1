@@ -39,7 +39,7 @@ function EditProductClient({ id }: { id: string }) {
   const [testing, setTesting] = useState(false)
   const [loadingProduct, setLoadingProduct] = useState(true)
   const [categories, setCategories] = useState<any[]>([])
-  const [paperStocks, setPaperStocks] = useState<any[]>([])
+  const [paperStockSets, setPaperStockSets] = useState<any[]>([])
   const [quantityGroups, setQuantityGroups] = useState<any[]>([])
   const [sizeGroups, setSizeGroups] = useState<any[]>([])
   const [addOns, setAddOns] = useState<any[]>([])
@@ -55,9 +55,8 @@ function EditProductClient({ id }: { id: string }) {
     isFeatured: false,
     images: [],
 
-    // Paper Stocks - Multiple selection with default
-    selectedPaperStocks: [] as string[], // Multiple paper stock IDs
-    defaultPaperStock: '', // Single default paper stock ID
+    // Paper Stock Set - Single selection
+    selectedPaperStockSet: '', // Single paper stock set ID
 
     // Single selections
     selectedQuantityGroup: '', // Single quantity group ID
@@ -99,10 +98,8 @@ function EditProductClient({ id }: { id: string }) {
         isFeatured: data.isFeatured ?? false,
         images: data.ProductImage || [],
 
-        // Map paper stocks
-        selectedPaperStocks: data.productPaperStocks?.map((ps: any) => ps.paperStockId) || [],
-        defaultPaperStock:
-          data.productPaperStocks?.find((ps: any) => ps.isDefault)?.paperStockId || '',
+        // Map paper stock set
+        selectedPaperStockSet: data.productPaperStockSets?.[0]?.paperStockSetId || '',
 
         // Map quantity and size groups
         selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
@@ -133,14 +130,14 @@ function EditProductClient({ id }: { id: string }) {
     try {
       const [catRes, paperRes, qtyRes, sizeRes, addOnRes] = await Promise.all([
         fetch('/api/product-categories'),
-        fetch('/api/paper-stocks'),
+        fetch('/api/paper-stock-sets'),
         fetch('/api/quantities'),
         fetch('/api/sizes'),
         fetch('/api/add-ons'),
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
-      if (paperRes.ok) setPaperStocks(await paperRes.json())
+      if (paperRes.ok) setPaperStockSets(await paperRes.json())
       if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
       if (sizeRes.ok) setSizeGroups(await sizeRes.json())
       if (addOnRes.ok) setAddOns(await addOnRes.json())
@@ -149,31 +146,6 @@ function EditProductClient({ id }: { id: string }) {
     }
   }
 
-  const handlePaperStockToggle = (stockId: string, checked: boolean) => {
-    if (checked) {
-      const newSelectedStocks = [...formData.selectedPaperStocks, stockId]
-      setFormData({
-        ...formData,
-        selectedPaperStocks: newSelectedStocks,
-        // Auto-set as default if it's the first paper stock selected
-        defaultPaperStock:
-          formData.selectedPaperStocks.length === 0 ? stockId : formData.defaultPaperStock,
-      })
-    } else {
-      const newSelectedStocks = formData.selectedPaperStocks.filter((id) => id !== stockId)
-      setFormData({
-        ...formData,
-        selectedPaperStocks: newSelectedStocks,
-        // Clear default if this was the default paper stock
-        defaultPaperStock:
-          formData.defaultPaperStock === stockId
-            ? newSelectedStocks.length > 0
-              ? newSelectedStocks[0]
-              : ''
-            : formData.defaultPaperStock,
-      })
-    }
-  }
 
   const testPrice = async () => {
     setTesting(true)
@@ -184,8 +156,7 @@ function EditProductClient({ id }: { id: string }) {
         body: JSON.stringify({
           basePrice: formData.basePrice,
           setupFee: formData.setupFee,
-          paperStocks: formData.selectedPaperStocks,
-          defaultPaperStock: formData.defaultPaperStock,
+          paperStockSetId: formData.selectedPaperStockSet,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
           addOns: formData.selectedAddOns,
@@ -211,13 +182,8 @@ function EditProductClient({ id }: { id: string }) {
       return
     }
 
-    if (formData.selectedPaperStocks.length === 0) {
-      toast.error('Please select at least one paper stock')
-      return
-    }
-
-    if (!formData.defaultPaperStock) {
-      toast.error('Please set a default paper stock')
+    if (!formData.selectedPaperStockSet) {
+      toast.error('Please select a paper stock set')
       return
     }
 
@@ -446,59 +412,80 @@ function EditProductClient({ id }: { id: string }) {
         </CardContent>
       </Card>
 
-      {/* Paper Stock - Multiple selection with default */}
+      {/* Paper Stock Set - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Paper Stock Options *</CardTitle>
+          <CardTitle>Paper Stock Set (Choose One) *</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Select available paper stocks for this product. One must be set as default. Customers
-            will see these options in a dropdown on the frontend, with the default pre-selected.
-          </p>
-          <div className="grid grid-cols-1 gap-3">
-            {paperStocks.map((stock) => (
-              <div key={stock.id} className="border rounded-lg p-3">
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    checked={formData.selectedPaperStocks.includes(stock.id)}
-                    id={`stock-${stock.id}`}
-                    onCheckedChange={(checked) =>
-                      handlePaperStockToggle(stock.id, checked as boolean)
-                    }
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Label className="font-medium cursor-pointer" htmlFor={`stock-${stock.id}`}>
-                        {stock.name} - {stock.weight}pt
-                      </Label>
-                      {formData.defaultPaperStock === stock.id && (
-                        <Badge className="text-xs" variant="secondary">
-                          DEFAULT
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">${stock.pricePerSqInch}/sq in</div>
-                    {formData.selectedPaperStocks.includes(stock.id) && (
-                      <div className="mt-2">
-                        <label className="flex items-center space-x-2 text-sm cursor-pointer">
-                          <input
-                            checked={formData.defaultPaperStock === stock.id}
-                            className="w-4 h-4"
-                            name="defaultPaperStock"
-                            type="radio"
-                            onChange={() =>
-                              setFormData({ ...formData, defaultPaperStock: stock.id })
-                            }
-                          />
-                          <span>Set as default paper stock</span>
-                        </label>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select a paper stock set for this product. Customers will see the paper stocks from this set,
+              with the default paper stock pre-selected.
+            </p>
+            <div>
+              <Label htmlFor="paper-stock-set">Paper Stock Set</Label>
+              <Select
+                value={formData.selectedPaperStockSet}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedPaperStockSet: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select paper stock set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paperStockSets.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{group.name}</span>
+                        {group.description && (
+                          <span className="text-xs text-muted-foreground">{group.description}</span>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected paper stock set */}
+            {formData.selectedPaperStockSet && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedGroup = paperStockSets.find(
+                    (g) => g.id === formData.selectedPaperStockSet
+                  )
+                  if (!selectedGroup) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
+                      <div className="space-y-1">
+                        {selectedGroup.paperStockItems?.map((item: any) => (
+                          <div
+                            key={item.id}
+                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
+                              item.isDefault
+                                ? 'bg-primary text-primary-foreground font-medium'
+                                : 'bg-background text-foreground border'
+                            }`}
+                          >
+                            <span>
+                              {item.paperStock.name} - {item.paperStock.weight}pt
+                            </span>
+                            <span className="text-xs opacity-70">
+                              ${item.paperStock.pricePerSqInch}/sq in
+                              {item.isDefault && ' (default)'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
