@@ -12,15 +12,7 @@ import {
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-
-interface Quantity {
-  id: string
-  name: string
-  value: number | null
-  isCustom: boolean
-  minValue?: number | null
-  maxValue?: number | null
-}
+import { validateCustomQuantity, type Quantity } from '@/lib/utils/quantity-transformer'
 
 interface QuantitySelectorProps {
   quantities?: Quantity[]
@@ -49,15 +41,18 @@ export function QuantitySelector({
 
   useEffect(() => {
     if (quantities.length === 0) {
-      // Fetch quantities from API
-      fetch('/api/quantities?active=true')
+      // Fetch quantities from API with selector format (already transformed)
+      fetch('/api/quantities?active=true&format=selector')
         .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: ${res.statusText}`)
           }
           return res.json()
         })
-        .then((data) => setDefaultQuantities(data))
+        .then((data: Quantity[]) => {
+          // Data is already transformed by the API
+          setDefaultQuantities(data)
+        })
         .catch((err) => console.error('Failed to load quantities:', err))
     }
   }, [quantities])
@@ -123,13 +118,11 @@ export function QuantitySelector({
       const customOption = safeQuantityOptions.find((q) => q.isCustom)
 
       if (customOption) {
-        // Validate against min/max
-        if (customOption.minValue && numValue < customOption.minValue) {
-          setError(`Minimum quantity is ${customOption.minValue}`)
-          return
-        }
-        if (customOption.maxValue && numValue > customOption.maxValue) {
-          setError(`Maximum quantity is ${customOption.maxValue}`)
+        // Use the validation function from transformer
+        const validation = validateCustomQuantity(numValue, customOption)
+
+        if (!validation.isValid) {
+          setError(validation.error || 'Invalid quantity')
           return
         }
 
