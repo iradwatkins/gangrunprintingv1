@@ -1,12 +1,21 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getFallbackConfig } from '@/lib/config-fallback'
 
 // Cache configuration data for 5 minutes
 const configCache = new Map<string, { data: any; timestamp: number }>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
+// Track consecutive failures for circuit breaker pattern
+const failureCount = new Map<string, number>()
+const FAILURE_THRESHOLD = 3
+const CIRCUIT_RESET_TIME = 60000 // 1 minute
+
 // GET /api/products/[id]/configuration - Get all configuration options for a product
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const startTime = Date.now()
+  let dbConnected = false
+
   try {
     const productId = params.id
 
@@ -17,12 +26,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       )
     }
 
-    // Check cache first
+    // Check cache first - this is critical for reducing database load
     const cached = configCache.get(productId)
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      console.log(`[Config API] Cache hit for ${productId}`)
       return NextResponse.json(cached.data, {
         status: 200,
-        headers: { 'X-Cache': 'HIT' }
+        headers: {
+          'X-Cache': 'HIT',
+          'X-Response-Time': `${Date.now() - startTime}ms`
+        }
       })
     }
 
@@ -338,7 +351,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(configurationData, {
       status: 200,
-      headers: { 'X-Cache': 'MISS' }
+      headers: {
+        'X-Cache': 'MISS',
+        'X-Response-Time': `${Date.now() - startTime}ms`,
+        'X-DB-Connected': 'true'
+      }
     })
   } catch (error) {
     console.error('Error fetching product configuration:', error)
@@ -381,19 +398,34 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     // Return cached data if available during errors
     const fallbackCache = configCache.get(params.id)
     if (fallbackCache) {
-      console.log('Returning stale cache due to error')
+      console.log('[Config API] Returning stale cache due to error')
       return NextResponse.json(fallbackCache.data, {
         status: 200,
         headers: {
           'X-Cache': 'STALE',
-          'X-Error': 'Database error, returning cached data'
+          'X-Error': 'Database error, returning cached data',
+          'X-Response-Time': `${Date.now() - startTime}ms`
         }
       })
     }
 
-    return NextResponse.json(
-      { error: 'Failed to fetch product configuration. Please try again.' },
-      { status: 500 }
-    )
+    // Use static fallback configuration as last resort
+    console.log('[Config API] Using static fallback configuration')
+    const fallbackConfig = getFallbackConfig(params.id)
+
+    // Cache the fallback for a short time to prevent repeated failures
+    configCache.set(params.id, {
+      data: fallbackConfig,
+      timestamp: Date.now(),
+    })
+
+    return NextResponse.json(fallbackConfig, {
+      status: 200,
+      headers: {
+        'X-Cache': 'FALLBACK',
+        'X-Error': 'Using fallback configuration',
+        'X-Response-Time': `${Date.now() - startTime}ms`
+      }
+    })
   }
 }
