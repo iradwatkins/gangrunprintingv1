@@ -107,12 +107,124 @@ const SIMPLE_CONFIG = {
       ]
     },
   ],
+  addons: [
+    {
+      id: 'addon_1',
+      name: 'Rounded Corners',
+      description: 'Round the corners of your prints for a professional finish',
+      pricingModel: 'FIXED_FEE',
+      price: 15.00,
+      priceDisplay: '$15',
+      isDefault: false,
+      additionalTurnaroundDays: 1
+    },
+    {
+      id: 'addon_2',
+      name: 'Spot UV Coating',
+      description: 'High-gloss UV coating applied to specific areas for enhanced visual impact',
+      pricingModel: 'FIXED_FEE',
+      price: 25.00,
+      priceDisplay: '$25',
+      isDefault: false,
+      additionalTurnaroundDays: 2
+    },
+    {
+      id: 'addon_3',
+      name: 'Lamination',
+      description: 'Protective coating that enhances durability and appearance',
+      pricingModel: 'PERCENTAGE',
+      price: 0.15,
+      priceDisplay: '15%',
+      isDefault: false,
+      additionalTurnaroundDays: 1
+    },
+    {
+      id: 'addon_4',
+      name: 'Die Cutting',
+      description: 'Custom shape cutting for unique designs',
+      pricingModel: 'FIXED_FEE',
+      price: 35.00,
+      priceDisplay: '$35',
+      isDefault: false,
+      additionalTurnaroundDays: 2
+    },
+    {
+      id: 'addon_5',
+      name: 'Foil Stamping',
+      description: 'Metallic foil accents for premium appearance',
+      pricingModel: 'PERCENTAGE',
+      price: 0.20,
+      priceDisplay: '20%',
+      isDefault: false,
+      additionalTurnaroundDays: 3
+    }
+  ],
+  turnaroundTimes: [
+    {
+      id: 'turnaround_1',
+      name: 'Economy',
+      displayName: 'Economy (2-4 Days)',
+      description: 'Standard processing time',
+      daysMin: 2,
+      daysMax: 4,
+      pricingModel: 'FLAT',
+      basePrice: 0,
+      priceMultiplier: 1.0,
+      requiresNoCoating: false,
+      restrictedCoatings: [],
+      isDefault: true
+    },
+    {
+      id: 'turnaround_2',
+      name: 'Fast',
+      displayName: 'Fast (1-2 Days)',
+      description: 'Expedited processing',
+      daysMin: 1,
+      daysMax: 2,
+      pricingModel: 'PERCENTAGE',
+      basePrice: 0,
+      priceMultiplier: 1.25,
+      requiresNoCoating: false,
+      restrictedCoatings: [],
+      isDefault: false
+    },
+    {
+      id: 'turnaround_3',
+      name: 'Faster',
+      displayName: 'Faster (Tomorrow)',
+      description: 'Next day delivery',
+      daysMin: 1,
+      daysMax: 1,
+      pricingModel: 'PERCENTAGE',
+      basePrice: 0,
+      priceMultiplier: 1.54,
+      requiresNoCoating: false,
+      restrictedCoatings: [],
+      isDefault: false
+    },
+    {
+      id: 'turnaround_4',
+      name: 'Fastest',
+      displayName: 'Fastest WITH NO COATING (Today)',
+      description: 'Same day processing without coating',
+      daysMin: 0,
+      daysMax: 0,
+      pricingModel: 'PERCENTAGE',
+      basePrice: 0,
+      priceMultiplier: 4.98,
+      requiresNoCoating: true,
+      restrictedCoatings: ['coating_1', 'coating_3'],
+      isDefault: false
+    }
+  ],
   defaults: {
     quantity: 'qty_2',
     size: 'size_2',
     paper: 'paper_1',
     coating: 'coating_1',
-    sides: 'sides_1'
+    sides: 'sides_1',
+    addons: [],
+    turnaround: 'turnaround_1'
   }
 }
 

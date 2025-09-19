@@ -1,3 +1,20 @@
+export interface TurnaroundTimeOption {
+  id: string
+  name: string
+  displayName: string
+  description?: string
+  daysMin: number
+  daysMax?: number
+  pricingModel: 'FLAT' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM'
+  basePrice: number
+  priceMultiplier: number
+  requiresNoCoating: boolean
+  restrictedCoatings: string[]
+  restrictedOptions?: any
+  totalPrice: number // Calculated total price for this turnaround option
+  pricePerUnit: number // Calculated price per unit
+}
+
 export interface CartItem {
   id: string
   productId: string
@@ -8,7 +25,7 @@ export interface CartItem {
   quantity: number
   subtotal: number
   image?: string
-  turnaround: string
+  turnaround: TurnaroundTimeOption
   options: {
     size?: string
     paperStock?: string
@@ -64,7 +81,7 @@ export interface ProductConfiguration {
   paperStockId?: string
   coating?: string
   sides?: string
-  turnaround: string
+  turnaround: TurnaroundTimeOption
   image?: string
   fileUrl?: string
   fileName?: string
