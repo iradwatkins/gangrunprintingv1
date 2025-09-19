@@ -281,7 +281,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* Product Configuration Form - New Component */}
+              {/* Product Configuration Form - Updated Component */}
               <ProductConfigurationForm
                 productId={product.id}
                 basePrice={product.basePrice}
@@ -290,9 +290,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 onPriceChange={handlePriceChange}
               />
 
-              {/* Customer File Upload */}
+              {/* Customer File Upload - Moved here to be above turnaround times */}
               <div>
-                <Label className="text-base mb-3 block">Upload Your Design</Label>
+                <Label className="text-sm font-semibold text-gray-800 uppercase tracking-wide mb-3 block">UPLOAD YOUR DESIGN</Label>
 
                 {/* Upload Area */}
                 <div className="border-2 border-dashed rounded-lg p-4 mb-4">
@@ -379,6 +379,29 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </div>
                 )}
               </div>
+
+              {/* Add to Cart Button - Positioned after everything */}
+              <div className="border-t pt-6">
+                <Button
+                  className="w-full"
+                  disabled={customerImages.length === 0 || isUploading || !isConfigurationComplete}
+                  size="lg"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
+                {customerImages.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    Please upload your design file to continue
+                  </p>
+                )}
+                {!isConfigurationComplete && customerImages.length > 0 && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    Please complete your product configuration
+                  </p>
+                )}
+              </div>
             </TabsContent>
 
             <TabsContent className="space-y-4" value="specifications">
@@ -423,7 +446,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsContent>
           </Tabs>
 
-          {/* Price and Add to Cart */}
+          {/* Price Display */}
           <div className="border-t pt-6">
             <div className="flex items-end justify-between mb-4">
               <div>
@@ -440,25 +463,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {product.productionTime} days
               </Badge>
             </div>
-            <Button
-              className="w-full"
-              disabled={customerImages.length === 0 || isUploading || !isConfigurationComplete}
-              size="lg"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart
-            </Button>
-            {customerImages.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center mt-2">
-                Please upload your design file to continue
-              </p>
-            )}
-            {!isConfigurationComplete && customerImages.length > 0 && (
-              <p className="text-sm text-muted-foreground text-center mt-2">
-                Please complete your product configuration
-              </p>
-            )}
           </div>
         </div>
       </div>
