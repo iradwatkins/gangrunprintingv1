@@ -15,18 +15,15 @@ export async function GET(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
-        emailVerified: user.emailVerified
+        emailVerified: user.emailVerified,
       },
       session: {
         id: session.id,
-        expiresAt: session.expiresAt
-      }
+        expiresAt: session.expiresAt,
+      },
     })
   } catch (error) {
     console.error('Error checking authentication:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

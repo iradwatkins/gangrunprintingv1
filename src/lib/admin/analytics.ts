@@ -63,88 +63,91 @@ export class AnalyticsService {
       prisma.order.findMany({
         where: {
           createdAt: { gte: from, lte: to },
-          status: { notIn: ['CANCELLED', 'REFUNDED'] }
+          status: { notIn: ['CANCELLED', 'REFUNDED'] },
         },
         include: {
           OrderItem: {
             include: {
               product: {
                 include: {
-                  ProductCategory: true
-                }
-              }
-            }
+                  ProductCategory: true,
+                },
+              },
+            },
           },
-          user: true
-        }
+          user: true,
+        },
       }),
       prisma.order.findMany({
         where: {
           createdAt: { gte: previousFrom, lte: previousTo },
-          status: { notIn: ['CANCELLED', 'REFUNDED'] }
-        }
-      })
+          status: { notIn: ['CANCELLED', 'REFUNDED'] },
+        },
+      }),
     ])
 
     // Calculate revenue metrics
     const currentRevenue = currentOrders.reduce((sum, order) => sum + order.total, 0)
     const previousRevenue = previousOrders.reduce((sum, order) => sum + order.total, 0)
-    const revenueGrowth = previousRevenue > 0
-      ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
-      : 0
+    const revenueGrowth =
+      previousRevenue > 0 ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0
 
     // Calculate order metrics
-    const orderGrowth = previousOrders.length > 0
-      ? ((currentOrders.length - previousOrders.length) / previousOrders.length) * 100
-      : 0
+    const orderGrowth =
+      previousOrders.length > 0
+        ? ((currentOrders.length - previousOrders.length) / previousOrders.length) * 100
+        : 0
 
     // Calculate customer metrics
-    const customerIds = new Set(currentOrders.map(order => order.userId))
+    const customerIds = new Set(currentOrders.map((order) => order.userId))
     const allCustomers = await prisma.user.findMany({
       where: { role: 'CUSTOMER' },
-      include: { orders: true }
+      include: { orders: true },
     })
 
-    const newCustomers = allCustomers.filter(customer =>
-      new Date(customer.createdAt) >= from && new Date(customer.createdAt) <= to
+    const newCustomers = allCustomers.filter(
+      (customer) => new Date(customer.createdAt) >= from && new Date(customer.createdAt) <= to
     ).length
 
-    const returningCustomers = allCustomers.filter(customer =>
-      customer.orders.length > 1 && customerIds.has(customer.id)
+    const returningCustomers = allCustomers.filter(
+      (customer) => customer.orders.length > 1 && customerIds.has(customer.id)
     ).length
 
-    const previousCustomers = allCustomers.filter(customer =>
-      new Date(customer.createdAt) >= previousFrom && new Date(customer.createdAt) <= previousTo
+    const previousCustomers = allCustomers.filter(
+      (customer) =>
+        new Date(customer.createdAt) >= previousFrom && new Date(customer.createdAt) <= previousTo
     ).length
 
-    const customerGrowth = previousCustomers > 0
-      ? ((newCustomers - previousCustomers) / previousCustomers) * 100
-      : 0
+    const customerGrowth =
+      previousCustomers > 0 ? ((newCustomers - previousCustomers) / previousCustomers) * 100 : 0
 
     // Calculate product metrics
     const productSales = new Map<string, { name: string; revenue: number; quantity: number }>()
     const categorySales = new Map<string, { revenue: number; orders: number }>()
 
-    currentOrders.forEach(order => {
-      order.OrderItem.forEach(item => {
+    currentOrders.forEach((order) => {
+      order.OrderItem.forEach((item) => {
         if (item.product) {
           const existing = productSales.get(item.product.id) || {
             name: item.product.name,
             revenue: 0,
-            quantity: 0
+            quantity: 0,
           }
           productSales.set(item.product.id, {
             ...existing,
-            revenue: existing.revenue + (order.total / order.OrderItem.length), // Approximate revenue per item
-            quantity: existing.quantity + item.quantity
+            revenue: existing.revenue + order.total / order.OrderItem.length, // Approximate revenue per item
+            quantity: existing.quantity + item.quantity,
           })
 
           // Category sales (if product has category)
           if (item.product.categoryId) {
-            const categoryRevenue = categorySales.get(item.product.categoryId) || { revenue: 0, orders: 0 }
+            const categoryRevenue = categorySales.get(item.product.categoryId) || {
+              revenue: 0,
+              orders: 0,
+            }
             categorySales.set(item.product.categoryId, {
-              revenue: categoryRevenue.revenue + (order.total / order.OrderItem.length),
-              orders: categoryRevenue.orders + 1
+              revenue: categoryRevenue.revenue + order.total / order.OrderItem.length,
+              orders: categoryRevenue.orders + 1,
             })
           }
         }
@@ -158,77 +161,80 @@ export class AnalyticsService {
 
     // Get category names
     const categoryNames = await prisma.productCategory.findMany({
-      where: { id: { in: Array.from(categorySales.keys()) } }
+      where: { id: { in: Array.from(categorySales.keys()) } },
     })
 
     const categories = Array.from(categorySales.entries())
       .map(([id, data]) => ({
-        name: categoryNames.find(cat => cat.id === id)?.name || 'Unknown',
-        ...data
+        name: categoryNames.find((cat) => cat.id === id)?.name || 'Unknown',
+        ...data,
       }))
       .sort((a, b) => b.revenue - a.revenue)
 
     // Calculate conversion metrics
-    const completedOrders = currentOrders.filter(order =>
-      order.status === 'DELIVERED' || order.status === 'COMPLETED'
+    const completedOrders = currentOrders.filter(
+      (order) => order.status === 'DELIVERED' || order.status === 'COMPLETED'
     )
 
-    const averageOrderValue = completedOrders.length > 0
-      ? completedOrders.reduce((sum, order) => sum + order.total, 0) / completedOrders.length
-      : 0
+    const averageOrderValue =
+      completedOrders.length > 0
+        ? completedOrders.reduce((sum, order) => sum + order.total, 0) / completedOrders.length
+        : 0
 
-    const customersWithMultipleOrders = allCustomers.filter(customer =>
-      customer.orders.length > 1
+    const customersWithMultipleOrders = allCustomers.filter(
+      (customer) => customer.orders.length > 1
     ).length
 
-    const repeatCustomerRate = allCustomers.length > 0
-      ? (customersWithMultipleOrders / allCustomers.length) * 100
-      : 0
+    const repeatCustomerRate =
+      allCustomers.length > 0 ? (customersWithMultipleOrders / allCustomers.length) * 100 : 0
 
     return {
       revenue: {
         total: currentRevenue / 100, // Convert cents to dollars
         growth: revenueGrowth,
-        previousPeriod: previousRevenue / 100
+        previousPeriod: previousRevenue / 100,
       },
       orders: {
         total: currentOrders.length,
         growth: orderGrowth,
-        previousPeriod: previousOrders.length
+        previousPeriod: previousOrders.length,
       },
       customers: {
         total: customerIds.size,
         new: newCustomers,
         returning: returningCustomers,
-        growth: customerGrowth
+        growth: customerGrowth,
       },
       products: {
-        topSelling: topSelling.map(product => ({
+        topSelling: topSelling.map((product) => ({
           ...product,
-          revenue: product.revenue / 100
+          revenue: product.revenue / 100,
         })),
-        categories: categories.map(category => ({
+        categories: categories.map((category) => ({
           ...category,
-          revenue: category.revenue / 100
-        }))
+          revenue: category.revenue / 100,
+        })),
       },
       conversion: {
         rate: 85, // Mock conversion rate - would need website analytics integration
         averageOrderValue: averageOrderValue / 100,
-        repeatCustomerRate
-      }
+        repeatCustomerRate,
+      },
     }
   }
 
-  static async getChartData(dateRange: DateRange, granularity: 'day' | 'week' | 'month' = 'day'): Promise<ChartData[]> {
+  static async getChartData(
+    dateRange: DateRange,
+    granularity: 'day' | 'week' | 'month' = 'day'
+  ): Promise<ChartData[]> {
     const { from, to } = dateRange
 
     const orders = await prisma.order.findMany({
       where: {
         createdAt: { gte: from, lte: to },
-        status: { notIn: ['CANCELLED', 'REFUNDED'] }
+        status: { notIn: ['CANCELLED', 'REFUNDED'] },
       },
-      include: { user: true }
+      include: { user: true },
     })
 
     // Group data by date
@@ -250,7 +256,7 @@ export class AnalyticsService {
     }
 
     // Populate with actual data
-    orders.forEach(order => {
+    orders.forEach((order) => {
       const dateKey = this.formatDateKey(order.createdAt, granularity)
       const existing = dataMap.get(dateKey)
       if (existing) {
@@ -266,7 +272,7 @@ export class AnalyticsService {
         date,
         revenue: data.revenue / 100,
         orders: data.orders,
-        customers: data.customers.size
+        customers: data.customers.size,
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
   }
@@ -287,7 +293,7 @@ export class AnalyticsService {
     const dayNum = d.getUTCDay() || 7
     d.setUTCDate(d.getUTCDate() + 4 - dayNum)
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
   }
 
   static async getTopCustomers(dateRange: DateRange, limit: number = 10) {
@@ -299,29 +305,29 @@ export class AnalyticsService {
         orders: {
           some: {
             createdAt: { gte: from, lte: to },
-            status: { notIn: ['CANCELLED', 'REFUNDED'] }
-          }
-        }
+            status: { notIn: ['CANCELLED', 'REFUNDED'] },
+          },
+        },
       },
       include: {
         orders: {
           where: {
             createdAt: { gte: from, lte: to },
-            status: { notIn: ['CANCELLED', 'REFUNDED'] }
-          }
-        }
-      }
+            status: { notIn: ['CANCELLED', 'REFUNDED'] },
+          },
+        },
+      },
     })
 
     return customers
-      .map(customer => {
+      .map((customer) => {
         const totalSpent = customer.orders.reduce((sum, order) => sum + order.total, 0)
         return {
           id: customer.id,
           name: customer.name || 'Unknown',
           email: customer.email,
           totalSpent: totalSpent / 100,
-          orderCount: customer.orders.length
+          orderCount: customer.orders.length,
         }
       })
       .sort((a, b) => b.totalSpent - a.totalSpent)
@@ -334,17 +340,17 @@ export class AnalyticsService {
     const statusCounts = await prisma.order.groupBy({
       by: ['status'],
       where: {
-        createdAt: { gte: from, lte: to }
+        createdAt: { gte: from, lte: to },
       },
-      _count: true
+      _count: true,
     })
 
     const total = statusCounts.reduce((sum, item) => sum + item._count, 0)
 
-    return statusCounts.map(item => ({
+    return statusCounts.map((item) => ({
       status: item.status,
       count: item._count,
-      percentage: total > 0 ? (item._count / total) * 100 : 0
+      percentage: total > 0 ? (item._count / total) * 100 : 0,
     }))
   }
 }

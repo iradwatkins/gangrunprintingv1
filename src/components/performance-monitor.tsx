@@ -1,25 +1,25 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
-import { reportWebVitals } from '@/lib/monitoring';
+import { useEffect } from 'react'
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+import { reportWebVitals } from '@/lib/monitoring'
 
 // Web Vitals monitoring component
 export function PerformanceMonitor() {
   useEffect(() => {
     // Monitor Core Web Vitals
-    getCLS(reportWebVitals);
-    getFID(reportWebVitals);
-    getFCP(reportWebVitals);
-    getLCP(reportWebVitals);
-    getTTFB(reportWebVitals);
+    getCLS(reportWebVitals)
+    getFID(reportWebVitals)
+    getFCP(reportWebVitals)
+    getLCP(reportWebVitals)
+    getTTFB(reportWebVitals)
 
     // Monitor custom performance metrics
     const observer = new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
         // Resource loading performance
         if (entry.entryType === 'resource') {
-          const resourceEntry = entry as PerformanceResourceTiming;
+          const resourceEntry = entry as PerformanceResourceTiming
 
           if (typeof window !== 'undefined' && window.gtag) {
             window.gtag('event', 'resource_load', {
@@ -29,27 +29,33 @@ export function PerformanceMonitor() {
               custom_map: {
                 resource_type: resourceEntry.initiatorType,
                 response_time: Math.round(resourceEntry.responseEnd - resourceEntry.requestStart),
-                dns_time: Math.round(resourceEntry.domainLookupEnd - resourceEntry.domainLookupStart),
+                dns_time: Math.round(
+                  resourceEntry.domainLookupEnd - resourceEntry.domainLookupStart
+                ),
                 connect_time: Math.round(resourceEntry.connectEnd - resourceEntry.connectStart),
-              }
-            });
+              },
+            })
           }
         }
 
         // Navigation timing
         if (entry.entryType === 'navigation') {
-          const navigationEntry = entry as PerformanceNavigationTiming;
+          const navigationEntry = entry as PerformanceNavigationTiming
 
           if (typeof window !== 'undefined' && window.gtag) {
             window.gtag('event', 'page_load', {
               event_category: 'Performance',
               value: Math.round(navigationEntry.loadEventEnd - navigationEntry.fetchStart),
               custom_map: {
-                dom_interactive: Math.round(navigationEntry.domInteractive - navigationEntry.fetchStart),
+                dom_interactive: Math.round(
+                  navigationEntry.domInteractive - navigationEntry.fetchStart
+                ),
                 dom_complete: Math.round(navigationEntry.domComplete - navigationEntry.fetchStart),
-                load_event: Math.round(navigationEntry.loadEventEnd - navigationEntry.loadEventStart),
-              }
-            });
+                load_event: Math.round(
+                  navigationEntry.loadEventEnd - navigationEntry.loadEventStart
+                ),
+              },
+            })
           }
         }
 
@@ -59,19 +65,19 @@ export function PerformanceMonitor() {
             window.gtag('event', entry.name.replace('-', '_'), {
               event_category: 'Performance',
               value: Math.round(entry.startTime),
-            });
+            })
           }
         }
-      });
-    });
+      })
+    })
 
     // Observe different types of performance entries
-    observer.observe({ entryTypes: ['resource', 'navigation', 'paint'] });
+    observer.observe({ entryTypes: ['resource', 'navigation', 'paint'] })
 
     // Monitor memory usage (if available)
     if ('memory' in performance) {
       const checkMemory = () => {
-        const memory = (performance as any).memory;
+        const memory = (performance as any).memory
         if (memory && typeof window !== 'undefined' && window.gtag) {
           window.gtag('event', 'memory_usage', {
             event_category: 'Performance',
@@ -79,72 +85,72 @@ export function PerformanceMonitor() {
               used_heap: Math.round(memory.usedJSHeapSize / 1024 / 1024), // MB
               total_heap: Math.round(memory.totalJSHeapSize / 1024 / 1024), // MB
               heap_limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024), // MB
-            }
-          });
+            },
+          })
         }
-      };
+      }
 
       // Check memory usage every 30 seconds
-      const memoryInterval = setInterval(checkMemory, 30000);
+      const memoryInterval = setInterval(checkMemory, 30000)
 
       return () => {
-        observer.disconnect();
-        clearInterval(memoryInterval);
-      };
+        observer.disconnect()
+        clearInterval(memoryInterval)
+      }
     }
 
     return () => {
-      observer.disconnect();
-    };
-  }, []);
+      observer.disconnect()
+    }
+  }, [])
 
-  return null; // This component doesn't render anything
+  return null // This component doesn't render anything
 }
 
 // Performance timing hook
 export function usePerformanceTiming() {
   const startTiming = (name: string) => {
-    performance.mark(`${name}-start`);
-  };
+    performance.mark(`${name}-start`)
+  }
 
   const endTiming = (name: string) => {
-    performance.mark(`${name}-end`);
-    performance.measure(name, `${name}-start`, `${name}-end`);
+    performance.mark(`${name}-end`)
+    performance.measure(name, `${name}-start`, `${name}-end`)
 
-    const measure = performance.getEntriesByName(name, 'measure')[0];
+    const measure = performance.getEntriesByName(name, 'measure')[0]
     if (measure && typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'custom_timing', {
         event_category: 'Performance',
         event_label: name,
         value: Math.round(measure.duration),
-      });
+      })
     }
 
     // Clean up marks
-    performance.clearMarks(`${name}-start`);
-    performance.clearMarks(`${name}-end`);
-    performance.clearMeasures(name);
+    performance.clearMarks(`${name}-start`)
+    performance.clearMarks(`${name}-end`)
+    performance.clearMeasures(name)
 
-    return measure?.duration || 0;
-  };
+    return measure?.duration || 0
+  }
 
   const measureAsync = async <T,>(name: string, asyncFn: () => Promise<T>): Promise<T> => {
-    startTiming(name);
+    startTiming(name)
     try {
-      const result = await asyncFn();
-      endTiming(name);
-      return result;
+      const result = await asyncFn()
+      endTiming(name)
+      return result
     } catch (error) {
-      endTiming(name);
-      throw error;
+      endTiming(name)
+      throw error
     }
-  };
+  }
 
   return {
     startTiming,
     endTiming,
     measureAsync,
-  };
+  }
 }
 
 // Network quality monitoring
@@ -152,7 +158,7 @@ export function NetworkMonitor() {
   useEffect(() => {
     // Monitor network connection
     if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
+      const connection = (navigator as any).connection
 
       const reportNetworkInfo = () => {
         if (typeof window !== 'undefined' && window.gtag) {
@@ -163,24 +169,24 @@ export function NetworkMonitor() {
               downlink: connection?.downlink || 0,
               rtt: connection?.rtt || 0,
               save_data: connection?.saveData || false,
-            }
-          });
+            },
+          })
         }
-      };
+      }
 
       // Report initial network info
-      reportNetworkInfo();
+      reportNetworkInfo()
 
       // Listen for network changes
-      connection?.addEventListener?.('change', reportNetworkInfo);
+      connection?.addEventListener?.('change', reportNetworkInfo)
 
       return () => {
-        connection?.removeEventListener?.('change', reportNetworkInfo);
-      };
+        connection?.removeEventListener?.('change', reportNetworkInfo)
+      }
     }
-  }, []);
+  }, [])
 
-  return null;
+  return null
 }
 
 // Device performance monitoring
@@ -198,13 +204,13 @@ export function DeviceMonitor() {
             viewport_width: window.innerWidth,
             viewport_height: window.innerHeight,
             pixel_ratio: window.devicePixelRatio,
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
     // Report device info once
-    reportDeviceInfo();
+    reportDeviceInfo()
 
     // Listen for viewport changes
     const handleResize = () => {
@@ -214,29 +220,29 @@ export function DeviceMonitor() {
           custom_map: {
             viewport_width: window.innerWidth,
             viewport_height: window.innerHeight,
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
-  return null;
+  return null
 }
 
 // User interaction monitoring
 export function InteractionMonitor() {
   useEffect(() => {
-    let interactionCount = 0;
-    const sessionStart = Date.now();
+    let interactionCount = 0
+    const sessionStart = Date.now()
 
     const trackInteraction = (type: string) => {
-      interactionCount++;
+      interactionCount++
 
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'user_interaction', {
@@ -245,23 +251,23 @@ export function InteractionMonitor() {
           custom_map: {
             interaction_count: interactionCount,
             session_duration: Date.now() - sessionStart,
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
     // Track various interactions
-    const trackClick = () => trackInteraction('click');
-    const trackKeyPress = () => trackInteraction('keypress');
-    const trackScroll = () => trackInteraction('scroll');
+    const trackClick = () => trackInteraction('click')
+    const trackKeyPress = () => trackInteraction('keypress')
+    const trackScroll = () => trackInteraction('scroll')
 
-    document.addEventListener('click', trackClick);
-    document.addEventListener('keypress', trackKeyPress);
-    document.addEventListener('scroll', trackScroll);
+    document.addEventListener('click', trackClick)
+    document.addEventListener('keypress', trackKeyPress)
+    document.addEventListener('scroll', trackScroll)
 
     // Report session summary on page unload
     const reportSessionSummary = () => {
-      const sessionDuration = Date.now() - sessionStart;
+      const sessionDuration = Date.now() - sessionStart
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'session_summary', {
           event_category: 'UX',
@@ -269,32 +275,32 @@ export function InteractionMonitor() {
             session_duration: sessionDuration,
             interaction_count: interactionCount,
             interactions_per_minute: Math.round((interactionCount / sessionDuration) * 60000),
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
-    window.addEventListener('beforeunload', reportSessionSummary);
+    window.addEventListener('beforeunload', reportSessionSummary)
 
     return () => {
-      document.removeEventListener('click', trackClick);
-      document.removeEventListener('keypress', trackKeyPress);
-      document.removeEventListener('scroll', trackScroll);
-      window.removeEventListener('beforeunload', reportSessionSummary);
-    };
-  }, []);
+      document.removeEventListener('click', trackClick)
+      document.removeEventListener('keypress', trackKeyPress)
+      document.removeEventListener('scroll', trackScroll)
+      window.removeEventListener('beforeunload', reportSessionSummary)
+    }
+  }, [])
 
-  return null;
+  return null
 }
 
 // Error rate monitoring
 export function ErrorRateMonitor() {
   useEffect(() => {
-    let errorCount = 0;
-    const sessionStart = Date.now();
+    let errorCount = 0
+    const sessionStart = Date.now()
 
     const handleError = (event: ErrorEvent) => {
-      errorCount++;
+      errorCount++
 
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'javascript_error', {
@@ -306,13 +312,13 @@ export function ErrorRateMonitor() {
             column_number: event.colno,
             error_count: errorCount,
             session_duration: Date.now() - sessionStart,
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      errorCount++;
+      errorCount++
 
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'unhandled_promise_rejection', {
@@ -321,21 +327,21 @@ export function ErrorRateMonitor() {
           custom_map: {
             error_count: errorCount,
             session_duration: Date.now() - sessionStart,
-          }
-        });
+          },
+        })
       }
-    };
+    }
 
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError)
+    window.addEventListener('unhandledrejection', handleUnhandledRejection)
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
+      window.removeEventListener('error', handleError)
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+    }
+  }, [])
 
-  return null;
+  return null
 }
 
 // Combined performance monitoring component
@@ -348,5 +354,5 @@ export function ComprehensivePerformanceMonitor() {
       <InteractionMonitor />
       <ErrorRateMonitor />
     </>
-  );
+  )
 }

@@ -1,13 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import {
-  Users,
-  Target,
-  Sparkles,
-  CheckCircle,
-  ArrowRight
-} from 'lucide-react'
+import { Users, Target, Sparkles, CheckCircle, ArrowRight } from 'lucide-react'
 
 export default function AboutPage() {
   return (
@@ -32,18 +26,19 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Founded in 2010, GangRun Printing started as a small family-owned print shop in Houston, Texas. 
-                  What began as a passion for quality printing has grown into one of the region's most trusted 
-                  printing services.
+                  Founded in 2010, GangRun Printing started as a small family-owned print shop in
+                  Houston, Texas. What began as a passion for quality printing has grown into one of
+                  the region's most trusted printing services.
                 </p>
                 <p>
-                  Over the years, we've invested in state-of-the-art printing technology and expanded our team 
-                  of skilled professionals. Today, we serve thousands of businesses and individuals across the 
-                  United States, delivering exceptional quality and service with every order.
+                  Over the years, we've invested in state-of-the-art printing technology and
+                  expanded our team of skilled professionals. Today, we serve thousands of
+                  businesses and individuals across the United States, delivering exceptional
+                  quality and service with every order.
                 </p>
                 <p>
-                  Our commitment to innovation, quality, and customer satisfaction has made us the go-to choice 
-                  for businesses looking for reliable printing solutions.
+                  Our commitment to innovation, quality, and customer satisfaction has made us the
+                  go-to choice for businesses looking for reliable printing solutions.
                 </p>
               </div>
               <Link href="/products">
@@ -96,7 +91,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    To provide exceptional printing services that help businesses and individuals 
+                    To provide exceptional printing services that help businesses and individuals
                     bring their ideas to life with quality, speed, and affordability.
                   </p>
                 </CardContent>
@@ -108,8 +103,8 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    We never compromise on quality. Every product that leaves our facility meets 
-                    our rigorous standards for excellence.
+                    We never compromise on quality. Every product that leaves our facility meets our
+                    rigorous standards for excellence.
                   </p>
                 </CardContent>
               </Card>
@@ -120,7 +115,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Your satisfaction is our priority. We go above and beyond to ensure every 
+                    Your satisfaction is our priority. We go above and beyond to ensure every
                     customer has an exceptional experience.
                   </p>
                 </CardContent>
@@ -144,7 +139,7 @@ export default function AboutPage() {
                 'Expert design assistance available',
                 'Eco-friendly printing options',
                 'Free shipping on orders over $100',
-                'Dedicated customer support team'
+                'Dedicated customer support team',
               ].map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />

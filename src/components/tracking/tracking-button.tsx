@@ -20,7 +20,7 @@ export function TrackingButton({
   variant = 'default',
   size = 'default',
   className,
-  showIcon = true
+  showIcon = true,
 }: TrackingButtonProps) {
   const trackingInfo = getTrackingInfo(carrier, trackingNumber)
 
@@ -29,12 +29,7 @@ export function TrackingButton({
   }
 
   return (
-    <Button
-      className={className}
-      size={size}
-      variant={variant}
-      onClick={handleClick}
-    >
+    <Button className={className} size={size} variant={variant} onClick={handleClick}>
       {showIcon && <Package className="mr-2 h-4 w-4" />}
       {trackingInfo.buttonText}
       <ExternalLink className="ml-2 h-3 w-3" />
@@ -53,7 +48,7 @@ export function TrackingLink({
   carrier,
   trackingNumber,
   className,
-  showNumber = false
+  showNumber = false,
 }: TrackingLinkProps) {
   const trackingInfo = getTrackingInfo(carrier, trackingNumber)
 

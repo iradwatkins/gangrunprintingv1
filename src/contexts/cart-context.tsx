@@ -4,12 +4,12 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import { type CartState, type CartItem, type CartContextType } from '@/lib/cart-types'
 
 const TAX_RATE = 0.0825
-const SHIPPING_RATE = 10.00
+const SHIPPING_RATE = 10.0
 
 const initialState: CartState = {
   items: [],
   isOpen: false,
-  lastUpdated: new Date().toISOString()
+  lastUpdated: new Date().toISOString(),
 }
 
 type CartAction =
@@ -26,9 +26,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   const updatedState = (() => {
     switch (action.type) {
       case 'ADD_ITEM': {
-        const existingItemIndex = state.items.findIndex(
-          item => item.id === action.payload.id
-        )
+        const existingItemIndex = state.items.findIndex((item) => item.id === action.payload.id)
 
         if (existingItemIndex >= 0) {
           const newItems = [...state.items]
@@ -36,13 +34,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           newItems[existingItemIndex] = {
             ...existingItem,
             quantity: existingItem.quantity + action.payload.quantity,
-            subtotal: existingItem.price * (existingItem.quantity + action.payload.quantity)
+            subtotal: existingItem.price * (existingItem.quantity + action.payload.quantity),
           }
           return {
             ...state,
             items: newItems,
             isOpen: true,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
           }
         }
 
@@ -50,15 +48,15 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           ...state,
           items: [...state.items, action.payload],
           isOpen: true,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         }
       }
 
       case 'REMOVE_ITEM':
         return {
           ...state,
-          items: state.items.filter(item => item.id !== action.payload),
-          lastUpdated: new Date().toISOString()
+          items: state.items.filter((item) => item.id !== action.payload),
+          lastUpdated: new Date().toISOString(),
         }
 
       case 'UPDATE_QUANTITY': {
@@ -66,19 +64,17 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         if (quantity <= 0) {
           return {
             ...state,
-            items: state.items.filter(item => item.id !== id),
-            lastUpdated: new Date().toISOString()
+            items: state.items.filter((item) => item.id !== id),
+            lastUpdated: new Date().toISOString(),
           }
         }
 
         return {
           ...state,
-          items: state.items.map(item =>
-            item.id === id
-              ? { ...item, quantity, subtotal: item.price * quantity }
-              : item
+          items: state.items.map((item) =>
+            item.id === id ? { ...item, quantity, subtotal: item.price * quantity } : item
           ),
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         }
       }
 
@@ -86,7 +82,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         return {
           ...state,
           items: [],
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         }
 
       case 'OPEN_CART':
@@ -143,7 +139,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     dispatch({
       type: 'ADD_ITEM',
-      payload: { ...item, id, subtotal }
+      payload: { ...item, id, subtotal },
     })
   }, [])
 
@@ -192,7 +188,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     openCart,
     closeCart,
     toggleCart,
-    isLoading
+    isLoading,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

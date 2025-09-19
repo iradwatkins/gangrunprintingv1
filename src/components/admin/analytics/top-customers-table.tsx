@@ -27,7 +27,7 @@ export function TopCustomersTable({ customers }: TopCustomersTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount)
   }
 
@@ -39,11 +39,7 @@ export function TopCustomersTable({ customers }: TopCustomersTableProps) {
   }
 
   if (!customers || customers.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No customer data available
-      </div>
-    )
+    return <div className="text-center py-8 text-muted-foreground">No customer data available</div>
   }
 
   return (

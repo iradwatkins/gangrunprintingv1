@@ -18,9 +18,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import {
-  useSortable,
-} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -37,11 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ColorPicker } from '@/components/ui/color-picker'
 import {
   Type,
@@ -153,14 +147,9 @@ function SortableComponent({
   onDelete: (id: string) => void
   onDuplicate: (id: string) => void
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: component.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: component.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -271,13 +260,7 @@ function SortableComponent({
 
       {/* Component controls */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          className="h-6 w-6 p-0"
-          size="sm"
-          variant="outline"
-          {...attributes}
-          {...listeners}
-        >
+        <Button className="h-6 w-6 p-0" size="sm" variant="outline" {...attributes} {...listeners}>
           <GripVertical className="w-3 h-3" />
         </Button>
         <Button
@@ -664,9 +647,9 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
     const { active, over } = event
 
     if (active.id !== over?.id) {
-      setCurrentTemplate(prev => {
-        const oldIndex = prev.components.findIndex(c => c.id === active.id)
-        const newIndex = prev.components.findIndex(c => c.id === over?.id)
+      setCurrentTemplate((prev) => {
+        const oldIndex = prev.components.findIndex((c) => c.id === active.id)
+        const newIndex = prev.components.findIndex((c) => c.id === over?.id)
 
         return {
           ...prev,
@@ -679,7 +662,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
   }
 
   const addComponent = (type: string) => {
-    const componentType = COMPONENT_TYPES.find(t => t.type === type)
+    const componentType = COMPONENT_TYPES.find((t) => t.type === type)
     if (!componentType) return
 
     const newComponent: EmailComponent = {
@@ -689,31 +672,29 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
       styles: componentType.defaultStyles,
     }
 
-    setCurrentTemplate(prev => ({
+    setCurrentTemplate((prev) => ({
       ...prev,
       components: [...prev.components, newComponent],
     }))
   }
 
   const updateComponent = (id: string, updates: Partial<EmailComponent>) => {
-    setCurrentTemplate(prev => ({
+    setCurrentTemplate((prev) => ({
       ...prev,
-      components: prev.components.map(c =>
-        c.id === id ? { ...c, ...updates } : c
-      ),
+      components: prev.components.map((c) => (c.id === id ? { ...c, ...updates } : c)),
     }))
   }
 
   const deleteComponent = (id: string) => {
-    setCurrentTemplate(prev => ({
+    setCurrentTemplate((prev) => ({
       ...prev,
-      components: prev.components.filter(c => c.id !== id),
+      components: prev.components.filter((c) => c.id !== id),
     }))
     setSelectedComponentId(null)
   }
 
   const duplicateComponent = (id: string) => {
-    const component = currentTemplate.components.find(c => c.id === id)
+    const component = currentTemplate.components.find((c) => c.id === id)
     if (!component) return
 
     const newComponent = {
@@ -721,13 +702,13 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
       id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     }
 
-    setCurrentTemplate(prev => ({
+    setCurrentTemplate((prev) => ({
       ...prev,
       components: [...prev.components, newComponent],
     }))
   }
 
-  const selectedComponent = currentTemplate.components.find(c => c.id === selectedComponentId)
+  const selectedComponent = currentTemplate.components.find((c) => c.id === selectedComponentId)
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -760,7 +741,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
             <ColorPicker
               value={currentTemplate.globalStyles.backgroundColor}
               onChange={(color) =>
-                setCurrentTemplate(prev => ({
+                setCurrentTemplate((prev) => ({
                   ...prev,
                   globalStyles: { ...prev.globalStyles, backgroundColor: color },
                 }))
@@ -773,7 +754,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
             <Select
               value={currentTemplate.globalStyles.fontFamily}
               onValueChange={(value) =>
-                setCurrentTemplate(prev => ({
+                setCurrentTemplate((prev) => ({
                   ...prev,
                   globalStyles: { ...prev.globalStyles, fontFamily: value },
                 }))
@@ -796,7 +777,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
             <ColorPicker
               value={currentTemplate.globalStyles.textColor}
               onChange={(color) =>
-                setCurrentTemplate(prev => ({
+                setCurrentTemplate((prev) => ({
                   ...prev,
                   globalStyles: { ...prev.globalStyles, textColor: color },
                 }))
@@ -820,7 +801,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                 <Input
                   value={currentTemplate.name}
                   onChange={(e) =>
-                    setCurrentTemplate(prev => ({ ...prev, name: e.target.value }))
+                    setCurrentTemplate((prev) => ({ ...prev, name: e.target.value }))
                   }
                 />
               </div>
@@ -830,7 +811,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                 <Input
                   value={currentTemplate.subject}
                   onChange={(e) =>
-                    setCurrentTemplate(prev => ({ ...prev, subject: e.target.value }))
+                    setCurrentTemplate((prev) => ({ ...prev, subject: e.target.value }))
                   }
                 />
               </div>
@@ -841,7 +822,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                   placeholder="This appears in the inbox preview"
                   value={currentTemplate.previewText}
                   onChange={(e) =>
-                    setCurrentTemplate(prev => ({ ...prev, previewText: e.target.value }))
+                    setCurrentTemplate((prev) => ({ ...prev, previewText: e.target.value }))
                   }
                 />
               </div>
@@ -868,7 +849,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                   onDragStart={handleDragStart}
                 >
                   <SortableContext
-                    items={currentTemplate.components.map(c => c.id)}
+                    items={currentTemplate.components.map((c) => c.id)}
                     strategy={verticalListSortingStrategy}
                   >
                     {currentTemplate.components.length === 0 ? (
@@ -908,9 +889,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
               <Eye className="w-4 h-4 mr-2" />
               Preview
             </Button>
-            <Button onClick={() => onSave(currentTemplate)}>
-              Save Template
-            </Button>
+            <Button onClick={() => onSave(currentTemplate)}>Save Template</Button>
           </div>
         </div>
       </div>
@@ -920,7 +899,8 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
         {selectedComponent ? (
           <>
             <h3 className="font-semibold mb-4">
-              Edit {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
+              Edit{' '}
+              {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
             </h3>
             <ComponentEditor
               component={selectedComponent}

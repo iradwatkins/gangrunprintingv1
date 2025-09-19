@@ -10,7 +10,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
 })
@@ -32,11 +32,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable} font-sans`}>

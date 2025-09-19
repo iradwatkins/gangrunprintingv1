@@ -5,7 +5,9 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-        <p className="text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString()}</p>
+        <p className="text-muted-foreground mb-8">
+          Last updated: {new Date().toLocaleDateString()}
+        </p>
 
         <div className="space-y-8">
           <Card>
@@ -46,9 +48,14 @@ export default function PrivacyPolicyPage() {
               <CardTitle>3. Information Sharing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
-              <p>We do not sell, trade, or rent your personal information. We may share your information with:</p>
+              <p>
+                We do not sell, trade, or rent your personal information. We may share your
+                information with:
+              </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Service providers who assist in our operations (shipping, payment processing)</li>
+                <li>
+                  Service providers who assist in our operations (shipping, payment processing)
+                </li>
                 <li>Professional advisors (lawyers, accountants) when necessary</li>
                 <li>Law enforcement when required by law</li>
               </ul>
@@ -61,9 +68,9 @@ export default function PrivacyPolicyPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                We implement appropriate technical and organizational measures to protect your personal 
-                information against unauthorized access, alteration, disclosure, or destruction. However, 
-                no method of transmission over the internet is 100% secure.
+                We implement appropriate technical and organizational measures to protect your
+                personal information against unauthorized access, alteration, disclosure, or
+                destruction. However, no method of transmission over the internet is 100% secure.
               </p>
             </CardContent>
           </Card>
@@ -90,9 +97,9 @@ export default function PrivacyPolicyPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                We use cookies and similar tracking technologies to improve your browsing experience, 
-                analyze site traffic, and personalize content. You can control cookies through your 
-                browser settings.
+                We use cookies and similar tracking technologies to improve your browsing
+                experience, analyze site traffic, and personalize content. You can control cookies
+                through your browser settings.
               </p>
             </CardContent>
           </Card>
@@ -103,7 +110,7 @@ export default function PrivacyPolicyPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                Our services are not directed to children under 13. We do not knowingly collect 
+                Our services are not directed to children under 13. We do not knowingly collect
                 personal information from children under 13.
               </p>
             </CardContent>
@@ -115,7 +122,7 @@ export default function PrivacyPolicyPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground">
               <p>
-                We may update this privacy policy from time to time. We will notify you of any 
+                We may update this privacy policy from time to time. We will notify you of any
                 changes by posting the new policy on this page and updating the "Last updated" date.
               </p>
             </CardContent>

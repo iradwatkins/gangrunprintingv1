@@ -38,7 +38,7 @@ import {
   ChevronRight,
   Eye,
   Factory,
-  UserCheck
+  UserCheck,
 } from 'lucide-react'
 import { VendorAssignment } from '@/components/admin/vendor-assignment'
 
@@ -54,11 +54,11 @@ async function getOrder(id: string) {
       vendor: true,
       OrderItem: {
         include: {
-          product: true
-        }
+          product: true,
+        },
       },
-      Payment: true
-    }
+      Payment: true,
+    },
   })
 
   return order
@@ -67,7 +67,7 @@ async function getOrder(id: string) {
 async function getVendors() {
   const vendors = await prisma.vendor.findMany({
     where: { isActive: true },
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
   })
   return vendors
 }
@@ -77,62 +77,62 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; ne
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
     icon: Clock,
-    next: ['PAID', 'CANCELLED']
+    next: ['PAID', 'CANCELLED'],
   },
   PAID: {
     label: 'Paid',
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
     icon: DollarSign,
-    next: ['PROCESSING', 'REFUNDED']
+    next: ['PROCESSING', 'REFUNDED'],
   },
   PROCESSING: {
     label: 'Processing',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
     icon: Package,
-    next: ['PRINTING', 'CANCELLED']
+    next: ['PRINTING', 'CANCELLED'],
   },
   PRINTING: {
     label: 'Printing',
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
     icon: Printer,
-    next: ['QUALITY_CHECK', 'PROCESSING']
+    next: ['QUALITY_CHECK', 'PROCESSING'],
   },
   QUALITY_CHECK: {
     label: 'Quality Check',
     color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
     icon: CheckCircle,
-    next: ['PACKAGING', 'PRINTING']
+    next: ['PACKAGING', 'PRINTING'],
   },
   PACKAGING: {
     label: 'Packaging',
     color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
     icon: Package,
-    next: ['SHIPPED']
+    next: ['SHIPPED'],
   },
   SHIPPED: {
     label: 'Shipped',
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
     icon: Truck,
-    next: ['DELIVERED']
+    next: ['DELIVERED'],
   },
   DELIVERED: {
     label: 'Delivered',
     color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
     icon: CheckCircle,
-    next: []
+    next: [],
   },
   CANCELLED: {
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
     icon: XCircle,
-    next: []
+    next: [],
   },
   REFUNDED: {
     label: 'Refunded',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
     icon: AlertCircle,
-    next: []
-  }
+    next: [],
+  },
 }
 
 // Generate order timeline based on order status
@@ -146,7 +146,7 @@ function getOrderTimeline(order: any) {
     date: order.createdAt,
     description: `Order ${order.orderNumber} was placed`,
     icon: Package,
-    completed: true
+    completed: true,
   })
 
   // Payment status
@@ -156,12 +156,19 @@ function getOrderTimeline(order: any) {
       date: order.createdAt, // In real app, would have separate payment date
       description: 'Payment was successfully processed',
       icon: DollarSign,
-      completed: true
+      completed: true,
     })
   }
 
   // Add current status if beyond payment
-  const statusFlow = ['PROCESSING', 'PRINTING', 'QUALITY_CHECK', 'PACKAGING', 'SHIPPED', 'DELIVERED']
+  const statusFlow = [
+    'PROCESSING',
+    'PRINTING',
+    'QUALITY_CHECK',
+    'PACKAGING',
+    'SHIPPED',
+    'DELIVERED',
+  ]
   const currentIndex = statusFlow.indexOf(currentStatus)
 
   if (currentIndex >= 0) {
@@ -172,7 +179,7 @@ function getOrderTimeline(order: any) {
         date: order.updatedAt, // In real app, would track each status change
         description: `Order is ${config.label.toLowerCase()}`,
         icon: config.icon,
-        completed: index < currentIndex || status === currentStatus
+        completed: index < currentIndex || status === currentStatus,
       })
     })
   }
@@ -185,7 +192,7 @@ function getOrderTimeline(order: any) {
       date: order.updatedAt,
       description: `Order was ${config.label.toLowerCase()}`,
       icon: config.icon,
-      completed: true
+      completed: true,
     })
   }
 
@@ -194,10 +201,7 @@ function getOrderTimeline(order: any) {
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [order, vendors] = await Promise.all([
-    getOrder(id),
-    getVendors()
-  ])
+  const [order, vendors] = await Promise.all([getOrder(id), getVendors()])
 
   if (!order) {
     notFound()
@@ -220,17 +224,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Order {order.orderNumber}
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">Order {order.orderNumber}</h1>
             <p className="text-muted-foreground">
-              Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
+              Placed on{' '}
+              {new Date(order.createdAt).toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
               })}
             </p>
           </div>
@@ -300,7 +303,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                               <div key={key}>
                                 <span className="font-medium capitalize">
                                   {key.replace(/_/g, ' ')}:
-                                </span> {String(value)}
+                                </span>{' '}
+                                {String(value)}
                               </div>
                             ))}
                           </div>
@@ -309,9 +313,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                         )}
                       </TableCell>
                       <TableCell className="text-right">{item.quantity}</TableCell>
-                      <TableCell className="text-right">
-                        ${(item.price / 100).toFixed(2)}
-                      </TableCell>
+                      <TableCell className="text-right">${(item.price / 100).toFixed(2)}</TableCell>
                       <TableCell className="text-right font-medium">
                         ${((item.price * item.quantity) / 100).toFixed(2)}
                       </TableCell>
@@ -473,10 +475,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <VendorAssignment
-                order={order}
-                vendors={vendors}
-              />
+              <VendorAssignment order={order} vendors={vendors} />
             </CardContent>
           </Card>
 
@@ -530,30 +529,32 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   return (
                     <div key={index} className="flex gap-3">
                       <div className="relative flex flex-col items-center">
-                        <div className={`rounded-full p-2 ${
-                          event.completed
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
+                        <div
+                          className={`rounded-full p-2 ${
+                            event.completed
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                        >
                           <EventIcon className="h-4 w-4" />
                         </div>
                         {index < timeline.length - 1 && (
-                          <div className={`w-0.5 h-16 mt-2 ${
-                            event.completed ? 'bg-primary' : 'bg-muted'
-                          }`} />
+                          <div
+                            className={`w-0.5 h-16 mt-2 ${
+                              event.completed ? 'bg-primary' : 'bg-muted'
+                            }`}
+                          />
                         )}
                       </div>
                       <div className="flex-1 pt-1">
                         <p className="font-medium text-sm">{event.status}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {event.description}
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {new Date(event.date).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
-                            minute: '2-digit'
+                            minute: '2-digit',
                           })}
                         </p>
                       </div>

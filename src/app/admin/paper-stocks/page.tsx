@@ -88,7 +88,7 @@ export default function PaperStocksPage() {
     selectedCoatings: [] as string[],
     defaultCoating: '' as string,
     selectedSides: [] as string[],
-    sidesMultipliers: {} as Record<string, number>
+    sidesMultipliers: {} as Record<string, number>,
   })
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function PaperStocksPage() {
     try {
       const [coatingsRes, sidesRes] = await Promise.all([
         fetch('/api/coating-options'),
-        fetch('/api/sides-options')
+        fetch('/api/sides-options'),
       ])
 
       if (coatingsRes.ok) {
@@ -134,7 +134,7 @@ export default function PaperStocksPage() {
         isActive: stock.isActive,
         paperStockCoatings: stock.paperStockCoatings || [],
         paperStockSides: stock.paperStockSides || [],
-        productsCount: stock.productPaperStocks?.length || 0
+        productsCount: stock.productPaperStocks?.length || 0,
       }))
 
       setPaperStocks(transformedStocks)
@@ -159,20 +159,20 @@ export default function PaperStocksPage() {
         pricePerSqInch: formData.pricePerSqInch,
         tooltipText: formData.tooltipText,
         isActive: formData.isActive,
-        coatings: formData.selectedCoatings.map(coatingId => ({
+        coatings: formData.selectedCoatings.map((coatingId) => ({
           id: coatingId,
-          isDefault: coatingId === formData.defaultCoating
+          isDefault: coatingId === formData.defaultCoating,
         })),
-        sidesOptions: formData.selectedSides.map(sidesId => ({
+        sidesOptions: formData.selectedSides.map((sidesId) => ({
           id: sidesId,
-          multiplier: formData.sidesMultipliers[sidesId] || 1.0
-        }))
+          multiplier: formData.sidesMultipliers[sidesId] || 1.0,
+        })),
       }
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -193,15 +193,18 @@ export default function PaperStocksPage() {
     setEditingStock(stock)
 
     // Extract coating data
-    const selectedCoatings = stock.paperStockCoatings.map(pc => pc.coatingId)
-    const defaultCoating = stock.paperStockCoatings.find(pc => pc.isDefault)?.coatingId || ''
+    const selectedCoatings = stock.paperStockCoatings.map((pc) => pc.coatingId)
+    const defaultCoating = stock.paperStockCoatings.find((pc) => pc.isDefault)?.coatingId || ''
 
     // Extract sides data and multipliers
-    const selectedSides = stock.paperStockSides.map(ps => ps.sidesOptionId)
-    const sidesMultipliers = stock.paperStockSides.reduce((acc, ps) => {
-      acc[ps.sidesOptionId] = ps.priceMultiplier
-      return acc
-    }, {} as Record<string, number>)
+    const selectedSides = stock.paperStockSides.map((ps) => ps.sidesOptionId)
+    const sidesMultipliers = stock.paperStockSides.reduce(
+      (acc, ps) => {
+        acc[ps.sidesOptionId] = ps.priceMultiplier
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     setFormData({
       name: stock.name,
@@ -212,7 +215,7 @@ export default function PaperStocksPage() {
       selectedCoatings,
       defaultCoating,
       selectedSides,
-      sidesMultipliers
+      sidesMultipliers,
     })
     setDialogOpen(true)
   }
@@ -222,7 +225,7 @@ export default function PaperStocksPage() {
 
     try {
       const response = await fetch(`/api/paper-stocks/${deletingStock.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (!response.ok) {
@@ -250,7 +253,7 @@ export default function PaperStocksPage() {
       selectedCoatings: [],
       defaultCoating: '',
       selectedSides: [],
-      sidesMultipliers: {}
+      sidesMultipliers: {},
     })
   }
 
@@ -262,15 +265,18 @@ export default function PaperStocksPage() {
   const handleDuplicate = (stock: PaperStock) => {
     setEditingStock(null) // Important: clear editing stock so it creates a new item
     // Extract coating data
-    const selectedCoatings = stock.paperStockCoatings.map(pc => pc.coatingId)
-    const defaultCoating = stock.paperStockCoatings.find(pc => pc.isDefault)?.coatingId || ''
+    const selectedCoatings = stock.paperStockCoatings.map((pc) => pc.coatingId)
+    const defaultCoating = stock.paperStockCoatings.find((pc) => pc.isDefault)?.coatingId || ''
 
     // Extract sides data and multipliers
-    const selectedSides = stock.paperStockSides.map(ps => ps.sidesOptionId)
-    const sidesMultipliers = stock.paperStockSides.reduce((acc, ps) => {
-      acc[ps.sidesOptionId] = ps.priceMultiplier
-      return acc
-    }, {} as Record<string, number>)
+    const selectedSides = stock.paperStockSides.map((ps) => ps.sidesOptionId)
+    const sidesMultipliers = stock.paperStockSides.reduce(
+      (acc, ps) => {
+        acc[ps.sidesOptionId] = ps.priceMultiplier
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     setFormData({
       name: `${stock.name} - Copy`,
@@ -281,35 +287,35 @@ export default function PaperStocksPage() {
       selectedCoatings,
       defaultCoating,
       selectedSides,
-      sidesMultipliers
+      sidesMultipliers,
     })
     setDialogOpen(true)
   }
 
   const handleCoatingCreated = (newCoating: CoatingOption) => {
     // Add to the list of available coating options
-    setAllCoatingOptions(prev => [...prev, newCoating])
+    setAllCoatingOptions((prev) => [...prev, newCoating])
 
     // Auto-select the new coating and set as default if it's the first one
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       selectedCoatings: [...prev.selectedCoatings, newCoating.id],
-      defaultCoating: prev.selectedCoatings.length === 0 ? newCoating.id : prev.defaultCoating
+      defaultCoating: prev.selectedCoatings.length === 0 ? newCoating.id : prev.defaultCoating,
     }))
   }
 
   const handleSidesCreated = (newSides: SidesOption) => {
     // Add to the list of available sides options
-    setAllSidesOptions(prev => [...prev, newSides])
+    setAllSidesOptions((prev) => [...prev, newSides])
 
     // Auto-select the new sides option with default multiplier
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       selectedSides: [...prev.selectedSides, newSides.id],
       sidesMultipliers: {
         ...prev.sidesMultipliers,
-        [newSides.id]: 1.0
-      }
+        [newSides.id]: 1.0,
+      },
     }))
   }
 
@@ -328,9 +334,7 @@ export default function PaperStocksPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Paper Stocks</h1>
-        <p className="text-gray-600 mt-2">
-          Manage paper stocks with coating and side options
-        </p>
+        <p className="text-gray-600 mt-2">Manage paper stocks with coating and side options</p>
       </div>
 
       <Card>
@@ -342,10 +346,12 @@ export default function PaperStocksPage() {
                 Create and manage paper stocks with available coating and side options
               </CardDescription>
             </div>
-            <Button onClick={() => {
-              resetForm()
-              setDialogOpen(true)
-            }}>
+            <Button
+              onClick={() => {
+                resetForm()
+                setDialogOpen(true)
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Paper Stock
             </Button>
@@ -383,12 +389,14 @@ export default function PaperStocksPage() {
                           <Input
                             required
                             id="weight"
-                            type="number"
-                            step="0.0001"
                             min="0"
                             placeholder="0.0015"
+                            step="0.0001"
+                            type="number"
                             value={formData.weight}
-                            onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })
+                            }
                           />
                           <p className="text-xs text-muted-foreground">
                             Numeric weight used for shipping rate calculations
@@ -398,11 +406,16 @@ export default function PaperStocksPage() {
                           <Label htmlFor="pricePerSqInch">Price per Square Inch ($)</Label>
                           <Input
                             id="pricePerSqInch"
-                            type="number"
-                            step="0.0001"
                             min="0"
+                            step="0.0001"
+                            type="number"
                             value={formData.pricePerSqInch}
-                            onChange={(e) => setFormData({ ...formData, pricePerSqInch: parseFloat(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                pricePerSqInch: parseFloat(e.target.value) || 0,
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -413,14 +426,18 @@ export default function PaperStocksPage() {
                           placeholder="Optional description for this paper stock"
                           rows={3}
                           value={formData.tooltipText}
-                          onChange={(e) => setFormData({ ...formData, tooltipText: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tooltipText: e.target.value })
+                          }
                         />
                       </div>
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={formData.isActive}
                           id="isActive"
-                          onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                          onCheckedChange={(checked) =>
+                            setFormData({ ...formData, isActive: checked })
+                          }
                         />
                         <Label htmlFor="isActive">Active</Label>
                       </div>
@@ -434,9 +451,9 @@ export default function PaperStocksPage() {
                           Available Coating Options
                         </h3>
                         <Button
+                          size="sm"
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={() => setCoatingModalOpen(true)}
                         >
                           <Plus className="h-4 w-4 mr-2" />
@@ -448,47 +465,61 @@ export default function PaperStocksPage() {
                           <div key={coating.id} className="border rounded-lg p-3">
                             <div className="flex items-start space-x-3">
                               <Checkbox
-                                id={`coating-${coating.id}`}
                                 checked={formData.selectedCoatings.includes(coating.id)}
+                                id={`coating-${coating.id}`}
                                 onCheckedChange={(checked) => {
                                   if (checked) {
                                     setFormData({
                                       ...formData,
                                       selectedCoatings: [...formData.selectedCoatings, coating.id],
                                       // Set as default if it's the first coating selected
-                                      defaultCoating: formData.selectedCoatings.length === 0 ? coating.id : formData.defaultCoating
+                                      defaultCoating:
+                                        formData.selectedCoatings.length === 0
+                                          ? coating.id
+                                          : formData.defaultCoating,
                                     })
                                   } else {
                                     setFormData({
                                       ...formData,
-                                      selectedCoatings: formData.selectedCoatings.filter(id => id !== coating.id),
+                                      selectedCoatings: formData.selectedCoatings.filter(
+                                        (id) => id !== coating.id
+                                      ),
                                       // Clear default if this was the default coating
-                                      defaultCoating: formData.defaultCoating === coating.id ? '' : formData.defaultCoating
+                                      defaultCoating:
+                                        formData.defaultCoating === coating.id
+                                          ? ''
+                                          : formData.defaultCoating,
                                     })
                                   }
                                 }}
                               />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <Label htmlFor={`coating-${coating.id}`} className="font-medium">
+                                  <Label className="font-medium" htmlFor={`coating-${coating.id}`}>
                                     {coating.name}
                                   </Label>
                                   {formData.defaultCoating === coating.id && (
-                                    <Badge variant="secondary" className="text-xs">DEFAULT</Badge>
+                                    <Badge className="text-xs" variant="secondary">
+                                      DEFAULT
+                                    </Badge>
                                   )}
                                 </div>
                                 {coating.description && (
-                                  <div className="text-sm text-gray-500 mt-1">{coating.description}</div>
+                                  <div className="text-sm text-gray-500 mt-1">
+                                    {coating.description}
+                                  </div>
                                 )}
                                 {formData.selectedCoatings.includes(coating.id) && (
                                   <div className="mt-2">
                                     <label className="flex items-center space-x-2 text-sm">
                                       <input
-                                        type="radio"
-                                        name="defaultCoating"
                                         checked={formData.defaultCoating === coating.id}
-                                        onChange={() => setFormData({ ...formData, defaultCoating: coating.id })}
                                         className="w-4 h-4"
+                                        name="defaultCoating"
+                                        type="radio"
+                                        onChange={() =>
+                                          setFormData({ ...formData, defaultCoating: coating.id })
+                                        }
                                       />
                                       <span>Set as default coating</span>
                                     </label>
@@ -509,9 +540,9 @@ export default function PaperStocksPage() {
                           Available Side Options
                         </h3>
                         <Button
+                          size="sm"
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={() => setSidesModalOpen(true)}
                         >
                           <Plus className="h-4 w-4 mr-2" />
@@ -523,8 +554,8 @@ export default function PaperStocksPage() {
                           <div key={sides.id} className="border rounded-lg p-3">
                             <div className="flex items-start space-x-3">
                               <Checkbox
-                                id={`sides-${sides.id}`}
                                 checked={formData.selectedSides.includes(sides.id)}
+                                id={`sides-${sides.id}`}
                                 onCheckedChange={(checked) => {
                                   if (checked) {
                                     setFormData({
@@ -533,47 +564,49 @@ export default function PaperStocksPage() {
                                       // Set default multiplier if not already set
                                       sidesMultipliers: {
                                         ...formData.sidesMultipliers,
-                                        [sides.id]: formData.sidesMultipliers[sides.id] || 1.0
-                                      }
+                                        [sides.id]: formData.sidesMultipliers[sides.id] || 1.0,
+                                      },
                                     })
                                   } else {
-                                    const { [sides.id]: removed, ...remainingMultipliers } = formData.sidesMultipliers
+                                    const { [sides.id]: removed, ...remainingMultipliers } =
+                                      formData.sidesMultipliers
                                     setFormData({
                                       ...formData,
-                                      selectedSides: formData.selectedSides.filter(id => id !== sides.id),
-                                      sidesMultipliers: remainingMultipliers
+                                      selectedSides: formData.selectedSides.filter(
+                                        (id) => id !== sides.id
+                                      ),
+                                      sidesMultipliers: remainingMultipliers,
                                     })
                                   }
                                 }}
                               />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <Label htmlFor={`sides-${sides.id}`} className="font-medium">
+                                  <Label className="font-medium" htmlFor={`sides-${sides.id}`}>
                                     {sides.name}
                                   </Label>
                                   {formData.selectedSides.includes(sides.id) && (
-                                    <Badge variant="outline" className="text-xs">
+                                    <Badge className="text-xs" variant="outline">
                                       {(formData.sidesMultipliers[sides.id] || 1.0).toFixed(1)}x
                                     </Badge>
                                   )}
                                 </div>
-                                <div className="text-sm text-gray-500 mt-1">
-                                  Code: {sides.code}
-                                </div>
+                                <div className="text-sm text-gray-500 mt-1">Code: {sides.code}</div>
                                 {sides.description && (
                                   <div className="text-sm text-gray-500">{sides.description}</div>
                                 )}
                                 {formData.selectedSides.includes(sides.id) && (
                                   <div className="mt-2">
-                                    <Label htmlFor={`multiplier-${sides.id}`} className="text-sm">
+                                    <Label className="text-sm" htmlFor={`multiplier-${sides.id}`}>
                                       Price Multiplier:
                                     </Label>
                                     <Input
+                                      className="w-24 h-8 text-sm mt-1"
                                       id={`multiplier-${sides.id}`}
-                                      type="number"
-                                      step="0.1"
-                                      min="0.1"
                                       max="10"
+                                      min="0.1"
+                                      step="0.1"
+                                      type="number"
                                       value={formData.sidesMultipliers[sides.id] || 1.0}
                                       onChange={(e) => {
                                         const value = parseFloat(e.target.value) || 1.0
@@ -581,11 +614,10 @@ export default function PaperStocksPage() {
                                           ...formData,
                                           sidesMultipliers: {
                                             ...formData.sidesMultipliers,
-                                            [sides.id]: value
-                                          }
+                                            [sides.id]: value,
+                                          },
                                         })
                                       }}
-                                      className="w-24 h-8 text-sm mt-1"
                                     />
                                   </div>
                                 )}
@@ -601,9 +633,7 @@ export default function PaperStocksPage() {
                     <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                       Cancel
                     </Button>
-                    <Button type="submit">
-                      {editingStock ? 'Update' : 'Create'}
-                    </Button>
+                    <Button type="submit">{editingStock ? 'Update' : 'Create'}</Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -647,7 +677,7 @@ export default function PaperStocksPage() {
                       <div className="flex flex-wrap gap-1 justify-center">
                         {stock.paperStockCoatings.length > 0 ? (
                           stock.paperStockCoatings.map((pc) => (
-                            <Badge key={pc.coating.id} variant="outline" className="text-xs">
+                            <Badge key={pc.coating.id} className="text-xs" variant="outline">
                               {pc.coating.name}
                               {pc.isDefault && <span className="ml-1 font-bold">★</span>}
                             </Badge>
@@ -661,7 +691,7 @@ export default function PaperStocksPage() {
                       <div className="flex flex-wrap gap-1 justify-center">
                         {stock.paperStockSides.length > 0 ? (
                           stock.paperStockSides.map((ps) => (
-                            <Badge key={ps.sidesOption.id} variant="outline" className="text-xs">
+                            <Badge key={ps.sidesOption.id} className="text-xs" variant="outline">
                               {ps.sidesOption.name} ({ps.priceMultiplier}x)
                             </Badge>
                           ))
@@ -671,7 +701,7 @@ export default function PaperStocksPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant={stock.isActive ? "default" : "secondary"}>
+                      <Badge variant={stock.isActive ? 'default' : 'secondary'}>
                         {stock.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
@@ -679,26 +709,26 @@ export default function PaperStocksPage() {
                       <div className="flex justify-end gap-2">
                         <Button
                           size="sm"
+                          title="Duplicate"
                           variant="outline"
                           onClick={() => handleDuplicate(stock)}
-                          title="Duplicate"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
+                          title="Edit"
                           variant="outline"
                           onClick={() => handleEdit(stock)}
-                          title="Edit"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           disabled={(stock.productsCount ?? 0) > 0}
                           size="sm"
+                          title="Delete"
                           variant="outline"
                           onClick={() => openDeleteDialog(stock)}
-                          title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -735,8 +765,8 @@ export default function PaperStocksPage() {
       {/* Coating Creation Modal */}
       <CoatingCreationModal
         open={coatingModalOpen}
-        onOpenChange={setCoatingModalOpen}
         onCoatingCreated={handleCoatingCreated}
+        onOpenChange={setCoatingModalOpen}
       />
 
       {/* Sides Creation Modal */}

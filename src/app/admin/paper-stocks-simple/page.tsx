@@ -47,7 +47,7 @@ export default function SimplePaperStocksPage() {
     shippingWeight: 0.5,
     sortOrder: 0,
     isDefault: false,
-    isActive: true
+    isActive: true,
   })
 
   useEffect(() => {
@@ -61,29 +61,29 @@ export default function SimplePaperStocksPage() {
         {
           id: '1',
           name: '14pt C1S',
-          basePrice: 0.00001000,
+          basePrice: 0.00001,
           shippingWeight: 0.45,
           sortOrder: 1,
           isDefault: false,
-          isActive: true
+          isActive: true,
         },
         {
           id: '2',
           name: '16pt C2S',
           basePrice: 0.00001234,
-          shippingWeight: 0.50,
+          shippingWeight: 0.5,
           sortOrder: 2,
           isDefault: true,
-          isActive: true
+          isActive: true,
         },
         {
           id: '3',
           name: '100lb Gloss Cover',
           basePrice: 0.00001456,
-          shippingWeight: 0.60,
+          shippingWeight: 0.6,
           sortOrder: 3,
           isDefault: false,
-          isActive: true
+          isActive: true,
         },
         {
           id: '4',
@@ -92,8 +92,8 @@ export default function SimplePaperStocksPage() {
           shippingWeight: 0.55,
           sortOrder: 4,
           isDefault: false,
-          isActive: true
-        }
+          isActive: true,
+        },
       ]
       setPaperStocks(mockData)
     } catch (error) {
@@ -112,7 +112,7 @@ export default function SimplePaperStocksPage() {
         shippingWeight: stock.shippingWeight,
         sortOrder: stock.sortOrder,
         isDefault: stock.isDefault,
-        isActive: stock.isActive
+        isActive: stock.isActive,
       })
     } else {
       setEditingStock(null)
@@ -122,7 +122,7 @@ export default function SimplePaperStocksPage() {
         shippingWeight: 0.5,
         sortOrder: paperStocks.length + 1,
         isDefault: false,
-        isActive: true
+        isActive: true,
       })
     }
     setDialogOpen(true)
@@ -132,24 +132,22 @@ export default function SimplePaperStocksPage() {
     try {
       // If setting as default, unset other defaults
       if (formData.isDefault) {
-        setPaperStocks(prev => prev.map(stock => ({ ...stock, isDefault: false })))
+        setPaperStocks((prev) => prev.map((stock) => ({ ...stock, isDefault: false })))
       }
 
       if (editingStock) {
         // Update existing
-        setPaperStocks(prev => prev.map(stock => 
-          stock.id === editingStock.id 
-            ? { ...stock, ...formData }
-            : stock
-        ))
+        setPaperStocks((prev) =>
+          prev.map((stock) => (stock.id === editingStock.id ? { ...stock, ...formData } : stock))
+        )
         toast.success('Paper stock updated')
       } else {
         // Add new
         const newStock: PaperStock = {
           id: Date.now().toString(),
-          ...formData
+          ...formData,
         }
-        setPaperStocks(prev => [...prev, newStock])
+        setPaperStocks((prev) => [...prev, newStock])
         toast.success('Paper stock added')
       }
       setDialogOpen(false)
@@ -160,22 +158,24 @@ export default function SimplePaperStocksPage() {
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this paper stock?')) {
-      setPaperStocks(prev => prev.filter(stock => stock.id !== id))
+      setPaperStocks((prev) => prev.filter((stock) => stock.id !== id))
       toast.success('Paper stock deleted')
     }
   }
 
   const toggleActive = (id: string) => {
-    setPaperStocks(prev => prev.map(stock => 
-      stock.id === id ? { ...stock, isActive: !stock.isActive } : stock
-    ))
+    setPaperStocks((prev) =>
+      prev.map((stock) => (stock.id === id ? { ...stock, isActive: !stock.isActive } : stock))
+    )
   }
 
   const setAsDefault = (id: string) => {
-    setPaperStocks(prev => prev.map(stock => ({
-      ...stock,
-      isDefault: stock.id === id
-    })))
+    setPaperStocks((prev) =>
+      prev.map((stock) => ({
+        ...stock,
+        isDefault: stock.id === id,
+      }))
+    )
     toast.success('Default paper stock updated')
   }
 
@@ -201,9 +201,7 @@ export default function SimplePaperStocksPage() {
       <Card>
         <CardHeader>
           <CardTitle>Paper Stocks</CardTitle>
-          <CardDescription>
-            Manage your available paper types and pricing
-          </CardDescription>
+          <CardDescription>Manage your available paper types and pricing</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -223,57 +221,43 @@ export default function SimplePaperStocksPage() {
               {paperStocks
                 .sort((a, b) => a.sortOrder - b.sortOrder)
                 .map((stock) => (
-                <TableRow key={stock.id}>
-                  <TableCell>
-                    <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                  </TableCell>
-                  <TableCell className="font-medium">{stock.name}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    ${stock.basePrice.toFixed(8)}
-                  </TableCell>
-                  <TableCell>
-                    ${calculatePrice(stock.basePrice)}
-                  </TableCell>
-                  <TableCell>{stock.shippingWeight} lbs/1000</TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={stock.isActive}
-                      onCheckedChange={() => toggleActive(stock.id)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {stock.isDefault ? (
-                      <Badge className="bg-green-100 text-green-800">Default</Badge>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setAsDefault(stock.id)}
-                      >
-                        Set Default
-                      </Button>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleOpenDialog(stock)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(stock.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                  <TableRow key={stock.id}>
+                    <TableCell>
+                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                    </TableCell>
+                    <TableCell className="font-medium">{stock.name}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      ${stock.basePrice.toFixed(8)}
+                    </TableCell>
+                    <TableCell>${calculatePrice(stock.basePrice)}</TableCell>
+                    <TableCell>{stock.shippingWeight} lbs/1000</TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={stock.isActive}
+                        onCheckedChange={() => toggleActive(stock.id)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {stock.isDefault ? (
+                        <Badge className="bg-green-100 text-green-800">Default</Badge>
+                      ) : (
+                        <Button size="sm" variant="ghost" onClick={() => setAsDefault(stock.id)}>
+                          Set Default
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => handleOpenDialog(stock)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDelete(stock.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>
@@ -282,12 +266,8 @@ export default function SimplePaperStocksPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingStock ? 'Edit Paper Stock' : 'Add Paper Stock'}
-            </DialogTitle>
-            <DialogDescription>
-              Configure the paper stock details
-            </DialogDescription>
+            <DialogTitle>{editingStock ? 'Edit Paper Stock' : 'Add Paper Stock'}</DialogTitle>
+            <DialogDescription>Configure the paper stock details</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -297,7 +277,7 @@ export default function SimplePaperStocksPage() {
                 id="name"
                 placeholder="e.g., 16pt C2S"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               />
             </div>
 
@@ -308,7 +288,9 @@ export default function SimplePaperStocksPage() {
                 step="0.00000001"
                 type="number"
                 value={formData.basePrice}
-                onChange={(e) => setFormData(prev => ({ ...prev, basePrice: parseFloat(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, basePrice: parseFloat(e.target.value) }))
+                }
               />
               <p className="text-xs text-muted-foreground">
                 Sample: 4x6 @ 500qty = ${calculatePrice(formData.basePrice)}
@@ -322,7 +304,9 @@ export default function SimplePaperStocksPage() {
                 step="0.01"
                 type="number"
                 value={formData.shippingWeight}
-                onChange={(e) => setFormData(prev => ({ ...prev, shippingWeight: parseFloat(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, shippingWeight: parseFloat(e.target.value) }))
+                }
               />
             </div>
 
@@ -332,7 +316,9 @@ export default function SimplePaperStocksPage() {
                 id="sortOrder"
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData(prev => ({ ...prev, sortOrder: parseInt(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) }))
+                }
               />
             </div>
 
@@ -341,7 +327,9 @@ export default function SimplePaperStocksPage() {
               <Switch
                 checked={formData.isDefault}
                 id="isDefault"
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isDefault: checked }))}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, isDefault: checked }))
+                }
               />
             </div>
 
@@ -350,7 +338,9 @@ export default function SimplePaperStocksPage() {
               <Switch
                 checked={formData.isActive}
                 id="isActive"
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, isActive: checked }))
+                }
               />
             </div>
           </div>
@@ -359,9 +349,7 @@ export default function SimplePaperStocksPage() {
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>
-              {editingStock ? 'Update' : 'Add'} Paper Stock
-            </Button>
+            <Button onClick={handleSubmit}>{editingStock ? 'Update' : 'Add'} Paper Stock</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

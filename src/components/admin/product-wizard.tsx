@@ -20,7 +20,7 @@ import {
   Settings,
   Clock,
   Calculator,
-  CheckCircle2
+  CheckCircle2,
 } from 'lucide-react'
 
 // Import step components
@@ -127,7 +127,13 @@ export function ProductWizard({ product }: ProductWizardProps) {
   })
 
   const [stepValidation, setStepValidation] = useState<boolean[]>([
-    false, false, false, false, false, false, false
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
   ])
 
   const steps: WizardStep[] = [
@@ -137,7 +143,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Product name, description, and images',
       icon: Package,
       isCompleted: stepValidation[0],
-      isValid: stepValidation[0]
+      isValid: stepValidation[0],
     },
     {
       id: 'paper-stock',
@@ -145,7 +151,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Available paper options',
       icon: FileText,
       isCompleted: stepValidation[1],
-      isValid: stepValidation[1]
+      isValid: stepValidation[1],
     },
     {
       id: 'quantities',
@@ -153,7 +159,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Available quantities',
       icon: Layers,
       isCompleted: stepValidation[2],
-      isValid: stepValidation[2]
+      isValid: stepValidation[2],
     },
     {
       id: 'sizes',
@@ -161,7 +167,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Available sizes',
       icon: Ruler,
       isCompleted: stepValidation[3],
-      isValid: stepValidation[3]
+      isValid: stepValidation[3],
     },
     {
       id: 'options',
@@ -169,7 +175,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Additional features and services',
       icon: Settings,
       isCompleted: stepValidation[4],
-      isValid: stepValidation[4]
+      isValid: stepValidation[4],
     },
     {
       id: 'turnaround',
@@ -177,7 +183,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Production and delivery times',
       icon: Clock,
       isCompleted: stepValidation[5],
-      isValid: stepValidation[5]
+      isValid: stepValidation[5],
     },
     {
       id: 'price-test',
@@ -185,16 +191,16 @@ export function ProductWizard({ product }: ProductWizardProps) {
       description: 'Test pricing and publish',
       icon: Calculator,
       isCompleted: stepValidation[6],
-      isValid: stepValidation[6]
-    }
+      isValid: stepValidation[6],
+    },
   ]
 
   const updateFormData = (updates: Partial<ProductData>) => {
-    setFormData(prev => ({ ...prev, ...updates }))
+    setFormData((prev) => ({ ...prev, ...updates }))
   }
 
   const updateStepValidation = (stepIndex: number, isValid: boolean) => {
-    setStepValidation(prev => {
+    setStepValidation((prev) => {
       const newValidation = [...prev]
       newValidation[stepIndex] = isValid
       return newValidation
@@ -209,22 +215,20 @@ export function ProductWizard({ product }: ProductWizardProps) {
 
   const goToNextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1)
+      setCurrentStep((prev) => prev + 1)
     }
   }
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1)
+      setCurrentStep((prev) => prev - 1)
     }
   }
 
   const saveDraft = async () => {
     setSavingDraft(true)
     try {
-      const url = product
-        ? `/api/products/${product.id}/draft`
-        : '/api/products/draft'
+      const url = product ? `/api/products/${product.id}/draft` : '/api/products/draft'
 
       const method = product ? 'PUT' : 'POST'
 
@@ -251,9 +255,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
   const publishProduct = async () => {
     setLoading(true)
     try {
-      const url = product
-        ? `/api/products/${product.id}`
-        : '/api/products'
+      const url = product ? `/api/products/${product.id}` : '/api/products'
 
       const method = product ? 'PUT' : 'POST'
 
@@ -333,9 +335,9 @@ export function ProductWizard({ product }: ProductWizardProps) {
         return (
           <ProductPriceTestStep
             formData={formData}
+            onPublish={publishProduct}
             onUpdate={updateFormData}
             onValidationChange={(isValid) => updateStepValidation(6, isValid)}
-            onPublish={publishProduct}
           />
         )
       default:
@@ -364,12 +366,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={saveDraft}
-            disabled={savingDraft}
-          >
+          <Button disabled={savingDraft} size="sm" variant="outline" onClick={saveDraft}>
             {savingDraft && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Save className="mr-2 h-4 w-4" />
             Save Draft
@@ -385,7 +382,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
               <span>Progress</span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress className="h-2" value={progress} />
           </div>
         </CardContent>
       </Card>
@@ -403,18 +400,19 @@ export function ProductWizard({ product }: ProductWizardProps) {
               return (
                 <button
                   key={step.id}
-                  onClick={() => isClickable && goToStep(index)}
-                  disabled={!isClickable}
                   className={`
                     p-3 rounded-lg border transition-all text-center
-                    ${isActive
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : isPast || step.isCompleted
-                        ? 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
-                        : 'border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
+                    ${
+                      isActive
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : isPast || step.isCompleted
+                          ? 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
+                          : 'border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
                     }
                     ${isClickable && !isActive ? 'hover:border-primary/50 hover:bg-primary/5' : ''}
                   `}
+                  disabled={!isClickable}
+                  onClick={() => isClickable && goToStep(index)}
                 >
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex items-center justify-center">
@@ -424,9 +422,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
                         <Icon className="h-5 w-5" />
                       )}
                     </div>
-                    <div className="text-xs font-medium leading-tight">
-                      {step.title}
-                    </div>
+                    <div className="text-xs font-medium leading-tight">{step.title}</div>
                   </div>
                 </button>
               )
@@ -436,48 +432,32 @@ export function ProductWizard({ product }: ProductWizardProps) {
       </Card>
 
       {/* Step Content */}
-      <div className="min-h-[500px]">
-        {renderStepContent()}
-      </div>
+      <div className="min-h-[500px]">{renderStepContent()}</div>
 
       {/* Navigation Buttons */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={goToPreviousStep}
-              disabled={currentStep === 0}
-            >
+            <Button disabled={currentStep === 0} variant="outline" onClick={goToPreviousStep}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Previous
             </Button>
 
             <div className="flex items-center gap-2">
               {currentStep < steps.length - 1 && (
-                <Button
-                  variant="outline"
-                  onClick={publishProduct}
-                  disabled={loading}
-                >
+                <Button disabled={loading} variant="outline" onClick={publishProduct}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Draft
                 </Button>
               )}
 
               {currentStep < steps.length - 1 ? (
-                <Button
-                  onClick={goToNextStep}
-                  disabled={!stepValidation[currentStep]}
-                >
+                <Button disabled={!stepValidation[currentStep]} onClick={goToNextStep}>
                   Next
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button
-                  onClick={publishProduct}
-                  disabled={loading || !stepValidation[currentStep]}
-                >
+                <Button disabled={loading || !stepValidation[currentStep]} onClick={publishProduct}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {product ? 'Update Product' : 'Publish Product'}
                 </Button>

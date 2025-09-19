@@ -1,17 +1,11 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState, useEffect, useRef } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Table,
   TableBody,
@@ -19,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/table'
 import {
   Dialog,
   DialogContent,
@@ -27,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,84 +31,75 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Palette,
-  Upload,
-  Download,
-  Trash2,
-  Check,
-  Eye,
-  Code,
-  FileText,
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Palette, Upload, Download, Trash2, Check, Eye, Code, FileText } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 interface Theme {
-  id: string;
-  name: string;
-  description?: string;
-  cssVariables: Record<string, string>;
-  darkModeVariables?: Record<string, string>;
-  customCSS?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  name: string
+  description?: string
+  cssVariables: Record<string, string>
+  darkModeVariables?: Record<string, string>
+  customCSS?: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export function ThemeManager() {
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
-  const [deleteTheme, setDeleteTheme] = useState<Theme | null>(null);
-  const [uploadDialog, setUploadDialog] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
+  const [themes, setThemes] = useState<Theme[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null)
+  const [deleteTheme, setDeleteTheme] = useState<Theme | null>(null)
+  const [uploadDialog, setUploadDialog] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   const [uploadForm, setUploadForm] = useState({
     name: '',
     description: '',
     file: null as File | null,
-  });
+  })
 
   useEffect(() => {
-    fetchThemes();
-  }, []);
+    fetchThemes()
+  }, [])
 
   const fetchThemes = async () => {
     try {
-      const response = await fetch('/api/themes');
+      const response = await fetch('/api/themes')
       if (response.ok) {
-        const data = await response.json();
-        setThemes(data);
+        const data = await response.json()
+        setThemes(data)
       }
     } catch (error) {
-      console.error('Error fetching themes:', error);
+      console.error('Error fetching themes:', error)
       toast({
         title: 'Error',
         description: 'Failed to fetch themes',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file && file.type === 'text/css') {
-      setUploadForm(prev => ({ ...prev, file }));
+      setUploadForm((prev) => ({ ...prev, file }))
     } else {
       toast({
         title: 'Invalid file',
         description: 'Please select a CSS file',
         variant: 'destructive',
-      });
+      })
     }
-  };
+  }
 
   const handleUpload = async () => {
     if (!uploadForm.file || !uploadForm.name) {
@@ -122,52 +107,52 @@ export function ThemeManager() {
         title: 'Missing fields',
         description: 'Please provide a name and select a CSS file',
         variant: 'destructive',
-      });
-      return;
+      })
+      return
     }
 
-    setUploading(true);
+    setUploading(true)
 
     try {
-      const formData = new FormData();
-      formData.append('file', uploadForm.file);
-      formData.append('name', uploadForm.name);
-      formData.append('description', uploadForm.description);
+      const formData = new FormData()
+      formData.append('file', uploadForm.file)
+      formData.append('name', uploadForm.name)
+      formData.append('description', uploadForm.description)
 
       const response = await fetch('/api/themes', {
         method: 'POST',
         body: formData,
-      });
+      })
 
       if (response.ok) {
-        const newTheme = await response.json();
-        setThemes(prev => [...prev, newTheme]);
-        setUploadDialog(false);
-        setUploadForm({ name: '', description: '', file: null });
+        const newTheme = await response.json()
+        setThemes((prev) => [...prev, newTheme])
+        setUploadDialog(false)
+        setUploadForm({ name: '', description: '', file: null })
 
         toast({
           title: 'Success',
           description: 'Theme uploaded and activated successfully',
-        });
+        })
 
         // Reload page to apply new theme
         setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+          window.location.reload()
+        }, 1000)
       } else {
-        throw new Error('Failed to upload theme');
+        throw new Error('Failed to upload theme')
       }
     } catch (error) {
-      console.error('Error uploading theme:', error);
+      console.error('Error uploading theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to upload theme',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const handleActivate = async (themeId: string) => {
     try {
@@ -175,105 +160,105 @@ export function ThemeManager() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ activate: true }),
-      });
+      })
 
       if (response.ok) {
-        setThemes(prev =>
-          prev.map(theme => ({
+        setThemes((prev) =>
+          prev.map((theme) => ({
             ...theme,
             isActive: theme.id === themeId,
           }))
-        );
+        )
 
         toast({
           title: 'Success',
           description: 'Theme activated successfully',
-        });
+        })
 
         // Reload page to apply new theme
         setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+          window.location.reload()
+        }, 1000)
       }
     } catch (error) {
-      console.error('Error activating theme:', error);
+      console.error('Error activating theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to activate theme',
         variant: 'destructive',
-      });
+      })
     }
-  };
+  }
 
   const handleDelete = async () => {
-    if (!deleteTheme) return;
+    if (!deleteTheme) return
 
     try {
       const response = await fetch(`/api/themes/${deleteTheme.id}`, {
         method: 'DELETE',
-      });
+      })
 
       if (response.ok) {
-        setThemes(prev => prev.filter(theme => theme.id !== deleteTheme.id));
-        setDeleteTheme(null);
+        setThemes((prev) => prev.filter((theme) => theme.id !== deleteTheme.id))
+        setDeleteTheme(null)
 
         toast({
           title: 'Success',
           description: 'Theme deleted successfully',
-        });
+        })
       }
     } catch (error) {
-      console.error('Error deleting theme:', error);
+      console.error('Error deleting theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to delete theme',
         variant: 'destructive',
-      });
+      })
     }
-  };
+  }
 
   const downloadTheme = (theme: Theme) => {
-    let css = '';
+    let css = ''
 
     // Generate :root variables
     if (theme.cssVariables) {
-      css += ':root {\n';
+      css += ':root {\n'
       for (const [key, value] of Object.entries(theme.cssVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Generate .dark variables
     if (theme.darkModeVariables) {
-      css += '.dark {\n';
+      css += '.dark {\n'
       for (const [key, value] of Object.entries(theme.darkModeVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Add custom CSS
     if (theme.customCSS) {
-      css += theme.customCSS;
+      css += theme.customCSS
     }
 
     // Create download
-    const blob = new Blob([css], { type: 'text/css' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${theme.name.toLowerCase().replace(/\s+/g, '-')}.css`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    const blob = new Blob([css], { type: 'text/css' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${theme.name.toLowerCase().replace(/\s+/g, '-')}.css`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
         <div className="text-center">Loading themes...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -298,7 +283,8 @@ export function ThemeManager() {
                 <DialogHeader>
                   <DialogTitle>Upload CSS Theme</DialogTitle>
                   <DialogDescription>
-                    Upload a CSS file containing theme variables to customize the application appearance
+                    Upload a CSS file containing theme variables to customize the application
+                    appearance
                   </DialogDescription>
                 </DialogHeader>
 
@@ -309,9 +295,7 @@ export function ThemeManager() {
                       id="name"
                       placeholder="My Custom Theme"
                       value={uploadForm.name}
-                      onChange={(e) =>
-                        setUploadForm(prev => ({ ...prev, name: e.target.value }))
-                      }
+                      onChange={(e) => setUploadForm((prev) => ({ ...prev, name: e.target.value }))}
                     />
                   </div>
 
@@ -323,7 +307,7 @@ export function ThemeManager() {
                       rows={3}
                       value={uploadForm.description}
                       onChange={(e) =>
-                        setUploadForm(prev => ({ ...prev, description: e.target.value }))
+                        setUploadForm((prev) => ({ ...prev, description: e.target.value }))
                       }
                     />
                   </div>
@@ -346,15 +330,13 @@ export function ThemeManager() {
 
                   <div className="bg-muted p-3 rounded-lg">
                     <p className="text-sm text-muted-foreground">
-                      <strong>Note:</strong> Your CSS file should contain CSS variables in :root and .dark selectors.
+                      <strong>Note:</strong> Your CSS file should contain CSS variables in :root and
+                      .dark selectors.
                     </p>
                   </div>
 
                   <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setUploadDialog(false)}
-                    >
+                    <Button variant="outline" onClick={() => setUploadDialog(false)}>
                       Cancel
                     </Button>
                     <Button disabled={uploading} onClick={handleUpload}>
@@ -391,9 +373,7 @@ export function ThemeManager() {
                       <Badge variant="outline">Inactive</Badge>
                     )}
                   </TableCell>
-                  <TableCell>
-                    {new Date(theme.createdAt).toLocaleDateString()}
-                  </TableCell>
+                  <TableCell>{new Date(theme.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       {!theme.isActive && (
@@ -405,18 +385,10 @@ export function ThemeManager() {
                           <Check className="w-4 h-4" />
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setSelectedTheme(theme)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => setSelectedTheme(theme)}>
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => downloadTheme(theme)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => downloadTheme(theme)}>
                         <Download className="w-4 h-4" />
                       </Button>
                       <Button
@@ -437,10 +409,7 @@ export function ThemeManager() {
       </Card>
 
       {/* Theme Preview Dialog */}
-      <Dialog
-        open={!!selectedTheme}
-        onOpenChange={() => setSelectedTheme(null)}
-      >
+      <Dialog open={!!selectedTheme} onOpenChange={() => setSelectedTheme(null)}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedTheme?.name}</DialogTitle>
@@ -480,10 +449,7 @@ export function ThemeManager() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deleteTheme}
-        onOpenChange={() => setDeleteTheme(null)}
-      >
+      <AlertDialog open={!!deleteTheme} onOpenChange={() => setDeleteTheme(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Theme</AlertDialogTitle>
@@ -498,5 +464,5 @@ export function ThemeManager() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }

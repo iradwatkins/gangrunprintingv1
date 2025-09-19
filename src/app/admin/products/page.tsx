@@ -141,9 +141,7 @@ export default function ProductsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Product Management</h1>
-          <p className="text-muted-foreground">
-            Manage your print products and configurations
-          </p>
+          <p className="text-muted-foreground">Manage your print products and configurations</p>
         </div>
         <div className="flex gap-2">
           <Link href="/admin/products/simple">
@@ -171,7 +169,7 @@ export default function ProductsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{products.length}</div>
             <p className="text-xs text-muted-foreground">
-              {products.filter(p => p.isActive).length} active
+              {products.filter((p) => p.isActive).length} active
             </p>
           </CardContent>
         </Card>
@@ -181,9 +179,7 @@ export default function ProductsPage() {
             <Package className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {products.filter(p => p.isFeatured).length}
-            </div>
+            <div className="text-2xl font-bold">{products.filter((p) => p.isFeatured).length}</div>
             <p className="text-xs text-muted-foreground">Featured products</p>
           </CardContent>
         </Card>
@@ -194,7 +190,7 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter(p => p.gangRunEligible).length}
+              {products.filter((p) => p.gangRunEligible).length}
             </div>
             <p className="text-xs text-muted-foreground">Can be gang run</p>
           </CardContent>
@@ -206,7 +202,7 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter(p => p._count?.ProductImage > 0).length}
+              {products.filter((p) => p._count?.ProductImage > 0).length}
             </div>
             <p className="text-xs text-muted-foreground">Have product images</p>
           </CardContent>
@@ -269,11 +265,14 @@ export default function ProductsPage() {
                     <TableCell>{product.ProductCategory?.name || 'Uncategorized'}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm">{product._count?.productPaperStocks || 0} stocks</span>
+                        <span className="text-sm">
+                          {product._count?.productPaperStocks || 0} stocks
+                        </span>
                         {product.productPaperStocks?.[0] && (
                           <span className="text-xs text-muted-foreground">
                             Default: {product.productPaperStocks[0].paperStock.name}
-                            {product.productPaperStocks[0].paperStock.coating && product.productPaperStocks[0].paperStock.coating !== 'None' &&
+                            {product.productPaperStocks[0].paperStock.coating &&
+                              product.productPaperStocks[0].paperStock.coating !== 'None' &&
                               ` (${product.productPaperStocks[0].paperStock.coating})`}
                           </span>
                         )}
@@ -292,7 +291,7 @@ export default function ProductsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <Badge 
+                        <Badge
                           className="w-fit cursor-pointer"
                           variant={product.isActive ? 'default' : 'secondary'}
                           onClick={() => toggleActive(product.id, product.isActive)}
@@ -300,8 +299,8 @@ export default function ProductsPage() {
                           {product.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                         {product.isFeatured && (
-                          <Badge 
-                            className="w-fit text-xs cursor-pointer" 
+                          <Badge
+                            className="w-fit text-xs cursor-pointer"
                             variant="outline"
                             onClick={() => toggleFeatured(product.id, product.isFeatured)}
                           >
@@ -313,19 +312,19 @@ export default function ProductsPage() {
                     <TableCell>
                       <div className="flex gap-2">
                         <Link href={`/products/${product.slug}`} target="_blank">
-                          <Button size="sm" variant="ghost" title="View Product">
+                          <Button size="sm" title="View Product" variant="ghost">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Link href={`/admin/products/${product.id}/edit`}>
-                          <Button size="sm" variant="ghost" title="Edit Product">
+                          <Button size="sm" title="Edit Product" variant="ghost">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Button
                           size="sm"
-                          variant="ghost"
                           title="Delete Product"
+                          variant="ghost"
                           onClick={() => handleDelete(product.id)}
                         >
                           <Trash2 className="h-4 w-4" />

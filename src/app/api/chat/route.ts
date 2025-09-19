@@ -33,17 +33,14 @@ export async function POST(request: NextRequest) {
     const { message, conversationHistory = [] } = await request.json()
 
     if (!message) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
     // Prepare messages for Ollama
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
       ...conversationHistory,
-      { role: 'user', content: message }
+      { role: 'user', content: message },
     ]
 
     // Call Ollama API
@@ -58,45 +55,48 @@ export async function POST(request: NextRequest) {
         stream: false,
         options: {
           temperature: 0.7,
-          max_tokens: 500
-        }
-      })
+          max_tokens: 500,
+        },
+      }),
     })
 
     if (!response.ok) {
       console.error('Ollama API error:', response.status, response.statusText)
-      
+
       // Fallback response if Ollama is not available
       return NextResponse.json({
-        response: "I apologize, but I'm temporarily unable to process your request. Please try again later or contact our support team at support@gangrunprinting.com for immediate assistance.",
-        fallback: true
+        response:
+          "I apologize, but I'm temporarily unable to process your request. Please try again later or contact our support team at support@gangrunprinting.com for immediate assistance.",
+        fallback: true,
       })
     }
 
     const data = await response.json()
-    
+
     // Extract the assistant's response
-    const aiResponse = data.message?.content || data.response || "I'm sorry, I couldn't generate a response."
+    const aiResponse =
+      data.message?.content || data.response || "I'm sorry, I couldn't generate a response."
 
     // Check if the response suggests connecting with a human
-    const needsHuman = aiResponse.toLowerCase().includes('representative') || 
-                      aiResponse.toLowerCase().includes('support team') ||
-                      aiResponse.toLowerCase().includes('contact us')
+    const needsHuman =
+      aiResponse.toLowerCase().includes('representative') ||
+      aiResponse.toLowerCase().includes('support team') ||
+      aiResponse.toLowerCase().includes('contact us')
 
     return NextResponse.json({
       response: aiResponse,
       needsHuman,
-      model: OLLAMA_MODEL
+      model: OLLAMA_MODEL,
     })
-
   } catch (error) {
     console.error('Chat API error:', error)
-    
+
     // Return a helpful fallback message
     return NextResponse.json({
-      response: "I apologize, but I'm having trouble connecting to our chat service. For immediate assistance, please email us at support@gangrunprinting.com or call during business hours.",
+      response:
+        "I apologize, but I'm having trouble connecting to our chat service. For immediate assistance, please email us at support@gangrunprinting.com or call during business hours.",
       fallback: true,
-      error: true
+      error: true,
     })
   }
 }
@@ -106,28 +106,27 @@ export async function GET() {
   try {
     // Check if Ollama is running
     const response = await fetch(`${OLLAMA_URL}/api/tags`)
-    
+
     if (response.ok) {
       const data = await response.json()
       const hasModel = data.models?.some((m: any) => m.name.includes(OLLAMA_MODEL))
-      
+
       return NextResponse.json({
         status: 'online',
         model: OLLAMA_MODEL,
         modelAvailable: hasModel,
-        endpoint: OLLAMA_URL
+        endpoint: OLLAMA_URL,
       })
     }
-    
+
     return NextResponse.json({
       status: 'offline',
-      message: 'Ollama service is not responding'
+      message: 'Ollama service is not responding',
     })
-    
   } catch (error) {
     return NextResponse.json({
       status: 'error',
-      message: 'Unable to connect to Ollama service'
+      message: 'Unable to connect to Ollama service',
     })
   }
 }

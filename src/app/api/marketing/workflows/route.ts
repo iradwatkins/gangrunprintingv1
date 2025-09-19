@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(workflows)
   } catch (error) {
     console.error('Error fetching workflows:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -31,10 +28,7 @@ export async function POST(request: NextRequest) {
     const { name, description, trigger, steps, segmentId, settings } = await request.json()
 
     if (!name || !trigger || !steps) {
-      return NextResponse.json(
-        { error: 'Name, trigger, and steps are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name, trigger, and steps are required' }, { status: 400 })
     }
 
     const workflow = await WorkflowEngine.createWorkflow(
@@ -49,9 +43,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(workflow, { status: 201 })
   } catch (error) {
     console.error('Error creating workflow:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

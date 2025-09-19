@@ -11,24 +11,25 @@ interface CustomerInsightsChartProps {
 export function CustomerInsightsChart({
   newCustomers,
   returningCustomers,
-  totalCustomers
+  totalCustomers,
 }: CustomerInsightsChartProps) {
   const data = [
     {
       category: 'New Customers',
       count: newCustomers,
-      percentage: totalCustomers > 0 ? (newCustomers / totalCustomers) * 100 : 0
+      percentage: totalCustomers > 0 ? (newCustomers / totalCustomers) * 100 : 0,
     },
     {
       category: 'Returning Customers',
       count: returningCustomers,
-      percentage: totalCustomers > 0 ? (returningCustomers / totalCustomers) * 100 : 0
+      percentage: totalCustomers > 0 ? (returningCustomers / totalCustomers) * 100 : 0,
     },
     {
       category: 'Single Purchase',
       count: totalCustomers - returningCustomers,
-      percentage: totalCustomers > 0 ? ((totalCustomers - returningCustomers) / totalCustomers) * 100 : 0
-    }
+      percentage:
+        totalCustomers > 0 ? ((totalCustomers - returningCustomers) / totalCustomers) * 100 : 0,
+    },
   ]
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -37,12 +38,8 @@ export function CustomerInsightsChart({
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
           <p className="text-sm font-medium">{label}</p>
-          <p className="text-sm text-blue-600">
-            Count: {data.count}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {data.percentage.toFixed(1)}% of total
-          </p>
+          <p className="text-sm text-blue-600">Count: {data.count}</p>
+          <p className="text-sm text-muted-foreground">{data.percentage.toFixed(1)}% of total</p>
         </div>
       )
     }
@@ -69,23 +66,10 @@ export function CustomerInsightsChart({
       <div className="h-[200px]">
         <ResponsiveContainer height="100%" width="100%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <XAxis
-              axisLine={false}
-              dataKey="category"
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-            />
-            <YAxis
-              axisLine={false}
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-            />
+            <XAxis axisLine={false} dataKey="category" tick={{ fontSize: 12 }} tickLine={false} />
+            <YAxis axisLine={false} tick={{ fontSize: 12 }} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Bar
-              dataKey="count"
-              fill="hsl(var(--primary))"
-              radius={[4, 4, 0, 0]}
-            />
+            <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

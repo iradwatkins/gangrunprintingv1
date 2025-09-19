@@ -1,7 +1,7 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export function ProductionChart() {
   // Sample data for production metrics
@@ -16,15 +16,13 @@ export function ProductionChart() {
     { time: '4PM', jobs: 25, completed: 22 },
   ]
 
-  const maxJobs = Math.max(...productionData.map(d => d.jobs))
+  const maxJobs = Math.max(...productionData.map((d) => d.jobs))
 
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle>Production Overview</CardTitle>
-        <CardDescription>
-          Hourly production metrics and completion rates
-        </CardDescription>
+        <CardDescription>Hourly production metrics and completion rates</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs className="space-y-4" defaultValue="today">
@@ -43,13 +41,13 @@ export function ProductionChart() {
                       <div
                         className="bg-primary/20 rounded-t"
                         style={{
-                          height: `${(data.jobs / maxJobs) * 250}px`
+                          height: `${(data.jobs / maxJobs) * 250}px`,
                         }}
                       >
                         <div
                           className="bg-primary rounded-t"
                           style={{
-                            height: `${(data.completed / data.jobs) * 100}%`
+                            height: `${(data.completed / data.jobs) * 100}%`,
                           }}
                         />
                       </div>

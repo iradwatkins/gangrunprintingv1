@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const sendMagicLinkSchema = z.object({
   email: z.string().email('Invalid email address'),
-  name: z.string().optional()
+  name: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -14,22 +14,30 @@ export async function POST(request: NextRequest) {
 
     await sendMagicLink(email, name)
 
-    return NextResponse.json({
-      message: 'Magic link sent to your email address'
-    }, { status: 200 })
-
+    return NextResponse.json(
+      {
+        message: 'Magic link sent to your email address',
+      },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Error sending magic link:', error)
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Validation failed',
-        details: error.errors
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.errors,
+        },
+        { status: 400 }
+      )
     }
 
-    return NextResponse.json({
-      error: 'Failed to send magic link'
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to send magic link',
+      },
+      { status: 500 }
+    )
   }
 }

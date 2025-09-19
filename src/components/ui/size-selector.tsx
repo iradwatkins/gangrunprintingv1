@@ -11,12 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface Size {
   id: string
@@ -49,7 +44,7 @@ export function SizeSelector({
   label = 'SIZE',
   required = false,
   className = '',
-  unit = 'inch'
+  unit = 'inch',
 }: SizeSelectorProps) {
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [customWidth, setCustomWidth] = useState<string>('')
@@ -60,19 +55,19 @@ export function SizeSelector({
 
   // Load default sizes if none provided
   const [defaultSizes, setDefaultSizes] = useState<Size[]>([])
-  
+
   useEffect(() => {
     if (sizes.length === 0) {
       // Fetch sizes from API
       fetch('/api/sizes?active=true')
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: ${res.statusText}`)
           }
           return res.json()
         })
-        .then(data => setDefaultSizes(data))
-        .catch(err => console.error('Failed to load sizes:', err))
+        .then((data) => setDefaultSizes(data))
+        .catch((err) => console.error('Failed to load sizes:', err))
     }
   }, [sizes])
 
@@ -82,15 +77,15 @@ export function SizeSelector({
   // Set initial selection based on value
   useEffect(() => {
     if (value && value.width && value.height) {
-      const matchingSize = safeOptions.find(s => 
-        s.width === value.width && s.height === value.height
+      const matchingSize = safeOptions.find(
+        (s) => s.width === value.width && s.height === value.height
       )
       if (matchingSize) {
         setSelectedOption(matchingSize.id)
         setShowCustomInput(false)
       } else {
         // It's a custom value
-        const customOption = safeOptions.find(s => s.isCustom)
+        const customOption = safeOptions.find((s) => s.isCustom)
         if (customOption) {
           setSelectedOption(customOption.id)
           setCustomWidth(value.width.toString())
@@ -105,9 +100,9 @@ export function SizeSelector({
     setSelectedOption(sizeId)
     setWidthError('')
     setHeightError('')
-    
-    const selectedSize = safeOptions.find(s => s.id === sizeId)
-    
+
+    const selectedSize = safeOptions.find((s) => s.id === sizeId)
+
     if (selectedSize) {
       if (selectedSize.isCustom) {
         setShowCustomInput(true)
@@ -130,7 +125,7 @@ export function SizeSelector({
   }
 
   const validateAndUpdateCustomSize = () => {
-    const customOption = safeOptions.find(s => s.isCustom)
+    const customOption = safeOptions.find((s) => s.isCustom)
     if (!customOption) return
 
     let hasError = false
@@ -174,9 +169,9 @@ export function SizeSelector({
     }
 
     if (!hasError && customWidth && customHeight) {
-      onChange({ 
-        width: parseFloat(customWidth), 
-        height: parseFloat(customHeight) 
+      onChange({
+        width: parseFloat(customWidth),
+        height: parseFloat(customHeight),
       })
     }
   }
@@ -207,9 +202,12 @@ export function SizeSelector({
 
   const getUnitLabel = () => {
     switch (unit) {
-      case 'cm': return 'cm'
-      case 'mm': return 'mm'
-      default: return '"'
+      case 'cm':
+        return 'cm'
+      case 'mm':
+        return 'mm'
+      default:
+        return '"'
     }
   }
 
@@ -249,7 +247,7 @@ export function SizeSelector({
         {showCustomInput && (
           <div className="space-y-2 p-3 border rounded-md bg-muted/50">
             <Label className="text-sm font-medium">Custom Dimensions</Label>
-            
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground" htmlFor="width">
@@ -265,9 +263,7 @@ export function SizeSelector({
                   onBlur={validateAndUpdateCustomSize}
                   onChange={handleCustomWidthChange}
                 />
-                {widthError && (
-                  <p className="text-xs text-red-500">{widthError}</p>
-                )}
+                {widthError && <p className="text-xs text-red-500">{widthError}</p>}
               </div>
 
               <div className="space-y-1">
@@ -284,15 +280,15 @@ export function SizeSelector({
                   onBlur={validateAndUpdateCustomSize}
                   onChange={handleCustomHeightChange}
                 />
-                {heightError && (
-                  <p className="text-xs text-red-500">{heightError}</p>
-                )}
+                {heightError && <p className="text-xs text-red-500">{heightError}</p>}
               </div>
             </div>
 
             {!widthError && !heightError && customWidth && customHeight && (
               <p className="text-sm text-muted-foreground mt-2">
-                Custom size: {customWidth}{getUnitLabel()} × {customHeight}{getUnitLabel()}
+                Custom size: {customWidth}
+                {getUnitLabel()} × {customHeight}
+                {getUnitLabel()}
               </p>
             )}
           </div>

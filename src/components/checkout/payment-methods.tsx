@@ -13,7 +13,11 @@ interface PaymentMethodsProps {
   onPaymentMethodSelect: (method: string) => Promise<void>
 }
 
-export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: PaymentMethodsProps) {
+export function PaymentMethods({
+  total,
+  isProcessing,
+  onPaymentMethodSelect,
+}: PaymentMethodsProps) {
   const [selectedMethod, setSelectedMethod] = useState<string>('card')
 
   const paymentMethods = [
@@ -22,14 +26,14 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
       name: 'Credit/Debit Card',
       description: 'Pay securely with your credit or debit card',
       icon: CreditCard,
-      popular: true
+      popular: true,
     },
     {
       id: 'square',
       name: 'Square Checkout',
       description: 'Secure checkout with Square (redirects to payment page)',
       icon: DollarSign,
-      popular: false
+      popular: false,
     },
     {
       id: 'cashapp',
@@ -37,7 +41,7 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
       description: 'Pay instantly with Cash App',
       icon: Smartphone,
       popular: false,
-      comingSoon: true
+      comingSoon: true,
     },
     {
       id: 'paypal',
@@ -45,8 +49,8 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
       description: 'Pay with your PayPal account',
       icon: DollarSign,
       popular: false,
-      comingSoon: true
-    }
+      comingSoon: true,
+    },
   ]
 
   const handleMethodSelect = (methodId: string) => {
@@ -61,9 +65,7 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">Payment Method</h3>
-        <p className="text-sm text-muted-foreground">
-          Choose how you'd like to pay for your order
-        </p>
+        <p className="text-sm text-muted-foreground">Choose how you'd like to pay for your order</p>
       </div>
 
       <RadioGroup value={selectedMethod} onValueChange={handleMethodSelect}>
@@ -73,28 +75,32 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
             return (
               <div key={method.id} className="relative">
                 <Label
-                  htmlFor={method.id}
                   className={`cursor-pointer block ${method.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  htmlFor={method.id}
                 >
-                  <Card className={`border transition-all ${
-                    selectedMethod === method.id && !method.comingSoon
-                      ? 'border-primary ring-2 ring-primary/20'
-                      : 'border-border hover:border-primary/50'
-                  } ${method.comingSoon ? 'bg-muted/50' : ''}`}>
+                  <Card
+                    className={`border transition-all ${
+                      selectedMethod === method.id && !method.comingSoon
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-border hover:border-primary/50'
+                    } ${method.comingSoon ? 'bg-muted/50' : ''}`}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-3">
                         <RadioGroupItem
+                          className="mt-0.5"
+                          disabled={method.comingSoon}
                           id={method.id}
                           value={method.id}
-                          disabled={method.comingSoon}
-                          className="mt-0.5"
                         />
                         <div className="flex items-center space-x-3 flex-1">
-                          <div className={`p-2 rounded-lg ${
-                            selectedMethod === method.id && !method.comingSoon
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
-                          }`}>
+                          <div
+                            className={`p-2 rounded-lg ${
+                              selectedMethod === method.id && !method.comingSoon
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted'
+                            }`}
+                          >
                             <IconComponent className="h-5 w-5" />
                           </div>
                           <div className="flex-1">
@@ -111,9 +117,7 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              {method.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground">{method.description}</p>
                           </div>
                         </div>
                         {!method.comingSoon && (
@@ -137,8 +141,8 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
 
         <Button
           className="w-full"
+          disabled={isProcessing || paymentMethods.find((m) => m.id === selectedMethod)?.comingSoon}
           size="lg"
-          disabled={isProcessing || paymentMethods.find(m => m.id === selectedMethod)?.comingSoon}
           onClick={handlePayment}
         >
           {isProcessing ? (
@@ -149,10 +153,13 @@ export function PaymentMethods({ total, isProcessing, onPaymentMethodSelect }: P
           ) : (
             <>
               <CreditCard className="mr-2 h-5 w-5" />
-              {selectedMethod === 'card' ? 'Continue to Card Details' :
-               selectedMethod === 'square' ? 'Pay with Square' :
-               selectedMethod === 'cashapp' ? 'Pay with Cash App' :
-               'Pay with PayPal'}
+              {selectedMethod === 'card'
+                ? 'Continue to Card Details'
+                : selectedMethod === 'square'
+                  ? 'Pay with Square'
+                  : selectedMethod === 'cashapp'
+                    ? 'Pay with Cash App'
+                    : 'Pay with PayPal'}
             </>
           )}
         </Button>

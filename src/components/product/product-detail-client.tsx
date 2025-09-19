@@ -5,7 +5,13 @@ import { ArrowLeft, Upload, ShoppingCart, Clock, Check, X, Loader2 } from 'lucid
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
@@ -84,16 +90,17 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   // Product configuration state
   const [selectedPaperStock, setSelectedPaperStock] = useState<string>(
-    product.productPaperStocks.find(p => p.isDefault)?.paperStock.id ||
-    product.productPaperStocks[0]?.paperStock.id || ''
+    product.productPaperStocks.find((p) => p.isDefault)?.paperStock.id ||
+      product.productPaperStocks[0]?.paperStock.id ||
+      ''
   )
 
   const [selectedQuantity, setSelectedQuantity] = useState<number>(() => {
     if (product.productQuantityGroups?.[0]?.quantityGroup?.values) {
       const quantities = product.productQuantityGroups[0].quantityGroup.values
         .split(',')
-        .map(v => v.trim())
-        .filter(v => v && v !== 'custom')
+        .map((v) => v.trim())
+        .filter((v) => v && v !== 'custom')
       if (quantities.length > 0) {
         return parseInt(quantities[0])
       }
@@ -105,8 +112,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     if (product.productSizeGroups?.[0]?.sizeGroup?.values) {
       const sizes = product.productSizeGroups[0].sizeGroup.values
         .split(',')
-        .map(v => v.trim())
-        .filter(v => v && v !== 'custom')
+        .map((v) => v.trim())
+        .filter((v) => v && v !== 'custom')
       if (sizes.length > 0) {
         return '0'
       }
@@ -135,7 +142,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
         const response = await fetch('/api/products/upload-customer-image', {
           method: 'POST',
-          body: formData
+          body: formData,
         })
 
         if (!response.ok) {
@@ -145,17 +152,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
         const data = await response.json()
 
-        setCustomerImages(prev => [...prev, {
-          id: data.id,
-          url: data.url,
-          thumbnailUrl: data.thumbnailUrl,
-          fileName: file.name,
-          fileSize: file.size,
-          uploadedAt: new Date().toISOString()
-        }])
+        setCustomerImages((prev) => [
+          ...prev,
+          {
+            id: data.id,
+            url: data.url,
+            thumbnailUrl: data.thumbnailUrl,
+            fileName: file.name,
+            fileSize: file.size,
+            uploadedAt: new Date().toISOString(),
+          },
+        ])
 
         toast.success(`${file.name} uploaded successfully`)
-
       } catch (error) {
         console.error('Upload error:', error)
         toast.error(`Failed to upload ${file.name}`)
@@ -170,16 +179,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const handleDeleteImage = async (imageId: string) => {
     try {
       const response = await fetch(`/api/products/customer-images?imageId=${imageId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (!response.ok) {
         throw new Error('Failed to delete image')
       }
 
-      setCustomerImages(prev => prev.filter(img => img.id !== imageId))
+      setCustomerImages((prev) => prev.filter((img) => img.id !== imageId))
       toast.success('Image deleted successfully')
-
     } catch (error) {
       console.error('Delete error:', error)
       toast.error('Failed to delete image')
@@ -191,7 +199,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     let price = product.basePrice
 
     // Add paper stock cost
-    const paperStock = product.productPaperStocks.find(p => p.paperStock.id === selectedPaperStock)
+    const paperStock = product.productPaperStocks.find(
+      (p) => p.paperStock.id === selectedPaperStock
+    )
     if (paperStock) {
       price += paperStock.additionalCost
     }
@@ -210,9 +220,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       return
     }
 
-    const selectedPaper = product.productPaperStocks.find(p => p.paperStock.id === selectedPaperStock)
+    const selectedPaper = product.productPaperStocks.find(
+      (p) => p.paperStock.id === selectedPaperStock
+    )
     const sizeGroup = product.productSizeGroups[0]?.sizeGroup
-    const sizeValues = sizeGroup?.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom') || []
+    const sizeValues =
+      sizeGroup?.values
+        .split(',')
+        .map((v) => v.trim())
+        .filter((v) => v && v !== 'custom') || []
     const selectedSizeData = sizeValues[parseInt(selectedSize)] || null
 
     addItem({
@@ -227,24 +243,29 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         size: selectedSizeData || 'Standard',
         paperStock: selectedPaper?.paperStock.name,
         paperStockId: selectedPaperStock,
-        sides: 'Double'
+        sides: 'Double',
       },
       fileUrl: customerImages[0]?.url,
       fileName: customerImages[0]?.fileName,
       fileSize: customerImages[0]?.fileSize,
-      image: product.ProductImage.find(img => img.isPrimary)?.thumbnailUrl || product.ProductImage[0]?.url
+      image:
+        product.ProductImage.find((img) => img.isPrimary)?.thumbnailUrl ||
+        product.ProductImage[0]?.url,
     })
 
     toast.success('Product added to cart!')
     openCart()
   }
 
-  const primaryImage = product.ProductImage.find(img => img.isPrimary) || product.ProductImage[0]
+  const primaryImage = product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
   const galleryImages = product.ProductImage.sort((a, b) => a.sortOrder - b.sortOrder)
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6" href="/products">
+      <Link
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
+        href="/products"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Products
       </Link>
@@ -255,11 +276,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
             {primaryImage ? (
               <Image
-                src={primaryImage.url}
                 alt={primaryImage.alt || product.name}
-                width={600}
-                height={600}
                 className="w-full h-full object-cover"
+                height={600}
+                src={primaryImage.url}
+                width={600}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -273,11 +294,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               {galleryImages.map((image) => (
                 <div key={image.id} className="aspect-square bg-gray-100 rounded overflow-hidden">
                   <Image
-                    src={image.thumbnailUrl || image.url}
                     alt={image.alt || `${product.name} image`}
-                    width={150}
-                    height={150}
                     className="w-full h-full object-cover cursor-pointer hover:opacity-80"
+                    height={150}
+                    src={image.thumbnailUrl || image.url}
+                    width={150}
                   />
                 </div>
               ))}
@@ -288,7 +309,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Product Details */}
         <div>
           <div className="mb-6">
-            <Badge className="mb-2" variant="secondary">{product.ProductCategory.name}</Badge>
+            <Badge className="mb-2" variant="secondary">
+              {product.ProductCategory.name}
+            </Badge>
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-muted-foreground mb-4">{product.description}</p>
             <div className="flex items-center gap-4 text-sm">
@@ -327,42 +350,55 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
 
               {/* Quantity */}
-              {product?.productQuantityGroups?.length > 0 && product.productQuantityGroups[0]?.quantityGroup?.values && (
-                <div>
-                  <Label className="text-base mb-3 block">Quantity</Label>
-                  <Select value={selectedQuantity.toString()} onValueChange={(v) => setSelectedQuantity(parseInt(v))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.productQuantityGroups[0].quantityGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom').map((qty: string) => (
-                        <SelectItem key={qty} value={qty}>
-                          {parseInt(qty).toLocaleString()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              {product?.productQuantityGroups?.length > 0 &&
+                product.productQuantityGroups[0]?.quantityGroup?.values && (
+                  <div>
+                    <Label className="text-base mb-3 block">Quantity</Label>
+                    <Select
+                      value={selectedQuantity.toString()}
+                      onValueChange={(v) => setSelectedQuantity(parseInt(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {product.productQuantityGroups[0].quantityGroup.values
+                          .split(',')
+                          .map((v) => v.trim())
+                          .filter((v) => v && v !== 'custom')
+                          .map((qty: string) => (
+                            <SelectItem key={qty} value={qty}>
+                              {parseInt(qty).toLocaleString()}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
               {/* Size */}
-              {product?.productSizeGroups?.length > 0 && product.productSizeGroups[0]?.sizeGroup?.values && (
-                <div>
-                  <Label className="text-base mb-3 block">Size</Label>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.productSizeGroups[0].sizeGroup.values.split(',').map(v => v.trim()).filter(v => v && v !== 'custom').map((size: string, index: number) => (
-                        <SelectItem key={index} value={index.toString()}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              {product?.productSizeGroups?.length > 0 &&
+                product.productSizeGroups[0]?.sizeGroup?.values && (
+                  <div>
+                    <Label className="text-base mb-3 block">Size</Label>
+                    <Select value={selectedSize} onValueChange={setSelectedSize}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {product.productSizeGroups[0].sizeGroup.values
+                          .split(',')
+                          .map((v) => v.trim())
+                          .filter((v) => v && v !== 'custom')
+                          .map((size: string, index: number) => (
+                            <SelectItem key={index} value={index.toString()}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
               {/* Customer File Upload */}
               <div>
@@ -371,11 +407,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {/* Upload Area */}
                 <div className="border-2 border-dashed rounded-lg p-4 mb-4">
                   <Input
+                    multiple
                     accept=".pdf,.ai,.psd,.jpg,.jpeg,.png,.svg"
                     className="hidden"
                     id="customer-files"
                     type="file"
-                    multiple
                     onChange={(e) => {
                       if (e.target.files) {
                         handleImageUpload(Array.from(e.target.files))
@@ -402,14 +438,17 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <Label className="text-sm font-medium">Uploaded Files</Label>
                     <div className="space-y-2">
                       {customerImages.map((image) => (
-                        <div key={image.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                        <div
+                          key={image.id}
+                          className="flex items-center gap-3 p-3 border rounded-lg"
+                        >
                           {image.thumbnailUrl ? (
                             <Image
-                              src={image.thumbnailUrl}
                               alt={image.fileName}
-                              width={48}
-                              height={48}
                               className="w-12 h-12 object-cover rounded"
+                              height={48}
+                              src={image.thumbnailUrl}
+                              width={48}
                             />
                           ) : (
                             <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
@@ -433,7 +472,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       ))}
 
                       {uploadingImages.map((file, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 p-3 border rounded-lg opacity-50"
+                        >
                           <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
                             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                           </div>
@@ -498,7 +540,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 <span className="text-sm text-muted-foreground">Total Price</span>
                 <p className="text-3xl font-bold">${calculatePrice().toFixed(2)}</p>
                 {product.setupFee > 0 && (
-                  <p className="text-sm text-muted-foreground">+ ${product.setupFee.toFixed(2)} setup fee</p>
+                  <p className="text-sm text-muted-foreground">
+                    + ${product.setupFee.toFixed(2)} setup fee
+                  </p>
                 )}
               </div>
               <Badge className="mb-1" variant="outline">

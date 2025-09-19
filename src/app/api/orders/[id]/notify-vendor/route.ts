@@ -1,20 +1,14 @@
-import { validateRequest } from "@/lib/auth"
+import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user } = await validateRequest()
 
     if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get the order with vendor information
@@ -25,24 +19,18 @@ export async function POST(
         user: true,
         OrderItem: {
           include: {
-            product: true
-          }
-        }
-      }
+            product: true,
+          },
+        },
+      },
     })
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     if (!order.vendor) {
-      return NextResponse.json(
-        { error: 'No vendor assigned to this order' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No vendor assigned to this order' }, { status: 400 })
     }
 
     // Build order details for notification
@@ -51,20 +39,20 @@ export async function POST(
       orderDate: order.createdAt,
       customerName: order.user?.name || 'Guest',
       customerEmail: order.email,
-      items: order.OrderItem.map(item => ({
+      items: order.OrderItem.map((item) => ({
         productName: item.product?.name || 'Unknown Product',
         sku: item.product?.sku || '',
         quantity: item.quantity,
         price: item.price / 100,
         total: (item.price * item.quantity) / 100,
-        configuration: item.configuration
+        configuration: item.configuration,
       })),
       subtotal: order.subtotal / 100,
       shipping: order.shipping / 100,
       tax: order.tax / 100,
       total: order.total / 100,
       shippingAddress: order.shippingAddress,
-      notes: order.adminNotes
+      notes: order.adminNotes,
     }
 
     // If vendor has n8n webhook, send notification
@@ -77,8 +65,8 @@ export async function POST(
             event: 'order_notification',
             vendorId: order.vendor.id,
             vendorName: order.vendor.name,
-            order: orderDetails
-          })
+            order: orderDetails,
+          }),
         })
 
         if (!webhookResponse.ok) {
@@ -86,10 +74,7 @@ export async function POST(
         }
       } catch (webhookError) {
         console.error('Failed to send webhook notification:', webhookError)
-        return NextResponse.json(
-          { error: 'Failed to send webhook notification' },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to send webhook notification' }, { status: 500 })
       }
     }
 
@@ -117,28 +102,24 @@ export async function POST(
         orderId: order.id,
         type: 'VENDOR_NOTIFIED',
         sent: true,
-        sentAt: new Date()
-      }
+        sentAt: new Date(),
+      },
     })
 
     // Update order notes
     await prisma.order.update({
       where: { id: id },
       data: {
-        adminNotes: `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor notified at ${new Date().toLocaleString()}`
-      }
+        adminNotes: `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor notified at ${new Date().toLocaleString()}`,
+      },
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Vendor notification sent successfully'
+      message: 'Vendor notification sent successfully',
     })
-
   } catch (error) {
     console.error('Error notifying vendor:', error)
-    return NextResponse.json(
-      { error: 'Failed to notify vendor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to notify vendor' }, { status: 500 })
   }
 }

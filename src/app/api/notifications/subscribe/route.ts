@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const subscription = await request.json()
 
     if (!subscription || !subscription.endpoint) {
-      return NextResponse.json(
-        { error: 'Invalid subscription' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid subscription' }, { status: 400 })
     }
 
     // Store subscription in database
@@ -29,25 +26,22 @@ export async function POST(request: NextRequest) {
     // Upsert subscription (update if exists, create if not)
     await prisma.pushSubscription.upsert({
       where: {
-        endpoint: subscription.endpoint
+        endpoint: subscription.endpoint,
       },
       update: {
         subscription: JSON.stringify(subscription),
         active: true,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
-      create: data
+      create: data,
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Subscription stored successfully'
+      message: 'Subscription stored successfully',
     })
   } catch (error) {
     console.error('Error storing subscription:', error)
-    return NextResponse.json(
-      { error: 'Failed to store subscription' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to store subscription' }, { status: 500 })
   }
 }

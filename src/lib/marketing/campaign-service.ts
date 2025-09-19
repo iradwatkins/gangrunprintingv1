@@ -5,7 +5,7 @@ import {
   SendStatus,
   type MarketingCampaign,
   type CampaignSend,
-  type CampaignAnalytics
+  type CampaignAnalytics,
 } from '@prisma/client'
 
 export interface CampaignCreateData {
@@ -249,7 +249,7 @@ export class CampaignService {
     }
 
     // Create campaign sends
-    const sends = recipients.map(recipient => ({
+    const sends = recipients.map((recipient) => ({
       campaignId: id,
       recipientEmail: recipient.email,
       recipientName: recipient.name,
@@ -369,10 +369,13 @@ export class CampaignService {
       },
     })
 
-    const stats = sendStats.reduce((acc, stat) => {
-      acc[stat.status] = stat._count.status
-      return acc
-    }, {} as Record<string, number>)
+    const stats = sendStats.reduce(
+      (acc, stat) => {
+        acc[stat.status] = stat._count.status
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     // Calculate unique opens and clicks
     const [uniqueOpens, uniqueClicks] = await Promise.all([
@@ -422,7 +425,7 @@ export class CampaignService {
         uniqueOpens,
         uniqueClicks,
         revenue: 0, // TODO: Calculate from order tracking
-        orders: 0,  // TODO: Calculate from order tracking
+        orders: 0, // TODO: Calculate from order tracking
       },
     })
   }

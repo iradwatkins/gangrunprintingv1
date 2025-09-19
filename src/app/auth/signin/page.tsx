@@ -52,8 +52,8 @@ export default function SignInPage() {
         <div className="mt-6">
           <button
             className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            onClick={() => window.location.href = '/api/auth/google'}
             type="button"
+            onClick={() => (window.location.href = '/api/auth/google')}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
@@ -130,9 +130,11 @@ export default function SignInPage() {
         </form>
 
         {message && (
-          <div className={`p-4 rounded-md ${
-            isSuccess ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-          }`}>
+          <div
+            className={`p-4 rounded-md ${
+              isSuccess ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            }`}
+          >
             <p className="text-sm">{message}</p>
           </div>
         )}

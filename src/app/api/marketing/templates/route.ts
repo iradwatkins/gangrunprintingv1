@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
 
     const where: any = {
-      OR: [
-        { isPublic: true },
-        { createdBy: session.user.email || user?.id },
-      ],
+      OR: [{ isPublic: true }, { createdBy: session.user.email || user?.id }],
     }
 
     if (category) {
@@ -31,10 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(templates)
   } catch (error) {
     console.error('Error fetching templates:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -64,9 +58,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(template, { status: 201 })
   } catch (error) {
     console.error('Error creating template:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

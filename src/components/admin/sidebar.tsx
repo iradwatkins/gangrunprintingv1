@@ -23,7 +23,7 @@ import {
   Ruler,
   ChevronDown,
   ChevronRight,
-  Mail
+  Mail,
 } from 'lucide-react'
 
 const navigationStructure = [
@@ -32,20 +32,20 @@ const navigationStructure = [
     title: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
-    description: 'Overview & metrics'
+    description: 'Overview & metrics',
   },
   {
     title: 'Orders',
     href: '/admin/orders',
     icon: FileText,
     description: 'Customer orders',
-    badge: '3'
+    badge: '3',
   },
   {
     title: 'Customers',
     href: '/admin/customers',
     icon: Users,
-    description: 'Customer management'
+    description: 'Customer management',
   },
 
   // Products Management - Dropdown
@@ -58,39 +58,39 @@ const navigationStructure = [
         title: 'Products',
         href: '/admin/products',
         icon: Package,
-        description: 'Product catalog'
+        description: 'Product catalog',
       },
       {
         title: 'Categories',
         href: '/admin/categories',
         icon: Layers,
-        description: 'Product categories'
+        description: 'Product categories',
       },
       {
         title: 'Material Types',
         href: '/admin/paper-stocks',
         icon: ScrollText,
-        description: 'Material management'
+        description: 'Material management',
       },
       {
         title: 'Add-ons',
         href: '/admin/add-ons',
         icon: Palette,
-        description: 'Printing add-ons'
+        description: 'Printing add-ons',
       },
       {
         title: 'Quantities',
         href: '/admin/quantities',
         icon: Grid3x3,
-        description: 'Quantity options'
+        description: 'Quantity options',
       },
       {
         title: 'Sizes',
         href: '/admin/sizes',
         icon: Ruler,
-        description: 'Print sizes'
-      }
-    ]
+        description: 'Print sizes',
+      },
+    ],
   },
 
   // Marketing & Automation - Dropdown
@@ -103,33 +103,33 @@ const navigationStructure = [
         title: 'Campaigns',
         href: '/admin/marketing/campaigns',
         icon: Mail,
-        description: 'Email & SMS campaigns'
+        description: 'Email & SMS campaigns',
       },
       {
         title: 'Email Builder',
         href: '/admin/marketing/email-builder',
         icon: Mail,
-        description: 'Design email templates'
+        description: 'Design email templates',
       },
       {
         title: 'Automation',
         href: '/admin/marketing/automation',
         icon: Settings,
-        description: 'Workflow automation'
+        description: 'Workflow automation',
       },
       {
         title: 'Segments',
         href: '/admin/marketing/segments',
         icon: Users,
-        description: 'Customer segmentation'
+        description: 'Customer segmentation',
       },
       {
         title: 'Analytics',
         href: '/admin/marketing/analytics',
         icon: BarChart3,
-        description: 'Campaign performance'
-      }
-    ]
+        description: 'Campaign performance',
+      },
+    ],
   },
 
   // Business Management - Dropdown
@@ -142,22 +142,22 @@ const navigationStructure = [
         title: 'Analytics',
         href: '/admin/analytics',
         icon: BarChart3,
-        description: 'Business insights'
+        description: 'Business insights',
       },
       {
         title: 'Billing',
         href: '/admin/billing',
         icon: CreditCard,
-        description: 'Payments & invoices'
+        description: 'Payments & invoices',
       },
       {
         title: 'Settings',
         href: '/admin/settings',
         icon: Settings,
-        description: 'System settings'
-      }
-    ]
-  }
+        description: 'System settings',
+      },
+    ],
+  },
 ]
 
 interface AdminSidebarProps {
@@ -170,11 +170,11 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
 
   // Auto-expand dropdowns containing active pages
   useEffect(() => {
-    navigationStructure.forEach(item => {
+    navigationStructure.forEach((item) => {
       if (item.isDropdown && item.children) {
-        const hasActiveChild = item.children.some(child => pathname === child.href)
+        const hasActiveChild = item.children.some((child) => pathname === child.href)
         if (hasActiveChild && !expandedDropdowns.includes(item.title)) {
-          setExpandedDropdowns(prev => [...prev, item.title])
+          setExpandedDropdowns((prev) => [...prev, item.title])
         }
       }
     })
@@ -187,15 +187,13 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   }
 
   const toggleDropdown = (title: string) => {
-    setExpandedDropdowns(prev =>
-      prev.includes(title)
-        ? prev.filter(item => item !== title)
-        : [...prev, title]
+    setExpandedDropdowns((prev) =>
+      prev.includes(title) ? prev.filter((item) => item !== title) : [...prev, title]
     )
   }
 
   const isChildActive = (children: any[]) => {
-    return children.some(child => pathname === child.href)
+    return children.some((child) => pathname === child.href)
   }
 
   return (
@@ -211,9 +209,9 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                 {/* Dropdown Header */}
                 <button
                   className={cn(
-                    "w-full flex items-center justify-between rounded-lg px-3 py-3 lg:py-2 text-sm transition-all hover:bg-accent",
-                    "min-h-[44px] lg:min-h-auto text-left",
-                    hasActiveChild && "bg-accent text-accent-foreground"
+                    'w-full flex items-center justify-between rounded-lg px-3 py-3 lg:py-2 text-sm transition-all hover:bg-accent',
+                    'min-h-[44px] lg:min-h-auto text-left',
+                    hasActiveChild && 'bg-accent text-accent-foreground'
                   )}
                   onClick={() => toggleDropdown(item.title)}
                 >
@@ -237,9 +235,9 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                         <Link
                           key={child.href}
                           className={cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent",
-                            "min-h-[40px] lg:min-h-auto",
-                            isActive && "bg-primary/10 text-primary font-medium"
+                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent',
+                            'min-h-[40px] lg:min-h-auto',
+                            isActive && 'bg-primary/10 text-primary font-medium'
                           )}
                           href={child.href}
                           onClick={handleNavClick}
@@ -264,9 +262,9 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
             <Link
               key={item.href}
               className={cn(
-                "flex items-center justify-between rounded-lg px-3 py-3 lg:py-2 text-sm transition-all hover:bg-accent",
-                "min-h-[44px] lg:min-h-auto",
-                isActive && "bg-accent text-accent-foreground"
+                'flex items-center justify-between rounded-lg px-3 py-3 lg:py-2 text-sm transition-all hover:bg-accent',
+                'min-h-[44px] lg:min-h-auto',
+                isActive && 'bg-accent text-accent-foreground'
               )}
               href={item.href}
               onClick={handleNavClick}

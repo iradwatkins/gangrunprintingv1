@@ -12,10 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const formData = await request.formData()
@@ -25,10 +22,7 @@ export async function POST(request: NextRequest) {
     const sortOrder = parseInt(formData.get('sortOrder') as string) || 0
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
     // Convert file to buffer
@@ -38,18 +32,11 @@ export async function POST(request: NextRequest) {
     // Validate image
     const validation = validateImage(buffer, file.name, file.type)
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
     // Upload to MinIO
-    const uploadedImage = await uploadProductImage(
-      buffer,
-      file.name,
-      file.type
-    )
+    const uploadedImage = await uploadProductImage(buffer, file.name, file.type)
 
     // Save to database if productId is provided
     let dbImage = null
@@ -59,12 +46,12 @@ export async function POST(request: NextRequest) {
         const maxSortOrder = await prisma.productImage.findFirst({
           where: { productId },
           orderBy: { sortOrder: 'desc' },
-          select: { sortOrder: true }
+          select: { sortOrder: true },
         })
 
         // Check if this is the first image (should be primary)
         const existingImagesCount = await prisma.productImage.count({
-          where: { productId }
+          where: { productId },
         })
 
         dbImage = await prisma.productImage.create({
@@ -77,8 +64,8 @@ export async function POST(request: NextRequest) {
             sortOrder: sortOrder !== undefined ? sortOrder : (maxSortOrder?.sortOrder || 0) + 1,
             isPrimary: isPrimary !== undefined ? isPrimary : existingImagesCount === 0,
             alt: `Product image for ${file.name}`,
-            caption: ''
-          }
+            caption: '',
+          },
         })
       } catch (dbError) {
         console.error('Database save error:', dbError)
@@ -86,15 +73,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      ...uploadedImage,
-      id: dbImage?.id,
-      productId: dbImage?.productId,
-      sortOrder: dbImage?.sortOrder,
-      isPrimary: dbImage?.isPrimary,
-      success: true,
-      timestamp: new Date().toISOString()
-    }, { status: 200 })
+    return NextResponse.json(
+      {
+        ...uploadedImage,
+        id: dbImage?.id,
+        productId: dbImage?.productId,
+        sortOrder: dbImage?.sortOrder,
+        isPrimary: dbImage?.isPrimary,
+        success: true,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Error uploading image:', error)
 
@@ -109,7 +99,10 @@ export async function POST(request: NextRequest) {
       } else if (error.message.includes('File too large')) {
         errorMessage = 'File size exceeds maximum limit of 10MB'
         statusCode = 413
-      } else if (error.message.includes('Invalid file type') || error.message.includes('Invalid image')) {
+      } else if (
+        error.message.includes('Invalid file type') ||
+        error.message.includes('Invalid image')
+      ) {
         errorMessage = 'Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.'
         statusCode = 400
       } else {
@@ -121,7 +114,7 @@ export async function POST(request: NextRequest) {
       {
         error: errorMessage,
         timestamp: new Date().toISOString(),
-        success: false
+        success: false,
       },
       { status: statusCode }
     )

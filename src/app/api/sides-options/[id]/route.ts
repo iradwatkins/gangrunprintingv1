@@ -1,29 +1,20 @@
-import { validateRequest } from "@/lib/auth"
+import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
     const { name, code, description, isDefault } = body
 
     if (!name || !code) {
-      return NextResponse.json(
-        { error: 'Name and code are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name and code are required' }, { status: 400 })
     }
 
     const sidesOption = await prisma.sidesOption.update({
@@ -32,32 +23,26 @@ export async function PUT(
         name,
         code,
         description,
-        isDefault: isDefault || false
-      }
+        isDefault: isDefault || false,
+      },
     })
 
     return NextResponse.json(sidesOption)
   } catch (error: any) {
     console.error('Error updating sides option:', error)
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A sides option with this name or code already exists' },
         { status: 400 }
       )
     }
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Sides option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Sides option not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to update sides option' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to update sides option' }, { status: 500 })
   }
 }
 
@@ -69,10 +54,7 @@ export async function DELETE(
     const { id } = await params
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if sides option is in use
@@ -80,16 +62,13 @@ export async function DELETE(
       where: { id },
       include: {
         _count: {
-          select: { paperStockSides: true }
-        }
-      }
+          select: { paperStockSides: true },
+        },
+      },
     })
 
     if (!sidesWithRelations) {
-      return NextResponse.json(
-        { error: 'Sides option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Sides option not found' }, { status: 404 })
     }
 
     if (sidesWithRelations._count.paperStockSides > 0) {
@@ -100,23 +79,17 @@ export async function DELETE(
     }
 
     await prisma.sidesOption.delete({
-      where: { id }
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error deleting sides option:', error)
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Sides option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Sides option not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to delete sides option' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to delete sides option' }, { status: 500 })
   }
 }

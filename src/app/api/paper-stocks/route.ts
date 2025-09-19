@@ -9,16 +9,16 @@ export async function GET() {
       include: {
         paperStockCoatings: {
           include: {
-            coating: true
-          }
+            coating: true,
+          },
         },
         paperStockSides: {
           include: {
-            sidesOption: true
-          }
+            sidesOption: true,
+          },
         },
-        productPaperStocks: true
-      }
+        productPaperStocks: true,
+      },
     })
 
     // Get all coating and sides options for comparison
@@ -26,37 +26,39 @@ export async function GET() {
     const allSides = await prisma.sidesOption.findMany()
 
     // Transform to match the frontend structure
-    const transformed = paperStocks.map(stock => {
+    const transformed = paperStocks.map((stock) => {
       // Map coatings
-      const stockCoatingIds = stock.paperStockCoatings.map(sc => sc.coatingId)
-      const coatings = allCoatings.map(coating => ({
+      const stockCoatingIds = stock.paperStockCoatings.map((sc) => sc.coatingId)
+      const coatings = allCoatings.map((coating) => ({
         id: coating.id,
         label: coating.name,
-        enabled: stockCoatingIds.includes(coating.id)
+        enabled: stockCoatingIds.includes(coating.id),
       }))
 
       // Map sides options
-      const stockSidesMap = new Map(
-        stock.paperStockSides.map(ss => [ss.sidesOptionId, ss])
-      )
-      const sidesOptions = allSides.map(side => {
+      const stockSidesMap = new Map(stock.paperStockSides.map((ss) => [ss.sidesOptionId, ss]))
+      const sidesOptions = allSides.map((side) => {
         const stockSide = stockSidesMap.get(side.id)
         return {
           id: side.id,
           label: side.name,
           enabled: stockSide?.isEnabled || false,
-          multiplier: stockSide ? Number(stockSide.priceMultiplier) : 1.0
+          multiplier: stockSide ? Number(stockSide.priceMultiplier) : 1.0,
         }
       })
 
       // Find defaults
-      const defaultCoating = stock.paperStockCoatings.find(c => c.isDefault)?.coatingId || 
-                             coatings.find(c => c.enabled)?.id || 
-                             allCoatings[0]?.id || ''
-      
-      const defaultSides = allSides.find(s => s.isDefault)?.id || 
-                          sidesOptions.find(s => s.enabled)?.id || 
-                          allSides[0]?.id || ''
+      const defaultCoating =
+        stock.paperStockCoatings.find((c) => c.isDefault)?.coatingId ||
+        coatings.find((c) => c.enabled)?.id ||
+        allCoatings[0]?.id ||
+        ''
+
+      const defaultSides =
+        allSides.find((s) => s.isDefault)?.id ||
+        sidesOptions.find((s) => s.enabled)?.id ||
+        allSides[0]?.id ||
+        ''
 
       return {
         id: stock.id,
@@ -67,17 +69,14 @@ export async function GET() {
         isActive: stock.isActive,
         paperStockCoatings: stock.paperStockCoatings,
         paperStockSides: stock.paperStockSides,
-        productsCount: stock.productPaperStocks.length
+        productsCount: stock.productPaperStocks.length,
       }
     })
 
     return NextResponse.json(transformed)
   } catch (error) {
     console.error('Error fetching paper stocks:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch paper stocks' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch paper stocks' }, { status: 500 })
   }
 }
 
@@ -85,28 +84,14 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
 
     const body = await request.json()
-    const {
-      name,
-      weight,
-      pricePerSqInch,
-      tooltipText,
-      isActive,
-      coatings,
-      sidesOptions
-    } = body
+    const { name, weight, pricePerSqInch, tooltipText, isActive, coatings, sidesOptions } = body
 
     if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
     // Create the paper stock with relationships
@@ -119,44 +104,43 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true,
         // Add coating relationships
         paperStockCoatings: {
-          create: coatings?.map((c: any) => ({
-            coatingId: c.id,
-            isDefault: c.isDefault || false
-          })) || []
+          create:
+            coatings?.map((c: any) => ({
+              coatingId: c.id,
+              isDefault: c.isDefault || false,
+            })) || [],
         },
         // Add sides relationships
         paperStockSides: {
-          create: sidesOptions?.map((s: any) => ({
-            sidesOptionId: s.id,
-            priceMultiplier: s.multiplier || 1.0,
-            isEnabled: true
-          })) || []
-        }
+          create:
+            sidesOptions?.map((s: any) => ({
+              sidesOptionId: s.id,
+              priceMultiplier: s.multiplier || 1.0,
+              isEnabled: true,
+            })) || [],
+        },
       },
       include: {
         paperStockCoatings: {
-          include: { coating: true }
+          include: { coating: true },
         },
         paperStockSides: {
-          include: { sidesOption: true }
-        }
-      }
+          include: { sidesOption: true },
+        },
+      },
     })
 
     return NextResponse.json(paperStock, { status: 201 })
   } catch (error: any) {
     console.error('Error creating paper stock:', error)
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A paper stock with this name already exists' },
         { status: 400 }
       )
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to create paper stock' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to create paper stock' }, { status: 500 })
   }
 }

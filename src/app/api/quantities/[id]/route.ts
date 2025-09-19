@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET single quantity group
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const quantityGroup = await prisma.quantityGroup.findUnique({
@@ -17,56 +14,39 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                sku: true
-              }
-            }
-          }
-        }
-      }
+                sku: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     if (!quantityGroup) {
-      return NextResponse.json(
-        { error: 'Quantity group not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }
 
     // Parse values for frontend
     const parsedGroup = {
       ...quantityGroup,
-      valuesList: quantityGroup.values.split(',').map(v => v.trim()),
-      hasCustomOption: quantityGroup.values.toLowerCase().includes('custom')
+      valuesList: quantityGroup.values.split(',').map((v) => v.trim()),
+      hasCustomOption: quantityGroup.values.toLowerCase().includes('custom'),
     }
 
     return NextResponse.json(parsedGroup)
   } catch (error) {
     console.error('Error fetching quantity group:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch quantity group' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch quantity group' }, { status: 500 })
   }
 }
 
 // PUT update quantity group
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
-    const { 
-      name, 
-      description, 
-      values, 
-      defaultValue, 
-      customMin, 
-      customMax, 
-      sortOrder, 
-      isActive 
-    } = body
+    const { name, description, values, defaultValue, customMin, customMax, sortOrder, isActive } =
+      body
 
     // Validation
     if (values && defaultValue) {
@@ -78,7 +58,7 @@ export async function PUT(
         )
       }
 
-      const hasCustom = valuesList.some(v => v.toLowerCase() === 'custom')
+      const hasCustom = valuesList.some((v) => v.toLowerCase() === 'custom')
       if (hasCustom && customMin && customMax && customMin >= customMax) {
         return NextResponse.json(
           { error: 'Custom minimum must be less than maximum' },
@@ -94,35 +74,29 @@ export async function PUT(
         description,
         values,
         defaultValue,
-        customMin: values?.toLowerCase().includes('custom') ? (customMin || null) : null,
-        customMax: values?.toLowerCase().includes('custom') ? (customMax || null) : null,
+        customMin: values?.toLowerCase().includes('custom') ? customMin || null : null,
+        customMax: values?.toLowerCase().includes('custom') ? customMax || null : null,
         sortOrder,
-        isActive
-      }
+        isActive,
+      },
     })
 
     return NextResponse.json(quantityGroup)
   } catch (error: any) {
     console.error('Error updating quantity group:', error)
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A quantity group with this name already exists' },
         { status: 400 }
       )
     }
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Quantity group not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to update quantity group' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to update quantity group' }, { status: 500 })
   }
 }
 
@@ -135,35 +109,31 @@ export async function DELETE(
     const { id } = await params
     // Check if the group is being used by any products
     const productsUsingGroup = await prisma.productQuantityGroup.count({
-      where: { quantityGroupId: id }
+      where: { quantityGroupId: id },
     })
 
     if (productsUsingGroup > 0) {
       return NextResponse.json(
-        { error: `This quantity group is being used by ${productsUsingGroup} product(s). Please remove it from all products before deleting.` },
+        {
+          error: `This quantity group is being used by ${productsUsingGroup} product(s). Please remove it from all products before deleting.`,
+        },
         { status: 400 }
       )
     }
 
     // Delete the quantity group
     await prisma.quantityGroup.delete({
-      where: { id }
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error deleting quantity group:', error)
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Quantity group not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to delete quantity group' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to delete quantity group' }, { status: 500 })
   }
 }

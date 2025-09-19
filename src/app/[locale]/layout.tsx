@@ -21,39 +21,43 @@ const inter = Inter({
 })
 
 type Props = {
-  children: React.ReactNode;
-  params: Promise<{locale: string}>;
-};
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({locale}));
+  return routing.locales.map((locale) => ({ locale }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const tenantContext = await getStaticTenantContext(locale);
-  const t = await getMessages();
+  const { locale } = await params
+  const tenantContext = await getStaticTenantContext(locale)
+  const t = await getMessages()
 
-  const title = tenantContext?.tenant?.branding?.logoText ||
-                (t as any)?.metadata?.title ||
-                'GangRun Printing - Professional Print Services';
+  const title =
+    tenantContext?.tenant?.branding?.logoText ||
+    (t as any)?.metadata?.title ||
+    'GangRun Printing - Professional Print Services'
 
-  const description = (t as any)?.metadata?.description ||
-                     'High-quality printing services for all your business and personal needs';
+  const description =
+    (t as any)?.metadata?.description ||
+    'High-quality printing services for all your business and personal needs'
 
   return {
     title,
     description,
     icons: {
       icon: tenantContext?.tenant?.branding?.faviconUrl || '/favicon-100x100.png',
-      apple: tenantContext?.tenant?.branding?.logoUrl || '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
+      apple:
+        tenantContext?.tenant?.branding?.logoUrl ||
+        '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
     },
     alternates: {
       languages: {
-        'en': `/en`,
-        'es': `/es`,
-        'x-default': `/${routing.defaultLocale}`
-      }
+        en: `/en`,
+        es: `/es`,
+        'x-default': `/${routing.defaultLocale}`,
+      },
     },
     openGraph: {
       title,
@@ -62,13 +66,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: locale,
       images: [
         {
-          url: tenantContext?.tenant?.branding?.logoUrl || '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
+          url:
+            tenantContext?.tenant?.branding?.logoUrl ||
+            '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
           width: 1200,
           height: 630,
-          alt: title
-        }
-      ]
-    }
+          alt: title,
+        },
+      ],
+    },
   }
 }
 
@@ -81,19 +87,19 @@ export const viewport: Viewport = {
 }
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = await params;
+  const { locale } = await params
 
   // Validate locale
   if (!routing.locales.includes(locale as any)) {
-    notFound();
+    notFound()
   }
 
   // Enable static rendering
-  setRequestLocale(locale);
+  setRequestLocale(locale)
 
   // Get tenant context and messages (using static resolver for SSG)
-  const tenantContext = await getStaticTenantContext(locale);
-  const messages = await getMessages();
+  const tenantContext = await getStaticTenantContext(locale)
+  const messages = await getMessages()
 
   return (
     <html suppressHydrationWarning dir={locale === 'ar' ? 'rtl' : 'ltr'} lang={locale}>
@@ -105,9 +111,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <NextIntlClientProvider messages={messages}>
             <TenantProvider initialTenant={tenantContext}>
               <ThemeProvider tenant={tenantContext?.tenant || null}>
-                <Providers>
-                  {children}
-                </Providers>
+                <Providers>{children}</Providers>
               </ThemeProvider>
             </TenantProvider>
           </NextIntlClientProvider>

@@ -27,9 +27,7 @@ export function CartItemImages({ item }: CartItemImagesProps) {
 
       setIsLoading(true)
       try {
-        const response = await fetch(
-          `/api/products/customer-images?productId=${item.productId}`
-        )
+        const response = await fetch(`/api/products/customer-images?productId=${item.productId}`)
 
         if (response.ok) {
           const data = await response.json()
@@ -68,9 +66,7 @@ export function CartItemImages({ item }: CartItemImagesProps) {
           ))}
           {customerImages.length > 2 && (
             <div className="w-16 h-16 rounded-md bg-muted border-2 border-dashed border-primary flex items-center justify-center">
-              <span className="text-xs font-medium text-primary">
-                +{customerImages.length - 2}
-              </span>
+              <span className="text-xs font-medium text-primary">+{customerImages.length - 2}</span>
             </div>
           )}
         </div>
@@ -83,9 +79,7 @@ export function CartItemImages({ item }: CartItemImagesProps) {
               {image.fileName}
             </p>
           ))}
-          {customerImages.length > 2 && (
-            <p>+{customerImages.length - 2} more files</p>
-          )}
+          {customerImages.length > 2 && <p>+{customerImages.length - 2} more files</p>}
         </div>
       </div>
     )
@@ -95,12 +89,7 @@ export function CartItemImages({ item }: CartItemImagesProps) {
   if (item.image) {
     return (
       <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
-        <Image
-          fill
-          alt={item.productName}
-          className="object-cover"
-          src={item.image}
-        />
+        <Image fill alt={item.productName} className="object-cover" src={item.image} />
       </div>
     )
   }

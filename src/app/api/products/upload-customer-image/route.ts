@@ -15,10 +15,7 @@ export async function POST(request: NextRequest) {
     const isCustomerUpload = formData.get('isCustomerUpload') as string
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
     // Convert file to buffer
@@ -28,10 +25,7 @@ export async function POST(request: NextRequest) {
     // Validate image
     const validation = validateImage(buffer, file.name, file.type)
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
     // Upload to MinIO with customer prefix
@@ -39,11 +33,7 @@ export async function POST(request: NextRequest) {
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
     const objectName = `customer-uploads/${timestamp}-${cleanFileName}`
 
-    const uploadedImage = await uploadProductImage(
-      buffer,
-      cleanFileName,
-      file.type
-    )
+    const uploadedImage = await uploadProductImage(buffer, cleanFileName, file.type)
 
     // Create a customer image record (separate from ProductImage table)
     // We'll store this in a CustomerImage table or in ProductImage with special flag
@@ -61,8 +51,8 @@ export async function POST(request: NextRequest) {
             sortOrder: 999, // High sort order for customer images
             isPrimary: false,
             alt: `Customer upload: ${file.name}`,
-            caption: 'Customer Design File'
-          }
+            caption: 'Customer Design File',
+          },
         })
       } catch (dbError) {
         console.error('Database save error:', dbError)
@@ -70,17 +60,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      id: dbImage?.id || `customer-${timestamp}`,
-      url: uploadedImage.url,
-      thumbnailUrl: uploadedImage.thumbnailUrl || uploadedImage.url,
-      fileName: file.name,
-      fileSize: buffer.length,
-      mimeType: file.type,
-      success: true,
-      timestamp: new Date().toISOString()
-    }, { status: 200 })
-
+    return NextResponse.json(
+      {
+        id: dbImage?.id || `customer-${timestamp}`,
+        url: uploadedImage.url,
+        thumbnailUrl: uploadedImage.thumbnailUrl || uploadedImage.url,
+        fileName: file.name,
+        fileSize: buffer.length,
+        mimeType: file.type,
+        success: true,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Error uploading customer image:', error)
 
@@ -95,8 +87,12 @@ export async function POST(request: NextRequest) {
       } else if (error.message.includes('File too large')) {
         errorMessage = 'File size exceeds maximum limit of 10MB'
         statusCode = 413
-      } else if (error.message.includes('Invalid file type') || error.message.includes('Invalid image')) {
-        errorMessage = 'Invalid file type. Only JPEG, PNG, WebP, GIF, PDF, AI, PSD, and SVG are allowed.'
+      } else if (
+        error.message.includes('Invalid file type') ||
+        error.message.includes('Invalid image')
+      ) {
+        errorMessage =
+          'Invalid file type. Only JPEG, PNG, WebP, GIF, PDF, AI, PSD, and SVG are allowed.'
         statusCode = 400
       } else {
         errorMessage = error.message || 'Failed to upload image'
@@ -107,7 +103,7 @@ export async function POST(request: NextRequest) {
       {
         error: errorMessage,
         timestamp: new Date().toISOString(),
-        success: false
+        success: false,
       },
       { status: statusCode }
     )

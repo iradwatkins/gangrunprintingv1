@@ -81,7 +81,7 @@ export class ServiceWorkerManager {
     try {
       const subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(publicKey)
+        applicationServerKey: this.urlBase64ToUint8Array(publicKey),
       })
 
       console.log('Push subscription created:', subscription)
@@ -110,10 +110,8 @@ export class ServiceWorkerManager {
   }
 
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4)
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
 
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
@@ -142,7 +140,7 @@ export class ServiceWorkerManager {
       const notification = new Notification(title, {
         icon: '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
         badge: '/favicon-100x100.png',
-        ...options
+        ...options,
       })
 
       // Auto close after 5 seconds
@@ -198,8 +196,10 @@ export class ServiceWorkerManager {
 
   // Check if app is installed as PWA
   isStandalone(): boolean {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           (window.navigator as any).standalone === true
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    )
   }
 
   // Prompt user to install PWA
@@ -212,7 +212,7 @@ export class ServiceWorkerManager {
       console.log('PWA install prompt outcome:', outcome)
 
       if (outcome === 'accepted') {
-        (window as any).deferredPrompt = null
+        ;(window as any).deferredPrompt = null
       }
     }
   }

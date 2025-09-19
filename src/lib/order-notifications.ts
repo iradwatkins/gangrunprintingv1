@@ -35,23 +35,19 @@ export async function notifyOrderStatusChange(
   additionalData?: any
 ) {
   const notificationType = getNotificationTypeForStatus(status)
-  
+
   if (!notificationType) {
     console.log(`No notification configured for status: ${status}`)
     return
   }
 
   try {
-    await sendNotificationToUser(
-      userId,
-      notificationType,
-      {
-        orderId,
-        status,
-        ...additionalData
-      }
-    )
-    
+    await sendNotificationToUser(userId, notificationType, {
+      orderId,
+      status,
+      ...additionalData,
+    })
+
     console.log(`Notification sent for order ${orderId} status change to ${status}`)
   } catch (error) {
     console.error(`Failed to send notification for order ${orderId}:`, error)
@@ -60,60 +56,36 @@ export async function notifyOrderStatusChange(
 }
 
 // Send notification for payment received
-export async function notifyPaymentReceived(
-  userId: string,
-  orderId: string,
-  amount: number
-) {
+export async function notifyPaymentReceived(userId: string, orderId: string, amount: number) {
   try {
-    await sendNotificationToUser(
-      userId,
-      NotificationTypes.PAYMENT_RECEIVED,
-      {
-        orderId,
-        amount: amount.toFixed(2)
-      }
-    )
+    await sendNotificationToUser(userId, NotificationTypes.PAYMENT_RECEIVED, {
+      orderId,
+      amount: amount.toFixed(2),
+    })
   } catch (error) {
     console.error(`Failed to send payment notification for order ${orderId}:`, error)
   }
 }
 
 // Send notification for design revision needed
-export async function notifyDesignRevision(
-  userId: string,
-  orderId: string,
-  comments: string
-) {
+export async function notifyDesignRevision(userId: string, orderId: string, comments: string) {
   try {
-    await sendNotificationToUser(
-      userId,
-      NotificationTypes.DESIGN_REVISION,
-      {
-        orderId,
-        comments
-      }
-    )
+    await sendNotificationToUser(userId, NotificationTypes.DESIGN_REVISION, {
+      orderId,
+      comments,
+    })
   } catch (error) {
     console.error(`Failed to send design revision notification for order ${orderId}:`, error)
   }
 }
 
 // Send promotional notification
-export async function notifySpecialOffer(
-  userId: string,
-  message: string,
-  offerUrl?: string
-) {
+export async function notifySpecialOffer(userId: string, message: string, offerUrl?: string) {
   try {
-    await sendNotificationToUser(
-      userId,
-      NotificationTypes.SPECIAL_OFFER,
-      {
-        message,
-        url: offerUrl || '/products'
-      }
-    )
+    await sendNotificationToUser(userId, NotificationTypes.SPECIAL_OFFER, {
+      message,
+      url: offerUrl || '/products',
+    })
   } catch (error) {
     console.error(`Failed to send special offer notification to user ${userId}:`, error)
   }

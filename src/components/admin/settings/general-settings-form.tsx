@@ -32,13 +32,13 @@ export function GeneralSettingsForm() {
     language: 'en',
     maintenanceMode: false,
     orderEmailNotifications: true,
-    customerRegistration: true
+    customerRegistration: true,
   })
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -48,7 +48,7 @@ export function GeneralSettingsForm() {
 
     try {
       // TODO: Implement settings update API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Mock delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
       console.log('General settings updated:', formData)
     } catch (error) {
       console.error('Failed to update settings:', error)
@@ -66,9 +66,7 @@ export function GeneralSettingsForm() {
             <Building className="h-5 w-5" />
             Company Information
           </CardTitle>
-          <CardDescription>
-            Basic information about your printing business
-          </CardDescription>
+          <CardDescription>Basic information about your printing business</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,7 +153,10 @@ export function GeneralSettingsForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="timezone">Timezone</Label>
-              <Select value={formData.timezone} onValueChange={(value) => handleInputChange('timezone', value)}>
+              <Select
+                value={formData.timezone}
+                onValueChange={(value) => handleInputChange('timezone', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -171,7 +172,10 @@ export function GeneralSettingsForm() {
 
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
-              <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+              <Select
+                value={formData.currency}
+                onValueChange={(value) => handleInputChange('currency', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -186,7 +190,10 @@ export function GeneralSettingsForm() {
 
             <div className="space-y-2">
               <Label htmlFor="dateFormat">Date Format</Label>
-              <Select value={formData.dateFormat} onValueChange={(value) => handleInputChange('dateFormat', value)}>
+              <Select
+                value={formData.dateFormat}
+                onValueChange={(value) => handleInputChange('dateFormat', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -201,7 +208,10 @@ export function GeneralSettingsForm() {
 
             <div className="space-y-2">
               <Label htmlFor="language">Language</Label>
-              <Select value={formData.language} onValueChange={(value) => handleInputChange('language', value)}>
+              <Select
+                value={formData.language}
+                onValueChange={(value) => handleInputChange('language', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -221,9 +231,7 @@ export function GeneralSettingsForm() {
       <Card>
         <CardHeader>
           <CardTitle>System Settings</CardTitle>
-          <CardDescription>
-            General system configuration and operational settings
-          </CardDescription>
+          <CardDescription>General system configuration and operational settings</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
@@ -275,9 +283,7 @@ export function GeneralSettingsForm() {
       <Card>
         <CardHeader>
           <CardTitle>Logo & Branding</CardTitle>
-          <CardDescription>
-            Upload your company logo and customize branding
-          </CardDescription>
+          <CardDescription>Upload your company logo and customize branding</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -307,9 +313,7 @@ export function GeneralSettingsForm() {
                 Upload Favicon
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Recommended: 32x32px ICO or PNG
-            </p>
+            <p className="text-sm text-muted-foreground">Recommended: 32x32px ICO or PNG</p>
           </div>
         </CardContent>
       </Card>

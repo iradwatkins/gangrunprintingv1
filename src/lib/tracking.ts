@@ -38,7 +38,7 @@ export function getTrackingInfo(carrier: Carrier, trackingNumber: string): Track
     carrier,
     trackingNumber,
     trackingUrl: getTrackingUrl(carrier, trackingNumber),
-    buttonText: `Track with ${getCarrierName(carrier)}`
+    buttonText: `Track with ${getCarrierName(carrier)}`,
   }
 }
 

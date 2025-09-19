@@ -15,30 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import toast from '@/lib/toast'
-import { 
-  FileText, 
-  Plus, 
-  X, 
-  Star,
-  DollarSign,
-  Package,
-  Droplets,
-  Info
-} from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { FileText, Plus, X, Star, DollarSign, Package, Droplets, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface PaperStock {
   id: string
@@ -106,11 +86,11 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
   }
 
   const handleToggleStock = (stockId: string) => {
-    const existing = selectedStocks.find(s => s.paperStockId === stockId)
-    
+    const existing = selectedStocks.find((s) => s.paperStockId === stockId)
+
     if (existing) {
       // Remove stock
-      const newStocks = selectedStocks.filter(s => s.paperStockId !== stockId)
+      const newStocks = selectedStocks.filter((s) => s.paperStockId !== stockId)
       // If removed stock was default and there are other stocks, make first one default
       if (existing.isDefault && newStocks.length > 0) {
         newStocks[0].isDefault = true
@@ -121,32 +101,31 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
       const newStock: ProductPaperStock = {
         paperStockId: stockId,
         isDefault: selectedStocks.length === 0, // Make first stock default
-        additionalCost: 0
+        additionalCost: 0,
       }
       onStocksChange([...selectedStocks, newStock])
     }
   }
 
   const handleSetDefault = (stockId: string) => {
-    const newStocks = selectedStocks.map(stock => ({
+    const newStocks = selectedStocks.map((stock) => ({
       ...stock,
-      isDefault: stock.paperStockId === stockId
+      isDefault: stock.paperStockId === stockId,
     }))
     onStocksChange(newStocks)
   }
 
   const handleAdditionalCostChange = (stockId: string, cost: number) => {
-    const newStocks = selectedStocks.map(stock => 
-      stock.paperStockId === stockId 
-        ? { ...stock, additionalCost: cost }
-        : stock
+    const newStocks = selectedStocks.map((stock) =>
+      stock.paperStockId === stockId ? { ...stock, additionalCost: cost } : stock
     )
     onStocksChange(newStocks)
   }
 
-  const filteredStocks = availableStocks.filter(stock => {
-    const matchesSearch = stock.name.toLowerCase().includes(filter.toLowerCase()) ||
-                         (stock.tooltipText && stock.tooltipText.toLowerCase().includes(filter.toLowerCase()))
+  const filteredStocks = availableStocks.filter((stock) => {
+    const matchesSearch =
+      stock.name.toLowerCase().includes(filter.toLowerCase()) ||
+      (stock.tooltipText && stock.tooltipText.toLowerCase().includes(filter.toLowerCase()))
     return matchesSearch
   })
 
@@ -159,11 +138,13 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
   }
 
   const getDefaultCoating = (stock: PaperStock) => {
-    return stock.paperStockCoatings.find(pc => pc.isDefault)?.coating.name || 'None'
+    return stock.paperStockCoatings.find((pc) => pc.isDefault)?.coating.name || 'None'
   }
 
   const getSidesOptions = (stock: PaperStock) => {
-    return stock.paperStockSides.map(ps => `${ps.sidesOption.name} (${ps.priceMultiplier}x)`).join(', ')
+    return stock.paperStockSides
+      .map((ps) => `${ps.sidesOption.name} (${ps.priceMultiplier}x)`)
+      .join(', ')
   }
 
   if (loading) {
@@ -197,10 +178,10 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
           </TableHeader>
           <TableBody>
             {filteredStocks.map((stock) => {
-              const isSelected = selectedStocks.some(s => s.paperStockId === stock.id)
-              const selectedStock = selectedStocks.find(s => s.paperStockId === stock.id)
+              const isSelected = selectedStocks.some((s) => s.paperStockId === stock.id)
+              const selectedStock = selectedStocks.find((s) => s.paperStockId === stock.id)
               const status = getStockStatus(stock)
-              
+
               return (
                 <TableRow key={stock.id} className={isSelected ? 'bg-muted/50' : ''}>
                   <TableCell>
@@ -213,9 +194,7 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                     <div className="space-y-1">
                       <div className="font-medium">{stock.name}</div>
                       {stock.tooltipText && (
-                        <div className="text-xs text-muted-foreground">
-                          {stock.tooltipText}
-                        </div>
+                        <div className="text-xs text-muted-foreground">{stock.tooltipText}</div>
                       )}
                       <Badge className="text-xs" variant={stock.isActive ? 'default' : 'secondary'}>
                         {stock.isActive ? 'Active' : 'Inactive'}
@@ -225,17 +204,15 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                   <TableCell>
                     <div className="space-y-1 text-sm">
                       <div>{stock.weight.toFixed(4)}</div>
-                      <div className="text-xs text-muted-foreground">
-                        Shipping weight
-                      </div>
+                      <div className="text-xs text-muted-foreground">Shipping weight</div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
                       {stock.paperStockCoatings.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
-                          {stock.paperStockCoatings.map(pc => (
-                            <Badge key={pc.coating.id} variant="outline" className="text-xs">
+                          {stock.paperStockCoatings.map((pc) => (
+                            <Badge key={pc.coating.id} className="text-xs" variant="outline">
                               {pc.coating.name}
                               {pc.isDefault && <span className="ml-1">★</span>}
                             </Badge>
@@ -250,8 +227,8 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                     <div className="space-y-1">
                       {stock.paperStockSides.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
-                          {stock.paperStockSides.map(ps => (
-                            <Badge key={ps.sidesOption.id} variant="outline" className="text-xs">
+                          {stock.paperStockSides.map((ps) => (
+                            <Badge key={ps.sidesOption.id} className="text-xs" variant="outline">
                               {ps.sidesOption.name} ({ps.priceMultiplier}x)
                             </Badge>
                           ))}
@@ -264,9 +241,7 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                   <TableCell>
                     <div className="space-y-1 text-sm">
                       <div>${stock.pricePerSqInch.toFixed(4)}/sq in</div>
-                      <div className="text-xs text-muted-foreground">
-                        Base pricing
-                      </div>
+                      <div className="text-xs text-muted-foreground">Base pricing</div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -280,7 +255,9 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                           step="0.01"
                           type="number"
                           value={selectedStock?.additionalCost || 0}
-                          onChange={(e) => handleAdditionalCostChange(stock.id, parseFloat(e.target.value) || 0)}
+                          onChange={(e) =>
+                            handleAdditionalCostChange(stock.id, parseFloat(e.target.value) || 0)
+                          }
                         />
                       </div>
                     )}
@@ -293,7 +270,9 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
                         variant={selectedStock?.isDefault ? 'default' : 'outline'}
                         onClick={() => handleSetDefault(stock.id)}
                       >
-                        <Star className={`h-3 w-3 ${selectedStock?.isDefault ? 'fill-current' : ''}`} />
+                        <Star
+                          className={`h-3 w-3 ${selectedStock?.isDefault ? 'fill-current' : ''}`}
+                        />
                       </Button>
                     )}
                   </TableCell>
@@ -309,15 +288,16 @@ export function ProductPaperStocks({ selectedStocks, onStocksChange }: ProductPa
           <CardHeader>
             <CardTitle className="text-base">Selected Paper Stocks Summary</CardTitle>
             <CardDescription>
-              {selectedStocks.length} paper stock{selectedStocks.length !== 1 ? 's' : ''} selected for this product
+              {selectedStocks.length} paper stock{selectedStocks.length !== 1 ? 's' : ''} selected
+              for this product
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {selectedStocks.map(stock => {
-                const paperStock = availableStocks.find(s => s.id === stock.paperStockId)
+              {selectedStocks.map((stock) => {
+                const paperStock = availableStocks.find((s) => s.id === stock.paperStockId)
                 if (!paperStock) return null
-                
+
                 return (
                   <Badge key={stock.paperStockId} className="py-1" variant="secondary">
                     {stock.isDefault && <Star className="h-3 w-3 mr-1 fill-current" />}

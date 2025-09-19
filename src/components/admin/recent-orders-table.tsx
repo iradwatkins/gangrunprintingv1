@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -20,15 +20,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { 
-  MoreHorizontal, 
-  Eye, 
-  Printer, 
+import {
+  MoreHorizontal,
+  Eye,
+  Printer,
   CheckCircle,
   XCircle,
   Clock,
   Package,
-  Truck
+  Truck,
 } from 'lucide-react'
 
 interface OrderItem {
@@ -53,56 +53,56 @@ interface RecentOrdersTableProps {
 }
 
 const statusConfig: Record<string, { label: string; variant: any; icon: any }> = {
-  PENDING_PAYMENT: { 
-    label: 'Pending Payment', 
+  PENDING_PAYMENT: {
+    label: 'Pending Payment',
     variant: 'secondary',
-    icon: Clock
+    icon: Clock,
   },
-  PAID: { 
-    label: 'Paid', 
+  PAID: {
+    label: 'Paid',
     variant: 'default',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
-  PROCESSING: { 
-    label: 'Processing', 
+  PROCESSING: {
+    label: 'Processing',
     variant: 'default',
-    icon: Package
+    icon: Package,
   },
-  PRINTING: { 
-    label: 'Printing', 
+  PRINTING: {
+    label: 'Printing',
     variant: 'default',
-    icon: Printer
+    icon: Printer,
   },
-  READY_FOR_PICKUP: { 
-    label: 'Ready', 
+  READY_FOR_PICKUP: {
+    label: 'Ready',
     variant: 'default',
-    icon: Package
+    icon: Package,
   },
-  SHIPPED: { 
-    label: 'Shipped', 
+  SHIPPED: {
+    label: 'Shipped',
     variant: 'default',
-    icon: Truck
+    icon: Truck,
   },
-  DELIVERED: { 
-    label: 'Delivered', 
+  DELIVERED: {
+    label: 'Delivered',
     variant: 'default',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
-  CANCELLED: { 
-    label: 'Cancelled', 
+  CANCELLED: {
+    label: 'Cancelled',
     variant: 'destructive',
-    icon: XCircle
+    icon: XCircle,
   },
-  REFUNDED: { 
-    label: 'Refunded', 
+  REFUNDED: {
+    label: 'Refunded',
     variant: 'destructive',
-    icon: XCircle
+    icon: XCircle,
   },
-  PAYMENT_FAILED: { 
-    label: 'Payment Failed', 
+  PAYMENT_FAILED: {
+    label: 'Payment Failed',
     variant: 'destructive',
-    icon: XCircle
-  }
+    icon: XCircle,
+  },
 }
 
 export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
@@ -112,10 +112,8 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
   const safeOrders = orders || []
 
   const toggleOrderSelection = (orderId: string) => {
-    setSelectedOrders(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId)
-        : [...prev, orderId]
+    setSelectedOrders((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
     )
   }
 
@@ -123,7 +121,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
     if (selectedOrders.length === safeOrders.length) {
       setSelectedOrders([])
     } else {
-      setSelectedOrders(safeOrders.map(order => order.id))
+      setSelectedOrders(safeOrders.map((order) => order.id))
     }
   }
 
@@ -132,18 +130,18 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   const getStatusBadge = (status: string) => {
-    const config = statusConfig[status] || { 
-      label: status, 
+    const config = statusConfig[status] || {
+      label: status,
       variant: 'secondary',
-      icon: Clock
+      icon: Clock,
     }
     const Icon = config.icon
-    
+
     return (
       <Badge className="gap-1" variant={config.variant}>
         <Icon className="h-3 w-3" />
@@ -175,7 +173,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
           </Button>
         </div>
       )}
-      
+
       <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
@@ -209,16 +207,11 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                   />
                 </TableCell>
                 <TableCell className="font-medium">
-                  <Link
-                    className="hover:underline"
-                    href={`/admin/orders/${order.id}`}
-                  >
+                  <Link className="hover:underline" href={`/admin/orders/${order.id}`}>
                     {order.orderNumber}
                   </Link>
                   {/* Mobile-only: Show customer info below order number */}
-                  <div className="sm:hidden text-xs text-muted-foreground mt-1">
-                    {order.email}
-                  </div>
+                  <div className="sm:hidden text-xs text-muted-foreground mt-1">{order.email}</div>
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{order.email}</TableCell>
                 <TableCell>
@@ -237,8 +230,12 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                     ${(order.total / 100).toFixed(2)} • {formatDate(order.createdAt)}
                   </div>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">${(order.total / 100).toFixed(2)}</TableCell>
-                <TableCell className="hidden lg:table-cell">{formatDate(order.createdAt)}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  ${(order.total / 100).toFixed(2)}
+                </TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  {formatDate(order.createdAt)}
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -260,12 +257,8 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                         Print Invoice
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        Update Status
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        Cancel Order
-                      </DropdownMenuItem>
+                      <DropdownMenuItem>Update Status</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">Cancel Order</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

@@ -45,18 +45,14 @@ interface ProductSizesProps {
   productId?: string
   selectedSizes?: string[]
   selectedSizeGroup?: string
-  onChange: (data: { 
-    useGroup: boolean
-    sizeGroupId?: string
-    sizeIds?: string[] 
-  }) => void
+  onChange: (data: { useGroup: boolean; sizeGroupId?: string; sizeIds?: string[] }) => void
 }
 
-export function ProductSizes({ 
-  productId, 
-  selectedSizes = [], 
+export function ProductSizes({
+  productId,
+  selectedSizes = [],
   selectedSizeGroup,
-  onChange 
+  onChange,
 }: ProductSizesProps) {
   const [useGroup, setUseGroup] = useState(!!selectedSizeGroup)
   const [sizeGroups, setSizeGroups] = useState<SizeGroup[]>([])
@@ -72,14 +68,14 @@ export function ProductSizes({
   const fetchData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch size groups
       const groupsResponse = await fetch('/api/size-groups?include=sizes&active=true')
       if (groupsResponse.ok) {
         const groupsData = await groupsResponse.json()
         setSizeGroups(groupsData)
       }
-      
+
       // Fetch individual sizes
       const sizesResponse = await fetch('/api/sizes?active=true')
       if (sizesResponse.ok) {
@@ -97,16 +93,16 @@ export function ProductSizes({
   const handleModeChange = (value: string) => {
     const newUseGroup = value === 'group'
     setUseGroup(newUseGroup)
-    
+
     if (newUseGroup) {
       onChange({
         useGroup: true,
-        sizeGroupId: selectedGroupId || undefined
+        sizeGroupId: selectedGroupId || undefined,
       })
     } else {
       onChange({
         useGroup: false,
-        sizeIds: individualSizes.length > 0 ? individualSizes : undefined
+        sizeIds: individualSizes.length > 0 ? individualSizes : undefined,
       })
     }
   }
@@ -115,24 +111,24 @@ export function ProductSizes({
     setSelectedGroupId(groupId)
     onChange({
       useGroup: true,
-      sizeGroupId: groupId
+      sizeGroupId: groupId,
     })
   }
 
   const handleSizeToggle = (sizeId: string) => {
     const newSizes = individualSizes.includes(sizeId)
-      ? individualSizes.filter(id => id !== sizeId)
+      ? individualSizes.filter((id) => id !== sizeId)
       : [...individualSizes, sizeId]
-    
+
     setIndividualSizes(newSizes)
     onChange({
       useGroup: false,
-      sizeIds: newSizes.length > 0 ? newSizes : undefined
+      sizeIds: newSizes.length > 0 ? newSizes : undefined,
     })
   }
 
   const getSelectedGroup = () => {
-    return sizeGroups.find(g => g.id === selectedGroupId)
+    return sizeGroups.find((g) => g.id === selectedGroupId)
   }
 
   const formatSizeDimensions = (size: Size) => {
@@ -162,18 +158,13 @@ export function ProductSizes({
           <Ruler className="h-5 w-5" />
           Size Options
         </CardTitle>
-        <CardDescription>
-          Configure available sizes for this product
-        </CardDescription>
+        <CardDescription>Configure available sizes for this product</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Mode Selection */}
         <div className="space-y-3">
           <Label>Size Selection Mode</Label>
-          <RadioGroup 
-            value={useGroup ? 'group' : 'individual'} 
-            onValueChange={handleModeChange}
-          >
+          <RadioGroup value={useGroup ? 'group' : 'individual'} onValueChange={handleModeChange}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem id="size-group" value="group" />
               <Label className="font-normal cursor-pointer" htmlFor="size-group">
@@ -211,14 +202,14 @@ export function ProductSizes({
                 ))}
               </SelectContent>
             </Select>
-            
+
             {/* Preview selected group */}
             {selectedGroupId && getSelectedGroup() && (
               <div className="mt-4 p-4 border rounded-lg bg-muted/50">
                 <h4 className="font-medium mb-2">Group Sizes:</h4>
                 <div className="flex flex-wrap gap-2">
-                  {getSelectedGroup()!.sizes
-                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                  {getSelectedGroup()!
+                    .sizes.sort((a, b) => a.sortOrder - b.sortOrder)
                     .map(({ size }) => (
                       <Badge key={size.id} variant="secondary">
                         <span className="font-medium">{size.name}</span>
@@ -257,15 +248,14 @@ export function ProductSizes({
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{size.name}</span>
                       {size.displayName && (
-                        <span className="text-sm text-muted-foreground">
-                          ({size.displayName})
-                        </span>
+                        <span className="text-sm text-muted-foreground">({size.displayName})</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       {size.isCustom ? (
                         <Badge variant="outline">
-                          Custom ({size.minWidth || 0}" - {size.maxWidth || '∞'}" × {size.minHeight || 0}" - {size.maxHeight || '∞'}")
+                          Custom ({size.minWidth || 0}" - {size.maxWidth || '∞'}" ×{' '}
+                          {size.minHeight || 0}" - {size.maxHeight || '∞'}")
                         </Badge>
                       ) : (
                         <Badge variant="secondary">
@@ -277,7 +267,7 @@ export function ProductSizes({
                 </div>
               ))}
             </div>
-            
+
             {individualSizes.length > 0 && (
               <div className="mt-2">
                 <p className="text-sm text-muted-foreground">

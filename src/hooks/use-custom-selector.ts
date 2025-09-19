@@ -38,7 +38,7 @@ export function useCustomSelector<T>({
   onChange,
   fetchUrl,
   validateCustomValue,
-  formatCustomValue
+  formatCustomValue,
 }: UseCustomSelectorProps<T>): UseCustomSelectorResult<T> {
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [customValue, setCustomValue] = useState<string>('')
@@ -52,17 +52,17 @@ export function useCustomSelector<T>({
     if (options.length === 0 && fetchUrl) {
       setLoading(true)
       fetch(fetchUrl)
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: ${res.statusText}`)
           }
           return res.json()
         })
-        .then(data => {
+        .then((data) => {
           setDefaultOptions(data || [])
           setLoading(false)
         })
-        .catch(err => {
+        .catch((err) => {
           // Silently fail and use empty array
           setDefaultOptions([])
           setLoading(false)
@@ -77,7 +77,7 @@ export function useCustomSelector<T>({
   useEffect(() => {
     if (value && safeOptions.length > 0) {
       // Check if value matches a preset option
-      const matchingOption = safeOptions.find(opt => {
+      const matchingOption = safeOptions.find((opt) => {
         if (opt.value === undefined) return false
         return JSON.stringify(opt.value) === JSON.stringify(value)
       })
@@ -88,7 +88,7 @@ export function useCustomSelector<T>({
         setCustomValue('')
       } else {
         // It's a custom value
-        const customOption = safeOptions.find(opt => opt.isCustom)
+        const customOption = safeOptions.find((opt) => opt.isCustom)
         if (customOption) {
           setSelectedOption(customOption.id)
           setShowCustomInput(true)
@@ -104,31 +104,34 @@ export function useCustomSelector<T>({
     }
   }, [value, safeOptions])
 
-  const handleSelectionChange = useCallback((optionId: string) => {
-    setSelectedOption(optionId)
-    setError('')
+  const handleSelectionChange = useCallback(
+    (optionId: string) => {
+      setSelectedOption(optionId)
+      setError('')
 
-    const selected = safeOptions.find(opt => opt.id === optionId)
-    if (!selected) return
+      const selected = safeOptions.find((opt) => opt.id === optionId)
+      if (!selected) return
 
-    if (selected.isCustom) {
-      setShowCustomInput(true)
-      // Preserve existing custom value if switching back to custom
-      if (!customValue && value) {
-        if (typeof value === 'object' && value !== null) {
-          setCustomValue(JSON.stringify(value))
-        } else {
-          setCustomValue(String(value))
+      if (selected.isCustom) {
+        setShowCustomInput(true)
+        // Preserve existing custom value if switching back to custom
+        if (!customValue && value) {
+          if (typeof value === 'object' && value !== null) {
+            setCustomValue(JSON.stringify(value))
+          } else {
+            setCustomValue(String(value))
+          }
+        }
+      } else {
+        setShowCustomInput(false)
+        setCustomValue('')
+        if (selected.value !== undefined) {
+          onChange(selected.value)
         }
       }
-    } else {
-      setShowCustomInput(false)
-      setCustomValue('')
-      if (selected.value !== undefined) {
-        onChange(selected.value)
-      }
-    }
-  }, [safeOptions, customValue, value, onChange])
+    },
+    [safeOptions, customValue, value, onChange]
+  )
 
   const handleCustomValueChange = useCallback((inputValue: string) => {
     setCustomValue(inputValue)
@@ -138,7 +141,7 @@ export function useCustomSelector<T>({
   const validateAndUpdate = useCallback(() => {
     if (!showCustomInput || !customValue) return
 
-    const customOption = safeOptions.find(opt => opt.isCustom)
+    const customOption = safeOptions.find((opt) => opt.isCustom)
     if (!customOption) return
 
     try {
@@ -184,6 +187,6 @@ export function useCustomSelector<T>({
     effectiveOptions: safeOptions,
     handleSelectionChange,
     handleCustomValueChange,
-    validateAndUpdate
+    validateAndUpdate,
   }
 }

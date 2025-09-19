@@ -23,7 +23,7 @@ export interface StandardSize {
 
 export interface StandardQuantity {
   id: string
-  displayValue: number     // What customer sees
+  displayValue: number // What customer sees
   calculationValue: number // What backend uses (for <5000)
   adjustmentValue?: number // Optional override
   sortOrder: number
@@ -90,9 +90,9 @@ export class BasePriceEngine {
           quantity: 0,
           sidesMultiplier: 0,
           formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
-          calculation: 'Invalid input'
+          calculation: 'Invalid input',
         },
-        validation
+        validation,
       }
     }
 
@@ -106,7 +106,7 @@ export class BasePriceEngine {
     const sidesMultiplier = this.calculateSidesMultiplier(input)
 
     // Step 4: Apply EXACT formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
-    const basePrice = (input.basePaperPrice * sidesMultiplier) * size * quantity
+    const basePrice = input.basePaperPrice * sidesMultiplier * size * quantity
 
     const calculation = `((${input.basePaperPrice} × ${sidesMultiplier}) × ${size} × ${quantity}) = ${basePrice}`
 
@@ -118,9 +118,9 @@ export class BasePriceEngine {
         quantity,
         sidesMultiplier,
         formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
-        calculation
+        calculation,
       },
-      validation
+      validation,
     }
   }
 
@@ -221,7 +221,10 @@ export class BasePriceEngine {
     } else if (input.sizeSelection === 'standard') {
       if (!input.standardSize) {
         errors.push('Standard size data is required')
-      } else if (!input.standardSize.preCalculatedValue || input.standardSize.preCalculatedValue <= 0) {
+      } else if (
+        !input.standardSize.preCalculatedValue ||
+        input.standardSize.preCalculatedValue <= 0
+      ) {
         errors.push('Standard size must have valid pre-calculated value')
       }
     } else {
@@ -240,7 +243,10 @@ export class BasePriceEngine {
         if (!input.standardQuantity.displayValue || input.standardQuantity.displayValue <= 0) {
           errors.push('Standard quantity must have valid display value')
         }
-        if (!input.standardQuantity.calculationValue || input.standardQuantity.calculationValue <= 0) {
+        if (
+          !input.standardQuantity.calculationValue ||
+          input.standardQuantity.calculationValue <= 0
+        ) {
           errors.push('Standard quantity must have valid calculation value')
         }
       }
@@ -255,7 +261,7 @@ export class BasePriceEngine {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     }
   }
 
@@ -282,7 +288,7 @@ export class BasePriceEngine {
     if (!result.validation.isValid) {
       lines.push('')
       lines.push('VALIDATION ERRORS:')
-      result.validation.errors.forEach(error => {
+      result.validation.errors.forEach((error) => {
         lines.push(`  ❌ ${error}`)
       })
     }
@@ -301,7 +307,7 @@ export class BasePriceEngine {
     isDoubleSidedTextPaper: boolean = false
   ): number {
     const sidesMultiplier = isDoubleSidedTextPaper ? 1.75 : 1.0
-    return (basePaperPrice * sidesMultiplier) * preCalculatedSize * calculationQuantity
+    return basePaperPrice * sidesMultiplier * preCalculatedSize * calculationQuantity
   }
 }
 

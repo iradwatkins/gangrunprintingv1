@@ -1,7 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Package, Truck, CheckCircle, Clock, FileText, Upload, AlertCircle } from 'lucide-react'
+import {
+  Search,
+  Package,
+  Truck,
+  CheckCircle,
+  Clock,
+  FileText,
+  Upload,
+  AlertCircle,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -37,19 +46,19 @@ const statusIcons: Record<string, any> = {
   'Payment Confirmed': CheckCircle,
   'In Production': Clock,
   'Quality Check': Search,
-  'Shipped': Truck,
-  'Delivered': Package
+  Shipped: Truck,
+  Delivered: Package,
 }
 
 const statusColors: Record<string, string> = {
-  'pending_payment': 'bg-yellow-100 text-yellow-800',
-  'paid': 'bg-blue-100 text-blue-800',
-  'processing': 'bg-purple-100 text-purple-800',
-  'printing': 'bg-orange-100 text-orange-800',
-  'quality_check': 'bg-indigo-100 text-indigo-800',
-  'packaging': 'bg-pink-100 text-pink-800',
-  'shipped': 'bg-cyan-100 text-cyan-800',
-  'delivered': 'bg-green-100 text-green-800'
+  pending_payment: 'bg-yellow-100 text-yellow-800',
+  paid: 'bg-blue-100 text-blue-800',
+  processing: 'bg-purple-100 text-purple-800',
+  printing: 'bg-orange-100 text-orange-800',
+  quality_check: 'bg-indigo-100 text-indigo-800',
+  packaging: 'bg-pink-100 text-pink-800',
+  shipped: 'bg-cyan-100 text-cyan-800',
+  delivered: 'bg-green-100 text-green-800',
 }
 
 export default function TrackOrderPage() {
@@ -70,7 +79,7 @@ export default function TrackOrderPage() {
     if (uploadedFile) {
       // Simulate file submission
       console.log('Submitting new file:', uploadedFile.name)
-      alert('New file submitted successfully! We\'ll review it and update your order.')
+      alert("New file submitted successfully! We'll review it and update your order.")
       setUploadedFile(null)
     }
   }
@@ -78,15 +87,15 @@ export default function TrackOrderPage() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+
     if (!searchValue.trim()) {
       setError('Please enter an order number or email')
       return
     }
-    
+
     // Navigate to the detailed tracking page
     window.location.href = `/track/${searchValue.trim().toUpperCase()}`
-    
+
     /* Original simulation code (kept for reference)
     setLoading(true)
     setHasIssue(false)
@@ -184,9 +193,7 @@ export default function TrackOrderPage() {
                 {loading ? 'Searching...' : 'Track Order'}
               </Button>
             </form>
-            {error && (
-              <p className="text-sm text-red-600 mt-2">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
           </CardContent>
         </Card>
 
@@ -198,7 +205,8 @@ export default function TrackOrderPage() {
                 <AlertCircle className="h-4 w-4 text-primary" />
                 <AlertTitle>File Issue Detected</AlertTitle>
                 <AlertDescription>
-                  We've detected an issue with your print file. Please upload a corrected version below to avoid delays.
+                  We've detected an issue with your print file. Please upload a corrected version
+                  below to avoid delays.
                 </AlertDescription>
               </Alert>
             )}
@@ -208,9 +216,7 @@ export default function TrackOrderPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle>Order #{order.orderNumber}</CardTitle>
-                    <CardDescription>
-                      Placed on {order.createdAt}
-                    </CardDescription>
+                    <CardDescription>Placed on {order.createdAt}</CardDescription>
                   </div>
                   <Badge className={statusColors[order.status] || 'bg-gray-100 text-gray-800'}>
                     {order.status.replace('_', ' ').toUpperCase()}
@@ -241,12 +247,13 @@ export default function TrackOrderPage() {
                   )}
 
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">
-                      Order Items
-                    </p>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Order Items</p>
                     <div className="space-y-2">
                       {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between py-2 border-b last:border-0">
+                        <div
+                          key={index}
+                          className="flex justify-between py-2 border-b last:border-0"
+                        >
                           <span className="text-sm">
                             {item.name} x {item.quantity}
                           </span>
@@ -273,33 +280,32 @@ export default function TrackOrderPage() {
                     return (
                       <div key={index} className="flex gap-4">
                         <div className="relative flex flex-col items-center">
-                          <div className={`
+                          <div
+                            className={`
                             w-10 h-10 rounded-full flex items-center justify-center
-                            ${step.completed 
-                              ? 'bg-primary text-white' 
-                              : 'bg-gray-100 text-gray-400'
+                            ${
+                              step.completed ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
                             }
-                          `}>
+                          `}
+                          >
                             <Icon className="w-5 h-5" />
                           </div>
                           {index < order.timeline.length - 1 && (
-                            <div className={`
+                            <div
+                              className={`
                               absolute top-10 w-0.5 h-16
                               ${step.completed ? 'bg-primary' : 'bg-gray-200'}
-                            `} />
+                            `}
+                            />
                           )}
                         </div>
                         <div className="flex-1 pb-8">
                           <p className={`font-semibold ${!step.completed && 'text-gray-400'}`}>
                             {step.status}
                           </p>
-                          <p className="text-sm text-muted-foreground">
-                            {step.description}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{step.description}</p>
                           {step.timestamp && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {step.timestamp}
-                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">{step.timestamp}</p>
                           )}
                         </div>
                       </div>
@@ -344,7 +350,7 @@ export default function TrackOrderPage() {
                         </Label>
                       </div>
                     </div>
-                    
+
                     {uploadedFile && (
                       <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                         <div className="flex items-center gap-2">
@@ -354,17 +360,13 @@ export default function TrackOrderPage() {
                             ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
                           </span>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setUploadedFile(null)}
-                        >
+                        <Button size="sm" variant="ghost" onClick={() => setUploadedFile(null)}>
                           Remove
                         </Button>
                       </div>
                     )}
 
-                    <Button 
+                    <Button
                       className="w-full"
                       disabled={!uploadedFile}
                       onClick={handleSubmitNewFile}

@@ -1,39 +1,35 @@
 // Temporarily simplified - i18n disabled
-import { Suspense } from 'react';
-import { BrandEditor } from '@/components/white-label/brand-editor';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Loading } from '@/components/ui/loading';
-import { Palette, Layout, Image, Code, Mail, Eye } from 'lucide-react';
+import { Suspense } from 'react'
+import { BrandEditor } from '@/components/white-label/brand-editor'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { Loading } from '@/components/ui/loading'
+import { Palette, Layout, Image, Code, Mail, Eye } from 'lucide-react'
 
 // Force dynamic rendering for admin pages (requires authentication)
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: Promise<{locale: string}>;
-  searchParams: Promise<{[key: string]: string | string[] | undefined}>;
-};
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
 export default async function WhiteLabelPage({ params, searchParams }: Props) {
-  const { locale } = await params;
-  const search = await searchParams;
+  const { locale } = await params
+  const search = await searchParams
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            White Label Settings
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">White Label Settings</h1>
           <p className="text-muted-foreground mt-2">
             Customize your brand appearance and white-label settings
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">
-            Current Locale: {locale.toUpperCase()}
-          </Badge>
+          <Badge variant="secondary">Current Locale: {locale.toUpperCase()}</Badge>
         </div>
       </div>
 
@@ -75,9 +71,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Palette className="h-5 w-5" />
                     Brand Colors
                   </CardTitle>
-                  <CardDescription>
-                    Define your brand's primary color palette
-                  </CardDescription>
+                  <CardDescription>Define your brand's primary color palette</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -94,9 +88,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Layout className="h-5 w-5" />
                     Typography
                   </CardTitle>
-                  <CardDescription>
-                    Configure fonts and text styling
-                  </CardDescription>
+                  <CardDescription>Configure fonts and text styling</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -113,9 +105,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Image className="h-5 w-5" />
                     Logos & Assets
                   </CardTitle>
-                  <CardDescription>
-                    Upload and manage your brand assets
-                  </CardDescription>
+                  <CardDescription>Upload and manage your brand assets</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -132,9 +122,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Layout className="h-5 w-5" />
                     Layout & Spacing
                   </CardTitle>
-                  <CardDescription>
-                    Adjust layout properties and spacing
-                  </CardDescription>
+                  <CardDescription>Adjust layout properties and spacing</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -151,9 +139,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Code className="h-5 w-5" />
                     Custom CSS & JavaScript
                   </CardTitle>
-                  <CardDescription>
-                    Add custom styling and functionality
-                  </CardDescription>
+                  <CardDescription>Add custom styling and functionality</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -170,9 +156,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                     <Mail className="h-5 w-5" />
                     Email Templates
                   </CardTitle>
-                  <CardDescription>
-                    Customize email template appearance
-                  </CardDescription>
+                  <CardDescription>Customize email template appearance</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Suspense fallback={<Loading />}>
@@ -191,9 +175,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
                   <Eye className="h-5 w-5" />
                   Live Preview
                 </CardTitle>
-                <CardDescription>
-                  See how your changes look in real-time
-                </CardDescription>
+                <CardDescription>See how your changes look in real-time</CardDescription>
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<Loading />}>
@@ -205,9 +187,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
             <Card>
               <CardHeader>
                 <CardTitle>Theme Templates</CardTitle>
-                <CardDescription>
-                  Choose from pre-made themes
-                </CardDescription>
+                <CardDescription>Choose from pre-made themes</CardDescription>
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<Loading />}>
@@ -219,9 +199,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
             <Card>
               <CardHeader>
                 <CardTitle>Export/Import</CardTitle>
-                <CardDescription>
-                  Manage your theme configurations
-                </CardDescription>
+                <CardDescription>Manage your theme configurations</CardDescription>
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<Loading />}>
@@ -233,7 +211,7 @@ export default async function WhiteLabelPage({ params, searchParams }: Props) {
         </div>
       </Tabs>
     </div>
-  );
+  )
 }
 
 // Component stubs - these will be implemented
@@ -243,11 +221,9 @@ function BrandPreview() {
       <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
         <p className="text-sm text-gray-500">Live preview will appear here</p>
       </div>
-      <div className="text-xs text-gray-500">
-        Preview updates automatically as you make changes
-      </div>
+      <div className="text-xs text-gray-500">Preview updates automatically as you make changes</div>
     </div>
-  );
+  )
 }
 
 function ThemeTemplates() {
@@ -255,7 +231,7 @@ function ThemeTemplates() {
     <div className="space-y-2">
       <p className="text-sm text-gray-600">Theme Templates Component</p>
     </div>
-  );
+  )
 }
 
 function ThemeImportExport() {
@@ -263,5 +239,5 @@ function ThemeImportExport() {
     <div className="space-y-2">
       <p className="text-sm text-gray-600">Import/Export Component</p>
     </div>
-  );
+  )
 }

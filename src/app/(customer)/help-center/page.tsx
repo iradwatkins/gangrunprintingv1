@@ -4,7 +4,12 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import {
   Search,
   HelpCircle,
@@ -14,7 +19,7 @@ import {
   Upload,
   MessageSquare,
   Phone,
-  Mail
+  Mail,
 } from 'lucide-react'
 
 const faqs = [
@@ -24,21 +29,21 @@ const faqs = [
     questions: [
       {
         q: 'How do I place an order?',
-        a: 'Simply browse our products, select your specifications, upload your design, and proceed to checkout. You can also request a custom quote for special requirements.'
+        a: 'Simply browse our products, select your specifications, upload your design, and proceed to checkout. You can also request a custom quote for special requirements.',
       },
       {
         q: 'What file formats do you accept?',
-        a: 'We accept PDF, AI, PSD, JPG, and PNG files. For best results, we recommend PDF files with 300 DPI resolution.'
+        a: 'We accept PDF, AI, PSD, JPG, and PNG files. For best results, we recommend PDF files with 300 DPI resolution.',
       },
       {
         q: 'Can I order samples?',
-        a: 'Yes! We offer sample packs for most of our products. Visit our Free Samples page to request yours.'
+        a: 'Yes! We offer sample packs for most of our products. Visit our Free Samples page to request yours.',
       },
       {
         q: 'What is your minimum order quantity?',
-        a: 'Minimum quantities vary by product. Business cards start at 100, flyers at 25, and custom items may have different minimums.'
-      }
-    ]
+        a: 'Minimum quantities vary by product. Business cards start at 100, flyers at 25, and custom items may have different minimums.',
+      },
+    ],
   },
   {
     category: 'Shipping & Delivery',
@@ -46,21 +51,21 @@ const faqs = [
     questions: [
       {
         q: 'How long does shipping take?',
-        a: 'Standard shipping takes 3-5 business days. Rush options are available for 24-hour and 48-hour delivery.'
+        a: 'Standard shipping takes 3-5 business days. Rush options are available for 24-hour and 48-hour delivery.',
       },
       {
         q: 'Do you ship internationally?',
-        a: 'Yes, we ship worldwide. International shipping times and rates vary by location.'
+        a: 'Yes, we ship worldwide. International shipping times and rates vary by location.',
       },
       {
         q: 'How can I track my order?',
-        a: 'Once your order ships, you\'ll receive a tracking number via email. You can also track your order on our website.'
+        a: "Once your order ships, you'll receive a tracking number via email. You can also track your order on our website.",
       },
       {
         q: 'What are your shipping costs?',
-        a: 'Shipping costs depend on order size and delivery speed. Free shipping is available on orders over $100.'
-      }
-    ]
+        a: 'Shipping costs depend on order size and delivery speed. Free shipping is available on orders over $100.',
+      },
+    ],
   },
   {
     category: 'Design & Files',
@@ -68,21 +73,21 @@ const faqs = [
     questions: [
       {
         q: 'Do you offer design services?',
-        a: 'Yes! Our professional design team can help create custom designs for your printing needs. Contact us for pricing.'
+        a: 'Yes! Our professional design team can help create custom designs for your printing needs. Contact us for pricing.',
       },
       {
         q: 'What resolution should my files be?',
-        a: 'Files should be at least 300 DPI for optimal print quality. Lower resolutions may result in pixelated prints.'
+        a: 'Files should be at least 300 DPI for optimal print quality. Lower resolutions may result in pixelated prints.',
       },
       {
         q: 'Can you match specific colors?',
-        a: 'We use CMYK printing and can match most colors. For exact color matching, please provide Pantone color codes.'
+        a: 'We use CMYK printing and can match most colors. For exact color matching, please provide Pantone color codes.',
       },
       {
         q: 'How do I prepare files for printing?',
-        a: 'Ensure your files are in CMYK color mode, include 0.125" bleed, and embed all fonts. Our templates can help.'
-      }
-    ]
+        a: 'Ensure your files are in CMYK color mode, include 0.125" bleed, and embed all fonts. Our templates can help.',
+      },
+    ],
   },
   {
     category: 'Payment & Pricing',
@@ -90,30 +95,30 @@ const faqs = [
     questions: [
       {
         q: 'What payment methods do you accept?',
-        a: 'We accept all major credit cards, debit cards, and PayPal through our secure Square payment system.'
+        a: 'We accept all major credit cards, debit cards, and PayPal through our secure Square payment system.',
       },
       {
         q: 'Do you offer bulk discounts?',
-        a: 'Yes! The more you order, the more you save. Bulk pricing is automatically applied in your cart.'
+        a: 'Yes! The more you order, the more you save. Bulk pricing is automatically applied in your cart.',
       },
       {
         q: 'Can I get a custom quote?',
-        a: 'Absolutely! For special projects or large orders, request a custom quote through our contact form.'
+        a: 'Absolutely! For special projects or large orders, request a custom quote through our contact form.',
       },
       {
         q: 'Is payment secure?',
-        a: 'Yes, all payments are processed through Square\'s secure, PCI-compliant payment system.'
-      }
-    ]
-  }
+        a: "Yes, all payments are processed through Square's secure, PCI-compliant payment system.",
+      },
+    ],
+  },
 ]
 
 export default function HelpCenterPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
-  const filteredFaqs = selectedCategory 
-    ? faqs.filter(cat => cat.category === selectedCategory)
+  const filteredFaqs = selectedCategory
+    ? faqs.filter((cat) => cat.category === selectedCategory)
     : faqs
 
   return (
@@ -127,7 +132,7 @@ export default function HelpCenterPage() {
             <p className="text-lg text-muted-foreground mb-8">
               Find answers to common questions or contact our support team
             </p>
-            
+
             {/* Search Bar */}
             <div className="relative max-w-xl mx-auto">
               <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -150,12 +155,14 @@ export default function HelpCenterPage() {
               {faqs.map((category) => {
                 const Icon = category.icon
                 return (
-                  <Card 
+                  <Card
                     key={category.category}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
-                    onClick={() => setSelectedCategory(
-                      selectedCategory === category.category ? null : category.category
-                    )}
+                    onClick={() =>
+                      setSelectedCategory(
+                        selectedCategory === category.category ? null : category.category
+                      )
+                    }
                   >
                     <CardContent className="p-6 text-center">
                       <Icon className="h-8 w-8 text-primary mx-auto mb-3" />
@@ -179,7 +186,7 @@ export default function HelpCenterPage() {
             <h2 className="text-2xl font-bold mb-8">
               {selectedCategory ? `${selectedCategory} Questions` : 'Frequently Asked Questions'}
             </h2>
-            
+
             {filteredFaqs.map((category) => (
               <div key={category.category} className="mb-8">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -189,12 +196,8 @@ export default function HelpCenterPage() {
                 <Accordion collapsible className="space-y-2" type="single">
                   {category.questions.map((faq, index) => (
                     <AccordionItem key={index} value={`${category.category}-${index}`}>
-                      <AccordionTrigger className="text-left">
-                        {faq.q}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground">
-                        {faq.a}
-                      </AccordionContent>
+                      <AccordionTrigger className="text-left">{faq.q}</AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground">{faq.a}</AccordionContent>
                     </AccordionItem>
                   ))}
                 </Accordion>
@@ -209,44 +212,39 @@ export default function HelpCenterPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4">Still Need Help?</h2>
-            <p className="text-muted-foreground mb-8">
-              Our support team is here to assist you
-            </p>
-            
+            <p className="text-muted-foreground mb-8">Our support team is here to assist you</p>
+
             <div className="grid sm:grid-cols-3 gap-6">
               <Card>
                 <CardContent className="p-6">
                   <Phone className="h-8 w-8 text-primary mx-auto mb-3" />
                   <h3 className="font-semibold mb-2">Call Us</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Mon-Fri 9am-6pm CST
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-3">Mon-Fri 9am-6pm CST</p>
                   <a className="text-primary hover:underline" href="tel:1-800-PRINTING">
                     1-800-PRINTING
                   </a>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <Mail className="h-8 w-8 text-primary mx-auto mb-3" />
                   <h3 className="font-semibold mb-2">Email Us</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    24/7 Support
-                  </p>
-                  <a className="text-primary hover:underline" href="mailto:support@gangrunprinting.com">
+                  <p className="text-sm text-muted-foreground mb-3">24/7 Support</p>
+                  <a
+                    className="text-primary hover:underline"
+                    href="mailto:support@gangrunprinting.com"
+                  >
                     support@gangrunprinting.com
                   </a>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <MessageSquare className="h-8 w-8 text-primary mx-auto mb-3" />
                   <h3 className="font-semibold mb-2">Live Chat</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Available 9am-6pm CST
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-3">Available 9am-6pm CST</p>
                   <Button size="sm">Start Chat</Button>
                 </CardContent>
               </Card>

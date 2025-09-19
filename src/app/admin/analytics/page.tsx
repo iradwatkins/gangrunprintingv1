@@ -11,7 +11,7 @@ import {
   Users,
   BarChart3,
   Download,
-  Filter
+  Filter,
 } from 'lucide-react'
 import { AnalyticsService, type DateRange } from '@/lib/admin/analytics'
 import { RevenueChart } from '@/components/admin/analytics/revenue-chart'
@@ -38,25 +38,25 @@ async function getAnalyticsData(period: string = '30d') {
     case '7d':
       dateRange = {
         from: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-        to: now
+        to: now,
       }
       break
     case '90d':
       dateRange = {
         from: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
-        to: now
+        to: now,
       }
       break
     case '1y':
       dateRange = {
         from: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000),
-        to: now
+        to: now,
       }
       break
     default: // 30d
       dateRange = {
         from: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
-        to: now
+        to: now,
       }
   }
 
@@ -65,7 +65,7 @@ async function getAnalyticsData(period: string = '30d') {
       AnalyticsService.getMetrics(dateRange),
       AnalyticsService.getChartData(dateRange),
       AnalyticsService.getTopCustomers(dateRange),
-      AnalyticsService.getOrderStatusBreakdown(dateRange)
+      AnalyticsService.getOrderStatusBreakdown(dateRange),
     ])
 
     return {
@@ -73,7 +73,7 @@ async function getAnalyticsData(period: string = '30d') {
       chartData,
       topCustomers,
       orderStatus,
-      period
+      period,
     }
   } catch (error) {
     console.error('Error fetching analytics data:', error)
@@ -83,7 +83,7 @@ async function getAnalyticsData(period: string = '30d') {
       topCustomers: [],
       orderStatus: [],
       period,
-      error: 'Failed to load analytics data'
+      error: 'Failed to load analytics data',
     }
   }
 }
@@ -91,7 +91,7 @@ async function getAnalyticsData(period: string = '30d') {
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
   }).format(amount)
 }
 
@@ -104,7 +104,7 @@ function MetricCard({
   value,
   change,
   icon,
-  subtitle
+  subtitle,
 }: {
   title: string
   value: string
@@ -121,14 +121,14 @@ function MetricCard({
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {change !== undefined && (
-          <div className={`text-xs flex items-center ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div
+            className={`text-xs flex items-center ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}
+          >
             <TrendingUp className={`h-3 w-3 mr-1 ${change < 0 ? 'rotate-180' : ''}`} />
             {formatPercent(change)} from last period
           </div>
         )}
-        {subtitle && (
-          <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
-        )}
+        {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
       </CardContent>
     </Card>
   )
@@ -144,7 +144,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-            <p className="text-muted-foreground">Comprehensive business insights and performance metrics</p>
+            <p className="text-muted-foreground">
+              Comprehensive business insights and performance metrics
+            </p>
           </div>
         </div>
 
@@ -179,7 +181,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     '7d': 'Last 7 days',
     '30d': 'Last 30 days',
     '90d': 'Last 90 days',
-    '1y': 'Last year'
+    '1y': 'Last year',
   }
 
   return (
@@ -189,7 +191,8 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            Comprehensive business insights and performance metrics for {periodLabels[period as keyof typeof periodLabels]}
+            Comprehensive business insights and performance metrics for{' '}
+            {periodLabels[period as keyof typeof periodLabels]}
           </p>
         </div>
 
@@ -208,12 +211,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
       {/* Period Selection */}
       <div className="flex gap-2">
         {Object.entries(periodLabels).map(([key, label]) => (
-          <Button
-            key={key}
-            asChild
-            size="sm"
-            variant={period === key ? "default" : "outline"}
-          >
+          <Button key={key} asChild size="sm" variant={period === key ? 'default' : 'outline'}>
             <a href={`/admin/analytics?period=${key}`}>{label}</a>
           </Button>
         ))}
@@ -299,12 +297,12 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
               <CardContent>
                 <Suspense fallback={<div className="h-[300px] animate-pulse bg-muted rounded" />}>
                   <TopProductsTable
-                    products={metrics.products.topSelling.map(product => ({
+                    products={metrics.products.topSelling.map((product) => ({
                       id: product.id,
                       name: product.name,
                       orderCount: product.quantity,
                       revenue: product.revenue,
-                      category: 'General' // Default category as we don't have it in the current data
+                      category: 'General', // Default category as we don't have it in the current data
                     }))}
                   />
                 </Suspense>
@@ -373,12 +371,12 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
             </CardHeader>
             <CardContent>
               <TopProductsTable
-                products={metrics.products.topSelling.map(product => ({
+                products={metrics.products.topSelling.map((product) => ({
                   id: product.id,
                   name: product.name,
                   orderCount: product.quantity,
                   revenue: product.revenue,
-                  category: 'General'
+                  category: 'General',
                 }))}
               />
             </CardContent>
@@ -398,7 +396,11 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                   <CustomerInsightsChart
                     data={[
                       { name: 'New Customers', value: metrics.customers.new, color: '#8884d8' },
-                      { name: 'Returning Customers', value: metrics.customers.returning, color: '#82ca9d' }
+                      {
+                        name: 'Returning Customers',
+                        value: metrics.customers.returning,
+                        color: '#82ca9d',
+                      },
                     ]}
                   />
                 </Suspense>
@@ -426,11 +428,15 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Repeat Customer Rate</span>
-                    <span className="font-semibold">{metrics.conversion.repeatCustomerRate.toFixed(1)}%</span>
+                    <span className="font-semibold">
+                      {metrics.conversion.repeatCustomerRate.toFixed(1)}%
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Average Order Value</span>
-                    <span className="font-semibold">{formatCurrency(metrics.conversion.averageOrderValue)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(metrics.conversion.averageOrderValue)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -474,13 +480,17 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Order Growth</span>
-                    <span className={`font-semibold ${metrics.orders.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span
+                      className={`font-semibold ${metrics.orders.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
                       {formatPercent(metrics.orders.growth)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Average Order Value</span>
-                    <span className="font-semibold">{formatCurrency(metrics.conversion.averageOrderValue)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(metrics.conversion.averageOrderValue)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Conversion Rate</span>

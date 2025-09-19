@@ -12,7 +12,7 @@ async function getCustomersData() {
   // Get all customers with their order stats
   const customers = await prisma.user.findMany({
     where: {
-      role: 'CUSTOMER'
+      role: 'CUSTOMER',
     },
     include: {
       orders: {
@@ -20,25 +20,24 @@ async function getCustomersData() {
           id: true,
           total: true,
           status: true,
-          createdAt: true
-        }
-      }
+          createdAt: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: 'desc',
+    },
   })
 
   // Calculate customer stats
-  const customersWithStats = customers.map(customer => {
+  const customersWithStats = customers.map((customer) => {
     const orders = customer.orders || []
     const totalSpent = orders
-      .filter(o => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
+      .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REFUNDED')
       .reduce((sum, order) => sum + (order.total || 0), 0)
-    
-    const lastOrderDate = orders.length > 0 
-      ? Math.max(...orders.map(o => new Date(o.createdAt).getTime()))
-      : null
+
+    const lastOrderDate =
+      orders.length > 0 ? Math.max(...orders.map((o) => new Date(o.createdAt).getTime())) : null
 
     return {
       id: customer.id,
@@ -48,22 +47,27 @@ async function getCustomersData() {
       totalOrders: orders.length,
       totalSpent,
       lastOrderDate: lastOrderDate ? new Date(lastOrderDate) : null,
-      status: customer.emailVerified ? 'verified' : 'unverified'
+      status: customer.emailVerified ? 'verified' : 'unverified',
     }
   })
 
   // Get summary stats
   const totalCustomers = customers.length
   const totalRevenue = customersWithStats.reduce((sum, c) => sum + c.totalSpent, 0)
-  const avgOrderValue = totalRevenue / Math.max(customersWithStats.reduce((sum, c) => sum + c.totalOrders, 0), 1)
-  
+  const avgOrderValue =
+    totalRevenue /
+    Math.max(
+      customersWithStats.reduce((sum, c) => sum + c.totalOrders, 0),
+      1
+    )
+
   // Get new customers this month
   const startOfMonth = new Date()
   startOfMonth.setDate(1)
   startOfMonth.setHours(0, 0, 0, 0)
-  
-  const newCustomersThisMonth = customers.filter(c => 
-    new Date(c.createdAt) >= startOfMonth
+
+  const newCustomersThisMonth = customers.filter(
+    (c) => new Date(c.createdAt) >= startOfMonth
   ).length
 
   return {
@@ -72,8 +76,8 @@ async function getCustomersData() {
       totalCustomers,
       newCustomersThisMonth,
       totalRevenue,
-      avgOrderValue
-    }
+      avgOrderValue,
+    },
   }
 }
 
@@ -91,9 +95,7 @@ export default async function CustomersPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            Export CSV
-          </Button>
+          <Button variant="outline">Export CSV</Button>
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />
             Add Customer
@@ -105,9 +107,7 @@ export default async function CustomersPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Customers
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -120,50 +120,34 @@ export default async function CustomersPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              New This Month
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">New This Month</CardTitle>
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.newCustomersThisMonth}</div>
-            <p className="text-xs text-muted-foreground">
-              Customer acquisition
-            </p>
+            <p className="text-xs text-muted-foreground">Customer acquisition</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Revenue
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${(stats.totalRevenue / 100).toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Lifetime value
-            </p>
+            <div className="text-2xl font-bold">${(stats.totalRevenue / 100).toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Lifetime value</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Avg Order Value
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${(stats.avgOrderValue / 100).toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Per order average
-            </p>
+            <div className="text-2xl font-bold">${(stats.avgOrderValue / 100).toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Per order average</p>
           </CardContent>
         </Card>
       </div>

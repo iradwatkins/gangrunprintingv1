@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { basePriceEngine, type PricingInput } from '@/lib/pricing/base-price-engine'
 
@@ -28,10 +28,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!data.paperStockId) {
-      return NextResponse.json(
-        { error: 'Paper stock ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Paper stock ID is required' }, { status: 400 })
     }
 
     if (!['single', 'double'].includes(data.sides)) {
@@ -45,15 +42,12 @@ export async function POST(request: NextRequest) {
     const paperStock = await prisma.paperStock.findUnique({
       where: { id: data.paperStockId },
       include: {
-        paperException: true
-      }
+        paperException: true,
+      },
     })
 
     if (!paperStock) {
-      return NextResponse.json(
-        { error: 'Paper stock not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }
 
     let standardSize = null
@@ -72,21 +66,15 @@ export async function POST(request: NextRequest) {
       // Note: This API still uses StandardSize for backwards compatibility
       // Size group relationships are handled at the product level
       standardSize = await prisma.standardSize.findUnique({
-        where: { id: data.standardSizeId }
+        where: { id: data.standardSizeId },
       })
 
       if (!standardSize) {
-        return NextResponse.json(
-          { error: 'Standard size not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Standard size not found' }, { status: 404 })
       }
 
       if (!standardSize.isActive) {
-        return NextResponse.json(
-          { error: 'Selected size is not active' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Selected size is not active' }, { status: 400 })
       }
     }
 
@@ -100,28 +88,22 @@ export async function POST(request: NextRequest) {
       }
 
       standardQuantity = await prisma.standardQuantity.findUnique({
-        where: { id: data.standardQuantityId }
+        where: { id: data.standardQuantityId },
       })
 
       if (!standardQuantity) {
-        return NextResponse.json(
-          { error: 'Standard quantity not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Standard quantity not found' }, { status: 404 })
       }
 
       if (!standardQuantity.isActive) {
-        return NextResponse.json(
-          { error: 'Selected quantity is not active' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Selected quantity is not active' }, { status: 400 })
       }
     }
 
     // Load product configuration if product specified
     if (data.productId) {
       productConfig = await prisma.productPricingConfig.findUnique({
-        where: { productId: data.productId }
+        where: { productId: data.productId },
       })
 
       // Validate custom options are allowed for this product
@@ -132,7 +114,11 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      if (data.quantitySelection === 'custom' && productConfig && !productConfig.allowCustomQuantity) {
+      if (
+        data.quantitySelection === 'custom' &&
+        productConfig &&
+        !productConfig.allowCustomQuantity
+      ) {
         return NextResponse.json(
           { error: 'Custom quantity is not allowed for this product' },
           { status: 400 }
@@ -141,25 +127,41 @@ export async function POST(request: NextRequest) {
 
       // Validate custom dimensions within limits
       if (data.sizeSelection === 'custom' && productConfig) {
-        if (data.customWidth && productConfig.minCustomWidth && data.customWidth < productConfig.minCustomWidth) {
+        if (
+          data.customWidth &&
+          productConfig.minCustomWidth &&
+          data.customWidth < productConfig.minCustomWidth
+        ) {
           return NextResponse.json(
             { error: `Minimum width is ${productConfig.minCustomWidth} inches` },
             { status: 400 }
           )
         }
-        if (data.customWidth && productConfig.maxCustomWidth && data.customWidth > productConfig.maxCustomWidth) {
+        if (
+          data.customWidth &&
+          productConfig.maxCustomWidth &&
+          data.customWidth > productConfig.maxCustomWidth
+        ) {
           return NextResponse.json(
             { error: `Maximum width is ${productConfig.maxCustomWidth} inches` },
             { status: 400 }
           )
         }
-        if (data.customHeight && productConfig.minCustomHeight && data.customHeight < productConfig.minCustomHeight) {
+        if (
+          data.customHeight &&
+          productConfig.minCustomHeight &&
+          data.customHeight < productConfig.minCustomHeight
+        ) {
           return NextResponse.json(
             { error: `Minimum height is ${productConfig.minCustomHeight} inches` },
             { status: 400 }
           )
         }
-        if (data.customHeight && productConfig.maxCustomHeight && data.customHeight > productConfig.maxCustomHeight) {
+        if (
+          data.customHeight &&
+          productConfig.maxCustomHeight &&
+          data.customHeight > productConfig.maxCustomHeight
+        ) {
           return NextResponse.json(
             { error: `Maximum height is ${productConfig.maxCustomHeight} inches` },
             { status: 400 }
@@ -169,13 +171,21 @@ export async function POST(request: NextRequest) {
 
       // Validate custom quantity within limits
       if (data.quantitySelection === 'custom' && productConfig) {
-        if (data.customQuantity && productConfig.minCustomQuantity && data.customQuantity < productConfig.minCustomQuantity) {
+        if (
+          data.customQuantity &&
+          productConfig.minCustomQuantity &&
+          data.customQuantity < productConfig.minCustomQuantity
+        ) {
           return NextResponse.json(
             { error: `Minimum quantity is ${productConfig.minCustomQuantity}` },
             { status: 400 }
           )
         }
-        if (data.customQuantity && productConfig.maxCustomQuantity && data.customQuantity > productConfig.maxCustomQuantity) {
+        if (
+          data.customQuantity &&
+          productConfig.maxCustomQuantity &&
+          data.customQuantity > productConfig.maxCustomQuantity
+        ) {
           return NextResponse.json(
             { error: `Maximum quantity is ${productConfig.maxCustomQuantity}` },
             { status: 400 }
@@ -196,7 +206,7 @@ export async function POST(request: NextRequest) {
       basePaperPrice: paperStock.pricePerSqInch,
       sides: data.sides,
       isExceptionPaper: !!paperStock.paperException,
-      paperException: paperStock.paperException || undefined
+      paperException: paperStock.paperException || undefined,
     }
 
     // Calculate base price using exact formula
@@ -207,7 +217,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Pricing calculation validation failed',
-          details: result.validation.errors
+          details: result.validation.errors,
         },
         { status: 400 }
       )
@@ -223,45 +233,47 @@ export async function POST(request: NextRequest) {
         name: paperStock.name,
         pricePerSqInch: paperStock.pricePerSqInch,
         isExceptionPaper: !!paperStock.paperException,
-        exceptionType: paperStock.paperException?.exceptionType
+        exceptionType: paperStock.paperException?.exceptionType,
       },
-      standardSize: standardSize ? {
-        id: standardSize.id,
-        name: standardSize.name,
-        displayName: standardSize.displayName,
-        preCalculatedValue: standardSize.preCalculatedValue
-      } : null,
-      standardQuantity: standardQuantity ? {
-        id: standardQuantity.id,
-        displayValue: standardQuantity.displayValue,
-        calculationValue: standardQuantity.calculationValue,
-        adjustmentValue: standardQuantity.adjustmentValue
-      } : null,
+      standardSize: standardSize
+        ? {
+            id: standardSize.id,
+            name: standardSize.name,
+            displayName: standardSize.displayName,
+            preCalculatedValue: standardSize.preCalculatedValue,
+          }
+        : null,
+      standardQuantity: standardQuantity
+        ? {
+            id: standardQuantity.id,
+            displayValue: standardQuantity.displayValue,
+            calculationValue: standardQuantity.calculationValue,
+            adjustmentValue: standardQuantity.adjustmentValue,
+          }
+        : null,
       customValues: {
         width: data.customWidth,
         height: data.customHeight,
-        quantity: data.customQuantity
+        quantity: data.customQuantity,
       },
-      productConfig: productConfig ? {
-        allowCustomSize: productConfig.allowCustomSize,
-        allowCustomQuantity: productConfig.allowCustomQuantity,
-        limits: {
-          minCustomWidth: productConfig.minCustomWidth,
-          maxCustomWidth: productConfig.maxCustomWidth,
-          minCustomHeight: productConfig.minCustomHeight,
-          maxCustomHeight: productConfig.maxCustomHeight,
-          minCustomQuantity: productConfig.minCustomQuantity,
-          maxCustomQuantity: productConfig.maxCustomQuantity
-        }
-      } : null
+      productConfig: productConfig
+        ? {
+            allowCustomSize: productConfig.allowCustomSize,
+            allowCustomQuantity: productConfig.allowCustomQuantity,
+            limits: {
+              minCustomWidth: productConfig.minCustomWidth,
+              maxCustomWidth: productConfig.maxCustomWidth,
+              minCustomHeight: productConfig.minCustomHeight,
+              maxCustomHeight: productConfig.maxCustomHeight,
+              minCustomQuantity: productConfig.minCustomQuantity,
+              maxCustomQuantity: productConfig.maxCustomQuantity,
+            },
+          }
+        : null,
     })
-
   } catch (error) {
     console.error('Error calculating base price:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate base price' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate base price' }, { status: 500 })
   }
 }
 
@@ -271,27 +283,27 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const productId = searchParams.get('productId')
 
-    let query: any = {
+    const query: any = {
       include: {
         _count: {
           select: {
             productSizes: true,
-            productQuantityGroups: true
-          }
-        }
-      }
+            productQuantityGroups: true,
+          },
+        },
+      },
     }
 
     // Get available sizes
     const sizes = await prisma.standardSize.findMany({
       where: { isActive: true },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     // Get available quantities
     const quantities = await prisma.standardQuantity.findMany({
       where: { isActive: true },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     let productConfig = null
@@ -301,49 +313,52 @@ export async function GET(request: NextRequest) {
     if (productId) {
       // Get product-specific configuration
       productConfig = await prisma.productPricingConfig.findUnique({
-        where: { productId }
+        where: { productId },
       })
 
       // Get product-specific sizes
       const productSizeLinks = await prisma.productSize.findMany({
         where: {
           productId,
-          isActive: true
+          isActive: true,
         },
         include: {
-          standardSize: true
+          standardSize: true,
         },
         orderBy: {
           standardSize: {
-            sortOrder: 'asc'
-          }
-        }
+            sortOrder: 'asc',
+          },
+        },
       })
 
-      productSizes = productSizeLinks.map(link => ({
+      productSizes = productSizeLinks.map((link) => ({
         ...link.standardSize,
-        isDefault: link.isDefault
+        isDefault: link.isDefault,
       }))
 
       // Get product-specific quantity groups
       const productQuantityGroupLinks = await prisma.productQuantityGroup.findMany({
         where: {
-          productId
+          productId,
         },
         include: {
-          quantityGroup: true
+          quantityGroup: true,
         },
         orderBy: {
           quantityGroup: {
-            sortOrder: 'asc'
-          }
-        }
+            sortOrder: 'asc',
+          },
+        },
       })
 
       // For each quantity group, parse the quantities and return them as individual options
-      productQuantities = productQuantityGroupLinks.flatMap(link => {
+      productQuantities = productQuantityGroupLinks.flatMap((link) => {
         const group = link.quantityGroup
-        const valuesList = group.values.split(',').map(v => v.trim()).filter(v => v)
+        const valuesList = group.values
+          .split(',')
+          .map((v) => v.trim())
+          .filter((v) => v)
 
         return valuesList.map((value, index) => ({
           id: `${group.id}-${index}`, // Create unique ID for each quantity value
@@ -355,7 +370,7 @@ export async function GET(request: NextRequest) {
           isDefault: value === group.defaultValue,
           groupId: group.id,
           groupName: group.name,
-          isCustom: value.toLowerCase() === 'custom'
+          isCustom: value.toLowerCase() === 'custom',
         }))
       })
     }
@@ -366,14 +381,10 @@ export async function GET(request: NextRequest) {
       quantities: productId ? productQuantities : quantities,
       productConfig,
       allSizes: sizes,
-      allQuantities: quantities
+      allQuantities: quantities,
     })
-
   } catch (error) {
     console.error('Error fetching pricing configuration:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch pricing configuration' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch pricing configuration' }, { status: 500 })
   }
 }

@@ -3,7 +3,15 @@ import { type CustomerSegment, type User, type Order } from '@prisma/client'
 
 export interface SegmentCriteria {
   name: string
-  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'in' | 'not_in' | 'between'
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'greater_than'
+    | 'less_than'
+    | 'contains'
+    | 'in'
+    | 'not_in'
+    | 'between'
   value: any
   field: string
   type: 'user' | 'order' | 'custom'
@@ -162,7 +170,7 @@ export class SegmentationService {
         isFirstRule = false
       } else {
         // Apply AND logic between rules (you can modify this for OR logic)
-        userIds = new Set([...userIds].filter(id => ruleUserIds.includes(id)))
+        userIds = new Set([...userIds].filter((id) => ruleUserIds.includes(id)))
       }
     }
 
@@ -180,7 +188,7 @@ export class SegmentationService {
 
     if (logic === 'OR') {
       const allIds = new Set<string>()
-      results.forEach(ids => ids.forEach(id => allIds.add(id)))
+      results.forEach((ids) => ids.forEach((id) => allIds.add(id)))
       return Array.from(allIds)
     } else {
       // AND logic
@@ -188,7 +196,7 @@ export class SegmentationService {
 
       let intersection = new Set(results[0])
       for (let i = 1; i < results.length; i++) {
-        intersection = new Set([...intersection].filter(id => results[i].includes(id)))
+        intersection = new Set([...intersection].filter((id) => results[i].includes(id)))
       }
       return Array.from(intersection)
     }
@@ -243,7 +251,7 @@ export class SegmentationService {
       select: { id: true },
     })
 
-    return users.map(user => user.id)
+    return users.map((user) => user.id)
   }
 
   private static async evaluateOrderCriterion(
@@ -282,7 +290,7 @@ export class SegmentationService {
       distinct: ['userId'],
     })
 
-    return orders.map(order => order.userId).filter(Boolean) as string[]
+    return orders.map((order) => order.userId).filter(Boolean) as string[]
   }
 
   private static async evaluateOrderCountCriterion(
@@ -302,11 +310,11 @@ export class SegmentationService {
     })
 
     return orderCounts
-      .filter(group => {
+      .filter((group) => {
         const count = group._count.id
         return this.compareValues(count, operator, value)
       })
-      .map(group => group.userId)
+      .map((group) => group.userId)
       .filter(Boolean) as string[]
   }
 
@@ -327,11 +335,11 @@ export class SegmentationService {
     })
 
     return totals
-      .filter(group => {
+      .filter((group) => {
         const total = group._sum.total || 0
         return this.compareValues(total, operator, value)
       })
-      .map(group => group.userId)
+      .map((group) => group.userId)
       .filter(Boolean) as string[]
   }
 
@@ -353,14 +361,14 @@ export class SegmentationService {
 
     const now = new Date()
     return lastOrders
-      .filter(group => {
+      .filter((group) => {
         if (!group._max.createdAt) return false
         const daysSince = Math.floor(
           (now.getTime() - group._max.createdAt.getTime()) / (1000 * 60 * 60 * 24)
         )
         return this.compareValues(daysSince, operator, value)
       })
-      .map(group => group.userId)
+      .map((group) => group.userId)
       .filter(Boolean) as string[]
   }
 
@@ -383,8 +391,8 @@ export class SegmentationService {
   private static async evaluateRFMScore(operator: string, value: string): Promise<string[]> {
     const rfmData = await this.calculateRFMAnalysis()
     return rfmData
-      .filter(customer => this.compareValues(customer.rfmScore, operator, value))
-      .map(customer => customer.userId)
+      .filter((customer) => this.compareValues(customer.rfmScore, operator, value))
+      .map((customer) => customer.userId)
   }
 
   private static async evaluateEngagementScore(operator: string, value: number): Promise<string[]> {
@@ -405,11 +413,11 @@ export class SegmentationService {
     })
 
     return engagementData
-      .filter(group => {
+      .filter((group) => {
         const score = group._count.openedAt + group._count.clickedAt * 2
         return this.compareValues(score, operator, value)
       })
-      .map(group => group.userId)
+      .map((group) => group.userId)
       .filter(Boolean) as string[]
   }
 
@@ -484,7 +492,7 @@ export class SegmentationService {
       if (user.orders.length === 0) continue
 
       // Calculate Recency (days since last order)
-      const lastOrderDate = Math.max(...user.orders.map(order => order.createdAt.getTime()))
+      const lastOrderDate = Math.max(...user.orders.map((order) => order.createdAt.getTime()))
       const recency = Math.floor((now.getTime() - lastOrderDate) / (1000 * 60 * 60 * 24))
 
       // Calculate Frequency (number of orders)
@@ -507,9 +515,9 @@ export class SegmentationService {
     }
 
     // Calculate scores using quintiles
-    const recencyValues = rfmData.map(d => d.recency).sort((a, b) => a - b)
-    const frequencyValues = rfmData.map(d => d.frequency).sort((a, b) => b - a)
-    const monetaryValues = rfmData.map(d => d.monetary).sort((a, b) => b - a)
+    const recencyValues = rfmData.map((d) => d.recency).sort((a, b) => a - b)
+    const frequencyValues = rfmData.map((d) => d.frequency).sort((a, b) => b - a)
+    const monetaryValues = rfmData.map((d) => d.monetary).sort((a, b) => b - a)
 
     const getQuintile = (value: number, values: number[], reverse = false): number => {
       const quintileSize = Math.ceil(values.length / 5)
@@ -582,22 +590,28 @@ export class SegmentationService {
     })
 
     const recencies = lastOrderDates
-      .filter(group => group._max.createdAt)
-      .map(group => Math.floor((now.getTime() - group._max.createdAt!.getTime()) / (1000 * 60 * 60 * 24)))
+      .filter((group) => group._max.createdAt)
+      .map((group) =>
+        Math.floor((now.getTime() - group._max.createdAt!.getTime()) / (1000 * 60 * 60 * 24))
+      )
 
-    const averageRecency = recencies.length > 0 ? recencies.reduce((a, b) => a + b, 0) / recencies.length : 0
+    const averageRecency =
+      recencies.length > 0 ? recencies.reduce((a, b) => a + b, 0) / recencies.length : 0
 
     // Top products
-    const productStats = orders.reduce((acc, order) => {
-      order.OrderItem.forEach(item => {
-        if (!acc[item.productName]) {
-          acc[item.productName] = { orderCount: 0, revenue: 0 }
-        }
-        acc[item.productName].orderCount += item.quantity
-        acc[item.productName].revenue += item.price * item.quantity
-      })
-      return acc
-    }, {} as Record<string, { orderCount: number; revenue: number }>)
+    const productStats = orders.reduce(
+      (acc, order) => {
+        order.OrderItem.forEach((item) => {
+          if (!acc[item.productName]) {
+            acc[item.productName] = { orderCount: 0, revenue: 0 }
+          }
+          acc[item.productName].orderCount += item.quantity
+          acc[item.productName].revenue += item.price * item.quantity
+        })
+        return acc
+      },
+      {} as Record<string, { orderCount: number; revenue: number }>
+    )
 
     const topProducts = Object.entries(productStats)
       .map(([productName, stats]) => ({ productName, ...stats }))
@@ -605,14 +619,17 @@ export class SegmentationService {
       .slice(0, 5)
 
     // Geographic distribution (simplified - based on shipping address)
-    const locations = orders.reduce((acc, order) => {
-      if (order.shippingAddress && typeof order.shippingAddress === 'object') {
-        const address = order.shippingAddress as any
-        const location = address.state || address.city || 'Unknown'
-        acc[location] = (acc[location] || 0) + 1
-      }
-      return acc
-    }, {} as Record<string, number>)
+    const locations = orders.reduce(
+      (acc, order) => {
+        if (order.shippingAddress && typeof order.shippingAddress === 'object') {
+          const address = order.shippingAddress as any
+          const location = address.state || address.city || 'Unknown'
+          acc[location] = (acc[location] || 0) + 1
+        }
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     const geographicDistribution = Object.entries(locations)
       .map(([location, customerCount]) => ({ location, customerCount }))
@@ -630,8 +647,8 @@ export class SegmentationService {
     })
 
     const totalSends = campaignSends.length
-    const opens = campaignSends.filter(send => send.openedAt).length
-    const clicks = campaignSends.filter(send => send.clickedAt).length
+    const opens = campaignSends.filter((send) => send.openedAt).length
+    const clicks = campaignSends.filter((send) => send.clickedAt).length
 
     const engagementMetrics = {
       emailOpenRate: totalSends > 0 ? (opens / totalSends) * 100 : 0,
@@ -685,7 +702,7 @@ export class SegmentationService {
       },
       {
         name: 'At Risk Customers',
-        description: 'Customers who haven\'t ordered in 90+ days',
+        description: "Customers who haven't ordered in 90+ days",
         rules: [
           {
             criteria: [

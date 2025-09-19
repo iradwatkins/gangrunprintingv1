@@ -15,9 +15,7 @@ export function PaymentSettingsForm() {
           <CreditCard className="h-5 w-5" />
           Payment Configuration
         </CardTitle>
-        <CardDescription>
-          Configure payment methods and processing settings
-        </CardDescription>
+        <CardDescription>Configure payment methods and processing settings</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

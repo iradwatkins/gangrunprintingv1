@@ -42,7 +42,7 @@ import {
   UserX,
   Clock,
   Mail,
-  Phone
+  Phone,
 } from 'lucide-react'
 
 interface StaffMember {
@@ -67,10 +67,11 @@ export function StaffTable({ staff }: StaffTableProps) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // Filter staff based on search
-  const filteredStaff = staff.filter(member =>
-    member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStaff = staff.filter(
+    (member) =>
+      member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // Sort staff
@@ -102,7 +103,7 @@ export function StaffTable({ staff }: StaffTableProps) {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -112,7 +113,7 @@ export function StaffTable({ staff }: StaffTableProps) {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
@@ -226,9 +227,7 @@ export function StaffTable({ staff }: StaffTableProps) {
                 <TableRow key={member.id}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">
-                        {member.name || 'Unnamed User'}
-                      </div>
+                      <div className="font-medium">{member.name || 'Unnamed User'}</div>
                       <div className="text-sm text-muted-foreground flex items-center gap-1">
                         <Mail className="h-3 w-3" />
                         {member.email}
@@ -242,9 +241,7 @@ export function StaffTable({ staff }: StaffTableProps) {
                       {member.role}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {getStatusBadge(member)}
-                  </TableCell>
+                  <TableCell>{getStatusBadge(member)}</TableCell>
                   <TableCell>
                     <div className="text-sm">
                       {member.permissions.length} permissions
@@ -310,8 +307,8 @@ export function StaffTable({ staff }: StaffTableProps) {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                staff member's account and remove their access to the system.
+                                This action cannot be undone. This will permanently delete the staff
+                                member's account and remove their access to the system.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -342,7 +339,8 @@ export function StaffTable({ staff }: StaffTableProps) {
             Showing {sortedStaff.length} of {staff.length} staff members
           </p>
           <p>
-            {staff.filter(s => s.isActive).length} active, {staff.filter(s => !s.isActive).length} pending
+            {staff.filter((s) => s.isActive).length} active,{' '}
+            {staff.filter((s) => !s.isActive).length} pending
           </p>
         </div>
       )}

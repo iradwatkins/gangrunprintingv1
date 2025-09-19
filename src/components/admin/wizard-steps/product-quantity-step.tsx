@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductQuantities } from '../product-quantities'
 import { Layers, Info } from 'lucide-react'
@@ -63,7 +57,7 @@ export function ProductQuantityStep({
     onUpdate({
       useQuantityGroup: data.useGroup,
       quantityGroupId: data.quantityGroupId || '',
-      quantityIds: data.quantityIds || []
+      quantityIds: data.quantityIds || [],
     })
   }
 
@@ -96,7 +90,7 @@ export function ProductQuantityStep({
         </CardHeader>
         <CardContent>
           {Object.keys(errors).length > 0 && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert className="mb-4" variant="destructive">
               <Info className="h-4 w-4" />
               <AlertDescription>
                 <ul className="space-y-1">
@@ -127,10 +121,22 @@ export function ProductQuantityStep({
             <div className="p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-900 mb-2">Best Practices</h4>
               <ul className="text-sm text-green-800 space-y-1">
-                <li>• <strong>Quantity Groups:</strong> Use predefined groups for consistent pricing across similar products</li>
-                <li>• <strong>Individual Selection:</strong> Choose specific quantities for unique products or special pricing</li>
-                <li>• <strong>Minimum Orders:</strong> Consider your production minimums when setting low quantities</li>
-                <li>• <strong>Bulk Pricing:</strong> Include higher quantities to encourage larger orders</li>
+                <li>
+                  • <strong>Quantity Groups:</strong> Use predefined groups for consistent pricing
+                  across similar products
+                </li>
+                <li>
+                  • <strong>Individual Selection:</strong> Choose specific quantities for unique
+                  products or special pricing
+                </li>
+                <li>
+                  • <strong>Minimum Orders:</strong> Consider your production minimums when setting
+                  low quantities
+                </li>
+                <li>
+                  • <strong>Bulk Pricing:</strong> Include higher quantities to encourage larger
+                  orders
+                </li>
               </ul>
             </div>
 
@@ -160,11 +166,13 @@ export function ProductQuantityStep({
                 <div className="text-sm space-y-1">
                   {formData.useQuantityGroup ? (
                     <div>
-                      <span className="font-medium">Using Quantity Group:</span> {formData.quantityGroupId}
+                      <span className="font-medium">Using Quantity Group:</span>{' '}
+                      {formData.quantityGroupId}
                     </div>
                   ) : (
                     <div>
-                      <span className="font-medium">Individual Quantities:</span> {formData.quantityIds.length} selected
+                      <span className="font-medium">Individual Quantities:</span>{' '}
+                      {formData.quantityIds.length} selected
                     </div>
                   )}
                 </div>

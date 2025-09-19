@@ -5,13 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -20,20 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { 
-  Calculator, 
-  DollarSign, 
-  TrendingUp, 
-  Plus,
-  X,
-  Info
-} from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Calculator, DollarSign, TrendingUp, Plus, X, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Progress } from '@/components/ui/progress'
 
 interface PricingTier {
@@ -59,7 +41,7 @@ export function PricingCalculator({
   paperStocks,
   options,
   pricingTiers,
-  onTiersChange
+  onTiersChange,
 }: PricingCalculatorProps) {
   const [testQuantity, setTestQuantity] = useState(100)
   const [selectedPaperMultiplier, setSelectedPaperMultiplier] = useState(1)
@@ -68,7 +50,7 @@ export function PricingCalculator({
     minQuantity: 0,
     maxQuantity: null,
     pricePerUnit: basePrice,
-    discountPercentage: 0
+    discountPercentage: 0,
   })
 
   const standardQuantities = [100, 250, 500, 1000, 2500, 5000, 10000]
@@ -78,12 +60,37 @@ export function PricingCalculator({
     if (pricingTiers.length === 0 && basePrice > 0) {
       const defaultTiers: PricingTier[] = [
         { minQuantity: 1, maxQuantity: 99, pricePerUnit: basePrice * 1.5, discountPercentage: 0 },
-        { minQuantity: 100, maxQuantity: 249, pricePerUnit: basePrice * 1.3, discountPercentage: 5 },
-        { minQuantity: 250, maxQuantity: 499, pricePerUnit: basePrice * 1.2, discountPercentage: 10 },
-        { minQuantity: 500, maxQuantity: 999, pricePerUnit: basePrice * 1.1, discountPercentage: 15 },
+        {
+          minQuantity: 100,
+          maxQuantity: 249,
+          pricePerUnit: basePrice * 1.3,
+          discountPercentage: 5,
+        },
+        {
+          minQuantity: 250,
+          maxQuantity: 499,
+          pricePerUnit: basePrice * 1.2,
+          discountPercentage: 10,
+        },
+        {
+          minQuantity: 500,
+          maxQuantity: 999,
+          pricePerUnit: basePrice * 1.1,
+          discountPercentage: 15,
+        },
         { minQuantity: 1000, maxQuantity: 2499, pricePerUnit: basePrice, discountPercentage: 20 },
-        { minQuantity: 2500, maxQuantity: 4999, pricePerUnit: basePrice * 0.9, discountPercentage: 25 },
-        { minQuantity: 5000, maxQuantity: null, pricePerUnit: basePrice * 0.8, discountPercentage: 30 },
+        {
+          minQuantity: 2500,
+          maxQuantity: 4999,
+          pricePerUnit: basePrice * 0.9,
+          discountPercentage: 25,
+        },
+        {
+          minQuantity: 5000,
+          maxQuantity: null,
+          pricePerUnit: basePrice * 0.8,
+          discountPercentage: 30,
+        },
       ]
       onTiersChange(defaultTiers)
     }
@@ -91,23 +98,23 @@ export function PricingCalculator({
 
   const calculatePrice = (quantity: number) => {
     // Find applicable tier
-    const tier = pricingTiers.find(t => 
-      quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= t.maxQuantity)
+    const tier = pricingTiers.find(
+      (t) => quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= t.maxQuantity)
     )
-    
+
     if (!tier) {
       return {
         unitPrice: basePrice,
         subtotal: basePrice * quantity,
         setupFee: setupFee,
-        total: (basePrice * quantity) + setupFee,
-        discountPercentage: 0
+        total: basePrice * quantity + setupFee,
+        discountPercentage: 0,
       }
     }
 
     const unitPrice = tier.pricePerUnit * selectedPaperMultiplier
     const optionsTotal = selectedOptionsPrice * quantity
-    const subtotal = (unitPrice * quantity) + optionsTotal
+    const subtotal = unitPrice * quantity + optionsTotal
     const total = subtotal + setupFee
 
     return {
@@ -117,7 +124,7 @@ export function PricingCalculator({
       optionsTotal,
       total,
       discountPercentage: tier.discountPercentage,
-      savings: (basePrice * 1.5 * quantity) - subtotal
+      savings: basePrice * 1.5 * quantity - subtotal,
     }
   }
 
@@ -133,7 +140,7 @@ export function PricingCalculator({
         minQuantity: 0,
         maxQuantity: null,
         pricePerUnit: basePrice,
-        discountPercentage: 0
+        discountPercentage: 0,
       })
     }
   }
@@ -147,7 +154,7 @@ export function PricingCalculator({
     const newTiers = [...pricingTiers]
     newTiers[index] = {
       ...newTiers[index],
-      [field]: value
+      [field]: value,
     }
     onTiersChange(newTiers)
   }
@@ -162,9 +169,7 @@ export function PricingCalculator({
             <Calculator className="h-5 w-5" />
             Quantity-Based Pricing Tiers
           </CardTitle>
-          <CardDescription>
-            Configure pricing tiers based on order quantity
-          </CardDescription>
+          <CardDescription>Configure pricing tiers based on order quantity</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="border rounded-lg">
@@ -186,7 +191,9 @@ export function PricingCalculator({
                         className="w-24"
                         type="number"
                         value={tier.minQuantity}
-                        onChange={(e) => handleTierChange(index, 'minQuantity', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          handleTierChange(index, 'minQuantity', parseInt(e.target.value))
+                        }
                       />
                     </TableCell>
                     <TableCell>
@@ -195,7 +202,13 @@ export function PricingCalculator({
                         placeholder="∞"
                         type="number"
                         value={tier.maxQuantity || ''}
-                        onChange={(e) => handleTierChange(index, 'maxQuantity', e.target.value ? parseInt(e.target.value) : null)}
+                        onChange={(e) =>
+                          handleTierChange(
+                            index,
+                            'maxQuantity',
+                            e.target.value ? parseInt(e.target.value) : null
+                          )
+                        }
                       />
                     </TableCell>
                     <TableCell>
@@ -206,7 +219,9 @@ export function PricingCalculator({
                           step="0.01"
                           type="number"
                           value={tier.pricePerUnit}
-                          onChange={(e) => handleTierChange(index, 'pricePerUnit', parseFloat(e.target.value))}
+                          onChange={(e) =>
+                            handleTierChange(index, 'pricePerUnit', parseFloat(e.target.value))
+                          }
                         />
                       </div>
                     </TableCell>
@@ -216,17 +231,19 @@ export function PricingCalculator({
                           className="w-20"
                           type="number"
                           value={tier.discountPercentage}
-                          onChange={(e) => handleTierChange(index, 'discountPercentage', parseFloat(e.target.value))}
+                          onChange={(e) =>
+                            handleTierChange(
+                              index,
+                              'discountPercentage',
+                              parseFloat(e.target.value)
+                            )
+                          }
                         />
                         <span>%</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleRemoveTier(index)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleRemoveTier(index)}>
                         <X className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -239,7 +256,9 @@ export function PricingCalculator({
                       placeholder="Min"
                       type="number"
                       value={newTier.minQuantity || ''}
-                      onChange={(e) => setNewTier(prev => ({ ...prev, minQuantity: parseInt(e.target.value) }))}
+                      onChange={(e) =>
+                        setNewTier((prev) => ({ ...prev, minQuantity: parseInt(e.target.value) }))
+                      }
                     />
                   </TableCell>
                   <TableCell>
@@ -248,7 +267,12 @@ export function PricingCalculator({
                       placeholder="Max"
                       type="number"
                       value={newTier.maxQuantity || ''}
-                      onChange={(e) => setNewTier(prev => ({ ...prev, maxQuantity: e.target.value ? parseInt(e.target.value) : null }))}
+                      onChange={(e) =>
+                        setNewTier((prev) => ({
+                          ...prev,
+                          maxQuantity: e.target.value ? parseInt(e.target.value) : null,
+                        }))
+                      }
                     />
                   </TableCell>
                   <TableCell>
@@ -260,7 +284,12 @@ export function PricingCalculator({
                         step="0.01"
                         type="number"
                         value={newTier.pricePerUnit || ''}
-                        onChange={(e) => setNewTier(prev => ({ ...prev, pricePerUnit: parseFloat(e.target.value) }))}
+                        onChange={(e) =>
+                          setNewTier((prev) => ({
+                            ...prev,
+                            pricePerUnit: parseFloat(e.target.value),
+                          }))
+                        }
                       />
                     </div>
                   </TableCell>
@@ -271,17 +300,18 @@ export function PricingCalculator({
                         placeholder="0"
                         type="number"
                         value={newTier.discountPercentage || ''}
-                        onChange={(e) => setNewTier(prev => ({ ...prev, discountPercentage: parseFloat(e.target.value) }))}
+                        onChange={(e) =>
+                          setNewTier((prev) => ({
+                            ...prev,
+                            discountPercentage: parseFloat(e.target.value),
+                          }))
+                        }
                       />
                       <span>%</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleAddTier}
-                    >
+                    <Button size="sm" variant="outline" onClick={handleAddTier}>
                       <Plus className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -298,9 +328,7 @@ export function PricingCalculator({
             <DollarSign className="h-5 w-5" />
             Price Calculator
           </CardTitle>
-          <CardDescription>
-            Test pricing with different quantities and options
-          </CardDescription>
+          <CardDescription>Test pricing with different quantities and options</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-3 gap-4">
@@ -340,7 +368,7 @@ export function PricingCalculator({
           </div>
 
           <div className="flex gap-2">
-            {standardQuantities.map(qty => (
+            {standardQuantities.map((qty) => (
               <Button
                 key={qty}
                 size="sm"
@@ -356,15 +384,11 @@ export function PricingCalculator({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Unit Price</p>
-                <p className="text-2xl font-bold">
-                  ${priceDetails.unitPrice.toFixed(2)}
-                </p>
+                <p className="text-2xl font-bold">${priceDetails.unitPrice.toFixed(2)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Subtotal</p>
-                <p className="text-2xl font-bold">
-                  ${priceDetails.subtotal.toFixed(2)}
-                </p>
+                <p className="text-2xl font-bold">${priceDetails.subtotal.toFixed(2)}</p>
               </div>
             </div>
 
@@ -419,7 +443,9 @@ export function PricingCalculator({
                 <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-900 space-y-1">
                   <p className="font-medium">Pricing Formula:</p>
-                  <p>Final Price = (Base Price × Paper Multiplier × Quantity) + Options + Setup Fee</p>
+                  <p>
+                    Final Price = (Base Price × Paper Multiplier × Quantity) + Options + Setup Fee
+                  </p>
                   <p className="text-xs text-blue-700">
                     Volume discounts are automatically applied based on quantity tiers
                   </p>

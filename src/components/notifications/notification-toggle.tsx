@@ -16,7 +16,7 @@ export default function NotificationToggle() {
   const [state, setState] = useState<NotificationState>({
     permission: 'default',
     isSubscribed: false,
-    isPushSupported: false
+    isPushSupported: false,
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -28,10 +28,10 @@ export default function NotificationToggle() {
   const checkNotificationSupport = async () => {
     const isPushSupported = 'serviceWorker' in navigator && 'PushManager' in window
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       permission: Notification.permission,
-      isPushSupported
+      isPushSupported,
     }))
 
     if (isPushSupported && navigator.serviceWorker?.controller) {
@@ -44,9 +44,9 @@ export default function NotificationToggle() {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.getSubscription()
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        isSubscribed: !!subscription
+        isSubscribed: !!subscription,
       }))
     } catch (error) {
       console.error('Error checking subscription:', error)
@@ -68,12 +68,12 @@ export default function NotificationToggle() {
           await fetch('/api/notifications/unsubscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscription)
+            body: JSON.stringify(subscription),
           })
           await subscription.unsubscribe()
         }
 
-        setState(prev => ({ ...prev, isSubscribed: false }))
+        setState((prev) => ({ ...prev, isSubscribed: false }))
       } else {
         // Enable notifications
         const permission = await Notification.requestPermission()
@@ -91,20 +91,20 @@ export default function NotificationToggle() {
         // Subscribe to push notifications
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicKey)
+          applicationServerKey: urlBase64ToUint8Array(publicKey),
         })
 
         // Send subscription to server
         await fetch('/api/notifications/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(subscription)
+          body: JSON.stringify(subscription),
         })
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           permission: 'granted',
-          isSubscribed: true
+          isSubscribed: true,
         }))
       }
     } catch (error) {
@@ -115,10 +115,8 @@ export default function NotificationToggle() {
   }
 
   const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4)
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
 
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
@@ -133,14 +131,22 @@ export default function NotificationToggle() {
     if (!state.isPushSupported) return null
 
     if (state.permission === 'denied') {
-      return <Badge className="text-xs" variant="destructive">Blocked</Badge>
+      return (
+        <Badge className="text-xs" variant="destructive">
+          Blocked
+        </Badge>
+      )
     }
 
     if (state.isSubscribed) {
       return <Badge className="bg-green-500 text-xs">On</Badge>
     }
 
-    return <Badge className="text-xs" variant="secondary">Off</Badge>
+    return (
+      <Badge className="text-xs" variant="secondary">
+        Off
+      </Badge>
+    )
   }
 
   if (!state.isPushSupported) {
@@ -163,15 +169,13 @@ export default function NotificationToggle() {
         </p>
 
         {state.permission === 'denied' ? (
-          <p className="text-xs text-red-600">
-            Enable in browser settings
-          </p>
+          <p className="text-xs text-red-600">Enable in browser settings</p>
         ) : (
           <Button
             className="w-full h-8 text-xs"
             disabled={isLoading}
             size="sm"
-            variant={state.isSubscribed ? "outline" : "default"}
+            variant={state.isSubscribed ? 'outline' : 'default'}
             onClick={toggleNotifications}
           >
             {isLoading ? (

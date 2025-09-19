@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { 
-  Menu, 
-  X, 
-  User, 
-  Phone, 
+import {
+  Menu,
+  X,
+  User,
+  Phone,
   Mail,
   Package,
   Info,
@@ -20,17 +20,11 @@ import {
   CreditCard,
   Settings,
   LogOut,
-  Smartphone
+  Smartphone,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,8 +38,8 @@ import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
 import { CartButton } from '@/components/cart/cart-button'
 
 const navigation = [
-  { 
-    name: 'Print Products', 
+  {
+    name: 'Print Products',
     href: '/products',
     icon: Package,
     children: [
@@ -56,7 +50,7 @@ const navigation = [
       { name: 'Stickers & Labels', href: '/products?category=stickers' },
       { name: 'Apparel', href: '/products?category=apparel' },
       { name: 'Postcards', href: '/products?category=postcards' },
-    ]
+    ],
   },
   { name: 'About', href: '/about', icon: Info },
   { name: 'Help', href: '/help-center', icon: FileText },
@@ -64,10 +58,26 @@ const navigation = [
 ]
 
 const productCategories = [
-  { name: 'Business Cards', href: '/products?category=business-cards', description: 'Premium quality cards' },
-  { name: 'Flyers & Brochures', href: '/products?category=flyers', description: 'Marketing materials' },
-  { name: 'Banners & Signs', href: '/products?category=banners', description: 'Large format printing' },
-  { name: 'Stickers & Labels', href: '/products?category=stickers', description: 'Custom die-cut stickers' },
+  {
+    name: 'Business Cards',
+    href: '/products?category=business-cards',
+    description: 'Premium quality cards',
+  },
+  {
+    name: 'Flyers & Brochures',
+    href: '/products?category=flyers',
+    description: 'Marketing materials',
+  },
+  {
+    name: 'Banners & Signs',
+    href: '/products?category=banners',
+    description: 'Large format printing',
+  },
+  {
+    name: 'Stickers & Labels',
+    href: '/products?category=stickers',
+    description: 'Custom die-cut stickers',
+  },
   { name: 'Apparel', href: '/products?category=apparel', description: 'Custom printed t-shirts' },
   { name: 'Postcards', href: '/products?category=postcards', description: 'Direct mail postcards' },
 ]
@@ -80,7 +90,7 @@ export default function Header() {
   const [isSignedIn, setIsSignedIn] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
-  
+
   // Check user authentication status
   useEffect(() => {
     const checkAuth = async () => {
@@ -128,7 +138,7 @@ export default function Header() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     }
   }, [])
-  
+
   const handleSignOut = async () => {
     try {
       const response = await fetch('/api/auth/signout', {
@@ -170,9 +180,9 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link className="flex items-center space-x-2" href="/">
-              <Image 
-                priority 
-                alt="GangRun Printing" 
+              <Image
+                priority
+                alt="GangRun Printing"
                 className="h-10 w-auto object-contain"
                 height={50}
                 src="/gangrunprinting_logo_new_1448921366__42384-268x50.png"
@@ -183,14 +193,14 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {navigation.map((item) => (
+            {navigation.map((item) =>
               item.children ? (
                 <DropdownMenu key={item.name}>
                   <DropdownMenuTrigger asChild>
                     <Button
                       className={cn(
-                        "flex items-center gap-1",
-                        pathname === item.href && "text-primary bg-primary/10"
+                        'flex items-center gap-1',
+                        pathname === item.href && 'text-primary bg-primary/10'
                       )}
                       variant="ghost"
                     >
@@ -212,14 +222,11 @@ export default function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                >
+                <Link key={item.name} href={item.href}>
                   <Button
                     className={cn(
-                      "flex items-center gap-1",
-                      pathname === item.href && "text-primary bg-primary/10"
+                      'flex items-center gap-1',
+                      pathname === item.href && 'text-primary bg-primary/10'
                     )}
                     variant="ghost"
                   >
@@ -228,13 +235,16 @@ export default function Header() {
                   </Button>
                 </Link>
               )
-            ))}
+            )}
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Phone Number */}
-            <a className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors" href="tel:1-800-PRINTING">
+            <a
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              href="tel:1-800-PRINTING"
+            >
               <Phone className="h-4 w-4" />
               <span>1-800-PRINTING</span>
             </a>
@@ -256,42 +266,58 @@ export default function Header() {
               <DropdownMenuContent align="end" className="w-48">
                 {isSignedIn ? (
                   <>
-                    <DropdownMenuLabel>
-                      {user?.email || 'My Account'}
-                    </DropdownMenuLabel>
+                    <DropdownMenuLabel>{user?.email || 'My Account'}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/dashboard">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/dashboard"
+                      >
                         <LayoutDashboard className="h-4 w-4" />
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/orders">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/orders"
+                      >
                         <Package className="h-4 w-4" />
                         Orders
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/downloads">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/downloads"
+                      >
                         <Download className="h-4 w-4" />
                         Downloads
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/addresses">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/addresses"
+                      >
                         <MapPin className="h-4 w-4" />
                         Addresses
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/payment-methods">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/payment-methods"
+                      >
                         <CreditCard className="h-4 w-4" />
                         Payment Methods
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link className="cursor-pointer flex items-center gap-2" href="/account/details">
+                      <Link
+                        className="cursor-pointer flex items-center gap-2"
+                        href="/account/details"
+                      >
                         <Settings className="h-4 w-4" />
                         Account Details
                       </Link>
@@ -299,8 +325,8 @@ export default function Header() {
                     {showInstallOption && (
                       <>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                          className="cursor-pointer flex items-center gap-2" 
+                        <DropdownMenuItem
+                          className="cursor-pointer flex items-center gap-2"
                           onClick={handleInstallApp}
                         >
                           <Smartphone className="h-4 w-4" />
@@ -309,8 +335,8 @@ export default function Header() {
                       </>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="cursor-pointer flex items-center gap-2 text-red-600" 
+                    <DropdownMenuItem
+                      className="cursor-pointer flex items-center gap-2 text-red-600"
                       onClick={handleSignOut}
                     >
                       <LogOut className="h-4 w-4" />
@@ -371,7 +397,10 @@ export default function Header() {
 
                 {/* Mobile Contact Info */}
                 <div className="mt-4 pb-4 border-b">
-                  <a className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50" href="tel:1-800-PRINTING">
+                  <a
+                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50"
+                    href="tel:1-800-PRINTING"
+                  >
                     <Phone className="h-4 w-4 text-primary" />
                     <div>
                       <p className="font-medium">1-800-PRINTING</p>
@@ -387,8 +416,8 @@ export default function Header() {
                         <>
                           <Button
                             className={cn(
-                              "w-full justify-start",
-                              pathname === item.href && "text-primary bg-primary/10"
+                              'w-full justify-start',
+                              pathname === item.href && 'text-primary bg-primary/10'
                             )}
                             variant="ghost"
                             onClick={() => {}}
@@ -415,14 +444,11 @@ export default function Header() {
                           </div>
                         </>
                       ) : (
-                        <Link
-                          href={item.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
+                        <Link href={item.href} onClick={() => setMobileMenuOpen(false)}>
                           <Button
                             className={cn(
-                              "w-full justify-start",
-                              pathname === item.href && "text-primary bg-primary/10"
+                              'w-full justify-start',
+                              pathname === item.href && 'text-primary bg-primary/10'
                             )}
                             variant="ghost"
                           >
@@ -433,11 +459,11 @@ export default function Header() {
                       )}
                     </div>
                   ))}
-                  
+
                   <div className="border-t pt-4 mt-4">
                     <MobileThemeToggle />
                   </div>
-                  
+
                   <div className="border-t pt-4 mt-4 space-y-1">
                     {isSignedIn ? (
                       <>
@@ -468,7 +494,10 @@ export default function Header() {
                             Addresses
                           </Button>
                         </Link>
-                        <Link href="/account/payment-methods" onClick={() => setMobileMenuOpen(false)}>
+                        <Link
+                          href="/account/payment-methods"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
                           <Button className="w-full justify-start" variant="ghost">
                             <CreditCard className="mr-2 h-4 w-4" />
                             Payment Methods
@@ -481,8 +510,8 @@ export default function Header() {
                           </Button>
                         </Link>
                         {showInstallOption && (
-                          <Button 
-                            className="w-full justify-start" 
+                          <Button
+                            className="w-full justify-start"
                             variant="ghost"
                             onClick={() => {
                               handleInstallApp()
@@ -493,8 +522,8 @@ export default function Header() {
                             Download App
                           </Button>
                         )}
-                        <Button 
-                          className="w-full justify-start text-red-600" 
+                        <Button
+                          className="w-full justify-start text-red-600"
                           variant="ghost"
                           onClick={() => {
                             handleSignOut()
@@ -549,7 +578,10 @@ export default function Header() {
                 {category.name}
               </Link>
             ))}
-            <Link className="text-sm font-medium text-primary hover:text-primary/80 transition-colors ml-auto" href="/products">
+            <Link
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors ml-auto"
+              href="/products"
+            >
               View All Products →
             </Link>
           </div>

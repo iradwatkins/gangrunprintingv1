@@ -17,7 +17,14 @@ export async function GET(request: NextRequest) {
 
     // Generate cache key
     const cacheKey = `search:${JSON.stringify({
-      query, category, minPrice, maxPrice, sortBy, page, limit, inStock
+      query,
+      category,
+      minPrice,
+      maxPrice,
+      sortBy,
+      page,
+      limit,
+      inStock,
     })}`
 
     // Try to get from cache
@@ -28,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     // Build search conditions
     const where: any = {
-      AND: []
+      AND: [],
     }
 
     // Text search
@@ -37,8 +44,8 @@ export async function GET(request: NextRequest) {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { description: { contains: query, mode: 'insensitive' } },
-          { tags: { hasSome: query.split(' ') } }
-        ]
+          { tags: { hasSome: query.split(' ') } },
+        ],
       })
     }
 
@@ -46,8 +53,8 @@ export async function GET(request: NextRequest) {
     if (category) {
       where.AND.push({
         productCategory: {
-          name: { equals: category, mode: 'insensitive' }
-        }
+          name: { equals: category, mode: 'insensitive' },
+        },
       })
     }
 
@@ -89,11 +96,7 @@ export async function GET(request: NextRequest) {
         break
       default:
         // For relevance, we'll sort by a combination of factors
-        orderBy = [
-          { featured: 'desc' },
-          { orderCount: 'desc' },
-          { createdAt: 'desc' }
-        ]
+        orderBy = [{ featured: 'desc' }, { orderCount: 'desc' }, { createdAt: 'desc' }]
     }
 
     // Execute search with pagination
@@ -107,14 +110,14 @@ export async function GET(request: NextRequest) {
           productCategory: true,
           images: {
             take: 1,
-            orderBy: { order: 'asc' }
+            orderBy: { order: 'asc' },
           },
           sizes: true,
           paperStocks: true,
           coatingOptions: true,
-        }
+        },
       }),
-      prisma.product.count({ where })
+      prisma.product.count({ where }),
     ])
 
     // Calculate pagination info
@@ -124,7 +127,7 @@ export async function GET(request: NextRequest) {
 
     // Format response
     const response = {
-      products: products.map(product => ({
+      products: products.map((product) => ({
         id: product.id,
         name: product.name,
         slug: product.slug,
@@ -145,13 +148,13 @@ export async function GET(request: NextRequest) {
         totalCount,
         totalPages,
         hasNextPage,
-        hasPrevPage
+        hasPrevPage,
       },
       facets: {
         categories: await getCategories(),
         priceRange: await getPriceRange(where),
-        attributes: await getAttributes(where)
-      }
+        attributes: await getAttributes(where),
+      },
     }
 
     // Cache the response for 5 minutes
@@ -165,10 +168,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response)
   } catch (error) {
     console.error('Search error:', error)
-    return NextResponse.json(
-      { error: 'Failed to search products' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to search products' }, { status: 500 })
   }
 }
 
@@ -180,21 +180,21 @@ async function getCategories() {
       name: true,
       slug: true,
       _count: {
-        select: { products: true }
-      }
+        select: { products: true },
+      },
     },
     orderBy: {
       products: {
-        _count: 'desc'
-      }
-    }
+        _count: 'desc',
+      },
+    },
   })
 
-  return categories.map(cat => ({
+  return categories.map((cat) => ({
     id: cat.id,
     name: cat.name,
     slug: cat.slug,
-    count: cat._count.products
+    count: cat._count.products,
   }))
 }
 
@@ -204,13 +204,13 @@ async function getPriceRange(where: any) {
     where,
     _min: { basePrice: true },
     _max: { basePrice: true },
-    _avg: { basePrice: true }
+    _avg: { basePrice: true },
   })
 
   return {
     min: result._min.basePrice || 0,
     max: result._max.basePrice || 1000,
-    avg: result._avg.basePrice || 0
+    avg: result._avg.basePrice || 0,
   }
 }
 
@@ -222,8 +222,8 @@ async function getAttributes(where: any) {
       sizes: { select: { name: true } },
       paperStocks: { select: { name: true } },
       coatingOptions: { select: { name: true } },
-      turnaroundTime: true
-    }
+      turnaroundTime: true,
+    },
   })
 
   // Aggregate unique attributes
@@ -232,10 +232,10 @@ async function getAttributes(where: any) {
   const coatings = new Set<string>()
   const turnaroundTimes = new Set<string>()
 
-  products.forEach(product => {
-    product.sizes.forEach(s => sizes.add(s.name))
-    product.paperStocks.forEach(p => paperStocks.add(p.name))
-    product.coatingOptions.forEach(c => coatings.add(c.name))
+  products.forEach((product) => {
+    product.sizes.forEach((s) => sizes.add(s.name))
+    product.paperStocks.forEach((p) => paperStocks.add(p.name))
+    product.coatingOptions.forEach((c) => coatings.add(c.name))
     if (product.turnaroundTime) turnaroundTimes.add(product.turnaroundTime)
   })
 
@@ -243,7 +243,7 @@ async function getAttributes(where: any) {
     sizes: Array.from(sizes),
     paperStocks: Array.from(paperStocks),
     coatings: Array.from(coatings),
-    turnaroundTimes: Array.from(turnaroundTimes)
+    turnaroundTimes: Array.from(turnaroundTimes),
   }
 }
 
@@ -268,42 +268,42 @@ export async function POST(request: NextRequest) {
       where: {
         OR: [
           { name: { startsWith: query, mode: 'insensitive' } },
-          { name: { contains: query, mode: 'insensitive' } }
-        ]
+          { name: { contains: query, mode: 'insensitive' } },
+        ],
       },
       select: {
         name: true,
         productCategory: {
-          select: { name: true }
-        }
+          select: { name: true },
+        },
       },
       take: 10,
       orderBy: {
-        orderCount: 'desc'
-      }
+        orderCount: 'desc',
+      },
     })
 
     // Get category suggestions
     const categories = await prisma.productCategory.findMany({
       where: {
-        name: { contains: query, mode: 'insensitive' }
+        name: { contains: query, mode: 'insensitive' },
       },
       select: {
-        name: true
+        name: true,
       },
-      take: 5
+      take: 5,
     })
 
     const suggestions = {
-      products: products.map(p => ({
+      products: products.map((p) => ({
         text: p.name,
         category: p.productCategory?.name,
-        type: 'product'
+        type: 'product',
       })),
-      categories: categories.map(c => ({
+      categories: categories.map((c) => ({
         text: c.name,
-        type: 'category'
-      }))
+        type: 'category',
+      })),
     }
 
     // Cache for 1 hour
@@ -312,9 +312,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(suggestions)
   } catch (error) {
     console.error('Autocomplete error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get suggestions' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to get suggestions' }, { status: 500 })
   }
 }

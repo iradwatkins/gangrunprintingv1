@@ -7,7 +7,6 @@ import Link from 'next/link'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 export default function OrdersPage() {
-
   return (
     <AccountWrapper>
       <div className="max-w-4xl">

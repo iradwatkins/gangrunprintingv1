@@ -15,7 +15,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
 import {
@@ -43,52 +43,52 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    icon: Clock
+    icon: Clock,
   },
   PAID: {
     label: 'Paid',
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: DollarSign
+    icon: DollarSign,
   },
   PROCESSING: {
     label: 'Processing',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: Package
+    icon: Package,
   },
   PRINTING: {
     label: 'Printing',
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Package
+    icon: Package,
   },
   QUALITY_CHECK: {
     label: 'Quality Check',
     color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
   PACKAGING: {
     label: 'Packaging',
     color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
-    icon: Package
+    icon: Package,
   },
   SHIPPED: {
     label: 'Shipped',
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
-    icon: Truck
+    icon: Truck,
   },
   DELIVERED: {
     label: 'Delivered',
     color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
   CANCELLED: {
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
-    icon: XCircle
+    icon: XCircle,
   },
   REFUNDED: {
     label: 'Refunded',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: AlertCircle
+    icon: AlertCircle,
   },
 }
 
@@ -132,20 +132,20 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
             id: true,
             name: true,
             email: true,
-          }
+          },
         },
         OrderItem: true,
         _count: {
           select: {
-            OrderItem: true
-          }
-        }
+            OrderItem: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),
-    prisma.order.count({ where })
+    prisma.order.count({ where }),
   ])
 
   const totalPages = Math.ceil(totalCount / pageSize)
@@ -156,19 +156,22 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     _count: true,
   })
 
-  const statsMap = stats.reduce((acc, stat) => {
-    acc[stat.status] = stat._count
-    return acc
-  }, {} as Record<string, number>)
+  const statsMap = stats.reduce(
+    (acc, stat) => {
+      acc[stat.status] = stat._count
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   // Calculate total revenue from delivered orders
   const revenue = await prisma.order.aggregate({
     where: {
-      status: 'DELIVERED'
+      status: 'DELIVERED',
     },
     _sum: {
-      total: true
-    }
+      total: true,
+    },
   })
 
   return (
@@ -177,9 +180,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage and track all printing orders
-          </p>
+          <p className="text-muted-foreground mt-2">Manage and track all printing orders</p>
         </div>
         <Button disabled>
           <Plus className="mr-2 h-4 w-4" />
@@ -196,9 +197,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalCount}</div>
-            <p className="text-xs text-muted-foreground">
-              All time orders
-            </p>
+            <p className="text-xs text-muted-foreground">All time orders</p>
           </CardContent>
         </Card>
 
@@ -209,11 +208,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(statsMap['PENDING_PAYMENT'] || 0) + (statsMap['PAID'] || 0) + (statsMap['PROCESSING'] || 0)}
+              {(statsMap['PENDING_PAYMENT'] || 0) +
+                (statsMap['PAID'] || 0) +
+                (statsMap['PROCESSING'] || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Orders in progress
-            </p>
+            <p className="text-xs text-muted-foreground">Orders in progress</p>
           </CardContent>
         </Card>
 
@@ -224,9 +223,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statsMap['DELIVERED'] || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Successfully delivered
-            </p>
+            <p className="text-xs text-muted-foreground">Successfully delivered</p>
           </CardContent>
         </Card>
 
@@ -237,11 +234,12 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${((revenue._sum.total || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              $
+              {((revenue._sum.total || 0) / 100).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+              })}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Total revenue
-            </p>
+            <p className="text-xs text-muted-foreground">Total revenue</p>
           </CardContent>
         </Card>
       </div>
@@ -250,9 +248,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       <Card>
         <CardHeader>
           <CardTitle>All Orders</CardTitle>
-          <CardDescription>
-            A list of all orders including their status and details
-          </CardDescription>
+          <CardDescription>A list of all orders including their status and details</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4 mb-6">
@@ -324,10 +320,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                     return (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
-                          <Link
-                            className="hover:underline"
-                            href={`/admin/orders/${order.id}`}
-                          >
+                          <Link className="hover:underline" href={`/admin/orders/${order.id}`}>
                             {order.orderNumber}
                           </Link>
                         </TableCell>
@@ -343,7 +336,8 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                             {order.OrderItem[0] && (
                               <p className="text-sm text-muted-foreground">
                                 {order.OrderItem[0].product?.name}
-                                {order.OrderItem.length > 1 && ` +${order.OrderItem.length - 1} more`}
+                                {order.OrderItem.length > 1 &&
+                                  ` +${order.OrderItem.length - 1} more`}
                               </p>
                             )}
                           </div>
@@ -363,13 +357,13 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                               {new Date(order.createdAt).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
-                                year: 'numeric'
+                                year: 'numeric',
                               })}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {new Date(order.createdAt).toLocaleTimeString('en-US', {
                                 hour: '2-digit',
-                                minute: '2-digit'
+                                minute: '2-digit',
                               })}
                             </p>
                           </div>
@@ -394,17 +388,14 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <p className="text-sm text-muted-foreground">
-                Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, totalCount)} of {totalCount} orders
+                Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of{' '}
+                {totalCount} orders
               </p>
               <div className="flex gap-2">
                 <Link
                   href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                 >
-                  <Button
-                    disabled={page <= 1}
-                    size="sm"
-                    variant="outline"
-                  >
+                  <Button disabled={page <= 1} size="sm" variant="outline">
                     Previous
                   </Button>
                 </Link>
@@ -417,10 +408,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                         key={pageNum}
                         href={`/admin/orders?page=${pageNum}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                       >
-                        <Button
-                          size="sm"
-                          variant={pageNum === page ? 'default' : 'outline'}
-                        >
+                        <Button size="sm" variant={pageNum === page ? 'default' : 'outline'}>
                           {pageNum}
                         </Button>
                       </Link>
@@ -430,11 +418,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                 <Link
                   href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                 >
-                  <Button
-                    disabled={page >= totalPages}
-                    size="sm"
-                    variant="outline"
-                  >
+                  <Button disabled={page >= totalPages} size="sm" variant="outline">
                     Next
                   </Button>
                 </Link>

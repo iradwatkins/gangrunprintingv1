@@ -64,22 +64,64 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ADMIN: [
     // Full access to everything
     'view_dashboard',
-    'view_orders', 'create_orders', 'edit_orders', 'delete_orders', 'manage_order_status', 'assign_vendors', 'process_refunds',
-    'view_customers', 'create_customers', 'edit_customers', 'delete_customers', 'view_customer_details', 'manage_customer_notes',
-    'view_products', 'create_products', 'edit_products', 'delete_products', 'manage_categories', 'manage_pricing', 'manage_inventory',
-    'view_staff', 'create_staff', 'edit_staff', 'delete_staff', 'manage_roles', 'assign_permissions',
-    'view_analytics', 'view_reports', 'export_data', 'view_financial_reports',
-    'view_settings', 'edit_general_settings', 'edit_payment_settings', 'edit_shipping_settings', 'edit_notification_settings', 'manage_integrations',
-    'manage_system', 'view_logs', 'backup_restore', 'maintenance_mode'
+    'view_orders',
+    'create_orders',
+    'edit_orders',
+    'delete_orders',
+    'manage_order_status',
+    'assign_vendors',
+    'process_refunds',
+    'view_customers',
+    'create_customers',
+    'edit_customers',
+    'delete_customers',
+    'view_customer_details',
+    'manage_customer_notes',
+    'view_products',
+    'create_products',
+    'edit_products',
+    'delete_products',
+    'manage_categories',
+    'manage_pricing',
+    'manage_inventory',
+    'view_staff',
+    'create_staff',
+    'edit_staff',
+    'delete_staff',
+    'manage_roles',
+    'assign_permissions',
+    'view_analytics',
+    'view_reports',
+    'export_data',
+    'view_financial_reports',
+    'view_settings',
+    'edit_general_settings',
+    'edit_payment_settings',
+    'edit_shipping_settings',
+    'edit_notification_settings',
+    'manage_integrations',
+    'manage_system',
+    'view_logs',
+    'backup_restore',
+    'maintenance_mode',
   ],
 
   STAFF: [
     // Limited access for staff members
     'view_dashboard',
-    'view_orders', 'create_orders', 'edit_orders', 'manage_order_status',
-    'view_customers', 'create_customers', 'edit_customers', 'view_customer_details', 'manage_customer_notes',
-    'view_products', 'edit_products', 'manage_inventory',
-    'view_reports'
+    'view_orders',
+    'create_orders',
+    'edit_orders',
+    'manage_order_status',
+    'view_customers',
+    'create_customers',
+    'edit_customers',
+    'view_customer_details',
+    'manage_customer_notes',
+    'view_products',
+    'edit_products',
+    'manage_inventory',
+    'view_reports',
   ],
 
   CUSTOMER: [
@@ -89,70 +131,88 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   BROKER: [
     // Similar to customer but with broker-specific permissions
     'view_orders', // Only their own orders
-    'create_orders' // Can create orders for customers
-  ]
+    'create_orders', // Can create orders for customers
+  ],
 }
 
 export const PERMISSION_GROUPS = {
   dashboard: {
     label: 'Dashboard',
     description: 'Access to main dashboard and overview',
-    permissions: ['view_dashboard']
+    permissions: ['view_dashboard'],
   },
   orders: {
     label: 'Order Management',
     description: 'Create, view, edit, and manage orders',
     permissions: [
-      'view_orders', 'create_orders', 'edit_orders', 'delete_orders',
-      'manage_order_status', 'assign_vendors', 'process_refunds'
-    ]
+      'view_orders',
+      'create_orders',
+      'edit_orders',
+      'delete_orders',
+      'manage_order_status',
+      'assign_vendors',
+      'process_refunds',
+    ],
   },
   customers: {
     label: 'Customer Management',
     description: 'Manage customer accounts and information',
     permissions: [
-      'view_customers', 'create_customers', 'edit_customers', 'delete_customers',
-      'view_customer_details', 'manage_customer_notes'
-    ]
+      'view_customers',
+      'create_customers',
+      'edit_customers',
+      'delete_customers',
+      'view_customer_details',
+      'manage_customer_notes',
+    ],
   },
   products: {
     label: 'Product Management',
     description: 'Manage products, categories, and inventory',
     permissions: [
-      'view_products', 'create_products', 'edit_products', 'delete_products',
-      'manage_categories', 'manage_pricing', 'manage_inventory'
-    ]
+      'view_products',
+      'create_products',
+      'edit_products',
+      'delete_products',
+      'manage_categories',
+      'manage_pricing',
+      'manage_inventory',
+    ],
   },
   staff: {
     label: 'Staff Management',
     description: 'Manage staff accounts, roles, and permissions',
     permissions: [
-      'view_staff', 'create_staff', 'edit_staff', 'delete_staff',
-      'manage_roles', 'assign_permissions'
-    ]
+      'view_staff',
+      'create_staff',
+      'edit_staff',
+      'delete_staff',
+      'manage_roles',
+      'assign_permissions',
+    ],
   },
   analytics: {
     label: 'Analytics & Reports',
     description: 'View analytics, reports, and export data',
-    permissions: [
-      'view_analytics', 'view_reports', 'export_data', 'view_financial_reports'
-    ]
+    permissions: ['view_analytics', 'view_reports', 'export_data', 'view_financial_reports'],
   },
   settings: {
     label: 'Settings',
     description: 'Manage system settings and configuration',
     permissions: [
-      'view_settings', 'edit_general_settings', 'edit_payment_settings',
-      'edit_shipping_settings', 'edit_notification_settings', 'manage_integrations'
-    ]
+      'view_settings',
+      'edit_general_settings',
+      'edit_payment_settings',
+      'edit_shipping_settings',
+      'edit_notification_settings',
+      'manage_integrations',
+    ],
   },
   system: {
     label: 'System Administration',
     description: 'Advanced system management and maintenance',
-    permissions: [
-      'manage_system', 'view_logs', 'backup_restore', 'maintenance_mode'
-    ]
-  }
+    permissions: ['manage_system', 'view_logs', 'backup_restore', 'maintenance_mode'],
+  },
 }
 
 export class PermissionService {
@@ -168,14 +228,14 @@ export class PermissionService {
    * Check if a user has any of the specified permissions
    */
   static hasAnyPermission(userRole: Role, permissions: Permission[]): boolean {
-    return permissions.some(permission => this.hasPermission(userRole, permission))
+    return permissions.some((permission) => this.hasPermission(userRole, permission))
   }
 
   /**
    * Check if a user has all of the specified permissions
    */
   static hasAllPermissions(userRole: Role, permissions: Permission[]): boolean {
-    return permissions.every(permission => this.hasPermission(userRole, permission))
+    return permissions.every((permission) => this.hasPermission(userRole, permission))
   }
 
   /**
@@ -194,12 +254,12 @@ export class PermissionService {
     return Object.entries(PERMISSION_GROUPS).map(([key, group]) => ({
       key,
       ...group,
-      permissions: group.permissions.filter(permission =>
+      permissions: group.permissions.filter((permission) =>
         userPermissions.includes(permission as Permission)
       ),
-      hasAny: group.permissions.some(permission =>
+      hasAny: group.permissions.some((permission) =>
         userPermissions.includes(permission as Permission)
-      )
+      ),
     }))
   }
 
@@ -218,7 +278,7 @@ export class PermissionService {
       '/admin/analytics': ['view_analytics'],
       '/admin/reports': ['view_reports'],
       '/admin/settings': ['view_settings'],
-      '/admin/inventory': ['manage_inventory']
+      '/admin/inventory': ['manage_inventory'],
     }
 
     const requiredPermissions = routePermissions[route]
@@ -233,7 +293,7 @@ export class PermissionService {
    * Filter menu items based on user permissions
    */
   static filterMenuItems(userRole: Role, menuItems: any[]): any[] {
-    return menuItems.filter(item => {
+    return menuItems.filter((item) => {
       if (item.permission) {
         return this.hasPermission(userRole, item.permission)
       }
@@ -292,7 +352,7 @@ export class PermissionService {
       manage_system: 'Manage System',
       view_logs: 'View Logs',
       backup_restore: 'Backup & Restore',
-      maintenance_mode: 'Maintenance Mode'
+      maintenance_mode: 'Maintenance Mode',
     }
 
     return labels[permission] || permission
@@ -307,22 +367,22 @@ export class PermissionService {
     resource: 'orders' | 'customers' | 'products' | 'staff'
   ): boolean {
     const permissionMap: Record<string, Permission> = {
-      'create_orders': 'create_orders',
-      'read_orders': 'view_orders',
-      'update_orders': 'edit_orders',
-      'delete_orders': 'delete_orders',
-      'create_customers': 'create_customers',
-      'read_customers': 'view_customers',
-      'update_customers': 'edit_customers',
-      'delete_customers': 'delete_customers',
-      'create_products': 'create_products',
-      'read_products': 'view_products',
-      'update_products': 'edit_products',
-      'delete_products': 'delete_products',
-      'create_staff': 'create_staff',
-      'read_staff': 'view_staff',
-      'update_staff': 'edit_staff',
-      'delete_staff': 'delete_staff'
+      create_orders: 'create_orders',
+      read_orders: 'view_orders',
+      update_orders: 'edit_orders',
+      delete_orders: 'delete_orders',
+      create_customers: 'create_customers',
+      read_customers: 'view_customers',
+      update_customers: 'edit_customers',
+      delete_customers: 'delete_customers',
+      create_products: 'create_products',
+      read_products: 'view_products',
+      update_products: 'edit_products',
+      delete_products: 'delete_products',
+      create_staff: 'create_staff',
+      read_staff: 'view_staff',
+      update_staff: 'edit_staff',
+      delete_staff: 'delete_staff',
     }
 
     const permission = permissionMap[`${action}_${resource}`]

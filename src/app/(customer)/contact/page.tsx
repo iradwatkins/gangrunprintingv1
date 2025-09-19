@@ -16,7 +16,7 @@ import {
   Send,
   Building,
   MessageSquare,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react'
 
 export default function ContactPage() {
@@ -26,7 +26,7 @@ export default function ContactPage() {
     phone: '',
     company: '',
     subject: '',
-    message: ''
+    message: '',
   })
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -34,13 +34,13 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
     setSubmitted(true)
     setLoading(false)
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setFormData({
@@ -49,16 +49,16 @@ export default function ContactPage() {
         phone: '',
         company: '',
         subject: '',
-        message: ''
+        message: '',
       })
       setSubmitted(false)
     }, 3000)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }))
   }
 
@@ -70,7 +70,8 @@ export default function ContactPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
             <p className="text-lg text-muted-foreground">
-              Get in touch with our team for custom quotes, support, or any questions about our printing services
+              Get in touch with our team for custom quotes, support, or any questions about our
+              printing services
             </p>
           </div>
         </div>
@@ -83,9 +84,7 @@ export default function ContactPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Get In Touch</CardTitle>
-                <CardDescription>
-                  We're here to help with all your printing needs
-                </CardDescription>
+                <CardDescription>We're here to help with all your printing needs</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -93,42 +92,48 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Headquarters</p>
                     <p className="text-sm text-muted-foreground">
-                      123 Print Street<br />
-                      Houston, TX 77001<br />
+                      123 Print Street
+                      <br />
+                      Houston, TX 77001
+                      <br />
                       United States
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Phone className="h-5 w-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium">Phone</p>
                     <p className="text-sm text-muted-foreground">
-                      Sales: 1-800-PRINTING<br />
+                      Sales: 1-800-PRINTING
+                      <br />
                       Support: (713) 555-0123
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">
-                      support@gangrunprinting.com<br />
+                      support@gangrunprinting.com
+                      <br />
                       sales@gangrunprinting.com
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Clock className="h-5 w-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium">Business Hours</p>
                     <p className="text-sm text-muted-foreground">
-                      Monday - Friday: 9:00 AM - 6:00 PM CST<br />
-                      Saturday: 10:00 AM - 4:00 PM CST<br />
+                      Monday - Friday: 9:00 AM - 6:00 PM CST
+                      <br />
+                      Saturday: 10:00 AM - 4:00 PM CST
+                      <br />
                       Sunday: Closed
                     </p>
                   </div>
@@ -144,16 +149,25 @@ export default function ContactPage() {
                 <Link className="block text-sm hover:text-primary transition-colors" href="/track">
                   Track Your Order
                 </Link>
-                <Link className="block text-sm hover:text-primary transition-colors" href="/products">
+                <Link
+                  className="block text-sm hover:text-primary transition-colors"
+                  href="/products"
+                >
                   Browse Products
                 </Link>
                 <Link className="block text-sm hover:text-primary transition-colors" href="/quote">
                   Request Custom Quote
                 </Link>
-                <Link className="block text-sm hover:text-primary transition-colors" href="/products">
+                <Link
+                  className="block text-sm hover:text-primary transition-colors"
+                  href="/products"
+                >
                   Request Samples
                 </Link>
-                <Link className="block text-sm hover:text-primary transition-colors" href="/help-center">
+                <Link
+                  className="block text-sm hover:text-primary transition-colors"
+                  href="/help-center"
+                >
                   Help Center
                 </Link>
               </CardContent>
@@ -293,9 +307,7 @@ export default function ContactPage() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle>Frequently Asked Questions</CardTitle>
-              <CardDescription>
-                Quick answers to common questions
-              </CardDescription>
+              <CardDescription>Quick answers to common questions</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
@@ -305,7 +317,8 @@ export default function ContactPage() {
                     What are your turnaround times?
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Standard orders are completed within 3-5 business days. Rush printing is available for 24-hour turnaround.
+                    Standard orders are completed within 3-5 business days. Rush printing is
+                    available for 24-hour turnaround.
                   </p>
                 </div>
                 <div>
@@ -314,7 +327,8 @@ export default function ContactPage() {
                     Do you offer design services?
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Yes! Our professional design team can help create custom designs for your printing needs.
+                    Yes! Our professional design team can help create custom designs for your
+                    printing needs.
                   </p>
                 </div>
                 <div>
@@ -323,7 +337,8 @@ export default function ContactPage() {
                     What file formats do you accept?
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    We accept PDF, AI, PSD, JPG, and PNG files. PDF is preferred for best print quality.
+                    We accept PDF, AI, PSD, JPG, and PNG files. PDF is preferred for best print
+                    quality.
                   </p>
                 </div>
                 <div>

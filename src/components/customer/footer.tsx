@@ -3,7 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -55,17 +66,13 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold mb-1">Subscribe to Our Newsletter</h3>
-              <p className="text-sm text-muted-foreground">Get exclusive deals and printing tips delivered to your inbox</p>
+              <p className="text-sm text-muted-foreground">
+                Get exclusive deals and printing tips delivered to your inbox
+              </p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <Input 
-                className="max-w-sm" 
-                placeholder="Enter your email" 
-                type="email"
-              />
-              <Button className="bg-primary hover:bg-primary/90">
-                Subscribe
-              </Button>
+              <Input className="max-w-sm" placeholder="Enter your email" type="email" />
+              <Button className="bg-primary hover:bg-primary/90">Subscribe</Button>
             </div>
           </div>
         </div>
@@ -90,23 +97,26 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Content */}
-      <div className={`container mx-auto px-4 transition-all duration-300 py-12 ${
-        isExpanded ? 'block' : 'hidden md:block'
-      }`}>
+      <div
+        className={`container mx-auto px-4 transition-all duration-300 py-12 ${
+          isExpanded ? 'block' : 'hidden md:block'
+        }`}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <Link className="flex items-center space-x-2 mb-4" href="/">
-              <Image 
-                alt="GangRun Printing" 
-                className="h-10 w-auto object-contain" 
+              <Image
+                alt="GangRun Printing"
+                className="h-10 w-auto object-contain"
                 height={50}
                 src="/gangrunprinting_logo_new_1448921366__42384-268x50.png"
                 width={268}
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
-              Your trusted partner for professional printing services. Quality prints, fast turnaround, and exceptional service.
+              Your trusted partner for professional printing services. Quality prints, fast
+              turnaround, and exceptional service.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
@@ -134,7 +144,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.products.map((link) => (
                 <li key={link.href}>
-                  <Link 
+                  <Link
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
                   >
@@ -151,7 +161,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.services.map((link, index) => (
                 <li key={`services-${index}-${link.name}`}>
-                  <Link 
+                  <Link
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
                   >
@@ -168,7 +178,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.company.map((link, index) => (
                 <li key={`company-${index}-${link.name}`}>
-                  <Link 
+                  <Link
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
                   >
@@ -185,7 +195,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.support.map((link, index) => (
                 <li key={`support-${index}-${link.name}`}>
-                  <Link 
+                  <Link
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     href={link.href}
                   >
@@ -234,12 +244,18 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
             <p>© 2024 GangRun Printing. All rights reserved.</p>
             <div className="flex gap-4">
-              <Link className="hover:text-primary transition-colors" href="/privacy-policy">Privacy Policy</Link>
-              <Link className="hover:text-primary transition-colors" href="/terms-of-service">Terms of Service</Link>
-              <Link className="hover:text-primary transition-colors" href="/privacy-policy#cookies">Cookie Policy</Link>
+              <Link className="hover:text-primary transition-colors" href="/privacy-policy">
+                Privacy Policy
+              </Link>
+              <Link className="hover:text-primary transition-colors" href="/terms-of-service">
+                Terms of Service
+              </Link>
+              <Link className="hover:text-primary transition-colors" href="/privacy-policy#cookies">
+                Cookie Policy
+              </Link>
             </div>
           </div>
-          
+
           {/* Social Links */}
           <div className="flex items-center gap-2">
             <Button className="hover:text-primary" size="icon" variant="ghost">

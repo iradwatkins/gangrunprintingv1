@@ -14,29 +14,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import toast from '@/lib/toast'
-import { 
-  Package, 
-  DollarSign, 
-  Clock, 
-  Layers, 
+import {
+  Package,
+  DollarSign,
+  Clock,
+  Layers,
   FileText,
   Image as ImageIcon,
   Settings,
   Zap,
   Save,
   Loader2,
-  Ruler
+  Ruler,
 } from 'lucide-react'
 import { ProductImageUpload } from './product-image-upload'
 import { ProductPaperStocks } from './product-paper-stocks'
@@ -81,7 +75,7 @@ export function ProductForm({ product }: ProductFormProps) {
     quantityIds: product?.quantityIds || [],
     useSizeGroup: product?.sizeGroupId ? true : false,
     sizeGroupId: product?.sizeGroupId || '',
-    sizeIds: product?.sizeIds || []
+    sizeIds: product?.sizeIds || [],
   })
 
   useEffect(() => {
@@ -122,10 +116,10 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       name,
-      slug: generateSlug(name)
+      slug: generateSlug(name),
     }))
   }
 
@@ -134,17 +128,15 @@ export function ProductForm({ product }: ProductFormProps) {
     setLoading(true)
 
     try {
-      const url = product 
-        ? `/api/products/${product.id}`
-        : '/api/products'
-      
+      const url = product ? `/api/products/${product.id}` : '/api/products'
+
       const method = product ? 'PUT' : 'POST'
 
       // Clean up the data before sending
       const dataToSend = {
         ...formData,
       }
-      
+
       const res = await fetch(url, {
         method,
         headers: {
@@ -209,9 +201,7 @@ export function ProductForm({ product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>
-              <CardDescription>
-                Essential product details and descriptions
-              </CardDescription>
+              <CardDescription>Essential product details and descriptions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -231,7 +221,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     id="slug"
                     placeholder="business-cards-premium"
                     value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                   />
                 </div>
               </div>
@@ -244,14 +234,16 @@ export function ProductForm({ product }: ProductFormProps) {
                     id="sku"
                     placeholder="BC-PREM-001"
                     value={formData.sku}
-                    onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
                   <Select
                     value={formData.categoryId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, categoryId: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, categoryId: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -267,7 +259,6 @@ export function ProductForm({ product }: ProductFormProps) {
                 </div>
               </div>
 
-
               <div className="space-y-2">
                 <Label htmlFor="shortDescription">Short Description</Label>
                 <Textarea
@@ -275,7 +266,9 @@ export function ProductForm({ product }: ProductFormProps) {
                   placeholder="Brief product description for listings"
                   rows={2}
                   value={formData.shortDescription}
-                  onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, shortDescription: e.target.value }))
+                  }
                 />
               </div>
 
@@ -286,7 +279,9 @@ export function ProductForm({ product }: ProductFormProps) {
                   placeholder="Detailed product description"
                   rows={5}
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
 
@@ -301,20 +296,22 @@ export function ProductForm({ product }: ProductFormProps) {
                 </div>
                 <Switch
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isActive: checked }))
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Featured Product</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Display prominently on homepage
-                  </p>
+                  <p className="text-sm text-muted-foreground">Display prominently on homepage</p>
                 </div>
                 <Switch
                   checked={formData.isFeatured}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFeatured: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isFeatured: checked }))
+                  }
                 />
               </div>
             </CardContent>
@@ -325,14 +322,12 @@ export function ProductForm({ product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Product Images</CardTitle>
-              <CardDescription>
-                Upload and manage product images
-              </CardDescription>
+              <CardDescription>Upload and manage product images</CardDescription>
             </CardHeader>
             <CardContent>
               <ProductImageUpload
                 images={formData.images}
-                onImagesChange={(images) => setFormData(prev => ({ ...prev, images }))}
+                onImagesChange={(images) => setFormData((prev) => ({ ...prev, images }))}
               />
             </CardContent>
           </Card>
@@ -344,11 +339,11 @@ export function ProductForm({ product }: ProductFormProps) {
             selectedQuantities={formData.quantityIds}
             selectedQuantityGroup={formData.quantityGroupId}
             onChange={(data) => {
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
                 useQuantityGroup: data.useGroup,
                 quantityGroupId: data.quantityGroupId || '',
-                quantityIds: data.quantityIds || []
+                quantityIds: data.quantityIds || [],
               }))
             }}
           />
@@ -360,11 +355,11 @@ export function ProductForm({ product }: ProductFormProps) {
             selectedSizeGroup={formData.sizeGroupId}
             selectedSizes={formData.sizeIds}
             onChange={(data) => {
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
                 useSizeGroup: data.useGroup,
                 sizeGroupId: data.sizeGroupId || '',
-                sizeIds: data.sizeIds || []
+                sizeIds: data.sizeIds || [],
               }))
             }}
           />
@@ -374,9 +369,7 @@ export function ProductForm({ product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Pricing Configuration</CardTitle>
-              <CardDescription>
-                Set base prices and quantity tiers
-              </CardDescription>
+              <CardDescription>Set base prices and quantity tiers</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -388,7 +381,9 @@ export function ProductForm({ product }: ProductFormProps) {
                     step="0.01"
                     type="number"
                     value={formData.basePrice}
-                    onChange={(e) => setFormData(prev => ({ ...prev, basePrice: parseFloat(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, basePrice: parseFloat(e.target.value) }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -398,7 +393,9 @@ export function ProductForm({ product }: ProductFormProps) {
                     step="0.01"
                     type="number"
                     value={formData.setupFee}
-                    onChange={(e) => setFormData(prev => ({ ...prev, setupFee: parseFloat(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, setupFee: parseFloat(e.target.value) }))
+                    }
                   />
                 </div>
               </div>
@@ -411,7 +408,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 paperStocks={formData.paperStocks}
                 pricingTiers={formData.pricingTiers}
                 setupFee={formData.setupFee}
-                onTiersChange={(tiers) => setFormData(prev => ({ ...prev, pricingTiers: tiers }))}
+                onTiersChange={(tiers) => setFormData((prev) => ({ ...prev, pricingTiers: tiers }))}
               />
             </CardContent>
           </Card>
@@ -421,14 +418,14 @@ export function ProductForm({ product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Paper Stock Options</CardTitle>
-              <CardDescription>
-                Configure available paper stocks for this product
-              </CardDescription>
+              <CardDescription>Configure available paper stocks for this product</CardDescription>
             </CardHeader>
             <CardContent>
               <ProductPaperStocks
                 selectedStocks={formData.paperStocks}
-                onStocksChange={(stocks) => setFormData(prev => ({ ...prev, paperStocks: stocks }))}
+                onStocksChange={(stocks) =>
+                  setFormData((prev) => ({ ...prev, paperStocks: stocks }))
+                }
               />
             </CardContent>
           </Card>
@@ -445,7 +442,7 @@ export function ProductForm({ product }: ProductFormProps) {
             <CardContent>
               <ProductOptions
                 options={formData.options}
-                onOptionsChange={(options) => setFormData(prev => ({ ...prev, options }))}
+                onOptionsChange={(options) => setFormData((prev) => ({ ...prev, options }))}
               />
             </CardContent>
           </Card>
@@ -455,9 +452,7 @@ export function ProductForm({ product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Production Settings</CardTitle>
-              <CardDescription>
-                Configure production time and gang run settings
-              </CardDescription>
+              <CardDescription>Configure production time and gang run settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -469,7 +464,9 @@ export function ProductForm({ product }: ProductFormProps) {
                     min="1"
                     type="number"
                     value={formData.productionTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, productionTime: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, productionTime: parseInt(e.target.value) }))
+                    }
                   />
                 </div>
 
@@ -488,7 +485,9 @@ export function ProductForm({ product }: ProductFormProps) {
                     </div>
                     <Switch
                       checked={formData.rushAvailable}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, rushAvailable: checked }))}
+                      onCheckedChange={(checked) =>
+                        setFormData((prev) => ({ ...prev, rushAvailable: checked }))
+                      }
                     />
                   </div>
 
@@ -501,7 +500,9 @@ export function ProductForm({ product }: ProductFormProps) {
                           min="1"
                           type="number"
                           value={formData.rushDays}
-                          onChange={(e) => setFormData(prev => ({ ...prev, rushDays: parseInt(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormData((prev) => ({ ...prev, rushDays: parseInt(e.target.value) }))
+                          }
                         />
                       </div>
                       <div className="space-y-2">
@@ -511,7 +512,12 @@ export function ProductForm({ product }: ProductFormProps) {
                           step="0.01"
                           type="number"
                           value={formData.rushFee}
-                          onChange={(e) => setFormData(prev => ({ ...prev, rushFee: parseFloat(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              rushFee: parseFloat(e.target.value),
+                            }))
+                          }
                         />
                       </div>
                     </div>
@@ -533,7 +539,9 @@ export function ProductForm({ product }: ProductFormProps) {
                     </div>
                     <Switch
                       checked={formData.gangRunEligible}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, gangRunEligible: checked }))}
+                      onCheckedChange={(checked) =>
+                        setFormData((prev) => ({ ...prev, gangRunEligible: checked }))
+                      }
                     />
                   </div>
 
@@ -546,7 +554,12 @@ export function ProductForm({ product }: ProductFormProps) {
                           min="1"
                           type="number"
                           value={formData.minGangQuantity}
-                          onChange={(e) => setFormData(prev => ({ ...prev, minGangQuantity: parseInt(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              minGangQuantity: parseInt(e.target.value),
+                            }))
+                          }
                         />
                       </div>
                       <div className="space-y-2">
@@ -556,7 +569,12 @@ export function ProductForm({ product }: ProductFormProps) {
                           min="1"
                           type="number"
                           value={formData.maxGangQuantity}
-                          onChange={(e) => setFormData(prev => ({ ...prev, maxGangQuantity: parseInt(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              maxGangQuantity: parseInt(e.target.value),
+                            }))
+                          }
                         />
                       </div>
                     </div>
@@ -569,11 +587,7 @@ export function ProductForm({ product }: ProductFormProps) {
       </Tabs>
 
       <div className="flex justify-end gap-4 mt-8">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/admin/products')}
-        >
+        <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>
           Cancel
         </Button>
         <Button disabled={loading} type="submit">

@@ -15,9 +15,7 @@ export function PrintingSettingsForm() {
           <Printer className="h-5 w-5" />
           Printing Configuration
         </CardTitle>
-        <CardDescription>
-          Configure printing equipment and production settings
-        </CardDescription>
+        <CardDescription>Configure printing equipment and production settings</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">

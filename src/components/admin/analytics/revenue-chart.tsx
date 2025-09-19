@@ -15,7 +15,7 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(value)
   }
 
@@ -23,7 +23,7 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
     const date = new Date(dateStr)
     return date.toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -32,13 +32,9 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
           <p className="text-sm font-medium">{formatDate(label)}</p>
-          <p className="text-sm text-blue-600">
-            Revenue: {formatCurrency(payload[0].value)}
-          </p>
+          <p className="text-sm text-blue-600">Revenue: {formatCurrency(payload[0].value)}</p>
           {showDetailedTooltip && (
-            <p className="text-sm text-muted-foreground">
-              Orders: {payload[0].payload.orders}
-            </p>
+            <p className="text-sm text-muted-foreground">Orders: {payload[0].payload.orders}</p>
           )}
         </div>
       )
@@ -75,9 +71,9 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
           <Line
             activeDot={{
               r: 4,
-              stroke: "hsl(var(--primary))",
+              stroke: 'hsl(var(--primary))',
               strokeWidth: 2,
-              fill: "hsl(var(--background))"
+              fill: 'hsl(var(--background))',
             }}
             dataKey="revenue"
             dot={false}

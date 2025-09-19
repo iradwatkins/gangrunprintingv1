@@ -8,17 +8,17 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  CreditCard, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  Clock,
   AlertCircle,
   Loader2,
   ShoppingCart,
   Package,
   DollarSign,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 
 interface TestResult {
@@ -36,7 +36,7 @@ export default function PaymentTestPage() {
   const [testAmount, setTestAmount] = useState('99.99')
 
   const addResult = (result: TestResult) => {
-    setResults(prev => [result, ...prev].slice(0, 10))
+    setResults((prev) => [result, ...prev].slice(0, 10))
   }
 
   // Test creating a checkout session
@@ -58,9 +58,9 @@ export default function PaymentTestPage() {
                 size: '4x6',
                 paper: '16pt Gloss',
                 coating: 'UV Coating',
-                sides: 'Double Sided'
-              }
-            }
+                sides: 'Double Sided',
+              },
+            },
           ],
           email: testEmail,
           name: 'Test Customer',
@@ -70,14 +70,14 @@ export default function PaymentTestPage() {
             city: 'Test City',
             state: 'TX',
             zip: '12345',
-            country: 'US'
+            country: 'US',
           },
-          shippingMethod: 'standard'
-        })
+          shippingMethod: 'standard',
+        }),
       })
 
       const data = await response.json()
-      
+
       if (data.checkoutUrl) {
         addResult({
           success: true,
@@ -85,11 +85,11 @@ export default function PaymentTestPage() {
           data: {
             orderNumber: data.order?.orderNumber,
             checkoutUrl: data.checkoutUrl,
-            total: data.order?.total
+            total: data.order?.total,
           },
-          timestamp: new Date()
+          timestamp: new Date(),
         })
-        
+
         // Open Square checkout in new tab
         window.open(data.checkoutUrl, '_blank')
       } else {
@@ -97,14 +97,14 @@ export default function PaymentTestPage() {
           success: false,
           message: 'Checkout creation failed',
           data: data,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       }
     } catch (error) {
       addResult({
         success: false,
         message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -126,10 +126,10 @@ export default function PaymentTestPage() {
               status: 'COMPLETED',
               amount_money: { amount: 10000, currency: 'USD' },
               order_id: 'test_order_' + Date.now(),
-              created_at: new Date().toISOString()
-            }
-          }
-        })
+              created_at: new Date().toISOString(),
+            },
+          },
+        }),
       })
 
       const data = await response.json()
@@ -137,13 +137,13 @@ export default function PaymentTestPage() {
         success: response.ok,
         message: response.ok ? 'Webhook test successful' : 'Webhook test failed',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Webhook error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -156,7 +156,7 @@ export default function PaymentTestPage() {
       addResult({
         success: false,
         message: 'Please enter an order number',
-        timestamp: new Date()
+        timestamp: new Date(),
       })
       return
     }
@@ -165,18 +165,18 @@ export default function PaymentTestPage() {
     try {
       const response = await fetch(`/api/orders?orderNumber=${orderNumber}`)
       const data = await response.json()
-      
+
       addResult({
         success: response.ok,
         message: response.ok ? 'Order found' : 'Order not found',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Error checking order: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -193,8 +193,8 @@ export default function PaymentTestPage() {
         body: JSON.stringify({
           to: testEmail,
           orderNumber: 'TEST-' + Date.now(),
-          type: 'order_confirmation'
-        })
+          type: 'order_confirmation',
+        }),
       })
 
       const data = await response.json()
@@ -202,13 +202,13 @@ export default function PaymentTestPage() {
         success: response.ok,
         message: response.ok ? `Email sent to ${testEmail}` : 'Email sending failed',
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Email error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -221,18 +221,18 @@ export default function PaymentTestPage() {
     try {
       const response = await fetch('/api/health')
       const data = await response.json()
-      
+
       addResult({
         success: data.status === 'healthy',
         message: `System status: ${data.status}`,
         data,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } catch (error) {
       addResult({
         success: false,
         message: `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     } finally {
       setLoading(false)
@@ -310,13 +310,9 @@ export default function PaymentTestPage() {
                   <TabsTrigger value="webhook">Webhooks</TabsTrigger>
                   <TabsTrigger value="system">System</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent className="space-y-4" value="payment">
-                  <Button 
-                    className="w-full" 
-                    disabled={loading}
-                    onClick={testCheckout}
-                  >
+                  <Button className="w-full" disabled={loading} onClick={testCheckout}>
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -324,9 +320,9 @@ export default function PaymentTestPage() {
                     )}
                     Create Test Checkout
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={checkOrderStatus}
@@ -339,13 +335,9 @@ export default function PaymentTestPage() {
                     Check Order Status
                   </Button>
                 </TabsContent>
-                
+
                 <TabsContent className="space-y-4" value="webhook">
-                  <Button 
-                    className="w-full" 
-                    disabled={loading}
-                    onClick={testWebhook}
-                  >
+                  <Button className="w-full" disabled={loading} onClick={testWebhook}>
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -353,9 +345,9 @@ export default function PaymentTestPage() {
                     )}
                     Test Webhook Endpoint
                   </Button>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     disabled={loading}
                     variant="outline"
                     onClick={testEmailNotification}
@@ -368,13 +360,9 @@ export default function PaymentTestPage() {
                     Test Email Notification
                   </Button>
                 </TabsContent>
-                
+
                 <TabsContent className="space-y-4" value="system">
-                  <Button 
-                    className="w-full" 
-                    disabled={loading}
-                    onClick={testHealthCheck}
-                  >
+                  <Button className="w-full" disabled={loading} onClick={testHealthCheck}>
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -418,28 +406,23 @@ export default function PaymentTestPage() {
             ) : (
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
                 {results.map((result, index) => (
-                  <div 
-                    key={index} 
-                    className="border rounded-lg p-3 space-y-2"
-                  >
+                  <div key={index} className="border rounded-lg p-3 space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(result.success)}
-                        <span className="font-medium">
-                          {result.message}
-                        </span>
+                        <span className="font-medium">{result.message}</span>
                       </div>
                       <Badge variant={result.success ? 'default' : 'destructive'}>
                         {result.success ? 'Success' : 'Failed'}
                       </Badge>
                     </div>
-                    
+
                     {result.data && (
                       <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
                         {JSON.stringify(result.data, null, 2)}
                       </pre>
                     )}
-                    
+
                     <p className="text-xs text-muted-foreground">
                       {result.timestamp.toLocaleTimeString()}
                     </p>

@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     const body = await request.json()
-    
+
     const {
       cartItems,
       customerInfo,
@@ -18,12 +18,12 @@ export async function POST(request: NextRequest) {
       subtotal,
       tax,
       shipping,
-      total
+      total,
     } = body
 
     // Generate order number
     const orderNumber = `GRP-${Date.now().toString(36).toUpperCase()}`
-    
+
     // Create or update Square customer
     const squareCustomer = await createOrUpdateSquareCustomer(
       customerInfo.email,
@@ -58,11 +58,11 @@ export async function POST(request: NextRequest) {
             options: {
               ...item.options,
               fileName: item.fileName,
-              fileSize: item.fileSize
-            }
-          }))
-        }
-      }
+              fileSize: item.fileSize,
+            },
+          })),
+        },
+      },
     })
 
     // Create Square checkout
@@ -71,23 +71,23 @@ export async function POST(request: NextRequest) {
       quantity: item.quantity.toString(),
       basePriceMoney: {
         amount: BigInt(Math.round(item.price * 100)), // Convert to cents
-        currency: 'USD'
-      }
+        currency: 'USD',
+      },
     }))
 
     const checkout = await createSquareCheckout({
       amount: Math.round(total * 100), // Convert to cents
       orderNumber: order.orderNumber,
       email: customerInfo.email,
-      items: lineItems
+      items: lineItems,
     })
 
     // Update order with Square IDs
     await prisma.order.update({
       where: { id: order.id },
       data: {
-        squareOrderId: checkout.orderId
-      }
+        squareOrderId: checkout.orderId,
+      },
     })
 
     // Send confirmation email (fire and forget - don't block checkout)
@@ -96,9 +96,9 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         orderId: order.id,
-        orderNumber: order.orderNumber
-      })
-    }).catch(error => {
+        orderNumber: order.orderNumber,
+      }),
+    }).catch((error) => {
       console.error('Failed to send confirmation email:', error)
     })
 
@@ -106,14 +106,10 @@ export async function POST(request: NextRequest) {
       success: true,
       checkoutUrl: checkout.url,
       orderId: order.id,
-      orderNumber: order.orderNumber
+      orderNumber: order.orderNumber,
     })
-
   } catch (error) {
     console.error('Checkout creation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
   }
 }

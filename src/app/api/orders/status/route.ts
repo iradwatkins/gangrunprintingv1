@@ -1,56 +1,44 @@
-import { validateRequest } from "@/lib/auth"
-import { type NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { OrderStatus } from '@prisma/client';
-import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management';
-import { N8NWorkflows } from '@/lib/n8n';
+import { validateRequest } from '@/lib/auth'
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { OrderStatus } from '@prisma/client'
+import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management'
+import { N8NWorkflows } from '@/lib/n8n'
 
 // Update order status
 export async function PUT(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest();
-    
+    const { user, session } = await validateRequest()
+
     // Only admins can update order status
     if (!session?.user || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const { orderId, newStatus, notes } = body;
+    const body = await request.json()
+    const { orderId, newStatus, notes } = body
 
     if (!orderId || !newStatus) {
-      return NextResponse.json(
-        { error: 'Order ID and new status are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Order ID and new status are required' }, { status: 400 })
     }
 
     // Validate the status value
     if (!Object.values(OrderStatus).includes(newStatus)) {
-      return NextResponse.json(
-        { error: 'Invalid status value' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
     }
 
     // Get current order
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { 
-        id: true, 
+      select: {
+        id: true,
         status: true,
-        referenceNumber: true
-      }
-    });
+        referenceNumber: true,
+      },
+    })
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     // Check if transition is valid
@@ -58,15 +46,15 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: `Cannot transition from ${order.status} to ${newStatus}` },
         { status: 400 }
-      );
+      )
     }
 
     // Generate reference number if transitioning to CONFIRMATION and doesn't have one
-    let referenceNumber = order.referenceNumber;
+    let referenceNumber = order.referenceNumber
     if (newStatus === OrderStatus.CONFIRMATION && !referenceNumber) {
       // Get the next order number
-      const orderCount = await prisma.order.count();
-      referenceNumber = generateReferenceNumber(orderCount + 1);
+      const orderCount = await prisma.order.count()
+      referenceNumber = generateReferenceNumber(orderCount + 1)
     }
 
     // Update order status in a transaction
@@ -78,24 +66,24 @@ export async function PUT(request: NextRequest) {
           fromStatus: order.status,
           toStatus: newStatus,
           notes: notes,
-          changedBy: session.user.email || session.user.id
-        }
-      });
+          changedBy: session.user.email || session.user.id,
+        },
+      })
 
       // Update the order
       const updated = await tx.order.update({
         where: { id: orderId },
         data: {
           status: newStatus,
-          ...(referenceNumber && { referenceNumber })
+          ...(referenceNumber && { referenceNumber }),
         },
         include: {
           StatusHistory: {
             orderBy: { createdAt: 'desc' },
-            take: 10
-          }
-        }
-      });
+            take: 10,
+          },
+        },
+      })
 
       // If order is delivered, schedule review request for 3 days later
       if (newStatus === OrderStatus.DELIVERED) {
@@ -103,26 +91,28 @@ export async function PUT(request: NextRequest) {
           data: {
             orderId: orderId,
             type: 'ORDER_DELIVERED',
-            sent: false
-          }
-        });
+            sent: false,
+          },
+        })
       }
 
-      return updated;
-    });
+      return updated
+    })
 
     // Trigger N8N workflow for status change
     try {
       await N8NWorkflows.onOrderStatusChanged(orderId, order.status)
-      
+
       // Additional workflow triggers based on specific status
       if (newStatus === OrderStatus.SHIPPED) {
-        const trackingInfo = updatedOrder.trackingNumber ? {
-          trackingNumber: updatedOrder.trackingNumber,
-          carrier: updatedOrder.carrier || 'FEDEX',
-          estimatedDelivery: updatedOrder.estimatedDelivery
-        } : null
-        
+        const trackingInfo = updatedOrder.trackingNumber
+          ? {
+              trackingNumber: updatedOrder.trackingNumber,
+              carrier: updatedOrder.carrier || 'FEDEX',
+              estimatedDelivery: updatedOrder.estimatedDelivery,
+            }
+          : null
+
         if (trackingInfo) {
           await N8NWorkflows.onOrderShipped(orderId, trackingInfo)
         }
@@ -133,81 +123,61 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      order: updatedOrder
-    });
-
+      order: updatedOrder,
+    })
   } catch (error) {
-    console.error('Error updating order status:', error);
-    return NextResponse.json(
-      { error: 'Failed to update order status' },
-      { status: 500 }
-    );
+    console.error('Error updating order status:', error)
+    return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
   }
 }
 
 // Get order status history
 export async function GET(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest();
-    
+    const { user, session } = await validateRequest()
+
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url);
-    const orderId = searchParams.get('orderId');
+    const { searchParams } = new URL(request.url)
+    const orderId = searchParams.get('orderId')
 
     if (!orderId) {
-      return NextResponse.json(
-        { error: 'Order ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 })
     }
 
     // Check if user owns the order or is admin
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { 
+      select: {
         userId: true,
         status: true,
-        referenceNumber: true
-      }
-    });
+        referenceNumber: true,
+      },
+    })
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     if (session.user.role !== 'ADMIN' && order.userId !== session.user.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get status history
     const statusHistory = await prisma.statusHistory.findMany({
       where: { orderId },
-      orderBy: { createdAt: 'asc' }
-    });
+      orderBy: { createdAt: 'asc' },
+    })
 
     return NextResponse.json({
       currentStatus: order.status,
       referenceNumber: order.referenceNumber,
-      history: statusHistory
-    });
-
+      history: statusHistory,
+    })
   } catch (error) {
-    console.error('Error fetching order status history:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch order status history' },
-      { status: 500 }
-    );
+    console.error('Error fetching order status history:', error)
+    return NextResponse.json({ error: 'Failed to fetch order status history' }, { status: 500 })
   }
 }

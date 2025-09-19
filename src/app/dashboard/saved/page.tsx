@@ -13,7 +13,7 @@ async function getSavedData(userId: string) {
   const savedOrders = await prisma.order.findMany({
     where: {
       userId,
-      status: 'DELIVERED'
+      status: 'DELIVERED',
     },
     take: 10,
     orderBy: { createdAt: 'desc' },
@@ -22,12 +22,12 @@ async function getSavedData(userId: string) {
         include: {
           orderItemAddOns: {
             include: {
-              addOn: true
-            }
-          }
-        }
-      }
-    }
+              addOn: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   // Get frequently ordered products (based on order history)
@@ -36,26 +36,26 @@ async function getSavedData(userId: string) {
     where: {
       Order: {
         userId,
-        status: 'DELIVERED'
-      }
+        status: 'DELIVERED',
+      },
     },
     _count: {
-      productSku: true
+      productSku: true,
     },
     _sum: {
-      quantity: true
+      quantity: true,
     },
     orderBy: {
       _count: {
-        productSku: 'desc'
-      }
+        productSku: 'desc',
+      },
     },
-    take: 6
+    take: 6,
   })
 
   return {
     savedOrders,
-    frequentProducts
+    frequentProducts,
   }
 }
 
@@ -75,15 +75,13 @@ export default async function SavedPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Saved Items
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Saved Items</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Your favorite products and orders you might want to reorder
           </p>
@@ -98,9 +96,7 @@ export default async function SavedPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{savedOrders.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Recent completed orders
-              </p>
+              <p className="text-xs text-muted-foreground">Recent completed orders</p>
             </CardContent>
           </Card>
 
@@ -111,9 +107,7 @@ export default async function SavedPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{frequentProducts.length}</div>
-              <p className="text-xs text-muted-foreground">
-                Products you order often
-              </p>
+              <p className="text-xs text-muted-foreground">Products you order often</p>
             </CardContent>
           </Card>
 
@@ -126,9 +120,7 @@ export default async function SavedPage() {
               <div className="text-2xl font-bold">
                 {frequentProducts.reduce((sum, item) => sum + (item._sum.quantity || 0), 0)}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Items ordered in total
-              </p>
+              <p className="text-xs text-muted-foreground">Items ordered in total</p>
             </CardContent>
           </Card>
         </div>
@@ -141,27 +133,24 @@ export default async function SavedPage() {
                 <Star className="h-5 w-5" />
                 Frequently Ordered
               </CardTitle>
-              <CardDescription>
-                Products you order most often
-              </CardDescription>
+              <CardDescription>Products you order most often</CardDescription>
             </CardHeader>
             <CardContent>
               {frequentProducts.length > 0 ? (
                 <div className="space-y-4">
                   {frequentProducts.map((product, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex-1">
                         <h3 className="font-medium">{product.productName}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          SKU: {product.productSku}
-                        </p>
+                        <p className="text-sm text-muted-foreground">SKU: {product.productSku}</p>
                         <div className="flex items-center gap-4 mt-2">
                           <Badge variant="secondary">
                             Ordered {product._count.productSku} times
                           </Badge>
-                          <Badge variant="outline">
-                            Total: {product._sum.quantity} items
-                          </Badge>
+                          <Badge variant="outline">Total: {product._sum.quantity} items</Badge>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -185,9 +174,7 @@ export default async function SavedPage() {
                     Start ordering to see your favorite products here.
                   </p>
                   <Link href="/products">
-                    <Button>
-                      Browse Products
-                    </Button>
+                    <Button>Browse Products</Button>
                   </Link>
                 </div>
               )}
@@ -263,9 +250,7 @@ export default async function SavedPage() {
                     Complete your first order to see reorder options here.
                   </p>
                   <Link href="/products">
-                    <Button>
-                      Place Your First Order
-                    </Button>
+                    <Button>Place Your First Order</Button>
                   </Link>
                 </div>
               )}
@@ -277,14 +262,12 @@ export default async function SavedPage() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common actions for managing your saved items
-            </CardDescription>
+            <CardDescription>Common actions for managing your saved items</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link href="/products">
-                <Button variant="outline" className="w-full justify-start h-auto p-4">
+                <Button className="w-full justify-start h-auto p-4" variant="outline">
                   <div className="text-left">
                     <div className="flex items-center gap-2 mb-1">
                       <ShoppingCart className="h-4 w-4" />
@@ -298,7 +281,7 @@ export default async function SavedPage() {
               </Link>
 
               <Link href="/dashboard/orders">
-                <Button variant="outline" className="w-full justify-start h-auto p-4">
+                <Button className="w-full justify-start h-auto p-4" variant="outline">
                   <div className="text-left">
                     <div className="flex items-center gap-2 mb-1">
                       <Package className="h-4 w-4" />

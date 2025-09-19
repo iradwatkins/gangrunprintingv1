@@ -69,9 +69,7 @@ async function VerifyContent({ searchParams }: VerifyPageProps) {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-red-600 mb-4">{errorTitle}</h1>
-        <p className="text-gray-600 mb-6">
-          {errorMessage}
-        </p>
+        <p className="text-gray-600 mb-6">{errorMessage}</p>
         <Link
           className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
           href="/auth/signin"
@@ -85,14 +83,16 @@ async function VerifyContent({ searchParams }: VerifyPageProps) {
 
 export default async function VerifyPage({ searchParams }: VerifyPageProps) {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying your magic link...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Verifying your magic link...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <VerifyContent searchParams={searchParams} />
     </Suspense>
   )

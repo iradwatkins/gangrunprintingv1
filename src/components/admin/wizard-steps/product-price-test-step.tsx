@@ -4,13 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -54,7 +48,7 @@ export function ProductPriceTestStep({
     quantity: '',
     size: '',
     paperStock: '',
-    selectedOptions: {} as Record<string, any>
+    selectedOptions: {} as Record<string, any>,
   })
   const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
@@ -137,8 +131,8 @@ export function ProductPriceTestStep({
       // Find quantity pricing tier
       let pricePerUnit = basePrice
       if (formData.pricingTiers.length > 0) {
-        const tier = formData.pricingTiers.find(t =>
-          quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= t.maxQuantity)
+        const tier = formData.pricingTiers.find(
+          (t) => quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= t.maxQuantity)
         )
         if (tier) {
           pricePerUnit = tier.pricePerUnit
@@ -146,11 +140,11 @@ export function ProductPriceTestStep({
       }
 
       // Calculate total
-      let total = (pricePerUnit * quantity) + setupFee
+      let total = pricePerUnit * quantity + setupFee
 
       // Add option costs
       Object.entries(testConfiguration.selectedOptions).forEach(([optionId, value]) => {
-        const option = formData.options.find(o => o.id === optionId)
+        const option = formData.options.find((o) => o.id === optionId)
         if (option && option.pricing) {
           if (option.type === 'checkbox' && value) {
             total += option.pricing.fee || 0
@@ -203,41 +197,35 @@ export function ProductPriceTestStep({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Base Pricing</CardTitle>
-          <CardDescription>
-            Set your base price and any setup fees
-          </CardDescription>
+          <CardDescription>Set your base price and any setup fees</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="basePrice">Base Price ($) *</Label>
               <Input
+                className={errors.basePrice ? 'border-red-500' : ''}
                 id="basePrice"
-                type="number"
-                step="0.01"
                 min="0"
+                step="0.01"
+                type="number"
                 value={formData.basePrice}
                 onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
-                className={errors.basePrice ? 'border-red-500' : ''}
               />
-              {errors.basePrice && (
-                <p className="text-sm text-red-500">{errors.basePrice}</p>
-              )}
+              {errors.basePrice && <p className="text-sm text-red-500">{errors.basePrice}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="setupFee">Setup Fee ($)</Label>
               <Input
+                className={errors.setupFee ? 'border-red-500' : ''}
                 id="setupFee"
-                type="number"
-                step="0.01"
                 min="0"
+                step="0.01"
+                type="number"
                 value={formData.setupFee}
                 onChange={(e) => onUpdate({ setupFee: parseFloat(e.target.value) || 0 })}
-                className={errors.setupFee ? 'border-red-500' : ''}
               />
-              {errors.setupFee && (
-                <p className="text-sm text-red-500">{errors.setupFee}</p>
-              )}
+              {errors.setupFee && <p className="text-sm text-red-500">{errors.setupFee}</p>}
             </div>
           </div>
         </CardContent>
@@ -254,10 +242,10 @@ export function ProductPriceTestStep({
         <CardContent>
           <PricingCalculator
             basePrice={formData.basePrice}
-            setupFee={formData.setupFee}
             options={formData.options}
             paperStocks={formData.paperStocks}
             pricingTiers={formData.pricingTiers}
+            setupFee={formData.setupFee}
             onTiersChange={(tiers) => onUpdate({ pricingTiers: tiers })}
           />
         </CardContent>
@@ -284,7 +272,9 @@ export function ProductPriceTestStep({
               <Label>Quantity</Label>
               <Select
                 value={testConfiguration.quantity}
-                onValueChange={(value) => setTestConfiguration(prev => ({ ...prev, quantity: value }))}
+                onValueChange={(value) =>
+                  setTestConfiguration((prev) => ({ ...prev, quantity: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select quantity" />
@@ -303,7 +293,9 @@ export function ProductPriceTestStep({
               <Label>Size</Label>
               <Select
                 value={testConfiguration.size}
-                onValueChange={(value) => setTestConfiguration(prev => ({ ...prev, size: value }))}
+                onValueChange={(value) =>
+                  setTestConfiguration((prev) => ({ ...prev, size: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select size" />
@@ -322,7 +314,9 @@ export function ProductPriceTestStep({
               <Label>Paper Stock</Label>
               <Select
                 value={testConfiguration.paperStock}
-                onValueChange={(value) => setTestConfiguration(prev => ({ ...prev, paperStock: value }))}
+                onValueChange={(value) =>
+                  setTestConfiguration((prev) => ({ ...prev, paperStock: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select paper" />
@@ -340,9 +334,9 @@ export function ProductPriceTestStep({
             <div className="space-y-2">
               <Label>&nbsp;</Label>
               <Button
-                onClick={calculateTestPrice}
-                disabled={!testConfiguration.quantity || !testConfiguration.size || isCalculating}
                 className="w-full"
+                disabled={!testConfiguration.quantity || !testConfiguration.size || isCalculating}
+                onClick={calculateTestPrice}
               >
                 {isCalculating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Calculate Price
@@ -357,12 +351,8 @@ export function ProductPriceTestStep({
                 <DollarSign className="h-5 w-5 text-green-600" />
                 <h4 className="font-medium text-green-900">Calculated Price</h4>
               </div>
-              <div className="text-2xl font-bold text-green-600">
-                ${calculatedPrice.toFixed(2)}
-              </div>
-              <p className="text-sm text-green-700 mt-1">
-                For {testConfiguration.quantity} units
-              </p>
+              <div className="text-2xl font-bold text-green-600">${calculatedPrice.toFixed(2)}</div>
+              <p className="text-sm text-green-700 mt-1">For {testConfiguration.quantity} units</p>
             </div>
           )}
         </CardContent>
@@ -372,9 +362,7 @@ export function ProductPriceTestStep({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Final Review</CardTitle>
-          <CardDescription>
-            Review your product configuration before publishing
-          </CardDescription>
+          <CardDescription>Review your product configuration before publishing</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -418,13 +406,14 @@ export function ProductPriceTestStep({
             <div className="p-4 bg-blue-50 rounded-lg">
               <h4 className="font-medium text-blue-900 mb-2">Ready to Publish?</h4>
               <p className="text-sm text-blue-800 mb-4">
-                Your product configuration is complete! Click the button below to make this product available to customers.
+                Your product configuration is complete! Click the button below to make this product
+                available to customers.
               </p>
               <Button
-                onClick={handlePublish}
+                className="w-full"
                 disabled={Object.keys(errors).length > 0 || publishing}
                 size="lg"
-                className="w-full"
+                onClick={handlePublish}
               >
                 {publishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Publish Product

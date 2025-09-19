@@ -1,112 +1,105 @@
-import { Lucia } from "lucia";
-import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { cookies } from "next/headers";
-import { cache } from "react";
-import { generateRandomString } from "oslo/crypto";
-import resend from "@/lib/resend";
-import { prisma } from "@/lib/prisma";
+import { Lucia } from 'lucia'
+import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
+import { cookies } from 'next/headers'
+import { cache } from 'react'
+import { generateRandomString } from 'oslo/crypto'
+import resend from '@/lib/resend'
+import { prisma } from '@/lib/prisma'
+import { authLogger } from '@/lib/logger'
 
-const adapter = new PrismaAdapter(prisma.session, prisma.user);
+const adapter = new PrismaAdapter(prisma.session, prisma.user)
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
-      secure: process.env.NODE_ENV === "production"
-    }
+      secure: process.env.NODE_ENV === 'production',
+    },
   },
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
       name: attributes.name,
       role: attributes.role,
-      emailVerified: attributes.emailVerified
-    };
-  }
-});
+      emailVerified: attributes.emailVerified,
+    }
+  },
+})
 
-declare module "lucia" {
+declare module 'lucia' {
   interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: DatabaseUserAttributes;
+    Lucia: typeof lucia
+    DatabaseUserAttributes: DatabaseUserAttributes
   }
 }
 
 export class MagicLinkError extends Error {
-  public readonly code: string;
-  public readonly userMessage: string;
+  public readonly code: string
+  public readonly userMessage: string
 
   constructor(code: string, message: string, userMessage: string) {
-    super(message);
-    this.code = code;
-    this.userMessage = userMessage;
-    this.name = 'MagicLinkError';
+    super(message)
+    this.code = code
+    this.userMessage = userMessage
+    this.name = 'MagicLinkError'
   }
 }
 
 interface DatabaseUserAttributes {
-  email: string;
-  name: string;
-  role: string;
-  emailVerified: boolean;
+  email: string
+  name: string
+  role: string
+  emailVerified: boolean
 }
 
 export const validateRequest = cache(
-  async (): Promise<
-    { user: User; session: Session } | { user: null; session: null }
-  > => {
-    const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null;
+  async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+    const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
     if (!sessionId) {
       return {
         user: null,
-        session: null
-      };
+        session: null,
+      }
     }
 
-    const result = await lucia.validateSession(sessionId);
-    
+    const result = await lucia.validateSession(sessionId)
+
     try {
       if (result.session && result.session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(result.session.id);
-        (await cookies()).set(
-          sessionCookie.name,
-          sessionCookie.value,
-          sessionCookie.attributes
-        );
+        const sessionCookie = lucia.createSessionCookie(result.session.id)
+        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
       }
       if (!result.session) {
-        const sessionCookie = lucia.createBlankSessionCookie();
-        (await cookies()).set(
-          sessionCookie.name,
-          sessionCookie.value,
-          sessionCookie.attributes
-        );
+        const sessionCookie = lucia.createBlankSessionCookie()
+        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
       }
-    } catch {}
-    
-    return result;
+    } catch (error) {
+      authLogger.debug('Failed to set session cookie', error)
+    }
+
+    return result
   }
-);
+)
 
 // Magic Link Authentication Functions
 export async function generateMagicLink(email: string): Promise<string> {
-  const token = generateRandomString(32, "abcdefghijklmnopqrstuvwxyz0123456789");
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+  const token = generateRandomString(32, 'abcdefghijklmnopqrstuvwxyz0123456789')
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
 
   // Delete any existing tokens for this email
   await prisma.verificationToken.deleteMany({
-    where: { identifier: email }
-  });
+    where: { identifier: email },
+  })
 
   // Create new verification token
   await prisma.verificationToken.create({
     data: {
       identifier: email,
       token,
-      expires: expiresAt
-    }
-  });
+      expires: expiresAt,
+    },
+  })
 
-  return token;
+  return token
 }
 
 export async function sendMagicLink(email: string, name?: string): Promise<void> {
@@ -114,13 +107,14 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
   // console.log('=== MAGIC LINK GENERATION DEBUG ===');
   // console.log('Generating magic link for email:', email);
 
-  const token = await generateMagicLink(email);
+  const token = await generateMagicLink(email)
   // console.log('Generated token:', token);
   // console.log('Token length:', token.length);
 
   // Use API route for verification to properly handle cookies
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com';
-  const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
+  const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`
 
   // console.log('Generated magic link:', magicLink);
   // console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
@@ -136,8 +130,8 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
       <p><a href="${magicLink}" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Sign In</a></p>
       <p>This link will expire in 15 minutes.</p>
       <p>If you didn't request this, you can safely ignore this email.</p>
-    `
-  });
+    `,
+  })
 }
 
 export async function verifyMagicLink(token: string, email: string) {
@@ -158,7 +152,7 @@ export async function verifyMagicLink(token: string, email: string) {
       'INVALID_TOKEN_FORMAT',
       'Magic link token has invalid format',
       'This magic link appears to be corrupted. Please request a new one.'
-    );
+    )
   }
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -168,17 +162,17 @@ export async function verifyMagicLink(token: string, email: string) {
       'INVALID_EMAIL_FORMAT',
       'Email has invalid format',
       'This magic link appears to be corrupted. Please request a new one.'
-    );
+    )
   }
 
   const verificationToken = await prisma.verificationToken.findUnique({
     where: {
       identifier_token: {
         identifier: email,
-        token
-      }
-    }
-  });
+        token,
+      },
+    },
+  })
 
   // console.log('Database query result:');
   // console.log('- Token found:', !!verificationToken);
@@ -199,7 +193,7 @@ export async function verifyMagicLink(token: string, email: string) {
       'TOKEN_NOT_FOUND',
       'Magic link token not found in database',
       'This magic link is invalid or has already been used. Please request a new one.'
-    );
+    )
   }
 
   if (verificationToken.expires < new Date()) {
@@ -209,7 +203,7 @@ export async function verifyMagicLink(token: string, email: string) {
       'TOKEN_EXPIRED',
       'Magic link token has expired',
       'This magic link has expired. Please request a new one.'
-    );
+    )
   }
 
   // console.log('=== VERIFICATION SUCCESSFUL ===');
@@ -220,37 +214,37 @@ export async function verifyMagicLink(token: string, email: string) {
       where: {
         identifier_token: {
           identifier: email,
-          token
-        }
-      }
-    });
+          token,
+        },
+      },
+    })
     // console.log('Token successfully deleted from database');
   } catch (deleteError) {
-    console.error('Warning: Failed to delete verification token:', deleteError);
+    authLogger.error('Warning: Failed to delete verification token:', deleteError)
     // Don't throw here - user should still be able to authenticate even if cleanup fails
   }
 
   // Find or create user with error handling
-  let user;
+  let user
   try {
     user = await prisma.user.findUnique({
-      where: { email }
-    });
+      where: { email },
+    })
 
     if (!user) {
       // console.log('Creating new user for email:', email);
 
       // Special handling for admin email
-      const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER';
+      const role = email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER'
 
       user = await prisma.user.create({
         data: {
           email,
           name: email.split('@')[0], // Default name from email
           role,
-          emailVerified: true
-        }
-      });
+          emailVerified: true,
+        },
+      })
 
       // console.log('New user created with ID:', user.id);
     } else {
@@ -259,74 +253,66 @@ export async function verifyMagicLink(token: string, email: string) {
       // Mark email as verified
       user = await prisma.user.update({
         where: { id: user.id },
-        data: { emailVerified: true }
-      });
+        data: { emailVerified: true },
+      })
 
       // console.log('User verification status updated');
     }
   } catch (userError) {
-    console.error('Database error during user lookup/creation:', userError);
+    authLogger.error('Database error during user lookup/creation:', userError)
     throw new MagicLinkError(
       'USER_CREATION_FAILED',
       'Failed to create or update user account',
       'There was a problem with your account. Please try again or contact support.'
-    );
+    )
   }
 
   // Create session with error handling
-  let session;
+  let session
   try {
-    session = await lucia.createSession(user.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
+    session = await lucia.createSession(user.id, {})
+    const sessionCookie = lucia.createSessionCookie(session.id)
 
-    cookies().set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes
-    );
+    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
     // console.log('Session created successfully:', session.id);
   } catch (sessionError) {
-    console.error('Failed to create session:', sessionError);
+    authLogger.error('Failed to create session:', sessionError)
     throw new MagicLinkError(
       'SESSION_CREATION_FAILED',
       'Failed to create user session',
       'Authentication succeeded but failed to create session. Please try signing in again.'
-    );
+    )
   }
 
-  return { user, session };
+  return { user, session }
 }
 
 export async function signOut() {
-  const { session } = await validateRequest();
-  
+  const { session } = await validateRequest()
+
   if (!session) {
     return {
-      error: "Unauthorized"
-    };
+      error: 'Unauthorized',
+    }
   }
-  
-  await lucia.invalidateSession(session.id);
-  
-  const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes
-  );
+
+  await lucia.invalidateSession(session.id)
+
+  const sessionCookie = lucia.createBlankSessionCookie()
+  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 }
 
 export type User = {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  emailVerified: boolean;
-};
+  id: string
+  email: string
+  name: string
+  role: string
+  emailVerified: boolean
+}
 
 export type Session = {
-  id: string;
-  userId: string;
-  expiresAt: Date;
-};
+  id: string
+  userId: string
+  expiresAt: Date
+}

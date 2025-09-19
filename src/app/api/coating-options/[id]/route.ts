@@ -1,61 +1,46 @@
-import { validateRequest } from "@/lib/auth"
+import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
     const { name, description } = body
 
     if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
     const coatingOption = await prisma.coatingOption.update({
       where: { id },
       data: {
         name,
-        description
-      }
+        description,
+      },
     })
 
     return NextResponse.json(coatingOption)
   } catch (error: any) {
     console.error('Error updating coating option:', error)
-    
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },
         { status: 400 }
       )
     }
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Coating option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to update coating option' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to update coating option' }, { status: 500 })
   }
 }
 
@@ -67,10 +52,7 @@ export async function DELETE(
     const { id } = await params
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if coating option is in use
@@ -78,16 +60,13 @@ export async function DELETE(
       where: { id },
       include: {
         _count: {
-          select: { paperStockCoatings: true }
-        }
-      }
+          select: { paperStockCoatings: true },
+        },
+      },
     })
 
     if (!coatingWithRelations) {
-      return NextResponse.json(
-        { error: 'Coating option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
 
     if (coatingWithRelations._count.paperStockCoatings > 0) {
@@ -98,23 +77,17 @@ export async function DELETE(
     }
 
     await prisma.coatingOption.delete({
-      where: { id }
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error deleting coating option:', error)
-    
+
     if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Coating option not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to delete coating option' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to delete coating option' }, { status: 500 })
   }
 }

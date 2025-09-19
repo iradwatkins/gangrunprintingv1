@@ -7,16 +7,16 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import toast from '@/lib/toast'
-import { 
-  Upload, 
-  X, 
-  Star, 
-  StarOff, 
+import {
+  Upload,
+  X,
+  Star,
+  StarOff,
   Image as ImageIcon,
   Loader2,
   GripVertical,
   Edit2,
-  Trash2
+  Trash2,
 } from 'lucide-react'
 import {
   DndContext,
@@ -32,9 +32,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import {
-  useSortable,
-} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
   Dialog,
@@ -64,15 +62,24 @@ interface ProductImageUploadProps {
   productId?: string
 }
 
-function SortableImageItem({ image, index, onRemove, onEdit, onSetPrimary }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: image.url })
+interface SortableImageItemProps {
+  image: ProductImage
+  index: number
+  onRemove: (index: number) => void
+  onEdit: (index: number) => void
+  onSetPrimary: (index: number) => void
+}
+
+function SortableImageItem({
+  image,
+  index,
+  onRemove,
+  onEdit,
+  onSetPrimary,
+}: SortableImageItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: image.url,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -81,11 +88,7 @@ function SortableImageItem({ image, index, onRemove, onEdit, onSetPrimary }: any
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      className="relative group"
-      style={style}
-    >
+    <div ref={setNodeRef} className="relative group" style={style}>
       <Card className="overflow-hidden">
         <div className="aspect-square relative">
           {image.uploading ? (
@@ -129,11 +132,7 @@ function SortableImageItem({ image, index, onRemove, onEdit, onSetPrimary }: any
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <div
-                {...attributes}
-                {...listeners}
-                className="absolute top-2 left-2 cursor-move"
-              >
+              <div {...attributes} {...listeners} className="absolute top-2 left-2 cursor-move">
                 <div className="bg-white/90 rounded p-1">
                   <GripVertical className="h-4 w-4" />
                 </div>
@@ -148,24 +147,28 @@ function SortableImageItem({ image, index, onRemove, onEdit, onSetPrimary }: any
         )}
       </Card>
       {image.caption && (
-        <p className="text-sm text-muted-foreground mt-1 text-center truncate">
-          {image.caption}
-        </p>
+        <p className="text-sm text-muted-foreground mt-1 text-center truncate">{image.caption}</p>
       )}
     </div>
   )
 }
 
-export function ProductImageUpload({ images = [], onImagesChange, productId }: ProductImageUploadProps) {
+export function ProductImageUpload({
+  images = [],
+  onImagesChange,
+  productId,
+}: ProductImageUploadProps) {
   const [uploading, setUploading] = useState(false)
-  const [editingImage, setEditingImage] = useState<{ index: number; image: ProductImage } | null>(null)
+  const [editingImage, setEditingImage] = useState<{ index: number; image: ProductImage } | null>(
+    null
+  )
   const [editForm, setEditForm] = useState({ alt: '', caption: '' })
 
   // Cleanup blob URLs when component unmounts
   useEffect(() => {
     return () => {
       const safeImages = Array.isArray(images) ? images : []
-      safeImages.forEach(image => {
+      safeImages.forEach((image) => {
         if (image.isBlobUrl && image.url.startsWith('blob:')) {
           URL.revokeObjectURL(image.url)
         }
@@ -229,7 +232,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
           }
 
           // Update the image with the uploaded URL and clean up blob
-          onImagesChange(prev => {
+          onImagesChange((prev) => {
             const currentImages = Array.isArray(prev) ? prev : []
             return currentImages.map((img, idx) => {
               if (idx === safeImages.length + i) {
@@ -250,10 +253,11 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
             })
           })
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
           console.error('Image upload error:', error)
-          toast.error(`Failed to upload image ${i + 1}: ${error.message}`)
+          toast.error(`Failed to upload image ${i + 1}: ${errorMessage}`)
           // Remove the failed image safely
-          onImagesChange(prev => {
+          onImagesChange((prev) => {
             const currentImages = Array.isArray(prev) ? prev : []
             return currentImages.filter((_, idx) => idx !== safeImages.length + i)
           })
@@ -276,31 +280,31 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragActive(false)
-    const files = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+    const files = Array.from(e.dataTransfer.files).filter(
+      (file) => file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
     )
     handleFiles(files)
   }
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).filter(file => 
-      file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+    const files = Array.from(e.target.files || []).filter(
+      (file) => file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
     )
     handleFiles(files)
   }
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: { active: { id: string }; over: { id: string } }) => {
     const { active, over } = event
 
     if (active.id !== over.id) {
       const safeImages = Array.isArray(images) ? images : []
-      const oldIndex = safeImages.findIndex(img => img.url === active.id)
-      const newIndex = safeImages.findIndex(img => img.url === over.id)
+      const oldIndex = safeImages.findIndex((img) => img.url === active.id)
+      const newIndex = safeImages.findIndex((img) => img.url === over.id)
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const newImages = arrayMove(safeImages, oldIndex, newIndex).map((img, idx) => ({
           ...img,
-          sortOrder: idx
+          sortOrder: idx,
         }))
 
         onImagesChange(newImages)
@@ -333,7 +337,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
 
     const newImages = safeImages.map((img, i) => ({
       ...img,
-      isPrimary: i === index
+      isPrimary: i === index,
     }))
     onImagesChange(newImages)
   }
@@ -346,7 +350,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
     if (image) {
       setEditForm({
         alt: image.alt || '',
-        caption: image.caption || ''
+        caption: image.caption || '',
       })
       setEditingImage({ index, image })
     }
@@ -360,7 +364,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
         newImages[editingImage.index] = {
           ...newImages[editingImage.index],
           alt: editForm.alt,
-          caption: editForm.caption
+          caption: editForm.caption,
         }
         onImagesChange(newImages)
       }
@@ -412,21 +416,23 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={Array.isArray(images) ? images.map(img => img.url) : []}
+              items={Array.isArray(images) ? images.map((img) => img.url) : []}
               strategy={verticalListSortingStrategy}
             >
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {Array.isArray(images) ? images.map((image, index) => (
-                  <SortableImageItem
-                    key={image.url}
-                    id={image.url}
-                    image={image}
-                    index={index}
-                    onEdit={handleEdit}
-                    onRemove={handleRemove}
-                    onSetPrimary={handleSetPrimary}
-                  />
-                )) : []}
+                {Array.isArray(images)
+                  ? images.map((image, index) => (
+                      <SortableImageItem
+                        key={image.url}
+                        id={image.url}
+                        image={image}
+                        index={index}
+                        onEdit={handleEdit}
+                        onRemove={handleRemove}
+                        onSetPrimary={handleSetPrimary}
+                      />
+                    ))
+                  : []}
               </div>
             </SortableContext>
           </DndContext>
@@ -448,7 +454,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
                 id="alt"
                 placeholder="Describe the image for screen readers"
                 value={editForm.alt}
-                onChange={(e) => setEditForm(prev => ({ ...prev, alt: e.target.value }))}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, alt: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -457,7 +463,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
                 id="caption"
                 placeholder="Optional caption for the image"
                 value={editForm.caption}
-                onChange={(e) => setEditForm(prev => ({ ...prev, caption: e.target.value }))}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, caption: e.target.value }))}
               />
             </div>
           </div>
@@ -465,9 +471,7 @@ export function ProductImageUpload({ images = [], onImagesChange, productId }: P
             <Button variant="outline" onClick={() => setEditingImage(null)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit}>
-              Save Changes
-            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

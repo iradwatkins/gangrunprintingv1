@@ -12,42 +12,52 @@ export async function GET() {
         isActive: true,
         coatings: [
           { id: 'high-gloss-uv', label: 'High Gloss UV', enabled: true },
-          { id: 'matte-aqueous', label: 'Matte Aqueous', enabled: true }
+          { id: 'matte-aqueous', label: 'Matte Aqueous', enabled: true },
         ],
         sidesOptions: [
-          { id: 'same-image-both', label: 'Same image, both sides', enabled: true, multiplier: 1.0 },
-          { id: 'different-image-both', label: 'Different image, both sides', enabled: true, multiplier: 1.0 },
-          { id: 'image-one-side', label: 'Image one side only', enabled: true, multiplier: 1.0 }
+          {
+            id: 'same-image-both',
+            label: 'Same image, both sides',
+            enabled: true,
+            multiplier: 1.0,
+          },
+          {
+            id: 'different-image-both',
+            label: 'Different image, both sides',
+            enabled: true,
+            multiplier: 1.0,
+          },
+          { id: 'image-one-side', label: 'Image one side only', enabled: true, multiplier: 1.0 },
         ],
         defaultCoating: 'high-gloss-uv',
         defaultSides: 'same-image-both',
-        productsCount: 0
+        productsCount: 0,
       },
       {
         id: '2',
         name: '100lb Text Paper',
-        basePrice: 0.00001000,
+        basePrice: 0.00001,
         shippingWeight: 0.4,
         isActive: true,
-        coatings: [
-          { id: 'matte-aqueous', label: 'Matte Aqueous', enabled: true }
-        ],
+        coatings: [{ id: 'matte-aqueous', label: 'Matte Aqueous', enabled: true }],
         sidesOptions: [
-          { id: 'different-image-both', label: 'Different image, both sides', enabled: true, multiplier: 1.75 },
-          { id: 'image-one-side', label: 'Image one side only', enabled: true, multiplier: 1.0 }
+          {
+            id: 'different-image-both',
+            label: 'Different image, both sides',
+            enabled: true,
+            multiplier: 1.75,
+          },
+          { id: 'image-one-side', label: 'Image one side only', enabled: true, multiplier: 1.0 },
         ],
         defaultCoating: 'matte-aqueous',
         defaultSides: 'image-one-side',
-        productsCount: 0
-      }
+        productsCount: 0,
+      },
     ]
-    
+
     return NextResponse.json(mockData)
   } catch (error) {
     console.error('Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch paper stocks' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch paper stocks' }, { status: 500 })
   }
 }

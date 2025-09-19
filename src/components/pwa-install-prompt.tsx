@@ -50,7 +50,7 @@ export function PWAInstallPrompt() {
 
     deferredPrompt.prompt()
     const { outcome } = await deferredPrompt.userChoice
-    
+
     if (outcome === 'accepted') {
       setShowPrompt(false)
     }
@@ -73,32 +73,24 @@ export function PWAInstallPrompt() {
       >
         <X className="h-4 w-4" />
       </button>
-      
+
       <div className="flex items-start gap-3">
         <div className="bg-primary/10 p-2 rounded-lg">
           <Smartphone className="h-5 w-5 text-primary" />
         </div>
-        
+
         <div className="flex-1">
           <h3 className="font-semibold text-sm mb-1">Install GangRun App</h3>
           <p className="text-xs text-muted-foreground mb-3">
             Get quick access, work offline, and enjoy a faster experience
           </p>
-          
+
           <div className="flex gap-2">
-            <Button
-              className="flex items-center gap-1"
-              size="sm"
-              onClick={handleInstall}
-            >
+            <Button className="flex items-center gap-1" size="sm" onClick={handleInstall}>
               <Download className="h-3 w-3" />
               Install
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleDismiss}
-            >
+            <Button size="sm" variant="ghost" onClick={handleDismiss}>
               Not now
             </Button>
           </div>

@@ -22,7 +22,7 @@ const formatFileSize = (bytes: number): string => {
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 export default function UploadPage() {
@@ -31,17 +31,17 @@ export default function UploadPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFiles = (fileList: FileList) => {
-    const newFiles = Array.from(fileList).map(file => ({
+    const newFiles = Array.from(fileList).map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
       size: file.size,
       type: file.type,
       preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
       progress: 0,
-      status: 'uploading' as const
+      status: 'uploading' as const,
     }))
 
-    setFiles(prev => [...prev, ...newFiles])
+    setFiles((prev) => [...prev, ...newFiles])
 
     // Upload files to the API
     newFiles.forEach(async (uploadFile, index) => {
@@ -53,32 +53,28 @@ export default function UploadPage() {
 
         const response = await fetch('/api/upload', {
           method: 'POST',
-          body: formData
+          body: formData,
         })
 
         if (response.ok) {
           const result = await response.json()
-          setFiles(prev => prev.map(f =>
-            f.id === uploadFile.id
-              ? { ...f, progress: 100, status: 'completed' }
-              : f
-          ))
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === uploadFile.id ? { ...f, progress: 100, status: 'completed' } : f
+            )
+          )
           toast.success(`${file.name} uploaded successfully!`)
         } else {
           const error = await response.json()
-          setFiles(prev => prev.map(f =>
-            f.id === uploadFile.id
-              ? { ...f, status: 'error' }
-              : f
-          ))
+          setFiles((prev) =>
+            prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+          )
           toast.error(`Failed to upload ${file.name}: ${error.error || 'Unknown error'}`)
         }
       } catch (error) {
-        setFiles(prev => prev.map(f =>
-          f.id === uploadFile.id
-            ? { ...f, status: 'error' }
-            : f
-        ))
+        setFiles((prev) =>
+          prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+        )
         toast.error(`Failed to upload ${uploadFile.name}: Network error`)
       }
     })
@@ -97,7 +93,7 @@ export default function UploadPage() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFiles(e.dataTransfer.files)
     }
@@ -110,7 +106,7 @@ export default function UploadPage() {
   }
 
   const removeFile = (id: string) => {
-    setFiles(prev => prev.filter(f => f.id !== id))
+    setFiles((prev) => prev.filter((f) => f.id !== id))
   }
 
   return (
@@ -139,37 +135,35 @@ export default function UploadPage() {
               type="file"
               onChange={handleFileInput}
             />
-            
+
             <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <p className="text-lg mb-2">Drag & drop files here, or click to select</p>
             <p className="text-sm text-gray-500 mb-4">
               Support for PDF, JPG, PNG, SVG, AI, PSD (Max 100MB per file)
             </p>
-            <Button onClick={() => fileInputRef.current?.click()}>
-              Select Files
-            </Button>
+            <Button onClick={() => fileInputRef.current?.click()}>Select Files</Button>
           </div>
 
           {files.length > 0 && (
             <div className="mt-6 space-y-3">
-              {files.map(file => (
+              {files.map((file) => (
                 <div key={file.id} className="flex items-center gap-3 p-3 border rounded-lg">
                   {file.type.startsWith('image/') ? (
                     <Image className="w-8 h-8 text-blue-500" />
                   ) : (
                     <FileText className="w-8 h-8 text-gray-500" />
                   )}
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <p className="font-medium">{file.name}</p>
                       <span className="text-sm text-gray-500">{formatFileSize(file.size)}</span>
                     </div>
-                    
+
                     {file.status === 'uploading' && (
                       <Progress className="h-1 mt-2" value={file.progress} />
                     )}
-                    
+
                     {file.status === 'completed' && (
                       <div className="flex items-center gap-1 mt-1 text-sm text-green-600">
                         <CheckCircle className="w-4 h-4" />
@@ -184,12 +178,8 @@ export default function UploadPage() {
                       </div>
                     )}
                   </div>
-                  
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeFile(file.id)}
-                  >
+
+                  <Button size="sm" variant="ghost" onClick={() => removeFile(file.id)}>
                     <X className="w-4 h-4" />
                   </Button>
                 </div>

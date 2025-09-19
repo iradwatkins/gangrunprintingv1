@@ -11,12 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface Quantity {
   id: string
@@ -42,7 +37,7 @@ export function QuantitySelector({
   onChange,
   label = 'QUANTITY',
   required = false,
-  className = ''
+  className = '',
 }: QuantitySelectorProps) {
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [customValue, setCustomValue] = useState<string>('')
@@ -51,19 +46,19 @@ export function QuantitySelector({
 
   // Load default quantities if none provided
   const [defaultQuantities, setDefaultQuantities] = useState<Quantity[]>([])
-  
+
   useEffect(() => {
     if (quantities.length === 0) {
       // Fetch quantities from API
       fetch('/api/quantities?active=true')
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: ${res.statusText}`)
           }
           return res.json()
         })
-        .then(data => setDefaultQuantities(data))
-        .catch(err => console.error('Failed to load quantities:', err))
+        .then((data) => setDefaultQuantities(data))
+        .catch((err) => console.error('Failed to load quantities:', err))
     }
   }, [quantities])
 
@@ -73,13 +68,13 @@ export function QuantitySelector({
   // Set initial selection based on value
   useEffect(() => {
     if (value) {
-      const matchingQuantity = safeQuantityOptions.find(q => q.value === value)
+      const matchingQuantity = safeQuantityOptions.find((q) => q.value === value)
       if (matchingQuantity) {
         setSelectedOption(matchingQuantity.id)
         setShowCustomInput(false)
       } else {
         // It's a custom value
-        const customOption = safeQuantityOptions.find(q => q.isCustom)
+        const customOption = safeQuantityOptions.find((q) => q.isCustom)
         if (customOption) {
           setSelectedOption(customOption.id)
           setCustomValue(value.toString())
@@ -92,9 +87,9 @@ export function QuantitySelector({
   const handleSelectionChange = (quantityId: string) => {
     setSelectedOption(quantityId)
     setError('')
-    
-    const selectedQuantity = safeQuantityOptions.find(q => q.id === quantityId)
-    
+
+    const selectedQuantity = safeQuantityOptions.find((q) => q.id === quantityId)
+
     if (selectedQuantity) {
       if (selectedQuantity.isCustom) {
         setShowCustomInput(true)
@@ -116,17 +111,17 @@ export function QuantitySelector({
     const inputValue = e.target.value
     setCustomValue(inputValue)
     setError('')
-    
+
     // Only allow numbers
     if (inputValue && !/^\d+$/.test(inputValue)) {
       setError('Please enter a valid number')
       return
     }
-    
+
     if (inputValue) {
       const numValue = parseInt(inputValue)
-      const customOption = safeQuantityOptions.find(q => q.isCustom)
-      
+      const customOption = safeQuantityOptions.find((q) => q.isCustom)
+
       if (customOption) {
         // Validate against min/max
         if (customOption.minValue && numValue < customOption.minValue) {
@@ -137,7 +132,7 @@ export function QuantitySelector({
           setError(`Maximum quantity is ${customOption.maxValue}`)
           return
         }
-        
+
         onChange(numValue)
       }
     }
@@ -185,9 +180,7 @@ export function QuantitySelector({
               value={customValue}
               onChange={handleCustomValueChange}
             />
-            {error && (
-              <p className="text-sm text-red-500">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-500">{error}</p>}
             {!error && customValue && (
               <p className="text-sm text-muted-foreground">
                 Custom quantity: {parseInt(customValue).toLocaleString()} units

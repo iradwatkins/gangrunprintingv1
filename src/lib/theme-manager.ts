@@ -1,56 +1,56 @@
-import { prisma } from '@/lib/prisma';
-import fs from 'fs/promises';
-import path from 'path';
+import { prisma } from '@/lib/prisma'
+import fs from 'fs/promises'
+import path from 'path'
 
 export interface ThemeConfig {
-  id?: string;
-  name: string;
-  description?: string;
-  cssVariables: Record<string, string>;
-  darkModeVariables?: Record<string, string>;
-  customCSS?: string;
-  isActive: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id?: string
+  name: string
+  description?: string
+  cssVariables: Record<string, string>
+  darkModeVariables?: Record<string, string>
+  customCSS?: string
+  isActive: boolean
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export class ThemeManager {
-  private static instance: ThemeManager;
-  private themesDir = path.join(process.cwd(), 'public', 'themes');
+  private static instance: ThemeManager
+  private themesDir = path.join(process.cwd(), 'public', 'themes')
 
   private constructor() {}
 
   static getInstance(): ThemeManager {
     if (!ThemeManager.instance) {
-      ThemeManager.instance = new ThemeManager();
+      ThemeManager.instance = new ThemeManager()
     }
-    return ThemeManager.instance;
+    return ThemeManager.instance
   }
 
   /**
    * Parse CSS file and extract CSS variables
    */
   async parseCSSFile(cssContent: string): Promise<{
-    lightVariables: Record<string, string>;
-    darkVariables: Record<string, string>;
-    customCSS: string;
+    lightVariables: Record<string, string>
+    darkVariables: Record<string, string>
+    customCSS: string
   }> {
-    const lightVariables: Record<string, string> = {};
-    const darkVariables: Record<string, string> = {};
-    let customCSS = '';
+    const lightVariables: Record<string, string> = {}
+    const darkVariables: Record<string, string> = {}
+    let customCSS = ''
 
     // Extract :root variables (light mode)
-    const rootMatch = cssContent.match(/:root\s*{([^}]*)}/);
+    const rootMatch = cssContent.match(/:root\s*{([^}]*)}/)
     if (rootMatch) {
-      const variables = this.extractCSSVariables(rootMatch[1]);
-      Object.assign(lightVariables, variables);
+      const variables = this.extractCSSVariables(rootMatch[1])
+      Object.assign(lightVariables, variables)
     }
 
     // Extract .dark variables (dark mode)
-    const darkMatch = cssContent.match(/\.dark\s*{([^}]*)}/);
+    const darkMatch = cssContent.match(/\.dark\s*{([^}]*)}/)
     if (darkMatch) {
-      const variables = this.extractCSSVariables(darkMatch[1]);
-      Object.assign(darkVariables, variables);
+      const variables = this.extractCSSVariables(darkMatch[1])
+      Object.assign(darkVariables, variables)
     }
 
     // Extract custom CSS (everything except variable definitions)
@@ -58,66 +58,66 @@ export class ThemeManager {
       .replace(/:root\s*{[^}]*}/g, '')
       .replace(/\.dark\s*{[^}]*}/g, '')
       .replace(/@theme[^}]*}/g, '')
-      .trim();
+      .trim()
 
     return {
       lightVariables,
       darkVariables,
-      customCSS
-    };
+      customCSS,
+    }
   }
 
   /**
    * Extract CSS variables from a CSS block
    */
   private extractCSSVariables(cssBlock: string): Record<string, string> {
-    const variables: Record<string, string> = {};
-    const lines = cssBlock.split(';');
+    const variables: Record<string, string> = {}
+    const lines = cssBlock.split(';')
 
     for (const line of lines) {
-      const trimmed = line.trim();
+      const trimmed = line.trim()
       if (trimmed.startsWith('--')) {
-        const [key, ...valueParts] = trimmed.split(':');
-        const value = valueParts.join(':').trim();
+        const [key, ...valueParts] = trimmed.split(':')
+        const value = valueParts.join(':').trim()
         if (key && value) {
-          variables[key.trim()] = value;
+          variables[key.trim()] = value
         }
       }
     }
 
-    return variables;
+    return variables
   }
 
   /**
    * Generate CSS from theme configuration
    */
   generateCSS(theme: ThemeConfig): string {
-    let css = '';
+    let css = ''
 
     // Generate :root variables
     if (theme.cssVariables && Object.keys(theme.cssVariables).length > 0) {
-      css += ':root {\n';
+      css += ':root {\n'
       for (const [key, value] of Object.entries(theme.cssVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Generate .dark variables
     if (theme.darkModeVariables && Object.keys(theme.darkModeVariables).length > 0) {
-      css += '.dark {\n';
+      css += '.dark {\n'
       for (const [key, value] of Object.entries(theme.darkModeVariables)) {
-        css += `  ${key}: ${value};\n`;
+        css += `  ${key}: ${value};\n`
       }
-      css += '}\n\n';
+      css += '}\n\n'
     }
 
     // Add custom CSS
     if (theme.customCSS) {
-      css += theme.customCSS;
+      css += theme.customCSS
     }
 
-    return css;
+    return css
   }
 
   /**
@@ -130,22 +130,22 @@ export class ThemeManager {
       cssVariables: theme.cssVariables,
       darkModeVariables: theme.darkModeVariables || {},
       customCSS: theme.customCSS || '',
-      isActive: theme.isActive
-    };
+      isActive: theme.isActive,
+    }
 
     if (theme.id) {
       // Update existing theme
       const updated = await prisma.customTheme.update({
         where: { id: theme.id },
-        data
-      });
-      return this.mapPrismaThemeToConfig(updated);
+        data,
+      })
+      return this.mapPrismaThemeToConfig(updated)
     } else {
       // Create new theme
       const created = await prisma.customTheme.create({
-        data
-      });
-      return this.mapPrismaThemeToConfig(created);
+        data,
+      })
+      return this.mapPrismaThemeToConfig(created)
     }
   }
 
@@ -154,9 +154,9 @@ export class ThemeManager {
    */
   async getThemes(): Promise<ThemeConfig[]> {
     const themes = await prisma.customTheme.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-    return themes.map(this.mapPrismaThemeToConfig);
+      orderBy: { createdAt: 'desc' },
+    })
+    return themes.map(this.mapPrismaThemeToConfig)
   }
 
   /**
@@ -164,9 +164,9 @@ export class ThemeManager {
    */
   async getActiveTheme(): Promise<ThemeConfig | null> {
     const theme = await prisma.customTheme.findFirst({
-      where: { isActive: true }
-    });
-    return theme ? this.mapPrismaThemeToConfig(theme) : null;
+      where: { isActive: true },
+    })
+    return theme ? this.mapPrismaThemeToConfig(theme) : null
   }
 
   /**
@@ -175,23 +175,23 @@ export class ThemeManager {
   async setActiveTheme(themeId: string): Promise<void> {
     // Deactivate all themes
     await prisma.customTheme.updateMany({
-      data: { isActive: false }
-    });
+      data: { isActive: false },
+    })
 
     // Activate selected theme
     await prisma.customTheme.update({
       where: { id: themeId },
-      data: { isActive: true }
-    });
+      data: { isActive: true },
+    })
 
     // Generate and save CSS file
     const theme = await prisma.customTheme.findUnique({
-      where: { id: themeId }
-    });
+      where: { id: themeId },
+    })
 
     if (theme) {
-      const config = this.mapPrismaThemeToConfig(theme);
-      await this.saveThemeCSS(config);
+      const config = this.mapPrismaThemeToConfig(theme)
+      await this.saveThemeCSS(config)
     }
   }
 
@@ -201,17 +201,17 @@ export class ThemeManager {
   async saveThemeCSS(theme: ThemeConfig): Promise<void> {
     try {
       // Ensure themes directory exists
-      await fs.mkdir(this.themesDir, { recursive: true });
+      await fs.mkdir(this.themesDir, { recursive: true })
 
       // Generate CSS
-      const css = this.generateCSS(theme);
+      const css = this.generateCSS(theme)
 
       // Save to file
-      const filePath = path.join(this.themesDir, 'custom-theme.css');
-      await fs.writeFile(filePath, css, 'utf-8');
+      const filePath = path.join(this.themesDir, 'custom-theme.css')
+      await fs.writeFile(filePath, css, 'utf-8')
     } catch (error) {
-      console.error('Error saving theme CSS:', error);
-      throw error;
+      console.error('Error saving theme CSS:', error)
+      throw error
     }
   }
 
@@ -220,8 +220,8 @@ export class ThemeManager {
    */
   async deleteTheme(themeId: string): Promise<void> {
     await prisma.customTheme.delete({
-      where: { id: themeId }
-    });
+      where: { id: themeId },
+    })
   }
 
   /**
@@ -233,7 +233,7 @@ export class ThemeManager {
     description?: string
   ): Promise<ThemeConfig> {
     // Parse CSS file
-    const { lightVariables, darkVariables, customCSS } = await this.parseCSSFile(cssContent);
+    const { lightVariables, darkVariables, customCSS } = await this.parseCSSFile(cssContent)
 
     // Create theme configuration
     const theme: ThemeConfig = {
@@ -242,18 +242,18 @@ export class ThemeManager {
       cssVariables: lightVariables,
       darkModeVariables: darkVariables,
       customCSS,
-      isActive: false
-    };
+      isActive: false,
+    }
 
     // Save to database
-    const saved = await this.saveTheme(theme);
+    const saved = await this.saveTheme(theme)
 
     // If requested to be active, activate it
     if (saved.id) {
-      await this.setActiveTheme(saved.id);
+      await this.setActiveTheme(saved.id)
     }
 
-    return saved;
+    return saved
   }
 
   /**
@@ -269,8 +269,8 @@ export class ThemeManager {
       customCSS: theme.customCSS,
       isActive: theme.isActive,
       createdAt: theme.createdAt,
-      updatedAt: theme.updatedAt
-    };
+      updatedAt: theme.updatedAt,
+    }
   }
 
   /**
@@ -278,39 +278,36 @@ export class ThemeManager {
    */
   async updateGlobalCSS(theme: ThemeConfig): Promise<void> {
     try {
-      const globalsPath = path.join(process.cwd(), 'src', 'app', 'globals.css');
+      const globalsPath = path.join(process.cwd(), 'src', 'app', 'globals.css')
 
       // Read current globals.css
-      let cssContent = await fs.readFile(globalsPath, 'utf-8');
+      let cssContent = await fs.readFile(globalsPath, 'utf-8')
 
       // Generate new CSS variables
-      const newCSS = this.generateCSS(theme);
+      const newCSS = this.generateCSS(theme)
 
       // Replace :root and .dark blocks with new theme
-      cssContent = cssContent.replace(
-        /:root\s*{[^}]*}/g,
-        newCSS.match(/:root\s*{[^}]*/)?.[0] + '}'
-      );
+      cssContent = cssContent.replace(/:root\s*{[^}]*}/g, newCSS.match(/:root\s*{[^}]*/)?.[0] + '}')
 
       if (theme.darkModeVariables && Object.keys(theme.darkModeVariables).length > 0) {
         cssContent = cssContent.replace(
           /\.dark\s*{[^}]*}/g,
           newCSS.match(/\.dark\s*{[^}]*/)?.[0] + '}'
-        );
+        )
       }
 
       // Add custom CSS if it doesn't exist
       if (theme.customCSS && !cssContent.includes(theme.customCSS)) {
-        cssContent += '\n\n' + theme.customCSS;
+        cssContent += '\n\n' + theme.customCSS
       }
 
       // Write updated globals.css
-      await fs.writeFile(globalsPath, cssContent, 'utf-8');
+      await fs.writeFile(globalsPath, cssContent, 'utf-8')
 
-      console.log('Updated globals.css with new theme:', theme.name);
+      console.log('Updated globals.css with new theme:', theme.name)
     } catch (error) {
-      console.error('Error updating globals.css:', error);
-      throw error;
+      console.error('Error updating globals.css:', error)
+      throw error
     }
   }
 
@@ -339,7 +336,7 @@ export class ThemeManager {
         '--border': 'oklch(0.9022 0.0052 247.8822)',
         '--input': 'oklch(0.9700 0.0029 264.5420)',
         '--ring': 'oklch(0.6397 0.1720 36.4421)',
-        '--radius': '0.75rem'
+        '--radius': '0.75rem',
       },
       darkModeVariables: {
         '--background': 'oklch(0.2598 0.0306 262.6666)',
@@ -358,11 +355,11 @@ export class ThemeManager {
         '--destructive-foreground': 'oklch(1.0000 0 0)',
         '--border': 'oklch(0.3843 0.0301 269.7337)',
         '--input': 'oklch(0.3843 0.0301 269.7337)',
-        '--ring': 'oklch(0.6397 0.1720 36.4421)'
+        '--ring': 'oklch(0.6397 0.1720 36.4421)',
       },
-      isActive: true
-    };
+      isActive: true,
+    }
   }
 }
 
-export const themeManager = ThemeManager.getInstance();
+export const themeManager = ThemeManager.getInstance()

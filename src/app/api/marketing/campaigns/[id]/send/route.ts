@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { CampaignService } from '@/lib/marketing/campaign-service'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!session?.user || (session.user as any).role !== 'ADMIN') {

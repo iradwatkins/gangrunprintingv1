@@ -14,15 +14,15 @@ import toast from '@/lib/toast'
 
 export default function CartPage() {
   const router = useRouter()
-  const { 
-    items: cartItems, 
-    updateQuantity, 
-    removeItem, 
-    clearCart, 
-    subtotal, 
-    tax, 
-    shipping, 
-    total 
+  const {
+    items: cartItems,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    subtotal,
+    tax,
+    shipping,
+    total,
   } = useCart()
   const [promoCode, setPromoCode] = useState('')
   const [discount, setDiscount] = useState(0)
@@ -61,9 +61,7 @@ export default function CartPage() {
             Add some products to get started with your order
           </p>
           <Link href="/products">
-            <Button size="lg">
-              Browse Products
-            </Button>
+            <Button size="lg">Browse Products</Button>
           </Link>
         </div>
       </div>
@@ -73,7 +71,10 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4" href="/products">
+        <Link
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+          href="/products"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Continue Shopping
         </Link>
@@ -100,12 +101,7 @@ export default function CartPage() {
               <div className="flex gap-4">
                 {item.image && (
                   <div className="relative w-20 h-20 rounded-md overflow-hidden bg-muted">
-                    <Image
-                      fill
-                      alt={item.productName}
-                      className="object-cover"
-                      src={item.image}
-                    />
+                    <Image fill alt={item.productName} className="object-cover" src={item.image} />
                   </div>
                 )}
                 <div className="flex-1">
@@ -130,7 +126,7 @@ export default function CartPage() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-2">
                   <Button
@@ -154,9 +150,7 @@ export default function CartPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold">${item.subtotal.toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground">
-                    ${item.price.toFixed(2)} each
-                  </p>
+                  <p className="text-sm text-muted-foreground">${item.price.toFixed(2)} each</p>
                 </div>
               </div>
             </div>
@@ -167,7 +161,7 @@ export default function CartPage() {
         <div>
           <div className="border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            
+
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
@@ -197,7 +191,9 @@ export default function CartPage() {
 
             {/* Promo Code */}
             <div className="mb-4">
-              <Label className="text-sm mb-2 block" htmlFor="promo">Promo Code</Label>
+              <Label className="text-sm mb-2 block" htmlFor="promo">
+                Promo Code
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="promo"
@@ -211,18 +207,12 @@ export default function CartPage() {
               </div>
             </div>
 
-            <Button 
-              className="w-full"
-              size="lg" 
-              onClick={handleCheckout}
-            >
+            <Button className="w-full" size="lg" onClick={handleCheckout}>
               Proceed to Checkout
             </Button>
 
             <div className="mt-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Secure checkout powered by Square
-              </p>
+              <p className="text-sm text-muted-foreground">Secure checkout powered by Square</p>
             </div>
           </div>
 

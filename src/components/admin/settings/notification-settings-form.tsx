@@ -44,13 +44,13 @@ export function NotificationSettingsForm() {
     digestFrequency: 'daily',
     quietHoursEnabled: true,
     quietHoursStart: '22:00',
-    quietHoursEnd: '08:00'
+    quietHoursEnd: '08:00',
   })
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -60,7 +60,7 @@ export function NotificationSettingsForm() {
 
     try {
       // TODO: Implement notification settings update API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Mock delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
       console.log('Notification settings updated:', formData)
     } catch (error) {
       console.error('Failed to update notification settings:', error)
@@ -133,7 +133,9 @@ export function NotificationSettingsForm() {
                     <Label>Payment Received</Label>
                     <Switch
                       checked={formData.emailPaymentReceived}
-                      onCheckedChange={(checked) => handleInputChange('emailPaymentReceived', checked)}
+                      onCheckedChange={(checked) =>
+                        handleInputChange('emailPaymentReceived', checked)
+                      }
                     />
                   </div>
 
@@ -149,7 +151,9 @@ export function NotificationSettingsForm() {
                     <Label>Customer Messages</Label>
                     <Switch
                       checked={formData.emailCustomerMessages}
-                      onCheckedChange={(checked) => handleInputChange('emailCustomerMessages', checked)}
+                      onCheckedChange={(checked) =>
+                        handleInputChange('emailCustomerMessages', checked)
+                      }
                     />
                   </div>
                 </div>
@@ -177,9 +181,7 @@ export function NotificationSettingsForm() {
             <Bell className="h-5 w-5" />
             Push Notifications
           </CardTitle>
-          <CardDescription>
-            Browser push notifications for real-time alerts
-          </CardDescription>
+          <CardDescription>Browser push notifications for real-time alerts</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -223,7 +225,9 @@ export function NotificationSettingsForm() {
                     <Label>Payment Received</Label>
                     <Switch
                       checked={formData.pushPaymentReceived}
-                      onCheckedChange={(checked) => handleInputChange('pushPaymentReceived', checked)}
+                      onCheckedChange={(checked) =>
+                        handleInputChange('pushPaymentReceived', checked)
+                      }
                     />
                   </div>
 
@@ -259,9 +263,7 @@ export function NotificationSettingsForm() {
             <MessageSquare className="h-5 w-5" />
             SMS Notifications
           </CardTitle>
-          <CardDescription>
-            Text message alerts for critical events
-          </CardDescription>
+          <CardDescription>Text message alerts for critical events</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -312,11 +314,7 @@ export function NotificationSettingsForm() {
 
               <Separator />
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleTestNotification('sms')}
-              >
+              <Button type="button" variant="outline" onClick={() => handleTestNotification('sms')}>
                 <TestTube className="mr-2 h-4 w-4" />
                 Send Test SMS
               </Button>
@@ -332,9 +330,7 @@ export function NotificationSettingsForm() {
             <Zap className="h-5 w-5" />
             Webhook Notifications
           </CardTitle>
-          <CardDescription>
-            Send HTTP notifications to external systems
-          </CardDescription>
+          <CardDescription>Send HTTP notifications to external systems</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -389,7 +385,9 @@ export function NotificationSettingsForm() {
                   <Label>Payment Events</Label>
                   <Switch
                     checked={formData.webhookPaymentEvents}
-                    onCheckedChange={(checked) => handleInputChange('webhookPaymentEvents', checked)}
+                    onCheckedChange={(checked) =>
+                      handleInputChange('webhookPaymentEvents', checked)
+                    }
                   />
                 </div>
               </div>

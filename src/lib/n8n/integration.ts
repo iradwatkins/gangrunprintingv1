@@ -29,7 +29,8 @@ export interface N8NExecutionResult {
 export class N8NIntegration {
   private static readonly N8N_BASE_URL = process.env.N8N_BASE_URL || 'http://n8n.agistaffers.com'
   private static readonly N8N_API_KEY = process.env.N8N_API_KEY
-  private static readonly WEBHOOK_SECRET = process.env.N8N_WEBHOOK_SECRET || 'gangrun-webhook-secret'
+  private static readonly WEBHOOK_SECRET =
+    process.env.N8N_WEBHOOK_SECRET || 'gangrun-webhook-secret'
 
   static async registerWebhook(
     name: string,
@@ -127,10 +128,7 @@ export class N8NIntegration {
     return results
   }
 
-  private static async executeWebhook(
-    webhook: N8NWebhook,
-    data: any
-  ): Promise<N8NExecutionResult> {
+  private static async executeWebhook(webhook: N8NWebhook, data: any): Promise<N8NExecutionResult> {
     const payload: N8NWebhookPayload = {
       trigger: webhook.trigger,
       data,
@@ -186,7 +184,11 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerEmailOpened(campaignId: string, recipientEmail: string, metadata: any): Promise<void> {
+  static async triggerEmailOpened(
+    campaignId: string,
+    recipientEmail: string,
+    metadata: any
+  ): Promise<void> {
     await this.triggerWebhook('email_opened', {
       campaignId,
       recipientEmail,
@@ -233,7 +235,11 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerABTestCompleted(testId: string, winnerId: string, results: any): Promise<void> {
+  static async triggerABTestCompleted(
+    testId: string,
+    winnerId: string,
+    results: any
+  ): Promise<void> {
     await this.triggerWebhook('ab_test_completed', {
       testId,
       winnerId,
@@ -328,13 +334,16 @@ export class N8NIntegration {
     }
 
     try {
-      const response = await fetch(`${this.N8N_BASE_URL}/api/v1/workflows/${workflowId}/deactivate`, {
-        method: 'POST',
-        headers: {
-          'X-N8N-API-KEY': this.N8N_API_KEY,
-          'Content-Type': 'application/json',
-        },
-      })
+      const response = await fetch(
+        `${this.N8N_BASE_URL}/api/v1/workflows/${workflowId}/deactivate`,
+        {
+          method: 'POST',
+          headers: {
+            'X-N8N-API-KEY': this.N8N_API_KEY,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
       return response.ok
     } catch (error) {
@@ -470,11 +479,7 @@ export class N8NIntegration {
 
     for (const webhookData of webhooks) {
       try {
-        await this.registerWebhook(
-          webhookData.name,
-          webhookData.trigger,
-          webhookData.description
-        )
+        await this.registerWebhook(webhookData.name, webhookData.trigger, webhookData.description)
       } catch (error) {
         console.log(`Webhook ${webhookData.name} may already exist`)
       }
@@ -488,10 +493,7 @@ export class N8NIntegration {
     secret: string = this.WEBHOOK_SECRET
   ): boolean {
     const crypto = require('crypto')
-    const computedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(payload)
-      .digest('hex')
+    const computedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex')
 
     return crypto.timingSafeEqual(
       Buffer.from(signature, 'hex'),

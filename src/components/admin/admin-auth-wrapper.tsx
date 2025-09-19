@@ -17,7 +17,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
-  isAuthorized: false
+  isAuthorized: false,
 })
 
 export const useAdminAuth = () => useContext(AuthContext)
@@ -45,9 +45,9 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
-          cache: 'no-store' // Prevent caching of auth status
+          cache: 'no-store', // Prevent caching of auth status
         })
 
         if (!response.ok) {

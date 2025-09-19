@@ -32,7 +32,7 @@ export function InstallPrompt() {
     const dismissed = localStorage.getItem('pwa-install-dismissed')
     const dismissedTime = dismissed ? parseInt(dismissed) : 0
     const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24)
-    
+
     // Show prompt again after 7 days
     if (dismissed && daysSinceDismissed < 7) {
       return
@@ -42,7 +42,7 @@ export function InstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      
+
       // Show prompt after a delay
       setTimeout(() => {
         setShowPrompt(true)
@@ -67,7 +67,9 @@ export function InstallPrompt() {
     if (!deferredPrompt) {
       // For iOS, show instructions
       if (isIOS) {
-        alert('To install this app on iOS:\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"')
+        alert(
+          'To install this app on iOS:\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"'
+        )
       }
       return
     }
@@ -110,20 +112,20 @@ export function InstallPrompt() {
           >
             <X className="h-4 w-4" />
           </button>
-          
+
           <div className="flex gap-4">
             <div className="flex-shrink-0">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                 <Smartphone className="h-6 w-6 text-primary" />
               </div>
             </div>
-            
+
             <div className="flex-1 space-y-2">
               <h3 className="font-semibold text-sm">Install GangRun Printing App</h3>
               <p className="text-xs text-muted-foreground">
                 Get instant access, work offline, and receive order updates
               </p>
-              
+
               <div className="flex gap-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Download className="h-3 w-3" />
@@ -138,28 +140,20 @@ export function InstallPrompt() {
                   <span>Offline mode</span>
                 </div>
               </div>
-              
+
               <div className="flex gap-2 pt-2">
-                <Button
-                  className="flex-1"
-                  size="sm"
-                  onClick={handleInstall}
-                >
+                <Button className="flex-1" size="sm" onClick={handleInstall}>
                   Install App
                 </Button>
-                <Button
-                  className="flex-1"
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleDismiss}
-                >
+                <Button className="flex-1" size="sm" variant="ghost" onClick={handleDismiss}>
                   Not Now
                 </Button>
               </div>
-              
+
               {isIOS && (
                 <p className="text-xs text-muted-foreground pt-1">
-                  Tap <span className="font-semibold">Share</span> then <span className="font-semibold">Add to Home Screen</span>
+                  Tap <span className="font-semibold">Share</span> then{' '}
+                  <span className="font-semibold">Add to Home Screen</span>
                 </p>
               )}
             </div>

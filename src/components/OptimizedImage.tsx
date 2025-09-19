@@ -37,15 +37,14 @@ export function OptimizedImage({
   onLoad,
   onError,
   objectFit = 'cover',
-  objectPosition = 'center'
+  objectPosition = 'center',
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
 
   // Generate responsive sizes if not provided
-  const responsiveSizes = sizes || fill
-    ? sizes || '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-    : undefined
+  const responsiveSizes =
+    sizes || fill ? sizes || '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw' : undefined
 
   // Handle image load
   const handleLoad = () => {
@@ -66,17 +65,12 @@ export function OptimizedImage({
   if (fill) {
     return (
       <div className={cn('relative overflow-hidden', className)}>
-        {isLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-        )}
+        {isLoading && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
         <Image
           fill
           alt={alt}
           blurDataURL={blurDataURL}
-          className={cn(
-            'transition-opacity duration-300',
-            isLoading ? 'opacity-0' : 'opacity-100'
-          )}
+          className={cn('transition-opacity duration-300', isLoading ? 'opacity-0' : 'opacity-100')}
           placeholder={placeholder}
           priority={priority}
           quality={quality}
@@ -84,7 +78,7 @@ export function OptimizedImage({
           src={imageSrc}
           style={{
             objectFit,
-            objectPosition
+            objectPosition,
           }}
           onError={handleError}
           onLoad={handleLoad}
@@ -96,10 +90,7 @@ export function OptimizedImage({
   return (
     <div className={cn('relative inline-block', className)}>
       {isLoading && (
-        <div
-          className="absolute inset-0 bg-gray-200 animate-pulse"
-          style={{ width, height }}
-        />
+        <div className="absolute inset-0 bg-gray-200 animate-pulse" style={{ width, height }} />
       )}
       <Image
         alt={alt}
@@ -219,7 +210,7 @@ export function HeroBanner({
   ctaText,
   ctaHref,
   className,
-  height = 'h-[500px]'
+  height = 'h-[500px]',
 }: HeroBannerProps) {
   return (
     <div className={cn('relative overflow-hidden', height, className)}>
@@ -241,15 +232,9 @@ export function HeroBanner({
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white px-4 max-w-4xl">
             {title && (
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-shadow-lg">
-                {title}
-              </h1>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-shadow-lg">{title}</h1>
             )}
-            {subtitle && (
-              <p className="text-xl md:text-2xl mb-8 text-shadow">
-                {subtitle}
-              </p>
-            )}
+            {subtitle && <p className="text-xl md:text-2xl mb-8 text-shadow">{subtitle}</p>}
             {ctaText && ctaHref && (
               <a
                 className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
@@ -275,14 +260,7 @@ interface CategoryCardProps {
   className?: string
 }
 
-export function CategoryCard({
-  src,
-  alt,
-  title,
-  description,
-  href,
-  className
-}: CategoryCardProps) {
+export function CategoryCard({ src, alt, title, description, href, className }: CategoryCardProps) {
   return (
     <a
       className={cn(
@@ -308,9 +286,7 @@ export function CategoryCard({
       {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform">
         <h3 className="text-lg font-semibold mb-1">{title}</h3>
-        {description && (
-          <p className="text-sm opacity-90">{description}</p>
-        )}
+        {description && <p className="text-sm opacity-90">{description}</p>}
       </div>
     </a>
   )
@@ -328,22 +304,17 @@ interface ImageGridProps {
   className?: string
 }
 
-export function ImageGrid({
-  images,
-  columns = 3,
-  gap = 4,
-  className
-}: ImageGridProps) {
+export function ImageGrid({ images, columns = 3, gap = 4, className }: ImageGridProps) {
   const gridCols = {
     2: 'grid-cols-1 sm:grid-cols-2',
     3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
   }
 
   const gridGap = {
     2: 'gap-2',
     4: 'gap-4',
-    6: 'gap-6'
+    6: 'gap-6',
   }
 
   return (

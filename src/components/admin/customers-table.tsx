@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,7 +13,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -21,16 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { 
-  MoreHorizontal, 
-  Eye, 
-  Mail,
-  Search,
-  Filter,
-  Download,
-  UserCheck,
-  UserX
-} from 'lucide-react'
+import { MoreHorizontal, Eye, Mail, Search, Filter, Download, UserCheck, UserX } from 'lucide-react'
 
 interface Customer {
   id: string
@@ -57,15 +48,16 @@ export function CustomersTable({ customers }: CustomersTableProps) {
   const safeCustomers = customers || []
 
   // Filter customers based on search
-  const filteredCustomers = safeCustomers.filter(customer => 
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = safeCustomers.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // Sort customers
   const sortedCustomers = [...filteredCustomers].sort((a, b) => {
     let comparison = 0
-    
+
     switch (sortBy) {
       case 'name':
         comparison = a.name.localeCompare(b.name)
@@ -80,15 +72,13 @@ export function CustomersTable({ customers }: CustomersTableProps) {
         comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         break
     }
-    
+
     return sortOrder === 'asc' ? comparison : -comparison
   })
 
   const toggleCustomerSelection = (customerId: string) => {
-    setSelectedCustomers(prev => 
-      prev.includes(customerId) 
-        ? prev.filter(id => id !== customerId)
-        : [...prev, customerId]
+    setSelectedCustomers((prev) =>
+      prev.includes(customerId) ? prev.filter((id) => id !== customerId) : [...prev, customerId]
     )
   }
 
@@ -96,7 +86,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
     if (selectedCustomers.length === sortedCustomers.length) {
       setSelectedCustomers([])
     } else {
-      setSelectedCustomers(sortedCustomers.map(customer => customer.id))
+      setSelectedCustomers(sortedCustomers.map((customer) => customer.id))
     }
   }
 
@@ -105,7 +95,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -163,33 +153,36 @@ export function CustomersTable({ customers }: CustomersTableProps) {
             <TableRow>
               <TableHead className="w-[40px]">
                 <input
-                  checked={selectedCustomers.length === sortedCustomers.length && sortedCustomers.length > 0}
+                  checked={
+                    selectedCustomers.length === sortedCustomers.length &&
+                    sortedCustomers.length > 0
+                  }
                   className="rounded border-gray-300"
                   type="checkbox"
                   onChange={selectAllCustomers}
                 />
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => handleSort('name')}
               >
                 Customer {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
               </TableHead>
               <TableHead>Status</TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => handleSort('orders')}
               >
                 Orders {sortBy === 'orders' && (sortOrder === 'asc' ? '↑' : '↓')}
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => handleSort('spent')}
               >
                 Total Spent {sortBy === 'spent' && (sortOrder === 'asc' ? '↑' : '↓')}
               </TableHead>
               <TableHead>Last Order</TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => handleSort('date')}
               >
@@ -260,9 +253,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           Send Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          View Orders
-                        </DropdownMenuItem>
+                        <DropdownMenuItem>View Orders</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">
                           Delete Customer
                         </DropdownMenuItem>

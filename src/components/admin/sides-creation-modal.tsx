@@ -29,10 +29,10 @@ interface SidesCreationModalProps {
 export function SidesCreationModal({
   open,
   onOpenChange,
-  onSidesCreated
+  onSidesCreated,
 }: SidesCreationModalProps) {
   const [formData, setFormData] = useState({
-    name: ''
+    name: '',
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -53,7 +53,6 @@ export function SidesCreationModal({
       newErrors.name = 'Name must be less than 100 characters'
     }
 
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -73,7 +72,7 @@ export function SidesCreationModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name.trim()
+          name: formData.name.trim(),
         }),
       })
 
@@ -105,7 +104,6 @@ export function SidesCreationModal({
     onOpenChange(newOpen)
   }
 
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -115,41 +113,34 @@ export function SidesCreationModal({
               <Square className="h-5 w-5" />
               Create New Sides Option
             </DialogTitle>
-            <DialogDescription>
-              Add a new printing sides option.
-            </DialogDescription>
+            <DialogDescription>Add a new printing sides option.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="sides-name">
-                Sides Option Name *
-              </Label>
+              <Label htmlFor="sides-name">Sides Option Name *</Label>
               <Input
-                id="sides-name"
                 required
+                className={errors.name ? 'border-red-500' : ''}
+                id="sides-name"
                 placeholder="e.g., Different Image Both Sides"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={errors.name ? 'border-red-500' : ''}
               />
-              {errors.name && (
-                <p className="text-sm text-red-600">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
             </div>
-
           </div>
 
           <DialogFooter>
             <Button
+              disabled={loading}
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button disabled={loading} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Sides Option
             </Button>

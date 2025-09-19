@@ -19,9 +19,9 @@ export function ChatWidget() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m here to help with your printing needs. How can I assist you today?',
-      timestamp: new Date()
-    }
+      content: "Hello! I'm here to help with your printing needs. How can I assist you today?",
+      timestamp: new Date(),
+    },
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -41,10 +41,10 @@ export function ChatWidget() {
       id: Date.now().toString(),
       role: 'user',
       content: input,
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
 
@@ -54,11 +54,11 @@ export function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input,
-          conversationHistory: messages.map(m => ({
+          conversationHistory: messages.map((m) => ({
             role: m.role,
-            content: m.content
-          }))
-        })
+            content: m.content,
+          })),
+        }),
       })
 
       if (!response.ok) {
@@ -70,31 +70,40 @@ export function ChatWidget() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || 'I apologize, but I couldn\'t process your request. Please try again.',
-        timestamp: new Date()
+        content:
+          data.response || "I apologize, but I couldn't process your request. Please try again.",
+        timestamp: new Date(),
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage])
 
       // If human support is needed, show a notification
       if (data.needsHuman) {
         setTimeout(() => {
-          setMessages(prev => [...prev, {
-            id: (Date.now() + 2).toString(),
-            role: 'assistant',
-            content: 'Would you like me to connect you with a human representative? You can also email us at support@gangrunprinting.com',
-            timestamp: new Date()
-          }])
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 2).toString(),
+              role: 'assistant',
+              content:
+                'Would you like me to connect you with a human representative? You can also email us at support@gangrunprinting.com',
+              timestamp: new Date(),
+            },
+          ])
         }, 1000)
       }
     } catch (error) {
       console.error('Chat error:', error)
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'I\'m having trouble connecting right now. Please email us at support@gangrunprinting.com for assistance.',
-        timestamp: new Date()
-      }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content:
+            "I'm having trouble connecting right now. Please email us at support@gangrunprinting.com for assistance.",
+          timestamp: new Date(),
+        },
+      ])
     } finally {
       setIsLoading(false)
     }
@@ -125,11 +134,7 @@ export function ChatWidget() {
                 <p className="text-xs text-muted-foreground">Powered by AI</p>
               </div>
             </div>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => setIsOpen(false)}
-            >
+            <Button size="icon" variant="ghost" onClick={() => setIsOpen(false)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -151,16 +156,14 @@ export function ChatWidget() {
                   )}
                   <div
                     className={`max-w-[80%] rounded-lg p-3 ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
+                      message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     <p className="text-xs opacity-70 mt-1">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </p>
                   </div>
@@ -178,9 +181,18 @@ export function ChatWidget() {
                   </div>
                   <div className="bg-muted rounded-lg p-3">
                     <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span
+                        className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      />
                     </div>
                   </div>
                 </div>

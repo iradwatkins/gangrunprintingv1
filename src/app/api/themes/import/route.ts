@@ -1,59 +1,50 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { themeManager } from '@/lib/theme-manager';
-import { validateRequest } from '@/lib/auth';
-import { ThemeImporter } from '@/lib/theme-importer';
+import { type NextRequest, NextResponse } from 'next/server'
+import { themeManager } from '@/lib/theme-manager'
+import { validateRequest } from '@/lib/auth'
+import { ThemeImporter } from '@/lib/theme-importer'
 
 export async function POST(request: NextRequest) {
   try {
     // Validate admin access
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
     if (!user || (user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const { url, name, description, applyImmediately = false } = body;
+    const body = await request.json()
+    const { url, name, description, applyImmediately = false } = body
 
     if (!url) {
-      return NextResponse.json(
-        { error: 'Theme URL is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Theme URL is required' }, { status: 400 })
     }
 
     // Validate URL format
     try {
-      new URL(url);
+      new URL(url)
     } catch {
-      return NextResponse.json(
-        { error: 'Invalid URL format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
     }
 
     // Import theme from URL
-    const importer = new ThemeImporter();
-    const themeData = await importer.importFromURL(url);
+    const importer = new ThemeImporter()
+    const themeData = await importer.importFromURL(url)
 
     // Create theme name if not provided
-    const themeName = name || themeData.name || `Imported Theme ${Date.now()}`;
+    const themeName = name || themeData.name || `Imported Theme ${Date.now()}`
 
     // Apply theme using existing theme manager
     const theme = await themeManager.applyThemeFromCSS(
       themeData.cssContent,
       themeName,
       description || themeData.description
-    );
+    )
 
     // Apply immediately if requested
     if (applyImmediately && theme.id) {
-      await themeManager.setActiveTheme(theme.id);
+      await themeManager.setActiveTheme(theme.id)
 
       // Update globals.css directly for immediate effect
-      await themeManager.updateGlobalCSS(theme);
+      await themeManager.updateGlobalCSS(theme)
     }
 
     return NextResponse.json({
@@ -62,11 +53,10 @@ export async function POST(request: NextRequest) {
       applied: applyImmediately,
       message: applyImmediately
         ? 'Theme imported and applied successfully'
-        : 'Theme imported successfully'
-    });
-
+        : 'Theme imported successfully',
+    })
   } catch (error) {
-    console.error('Error importing theme:', error);
+    console.error('Error importing theme:', error)
 
     // Handle specific error types
     if (error instanceof Error) {
@@ -74,47 +64,37 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'Failed to fetch theme from URL. Please check the URL and try again.' },
           { status: 400 }
-        );
+        )
       }
       if (error.message.includes('parse')) {
         return NextResponse.json(
           { error: 'Failed to parse theme data. The URL may not contain valid theme information.' },
           { status: 400 }
-        );
+        )
       }
     }
 
-    return NextResponse.json(
-      { error: 'Failed to import theme' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to import theme' }, { status: 500 })
   }
 }
 
 // Get import history
 export async function GET() {
   try {
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
     if (!user || (user as any).role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get all themes sorted by creation date
-    const themes = await themeManager.getThemes();
+    const themes = await themeManager.getThemes()
 
     return NextResponse.json({
       themes,
-      totalCount: themes.length
-    });
-
+      totalCount: themes.length,
+    })
   } catch (error) {
-    console.error('Error fetching import history:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch import history' },
-      { status: 500 }
-    );
+    console.error('Error fetching import history:', error)
+    return NextResponse.json({ error: 'Failed to fetch import history' }, { status: 500 })
   }
 }

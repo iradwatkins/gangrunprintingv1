@@ -5,13 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Clock, Zap, Layers, Info, AlertTriangle } from 'lucide-react'
@@ -105,37 +99,45 @@ export function ProductTurnaroundStep({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Standard Production Time</CardTitle>
-          <CardDescription>
-            Set the normal production time for this product
-          </CardDescription>
+          <CardDescription>Set the normal production time for this product</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="productionTime">Production Time (Business Days) *</Label>
             <Input
+              className={errors.productionTime ? 'border-red-500' : ''}
               id="productionTime"
-              type="number"
-              min="1"
               max="30"
+              min="1"
+              type="number"
               value={formData.productionTime}
               onChange={(e) => onUpdate({ productionTime: parseInt(e.target.value) || 1 })}
-              className={errors.productionTime ? 'border-red-500' : ''}
             />
             {errors.productionTime && (
               <p className="text-sm text-red-500">{errors.productionTime}</p>
             )}
             <p className="text-sm text-muted-foreground">
-              This excludes weekends and holidays. Customers will see an estimated delivery date based on this time.
+              This excludes weekends and holidays. Customers will see an estimated delivery date
+              based on this time.
             </p>
           </div>
 
           <div className="p-4 bg-blue-50 rounded-lg">
             <h4 className="font-medium text-blue-900 mb-2">Production Time Guidelines</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>1-2 days:</strong> Simple digital products (business cards, flyers)</li>
-              <li>• <strong>3-5 days:</strong> Standard printing with finishing (booklets, brochures)</li>
-              <li>• <strong>5-10 days:</strong> Complex products requiring special materials or processes</li>
-              <li>• <strong>10+ days:</strong> Large format, custom, or specialty items</li>
+              <li>
+                • <strong>1-2 days:</strong> Simple digital products (business cards, flyers)
+              </li>
+              <li>
+                • <strong>3-5 days:</strong> Standard printing with finishing (booklets, brochures)
+              </li>
+              <li>
+                • <strong>5-10 days:</strong> Complex products requiring special materials or
+                processes
+              </li>
+              <li>
+                • <strong>10+ days:</strong> Large format, custom, or specialty items
+              </li>
             </ul>
           </div>
         </CardContent>
@@ -148,9 +150,7 @@ export function ProductTurnaroundStep({
             <Zap className="h-5 w-5 text-yellow-600" />
             Rush Production Options
           </CardTitle>
-          <CardDescription>
-            Offer expedited production for urgent orders
-          </CardDescription>
+          <CardDescription>Offer expedited production for urgent orders</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -172,38 +172,35 @@ export function ProductTurnaroundStep({
                 <div className="space-y-2">
                   <Label htmlFor="rushDays">Rush Production Time (Days) *</Label>
                   <Input
+                    className={errors.rushDays ? 'border-red-500' : ''}
                     id="rushDays"
-                    type="number"
                     min="1"
+                    type="number"
                     value={formData.rushDays}
                     onChange={(e) => onUpdate({ rushDays: parseInt(e.target.value) || 1 })}
-                    className={errors.rushDays ? 'border-red-500' : ''}
                   />
-                  {errors.rushDays && (
-                    <p className="text-sm text-red-500">{errors.rushDays}</p>
-                  )}
+                  {errors.rushDays && <p className="text-sm text-red-500">{errors.rushDays}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="rushFee">Rush Fee ($)</Label>
                   <Input
+                    className={errors.rushFee ? 'border-red-500' : ''}
                     id="rushFee"
-                    type="number"
-                    step="0.01"
                     min="0"
+                    step="0.01"
+                    type="number"
                     value={formData.rushFee}
                     onChange={(e) => onUpdate({ rushFee: parseFloat(e.target.value) || 0 })}
-                    className={errors.rushFee ? 'border-red-500' : ''}
                   />
-                  {errors.rushFee && (
-                    <p className="text-sm text-red-500">{errors.rushFee}</p>
-                  )}
+                  {errors.rushFee && <p className="text-sm text-red-500">{errors.rushFee}</p>}
                 </div>
               </div>
 
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Rush production requires careful capacity planning. Ensure you can consistently deliver within the rush timeframe.
+                  Rush production requires careful capacity planning. Ensure you can consistently
+                  deliver within the rush timeframe.
                 </AlertDescription>
               </Alert>
             </div>
@@ -242,12 +239,12 @@ export function ProductTurnaroundStep({
                 <div className="space-y-2">
                   <Label htmlFor="minGangQuantity">Minimum Gang Quantity *</Label>
                   <Input
+                    className={errors.minGangQuantity ? 'border-red-500' : ''}
                     id="minGangQuantity"
-                    type="number"
                     min="1"
+                    type="number"
                     value={formData.minGangQuantity}
                     onChange={(e) => onUpdate({ minGangQuantity: parseInt(e.target.value) || 100 })}
-                    className={errors.minGangQuantity ? 'border-red-500' : ''}
                   />
                   {errors.minGangQuantity && (
                     <p className="text-sm text-red-500">{errors.minGangQuantity}</p>
@@ -256,12 +253,14 @@ export function ProductTurnaroundStep({
                 <div className="space-y-2">
                   <Label htmlFor="maxGangQuantity">Maximum Gang Quantity *</Label>
                   <Input
-                    id="maxGangQuantity"
-                    type="number"
-                    min="1"
-                    value={formData.maxGangQuantity}
-                    onChange={(e) => onUpdate({ maxGangQuantity: parseInt(e.target.value) || 1000 })}
                     className={errors.maxGangQuantity ? 'border-red-500' : ''}
+                    id="maxGangQuantity"
+                    min="1"
+                    type="number"
+                    value={formData.maxGangQuantity}
+                    onChange={(e) =>
+                      onUpdate({ maxGangQuantity: parseInt(e.target.value) || 1000 })
+                    }
                   />
                   {errors.maxGangQuantity && (
                     <p className="text-sm text-red-500">{errors.maxGangQuantity}</p>
@@ -272,10 +271,18 @@ export function ProductTurnaroundStep({
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-medium text-green-900 mb-2">Gang Run Benefits</h4>
                 <ul className="text-sm text-green-800 space-y-1">
-                  <li>• <strong>Cost Savings:</strong> Customers save money by sharing setup costs</li>
-                  <li>• <strong>Efficiency:</strong> Better use of press time and materials</li>
-                  <li>• <strong>Environmental:</strong> Reduced waste and resource usage</li>
-                  <li>• <strong>Competitive:</strong> Offer lower prices than individual runs</li>
+                  <li>
+                    • <strong>Cost Savings:</strong> Customers save money by sharing setup costs
+                  </li>
+                  <li>
+                    • <strong>Efficiency:</strong> Better use of press time and materials
+                  </li>
+                  <li>
+                    • <strong>Environmental:</strong> Reduced waste and resource usage
+                  </li>
+                  <li>
+                    • <strong>Competitive:</strong> Offer lower prices than individual runs
+                  </li>
                 </ul>
               </div>
             </div>
@@ -322,7 +329,9 @@ export function ProductTurnaroundStep({
               {formData.gangRunEligible ? (
                 <>
                   <p className="text-sm font-medium text-green-600">Eligible</p>
-                  <p className="text-sm text-gray-600">{formData.minGangQuantity}-{formData.maxGangQuantity} qty</p>
+                  <p className="text-sm text-gray-600">
+                    {formData.minGangQuantity}-{formData.maxGangQuantity} qty
+                  </p>
                 </>
               ) : (
                 <p className="text-gray-500">Not eligible</p>

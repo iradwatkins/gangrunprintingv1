@@ -26,10 +26,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error fetching campaigns:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -44,10 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!data.name || !data.type) {
-      return NextResponse.json(
-        { error: 'Name and type are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name and type are required' }, { status: 400 })
     }
 
     const campaign = await CampaignService.createCampaign({
@@ -58,9 +52,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(campaign, { status: 201 })
   } catch (error) {
     console.error('Error creating campaign:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

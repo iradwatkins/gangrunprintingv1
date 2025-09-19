@@ -6,32 +6,26 @@ export async function POST(request: NextRequest) {
     const { endpoint } = await request.json()
 
     if (!endpoint) {
-      return NextResponse.json(
-        { error: 'Endpoint required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Endpoint required' }, { status: 400 })
     }
 
     // Mark subscription as inactive
     await prisma.pushSubscription.updateMany({
       where: {
-        endpoint
+        endpoint,
       },
       data: {
         active: false,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Unsubscribed successfully'
+      message: 'Unsubscribed successfully',
     })
   } catch (error) {
     console.error('Error unsubscribing:', error)
-    return NextResponse.json(
-      { error: 'Failed to unsubscribe' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to unsubscribe' }, { status: 500 })
   }
 }

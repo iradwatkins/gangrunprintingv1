@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Activity,
   Server,
@@ -13,9 +13,9 @@ import {
   Clock,
   TrendingUp,
   Users,
-  DollarSign
-} from "lucide-react"
-import { useEffect, useState } from "react"
+  DollarSign,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface SystemMetrics {
   uptime: string
@@ -33,7 +33,7 @@ export default function MonitoringPage() {
     errorRate: 0.1,
     activeUsers: 142,
     revenue: 15420,
-    status: 'healthy'
+    status: 'healthy',
   })
 
   const [isLoading, setIsLoading] = useState(true)
@@ -45,19 +45,27 @@ export default function MonitoringPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'text-green-600 bg-green-50'
-      case 'warning': return 'text-yellow-600 bg-yellow-50'
-      case 'critical': return 'text-red-600 bg-red-50'
-      default: return 'text-gray-600 bg-gray-50'
+      case 'healthy':
+        return 'text-green-600 bg-green-50'
+      case 'warning':
+        return 'text-yellow-600 bg-yellow-50'
+      case 'critical':
+        return 'text-red-600 bg-red-50'
+      default:
+        return 'text-gray-600 bg-gray-50'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'healthy': return <CheckCircle className="h-4 w-4" />
-      case 'warning': return <AlertTriangle className="h-4 w-4" />
-      case 'critical': return <AlertTriangle className="h-4 w-4" />
-      default: return <Clock className="h-4 w-4" />
+      case 'healthy':
+        return <CheckCircle className="h-4 w-4" />
+      case 'warning':
+        return <AlertTriangle className="h-4 w-4" />
+      case 'critical':
+        return <AlertTriangle className="h-4 w-4" />
+      default:
+        return <Clock className="h-4 w-4" />
     }
   }
 
@@ -95,9 +103,7 @@ export default function MonitoringPage() {
                 {metrics.status.toUpperCase()}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Uptime: {metrics.uptime}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Uptime: {metrics.uptime}</p>
           </CardContent>
         </Card>
 
@@ -108,9 +114,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.responseTime}ms</div>
-            <p className="text-xs text-muted-foreground">
-              Average response time
-            </p>
+            <p className="text-xs text-muted-foreground">Average response time</p>
           </CardContent>
         </Card>
 
@@ -121,9 +125,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.activeUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              Currently online
-            </p>
+            <p className="text-xs text-muted-foreground">Currently online</p>
           </CardContent>
         </Card>
 
@@ -134,9 +136,7 @@ export default function MonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${metrics.revenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Daily revenue
-            </p>
+            <p className="text-xs text-muted-foreground">Daily revenue</p>
           </CardContent>
         </Card>
       </div>
@@ -250,7 +250,9 @@ export default function MonitoringPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-2">
                   <div className="text-sm font-medium">Recent Activity</div>
-                  <Button size="sm" variant="outline">Export Logs</Button>
+                  <Button size="sm" variant="outline">
+                    Export Logs
+                  </Button>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -277,7 +279,9 @@ export default function MonitoringPage() {
                 </div>
                 {!isLoading && (
                   <div className="text-center py-4">
-                    <p className="text-sm text-muted-foreground">Showing recent logs. For detailed logs, check the server console.</p>
+                    <p className="text-sm text-muted-foreground">
+                      Showing recent logs. For detailed logs, check the server console.
+                    </p>
                   </div>
                 )}
               </div>

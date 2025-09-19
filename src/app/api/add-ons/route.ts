@@ -6,25 +6,28 @@ import { validateRequest } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   try {
     console.log('Fetching add-ons from database...')
-    
+
     const searchParams = request.nextUrl.searchParams
     const isActive = searchParams.get('active')
-    
+
     const where = isActive !== null ? { isActive: isActive === 'true' } : {}
-    
+
     // Simplified query without includes first
     const addOns = await prisma.addOn.findMany({
       where,
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
-    
+
     console.log(`Found ${addOns.length} add-ons`)
-    
+
     return NextResponse.json(addOns)
   } catch (error) {
     console.error('Error fetching add-ons:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch add-ons', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to fetch add-ons',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     )
   }
@@ -35,14 +38,11 @@ export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    
+
     const {
       name,
       description,
@@ -52,9 +52,9 @@ export async function POST(request: NextRequest) {
       additionalTurnaroundDays,
       sortOrder,
       isActive,
-      adminNotes
+      adminNotes,
     } = body
-    
+
     // Create add-on without sub-options for now
     const addOn = await prisma.addOn.create({
       data: {
@@ -66,15 +66,18 @@ export async function POST(request: NextRequest) {
         additionalTurnaroundDays: additionalTurnaroundDays || 0,
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true,
-        adminNotes
-      }
+        adminNotes,
+      },
     })
-    
+
     return NextResponse.json(addOn, { status: 201 })
   } catch (error) {
     console.error('Error creating add-on:', error)
     return NextResponse.json(
-      { error: 'Failed to create add-on', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to create add-on',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     )
   }

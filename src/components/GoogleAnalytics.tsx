@@ -14,13 +14,15 @@ export default function GoogleAnalytics() {
     script.async = true
     script.onload = () => {
       // Initialize GA when script loads
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
       window.gtag = gtag
-      gtag('js', new Date());
+      gtag('js', new Date())
       gtag('config', GA_MEASUREMENT_ID, {
         page_path: window.location.pathname,
-      });
+      })
     }
 
     // Only load if not already loaded
@@ -79,7 +81,7 @@ export const logAddToCart = (item: {
     window.gtag('event', 'add_to_cart', {
       currency: 'USD',
       value: item.price * item.quantity,
-      items: [item]
+      items: [item],
     })
   }
 }
@@ -94,7 +96,7 @@ export const logViewItem = (item: {
     window.gtag('event', 'view_item', {
       currency: 'USD',
       value: item.price,
-      items: [item]
+      items: [item],
     })
   }
 }
@@ -102,7 +104,7 @@ export const logViewItem = (item: {
 export const logSearch = (searchTerm: string) => {
   if (typeof window !== 'undefined' && window.gtag && GA_TRACKING_ID) {
     window.gtag('event', 'search', {
-      search_term: searchTerm
+      search_term: searchTerm,
     })
   }
 }
@@ -110,7 +112,7 @@ export const logSearch = (searchTerm: string) => {
 export const logSignUp = (method: string) => {
   if (typeof window !== 'undefined' && window.gtag && GA_TRACKING_ID) {
     window.gtag('event', 'sign_up', {
-      method: method
+      method: method,
     })
   }
 }
@@ -118,7 +120,7 @@ export const logSignUp = (method: string) => {
 export const logLogin = (method: string) => {
   if (typeof window !== 'undefined' && window.gtag && GA_TRACKING_ID) {
     window.gtag('event', 'login', {
-      method: method
+      method: method,
     })
   }
 }
@@ -146,7 +148,7 @@ export const logTiming = (name: string, value: number, category?: string, label?
       name: name,
       value: value,
       event_category: category || 'Performance',
-      event_label: label
+      event_label: label,
     })
   }
 }
@@ -156,7 +158,7 @@ export const logException = (description: string, fatal: boolean = false) => {
   if (typeof window !== 'undefined' && window.gtag && GA_TRACKING_ID) {
     window.gtag('event', 'exception', {
       description: description,
-      fatal: fatal
+      fatal: fatal,
     })
   }
 }

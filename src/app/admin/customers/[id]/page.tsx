@@ -43,7 +43,7 @@ import {
   CheckCircle,
   XCircle,
   Truck,
-  Printer
+  Printer,
 } from 'lucide-react'
 import {
   Table,
@@ -63,43 +63,43 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    icon: Clock
+    icon: Clock,
   },
   PAID: {
     label: 'Paid',
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: DollarSign
+    icon: DollarSign,
   },
   PROCESSING: {
     label: 'Processing',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: Package
+    icon: Package,
   },
   PRINTING: {
     label: 'Printing',
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Printer
+    icon: Printer,
   },
   SHIPPED: {
     label: 'Shipped',
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
-    icon: Truck
+    icon: Truck,
   },
   DELIVERED: {
     label: 'Delivered',
     color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-    icon: CheckCircle
+    icon: CheckCircle,
   },
   CANCELLED: {
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
-    icon: XCircle
+    icon: XCircle,
   },
   REFUNDED: {
     label: 'Refunded',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: AlertCircle
-  }
+    icon: AlertCircle,
+  },
 }
 
 // Broker tier configuration
@@ -117,12 +117,12 @@ async function getCustomer(id: string) {
     include: {
       orders: {
         include: {
-          OrderItem: true
+          OrderItem: true,
         },
         orderBy: { createdAt: 'desc' },
-        take: 10
-      }
-    }
+        take: 10,
+      },
+    },
   })
 
   return customer
@@ -133,9 +133,9 @@ async function getCustomerStats(customerId: string) {
     where: {
       userId: customerId,
       status: {
-        notIn: ['CANCELLED', 'REFUNDED']
-      }
-    }
+        notIn: ['CANCELLED', 'REFUNDED'],
+      },
+    },
   })
 
   const totalSpent = orders.reduce((sum, order) => sum + order.total, 0)
@@ -150,31 +150,34 @@ async function getCustomerStats(customerId: string) {
     where: {
       userId: customerId,
       createdAt: { gte: sixMonthsAgo },
-      status: { notIn: ['CANCELLED', 'REFUNDED'] }
+      status: { notIn: ['CANCELLED', 'REFUNDED'] },
     },
-    orderBy: { createdAt: 'asc' }
+    orderBy: { createdAt: 'asc' },
   })
 
   // Group by month
-  const monthlyOrders = recentOrders.reduce((acc, order) => {
-    const month = new Date(order.createdAt).toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric'
-    })
-    if (!acc[month]) {
-      acc[month] = { count: 0, revenue: 0 }
-    }
-    acc[month].count++
-    acc[month].revenue += order.total
-    return acc
-  }, {} as Record<string, { count: number; revenue: number }>)
+  const monthlyOrders = recentOrders.reduce(
+    (acc, order) => {
+      const month = new Date(order.createdAt).toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      })
+      if (!acc[month]) {
+        acc[month] = { count: 0, revenue: 0 }
+      }
+      acc[month].count++
+      acc[month].revenue += order.total
+      return acc
+    },
+    {} as Record<string, { count: number; revenue: number }>
+  )
 
   return {
     totalOrders: orders.length,
     totalSpent: totalSpent / 100,
     averageOrderValue: averageOrderValue / 100,
     lastOrderDate,
-    monthlyOrders
+    monthlyOrders,
   }
 }
 
@@ -188,7 +191,7 @@ function getActivityTimeline(customer: any) {
     icon: User,
     title: 'Account created',
     description: 'Customer joined the platform',
-    date: customer.createdAt
+    date: customer.createdAt,
   })
 
   // Email verified
@@ -198,7 +201,7 @@ function getActivityTimeline(customer: any) {
       icon: UserCheck,
       title: 'Email verified',
       description: 'Customer verified their email address',
-      date: customer.emailVerified
+      date: customer.emailVerified,
     })
   }
 
@@ -210,14 +213,12 @@ function getActivityTimeline(customer: any) {
       title: `Order #${order.orderNumber}`,
       description: `${order.OrderItem.length} items - $${(order.total / 100).toFixed(2)}`,
       date: order.createdAt,
-      link: `/admin/orders/${order.id}`
+      link: `/admin/orders/${order.id}`,
     })
   })
 
   // Sort by date (newest first)
-  return activities.sort((a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  )
+  return activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -254,9 +255,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               {customer.name || 'Unknown Customer'}
             </h1>
             <p className="text-muted-foreground">
-              Customer since {new Date(customer.createdAt).toLocaleDateString('en-US', {
+              Customer since{' '}
+              {new Date(customer.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
-                year: 'numeric'
+                year: 'numeric',
               })}
             </p>
           </div>
@@ -292,9 +294,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Order History</CardTitle>
-                      <CardDescription>
-                        Last 10 orders from this customer
-                      </CardDescription>
+                      <CardDescription>Last 10 orders from this customer</CardDescription>
                     </div>
                     <Link href={`/admin/orders?search=${customer.email}`}>
                       <Button size="sm" variant="outline">
@@ -308,9 +308,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   {customer.orders.length === 0 ? (
                     <div className="text-center py-8">
                       <ShoppingCart className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        No orders yet
-                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground">No orders yet</p>
                       <p className="text-xs text-muted-foreground">
                         Orders will appear here when the customer makes a purchase
                       </p>
@@ -329,7 +327,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                         </TableHeader>
                         <TableBody>
                           {customer.orders.map((order) => {
-                            const status = statusConfig[order.status] || statusConfig.PENDING_PAYMENT
+                            const status =
+                              statusConfig[order.status] || statusConfig.PENDING_PAYMENT
                             const StatusIcon = status.icon
 
                             return (
@@ -348,7 +347,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                     {order.OrderItem[0] && (
                                       <p className="text-xs text-muted-foreground">
                                         {order.OrderItem[0].product?.name}
-                                        {order.OrderItem.length > 1 && ` +${order.OrderItem.length - 1} more`}
+                                        {order.OrderItem.length > 1 &&
+                                          ` +${order.OrderItem.length - 1} more`}
                                       </p>
                                     )}
                                   </div>
@@ -364,7 +364,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                     {new Date(order.createdAt).toLocaleDateString('en-US', {
                                       month: 'short',
                                       day: 'numeric',
-                                      year: 'numeric'
+                                      year: 'numeric',
                                     })}
                                   </div>
                                 </TableCell>
@@ -387,9 +387,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <Card>
                 <CardHeader>
                   <CardTitle>Activity Timeline</CardTitle>
-                  <CardDescription>
-                    Recent customer interactions and events
-                  </CardDescription>
+                  <CardDescription>Recent customer interactions and events</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -415,16 +413,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                 <p className="font-medium">{activity.title}</p>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              {activity.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground">{activity.description}</p>
                             <p className="text-xs text-muted-foreground mt-1">
                               {new Date(activity.date).toLocaleString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
                                 year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit'
+                                minute: '2-digit',
                               })}
                             </p>
                           </div>
@@ -441,9 +437,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <Card>
                 <CardHeader>
                   <CardTitle>Broker Configuration</CardTitle>
-                  <CardDescription>
-                    Manage broker status and pricing tiers
-                  </CardDescription>
+                  <CardDescription>Manage broker status and pricing tiers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-4">
@@ -469,7 +463,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {brokerTiers.map(tier => (
+                              {brokerTiers.map((tier) => (
                                 <SelectItem key={tier.value} value={tier.value}>
                                   {tier.label} ({tier.discount}% discount)
                                 </SelectItem>
@@ -480,12 +474,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
                         <div className="grid gap-2">
                           <Label>Custom Discount (%)</Label>
-                          <Input
-                            disabled
-                            defaultValue="10"
-                            placeholder="0-100"
-                            type="number"
-                          />
+                          <Input disabled defaultValue="10" placeholder="0-100" type="number" />
                           <p className="text-xs text-muted-foreground">
                             Override tier discount with custom percentage
                           </p>
@@ -532,9 +521,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <Card>
                 <CardHeader>
                   <CardTitle>Customer Notes</CardTitle>
-                  <CardDescription>
-                    Internal notes and communication history
-                  </CardDescription>
+                  <CardDescription>Internal notes and communication history</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -637,9 +624,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Average Order Value</p>
-                  <p className="text-2xl font-bold">
-                    ${stats.averageOrderValue.toFixed(2)}
-                  </p>
+                  <p className="text-2xl font-bold">${stats.averageOrderValue.toFixed(2)}</p>
                 </div>
                 {stats.lastOrderDate && (
                   <div>
@@ -648,7 +633,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       {new Date(stats.lastOrderDate).toLocaleDateString('en-US', {
                         month: 'long',
                         day: 'numeric',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                     </p>
                   </div>

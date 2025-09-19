@@ -93,7 +93,7 @@ export default function MarketingAnalyticsPage() {
           customers: 3254,
         },
         performance: {
-          revenue: 45230.50,
+          revenue: 45230.5,
           orders: 187,
           avgOrderValue: 241.93,
           conversionRate: 2.1,
@@ -163,7 +163,9 @@ export default function MarketingAnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold">{formatCurrency(analytics.performance.revenue)}</p>
+                <p className="text-3xl font-bold">
+                  {formatCurrency(analytics.performance.revenue)}
+                </p>
                 <div className="flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
                   <span className="text-sm text-green-600">+12.5%</span>
@@ -211,7 +213,9 @@ export default function MarketingAnalyticsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
-                <p className="text-3xl font-bold">{formatPercent(analytics.performance.conversionRate)}</p>
+                <p className="text-3xl font-bold">
+                  {formatPercent(analytics.performance.conversionRate)}
+                </p>
                 <div className="flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
                   <span className="text-sm text-green-600">+0.5%</span>
@@ -255,7 +259,9 @@ export default function MarketingAnalyticsPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Delivery Rate</span>
-                    <span className="font-semibold">{formatPercent(analytics.campaigns.deliveryRate)}</span>
+                    <span className="font-semibold">
+                      {formatPercent(analytics.campaigns.deliveryRate)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -270,7 +276,9 @@ export default function MarketingAnalyticsPage() {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Open Rate</span>
-                      <span className="font-semibold">{formatPercent(analytics.campaigns.openRate)}</span>
+                      <span className="font-semibold">
+                        {formatPercent(analytics.campaigns.openRate)}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -283,7 +291,9 @@ export default function MarketingAnalyticsPage() {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Click Rate</span>
-                      <span className="font-semibold">{formatPercent(analytics.campaigns.clickRate)}</span>
+                      <span className="font-semibold">
+                        {formatPercent(analytics.campaigns.clickRate)}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -360,11 +370,15 @@ export default function MarketingAnalyticsPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Total Executions</span>
-                    <span className="font-semibold">{analytics.workflows.executions.toLocaleString()}</span>
+                    <span className="font-semibold">
+                      {analytics.workflows.executions.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Completion Rate</span>
-                    <span className="font-semibold">{formatPercent(analytics.workflows.completionRate)}</span>
+                    <span className="font-semibold">
+                      {formatPercent(analytics.workflows.completionRate)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -426,12 +440,16 @@ export default function MarketingAnalyticsPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Total Customers</span>
-                    <span className="font-semibold">{analytics.segments.customers.toLocaleString()}</span>
+                    <span className="font-semibold">
+                      {analytics.segments.customers.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Avg Segment Size</span>
                     <span className="font-semibold">
-                      {Math.round(analytics.segments.customers / analytics.segments.total).toLocaleString()}
+                      {Math.round(
+                        analytics.segments.customers / analytics.segments.total
+                      ).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -484,7 +502,9 @@ export default function MarketingAnalyticsPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Marketing Revenue</span>
-                    <span className="font-semibold">{formatCurrency(analytics.performance.revenue)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(analytics.performance.revenue)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Orders Generated</span>
@@ -492,11 +512,15 @@ export default function MarketingAnalyticsPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Avg Order Value</span>
-                    <span className="font-semibold">{formatCurrency(analytics.performance.avgOrderValue)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(analytics.performance.avgOrderValue)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Conversion Rate</span>
-                    <span className="font-semibold">{formatPercent(analytics.performance.conversionRate)}</span>
+                    <span className="font-semibold">
+                      {formatPercent(analytics.performance.conversionRate)}
+                    </span>
                   </div>
                 </div>
               </CardContent>

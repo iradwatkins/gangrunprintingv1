@@ -13,13 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -28,16 +22,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { 
-  Plus, 
-  X, 
-  Edit2, 
+import {
+  Plus,
+  X,
+  Edit2,
   Trash2,
   Settings,
   DollarSign,
   GripVertical,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react'
 import {
   DndContext,
@@ -53,9 +47,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import {
-  useSortable,
-} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
 type OptionType = 'SELECT' | 'RADIO' | 'CHECKBOX' | 'TEXT' | 'NUMBER'
@@ -84,14 +76,9 @@ interface ProductOptionsProps {
 }
 
 function SortableOption({ option, index, onEdit, onDelete }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: option.name })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: option.name,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -122,29 +109,13 @@ function SortableOption({ option, index, onEdit, onDelete }: any) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setExpanded(!expanded)}
-              >
-                {expanded ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
+              <Button size="sm" variant="ghost" onClick={() => setExpanded(!expanded)}>
+                {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onEdit(index)}
-              >
+              <Button size="sm" variant="ghost" onClick={() => onEdit(index)}>
                 <Edit2 className="h-4 w-4" />
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onDelete(index)}
-              >
+              <Button size="sm" variant="ghost" onClick={() => onDelete(index)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -158,7 +129,9 @@ function SortableOption({ option, index, onEdit, onDelete }: any) {
                   <div className="flex items-center gap-2">
                     <span>{value.label}</span>
                     {value.isDefault && (
-                      <Badge className="text-xs" variant="outline">Default</Badge>
+                      <Badge className="text-xs" variant="outline">
+                        Default
+                      </Badge>
                     )}
                   </div>
                   {value.additionalPrice > 0 && (
@@ -184,13 +157,13 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
     type: 'SELECT',
     required: false,
     values: [],
-    sortOrder: 0
+    sortOrder: 0,
   })
   const [newValue, setNewValue] = useState({
     value: '',
     label: '',
     additionalPrice: 0,
-    isDefault: false
+    isDefault: false,
   })
 
   const sensors = useSensors(
@@ -209,7 +182,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
         { label: '3.5" x 2" (Square Corners)', value: 'square', additionalPrice: 0 },
         { label: '2" x 3.5" (Vertical)', value: 'vertical', additionalPrice: 5 },
         { label: '3.5" x 3.5" (Square)', value: 'square-large', additionalPrice: 10 },
-      ]
+      ],
     },
     {
       name: 'Quantity',
@@ -221,7 +194,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
         { label: '1000', value: '1000', additionalPrice: 0 },
         { label: '2500', value: '2500', additionalPrice: 0 },
         { label: '5000', value: '5000', additionalPrice: 0 },
-      ]
+      ],
     },
     {
       name: 'Finishing',
@@ -232,7 +205,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
         { label: 'Foil Stamping', value: 'foil', additionalPrice: 50 },
         { label: 'Embossing', value: 'emboss', additionalPrice: 40 },
         { label: 'Die Cutting', value: 'die-cut', additionalPrice: 60 },
-      ]
+      ],
     },
     {
       name: 'Binding',
@@ -242,22 +215,22 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
         { label: 'Perfect Bound', value: 'perfect', additionalPrice: 25 },
         { label: 'Wire-O', value: 'wire-o', additionalPrice: 35 },
         { label: 'Spiral', value: 'spiral', additionalPrice: 30 },
-      ]
-    }
+      ],
+    },
   ]
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
 
     if (active.id !== over.id) {
-      const oldIndex = options.findIndex(opt => opt.name === active.id)
-      const newIndex = options.findIndex(opt => opt.name === over.id)
-      
+      const oldIndex = options.findIndex((opt) => opt.name === active.id)
+      const newIndex = options.findIndex((opt) => opt.name === over.id)
+
       const newOptions = arrayMove(options, oldIndex, newIndex).map((opt, idx) => ({
         ...opt,
-        sortOrder: idx
+        sortOrder: idx,
       }))
-      
+
       onOptionsChange(newOptions)
     }
   }
@@ -269,7 +242,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
       type: 'SELECT',
       required: false,
       values: [],
-      sortOrder: options.length
+      sortOrder: options.length,
     })
     setDialogOpen(true)
   }
@@ -290,17 +263,17 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
       const value: OptionValue = {
         ...newValue,
         sortOrder: formData.values.length,
-        isDefault: formData.values.length === 0 // Make first value default
+        isDefault: formData.values.length === 0, // Make first value default
       }
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        values: [...prev.values, value]
+        values: [...prev.values, value],
       }))
       setNewValue({
         value: '',
         label: '',
         additionalPrice: 0,
-        isDefault: false
+        isDefault: false,
       })
     }
   }
@@ -311,20 +284,20 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
     if (formData.values[index].isDefault && newValues.length > 0) {
       newValues[0].isDefault = true
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      values: newValues
+      values: newValues,
     }))
   }
 
   const handleSetDefaultValue = (index: number) => {
     const newValues = formData.values.map((val, i) => ({
       ...val,
-      isDefault: i === index
+      isDefault: i === index,
     }))
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      values: newValues
+      values: newValues,
     }))
   }
 
@@ -348,9 +321,9 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
       values: predefined.values.map((v: any, i: number) => ({
         ...v,
         isDefault: i === 0,
-        sortOrder: i
+        sortOrder: i,
       })),
-      sortOrder: options.length
+      sortOrder: options.length,
     })
   }
 
@@ -370,13 +343,9 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
       </div>
 
       {options.length > 0 ? (
-        <DndContext
-          collisionDetection={closestCenter}
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext collisionDetection={closestCenter} sensors={sensors} onDragEnd={handleDragEnd}>
           <SortableContext
-            items={options.map(opt => opt.name)}
+            items={options.map((opt) => opt.name)}
             strategy={verticalListSortingStrategy}
           >
             <div className="space-y-3">
@@ -401,7 +370,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
               No options added yet. Start by adding common options.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
-              {predefinedOptions.map(opt => (
+              {predefinedOptions.map((opt) => (
                 <Button
                   key={opt.name}
                   size="sm"
@@ -423,12 +392,8 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingIndex !== null ? 'Edit Option' : 'Add Option'}
-            </DialogTitle>
-            <DialogDescription>
-              Configure the option details and available values
-            </DialogDescription>
+            <DialogTitle>{editingIndex !== null ? 'Edit Option' : 'Add Option'}</DialogTitle>
+            <DialogDescription>Configure the option details and available values</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -439,14 +404,16 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
                   id="optionName"
                   placeholder="e.g., Size, Quantity, Finishing"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="optionType">Option Type</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value: OptionType) => setFormData(prev => ({ ...prev, type: value }))}
+                  onValueChange={(value: OptionType) =>
+                    setFormData((prev) => ({ ...prev, type: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -467,26 +434,30 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
               <Switch
                 checked={formData.required}
                 id="required"
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, required: checked }))}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, required: checked }))
+                }
               />
             </div>
 
-            {(formData.type === 'SELECT' || formData.type === 'RADIO' || formData.type === 'CHECKBOX') && (
+            {(formData.type === 'SELECT' ||
+              formData.type === 'RADIO' ||
+              formData.type === 'CHECKBOX') && (
               <div className="space-y-4">
                 <Label>Option Values</Label>
-                
+
                 <div className="flex gap-2">
                   <Input
                     className="flex-1"
                     placeholder="Value"
                     value={newValue.value}
-                    onChange={(e) => setNewValue(prev => ({ ...prev, value: e.target.value }))}
+                    onChange={(e) => setNewValue((prev) => ({ ...prev, value: e.target.value }))}
                   />
                   <Input
                     className="flex-1"
                     placeholder="Label"
                     value={newValue.label}
-                    onChange={(e) => setNewValue(prev => ({ ...prev, label: e.target.value }))}
+                    onChange={(e) => setNewValue((prev) => ({ ...prev, label: e.target.value }))}
                   />
                   <div className="flex items-center gap-1">
                     <span className="text-sm">+$</span>
@@ -496,7 +467,12 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
                       step="0.01"
                       type="number"
                       value={newValue.additionalPrice}
-                      onChange={(e) => setNewValue(prev => ({ ...prev, additionalPrice: parseFloat(e.target.value) || 0 }))}
+                      onChange={(e) =>
+                        setNewValue((prev) => ({
+                          ...prev,
+                          additionalPrice: parseFloat(e.target.value) || 0,
+                        }))
+                      }
                     />
                   </div>
                   <Button size="sm" onClick={handleAddValue}>

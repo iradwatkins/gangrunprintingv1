@@ -1,34 +1,45 @@
-'use client';
+'use client'
 
-import { usePathname, useRouter } from '@/lib/i18n/navigation';
-import { useLocale } from 'next-intl';
-import { useTenantInfo } from '@/components/tenants/tenant-provider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Globe, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { usePathname, useRouter } from '@/lib/i18n/navigation'
+import { useLocale } from 'next-intl'
+import { useTenantInfo } from '@/components/tenants/tenant-provider'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Globe, Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface LanguageSwitcherProps {
-  variant?: 'select' | 'dropdown' | 'buttons';
-  className?: string;
-  showFlag?: boolean;
-  showName?: boolean;
+  variant?: 'select' | 'dropdown' | 'buttons'
+  className?: string
+  showFlag?: boolean
+  showName?: boolean
 }
 
 export function LanguageSwitcher({
   variant = 'dropdown',
   className,
   showFlag = true,
-  showName = true
+  showName = true,
 }: LanguageSwitcherProps) {
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
-  const tenant = useTenantInfo();
+  const locale = useLocale()
+  const pathname = usePathname()
+  const router = useRouter()
+  const tenant = useTenantInfo()
 
   // Get supported locales from tenant or default
-  const supportedLocales = tenant?.locales || ['en', 'es'];
+  const supportedLocales = tenant?.locales || ['en', 'es']
 
   // Language configurations
   const languages = {
@@ -36,90 +47,90 @@ export function LanguageSwitcher({
       code: 'en',
       name: 'English',
       nativeName: 'English',
-      flag: '🇺🇸'
+      flag: '🇺🇸',
     },
     es: {
       code: 'es',
       name: 'Spanish',
       nativeName: 'Español',
-      flag: '🇪🇸'
+      flag: '🇪🇸',
     },
     fr: {
       code: 'fr',
       name: 'French',
       nativeName: 'Français',
-      flag: '🇫🇷'
+      flag: '🇫🇷',
     },
     de: {
       code: 'de',
       name: 'German',
       nativeName: 'Deutsch',
-      flag: '🇩🇪'
+      flag: '🇩🇪',
     },
     it: {
       code: 'it',
       name: 'Italian',
       nativeName: 'Italiano',
-      flag: '🇮🇹'
+      flag: '🇮🇹',
     },
     pt: {
       code: 'pt',
       name: 'Portuguese',
       nativeName: 'Português',
-      flag: '🇵🇹'
+      flag: '🇵🇹',
     },
     nl: {
       code: 'nl',
       name: 'Dutch',
       nativeName: 'Nederlands',
-      flag: '🇳🇱'
+      flag: '🇳🇱',
     },
     ru: {
       code: 'ru',
       name: 'Russian',
       nativeName: 'Русский',
-      flag: '🇷🇺'
+      flag: '🇷🇺',
     },
     ja: {
       code: 'ja',
       name: 'Japanese',
       nativeName: '日本語',
-      flag: '🇯🇵'
+      flag: '🇯🇵',
     },
     ko: {
       code: 'ko',
       name: 'Korean',
       nativeName: '한국어',
-      flag: '🇰🇷'
+      flag: '🇰🇷',
     },
     zh: {
       code: 'zh',
       name: 'Chinese',
       nativeName: '中文',
-      flag: '🇨🇳'
+      flag: '🇨🇳',
     },
     ar: {
       code: 'ar',
       name: 'Arabic',
       nativeName: 'العربية',
-      flag: '🇸🇦'
-    }
-  };
+      flag: '🇸🇦',
+    },
+  }
 
   // Filter languages by supported locales
   const availableLanguages = supportedLocales
-    .map(code => languages[code as keyof typeof languages])
-    .filter(Boolean);
+    .map((code) => languages[code as keyof typeof languages])
+    .filter(Boolean)
 
-  const currentLanguage = languages[locale as keyof typeof languages];
+  const currentLanguage = languages[locale as keyof typeof languages]
 
   const handleLanguageChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
-  };
+    router.replace(pathname, { locale: newLocale })
+  }
 
   // Don't render if only one language is supported
   if (availableLanguages.length <= 1) {
-    return null;
+    return null
   }
 
   if (variant === 'select') {
@@ -129,11 +140,7 @@ export function LanguageSwitcher({
           <SelectValue>
             <div className="flex items-center gap-2">
               {showFlag && currentLanguage?.flag}
-              {showName && (
-                <span className="hidden sm:inline">
-                  {currentLanguage?.nativeName}
-                </span>
-              )}
+              {showName && <span className="hidden sm:inline">{currentLanguage?.nativeName}</span>}
               <span className="sm:hidden">{locale.toUpperCase()}</span>
             </div>
           </SelectValue>
@@ -144,15 +151,13 @@ export function LanguageSwitcher({
               <div className="flex items-center gap-2">
                 {showFlag && language.flag}
                 <span>{language.nativeName}</span>
-                {locale === language.code && (
-                  <Check className="h-4 w-4 ml-auto" />
-                )}
+                {locale === language.code && <Check className="h-4 w-4 ml-auto" />}
               </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-    );
+    )
   }
 
   if (variant === 'buttons') {
@@ -167,16 +172,12 @@ export function LanguageSwitcher({
             onClick={() => handleLanguageChange(language.code)}
           >
             {showFlag && language.flag}
-            {showName && (
-              <span className="ml-1 hidden sm:inline">
-                {language.nativeName}
-              </span>
-            )}
+            {showName && <span className="ml-1 hidden sm:inline">{language.nativeName}</span>}
             <span className="ml-1 sm:hidden">{language.code.toUpperCase()}</span>
           </Button>
         ))}
       </div>
-    );
+    )
   }
 
   // Default: dropdown variant
@@ -186,11 +187,7 @@ export function LanguageSwitcher({
         <Button className={cn('gap-2', className)} size="sm" variant="ghost">
           <Globe className="h-4 w-4" />
           {showFlag && currentLanguage?.flag}
-          {showName && (
-            <span className="hidden sm:inline">
-              {currentLanguage?.nativeName}
-            </span>
-          )}
+          {showName && <span className="hidden sm:inline">{currentLanguage?.nativeName}</span>}
           <span className="sm:hidden">{locale.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
@@ -203,59 +200,40 @@ export function LanguageSwitcher({
           >
             {showFlag && language.flag}
             <span>{language.nativeName}</span>
-            <span className="text-xs text-gray-500 ml-auto">
-              {language.name}
-            </span>
-            {locale === language.code && (
-              <Check className="h-4 w-4 ml-2" />
-            )}
+            <span className="text-xs text-gray-500 ml-auto">{language.name}</span>
+            {locale === language.code && <Check className="h-4 w-4 ml-2" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 // Compact version for mobile/small spaces
 export function CompactLanguageSwitcher({ className }: { className?: string }) {
   return (
-    <LanguageSwitcher
-      className={className}
-      showFlag={true}
-      showName={false}
-      variant="dropdown"
-    />
-  );
+    <LanguageSwitcher className={className} showFlag={true} showName={false} variant="dropdown" />
+  )
 }
 
 // Full version for desktop/large spaces
 export function FullLanguageSwitcher({ className }: { className?: string }) {
   return (
-    <LanguageSwitcher
-      className={className}
-      showFlag={true}
-      showName={true}
-      variant="dropdown"
-    />
-  );
+    <LanguageSwitcher className={className} showFlag={true} showName={true} variant="dropdown" />
+  )
 }
 
 // Button group version
 export function LanguageButtonGroup({ className }: { className?: string }) {
   return (
-    <LanguageSwitcher
-      className={className}
-      showFlag={true}
-      showName={false}
-      variant="buttons"
-    />
-  );
+    <LanguageSwitcher className={className} showFlag={true} showName={false} variant="buttons" />
+  )
 }
 
 // Hook to get language information
 export function useLanguageInfo() {
-  const locale = useLocale();
-  const tenant = useTenantInfo();
+  const locale = useLocale()
+  const tenant = useTenantInfo()
 
   const languages = {
     en: { name: 'English', nativeName: 'English', flag: '🇺🇸', direction: 'ltr' },
@@ -263,15 +241,15 @@ export function useLanguageInfo() {
     fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷', direction: 'ltr' },
     de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', direction: 'ltr' },
     ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', direction: 'rtl' },
-  };
+  }
 
-  const currentLanguage = languages[locale as keyof typeof languages];
-  const supportedLocales = tenant?.locales || ['en', 'es'];
+  const currentLanguage = languages[locale as keyof typeof languages]
+  const supportedLocales = tenant?.locales || ['en', 'es']
 
   return {
     locale,
     currentLanguage,
     supportedLocales,
     isRTL: currentLanguage?.direction === 'rtl',
-  };
+  }
 }

@@ -1,41 +1,29 @@
-import { validateRequest } from "@/lib/auth"
+import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user } = await validateRequest()
 
     if (!user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { vendorId, notes } = await request.json()
 
     if (!vendorId) {
-      return NextResponse.json(
-        { error: 'Vendor ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Vendor ID is required' }, { status: 400 })
     }
 
     // Get the order
     const order = await prisma.order.findUnique({
-      where: { id: id }
+      where: { id: id },
     })
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     // Check if order is in a valid state for vendor assignment
@@ -49,14 +37,11 @@ export async function POST(
 
     // Verify vendor exists and is active
     const vendor = await prisma.vendor.findUnique({
-      where: { id: vendorId }
+      where: { id: vendorId },
     })
 
     if (!vendor || !vendor.isActive) {
-      return NextResponse.json(
-        { error: 'Invalid or inactive vendor' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid or inactive vendor' }, { status: 400 })
     }
 
     // Update the order with vendor assignment
@@ -64,13 +49,13 @@ export async function POST(
       where: { id: id },
       data: {
         vendorId,
-        adminNotes: notes ?
-          `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor assigned to ${vendor.name}${notes ? ': ' + notes : ''}` :
-          order.adminNotes
+        adminNotes: notes
+          ? `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor assigned to ${vendor.name}${notes ? ': ' + notes : ''}`
+          : order.adminNotes,
       },
       include: {
-        vendor: true
-      }
+        vendor: true,
+      },
     })
 
     // Create status history entry
@@ -80,8 +65,8 @@ export async function POST(
         fromStatus: order.status,
         toStatus: order.status,
         notes: `Vendor assigned: ${vendor.name}`,
-        changedBy: userId
-      }
+        changedBy: userId,
+      },
     })
 
     // If vendor has n8n webhook, trigger it
@@ -97,8 +82,8 @@ export async function POST(
             vendorId: vendor.id,
             vendorName: vendor.name,
             orderTotal: order.total / 100,
-            notes: notes || ''
-          })
+            notes: notes || '',
+          }),
         })
       } catch (webhookError) {
         console.error('Failed to trigger vendor webhook:', webhookError)
@@ -107,14 +92,10 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      order: updatedOrder
+      order: updatedOrder,
     })
-
   } catch (error) {
     console.error('Error assigning vendor:', error)
-    return NextResponse.json(
-      { error: 'Failed to assign vendor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to assign vendor' }, { status: 500 })
   }
 }

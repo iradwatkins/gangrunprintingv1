@@ -41,18 +41,14 @@ interface ProductQuantitiesProps {
   productId?: string
   selectedQuantities?: string[]
   selectedQuantityGroup?: string
-  onChange: (data: { 
-    useGroup: boolean
-    quantityGroupId?: string
-    quantityIds?: string[] 
-  }) => void
+  onChange: (data: { useGroup: boolean; quantityGroupId?: string; quantityIds?: string[] }) => void
 }
 
-export function ProductQuantities({ 
-  productId, 
-  selectedQuantities = [], 
+export function ProductQuantities({
+  productId,
+  selectedQuantities = [],
   selectedQuantityGroup,
-  onChange 
+  onChange,
 }: ProductQuantitiesProps) {
   const [useGroup, setUseGroup] = useState(!!selectedQuantityGroup)
   const [quantityGroups, setQuantityGroups] = useState<QuantityGroup[]>([])
@@ -68,14 +64,14 @@ export function ProductQuantities({
   const fetchData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch quantity groups
       const groupsResponse = await fetch('/api/quantity-groups?include=quantities&active=true')
       if (groupsResponse.ok) {
         const groupsData = await groupsResponse.json()
         setQuantityGroups(groupsData)
       }
-      
+
       // Fetch individual quantities
       const quantitiesResponse = await fetch('/api/quantities?active=true')
       if (quantitiesResponse.ok) {
@@ -93,16 +89,16 @@ export function ProductQuantities({
   const handleModeChange = (value: string) => {
     const newUseGroup = value === 'group'
     setUseGroup(newUseGroup)
-    
+
     if (newUseGroup) {
       onChange({
         useGroup: true,
-        quantityGroupId: selectedGroupId || undefined
+        quantityGroupId: selectedGroupId || undefined,
       })
     } else {
       onChange({
         useGroup: false,
-        quantityIds: individualQuantities.length > 0 ? individualQuantities : undefined
+        quantityIds: individualQuantities.length > 0 ? individualQuantities : undefined,
       })
     }
   }
@@ -111,24 +107,24 @@ export function ProductQuantities({
     setSelectedGroupId(groupId)
     onChange({
       useGroup: true,
-      quantityGroupId: groupId
+      quantityGroupId: groupId,
     })
   }
 
   const handleQuantityToggle = (quantityId: string) => {
     const newQuantities = individualQuantities.includes(quantityId)
-      ? individualQuantities.filter(id => id !== quantityId)
+      ? individualQuantities.filter((id) => id !== quantityId)
       : [...individualQuantities, quantityId]
-    
+
     setIndividualQuantities(newQuantities)
     onChange({
       useGroup: false,
-      quantityIds: newQuantities.length > 0 ? newQuantities : undefined
+      quantityIds: newQuantities.length > 0 ? newQuantities : undefined,
     })
   }
 
   const getSelectedGroup = () => {
-    return quantityGroups.find(g => g.id === selectedGroupId)
+    return quantityGroups.find((g) => g.id === selectedGroupId)
   }
 
   if (loading) {
@@ -148,18 +144,13 @@ export function ProductQuantities({
           <Hash className="h-5 w-5" />
           Quantity Options
         </CardTitle>
-        <CardDescription>
-          Configure available quantities for this product
-        </CardDescription>
+        <CardDescription>Configure available quantities for this product</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Mode Selection */}
         <div className="space-y-3">
           <Label>Quantity Selection Mode</Label>
-          <RadioGroup 
-            value={useGroup ? 'group' : 'individual'} 
-            onValueChange={handleModeChange}
-          >
+          <RadioGroup value={useGroup ? 'group' : 'individual'} onValueChange={handleModeChange}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem id="group" value="group" />
               <Label className="font-normal cursor-pointer" htmlFor="group">
@@ -197,19 +188,20 @@ export function ProductQuantities({
                 ))}
               </SelectContent>
             </Select>
-            
+
             {/* Preview selected group */}
             {selectedGroupId && getSelectedGroup() && (
               <div className="mt-4 p-4 border rounded-lg bg-muted/50">
                 <h4 className="font-medium mb-2">Group Quantities:</h4>
                 <div className="flex flex-wrap gap-2">
-                  {getSelectedGroup()!.quantities
-                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                  {getSelectedGroup()!
+                    .quantities.sort((a, b) => a.sortOrder - b.sortOrder)
                     .map(({ quantity }) => (
                       <Badge key={quantity.id} variant="secondary">
                         {quantity.isCustom ? (
                           <span>
-                            Custom ({quantity.minValue?.toLocaleString() || '0'} - {quantity.maxValue?.toLocaleString() || '∞'})
+                            Custom ({quantity.minValue?.toLocaleString() || '0'} -{' '}
+                            {quantity.maxValue?.toLocaleString() || '∞'})
                           </span>
                         ) : (
                           <span>{quantity.value?.toLocaleString()}</span>
@@ -242,19 +234,18 @@ export function ProductQuantities({
                     <div className="flex items-center gap-2">
                       {quantity.isCustom ? (
                         <Badge variant="outline">
-                          Custom ({quantity.minValue?.toLocaleString() || '0'} - {quantity.maxValue?.toLocaleString() || '∞'})
+                          Custom ({quantity.minValue?.toLocaleString() || '0'} -{' '}
+                          {quantity.maxValue?.toLocaleString() || '∞'})
                         </Badge>
                       ) : (
-                        <Badge variant="secondary">
-                          {quantity.value?.toLocaleString()} units
-                        </Badge>
+                        <Badge variant="secondary">{quantity.value?.toLocaleString()} units</Badge>
                       )}
                     </div>
                   </Label>
                 </div>
               ))}
             </div>
-            
+
             {individualQuantities.length > 0 && (
               <div className="mt-2">
                 <p className="text-sm text-muted-foreground">

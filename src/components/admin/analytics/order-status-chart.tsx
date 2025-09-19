@@ -18,7 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
   SHIPPED: '#06b6d4',
   DELIVERED: '#059669',
   CANCELLED: '#6b7280',
-  REFUNDED: '#ef4444'
+  REFUNDED: '#ef4444',
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -29,15 +29,15 @@ const STATUS_LABELS: Record<string, string> = {
   SHIPPED: 'Shipped',
   DELIVERED: 'Delivered',
   CANCELLED: 'Cancelled',
-  REFUNDED: 'Refunded'
+  REFUNDED: 'Refunded',
 }
 
 export function OrderStatusChart({ data }: OrderStatusChartProps) {
-  const chartData = data.map(item => ({
+  const chartData = data.map((item) => ({
     name: STATUS_LABELS[item.status] || item.status,
     value: item.count,
     percentage: item.percentage,
-    fill: STATUS_COLORS[item.status] || '#6b7280'
+    fill: STATUS_COLORS[item.status] || '#6b7280',
   }))
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -82,9 +82,7 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            formatter={(value, entry) => (
-              <span style={{ color: entry.color }}>{value}</span>
-            )}
+            formatter={(value, entry) => <span style={{ color: entry.color }}>{value}</span>}
             height={36}
             verticalAlign="bottom"
           />
