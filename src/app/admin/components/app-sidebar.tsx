@@ -115,6 +115,10 @@ const data = {
           title: 'Turnaround Times',
           url: '/admin/turnaround-times',
         },
+        {
+          title: 'Turnaround Time Sets',
+          url: '/admin/turnaround-time-sets',
+        },
       ],
     },
     {
