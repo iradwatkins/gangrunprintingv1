@@ -580,25 +580,6 @@ export default function SimpleConfigurationForm({
         )
       })()}
 
-      {/* Turnaround Time Selection */}
-      <TurnaroundTimeSelector
-        turnaroundTimes={configData.turnaroundTimes || []}
-        selectedTurnaroundId={configuration.turnaround}
-        onTurnaroundChange={handleTurnaroundChange}
-        baseProductPrice={calculateBasePrice(configuration)}
-        quantity={configData.quantities.find(q => q.id === configuration.quantity)?.value || 1}
-        currentCoating={configuration.coating}
-        disabled={loading}
-      />
-
-      {/* Add-ons & Upgrades Section */}
-      <AddonAccordion
-        addons={configData.addons || []}
-        selectedAddons={configuration.selectedAddons}
-        onAddonChange={handleAddonChange}
-        disabled={loading}
-      />
-
       {/* File Upload Section */}
       <div className="space-y-3">
         <Label className="text-base font-medium">
@@ -612,107 +593,24 @@ export default function SimpleConfigurationForm({
         />
       </div>
 
-      {/* Current Configuration Summary */}
-      <div className="border-t pt-4">
-        <h3 className="text-sm font-medium text-gray-900 mb-2">Selected Configuration:</h3>
-        <div className="text-sm text-gray-600 space-y-1">
-          <div>
-            Quantity: {configData.quantities.find(q => q.id === configuration.quantity)?.label || 'None'}
-          </div>
-          <div>
-            Size: {configData.sizes.find(s => s.id === configuration.size)?.displayName || 'None'}
-            {(() => {
-              const selectedSize = configData.sizes.find(s => s.id === configuration.size)
-              return selectedSize && selectedSize.priceMultiplier !== 1.0 && (
-                <span className="ml-1 text-xs text-gray-500">
-                  ({selectedSize.priceMultiplier.toFixed(1)}x)
-                </span>
-              )
-            })()}
-          </div>
-          <div>
-            Paper: {configData.paperStocks.find(p => p.id === configuration.paper)?.name || 'None'}
-          </div>
-          {configuration.paper && (() => {
-            const selectedPaper = configData.paperStocks.find(p => p.id === configuration.paper)
-            const selectedCoating = selectedPaper?.coatings.find(c => c.id === configuration.coating)
-            const selectedSides = selectedPaper?.sides.find(s => s.id === configuration.sides)
+      {/* Add-ons & Upgrades Section */}
+      <AddonAccordion
+        addons={configData.addons || []}
+        selectedAddons={configuration.selectedAddons}
+        onAddonChange={handleAddonChange}
+        disabled={loading}
+      />
 
-            return (
-              <>
-                <div>
-                  Coating: {selectedCoating?.name || 'None'}
-                  {selectedCoating && selectedCoating.priceMultiplier !== 1.0 && (
-                    <span className="ml-1 text-xs text-gray-500">
-                      ({selectedCoating.priceMultiplier > 1.0 ? '+' : ''}{((selectedCoating.priceMultiplier - 1) * 100).toFixed(0)}%)
-                    </span>
-                  )}
-                </div>
-                <div>
-                  Sides: {selectedSides?.name || 'None'}
-                  {selectedSides && selectedSides.priceMultiplier !== 1.0 && (
-                    <span className="ml-1 text-xs text-gray-500">
-                      ({selectedSides.priceMultiplier > 1.0 ? '+' : ''}{((selectedSides.priceMultiplier - 1) * 100).toFixed(0)}%)
-                    </span>
-                  )}
-                </div>
-              </>
-            )
-          })()}
-          <div>
-            Turnaround: {configData.turnaroundTimes?.find(t => t.id === configuration.turnaround)?.displayName || 'None'}
-            {(() => {
-              const selectedTurnaround = configData.turnaroundTimes?.find(t => t.id === configuration.turnaround)
-              if (selectedTurnaround && selectedTurnaround.priceMultiplier !== 1.0) {
-                return (
-                  <span className="ml-1 text-xs text-gray-500">
-                    ({selectedTurnaround.priceMultiplier.toFixed(2)}x)
-                  </span>
-                )
-              }
-              if (selectedTurnaround?.requiresNoCoating) {
-                return (
-                  <span className="ml-1 text-xs text-orange-600">
-                    (No coating required)
-                  </span>
-                )
-              }
-              return null
-            })()}
-          </div>
-          <div>
-            Files: {configuration.uploadedFiles.length === 0
-              ? 'No files uploaded'
-              : `${configuration.uploadedFiles.length} file${configuration.uploadedFiles.length > 1 ? 's' : ''} uploaded`
-            }
-          </div>
-          <div>
-            Add-ons: {configuration.selectedAddons.length === 0
-              ? 'None selected'
-              : (
-                <div className="mt-1 space-y-1">
-                  {configuration.selectedAddons.map(addonId => {
-                    const addon = configData.addons?.find(a => a.id === addonId)
-                    return addon ? (
-                      <div key={addonId} className="text-xs text-gray-600 ml-2">
-                        • {addon.name} - {addon.priceDisplay}
-                        {addon.additionalTurnaroundDays > 0 && (
-                          <span className="text-amber-600 ml-1">
-                            (+{addon.additionalTurnaroundDays} day{addon.additionalTurnaroundDays > 1 ? 's' : ''})
-                          </span>
-                        )}
-                      </div>
-                    ) : null
-                  })}
-                </div>
-              )
-            }
-          </div>
-          <div className="font-medium pt-2 border-t">
-            Total Price: ${calculatePrice(configuration).toFixed(2)}
-          </div>
-        </div>
-      </div>
+      {/* Turnaround Time Selection */}
+      <TurnaroundTimeSelector
+        turnaroundTimes={configData.turnaroundTimes || []}
+        selectedTurnaroundId={configuration.turnaround}
+        onTurnaroundChange={handleTurnaroundChange}
+        baseProductPrice={calculateBasePrice(configuration)}
+        quantity={configData.quantities.find(q => q.id === configuration.quantity)?.value || 1}
+        currentCoating={configuration.coating}
+        disabled={loading}
+      />
     </div>
   )
 }
