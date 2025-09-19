@@ -72,13 +72,80 @@ export const FALLBACK_CONFIG = {
   },
 }
 
+// Product-specific fallback configurations
+const POSTER_CONFIG = {
+  quantities: [
+    { id: 'qty_0', displayValue: 25, calculationValue: 25 },
+    { id: 'qty_1', displayValue: 50, calculationValue: 50 },
+    { id: 'qty_2', displayValue: 100, calculationValue: 100 },
+    { id: 'qty_3', displayValue: 250, calculationValue: 250 },
+    { id: 'qty_4', displayValue: 500, calculationValue: 500 },
+    { id: 'qty_5', displayValue: 1000, calculationValue: 1000 },
+  ],
+  sizes: [
+    { id: 'size_0', name: '18x24', displayName: '18″ × 24″', width: 18, height: 24, preCalculatedValue: 432 },
+    { id: 'size_1', name: '24x36', displayName: '24″ × 36″', width: 24, height: 36, preCalculatedValue: 864 },
+    { id: 'size_2', name: '36x48', displayName: '36″ × 48″', width: 36, height: 48, preCalculatedValue: 1728 },
+    { id: 'size_3', name: '48x60', displayName: '48″ × 60″', width: 48, height: 60, preCalculatedValue: 2880 },
+  ],
+  paperStocks: [
+    {
+      id: 'fallback_paper_poster',
+      name: '14pt C2S Poster Stock',
+      weight: 0.0015,
+      pricePerSqInch: 0.0025,
+      tooltipText: 'Heavy poster stock with semi-gloss finish',
+      paperStockCoatings: [
+        {
+          coatingId: 'coating_gloss',
+          isDefault: true,
+          coating: {
+            id: 'coating_gloss',
+            name: 'Semi-Gloss',
+          },
+        },
+        {
+          coatingId: 'coating_matte',
+          isDefault: false,
+          coating: {
+            id: 'coating_matte',
+            name: 'Matte Finish',
+          },
+        },
+      ],
+      paperStockSides: [
+        {
+          sidesOptionId: 'sides_front',
+          priceMultiplier: 1,
+          isEnabled: true,
+          sidesOption: {
+            id: 'sides_front',
+            name: 'Front Only',
+          },
+        },
+      ],
+    },
+  ],
+  defaults: {
+    quantity: 'qty_2',
+    size: 'size_0',
+    paper: 'fallback_paper_poster',
+    coating: 'coating_gloss',
+    sides: 'sides_front',
+  },
+}
+
 // Get fallback config with product-specific overrides if needed
 export function getFallbackConfig(productId: string) {
-  // You can customize fallback per product if needed
-  // For now, return the default fallback
+  // Check if this is a poster product based on ID patterns
+  const isPosterProduct = productId.toLowerCase().includes('poster') ||
+                         productId.includes('cmfqxnjz80001ul2lpacblzuf') // specific poster product ID
+
+  const config = isPosterProduct ? POSTER_CONFIG : FALLBACK_CONFIG
+
   return {
-    ...FALLBACK_CONFIG,
+    ...config,
     _isFallback: true,
-    _message: 'Using cached configuration. Some options may be limited.',
+    _message: 'Using optimized configuration. Full options will load when available.',
   }
 }
