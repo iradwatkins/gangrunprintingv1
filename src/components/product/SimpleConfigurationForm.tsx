@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/select'
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
-import AddonAccordionEnhanced from './AddonAccordionEnhanced'
+import AddonAccordion from './AddonAccordion'
+import VariableDataAddon from './VariableDataAddon'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -112,8 +113,9 @@ interface UploadedFile {
 }
 
 interface VariableDataConfig {
-  locationsCount: number
-  locations: string[]
+  enabled: boolean
+  locationsCount: string
+  locations: string
 }
 
 interface SimpleProductConfiguration {
@@ -297,27 +299,31 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          // Handle Variable Data addon with custom pricing
-          if (addon.pricingModel === 'CUSTOM' && addon.configuration?.type === 'variable_data') {
-            const basePrice = addon.configuration.basePrice || 60
-            const pricePerPiece = addon.configuration.pricePerPiece || 0.02
-            addonCosts += basePrice + (pricePerPiece * quantity)
-          } else {
-            switch (addon.pricingModel) {
-              case 'FIXED_FEE':
-              case 'FLAT':
-                addonCosts += addon.price || 0
-                break
-              case 'PERCENTAGE':
-                addonCosts += baseProductPrice * (addon.price || 0)
-                break
-              case 'PER_UNIT':
-                addonCosts += quantity * (addon.price || 0)
-                break
-            }
+          // Skip Variable Data addon as it's handled separately
+          if (addon.configuration?.type === 'variable_data') {
+            return
+          }
+
+          switch (addon.pricingModel) {
+            case 'FIXED_FEE':
+            case 'FLAT':
+              addonCosts += addon.price || 0
+              break
+            case 'PERCENTAGE':
+              addonCosts += baseProductPrice * (addon.price || 0)
+              break
+            case 'PER_UNIT':
+              addonCosts += quantity * (addon.price || 0)
+              break
           }
         }
       })
+    }
+
+    // Add Variable Data cost if enabled
+    if (config.variableDataConfig?.enabled) {
+      const variableDataCost = 60 + (0.02 * quantity)
+      addonCosts += variableDataCost
     }
 
     const subtotalWithAddons = baseProductPrice + addonCosts
@@ -389,27 +395,31 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          // Handle Variable Data addon with custom pricing
-          if (addon.pricingModel === 'CUSTOM' && addon.configuration?.type === 'variable_data') {
-            const basePrice = addon.configuration.basePrice || 60
-            const pricePerPiece = addon.configuration.pricePerPiece || 0.02
-            addonCosts += basePrice + (pricePerPiece * quantity)
-          } else {
-            switch (addon.pricingModel) {
-              case 'FIXED_FEE':
-              case 'FLAT':
-                addonCosts += addon.price || 0
-                break
-              case 'PERCENTAGE':
-                addonCosts += baseProductPrice * (addon.price || 0)
-                break
-              case 'PER_UNIT':
-                addonCosts += quantity * (addon.price || 0)
-                break
-            }
+          // Skip Variable Data addon as it's handled separately
+          if (addon.configuration?.type === 'variable_data') {
+            return
+          }
+
+          switch (addon.pricingModel) {
+            case 'FIXED_FEE':
+            case 'FLAT':
+              addonCosts += addon.price || 0
+              break
+            case 'PERCENTAGE':
+              addonCosts += baseProductPrice * (addon.price || 0)
+              break
+            case 'PER_UNIT':
+              addonCosts += quantity * (addon.price || 0)
+              break
           }
         }
       })
+    }
+
+    // Add Variable Data cost if enabled
+    if (config.variableDataConfig?.enabled) {
+      const variableDataCost = 60 + (0.02 * quantity)
+      addonCosts += variableDataCost
     }
 
     return baseProductPrice + addonCosts
@@ -457,8 +467,17 @@ export default function SimpleConfigurationForm({
   }
 
   // Handle addon changes
-  const handleAddonChange = (selectedAddonIds: string[], variableData?: VariableDataConfig) => {
-    const newConfig = { ...configuration, selectedAddons: selectedAddonIds, variableDataConfig: variableData }
+  const handleAddonChange = (selectedAddonIds: string[]) => {
+    const newConfig = { ...configuration, selectedAddons: selectedAddonIds }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle Variable Data changes
+  const handleVariableDataChange = (variableData: VariableDataConfig, variableDataPrice: number) => {
+    const newConfig = { ...configuration, variableDataConfig: variableData }
     setConfiguration(newConfig)
 
     const price = calculatePrice(newConfig)
@@ -902,14 +921,19 @@ export default function SimpleConfigurationForm({
         />
       </div>
 
+      {/* Variable Data Add-on */}
+      <VariableDataAddon
+        quantity={getQuantityValue(configuration)}
+        onChange={handleVariableDataChange}
+        disabled={loading}
+      />
+
       {/* Add-ons & Upgrades Section */}
-      <AddonAccordionEnhanced
-        addons={configData.addons || []}
+      <AddonAccordion
+        addons={(configData.addons || []).filter(addon => addon.configuration?.type !== 'variable_data')}
         disabled={loading}
         selectedAddons={configuration.selectedAddons}
-        variableDataConfig={configuration.variableDataConfig}
         onAddonChange={handleAddonChange}
-        quantity={getQuantityValue(configuration)}
       />
 
       {/* Turnaround Time Selection */}

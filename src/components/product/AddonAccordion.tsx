@@ -13,11 +13,12 @@ interface Addon {
   id: string
   name: string
   description: string
-  pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT'
-  price: number
-  priceDisplay: string
-  isDefault: boolean
-  additionalTurnaroundDays: number
+  pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM' | 'FLAT'
+  price?: number
+  priceDisplay?: string
+  configuration?: any
+  isDefault?: boolean
+  additionalTurnaroundDays?: number
 }
 
 interface TurnaroundTime {
@@ -149,14 +150,14 @@ export default function AddonAccordion({
                                 isSelected ? 'text-blue-600' : 'text-gray-700'
                               }`}
                             >
-                              {addon.priceDisplay}
+                              {addon.priceDisplay || (addon.price ? `$${addon.price.toFixed(2)}` : 'Variable')}
                             </span>
                           </div>
                         </Label>
 
                         <p className="text-xs text-gray-600 mt-1">{addon.description}</p>
 
-                        {addon.additionalTurnaroundDays > 0 && (
+                        {addon.additionalTurnaroundDays && addon.additionalTurnaroundDays > 0 && (
                           <p className="text-xs text-amber-600 mt-1">
                             +{addon.additionalTurnaroundDays} day
                             {addon.additionalTurnaroundDays > 1 ? 's' : ''} turnaround
