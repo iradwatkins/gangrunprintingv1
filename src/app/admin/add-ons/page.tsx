@@ -229,6 +229,26 @@ export default function AddOnsPage() {
     }
   }
 
+  const handleToggleActive = async (addOn: AddOn) => {
+    try {
+      const response = await fetch(`/api/add-ons/${addOn.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !addOn.isActive }),
+      })
+
+      if (response.ok) {
+        toast.success(`Add-on ${!addOn.isActive ? 'activated' : 'deactivated'} successfully`)
+        fetchAddOns()
+      } else {
+        throw new Error('Failed to update add-on status')
+      }
+    } catch (error) {
+      console.error('Error toggling add-on status:', error)
+      toast.error('Failed to update add-on status')
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -414,7 +434,6 @@ export default function AddOnsPage() {
                     <TableHead>Price</TableHead>
                     <TableHead>Turnaround</TableHead>
                     <TableHead>Order</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -450,13 +469,13 @@ export default function AddOnsPage() {
                       <TableCell>
                         <span className="text-sm text-muted-foreground">{addOn.sortOrder}</span>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant={addOn.isActive ? 'default' : 'secondary'}>
-                          {addOn.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex gap-2 justify-end">
+                        <div className="flex gap-2 justify-end items-center">
+                          <Switch
+                            checked={addOn.isActive}
+                            onCheckedChange={() => handleToggleActive(addOn)}
+                            aria-label={`Toggle ${addOn.name} active state`}
+                          />
                           <Button
                             size="sm"
                             title="Duplicate"
