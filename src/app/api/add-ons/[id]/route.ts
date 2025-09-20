@@ -113,6 +113,28 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
+// PATCH /api/add-ons/[id] - Partially update an add-on (e.g., toggle isActive)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const body = await request.json()
+
+    // Only update the fields provided in the request body
+    const addOn = await prisma.addOn.update({
+      where: { id },
+      data: body,
+    })
+
+    return NextResponse.json(addOn)
+  } catch (error) {
+    console.error('Error updating add-on:', error)
+    return NextResponse.json({ error: 'Failed to update add-on' }, { status: 500 })
+  }
+}
+
 // DELETE /api/add-ons/[id] - Delete an add-on (soft delete by setting isActive to false)
 export async function DELETE(
   request: NextRequest,
