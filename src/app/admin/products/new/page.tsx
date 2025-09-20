@@ -35,7 +35,8 @@ export default function NewProductPage() {
   const [paperStockSets, setPaperStockSets] = useState([])
   const [quantityGroups, setQuantityGroups] = useState([])
   const [sizeGroups, setSizeGroups] = useState([])
-  const [addOns, setAddOns] = useState([])
+  const [addOnSets, setAddOnSets] = useState([])
+  const [turnaroundTimeSets, setTurnaroundTimeSets] = useState([])
   const [apiLoading, setApiLoading] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -54,9 +55,8 @@ export default function NewProductPage() {
     selectedPaperStockSet: '', // Single paper stock set ID
     selectedQuantityGroup: '', // Single quantity group ID
     selectedSizeGroup: '', // Single size group ID
-
-    // Multiple selections
-    selectedAddOns: [] as string[], // Multiple add-ons
+    selectedAddOnSet: '', // Single addon set ID
+    selectedTurnaroundTimeSet: '', // Single turnaround time set ID
 
     // Turnaround
     productionTime: 3,
@@ -77,13 +77,14 @@ export default function NewProductPage() {
   const fetchAllData = async () => {
     try {
       setApiLoading(true)
-      const [categoriesRes, paperStockGroupsRes, quantitiesRes, sizesRes, addOnsRes] =
+      const [categoriesRes, paperStockGroupsRes, quantitiesRes, sizesRes, addOnSetsRes, turnaroundTimeSetsRes] =
         await Promise.all([
           fetch('/api/product-categories'),
           fetch('/api/paper-stock-sets'),
           fetch('/api/quantities'),
           fetch('/api/sizes'),
-          fetch('/api/add-ons'),
+          fetch('/api/addon-sets'),
+          fetch('/api/turnaround-time-sets'),
         ])
 
       const newErrors = {}
@@ -124,13 +125,22 @@ export default function NewProductPage() {
         console.error('Failed to fetch size groups:', sizesRes.status)
       }
 
-      // Handle add-ons
-      if (addOnsRes.ok) {
-        const data = await addOnsRes.json()
-        setAddOns(data)
+      // Handle addon sets
+      if (addOnSetsRes.ok) {
+        const data = await addOnSetsRes.json()
+        setAddOnSets(data)
       } else {
-        newErrors.addOns = 'Failed to load add-ons'
-        console.error('Failed to fetch add-ons:', addOnsRes.status)
+        newErrors.addOnSets = 'Failed to load addon sets'
+        console.error('Failed to fetch addon sets:', addOnSetsRes.status)
+      }
+
+      // Handle turnaround time sets
+      if (turnaroundTimeSetsRes.ok) {
+        const data = await turnaroundTimeSetsRes.json()
+        setTurnaroundTimeSets(data)
+      } else {
+        newErrors.turnaroundTimeSets = 'Failed to load turnaround time sets'
+        console.error('Failed to fetch turnaround time sets:', turnaroundTimeSetsRes.status)
       }
 
       setErrors(newErrors)
@@ -141,7 +151,8 @@ export default function NewProductPage() {
         paperStockSets: 'Network error',
         quantityGroups: 'Network error',
         sizeGroups: 'Network error',
-        addOns: 'Network error',
+        addOnSets: 'Network error',
+        turnaroundTimeSets: 'Network error',
       })
     } finally {
       setApiLoading(false)
@@ -177,6 +188,18 @@ export default function NewProductPage() {
       setFormData((prev) => ({ ...prev, selectedSizeGroup: sizeGroups[0].id }))
     }
   }, [sizeGroups, formData.selectedSizeGroup])
+
+  useEffect(() => {
+    if (addOnSets.length > 0 && !formData.selectedAddOnSet) {
+      setFormData((prev) => ({ ...prev, selectedAddOnSet: addOnSets[0].id }))
+    }
+  }, [addOnSets, formData.selectedAddOnSet])
+
+  useEffect(() => {
+    if (turnaroundTimeSets.length > 0 && !formData.selectedTurnaroundTimeSet) {
+      setFormData((prev) => ({ ...prev, selectedTurnaroundTimeSet: turnaroundTimeSets[0].id }))
+    }
+  }, [turnaroundTimeSets, formData.selectedTurnaroundTimeSet])
 
   const testPrice = async () => {
     setTesting(true)
@@ -452,7 +475,10 @@ export default function NewProductPage() {
                   <div>✓ Quantity Groups: {quantityGroups.length} items</div>
                 )}
                 {sizeGroups.length > 0 && <div>✓ Size Groups: {sizeGroups.length} items</div>}
-                {addOns.length > 0 && <div>✓ Add-ons: {addOns.length} items</div>}
+                {addOnSets.length > 0 && <div>✓ AddOn Sets: {addOnSets.length} items</div>}
+                {turnaroundTimeSets.length > 0 && (
+                  <div>✓ Turnaround Time Sets: {turnaroundTimeSets.length} items</div>
+                )}
               </div>
             </AlertDescription>
           </Alert>
@@ -799,61 +825,147 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Add-on Options - Multiple selection */}
+      {/* AddOn Set - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Add-on Options (Choose Multiple)</CardTitle>
+          <CardTitle>AddOn Set (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {addOns
-              .filter((addon) => addon.isActive)
-              .map((addon) => (
-                <div key={addon.id} className="flex items-center gap-2">
-                  <Checkbox
-                    checked={formData.selectedAddOns.includes(addon.id)}
-                    id={`addon-${addon.id}`}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setFormData({
-                          ...formData,
-                          selectedAddOns: [...formData.selectedAddOns, addon.id],
-                        })
-                      } else {
-                        setFormData({
-                          ...formData,
-                          selectedAddOns: formData.selectedAddOns.filter((id) => id !== addon.id),
-                        })
-                      }
-                    }}
-                  />
-                  <Label className="cursor-pointer font-normal" htmlFor={`addon-${addon.id}`}>
-                    {addon.name}
-                  </Label>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select an addon set for this product. Customers will see the addons from this set,
+              allowing them to add extra features to their order.
+            </p>
+            <div>
+              <Label htmlFor="addon-set">AddOn Set</Label>
+              <Select
+                value={formData.selectedAddOnSet}
+                onValueChange={(value) => setFormData({ ...formData, selectedAddOnSet: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select addon set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {addOnSets.map((set) => (
+                    <SelectItem key={set.id} value={set.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{set.name}</span>
+                        {set.description && (
+                          <span className="text-xs text-muted-foreground">{set.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected addon set */}
+            {formData.selectedAddOnSet && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedSet = addOnSets.find((s) => s.id === formData.selectedAddOnSet)
+                  if (!selectedSet) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
+                      <div className="text-xs text-muted-foreground">
+                        Contains {selectedSet._count?.addOnSetItems || 0} add-ons
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Turnaround Times */}
+      {/* Turnaround Time Set - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Turnaround Times</CardTitle>
+          <CardTitle>Turnaround Time Set (Choose One) *</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select a turnaround time set for this product. Customers will see the turnaround
+              options from this set, with pricing adjustments for faster delivery.
+            </p>
+            <div>
+              <Label htmlFor="turnaround-time-set">Turnaround Time Set</Label>
+              <Select
+                value={formData.selectedTurnaroundTimeSet}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedTurnaroundTimeSet: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select turnaround time set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {turnaroundTimeSets.map((set) => (
+                    <SelectItem key={set.id} value={set.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{set.name}</span>
+                        {set.description && (
+                          <span className="text-xs text-muted-foreground">{set.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected turnaround time set */}
+            {formData.selectedTurnaroundTimeSet && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedSet = turnaroundTimeSets.find(
+                    (s) => s.id === formData.selectedTurnaroundTimeSet
+                  )
+                  if (!selectedSet) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
+                      <div className="space-y-1">
+                        {selectedSet.turnaroundTimeItems?.map((item: any) => (
+                          <div
+                            key={item.id}
+                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
+                              item.isDefault
+                                ? 'bg-primary text-primary-foreground font-medium'
+                                : 'bg-background text-foreground border'
+                            }`}
+                          >
+                            <span>{item.turnaroundTime.displayName}</span>
+                            <span className="text-xs opacity-70">
+                              {item.turnaroundTime.basePrice > 0 &&
+                                `+$${item.turnaroundTime.basePrice}`}
+                              {item.isDefault && ' (default)'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pricing */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Pricing</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="production">Production Time (days)</Label>
-              <Input
-                id="production"
-                type="number"
-                value={formData.productionTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
             <div>
               <Label htmlFor="base-price">Base Price ($)</Label>
               <Input
@@ -866,43 +978,32 @@ export default function NewProductPage() {
                 }
               />
             </div>
+            <div>
+              <Label htmlFor="setup-fee">Setup Fee ($)</Label>
+              <Input
+                id="setup-fee"
+                step="0.01"
+                type="number"
+                value={formData.setupFee}
+                onChange={(e) =>
+                  setFormData({ ...formData, setupFee: parseFloat(e.target.value) || 0 })
+                }
+              />
+            </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={formData.rushAvailable}
-                onCheckedChange={(checked) => setFormData({ ...formData, rushAvailable: checked })}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="production">Default Production Time (days)</Label>
+              <Input
+                id="production"
+                type="number"
+                value={formData.productionTime}
+                onChange={(e) =>
+                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
+                }
               />
-              <Label>Rush Available</Label>
             </div>
-            {formData.rushAvailable && (
-              <>
-                <div className="flex items-center gap-2">
-                  <Label>Rush Days:</Label>
-                  <Input
-                    className="w-20"
-                    type="number"
-                    value={formData.rushDays}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rushDays: parseInt(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label>Rush Fee ($):</Label>
-                  <Input
-                    className="w-24"
-                    step="0.01"
-                    type="number"
-                    value={formData.rushFee}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rushFee: parseFloat(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-              </>
-            )}
           </div>
         </CardContent>
       </Card>

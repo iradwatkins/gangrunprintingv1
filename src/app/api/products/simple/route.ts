@@ -17,6 +17,10 @@ const simpleProductSchema = z.object({
   quantityGroupId: z.string().min(1, 'Quantity group is required'),
   sizeGroupId: z.string().min(1, 'Size group is required'),
 
+  // New set selections - optional for backward compatibility
+  addOnSetId: z.string().optional().nullable(),
+  turnaroundTimeSetId: z.string().optional().nullable(),
+
   // Basic numeric fields - optional for now
   basePrice: z.number().default(0),
   setupFee: z.number().default(0),
@@ -111,6 +115,22 @@ export async function POST(request: NextRequest) {
             sizeGroupId: validatedData.sizeGroupId,
           },
         },
+
+        // Create addon set relation if provided
+        productAddOnSets: validatedData.addOnSetId ? {
+          create: {
+            addOnSetId: validatedData.addOnSetId,
+            isDefault: true,
+          },
+        } : undefined,
+
+        // Create turnaround time set relation if provided
+        productTurnaroundTimeSets: validatedData.turnaroundTimeSetId ? {
+          create: {
+            turnaroundTimeSetId: validatedData.turnaroundTimeSetId,
+            isDefault: true,
+          },
+        } : undefined,
       },
       include: {
         ProductCategory: true,
@@ -135,6 +155,32 @@ export async function POST(request: NextRequest) {
         productSizeGroups: {
           include: {
             sizeGroup: true,
+          },
+        },
+        productAddOnSets: {
+          include: {
+            addOnSet: {
+              include: {
+                addOnSetItems: {
+                  include: {
+                    addOn: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        productTurnaroundTimeSets: {
+          include: {
+            turnaroundTimeSet: {
+              include: {
+                turnaroundTimeItems: {
+                  include: {
+                    turnaroundTime: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
