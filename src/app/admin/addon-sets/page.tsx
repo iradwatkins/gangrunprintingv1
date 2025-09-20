@@ -166,8 +166,10 @@ export default function AddOnSetsPage() {
     try {
       const response = await fetch('/api/add-ons')
       if (response.ok) {
-        const data = await response.json()
-        setAddOns(data.filter((addon: AddOn) => addon.isActive))
+        const result = await response.json()
+        // The API returns { data: [...] } structure
+        const addonsArray = result.data || result
+        setAddOns(addonsArray.filter((addon: AddOn) => addon.isActive))
       } else {
         toast.error('Failed to fetch addons')
       }
@@ -535,9 +537,9 @@ export default function AddOnSetsPage() {
             </div>
 
             <div>
-              <Label className="text-base font-semibold">AddOns Configuration</Label>
+              <Label className="text-base font-semibold">Add-ons Configuration</Label>
               <p className="text-sm text-gray-600 mb-4">
-                Select addons and configure their display positions
+                Select add-ons and configure their display positions
               </p>
 
               <div className="space-y-4 max-h-96 overflow-y-auto border rounded p-4">
