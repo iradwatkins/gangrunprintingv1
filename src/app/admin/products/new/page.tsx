@@ -20,14 +20,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import toast from '@/lib/toast'
-import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw, Upload, X } from 'lucide-react'
 import { responseToJsonSafely } from '@/lib/safe-json'
 
 export default function NewProductPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [uploadingImages, setUploadingImages] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [testing, setTesting] = useState(false)
 
   // Data state - simple fetch pattern like paper-stocks page
@@ -49,7 +48,7 @@ export default function NewProductPage() {
     shortDescription: '',
     isActive: true,
     isFeatured: false,
-    images: [],
+    imageUrl: '', // Simple single image URL
 
     // Single selections
     selectedPaperStockSet: '', // Single paper stock set ID
@@ -230,6 +229,64 @@ export default function NewProductPage() {
     }
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Basic validation
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file')
+      return
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size must be less than 10MB')
+      return
+    }
+
+    setUploadingImage(true)
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+      uploadFormData.append('isPrimary', 'true')
+      uploadFormData.append('sortOrder', '0')
+
+      const response = await fetch('/api/products/upload-image', {
+        method: 'POST',
+        body: uploadFormData,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
+        throw new Error(errorData.error || 'Failed to upload image')
+      }
+
+      const data = await response.json()
+
+      // Update form data with the uploaded image URL
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: data.url
+      }))
+
+      toast.success('Image uploaded successfully')
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload image')
+      console.error('Image upload error:', error)
+    } finally {
+      setUploadingImage(false)
+      // Reset file input
+      e.target.value = ''
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: ''
+    }))
+  }
+
   const handleSubmit = async () => {
     if (!formData.name || !formData.sku || !formData.categoryId) {
       toast.error('Please fill in all required fields')
@@ -267,6 +324,7 @@ export default function NewProductPage() {
       basePrice: formData.basePrice || 0,
       setupFee: formData.setupFee || 0,
       productionTime: formData.productionTime || 3,
+      imageUrl: formData.imageUrl || null,
     }
 
     console.log('Sending simplified data:', simplifiedData)
@@ -570,13 +628,62 @@ export default function NewProductPage() {
           </div>
 
           <div>
-            <Label>Product Images</Label>
-            <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Image upload temporarily simplified while we fix core functionality. Products can be
-                created without images and images can be added later.
-              </p>
-            </div>
+            <Label>Product Image</Label>
+            {!formData.imageUrl ? (
+              <div className="border-2 border-dashed rounded-lg p-8 text-center">
+                <input
+                  type="file"
+                  id="product-image"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                />
+                <label
+                  htmlFor="product-image"
+                  className={`cursor-pointer ${uploadingImage ? 'opacity-50' : ''}`}
+                >
+                  {uploadingImage ? (
+                    <>
+                      <Loader2 className="mx-auto h-8 w-8 animate-spin mb-4" />
+                      <p className="text-sm font-medium">Uploading image...</p>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="mx-auto h-8 w-8 mb-4 text-muted-foreground" />
+                      <p className="text-sm font-medium">Click to upload product image</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Supports JPEG, PNG (max 10MB)
+                      </p>
+                    </>
+                  )}
+                </label>
+              </div>
+            ) : (
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start gap-4">
+                  <img
+                    src={formData.imageUrl}
+                    alt="Product preview"
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Image uploaded successfully</p>
+                    <p className="text-xs text-muted-foreground">
+                      This image will be visible to customers
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-6">
