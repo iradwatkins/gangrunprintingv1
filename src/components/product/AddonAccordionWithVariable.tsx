@@ -193,7 +193,7 @@ export default function AddonAccordionWithVariable({
               {/* Variable Data Addon */}
               <div className="space-y-4 border rounded-lg p-4 bg-white">
                 {/* Checkbox with price */}
-                <div className="space-y-3">
+                <div>
                   <div className="flex items-start space-x-3">
                     <Checkbox
                       id="variable-data"
@@ -213,13 +213,13 @@ export default function AddonAccordionWithVariable({
                         <span className="text-sm font-medium">
                           $60.00 + $.02/piece
                         </span>
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                              <p>Variable data printing allows each piece to have unique information like names, numbers, or custom text.</p>
+                              <p>Select this option if you need your order to have a unique name, number, or word on each card.</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -227,10 +227,6 @@ export default function AddonAccordionWithVariable({
                     </div>
                   </div>
 
-                  {/* Description box (always visible) */}
-                  <div className="ml-6 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
-                    Select this option if you need your order to have a unique name, number, or word on each card.
-                  </div>
                 </div>
 
                 {/* Conditional fields - only show when checked */}
@@ -245,7 +241,7 @@ export default function AddonAccordionWithVariable({
                         >
                           How many locations for the variables?
                         </Label>
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
@@ -278,7 +274,7 @@ export default function AddonAccordionWithVariable({
                         >
                           Where are the locations for the variables?
                         </Label>
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={0}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
