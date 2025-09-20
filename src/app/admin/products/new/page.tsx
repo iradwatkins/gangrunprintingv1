@@ -662,15 +662,35 @@ export default function NewProductPage() {
             ) : (
               <div className="border rounded-lg p-4">
                 <div className="flex items-start gap-4">
-                  <img
-                    src={formData.imageUrl}
-                    alt="Product preview"
-                    className="w-20 h-20 object-cover rounded"
-                  />
+                  <div className="w-20 h-20 bg-muted rounded flex items-center justify-center">
+                    <img
+                      src={formData.imageUrl}
+                      alt="Product preview"
+                      className="w-20 h-20 object-cover rounded"
+                      onError={(e) => {
+                        // Hide broken image and show placeholder
+                        e.currentTarget.style.display = 'none'
+                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement
+                        if (placeholder) placeholder.style.display = 'flex'
+                      }}
+                      onLoad={(e) => {
+                        // Hide placeholder when image loads successfully
+                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement
+                        if (placeholder) placeholder.style.display = 'none'
+                      }}
+                    />
+                    <div className="flex flex-col items-center text-muted-foreground" style={{display: 'none'}}>
+                      <Upload className="h-6 w-6 mb-1" />
+                      <span className="text-xs">Preview</span>
+                    </div>
+                  </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">Image uploaded successfully</p>
                     <p className="text-xs text-muted-foreground">
                       This image will be visible to customers
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 font-mono truncate">
+                      {formData.imageUrl}
                     </p>
                   </div>
                   <Button
