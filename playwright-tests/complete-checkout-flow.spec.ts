@@ -40,7 +40,7 @@ test.describe('Complete Image Upload + Checkout Flow', () => {
     })
 
     // Upload test image file
-    if (await fileInput.count() > 0) {
+    if ((await fileInput.count()) > 0) {
       await fileInput.setInputFiles(testImagePath)
 
       // Wait for upload to complete
@@ -141,7 +141,7 @@ test.describe('Complete Image Upload + Checkout Flow', () => {
     // Try to upload an invalid file type
     const fileInput = page.locator('input[type="file"]')
 
-    if (await fileInput.count() > 0) {
+    if ((await fileInput.count()) > 0) {
       // Create a text file to test invalid file type
       await page.evaluate(() => {
         const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -166,7 +166,7 @@ test.describe('Complete Image Upload + Checkout Flow', () => {
     const fileInput = page.locator('input[type="file"]')
     const testImagePath = path.join(__dirname, 'sample-images', 'business-card-design.jpg')
 
-    if (await fileInput.count() > 0) {
+    if ((await fileInput.count()) > 0) {
       // Upload image
       await fileInput.setInputFiles(testImagePath)
       await expect(page.locator('.uploaded-image-thumbnail')).toBeVisible()

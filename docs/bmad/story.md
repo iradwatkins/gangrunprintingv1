@@ -63,6 +63,7 @@ Perhaps the most ambitious aspect was the complete marketing automation platform
 Throughout the project, Alex adhered strictly to the Dokploy deployment strategy. No direct Docker commands, no manual Traefik configuration—everything flowed through Dokploy's interface. This ensured complete isolation from other services like SteppersLife.com while leveraging shared resources like N8N and MinIO.
 
 The deployment checklist became her daily ritual:
+
 - ✅ Use Dokploy interface only
 - ✅ Create isolated PostgreSQL database
 - ✅ Configure MinIO bucket for file storage
@@ -91,7 +92,7 @@ The platform was ready for its users, and more importantly, it was ready for the
 
 ---
 
-*This story documents the development of GangRun Printing's e-commerce platform using the BMad Method, with each chapter corresponding to major development phases documented in the associated shards.*
+_This story documents the development of GangRun Printing's e-commerce platform using the BMad Method, with each chapter corresponding to major development phases documented in the associated shards._
 
 ## Story Metadata
 

@@ -57,6 +57,7 @@ This guide provides a complete implementation of a production-ready monitoring a
 ## 🗂️ **File Structure Overview**
 
 ### **Core Monitoring Libraries**
+
 ```
 src/lib/
 ├── sentry.ts                    # Sentry configuration and helpers
@@ -67,6 +68,7 @@ src/lib/
 ```
 
 ### **Components & UI**
+
 ```
 src/components/
 ├── error-boundary.tsx          # React error boundaries
@@ -74,6 +76,7 @@ src/components/
 ```
 
 ### **API Endpoints**
+
 ```
 src/app/api/monitoring/
 ├── metrics/route.ts            # System and business metrics API
@@ -83,12 +86,14 @@ src/app/api/monitoring/
 ```
 
 ### **Admin Dashboard**
+
 ```
 src/app/admin/
 └── monitoring/page.tsx         # Comprehensive monitoring dashboard
 ```
 
 ### **Configuration Files**
+
 ```
 monitoring/
 ├── prometheus.yml              # Prometheus configuration
@@ -99,6 +104,7 @@ monitoring/
 ```
 
 ### **Infrastructure**
+
 ```
 ├── docker-compose.monitoring.yml   # Complete monitoring stack
 ├── sentry.client.config.ts        # Sentry client configuration
@@ -112,12 +118,15 @@ monitoring/
 ## 🚀 **Quick Start Guide**
 
 ### **1. Install Dependencies**
+
 ```bash
 npm install @sentry/nextjs prom-client uuid web-vitals @types/uuid
 ```
 
 ### **2. Environment Variables**
+
 Add to your `.env.local`:
+
 ```bash
 # Required
 NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
@@ -132,6 +141,7 @@ RESEND_API_KEY=your_resend_key
 ```
 
 ### **3. Deploy Monitoring Stack (Dokploy)**
+
 ```bash
 # 1. Create directories on server
 ssh root@72.60.28.175 'mkdir -p /opt/gangrun/monitoring/{prometheus,grafana,alertmanager,postgres}'
@@ -143,6 +153,7 @@ scp monitoring/*.yml root@72.60.28.175:/opt/gangrun/monitoring/
 ```
 
 ### **4. Verify Installation**
+
 ```bash
 # Check metrics endpoint
 curl https://gangrunprinting.com/api/monitoring/prometheus
@@ -159,6 +170,7 @@ curl https://gangrunprinting.com/api/health
 ## 📊 **Monitoring Capabilities**
 
 ### **System Metrics**
+
 - CPU, Memory, Disk usage
 - Network I/O and connections
 - Container resource utilization
@@ -166,6 +178,7 @@ curl https://gangrunprinting.com/api/health
 - Response times and throughput
 
 ### **Application Metrics**
+
 - HTTP request/response metrics
 - API endpoint performance
 - Error rates by endpoint
@@ -173,6 +186,7 @@ curl https://gangrunprinting.com/api/health
 - Background job processing
 
 ### **Business Metrics**
+
 - Order creation and completion
 - Payment success/failure rates
 - Conversion funnel metrics
@@ -181,6 +195,7 @@ curl https://gangrunprinting.com/api/health
 - Revenue and profit margins
 
 ### **User Experience Metrics**
+
 - Core Web Vitals (LCP, FID, CLS)
 - Page load times
 - JavaScript errors
@@ -192,6 +207,7 @@ curl https://gangrunprinting.com/api/health
 ## 🔔 **Alert Configuration**
 
 ### **Critical Alerts (Immediate Response)**
+
 - System down or unresponsive
 - Database connection failures
 - Payment processing errors
@@ -199,6 +215,7 @@ curl https://gangrunprinting.com/api/health
 - High error rates (>10%)
 
 ### **Warning Alerts (30-minute SLA)**
+
 - High resource usage (>80%)
 - Slow response times (>2s)
 - SSL certificate expiring soon
@@ -206,6 +223,7 @@ curl https://gangrunprinting.com/api/health
 - Low conversion rate (<1.5%)
 
 ### **Info Alerts (Business Hours)**
+
 - Deployment notifications
 - Performance optimizations
 - Maintenance schedules
@@ -216,21 +234,25 @@ curl https://gangrunprinting.com/api/health
 ## 📈 **Dashboards & Visualization**
 
 ### **Admin Monitoring Dashboard**
+
 - **URL**: `/admin/monitoring`
 - **Features**: Real-time metrics, alerts, system health
 - **Access**: Admin users only
 
 ### **Grafana Dashboards**
+
 - **URL**: `https://monitoring.gangrunprinting.com`
 - **Dashboards**: System, Application, Business metrics
 - **Access**: Monitoring team
 
 ### **Prometheus Metrics**
+
 - **URL**: `https://prometheus.gangrunprinting.com`
 - **Features**: Raw metrics, query interface
 - **Access**: Technical team
 
 ### **AlertManager**
+
 - **URL**: `https://alerts.gangrunprinting.com`
 - **Features**: Alert management, silencing, routing
 - **Access**: Operations team
@@ -240,19 +262,23 @@ curl https://gangrunprinting.com/api/health
 ## 🔍 **Key Monitoring Patterns**
 
 ### **1. Correlation ID Tracking**
+
 Every request gets a unique correlation ID for distributed tracing:
+
 ```typescript
-import { logger } from '@/lib/structured-logging';
+import { logger } from '@/lib/structured-logging'
 
 // Set correlation ID from request headers
-logger.setCorrelationId(req.headers.get('x-correlation-id'));
+logger.setCorrelationId(req.headers.get('x-correlation-id'))
 
 // All subsequent logs will include this ID
-logger.info('Processing order', 'business', { orderId });
+logger.info('Processing order', 'business', { orderId })
 ```
 
 ### **2. Error Boundary Implementation**
+
 Automatic error reporting with user context:
+
 ```typescript
 import { ErrorBoundary } from '@/components/error-boundary';
 
@@ -263,28 +289,30 @@ import { ErrorBoundary } from '@/components/error-boundary';
 ```
 
 ### **3. Business Metrics Tracking**
+
 Track key business events throughout the application:
+
 ```typescript
-import { conversionFunnel } from '@/lib/business-intelligence';
+import { conversionFunnel } from '@/lib/business-intelligence'
 
 // Track user journey
-conversionFunnel.trackLanding();
-conversionFunnel.trackBrowsing(productId, category);
-conversionFunnel.trackAddToCart(productId, quantity, price, productName);
-conversionFunnel.trackConversion(orderId, amount, itemCount, method);
+conversionFunnel.trackLanding()
+conversionFunnel.trackBrowsing(productId, category)
+conversionFunnel.trackAddToCart(productId, quantity, price, productName)
+conversionFunnel.trackConversion(orderId, amount, itemCount, method)
 ```
 
 ### **4. Performance Monitoring**
-Automatic Core Web Vitals and custom performance tracking:
-```typescript
-import { usePerformanceTiming } from '@/components/performance-monitor';
 
-const { measureAsync } = usePerformanceTiming();
+Automatic Core Web Vitals and custom performance tracking:
+
+```typescript
+import { usePerformanceTiming } from '@/components/performance-monitor'
+
+const { measureAsync } = usePerformanceTiming()
 
 // Measure async operations
-const result = await measureAsync('api-call', () =>
-  fetch('/api/products').then(r => r.json())
-);
+const result = await measureAsync('api-call', () => fetch('/api/products').then((r) => r.json()))
 ```
 
 ---
@@ -292,18 +320,21 @@ const result = await measureAsync('api-call', () =>
 ## 🛡️ **Security & Privacy**
 
 ### **Data Protection**
+
 - Sensitive data automatically redacted from logs
 - PII masking in error reports
 - Secure credential storage
 - Encrypted data transmission
 
 ### **Access Control**
+
 - Role-based access to monitoring tools
 - API key authentication
 - Network-level restrictions
 - Audit logging for administrative actions
 
 ### **Compliance**
+
 - GDPR-compliant data collection
 - Configurable data retention
 - User consent management
@@ -314,18 +345,21 @@ const result = await measureAsync('api-call', () =>
 ## 🔧 **Maintenance & Operations**
 
 ### **Daily Tasks**
+
 - Review critical alerts
 - Check system resource usage
 - Verify backup completion
 - Monitor business KPIs
 
 ### **Weekly Tasks**
+
 - Performance trend analysis
 - Update monitoring dashboards
 - Clean up resolved alerts
 - Review error patterns
 
 ### **Monthly Tasks**
+
 - Update alert thresholds
 - Capacity planning review
 - Security audit
@@ -336,12 +370,14 @@ const result = await measureAsync('api-call', () =>
 ## 🎯 **Business Value Delivered**
 
 ### **Immediate Benefits**
+
 1. **Proactive Issue Detection**: Identify problems before users report them
 2. **Faster Resolution**: Correlation IDs and structured logging reduce MTTR
 3. **Business Insights**: Real-time visibility into key metrics
 4. **Compliance Ready**: Audit trails and data protection measures
 
 ### **Long-term Value**
+
 1. **Improved Reliability**: Higher uptime and better user experience
 2. **Data-Driven Decisions**: Business metrics inform strategic choices
 3. **Scalability Planning**: Capacity insights prevent resource constraints
@@ -352,11 +388,13 @@ const result = await measureAsync('api-call', () =>
 ## 📞 **Support & Contacts**
 
 ### **Alert Routing**
+
 - **Critical Alerts**: admin@gangrunprinting.com (immediate)
 - **Business Alerts**: business@gangrunprinting.com (30 min SLA)
 - **System Alerts**: admin@gangrunprinting.com (2 hour SLA)
 
 ### **Monitoring Services**
+
 - **Sentry**: Error tracking and performance
 - **Grafana**: Metrics visualization
 - **Prometheus**: Metrics collection
@@ -367,12 +405,14 @@ const result = await measureAsync('api-call', () =>
 ## 🚀 **Next Steps**
 
 ### **Phase 2 Enhancements (Future)**
+
 1. **Advanced Analytics**: Machine learning for anomaly detection
 2. **Mobile Monitoring**: React Native app performance tracking
 3. **Third-party Integration**: Slack, PagerDuty, Jira integrations
 4. **Custom Dashboards**: Business-specific metric displays
 
 ### **Scaling Considerations**
+
 1. **High Availability**: Multi-region monitoring deployment
 2. **Data Retention**: Long-term storage for historical analysis
 3. **Performance**: Metrics aggregation and sampling strategies

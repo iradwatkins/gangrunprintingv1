@@ -7,12 +7,14 @@ This directory contains N8N workflow configurations for automating GangRun Print
 ## 📱 Telegram Integration
 
 Your Telegram bot is configured and ready:
+
 - **Bot Name**: Halle (Personal Assistant AI)
 - **Bot Username**: @irapa_bot
 - **Your Chat ID**: 7154912264
 - **Bot Token**: 7241850736:AAHqJYoWRzJdtFUclpdmosvVZN5C6DDbKL4
 
 Notifications will be sent directly to your Telegram for:
+
 - New orders
 - Payment confirmations
 - Order issues
@@ -22,15 +24,18 @@ Notifications will be sent directly to your Telegram for:
 ## 🚀 Quick Setup
 
 ### 1. Access N8N Dashboard
+
 - URL: https://n8n.agistaffers.com
 - Login with your credentials
 
 ### 2. Import the Workflow
+
 1. In N8N, click "Workflows" → "Import from File"
 2. Upload `workflows/gangrun-order-processing.json`
 3. Review the workflow nodes
 
 ### 3. Configure Webhook
+
 1. Open the imported workflow
 2. Click on the "Webhook Receiver" node
 3. Copy the webhook URL (it will be something like: `https://n8n.agistaffers.com/webhook/gangrun`)
@@ -40,11 +45,13 @@ Notifications will be sent directly to your Telegram for:
    ```
 
 ### 4. Configure Credentials (if needed)
+
 - **PostgreSQL**: For logging events
 - **HTTP Request**: For vendor APIs
 - **SMTP**: For email notifications
 
 ### 5. Activate the Workflow
+
 1. Toggle the workflow to "Active"
 2. Test with the test script: `npm run test:n8n`
 
@@ -53,39 +60,45 @@ Notifications will be sent directly to your Telegram for:
 The application sends the following events to N8N:
 
 ### Order Events
-| Event | Description | Payload |
-|-------|-------------|---------|
-| `order.created` | New order placed | Order details, items, customer info |
-| `order.status_changed` | Order status updated | Order ID, old status, new status |
-| `order.shipped` | Order shipped | Tracking info, carrier details |
-| `order.issue_detected` | Problem with order | Issue type, severity, description |
+
+| Event                  | Description          | Payload                             |
+| ---------------------- | -------------------- | ----------------------------------- |
+| `order.created`        | New order placed     | Order details, items, customer info |
+| `order.status_changed` | Order status updated | Order ID, old status, new status    |
+| `order.shipped`        | Order shipped        | Tracking info, carrier details      |
+| `order.issue_detected` | Problem with order   | Issue type, severity, description   |
 
 ### Payment Events
-| Event | Description | Payload |
-|-------|-------------|---------|
+
+| Event              | Description       | Payload                        |
+| ------------------ | ----------------- | ------------------------------ |
 | `payment.received` | Payment confirmed | Amount, transaction ID, method |
-| `payment.refunded` | Refund processed | Amount, reason, refund ID |
+| `payment.refunded` | Refund processed  | Amount, reason, refund ID      |
 
 ### File Events
-| Event | Description | Payload |
-|-------|-------------|---------|
+
+| Event           | Description      | Payload                         |
+| --------------- | ---------------- | ------------------------------- |
 | `file.uploaded` | Artwork uploaded | File name, size, type, order ID |
 
 ### Vendor Events
-| Event | Description | Payload |
-|-------|-------------|---------|
+
+| Event             | Description              | Payload                    |
+| ----------------- | ------------------------ | -------------------------- |
 | `vendor.assigned` | Order assigned to vendor | Vendor info, order details |
 
 ### Notification Events
-| Event | Description | Payload |
-|-------|-------------|---------|
+
+| Event               | Description           | Payload                  |
+| ------------------- | --------------------- | ------------------------ |
 | `notification.send` | Customer notification | Type, recipient, subject |
 
 ### Report Events
-| Event | Description | Payload |
-|-------|-------------|---------|
-| `report.daily` | Daily summary | Orders, revenue, pending items |
-| `inventory.low_stock` | Stock alert | Product, current stock, minimum |
+
+| Event                 | Description   | Payload                         |
+| --------------------- | ------------- | ------------------------------- |
+| `report.daily`        | Daily summary | Orders, revenue, pending items  |
+| `inventory.low_stock` | Stock alert   | Product, current stock, minimum |
 
 ## 🧪 Testing
 
@@ -125,7 +138,7 @@ npx tsx scripts/test-n8n-webhook.ts
 
 ### Order Processing Flow
 
-1. **Order Created** → 
+1. **Order Created** →
    - Log to database
    - Send confirmation email
    - Create production ticket

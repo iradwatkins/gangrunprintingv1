@@ -11,8 +11,8 @@ groups:
           severity: warning
           service: system
         annotations:
-          summary: "High CPU usage on {{ $labels.instance }}"
-          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+          summary: 'High CPU usage on {{ $labels.instance }}'
+          description: 'CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}'
 
       - alert: CriticalCPUUsage
         expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
@@ -21,8 +21,8 @@ groups:
           severity: critical
           service: system
         annotations:
-          summary: "Critical CPU usage on {{ $labels.instance }}"
-          description: "CPU usage is above 95% for more than 2 minutes on {{ $labels.instance }}"
+          summary: 'Critical CPU usage on {{ $labels.instance }}'
+          description: 'CPU usage is above 95% for more than 2 minutes on {{ $labels.instance }}'
 
       # High memory usage
       - alert: HighMemoryUsage
@@ -32,8 +32,8 @@ groups:
           severity: warning
           service: system
         annotations:
-          summary: "High memory usage on {{ $labels.instance }}"
-          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+          summary: 'High memory usage on {{ $labels.instance }}'
+          description: 'Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}'
 
       - alert: CriticalMemoryUsage
         expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
@@ -42,8 +42,8 @@ groups:
           severity: critical
           service: system
         annotations:
-          summary: "Critical memory usage on {{ $labels.instance }}"
-          description: "Memory usage is above 95% for more than 2 minutes on {{ $labels.instance }}"
+          summary: 'Critical memory usage on {{ $labels.instance }}'
+          description: 'Memory usage is above 95% for more than 2 minutes on {{ $labels.instance }}'
 
       # High disk usage
       - alert: HighDiskUsage
@@ -53,8 +53,8 @@ groups:
           severity: warning
           service: system
         annotations:
-          summary: "High disk usage on {{ $labels.instance }}"
-          description: "Disk usage is above 85% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          summary: 'High disk usage on {{ $labels.instance }}'
+          description: 'Disk usage is above 85% on {{ $labels.instance }} ({{ $labels.mountpoint }})'
 
       - alert: CriticalDiskUsage
         expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 95
@@ -63,8 +63,8 @@ groups:
           severity: critical
           service: system
         annotations:
-          summary: "Critical disk usage on {{ $labels.instance }}"
-          description: "Disk usage is above 95% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          summary: 'Critical disk usage on {{ $labels.instance }}'
+          description: 'Disk usage is above 95% on {{ $labels.instance }} ({{ $labels.mountpoint }})'
 
       # System load
       - alert: HighSystemLoad
@@ -74,8 +74,8 @@ groups:
           severity: warning
           service: system
         annotations:
-          summary: "High system load on {{ $labels.instance }}"
-          description: "System load is {{ $value }} (normalized by CPU count) on {{ $labels.instance }}"
+          summary: 'High system load on {{ $labels.instance }}'
+          description: 'System load is {{ $value }} (normalized by CPU count) on {{ $labels.instance }}'
 
   # Application alerts
   - name: application_alerts
@@ -88,8 +88,8 @@ groups:
           severity: critical
           service: application
         annotations:
-          summary: "Service {{ $labels.job }} is down"
-          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+          summary: 'Service {{ $labels.job }} is down'
+          description: 'Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute'
 
       # High HTTP error rate
       - alert: HighHTTPErrorRate
@@ -99,8 +99,8 @@ groups:
           severity: warning
           service: application
         annotations:
-          summary: "High HTTP 5xx error rate for {{ $labels.job }}"
-          description: "HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}"
+          summary: 'High HTTP 5xx error rate for {{ $labels.job }}'
+          description: 'HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}'
 
       - alert: CriticalHTTPErrorRate
         expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 10
@@ -109,8 +109,8 @@ groups:
           severity: critical
           service: application
         annotations:
-          summary: "Critical HTTP 5xx error rate for {{ $labels.job }}"
-          description: "HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}"
+          summary: 'Critical HTTP 5xx error rate for {{ $labels.job }}'
+          description: 'HTTP 5xx error rate is {{ $value }}% for {{ $labels.job }} on {{ $labels.instance }}'
 
       # Slow HTTP response time
       - alert: SlowHTTPResponseTime
@@ -120,8 +120,8 @@ groups:
           severity: warning
           service: application
         annotations:
-          summary: "Slow HTTP response time for {{ $labels.job }}"
-          description: "95th percentile HTTP response time is {{ $value }}s for {{ $labels.job }} on {{ $labels.instance }}"
+          summary: 'Slow HTTP response time for {{ $labels.job }}'
+          description: '95th percentile HTTP response time is {{ $value }}s for {{ $labels.job }} on {{ $labels.instance }}'
 
       # High HTTP request rate
       - alert: HighHTTPRequestRate
@@ -131,8 +131,8 @@ groups:
           severity: warning
           service: application
         annotations:
-          summary: "High HTTP request rate for {{ $labels.job }}"
-          description: "HTTP request rate is {{ $value }} req/s for {{ $labels.job }} on {{ $labels.instance }}"
+          summary: 'High HTTP request rate for {{ $labels.job }}'
+          description: 'HTTP request rate is {{ $value }} req/s for {{ $labels.job }} on {{ $labels.instance }}'
 
   # Business alerts
   - name: business_alerts
@@ -145,8 +145,8 @@ groups:
           severity: warning
           service: business
         annotations:
-          summary: "Low conversion rate detected"
-          description: "Conversion rate has been below 1.5% for more than 30 minutes: {{ $value }}%"
+          summary: 'Low conversion rate detected'
+          description: 'Conversion rate has been below 1.5% for more than 30 minutes: {{ $value }}%'
 
       # High cart abandonment rate
       - alert: HighCartAbandonmentRate
@@ -156,8 +156,8 @@ groups:
           severity: warning
           service: business
         annotations:
-          summary: "High cart abandonment rate detected"
-          description: "Cart abandonment rate has been above 80% for more than 60 minutes: {{ $value }}%"
+          summary: 'High cart abandonment rate detected'
+          description: 'Cart abandonment rate has been above 80% for more than 60 minutes: {{ $value }}%'
 
       # Payment failure spike
       - alert: PaymentFailureSpike
@@ -167,8 +167,8 @@ groups:
           severity: critical
           service: business
         annotations:
-          summary: "Payment failure spike detected"
-          description: "{{ $value }} payment failures in the last 10 minutes"
+          summary: 'Payment failure spike detected'
+          description: '{{ $value }} payment failures in the last 10 minutes'
 
       # Revenue drop
       - alert: RevenueDrop
@@ -178,8 +178,8 @@ groups:
           severity: warning
           service: business
         annotations:
-          summary: "Significant revenue drop detected"
-          description: "Revenue rate is less than 50% of the same time yesterday"
+          summary: 'Significant revenue drop detected'
+          description: 'Revenue rate is less than 50% of the same time yesterday'
 
       # Order processing delay
       - alert: OrderProcessingDelay
@@ -189,8 +189,8 @@ groups:
           severity: warning
           service: business
         annotations:
-          summary: "Order processing delay detected"
-          description: "Orders are taking more than 5 minutes to process: {{ $value }}s"
+          summary: 'Order processing delay detected'
+          description: 'Orders are taking more than 5 minutes to process: {{ $value }}s'
 
   # Database alerts
   - name: database_alerts
@@ -203,8 +203,8 @@ groups:
           severity: critical
           service: database
         annotations:
-          summary: "Database connection failures detected"
-          description: "{{ $value }} database connection failures in the last minute"
+          summary: 'Database connection failures detected'
+          description: '{{ $value }} database connection failures in the last minute'
 
       # Slow database queries
       - alert: SlowDatabaseQueries
@@ -214,8 +214,8 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "Slow database queries detected"
-          description: "95th percentile database query time is {{ $value }}s"
+          summary: 'Slow database queries detected'
+          description: '95th percentile database query time is {{ $value }}s'
 
       # High database CPU
       - alert: HighDatabaseCPU
@@ -225,8 +225,8 @@ groups:
           severity: warning
           service: database
         annotations:
-          summary: "High database CPU usage"
-          description: "Database CPU usage is {{ $value }}%"
+          summary: 'High database CPU usage'
+          description: 'Database CPU usage is {{ $value }}%'
 
   # SSL certificate alerts
   - name: ssl_alerts
@@ -239,8 +239,8 @@ groups:
           severity: warning
           service: ssl
         annotations:
-          summary: "SSL certificate expiring soon for {{ $labels.instance }}"
-          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+          summary: 'SSL certificate expiring soon for {{ $labels.instance }}'
+          description: 'SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}'
 
       # SSL certificate expired
       - alert: SSLCertificateExpired
@@ -250,8 +250,8 @@ groups:
           severity: critical
           service: ssl
         annotations:
-          summary: "SSL certificate expired for {{ $labels.instance }}"
-          description: "SSL certificate for {{ $labels.instance }} has expired"
+          summary: 'SSL certificate expired for {{ $labels.instance }}'
+          description: 'SSL certificate for {{ $labels.instance }} has expired'
 
   # External service alerts
   - name: external_service_alerts
@@ -264,8 +264,8 @@ groups:
           severity: critical
           service: external
         annotations:
-          summary: "External service {{ $labels.instance }} is down"
-          description: "External service {{ $labels.instance }} has been unreachable for more than 2 minutes"
+          summary: 'External service {{ $labels.instance }} is down'
+          description: 'External service {{ $labels.instance }} has been unreachable for more than 2 minutes'
 
       # Slow external service
       - alert: SlowExternalService
@@ -275,8 +275,8 @@ groups:
           severity: warning
           service: external
         annotations:
-          summary: "External service {{ $labels.instance }} is slow"
-          description: "External service {{ $labels.instance }} response time is {{ $value }}s"
+          summary: 'External service {{ $labels.instance }} is slow'
+          description: 'External service {{ $labels.instance }} response time is {{ $value }}s'
 
   # Storage alerts
   - name: storage_alerts
@@ -289,8 +289,8 @@ groups:
           severity: critical
           service: storage
         annotations:
-          summary: "MinIO storage service is down"
-          description: "MinIO storage service has been down for more than 1 minute"
+          summary: 'MinIO storage service is down'
+          description: 'MinIO storage service has been down for more than 1 minute'
 
       # High storage usage
       - alert: HighStorageUsage
@@ -300,5 +300,5 @@ groups:
           severity: warning
           service: storage
         annotations:
-          summary: "High MinIO storage usage"
-          description: "MinIO storage usage is {{ $value }}%"
+          summary: 'High MinIO storage usage'
+          description: 'MinIO storage usage is {{ $value }}%'

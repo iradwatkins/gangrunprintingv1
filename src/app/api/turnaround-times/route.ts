@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -24,10 +24,7 @@ const updateTurnaroundTimeSchema = createTurnaroundTimeSchema.partial()
 export async function GET() {
   try {
     const turnaroundTimes = await prisma.turnaroundTime.findMany({
-      orderBy: [
-        { sortOrder: 'asc' },
-        { daysMin: 'asc' },
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { daysMin: 'asc' }],
       include: {
         turnaroundTimeSetItems: {
           include: {
@@ -39,11 +36,7 @@ export async function GET() {
 
     return NextResponse.json(turnaroundTimes)
   } catch (error) {
-    console.error('Failed to fetch turnaround times:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch turnaround times' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch turnaround times' }, { status: 500 })
   }
 }
 
@@ -66,10 +59,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Failed to create turnaround time:', error)
-    return NextResponse.json(
-      { error: 'Failed to create turnaround time' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create turnaround time' }, { status: 500 })
   }
 }

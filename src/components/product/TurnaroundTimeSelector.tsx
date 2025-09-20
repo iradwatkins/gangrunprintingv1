@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
@@ -36,35 +35,36 @@ export default function TurnaroundTimeSelector({
   baseProductPrice,
   quantity,
   currentCoating,
-  disabled = false
+  disabled = false,
 }: TurnaroundTimeSelectorProps) {
-
-  const calculateTurnaroundPrice = (turnaround: TurnaroundTime): { totalPrice: number; pricePerUnit: number } => {
+  const calculateTurnaroundPrice = (
+    turnaround: TurnaroundTime
+  ): { totalPrice: number; pricePerUnit: number } => {
     if (turnaround.pricingModel === 'FLAT') {
       const totalPrice = baseProductPrice + turnaround.basePrice
       return {
         totalPrice,
-        pricePerUnit: totalPrice / quantity
+        pricePerUnit: totalPrice / quantity,
       }
     } else if (turnaround.pricingModel === 'PERCENTAGE') {
       const totalPrice = baseProductPrice * turnaround.priceMultiplier
       return {
         totalPrice,
-        pricePerUnit: totalPrice / quantity
+        pricePerUnit: totalPrice / quantity,
       }
     } else if (turnaround.pricingModel === 'PER_UNIT') {
       const additionalCost = quantity * turnaround.basePrice
       const totalPrice = baseProductPrice + additionalCost
       return {
         totalPrice,
-        pricePerUnit: totalPrice / quantity
+        pricePerUnit: totalPrice / quantity,
       }
     }
 
     // Default case
     return {
       totalPrice: baseProductPrice,
-      pricePerUnit: baseProductPrice / quantity
+      pricePerUnit: baseProductPrice / quantity,
     }
   }
 
@@ -72,7 +72,11 @@ export default function TurnaroundTimeSelector({
     if (turnaround.requiresNoCoating && currentCoating && currentCoating !== 'coating_4') {
       return true
     }
-    if (turnaround.restrictedCoatings.length > 0 && currentCoating && turnaround.restrictedCoatings.includes(currentCoating)) {
+    if (
+      turnaround.restrictedCoatings.length > 0 &&
+      currentCoating &&
+      turnaround.restrictedCoatings.includes(currentCoating)
+    ) {
       return true
     }
     return false
@@ -81,7 +85,7 @@ export default function TurnaroundTimeSelector({
   const handleValueChange = (value: string) => {
     if (disabled) return
 
-    const selectedTurnaround = turnaroundTimes.find(t => t.id === value)
+    const selectedTurnaround = turnaroundTimes.find((t) => t.id === value)
     if (selectedTurnaround && !isOptionRestricted(selectedTurnaround)) {
       onTurnaroundChange(value)
     }
@@ -91,9 +95,7 @@ export default function TurnaroundTimeSelector({
   if (!turnaroundTimes || turnaroundTimes.length === 0) {
     return (
       <div className="space-y-3">
-        <Label className="text-base font-medium">
-          Print Turnaround
-        </Label>
+        <Label className="text-base font-medium">Print Turnaround</Label>
         <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
           <p className="text-sm text-yellow-800">
             Turnaround options are currently unavailable. Please contact support if this persists.
@@ -105,18 +107,14 @@ export default function TurnaroundTimeSelector({
 
   return (
     <div className="space-y-3">
-      <Label className="text-base font-medium">
-        Print Turnaround
-      </Label>
-      <p className="text-sm text-gray-600">
-        Turnaround times do not include shipping
-      </p>
+      <Label className="text-base font-medium">Print Turnaround</Label>
+      <p className="text-sm text-gray-600">Turnaround times do not include shipping</p>
 
       <RadioGroup
+        className="space-y-2"
+        disabled={disabled}
         value={selectedTurnaroundId}
         onValueChange={handleValueChange}
-        disabled={disabled}
-        className="space-y-2"
       >
         {turnaroundTimes.map((turnaround) => {
           const { totalPrice, pricePerUnit } = calculateTurnaroundPrice(turnaround)
@@ -130,24 +128,24 @@ export default function TurnaroundTimeSelector({
                 isSelected && !isRestricted
                   ? 'bg-blue-50 border-blue-200'
                   : isRestricted
-                  ? 'bg-gray-50 border-gray-200 opacity-50'
-                  : 'bg-white border-gray-200 hover:bg-gray-50'
+                    ? 'bg-gray-50 border-gray-200 opacity-50'
+                    : 'bg-white border-gray-200 hover:bg-gray-50'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : isRestricted ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               onClick={() => !disabled && !isRestricted && handleValueChange(turnaround.id)}
             >
               <RadioGroupItem
-                value={turnaround.id}
-                id={turnaround.id}
-                disabled={disabled || isRestricted}
                 className="mt-0.5"
+                disabled={disabled || isRestricted}
+                id={turnaround.id}
+                value={turnaround.id}
               />
 
               <div className="flex-1 min-w-0">
                 <Label
-                  htmlFor={turnaround.id}
                   className={`block cursor-pointer ${
                     disabled || isRestricted ? 'cursor-not-allowed' : ''
                   }`}
+                  htmlFor={turnaround.id}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -155,29 +153,26 @@ export default function TurnaroundTimeSelector({
                         {turnaround.displayName}
                       </div>
                       {turnaround.description && (
-                        <div className="text-xs text-gray-600 mt-1">
-                          {turnaround.description}
-                        </div>
+                        <div className="text-xs text-gray-600 mt-1">{turnaround.description}</div>
                       )}
                       {isRestricted && (
                         <div className="text-xs text-red-600 mt-1">
                           {turnaround.requiresNoCoating
                             ? 'Requires no coating option'
-                            : 'Not available with current coating selection'
-                          }
+                            : 'Not available with current coating selection'}
                         </div>
                       )}
                     </div>
 
                     <div className="text-right ml-4">
-                      <div className={`text-sm font-semibold ${
-                        isSelected && !isRestricted ? 'text-blue-600' : 'text-gray-700'
-                      }`}>
+                      <div
+                        className={`text-sm font-semibold ${
+                          isSelected && !isRestricted ? 'text-blue-600' : 'text-gray-700'
+                        }`}
+                      >
                         ${totalPrice.toFixed(2)}
                       </div>
-                      <div className="text-xs text-gray-500">
-                        ${pricePerUnit.toFixed(2)} ea
-                      </div>
+                      <div className="text-xs text-gray-500">${pricePerUnit.toFixed(2)} ea</div>
                     </div>
                   </div>
                 </Label>

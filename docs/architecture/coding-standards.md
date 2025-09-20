@@ -1,11 +1,13 @@
 # GangRun Printing Coding Standards
 
 ## Overview
+
 This document defines the coding standards and best practices for the GangRun Printing platform. All developers and AI agents must follow these standards to ensure consistency, maintainability, and quality.
 
 ## TypeScript Standards
 
 ### General Rules
+
 ```typescript
 // ✅ ALWAYS use TypeScript strict mode
 // ✅ ALWAYS define explicit return types for functions
@@ -14,25 +16,27 @@ This document defines the coding standards and best practices for the GangRun Pr
 ```
 
 ### Type Definitions
+
 ```typescript
 // ✅ Good - Explicit types with proper naming
 interface ProductConfiguration {
-  size: string;
-  quantity: number;
-  options?: ProductOption[];
+  size: string
+  quantity: number
+  options?: ProductOption[]
 }
 
 // ❌ Bad - Using 'any' and poor naming
 interface Config {
-  data: any;
-  opts?: any;
+  data: any
+  opts?: any
 }
 ```
 
 ### Shared Types Location
+
 ```typescript
 // ✅ Good - Types defined in src/types and imported
-import { Product, Order, User } from '@/types';
+import { Product, Order, User } from '@/types'
 
 // ❌ Bad - Types defined inline in components
 // Never define shared types in component files
@@ -41,6 +45,7 @@ import { Product, Order, User } from '@/types';
 ## React/Next.js Standards
 
 ### Component Structure
+
 ```typescript
 // ✅ Good - Well-structured component
 import { FC } from 'react';
@@ -80,6 +85,7 @@ export const Component: FC<ComponentProps> = ({
 ```
 
 ### Server Components vs Client Components
+
 ```typescript
 // ✅ Good - Server Component (default)
 // app/products/page.tsx
@@ -99,6 +105,7 @@ export function SearchBar() {
 ```
 
 ### Data Fetching
+
 ```typescript
 // ✅ Good - Use server components for data fetching
 async function ProductPage({ params }: { params: { slug: string } }) {
@@ -121,62 +128,58 @@ function ProductPage() {
 ## API Development Standards
 
 ### API Route Structure
+
 ```typescript
 // ✅ Good - Properly structured API route
 // app/api/products/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
 
 // Define schema for validation
 const createProductSchema = z.object({
   name: z.string().min(1).max(100),
   price: z.number().positive(),
   category: z.string(),
-});
+})
 
 export async function POST(request: NextRequest) {
   try {
     // 1. Authentication check
-    const session = await getServerSession();
+    const session = await getServerSession()
     if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // 2. Parse and validate input
-    const body = await request.json();
-    const data = createProductSchema.parse(body);
+    const body = await request.json()
+    const data = createProductSchema.parse(body)
 
     // 3. Business logic
     const product = await prisma.product.create({
       data,
-    });
+    })
 
     // 4. Return response
-    return NextResponse.json(product, { status: 201 });
+    return NextResponse.json(product, { status: 201 })
   } catch (error) {
     // 5. Error handling
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
         { status: 400 }
-      );
+      )
     }
 
-    console.error('API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('API Error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 ```
 
 ### API Response Format
+
 ```typescript
 // ✅ Good - Consistent response format
 // Success response
@@ -201,9 +204,10 @@ export async function POST(request: NextRequest) {
 ## Database Standards
 
 ### Prisma Usage
+
 ```typescript
 // ✅ Good - Use Prisma with proper error handling
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma'
 
 export async function getProductBySlug(slug: string) {
   try {
@@ -213,52 +217,54 @@ export async function getProductBySlug(slug: string) {
         category: true,
         images: true,
       },
-    });
+    })
   } catch (error) {
-    console.error('Database error:', error);
-    throw new Error('Failed to fetch product');
+    console.error('Database error:', error)
+    throw new Error('Failed to fetch product')
   }
 }
 
 // ❌ Bad - Direct SQL or missing error handling
-const product = await prisma.$queryRaw`SELECT * FROM products`;
+const product = await prisma.$queryRaw`SELECT * FROM products`
 ```
 
 ### Transaction Handling
+
 ```typescript
 // ✅ Good - Use transactions for related operations
 const order = await prisma.$transaction(async (tx) => {
   const order = await tx.order.create({
     data: orderData,
-  });
+  })
 
   await tx.orderItem.createMany({
     data: orderItems,
-  });
+  })
 
   await tx.cart.delete({
     where: { userId },
-  });
+  })
 
-  return order;
-});
+  return order
+})
 ```
 
 ## State Management Standards
 
 ### Client State (Zustand)
+
 ```typescript
 // ✅ Good - Well-structured store
 // stores/cart.ts
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface CartState {
-  items: CartItem[];
-  total: number;
-  addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  clearCart: () => void;
+  items: CartItem[]
+  total: number
+  addItem: (item: CartItem) => void
+  removeItem: (id: string) => void
+  clearCart: () => void
 }
 
 export const useCartStore = create<CartState>()(
@@ -282,31 +288,33 @@ export const useCartStore = create<CartState>()(
       name: 'cart-storage',
     }
   )
-);
+)
 ```
 
 ## Error Handling Standards
 
 ### Try-Catch Patterns
+
 ```typescript
 // ✅ Good - Proper error handling
 try {
-  const result = await riskyOperation();
-  return { success: true, data: result };
+  const result = await riskyOperation()
+  return { success: true, data: result }
 } catch (error) {
   // Log error for debugging
-  console.error('Operation failed:', error);
+  console.error('Operation failed:', error)
 
   // Return user-friendly error
   if (error instanceof KnownError) {
-    return { success: false, error: error.message };
+    return { success: false, error: error.message }
   }
 
-  return { success: false, error: 'An unexpected error occurred' };
+  return { success: false, error: 'An unexpected error occurred' }
 }
 ```
 
 ### Error Boundaries
+
 ```typescript
 // ✅ Good - Use error boundaries for React components
 export function ProductSection() {
@@ -323,6 +331,7 @@ export function ProductSection() {
 ## CSS/Styling Standards
 
 ### Tailwind CSS Usage
+
 ```typescript
 // ✅ Good - Use Tailwind utilities with cn() helper
 import { cn } from '@/lib/utils';
@@ -339,6 +348,7 @@ import { cn } from '@/lib/utils';
 ```
 
 ### Component Styling
+
 ```typescript
 // ✅ Good - Consistent styling approach
 const buttonVariants = cva(
@@ -360,12 +370,13 @@ const buttonVariants = cva(
       size: 'default',
     },
   }
-);
+)
 ```
 
 ## Environment Variables
 
 ### Access Patterns
+
 ```typescript
 // ✅ Good - Access through config object
 // lib/config.ts
@@ -380,47 +391,49 @@ export const config = {
   api: {
     resendKey: process.env.RESEND_API_KEY!,
   },
-} as const;
+} as const
 
 // Use in code
-import { config } from '@/lib/config';
-const client = new ResendClient(config.api.resendKey);
+import { config } from '@/lib/config'
+const client = new ResendClient(config.api.resendKey)
 
 // ❌ Bad - Direct process.env access throughout code
-const key = process.env.RESEND_API_KEY;
+const key = process.env.RESEND_API_KEY
 ```
 
 ## Security Standards
 
 ### Input Validation
+
 ```typescript
 // ✅ Good - Always validate user input with Zod
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-});
+})
 
-const validated = schema.safeParse(input);
+const validated = schema.safeParse(input)
 if (!validated.success) {
-  return { error: validated.error };
+  return { error: validated.error }
 }
 ```
 
 ### Authentication Checks
+
 ```typescript
 // ✅ Good - Check authentication on protected routes
-import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
 
 export default async function ProtectedPage() {
-  const session = await getServerSession();
+  const session = await getServerSession()
 
   if (!session) {
-    redirect('/auth/signin');
+    redirect('/auth/signin')
   }
 
   if (session.user.role !== 'ADMIN') {
-    redirect('/unauthorized');
+    redirect('/unauthorized')
   }
 
   // Proceed with protected content
@@ -428,23 +441,25 @@ export default async function ProtectedPage() {
 ```
 
 ### SQL Injection Prevention
+
 ```typescript
 // ✅ Good - Use Prisma's query builder
 const products = await prisma.product.findMany({
   where: {
     category: userInput, // Prisma handles escaping
   },
-});
+})
 
 // ❌ Bad - Never use raw SQL with user input
 const products = await prisma.$queryRawUnsafe(
   `SELECT * FROM products WHERE category = '${userInput}'`
-);
+)
 ```
 
 ## Performance Standards
 
 ### Image Optimization
+
 ```typescript
 // ✅ Good - Use Next.js Image component
 import Image from 'next/image';
@@ -463,6 +478,7 @@ import Image from 'next/image';
 ```
 
 ### Code Splitting
+
 ```typescript
 // ✅ Good - Dynamic imports for heavy components
 const HeavyComponent = dynamic(
@@ -475,20 +491,22 @@ const HeavyComponent = dynamic(
 ```
 
 ### Memoization
+
 ```typescript
 // ✅ Good - Memoize expensive computations
 const expensiveValue = useMemo(() => {
-  return calculateExpensiveValue(data);
-}, [data]);
+  return calculateExpensiveValue(data)
+}, [data])
 
 const handleClick = useCallback(() => {
-  doSomething(id);
-}, [id]);
+  doSomething(id)
+}, [id])
 ```
 
 ## Git Commit Standards
 
 ### Commit Message Format
+
 ```
 type(scope): description
 
@@ -498,6 +516,7 @@ type(scope): description
 ```
 
 ### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -507,6 +526,7 @@ type(scope): description
 - `chore`: Build process or auxiliary tool changes
 
 ### Examples
+
 ```bash
 # ✅ Good
 feat(cart): add quantity selector to cart items
@@ -522,27 +542,29 @@ changes
 ## File Organization Standards
 
 ### Import Order
+
 ```typescript
 // 1. React/Next.js imports
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 // 2. External library imports
-import { z } from 'zod';
-import { format } from 'date-fns';
+import { z } from 'zod'
+import { format } from 'date-fns'
 
 // 3. Internal absolute imports
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/hooks/use-auth'
 
 // 4. Relative imports
-import { localHelper } from './utils';
+import { localHelper } from './utils'
 
 // 5. Type imports
-import type { Product, Order } from '@/types';
+import type { Product, Order } from '@/types'
 ```
 
 ### File Naming
+
 - Components: `PascalCase.tsx` (e.g., `ProductCard.tsx`)
 - Utilities: `kebab-case.ts` (e.g., `format-price.ts`)
 - Hooks: `use-kebab-case.ts` (e.g., `use-auth.ts`)
@@ -551,6 +573,7 @@ import type { Product, Order } from '@/types';
 ## Testing Standards
 
 ### Test Structure
+
 ```typescript
 // ✅ Good - Well-structured test
 describe('ProductCard', () => {
@@ -575,6 +598,7 @@ describe('ProductCard', () => {
 ## Documentation Standards
 
 ### Component Documentation
+
 ```typescript
 /**
  * ProductCard displays a product with its image, name, and price.
@@ -595,6 +619,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
 ```
 
 ### API Documentation
+
 ```typescript
 /**
  * GET /api/products

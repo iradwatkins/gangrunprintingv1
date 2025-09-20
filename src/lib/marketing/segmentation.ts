@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { type CustomerSegment, type User, type Order } from '@prisma/client'
+import { type CustomerSegment, type User } from '@prisma/client'
 
 export interface SegmentCriteria {
   name: string

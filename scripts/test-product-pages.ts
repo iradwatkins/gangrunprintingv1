@@ -7,18 +7,18 @@ async function testProductPages() {
     {
       name: 'Premium Business Cards',
       slug: 'premium-business-cards',
-      url: 'http://localhost:3002/products/premium-business-cards'
+      url: 'http://localhost:3002/products/premium-business-cards',
     },
     {
       name: 'Marketing Flyers',
       slug: 'marketing-flyers',
-      url: 'http://localhost:3002/products/marketing-flyers'
+      url: 'http://localhost:3002/products/marketing-flyers',
     },
     {
       name: 'Professional Large Format Posters',
       slug: 'professional-large-format-posters',
-      url: 'http://localhost:3002/products/professional-large-format-posters'
-    }
+      url: 'http://localhost:3002/products/professional-large-format-posters',
+    },
   ]
 
   console.log('🧪 Testing Customer Product Pages...\n')
@@ -56,7 +56,6 @@ async function testProductPages() {
         } catch (error) {
           console.log(`   Config API: Error`)
         }
-
       } else {
         console.log(`❌ ${product.name}`)
         console.log(`   URL: ${product.url}`)
@@ -64,7 +63,6 @@ async function testProductPages() {
       }
 
       console.log('')
-
     } catch (error) {
       console.log(`❌ ${product.name} - Error: ${error}`)
       console.log('')

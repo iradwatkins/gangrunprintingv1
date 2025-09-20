@@ -34,7 +34,7 @@ const DEFAULT_ACCEPTED_TYPES = [
   'application/postscript',
   'application/x-photoshop',
   'application/vnd.adobe.photoshop',
-  'application/vnd.adobe.illustrator'
+  'application/vnd.adobe.illustrator',
 ]
 
 const formatFileSize = (bytes: number): string => {
@@ -56,7 +56,7 @@ export default function FileUploadZone({
   maxFileSize = 10, // MB
   maxTotalSize = 50, // MB
   acceptedTypes = DEFAULT_ACCEPTED_TYPES,
-  disabled = false
+  disabled = false,
 }: FileUploadZoneProps) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [dragActive, setDragActive] = useState(false)
@@ -72,7 +72,7 @@ export default function FileUploadZone({
     sessionId.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 
-  const validateFiles = (files: FileList): { valid: File[], errors: string[] } => {
+  const validateFiles = (files: FileList): { valid: File[]; errors: string[] } => {
     const validFiles: File[] = []
     const fileErrors: string[] = []
 
@@ -133,9 +133,9 @@ export default function FileUploadZone({
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentComplete = (event.loaded / event.total) * 100
-          setUploadProgress(prev => ({
+          setUploadProgress((prev) => ({
             ...prev,
-            global: percentComplete
+            global: percentComplete,
           }))
         }
       })
@@ -176,7 +176,6 @@ export default function FileUploadZone({
       const updatedFiles = [...uploadedFiles, ...newFiles]
       setUploadedFiles(updatedFiles)
       onFilesUploaded?.(updatedFiles)
-
     } catch (error) {
       console.error('Upload error:', error)
       setErrors([error instanceof Error ? error.message : 'Upload failed'])
@@ -186,33 +185,39 @@ export default function FileUploadZone({
     }
   }
 
-  const handleFiles = useCallback(async (files: FileList) => {
-    if (disabled || uploading) return
+  const handleFiles = useCallback(
+    async (files: FileList) => {
+      if (disabled || uploading) return
 
-    const { valid, errors: validationErrors } = validateFiles(files)
+      const { valid, errors: validationErrors } = validateFiles(files)
 
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors)
-      return
-    }
+      if (validationErrors.length > 0) {
+        setErrors(validationErrors)
+        return
+      }
 
-    if (valid.length > 0) {
-      await uploadFiles(valid)
-    }
-  }, [disabled, uploading, uploadedFiles])
+      if (valid.length > 0) {
+        await uploadFiles(valid)
+      }
+    },
+    [disabled, uploading, uploadedFiles]
+  )
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
   }, [])
 
-  const handleDragIn = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!disabled && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      setDragActive(true)
-    }
-  }, [disabled])
+  const handleDragIn = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!disabled && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+        setDragActive(true)
+      }
+    },
+    [disabled]
+  )
 
   const handleDragOut = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -220,28 +225,34 @@ export default function FileUploadZone({
     setDragActive(false)
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setDragActive(false)
 
-    if (disabled || uploading) return
+      if (disabled || uploading) return
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files)
-    }
-  }, [disabled, uploading, handleFiles])
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files)
+      }
+    },
+    [disabled, uploading, handleFiles]
+  )
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files)
-    }
-    // Reset input value to allow re-uploading same file
-    e.target.value = ''
-  }, [handleFiles])
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFiles(e.target.files)
+      }
+      // Reset input value to allow re-uploading same file
+      e.target.value = ''
+    },
+    [handleFiles]
+  )
 
   const removeFile = (fileId: string) => {
-    const updatedFiles = uploadedFiles.filter(file => file.fileId !== fileId)
+    const updatedFiles = uploadedFiles.filter((file) => file.fileId !== fileId)
     setUploadedFiles(updatedFiles)
     onFilesUploaded?.(updatedFiles)
   }
@@ -258,20 +269,20 @@ export default function FileUploadZone({
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}
           ${uploading ? 'pointer-events-none' : ''}
         `}
+        onClick={() => !disabled && !uploading && fileInputRef.current?.click()}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => !disabled && !uploading && fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}
-          type="file"
           multiple
           accept={acceptedTypes.join(',')}
-          onChange={handleFileInput}
           className="hidden"
           disabled={disabled || uploading}
+          type="file"
+          onChange={handleFileInput}
         />
 
         {uploading ? (
@@ -296,9 +307,7 @@ export default function FileUploadZone({
               <p className="text-lg font-medium">
                 {dragActive ? 'Drop your files here' : 'Upload your design files'}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
-                Drag and drop or click to select files
-              </p>
+              <p className="text-sm text-gray-500 mt-1">Drag and drop or click to select files</p>
               <p className="text-xs text-gray-400 mt-2">
                 PDF, JPG, PNG, SVG, AI, PSD • Max {maxFileSize}MB per file • {maxFiles} files max
               </p>
@@ -320,10 +329,10 @@ export default function FileUploadZone({
                 ))}
               </ul>
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearErrors}
                 className="mt-2 text-red-600 hover:text-red-800"
+                size="sm"
+                variant="ghost"
+                onClick={clearErrors}
               >
                 Dismiss
               </Button>
@@ -341,14 +350,17 @@ export default function FileUploadZone({
               const FileIcon = getFileIcon(file.mimeType, file.isImage)
 
               return (
-                <div key={file.fileId} className="flex items-center space-x-3 p-3 border rounded-lg bg-gray-50">
+                <div
+                  key={file.fileId}
+                  className="flex items-center space-x-3 p-3 border rounded-lg bg-gray-50"
+                >
                   {/* Thumbnail or Icon */}
                   <div className="flex-shrink-0">
                     {file.thumbnailUrl ? (
                       <img
-                        src={file.thumbnailUrl}
                         alt={file.originalName}
                         className="w-12 h-12 rounded object-cover border"
+                        src={file.thumbnailUrl}
                         onError={(e) => {
                           // Fallback to icon if thumbnail fails to load
                           const target = e.target as HTMLImageElement
@@ -357,7 +369,9 @@ export default function FileUploadZone({
                         }}
                       />
                     ) : null}
-                    <FileIcon className={`w-12 h-12 text-gray-400 ${file.thumbnailUrl ? 'hidden' : ''}`} />
+                    <FileIcon
+                      className={`w-12 h-12 text-gray-400 ${file.thumbnailUrl ? 'hidden' : ''}`}
+                    />
                   </div>
 
                   {/* File Info */}
@@ -374,10 +388,10 @@ export default function FileUploadZone({
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="w-5 h-5 text-green-500" />
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file.fileId)}
                       className="text-red-600 hover:text-red-800"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeFile(file.fileId)}
                     >
                       <X className="w-4 h-4" />
                     </Button>

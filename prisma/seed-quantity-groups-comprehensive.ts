@@ -14,7 +14,7 @@ async function main() {
       customMin: 100,
       customMax: 50000,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Postcard Quantities',
@@ -24,7 +24,7 @@ async function main() {
       customMin: 25,
       customMax: 25000,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Flyer Quantities',
@@ -34,7 +34,7 @@ async function main() {
       customMin: 25,
       customMax: 50000,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Brochure Quantities',
@@ -44,7 +44,7 @@ async function main() {
       customMin: 25,
       customMax: 10000,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Poster Quantities',
@@ -54,7 +54,7 @@ async function main() {
       customMin: 1,
       customMax: 1000,
       sortOrder: 5,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Banner Quantities',
@@ -64,7 +64,7 @@ async function main() {
       customMin: 1,
       customMax: 100,
       sortOrder: 6,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Sticker Sheet Quantities',
@@ -74,7 +74,7 @@ async function main() {
       customMin: 25,
       customMax: 10000,
       sortOrder: 7,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Individual Sticker Quantities',
@@ -84,7 +84,7 @@ async function main() {
       customMin: 50,
       customMax: 100000,
       sortOrder: 8,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Label Quantities',
@@ -94,7 +94,7 @@ async function main() {
       customMin: 100,
       customMax: 100000,
       sortOrder: 9,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Envelope Quantities',
@@ -104,7 +104,7 @@ async function main() {
       customMin: 50,
       customMax: 10000,
       sortOrder: 10,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Letterhead Quantities',
@@ -114,7 +114,7 @@ async function main() {
       customMin: 100,
       customMax: 25000,
       sortOrder: 11,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Greeting Card Quantities',
@@ -124,7 +124,7 @@ async function main() {
       customMin: 25,
       customMax: 5000,
       sortOrder: 12,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Bookmark Quantities',
@@ -134,7 +134,7 @@ async function main() {
       customMin: 50,
       customMax: 10000,
       sortOrder: 13,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Rack Card Quantities',
@@ -144,7 +144,7 @@ async function main() {
       customMin: 100,
       customMax: 25000,
       sortOrder: 14,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Door Hanger Quantities',
@@ -154,7 +154,7 @@ async function main() {
       customMin: 100,
       customMax: 25000,
       sortOrder: 15,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Presentation Folder Quantities',
@@ -164,7 +164,7 @@ async function main() {
       customMin: 25,
       customMax: 5000,
       sortOrder: 16,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Gang Run Quantities',
@@ -174,7 +174,7 @@ async function main() {
       customMin: null,
       customMax: null,
       sortOrder: 17,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Sample Pack Quantities',
@@ -184,8 +184,8 @@ async function main() {
       customMin: null,
       customMax: null,
       sortOrder: 18,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   let createdCount = 0
@@ -194,7 +194,7 @@ async function main() {
       await prisma.quantityGroup.upsert({
         where: { name: quantityGroup.name },
         update: quantityGroup,
-        create: quantityGroup
+        create: quantityGroup,
       })
       createdCount++
       console.log(`✓ Created/Updated quantity group: ${quantityGroup.name}`)

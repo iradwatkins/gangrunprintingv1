@@ -12,9 +12,9 @@ async function main() {
   const quantityGroups = await prisma.quantityGroup.findMany()
   const addOns = await prisma.addOn.findMany()
 
-  const categoryMap = Object.fromEntries(categories.map(c => [c.name, c.id]))
-  const sizeGroupMap = Object.fromEntries(sizeGroups.map(s => [s.name, s.id]))
-  const quantityGroupMap = Object.fromEntries(quantityGroups.map(q => [q.name, q.id]))
+  const categoryMap = Object.fromEntries(categories.map((c) => [c.name, c.id]))
+  const sizeGroupMap = Object.fromEntries(sizeGroups.map((s) => [s.name, s.id]))
+  const quantityGroupMap = Object.fromEntries(quantityGroups.map((q) => [q.name, q.id]))
 
   const products = [
     // Business Cards
@@ -33,18 +33,19 @@ async function main() {
       maxGangQuantity: 5000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 25.00,
+      rushFee: 25.0,
       isFeatured: true,
       sizeGroupId: sizeGroupMap['Business Card Sizes'],
       quantityGroupId: quantityGroupMap['Business Card Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', '16pt Premium Cover'],
-      availableAddOns: ['Rounded Corners', 'Spot UV', 'Foil Stamping']
+      availableAddOns: ['Rounded Corners', 'Spot UV', 'Foil Stamping'],
     },
     {
       name: 'Premium Suede Business Cards',
       slug: 'premium-suede-business-cards',
       sku: 'BC-SUEDE-001',
-      description: 'Luxury business cards with velvet-like suede finish for an unforgettable first impression',
+      description:
+        'Luxury business cards with velvet-like suede finish for an unforgettable first impression',
       shortDescription: 'Ultra-premium suede finish cards',
       categoryId: categoryMap['Business Card'],
       basePrice: 89.99,
@@ -53,12 +54,12 @@ async function main() {
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 50.00,
+      rushFee: 50.0,
       isFeatured: true,
       sizeGroupId: sizeGroupMap['Business Card Sizes'],
       quantityGroupId: quantityGroupMap['Business Card Quantities'],
       defaultPaperStocks: ['32pt Suede'],
-      availableAddOns: ['Foil Stamping', 'Spot UV', 'Colored Edges']
+      availableAddOns: ['Foil Stamping', 'Spot UV', 'Colored Edges'],
     },
 
     // Flyers
@@ -77,12 +78,12 @@ async function main() {
       maxGangQuantity: 10000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 35.00,
+      rushFee: 35.0,
       isFeatured: true,
       sizeGroupId: sizeGroupMap['Flyer Sizes'],
       quantityGroupId: quantityGroupMap['Flyer Quantities'],
       defaultPaperStocks: ['100lb Gloss Text', '100lb Matte Text', '80lb Gloss Cover'],
-      availableAddOns: ['Folding', 'Perforation', 'Die Cutting']
+      availableAddOns: ['Folding', 'Perforation', 'Die Cutting'],
     },
 
     // Postcards
@@ -101,12 +102,12 @@ async function main() {
       maxGangQuantity: 10000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 30.00,
+      rushFee: 30.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Postcard Sizes'],
       quantityGroupId: quantityGroupMap['Postcard Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', '16pt Premium Cover'],
-      availableAddOns: ['Variable Data Printing', 'Mailing Services', 'Perforation']
+      availableAddOns: ['Variable Data Printing', 'Mailing Services', 'Perforation'],
     },
 
     // Brochures
@@ -125,12 +126,12 @@ async function main() {
       maxGangQuantity: 5000,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 40.00,
+      rushFee: 40.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Brochure Sizes'],
       quantityGroupId: quantityGroupMap['Brochure Quantities'],
       defaultPaperStocks: ['100lb Gloss Text', '100lb Matte Text', '80lb Gloss Cover'],
-      availableAddOns: ['Folding', 'Scoring', 'Aqueous Coating']
+      availableAddOns: ['Folding', 'Scoring', 'Aqueous Coating'],
     },
 
     // Posters
@@ -147,12 +148,12 @@ async function main() {
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 20.00,
+      rushFee: 20.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Poster Sizes'],
       quantityGroupId: quantityGroupMap['Poster Quantities'],
       defaultPaperStocks: ['12pt C2S Poster', '24pt Styrene'],
-      availableAddOns: ['Mounting', 'Lamination', 'Grommets']
+      availableAddOns: ['Mounting', 'Lamination', 'Grommets'],
     },
 
     // Banners
@@ -169,12 +170,12 @@ async function main() {
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 45.00,
+      rushFee: 45.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Banner Sizes'],
       quantityGroupId: quantityGroupMap['Banner Quantities'],
       defaultPaperStocks: ['White Vinyl Adhesive'],
-      availableAddOns: ['Grommets', 'Pole Pockets', 'Wind Slits']
+      availableAddOns: ['Grommets', 'Pole Pockets', 'Wind Slits'],
     },
 
     // Stickers
@@ -186,17 +187,17 @@ async function main() {
       shortDescription: 'Custom shape vinyl stickers',
       categoryId: categoryMap['Sticker'],
       basePrice: 34.99,
-      setupFee: 25.00,
+      setupFee: 25.0,
       productionTime: 5,
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 35.00,
+      rushFee: 35.0,
       isFeatured: true,
       sizeGroupId: sizeGroupMap['Sticker Sizes'],
       quantityGroupId: quantityGroupMap['Individual Sticker Quantities'],
       defaultPaperStocks: ['White Vinyl Adhesive', 'Clear Vinyl Adhesive'],
-      availableAddOns: ['Lamination', 'Special Shape Die Cut']
+      availableAddOns: ['Lamination', 'Special Shape Die Cut'],
     },
     {
       name: 'Sheet Labels',
@@ -213,12 +214,12 @@ async function main() {
       maxGangQuantity: 10000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 25.00,
+      rushFee: 25.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Label Sizes'],
       quantityGroupId: quantityGroupMap['Label Quantities'],
       defaultPaperStocks: ['Paper Matte Labels', 'White Vinyl Adhesive'],
-      availableAddOns: ['Lamination', 'Perforation']
+      availableAddOns: ['Lamination', 'Perforation'],
     },
 
     // Letterheads
@@ -237,12 +238,12 @@ async function main() {
       maxGangQuantity: 5000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 30.00,
+      rushFee: 30.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Letterhead Sizes'],
       quantityGroupId: quantityGroupMap['Letterhead Quantities'],
       defaultPaperStocks: ['100lb Gloss Text', '100lb Matte Text'],
-      availableAddOns: ['Embossing', 'Foil Stamping']
+      availableAddOns: ['Embossing', 'Foil Stamping'],
     },
 
     // Envelopes
@@ -264,7 +265,7 @@ async function main() {
       sizeGroupId: sizeGroupMap['Envelope Sizes'],
       quantityGroupId: quantityGroupMap['Envelope Quantities'],
       defaultPaperStocks: ['100lb Gloss Text', '100lb Matte Text'],
-      availableAddOns: ['Window Cut-Out', 'Security Tint']
+      availableAddOns: ['Window Cut-Out', 'Security Tint'],
     },
 
     // Greeting Cards
@@ -283,12 +284,12 @@ async function main() {
       maxGangQuantity: 2500,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 35.00,
+      rushFee: 35.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Greeting Card Sizes'],
       quantityGroupId: quantityGroupMap['Greeting Card Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', 'Kraft Brown'],
-      availableAddOns: ['Foil Stamping', 'Embossing', 'Envelope Printing']
+      availableAddOns: ['Foil Stamping', 'Embossing', 'Envelope Printing'],
     },
 
     // Presentation Folders
@@ -300,17 +301,17 @@ async function main() {
       shortDescription: 'Corporate presentation folders',
       categoryId: categoryMap['Pocket Folder'],
       basePrice: 99.99,
-      setupFee: 50.00,
+      setupFee: 50.0,
       productionTime: 5,
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 75.00,
+      rushFee: 75.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Presentation Folder Sizes'],
       quantityGroupId: quantityGroupMap['Presentation Folder Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', '16pt Premium Cover'],
-      availableAddOns: ['Business Card Slits', 'Spot UV', 'Foil Stamping']
+      availableAddOns: ['Business Card Slits', 'Spot UV', 'Foil Stamping'],
     },
 
     // Bookmarks
@@ -329,12 +330,12 @@ async function main() {
       maxGangQuantity: 5000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 20.00,
+      rushFee: 20.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Bookmark Sizes'],
       quantityGroupId: quantityGroupMap['Bookmark Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', '16pt Premium Cover'],
-      availableAddOns: ['Lamination', 'Rounded Corners', 'Hole Punch with Ribbon']
+      availableAddOns: ['Lamination', 'Rounded Corners', 'Hole Punch with Ribbon'],
     },
 
     // Door Hangers
@@ -353,25 +354,20 @@ async function main() {
       maxGangQuantity: 10000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 35.00,
+      rushFee: 35.0,
       isFeatured: false,
       sizeGroupId: sizeGroupMap['Door Hanger Sizes'],
       quantityGroupId: quantityGroupMap['Door Hanger Quantities'],
       defaultPaperStocks: ['14pt Gloss Cover', '14pt Matte Cover', '16pt Premium Cover'],
-      availableAddOns: ['Die Cutting', 'Perforation', 'Variable Data']
-    }
+      availableAddOns: ['Die Cutting', 'Perforation', 'Variable Data'],
+    },
   ]
 
   let createdCount = 0
   for (const productData of products) {
     try {
-      const { 
-        defaultPaperStocks, 
-        availableAddOns, 
-        sizeGroupId, 
-        quantityGroupId,
-        ...productInfo 
-      } = productData
+      const { defaultPaperStocks, availableAddOns, sizeGroupId, quantityGroupId, ...productInfo } =
+        productData
 
       // Create the product
       const product = await prisma.product.upsert({
@@ -380,8 +376,8 @@ async function main() {
         create: {
           ...productInfo,
           isActive: true,
-          metadata: {}
-        }
+          metadata: {},
+        },
       })
 
       // Link size group if provided
@@ -390,14 +386,14 @@ async function main() {
           where: {
             productId_sizeGroupId: {
               productId: product.id,
-              sizeGroupId: sizeGroupId
-            }
+              sizeGroupId: sizeGroupId,
+            },
           },
           update: {},
           create: {
             productId: product.id,
-            sizeGroupId: sizeGroupId
-          }
+            sizeGroupId: sizeGroupId,
+          },
         })
       }
 
@@ -407,39 +403,39 @@ async function main() {
           where: {
             productId_quantityGroupId: {
               productId: product.id,
-              quantityGroupId: quantityGroupId
-            }
+              quantityGroupId: quantityGroupId,
+            },
           },
           update: {},
           create: {
             productId: product.id,
-            quantityGroupId: quantityGroupId
-          }
+            quantityGroupId: quantityGroupId,
+          },
         })
       }
 
       // Link paper stocks
       if (defaultPaperStocks && defaultPaperStocks.length > 0) {
         for (let i = 0; i < defaultPaperStocks.length; i++) {
-          const paperStock = paperStocks.find(ps => ps.name === defaultPaperStocks[i])
+          const paperStock = paperStocks.find((ps) => ps.name === defaultPaperStocks[i])
           if (paperStock) {
             await prisma.productPaperStock.upsert({
               where: {
                 productId_paperStockId: {
                   productId: product.id,
-                  paperStockId: paperStock.id
-                }
+                  paperStockId: paperStock.id,
+                },
               },
               update: {
                 isDefault: i === 0,
-                additionalCost: 0
+                additionalCost: 0,
               },
               create: {
                 productId: product.id,
                 paperStockId: paperStock.id,
                 isDefault: i === 0,
-                additionalCost: 0
-              }
+                additionalCost: 0,
+              },
             })
           }
         }
@@ -448,21 +444,21 @@ async function main() {
       // Link add-ons
       if (availableAddOns && availableAddOns.length > 0) {
         for (const addOnName of availableAddOns) {
-          const addOn = addOns.find(a => a.name === addOnName)
+          const addOn = addOns.find((a) => a.name === addOnName)
           if (addOn) {
             await prisma.productAddOn.upsert({
               where: {
                 productId_addOnId: {
                   productId: product.id,
-                  addOnId: addOn.id
-                }
+                  addOnId: addOn.id,
+                },
               },
               update: {},
               create: {
                 productId: product.id,
                 addOnId: addOn.id,
-                isMandatory: false
-              }
+                isMandatory: false,
+              },
             })
           }
         }
@@ -476,7 +472,7 @@ async function main() {
         { minQuantity: 500, maxQuantity: 999, unitPrice: productInfo.basePrice },
         { minQuantity: 1000, maxQuantity: 2499, unitPrice: productInfo.basePrice * 0.9 },
         { minQuantity: 2500, maxQuantity: 4999, unitPrice: productInfo.basePrice * 0.8 },
-        { minQuantity: 5000, maxQuantity: null, unitPrice: productInfo.basePrice * 0.7 }
+        { minQuantity: 5000, maxQuantity: null, unitPrice: productInfo.basePrice * 0.7 },
       ]
 
       for (const tier of pricingTiers) {
@@ -486,12 +482,12 @@ async function main() {
           where: {
             productId_minQuantity: {
               productId: product.id,
-              minQuantity: tier.minQuantity
-            }
+              minQuantity: tier.minQuantity,
+            },
           },
           update: {
             ...tier,
-            updatedAt: now
+            updatedAt: now,
           },
           create: {
             id: tierId,
@@ -499,8 +495,8 @@ async function main() {
             productId: product.id,
             setupFee: productInfo.setupFee || 0,
             createdAt: now,
-            updatedAt: now
-          }
+            updatedAt: now,
+          },
         })
       }
 

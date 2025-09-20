@@ -21,9 +21,10 @@ async function testSquare() {
     const client = new SquareClient({
       squareVersion: '2024-08-21',
       accessToken: process.env.SQUARE_ACCESS_TOKEN!,
-      environment: process.env.SQUARE_ENVIRONMENT === 'production' 
-        ? SquareEnvironment.Production 
-        : SquareEnvironment.Sandbox,
+      environment:
+        process.env.SQUARE_ENVIRONMENT === 'production'
+          ? SquareEnvironment.Production
+          : SquareEnvironment.Sandbox,
     } as any)
 
     const { locations } = await client.locations.list()

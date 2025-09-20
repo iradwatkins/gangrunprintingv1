@@ -3,34 +3,41 @@
 ## 📋 Pre-Deployment Checklist
 
 ### Required Credentials
+
 You need to gather these credentials before proceeding:
 
 #### 1. **Square Payment Processing**
+
 - [ ] Square Access Token
-- [ ] Square Location ID  
+- [ ] Square Location ID
 - [ ] Square Application ID
 - [ ] Square Environment (sandbox for testing, production for live)
 
 **How to get Square credentials:**
+
 1. Go to https://developer.squareup.com/apps
 2. Create or select your application
 3. Navigate to "Credentials" tab
 4. Copy the required values
 
 #### 2. **SendGrid Email Service**
+
 - [ ] SendGrid API Key
 - [ ] From Email Address (e.g., orders@gangrunprinting.com)
 - [ ] From Name (e.g., "GangRun Printing")
 
 **How to get SendGrid credentials:**
+
 1. Go to https://app.sendgrid.com/settings/api_keys
 2. Create a new API key with "Mail Send" permissions
 3. Verify your sender email address
 
 #### 3. **Database**
+
 - [ ] PostgreSQL connection string (will be created in Dokploy)
 
 #### 4. **N8N Automation**
+
 - [ ] N8N Webhook URL (e.g., https://n8n.agistaffers.com/webhook/gangrun)
 - [ ] N8N API Key (if required)
 
@@ -80,7 +87,7 @@ Visit http://localhost:3003 to verify the application works.
 
 1. **Login to Dokploy**: https://72.60.28.175:3000
 
-2. **Create New Project**: 
+2. **Create New Project**:
    - Name: `gangrunprinting`
    - Description: "GangRun Printing E-commerce Platform"
 
@@ -98,6 +105,7 @@ Visit http://localhost:3003 to verify the application works.
    - Compose File: docker-compose.dokploy.yml
 
 5. **Configure Environment Variables** in Dokploy:
+
    ```env
    DATABASE_URL=postgresql://gangrun_user:password@gangrunprinting-postgres:5432/gangrun_db
    NEXTAUTH_URL=https://gangrunprinting.com
@@ -143,6 +151,7 @@ dokploy deploy gangrunprinting
 ### Step 5: Post-Deployment Setup
 
 1. **Run Database Migrations**:
+
 ```bash
 # SSH into the container
 docker exec -it gangrunprinting-app sh
@@ -155,6 +164,7 @@ npm run seed
 ```
 
 2. **Create MinIO Bucket**:
+
 ```bash
 # Access MinIO console at http://72.60.28.175:9003
 # Login with credentials from docker-compose
@@ -162,11 +172,13 @@ npm run seed
 ```
 
 3. **Configure N8N Workflows**:
+
 - Login to N8N: https://n8n.agistaffers.com
 - Create webhook node for order processing
 - Configure vendor integration workflows
 
 4. **Test Order Flow**:
+
 - Place a test order
 - Verify payment processing
 - Check email delivery
@@ -177,6 +189,7 @@ npm run seed
 ### Health Checks
 
 Test the application health:
+
 ```bash
 curl https://gangrunprinting.com/api/health
 ```

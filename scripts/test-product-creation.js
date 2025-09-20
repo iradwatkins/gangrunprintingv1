@@ -18,7 +18,7 @@ const testProductCreation = async () => {
     sizeGroupId: 'cmfk2y9bs000k10ij4vmmgkgf', // Business Card Sizes
     basePrice: 0,
     setupFee: 0,
-    productionTime: 3
+    productionTime: 3,
   }
 
   console.log('Product Data:', JSON.stringify(productData, null, 2))
@@ -32,9 +32,9 @@ const testProductCreation = async () => {
       headers: {
         'Content-Type': 'application/json',
         // Note: In production, you'd need proper authentication here
-        'Cookie': 'auth-session=your-session-cookie'
+        Cookie: 'auth-session=your-session-cookie',
       },
-      body: JSON.stringify(productData)
+      body: JSON.stringify(productData),
     })
 
     console.log('Response Status:', response.status)
@@ -77,8 +77,8 @@ const testProductCreation = async () => {
     const deleteResponse = await fetch(`http://localhost:3002/api/products/${result.id}`, {
       method: 'DELETE',
       headers: {
-        'Cookie': 'auth-session=your-session-cookie'
-      }
+        Cookie: 'auth-session=your-session-cookie',
+      },
     })
 
     if (deleteResponse.ok) {
@@ -86,7 +86,6 @@ const testProductCreation = async () => {
     } else {
       console.log('❌ Failed to delete product')
     }
-
   } catch (error) {
     console.error('\n❌ Error:', error.message)
     process.exit(1)

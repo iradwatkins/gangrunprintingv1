@@ -14,6 +14,7 @@ VAPID_SUBJECT=mailto:support@gangrunprinting.com
 ## Database Migration
 
 After deployment, the database will automatically apply the new schema for:
+
 - `PushSubscription` table
 - `PushNotification` table
 

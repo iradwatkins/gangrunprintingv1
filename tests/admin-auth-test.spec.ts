@@ -47,8 +47,8 @@ test.describe('Admin Authentication Flow Test', () => {
 
     const response = await request.post('https://gangrunprinting.com/api/auth/send-magic-link', {
       data: {
-        email: 'test@example.com'
-      }
+        email: 'test@example.com',
+      },
     })
 
     console.log(`✓ API Response Status: ${response.status()}`)

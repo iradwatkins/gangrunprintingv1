@@ -1,16 +1,9 @@
 {
   "agent": "product-manager",
   "extensions": {
-    "required": [
-      "yzhang.markdown-all-in-one",
-      "bierner.markdown-mermaid",
-      "humao.rest-client"
-    ],
+    "required": ["yzhang.markdown-all-in-one", "bierner.markdown-mermaid", "humao.rest-client"],
     "autoActivate": true,
-    "commands": [
-      "markdown.showPreview",
-      "markdown-mermaid.generateDiagram"
-    ],
+    "commands": ["markdown.showPreview", "markdown-mermaid.generateDiagram"],
     "mcpIntegration": {
       "exa": ["rest-client"],
       "firecrawl": ["markdown-all-in-one"],

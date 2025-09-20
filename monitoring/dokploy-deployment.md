@@ -51,6 +51,7 @@ scp monitoring/blackbox.yml root@72.60.28.175:/opt/gangrun/monitoring/
 In Dokploy, set the following environment variables for the monitoring stack:
 
 #### Required Variables:
+
 ```bash
 GRAFANA_ADMIN_PASSWORD=SecurePassword123!
 GRAFANA_SECRET_KEY=very-long-random-secret-key-for-grafana
@@ -59,6 +60,7 @@ RESEND_API_KEY=re_your_resend_api_key_here
 ```
 
 #### Optional Variables:
+
 ```bash
 PROMETHEUS_RETENTION=30d
 ALERTMANAGER_LOG_LEVEL=info
@@ -70,12 +72,14 @@ TZ=America/Chicago
 Set up the following domains in Dokploy's domain management:
 
 #### Monitoring Domains:
+
 - `monitoring.gangrunprinting.com` → Grafana (port 3000)
 - `prometheus.gangrunprinting.com` → Prometheus (port 9090)
 - `alerts.gangrunprinting.com` → AlertManager (port 9093)
 - `metrics.gangrunprinting.com` → Pushgateway (port 9091)
 
 #### SSL Configuration:
+
 - Enable Let's Encrypt for all monitoring domains
 - Force HTTPS redirect
 - Configure HSTS headers
@@ -117,6 +121,7 @@ In Grafana, set up notification channels:
 ### 9. Verify Monitoring Stack
 
 #### Health Checks:
+
 ```bash
 # Check service status
 curl -f https://monitoring.gangrunprinting.com/api/health
@@ -128,6 +133,7 @@ curl -s https://prometheus.gangrunprinting.com/api/v1/query?query=up
 ```
 
 #### Test Alerts:
+
 1. Create test alert in AlertManager
 2. Verify email delivery
 3. Check alert routing and grouping
@@ -137,6 +143,7 @@ curl -s https://prometheus.gangrunprinting.com/api/v1/query?query=up
 Update the main GangRun Printing application to expose metrics:
 
 #### Add to package.json:
+
 ```json
 {
   "dependencies": {
@@ -149,42 +156,47 @@ Update the main GangRun Printing application to expose metrics:
 ```
 
 #### Create Prometheus Metrics Endpoint:
+
 ```typescript
 // src/app/api/monitoring/prometheus/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { register } from 'prom-client';
+import { NextRequest, NextResponse } from 'next/server'
+import { register } from 'prom-client'
 
 export async function GET(req: NextRequest) {
-  const metrics = await register.metrics();
+  const metrics = await register.metrics()
   return new NextResponse(metrics, {
     headers: {
       'Content-Type': register.contentType,
     },
-  });
+  })
 }
 ```
 
 ## Monitoring Targets
 
 ### System Monitoring:
+
 - CPU, Memory, Disk usage
 - Network statistics
 - System load and processes
 - Docker container metrics
 
 ### Application Monitoring:
+
 - HTTP request metrics
 - Database query performance
 - API endpoint response times
 - Error rates and exceptions
 
 ### Business Monitoring:
+
 - Order processing metrics
 - Payment success/failure rates
 - User registration and activity
 - Revenue and conversion metrics
 
 ### External Monitoring:
+
 - Website uptime and performance
 - SSL certificate expiration
 - DNS resolution times
@@ -193,18 +205,21 @@ export async function GET(req: NextRequest) {
 ## Alert Configuration
 
 ### Critical Alerts (Immediate):
+
 - System down or unresponsive
 - Database connection failures
 - Payment processing errors
 - SSL certificate expired
 
 ### Warning Alerts (Within 30 minutes):
+
 - High resource usage
 - Slow response times
 - SSL certificate expiring soon
 - Business metric anomalies
 
 ### Info Alerts (During business hours):
+
 - Deployment notifications
 - Maintenance schedules
 - Performance optimizations
@@ -212,16 +227,19 @@ export async function GET(req: NextRequest) {
 ## Maintenance Tasks
 
 ### Daily:
+
 - Review critical alerts
 - Check system resource usage
 - Verify backup completion
 
 ### Weekly:
+
 - Review performance trends
 - Update monitoring dashboards
 - Clean up old alert data
 
 ### Monthly:
+
 - Review and update alert thresholds
 - Analyze business metric trends
 - Update monitoring documentation
@@ -251,6 +269,7 @@ export async function GET(req: NextRequest) {
    - Review dashboard JSON
 
 ### Support Contacts:
+
 - **System Issues**: admin@gangrunprinting.com
 - **Business Alerts**: business@gangrunprinting.com
 - **Emergency**: Configured on-call rotation

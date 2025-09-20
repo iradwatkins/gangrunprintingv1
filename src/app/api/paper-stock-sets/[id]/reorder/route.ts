@@ -1,34 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 // Schema for reordering items
 const reorderSchema = z.object({
-  items: z.array(z.object({
-    paperStockId: z.string(),
-    sortOrder: z.number().int().min(0)
-  }))
+  items: z.array(
+    z.object({
+      paperStockId: z.string(),
+      sortOrder: z.number().int().min(0),
+    })
+  ),
 })
 
 // PUT - Reorder paper stocks within a set
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const validatedData = reorderSchema.parse(body)
 
     // Check if set exists
     const group = await prisma.paperStockSet.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!group) {
-      return NextResponse.json(
-        { error: 'Paper stock set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Paper stock set not found' }, { status: 404 })
     }
 
     // Update sort orders in a transaction
@@ -38,12 +34,12 @@ export async function PUT(
           where: {
             paperStockSetId_paperStockId: {
               paperStockSetId: params.id,
-              paperStockId: item.paperStockId
-            }
+              paperStockId: item.paperStockId,
+            },
           },
           data: {
-            sortOrder: item.sortOrder
-          }
+            sortOrder: item.sortOrder,
+          },
         })
       )
     )
@@ -54,13 +50,13 @@ export async function PUT(
       include: {
         paperStockItems: {
           include: {
-            paperStock: true
+            paperStock: true,
           },
           orderBy: {
-            sortOrder: 'asc'
-          }
-        }
-      }
+            sortOrder: 'asc',
+          },
+        },
+      },
     })
 
     return NextResponse.json(updatedGroup)
@@ -73,9 +69,6 @@ export async function PUT(
     }
 
     console.error('Error reordering paper stock set items:', error)
-    return NextResponse.json(
-      { error: 'Failed to reorder paper stock set items' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to reorder paper stock set items' }, { status: 500 })
   }
 }

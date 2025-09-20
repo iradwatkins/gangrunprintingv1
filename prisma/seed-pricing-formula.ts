@@ -7,42 +7,175 @@ async function seedStandardSizes() {
 
   const sizes = [
     // Business Card Sizes
-    { name: '3.5x2', displayName: '3.5″ × 2″ (Standard Business Card)', width: 3.5, height: 2, preCalculatedValue: 7, sortOrder: 1 },
-    { name: '2x2', displayName: '2″ × 2″ (Square Mini)', width: 2, height: 2, preCalculatedValue: 4, sortOrder: 2 },
-    { name: '3.5x1', displayName: '3.5″ × 1″ (Slim)', width: 3.5, height: 1, preCalculatedValue: 3.5, sortOrder: 3 },
+    {
+      name: '3.5x2',
+      displayName: '3.5″ × 2″ (Standard Business Card)',
+      width: 3.5,
+      height: 2,
+      preCalculatedValue: 7,
+      sortOrder: 1,
+    },
+    {
+      name: '2x2',
+      displayName: '2″ × 2″ (Square Mini)',
+      width: 2,
+      height: 2,
+      preCalculatedValue: 4,
+      sortOrder: 2,
+    },
+    {
+      name: '3.5x1',
+      displayName: '3.5″ × 1″ (Slim)',
+      width: 3.5,
+      height: 1,
+      preCalculatedValue: 3.5,
+      sortOrder: 3,
+    },
 
     // Postcard Sizes
-    { name: '4x6', displayName: '4″ × 6″ (Standard Postcard)', width: 4, height: 6, preCalculatedValue: 24, sortOrder: 10 },
-    { name: '5x7', displayName: '5″ × 7″', width: 5, height: 7, preCalculatedValue: 35, sortOrder: 11 },
-    { name: '6x9', displayName: '6″ × 9″', width: 6, height: 9, preCalculatedValue: 54, sortOrder: 12 },
-    { name: '6x11', displayName: '6″ × 11″', width: 6, height: 11, preCalculatedValue: 66, sortOrder: 13 },
+    {
+      name: '4x6',
+      displayName: '4″ × 6″ (Standard Postcard)',
+      width: 4,
+      height: 6,
+      preCalculatedValue: 24,
+      sortOrder: 10,
+    },
+    {
+      name: '5x7',
+      displayName: '5″ × 7″',
+      width: 5,
+      height: 7,
+      preCalculatedValue: 35,
+      sortOrder: 11,
+    },
+    {
+      name: '6x9',
+      displayName: '6″ × 9″',
+      width: 6,
+      height: 9,
+      preCalculatedValue: 54,
+      sortOrder: 12,
+    },
+    {
+      name: '6x11',
+      displayName: '6″ × 11″',
+      width: 6,
+      height: 11,
+      preCalculatedValue: 66,
+      sortOrder: 13,
+    },
 
     // Flyer Sizes
-    { name: '5.5x8.5', displayName: '5.5″ × 8.5″ (Half Letter)', width: 5.5, height: 8.5, preCalculatedValue: 46.75, sortOrder: 20 },
-    { name: '8.5x11', displayName: '8.5″ × 11″ (Letter)', width: 8.5, height: 11, preCalculatedValue: 93.5, sortOrder: 21 },
-    { name: '11x17', displayName: '11″ × 17″ (Tabloid)', width: 11, height: 17, preCalculatedValue: 187, sortOrder: 22 },
+    {
+      name: '5.5x8.5',
+      displayName: '5.5″ × 8.5″ (Half Letter)',
+      width: 5.5,
+      height: 8.5,
+      preCalculatedValue: 46.75,
+      sortOrder: 20,
+    },
+    {
+      name: '8.5x11',
+      displayName: '8.5″ × 11″ (Letter)',
+      width: 8.5,
+      height: 11,
+      preCalculatedValue: 93.5,
+      sortOrder: 21,
+    },
+    {
+      name: '11x17',
+      displayName: '11″ × 17″ (Tabloid)',
+      width: 11,
+      height: 17,
+      preCalculatedValue: 187,
+      sortOrder: 22,
+    },
 
     // Brochure Sizes
-    { name: '8.5x14', displayName: '8.5″ × 14″ (Legal)', width: 8.5, height: 14, preCalculatedValue: 119, sortOrder: 30 },
-    { name: '11x25.5', displayName: '11″ × 25.5″ (Tri-fold)', width: 11, height: 25.5, preCalculatedValue: 280.5, sortOrder: 31 },
+    {
+      name: '8.5x14',
+      displayName: '8.5″ × 14″ (Legal)',
+      width: 8.5,
+      height: 14,
+      preCalculatedValue: 119,
+      sortOrder: 30,
+    },
+    {
+      name: '11x25.5',
+      displayName: '11″ × 25.5″ (Tri-fold)',
+      width: 11,
+      height: 25.5,
+      preCalculatedValue: 280.5,
+      sortOrder: 31,
+    },
 
     // Square Sizes
-    { name: '4x4', displayName: '4″ × 4″ (Square)', width: 4, height: 4, preCalculatedValue: 16, sortOrder: 40 },
-    { name: '5x5', displayName: '5″ × 5″ (Square)', width: 5, height: 5, preCalculatedValue: 25, sortOrder: 41 },
-    { name: '6x6', displayName: '6″ × 6″ (Square)', width: 6, height: 6, preCalculatedValue: 36, sortOrder: 42 },
-    { name: '8x8', displayName: '8″ × 8″ (Square)', width: 8, height: 8, preCalculatedValue: 64, sortOrder: 43 },
+    {
+      name: '4x4',
+      displayName: '4″ × 4″ (Square)',
+      width: 4,
+      height: 4,
+      preCalculatedValue: 16,
+      sortOrder: 40,
+    },
+    {
+      name: '5x5',
+      displayName: '5″ × 5″ (Square)',
+      width: 5,
+      height: 5,
+      preCalculatedValue: 25,
+      sortOrder: 41,
+    },
+    {
+      name: '6x6',
+      displayName: '6″ × 6″ (Square)',
+      width: 6,
+      height: 6,
+      preCalculatedValue: 36,
+      sortOrder: 42,
+    },
+    {
+      name: '8x8',
+      displayName: '8″ × 8″ (Square)',
+      width: 8,
+      height: 8,
+      preCalculatedValue: 64,
+      sortOrder: 43,
+    },
 
     // Large Format
-    { name: '12x18', displayName: '12″ × 18″', width: 12, height: 18, preCalculatedValue: 216, sortOrder: 50 },
-    { name: '18x24', displayName: '18″ × 24″', width: 18, height: 24, preCalculatedValue: 432, sortOrder: 51 },
-    { name: '24x36', displayName: '24″ × 36″', width: 24, height: 36, preCalculatedValue: 864, sortOrder: 52 },
+    {
+      name: '12x18',
+      displayName: '12″ × 18″',
+      width: 12,
+      height: 18,
+      preCalculatedValue: 216,
+      sortOrder: 50,
+    },
+    {
+      name: '18x24',
+      displayName: '18″ × 24″',
+      width: 18,
+      height: 24,
+      preCalculatedValue: 432,
+      sortOrder: 51,
+    },
+    {
+      name: '24x36',
+      displayName: '24″ × 36″',
+      width: 24,
+      height: 36,
+      preCalculatedValue: 864,
+      sortOrder: 52,
+    },
   ]
 
   for (const size of sizes) {
     await prisma.standardSize.upsert({
       where: { name: size.name },
       update: size,
-      create: size
+      create: size,
     })
   }
 
@@ -54,16 +187,16 @@ async function seedStandardQuantities() {
 
   const quantities = [
     // Small quantities with adjustments (< 5000)
-    { displayValue: 25, calculationValue: 50, sortOrder: 1 },      // 100% adjustment
-    { displayValue: 50, calculationValue: 75, sortOrder: 2 },      // 50% adjustment
-    { displayValue: 100, calculationValue: 125, sortOrder: 3 },    // 25% adjustment
-    { displayValue: 150, calculationValue: 175, sortOrder: 4 },    // ~17% adjustment
-    { displayValue: 200, calculationValue: 250, sortOrder: 5 },    // 25% adjustment
-    { displayValue: 250, calculationValue: 300, sortOrder: 6 },    // 20% adjustment
-    { displayValue: 300, calculationValue: 350, sortOrder: 7 },    // ~17% adjustment
-    { displayValue: 400, calculationValue: 450, sortOrder: 8 },    // 12.5% adjustment
-    { displayValue: 500, calculationValue: 550, sortOrder: 9 },    // 10% adjustment
-    { displayValue: 750, calculationValue: 800, sortOrder: 10 },   // ~7% adjustment
+    { displayValue: 25, calculationValue: 50, sortOrder: 1 }, // 100% adjustment
+    { displayValue: 50, calculationValue: 75, sortOrder: 2 }, // 50% adjustment
+    { displayValue: 100, calculationValue: 125, sortOrder: 3 }, // 25% adjustment
+    { displayValue: 150, calculationValue: 175, sortOrder: 4 }, // ~17% adjustment
+    { displayValue: 200, calculationValue: 250, sortOrder: 5 }, // 25% adjustment
+    { displayValue: 250, calculationValue: 300, sortOrder: 6 }, // 20% adjustment
+    { displayValue: 300, calculationValue: 350, sortOrder: 7 }, // ~17% adjustment
+    { displayValue: 400, calculationValue: 450, sortOrder: 8 }, // 12.5% adjustment
+    { displayValue: 500, calculationValue: 550, sortOrder: 9 }, // 10% adjustment
+    { displayValue: 750, calculationValue: 800, sortOrder: 10 }, // ~7% adjustment
     { displayValue: 1000, calculationValue: 1050, sortOrder: 11 }, // 5% adjustment
     { displayValue: 1500, calculationValue: 1550, sortOrder: 12 }, // ~3% adjustment
     { displayValue: 2000, calculationValue: 2050, sortOrder: 13 }, // 2.5% adjustment
@@ -89,7 +222,7 @@ async function seedStandardQuantities() {
     await prisma.standardQuantity.upsert({
       where: { displayValue: qty.displayValue },
       update: qty,
-      create: qty
+      create: qty,
     })
   }
 
@@ -109,8 +242,8 @@ async function seedPaperExceptions() {
         { weight: { contains: '70#', mode: 'insensitive' } }, // Common text weights
         { weight: { contains: '80#', mode: 'insensitive' } },
         { weight: { contains: '100# Text', mode: 'insensitive' } },
-      ]
-    }
+      ],
+    },
   })
 
   for (const paper of textPapers) {
@@ -119,14 +252,14 @@ async function seedPaperExceptions() {
       update: {
         exceptionType: 'TEXT_PAPER',
         doubleSidedMultiplier: 1.75,
-        description: `Text paper exception: ${paper.name} uses 1.75x multiplier for double-sided printing`
+        description: `Text paper exception: ${paper.name} uses 1.75x multiplier for double-sided printing`,
       },
       create: {
         paperStockId: paper.id,
         exceptionType: 'TEXT_PAPER',
         doubleSidedMultiplier: 1.75,
-        description: `Text paper exception: ${paper.name} uses 1.75x multiplier for double-sided printing`
-      }
+        description: `Text paper exception: ${paper.name} uses 1.75x multiplier for double-sided printing`,
+      },
     })
   }
 
@@ -143,11 +276,13 @@ async function seedPaperExceptions() {
         { weight: { contains: '14pt', mode: 'insensitive' } },
         { weight: { contains: '16pt', mode: 'insensitive' } },
         { weight: { contains: '100# Cover', mode: 'insensitive' } },
-      ]
-    }
+      ],
+    },
   })
 
-  console.log(`ℹ️ Found ${cardstockPapers.length} cardstock papers (no exception needed - default 1.0 multiplier)`)
+  console.log(
+    `ℹ️ Found ${cardstockPapers.length} cardstock papers (no exception needed - default 1.0 multiplier)`
+  )
 }
 
 async function seedProductPricingConfig() {
@@ -167,7 +302,7 @@ async function seedProductPricingConfig() {
       minCustomHeight: 1,
       maxCustomHeight: 48,
       minCustomQuantity: 1,
-      maxCustomQuantity: 1000000
+      maxCustomQuantity: 1000000,
     }
 
     // Special cases - disable custom for certain products
@@ -185,7 +320,7 @@ async function seedProductPricingConfig() {
     await prisma.productPricingConfig.upsert({
       where: { productId: product.id },
       update: config,
-      create: config
+      create: config,
     })
   }
 
@@ -221,25 +356,25 @@ async function linkProductsToSizesAndQuantities() {
 
     // Link sizes
     for (const sizeName of relevantSizes) {
-      const size = sizes.find(s => s.name === sizeName)
+      const size = sizes.find((s) => s.name === sizeName)
       if (size) {
         await prisma.productSize.upsert({
           where: {
             productId_standardSizeId: {
               productId: product.id,
-              standardSizeId: size.id
-            }
+              standardSizeId: size.id,
+            },
           },
           update: {
             isActive: true,
-            isDefault: sizeName === relevantSizes[0] // First size is default
+            isDefault: sizeName === relevantSizes[0], // First size is default
           },
           create: {
             productId: product.id,
             standardSizeId: size.id,
             isDefault: sizeName === relevantSizes[0],
-            isActive: true
-          }
+            isActive: true,
+          },
         })
       }
     }
@@ -262,25 +397,25 @@ async function linkProductsToSizesAndQuantities() {
 
     // Link quantities
     for (const qtyValue of relevantQuantities) {
-      const qty = quantities.find(q => q.displayValue === qtyValue)
+      const qty = quantities.find((q) => q.displayValue === qtyValue)
       if (qty) {
         await prisma.productQuantity.upsert({
           where: {
             productId_standardQuantityId: {
               productId: product.id,
-              standardQuantityId: qty.id
-            }
+              standardQuantityId: qty.id,
+            },
           },
           update: {
             isActive: true,
-            isDefault: qtyValue === relevantQuantities[0] // First quantity is default
+            isDefault: qtyValue === relevantQuantities[0], // First quantity is default
           },
           create: {
             productId: product.id,
             standardQuantityId: qty.id,
             isDefault: qtyValue === relevantQuantities[0],
-            isActive: true
-          }
+            isActive: true,
+          },
         })
       }
     }
@@ -308,8 +443,7 @@ async function main() {
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})

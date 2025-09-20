@@ -1,20 +1,23 @@
 'use client'
 
-import { Suspense, useState, useMemo, useEffect } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
-  Search,
-  Filter,
+  ArrowUpDown,
   ChevronDown,
   Grid3x3,
   List,
+  Package,
+  Search,
   SlidersHorizontal,
   X,
-  ArrowUpDown,
-  Package,
 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +26,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Sheet,
   SheetContent,
@@ -31,20 +36,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { Slider } from '@/components/ui/slider'
 import { Skeleton } from '@/components/ui/skeleton'
-import Link from 'next/link'
-import Image from 'next/image'
+import { Slider } from '@/components/ui/slider'
 
 const products = [
   {
@@ -165,7 +158,7 @@ function ProductsPageContent() {
   const [priceRange, setPriceRange] = useState([0, 200])
   const [sortBy, setSortBy] = useState('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, _setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   // Handle URL search parameters
@@ -187,7 +180,7 @@ function ProductsPageContent() {
         setSelectedCategories([displayCategory])
       }
     }
-  }, [searchParams])
+  }, [searchParams, selectedCategories])
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {

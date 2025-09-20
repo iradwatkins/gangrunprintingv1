@@ -27,7 +27,7 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
       '/api/paper-stocks',
       '/api/quantities',
       '/api/sizes',
-      '/api/add-ons'
+      '/api/add-ons',
     ]
 
     for (const endpoint of endpoints) {
@@ -52,7 +52,9 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
     await page.fill('input[type="email"], input[name="email"]', 'iradwatkins@gmail.com')
 
     // Submit form to send magic link
-    const submitButton = page.locator('button[type="submit"], button:has-text("Send Magic Link"), button:has-text("Sign In")')
+    const submitButton = page.locator(
+      'button[type="submit"], button:has-text("Send Magic Link"), button:has-text("Sign In")'
+    )
     await submitButton.click()
 
     // Wait for magic link confirmation
@@ -74,7 +76,7 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
       'text=Verifying admin access',
       'text=Loading',
       '.animate-spin',
-      '[role="status"]'
+      '[role="status"]',
     ]
 
     let foundLoadingState = false
@@ -100,13 +102,13 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
     console.log('🌐 Test 5: Testing timeout handling...')
 
     // Simulate slow network
-    await page.route('**/api/**', async route => {
-      await new Promise(resolve => setTimeout(resolve, 5000))
+    await page.route('**/api/**', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 5000))
       await route.continue()
     })
 
     await page.goto('https://gangrunprinting.com/admin/products/new', {
-      timeout: 20000
+      timeout: 20000,
     })
 
     // Should either redirect or show error state within timeout
@@ -114,7 +116,7 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
 
     const url = page.url()
     const hasRedirected = url.includes('/auth/signin')
-    const hasErrorMessage = await page.locator('text=/error|failed|timeout/i').count() > 0
+    const hasErrorMessage = (await page.locator('text=/error|failed|timeout/i').count()) > 0
 
     expect(hasRedirected || hasErrorMessage).toBeTruthy()
     console.log(`  Result: ${hasRedirected ? 'Redirected to signin' : 'Showed error message'}`)
@@ -138,16 +140,11 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
       expect(url).toContain('/auth/signin')
     } else {
       // If authenticated, check for form elements
-      const formElements = [
-        'input#name',
-        'input#sku',
-        'select',
-        'button:has-text("Save")'
-      ]
+      const formElements = ['input#name', 'input#sku', 'select', 'button:has-text("Save")']
 
       for (const selector of formElements) {
         const element = page.locator(selector).first()
-        const isPresent = await element.count() > 0
+        const isPresent = (await element.count()) > 0
         console.log(`  Form element ${selector}: ${isPresent ? 'Present' : 'Not found'}`)
       }
     }
@@ -160,36 +157,39 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
     console.log('🚨 Test 7: Monitoring console errors...')
 
     const consoleErrors: string[] = []
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text())
       }
     })
 
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       consoleErrors.push(error.message)
     })
 
-    await page.goto('https://gangrunprinting.com/admin/products/new', {
-      waitUntil: 'networkidle',
-      timeout: 20000
-    }).catch(() => {
-      // Continue even if navigation fails
-    })
+    await page
+      .goto('https://gangrunprinting.com/admin/products/new', {
+        waitUntil: 'networkidle',
+        timeout: 20000,
+      })
+      .catch(() => {
+        // Continue even if navigation fails
+      })
 
     await page.waitForTimeout(5000)
 
     // Filter out expected auth-related messages
-    const criticalErrors = consoleErrors.filter(err =>
-      !err.includes('401') &&
-      !err.includes('Unauthorized') &&
-      !err.includes('auth') &&
-      !err.includes('signin')
+    const criticalErrors = consoleErrors.filter(
+      (err) =>
+        !err.includes('401') &&
+        !err.includes('Unauthorized') &&
+        !err.includes('auth') &&
+        !err.includes('signin')
     )
 
     if (criticalErrors.length > 0) {
       console.log('  Found console errors:')
-      criticalErrors.forEach(err => console.log(`    - ${err}`))
+      criticalErrors.forEach((err) => console.log(`    - ${err}`))
     } else {
       console.log('  No critical console errors found')
     }
@@ -205,12 +205,14 @@ test.describe('Admin Products Page - Comprehensive Tests', () => {
 
     const startTime = Date.now()
 
-    await page.goto('https://gangrunprinting.com/admin/products/new', {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000
-    }).catch(() => {
-      // Continue even if navigation fails
-    })
+    await page
+      .goto('https://gangrunprinting.com/admin/products/new', {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      })
+      .catch(() => {
+        // Continue even if navigation fails
+      })
 
     const loadTime = Date.now() - startTime
     console.log(`  Initial load time: ${loadTime}ms`)
@@ -236,13 +238,13 @@ test('SUMMARY: Admin Products Page Health Check', async ({ page }) => {
     authRedirect: false,
     pageLoads: false,
     noErrors: true,
-    apiAccessible: false
+    apiAccessible: false,
   }
 
   // Quick health check
   try {
     await page.goto('https://gangrunprinting.com/admin/products/new', {
-      timeout: 15000
+      timeout: 15000,
     })
 
     await page.waitForTimeout(5000)
@@ -258,7 +260,6 @@ test('SUMMARY: Admin Products Page Health Check', async ({ page }) => {
     console.log('✅ Authentication redirect:', results.authRedirect ? 'Working' : 'Not tested')
     console.log('✅ Page loads:', results.pageLoads ? 'Yes' : 'No')
     console.log('✅ No critical errors:', results.noErrors ? 'Yes' : 'No')
-
   } catch (error) {
     console.log('❌ Health check failed:', error.message)
   }

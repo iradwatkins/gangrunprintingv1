@@ -1,3 +1,5 @@
+import { EMAIL_STYLES, SERVICE_ENDPOINTS } from '@/config/constants'
+
 export function getOrderConfirmationEmail(orderData: {
   orderNumber: string
   customerName: string
@@ -47,7 +49,7 @@ export function getOrderConfirmationEmail(orderData: {
   <title>Order Confirmation</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="max-width: ${EMAIL_STYLES.CONTAINER_MAX_WIDTH}; margin: 0 auto; padding: 20px;">
     <!-- Header -->
     <div style="background-color: #000000; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
       <h1 style="margin: 0; font-size: 28px;">GangRun Printing</h1>
@@ -234,7 +236,7 @@ export function getOrderStatusUpdateEmail(orderData: {
   <title>Order Status Update</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="max-width: ${EMAIL_STYLES.CONTAINER_MAX_WIDTH}; margin: 0 auto; padding: 20px;">
     <!-- Header -->
     <div style="background-color: #000000; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
       <h1 style="margin: 0; font-size: 28px;">GangRun Printing</h1>

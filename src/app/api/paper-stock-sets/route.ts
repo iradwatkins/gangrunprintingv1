@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -8,11 +8,15 @@ const paperStockSetSchema = z.object({
   description: z.string().nullable().optional(),
   sortOrder: z.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
-  paperStocks: z.array(z.object({
-    id: z.string(),
-    isDefault: z.boolean().default(false),
-    sortOrder: z.number().int().min(0).default(0)
-  })).optional()
+  paperStocks: z
+    .array(
+      z.object({
+        id: z.string(),
+        isDefault: z.boolean().default(false),
+        sortOrder: z.number().int().min(0).default(0),
+      })
+    )
+    .optional(),
 })
 
 // GET - List all paper stock sets
@@ -26,34 +30,31 @@ export async function GET() {
               include: {
                 paperStockCoatings: {
                   include: {
-                    coating: true
-                  }
+                    coating: true,
+                  },
                 },
                 paperStockSides: {
                   include: {
-                    sidesOption: true
-                  }
-                }
-              }
-            }
+                    sidesOption: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: {
-            sortOrder: 'asc'
-          }
-        }
+            sortOrder: 'asc',
+          },
+        },
       },
       orderBy: {
-        sortOrder: 'asc'
-      }
+        sortOrder: 'asc',
+      },
     })
 
     return NextResponse.json(groups)
   } catch (error) {
     console.error('Error fetching paper stock sets:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch paper stock sets' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch paper stock sets' }, { status: 500 })
   }
 }
 
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Check if name already exists
     const existingGroup = await prisma.paperStockSet.findUnique({
-      where: { name: validatedData.name }
+      where: { name: validatedData.name },
     })
 
     if (existingGroup) {
@@ -76,9 +77,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure at least one paper stock is marked as default
-    let paperStocksWithDefault = validatedData.paperStocks || []
+    const paperStocksWithDefault = validatedData.paperStocks || []
     if (paperStocksWithDefault.length > 0) {
-      const hasDefault = paperStocksWithDefault.some(stock => stock.isDefault)
+      const hasDefault = paperStocksWithDefault.some((stock) => stock.isDefault)
       if (!hasDefault) {
         // If no default is set, make the first one default
         paperStocksWithDefault[0].isDefault = true
@@ -96,9 +97,9 @@ export async function POST(request: NextRequest) {
           create: paperStocksWithDefault.map((stock, index) => ({
             paperStockId: stock.id,
             isDefault: stock.isDefault,
-            sortOrder: stock.sortOrder || index
-          }))
-        }
+            sortOrder: stock.sortOrder || index,
+          })),
+        },
       },
       include: {
         paperStockItems: {
@@ -107,19 +108,19 @@ export async function POST(request: NextRequest) {
               include: {
                 paperStockCoatings: {
                   include: {
-                    coating: true
-                  }
+                    coating: true,
+                  },
                 },
                 paperStockSides: {
                   include: {
-                    sidesOption: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    sidesOption: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })
 
     return NextResponse.json(group)
@@ -132,9 +133,6 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error creating paper stock set:', error)
-    return NextResponse.json(
-      { error: 'Failed to create paper stock set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create paper stock set' }, { status: 500 })
   }
 }

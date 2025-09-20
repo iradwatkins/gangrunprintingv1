@@ -7,6 +7,7 @@
 **Objective**: Establish a robust foundation for the GangRun Printing e-commerce platform with proper project structure, dependencies, and configuration.
 
 **Key Components**:
+
 - Next.js 14 with App Router
 - TypeScript configuration
 - Tailwind CSS with shadcn/ui components
@@ -19,7 +20,7 @@
 Alex identified the need for a scalable, maintainable architecture that could support:
 
 1. **Complex E-commerce Requirements**: Product configurations, pricing engines, order management
-2. **Multi-user System**: Customers, brokers, and administrators with different access levels  
+2. **Multi-user System**: Customers, brokers, and administrators with different access levels
 3. **Marketing Automation**: Email campaigns, workflows, customer segmentation
 4. **Bilingual Support**: English and Spanish with auto-translation capabilities
 5. **White-label Ready**: Themeable and brandable for multiple deployments
@@ -35,7 +36,7 @@ Alex identified the need for a scalable, maintainable architecture that could su
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build", 
+    "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint"
   }
@@ -47,22 +48,26 @@ Alex identified the need for a scalable, maintainable architecture that could su
 ### Core Dependencies
 
 #### Framework & Runtime
+
 - **Next.js 15.5.2**: Latest stable with App Router for modern routing patterns
 - **React 19.1.1**: Latest React with concurrent features
 - **TypeScript 5.9.2**: Strong typing for enterprise-grade development
 
-#### UI & Styling  
+#### UI & Styling
+
 - **Tailwind CSS 4.1.13**: Latest version with improved performance
 - **shadcn/ui components**: Complete UI component library with Radix UI primitives
 - **Framer Motion 12.23.12**: Animations and micro-interactions
 - **Lucide React**: Consistent icon system
 
 #### Database & Authentication
+
 - **Prisma 6.15.0**: Type-safe database ORM
 - **NextAuth 5.0.0-beta.29**: Authentication with multiple providers
 - **@auth/prisma-adapter**: Seamless Prisma integration
 
 #### Additional Integrations
+
 - **MinIO**: File storage for artwork uploads
 - **SendGrid**: Email delivery service
 - **Square SDK**: Payment processing
@@ -125,17 +130,18 @@ datasource db {
 
 ```javascript
 // next.config.js PWA setup
-const withPWA = require("@ducanh2912/next-pwa").default({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
+const withPWA = require('@ducanh2912/next-pwa').default({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
-});
+})
 ```
 
 **PWA Features Implemented**:
+
 - Service worker for offline functionality
-- Web manifest for installability  
+- Web manifest for installability
 - Push notification support
 - Background sync for form submissions
 
@@ -145,7 +151,8 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 **Decision**: Use Next.js App Router instead of Pages Router
 
-**Rationale**: 
+**Rationale**:
+
 - Better TypeScript support
 - Improved data fetching patterns
 - Native support for layouts and loading states
@@ -156,6 +163,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 **Decision**: Combine shadcn/ui with custom components
 
 **Rationale**:
+
 - shadcn/ui provides consistent, accessible base components
 - Custom components handle business-specific logic
 - Easy theming for white-label requirements
@@ -166,6 +174,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 **Decision**: Prisma ORM with PostgreSQL
 
 **Rationale**:
+
 - Type safety across the application
 - Excellent migration system
 - Strong relationship handling
@@ -176,6 +185,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 **Decision**: NextAuth.js with multiple providers
 
 **Rationale**:
+
 - Support for social (Google) and email authentication
 - Built-in session management
 - Easy role-based access control
@@ -226,7 +236,7 @@ DATABASE_URL=postgresql://...
 
 # Authentication
 AUTH_SECRET=your-auth-secret
-AUTH_GOOGLE_ID=your-google-client-id  
+AUTH_GOOGLE_ID=your-google-client-id
 AUTH_GOOGLE_SECRET=your-google-client-secret
 
 # Email
@@ -250,4 +260,4 @@ MINIO_SECRET_KEY=your-minio-secret
 
 ---
 
-*This shard establishes the foundation that all subsequent development builds upon. The decisions made here influence the entire project's architecture and maintainability.*
+_This shard establishes the foundation that all subsequent development builds upon. The decisions made here influence the entire project's architecture and maintainability._

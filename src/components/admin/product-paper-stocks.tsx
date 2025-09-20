@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup } from '@/components/ui/radio-group'
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import toast from '@/lib/toast'
-import { FileText, Plus, X, Star, DollarSign, Package, Droplets, Info } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { FileText, Plus, X, Star, DollarSign, Package, Droplets } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 interface PaperStock {
   id: string

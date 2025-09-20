@@ -15,7 +15,7 @@ async function main() {
       customMin: 100,
       customMax: 100000,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Flyer Quantities',
@@ -25,7 +25,7 @@ async function main() {
       customMin: 25,
       customMax: 50000,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Poster Quantities',
@@ -35,7 +35,7 @@ async function main() {
       customMin: 1,
       customMax: 5000,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Brochure Quantities',
@@ -45,7 +45,7 @@ async function main() {
       customMin: 50,
       customMax: 50000,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Sticker Quantities',
@@ -55,15 +55,15 @@ async function main() {
       customMin: 25,
       customMax: 10000,
       sortOrder: 5,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   for (const group of quantityGroups) {
     const created = await prisma.quantityGroup.upsert({
       where: { name: group.name },
       update: group,
-      create: group
+      create: group,
     })
     console.log(`✓ Upserted quantity group: ${created.name}`)
   }
@@ -80,7 +80,7 @@ async function main() {
       customMinHeight: 2.0,
       customMaxHeight: 4.0,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Postcard Sizes',
@@ -92,7 +92,7 @@ async function main() {
       customMinHeight: 3.0,
       customMaxHeight: 12.0,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Flyer Sizes',
@@ -104,7 +104,7 @@ async function main() {
       customMinHeight: 4.0,
       customMaxHeight: 24.0,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Poster Sizes',
@@ -116,7 +116,7 @@ async function main() {
       customMinHeight: 8.0,
       customMaxHeight: 96.0,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Brochure Sizes',
@@ -128,7 +128,7 @@ async function main() {
       customMinHeight: 6.0,
       customMaxHeight: 24.0,
       sortOrder: 5,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Banner Sizes',
@@ -140,7 +140,7 @@ async function main() {
       customMinHeight: 12.0,
       customMaxHeight: 120.0,
       sortOrder: 6,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Sticker Sizes',
@@ -152,15 +152,15 @@ async function main() {
       customMinHeight: 1.0,
       customMaxHeight: 12.0,
       sortOrder: 7,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   for (const group of sizeGroups) {
     const created = await prisma.sizeGroup.upsert({
       where: { name: group.name },
       update: group,
-      create: group
+      create: group,
     })
     console.log(`✓ Upserted size group: ${created.name}`)
   }

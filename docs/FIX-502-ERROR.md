@@ -3,6 +3,7 @@
 ## Quick Diagnosis Commands
 
 SSH into your server first:
+
 ```bash
 ssh root@72.60.28.175
 # Password: Bobby321&Gloria321Watkins?
@@ -23,6 +24,7 @@ docker logs gangrunprinting-minio
 ## Step 2: Most Common Fixes
 
 ### A. Database Connection Issue (Most Likely)
+
 ```bash
 # Check if PostgreSQL is running
 docker ps | grep postgres
@@ -39,6 +41,7 @@ docker-compose -f docker-compose.dokploy.yml up -d gangrunprinting-app
 ```
 
 ### B. Environment Variables Missing
+
 ```bash
 # Check if .env file exists in Dokploy
 cd /var/lib/dokploy/projects/gangrunprinting
@@ -50,6 +53,7 @@ docker exec gangrunprinting-app env | grep -E "DATABASE_URL|NEXTAUTH_URL|AUTH_SE
 ```
 
 ### C. Build Failed
+
 ```bash
 # Rebuild the application
 cd /var/lib/dokploy/projects/gangrunprinting
@@ -177,17 +181,18 @@ curl http://localhost:3002/api/health
 
 ## Common Error Messages and Solutions
 
-| Error | Solution |
-|-------|----------|
-| `ECONNREFUSED` to PostgreSQL | Database not running - start it first |
-| `Invalid AUTH_SECRET` | Generate new secret and add to env |
-| `Cannot find module` | Rebuild the container |
-| `Prisma schema not found` | Run `npx prisma generate` in container |
-| `ENOENT: no such file` | Pull latest code and rebuild |
+| Error                        | Solution                               |
+| ---------------------------- | -------------------------------------- |
+| `ECONNREFUSED` to PostgreSQL | Database not running - start it first  |
+| `Invalid AUTH_SECRET`        | Generate new secret and add to env     |
+| `Cannot find module`         | Rebuild the container                  |
+| `Prisma schema not found`    | Run `npx prisma generate` in container |
+| `ENOENT: no such file`       | Pull latest code and rebuild           |
 
 ## Final Check
 
 Once fixed, you should see:
+
 - ✅ https://gangrunprinting.com loads
 - ✅ No 502 error
 - ✅ Login page appears
@@ -196,6 +201,7 @@ Once fixed, you should see:
 ## Need More Help?
 
 1. Check the detailed logs:
+
 ```bash
 docker logs -f gangrunprinting-app --tail 100
 ```
@@ -203,8 +209,9 @@ docker logs -f gangrunprinting-app --tail 100
 2. Share the error message from the logs to identify the specific issue.
 
 The 502 error usually means:
+
 - App container isn't running
-- Database connection failed  
+- Database connection failed
 - Missing environment variables
 - Build/compilation error
 

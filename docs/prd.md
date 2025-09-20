@@ -1,4 +1,3 @@
-  
 \# Custom E-commerce Printing Platform Product Requirements Document (PRD)
 
 \#\# Goals and Background Context
@@ -18,10 +17,10 @@ This project aims to develop a bespoke e-commerce platform to address a gap in t
 
 \#\#\# Change Log
 
-| Date | Version | Description | Author |  
-| :--- | :--- | :--- | :--- |  
-| 2025-06-20 | 1.0 | Initial PRD Draft | John (PM) |  
-| 2025-06-20 | 2.0 | Revised MVP scope to include Marketing and Automation Epics per stakeholder feedback. | John (PM) |
+| Date       | Version | Description                                                                           | Author    |
+| :--------- | :------ | :------------------------------------------------------------------------------------ | :-------- |
+| 2025-06-20 | 1.0     | Initial PRD Draft                                                                     | John (PM) |
+| 2025-06-20 | 2.0     | Revised MVP scope to include Marketing and Automation Epics per stakeholder feedback. | John (PM) |
 
 \---
 
@@ -67,37 +66,37 @@ The goal of Phase 1 is to launch a fully functional e-commerce platform that inc
 **\*\*Phase 1 Epics:\*\***
 
 \* **\*\*Epic 1: Foundational Setup & Theming\*\***  
-    \* **\*\*Description:\*\*** Establish the core frontend and backend architecture, including the database schema, CI/CD pipeline, and the admin-facing "Theme Editor" to manage the site's branding (logos, colors, fonts).  
-    \* **\*\*User Goal:\*\*** As an Administrator, I need to set up my website's core brand identity so that it reflects my business.
+ \* **\*\*Description:\*\*** Establish the core frontend and backend architecture, including the database schema, CI/CD pipeline, and the admin-facing "Theme Editor" to manage the site's branding (logos, colors, fonts).  
+ \* **\*\*User Goal:\*\*** As an Administrator, I need to set up my website's core brand identity so that it reflects my business.
 
 \* **\*\*Epic 2: Product Catalog & Configuration\*\***  
-    \* **\*\*Description:\*\*** Build the systems to manage the product catalog, including categories, products, and all associated configuration options (paper stocks, coatings, sizes, etc.). Implement the customer-facing product detail page with the dynamic pricing calculator.  
-    \* **\*\*User Goal:\*\*** As a Customer, I want to be able to see all available product options and understand the price in real-time as I make selections.
+ \* **\*\*Description:\*\*** Build the systems to manage the product catalog, including categories, products, and all associated configuration options (paper stocks, coatings, sizes, etc.). Implement the customer-facing product detail page with the dynamic pricing calculator.  
+ \* **\*\*User Goal:\*\*** As a Customer, I want to be able to see all available product options and understand the price in real-time as I make selections.
 
 \* **\*\*Epic 3: Core Commerce & Checkout\*\***  
-    \* **\*\*Description:\*\*** Implement the floating side cart and the full, multi-step checkout process. This includes address entry, shipping selection, and integration with Square, CashApp, and PayPal.  
-    \* **\*\*User Goal:\*\*** As a Customer, I want a clear and secure process to purchase the items in my cart.
+ \* **\*\*Description:\*\*** Implement the floating side cart and the full, multi-step checkout process. This includes address entry, shipping selection, and integration with Square, CashApp, and PayPal.  
+ \* **\*\*User Goal:\*\*** As a Customer, I want a clear and secure process to purchase the items in my cart.
 
 \* **\*\*Epic 4: Customer Account Management\*\***  
-    \* **\*\*Description:\*\*** Develop the full "My Account" section where users can view their order history (with filtering), see order details, and use the "Re-Order" functionality.  
-    \* **\*\*User Goal:\*\*** As a Customer, I want to be able to track my past orders and easily place a new order for a product I've purchased before.
+ \* **\*\*Description:\*\*** Develop the full "My Account" section where users can view their order history (with filtering), see order details, and use the "Re-Order" functionality.  
+ \* **\*\*User Goal:\*\*** As a Customer, I want to be able to track my past orders and easily place a new order for a product I've purchased before.
 
 \* **\*\*Epic 5: Admin Order & User Management\*\***  
-    \* **\*\*Description:\*\*** Build the essential admin screens for viewing and managing orders, customers, and the broker discount system. The UI for these screens will be based on samples you provide.  
-    \* **\*\*User Goal:\*\*** As an Administrator, I need to be able to manage incoming orders and view my customers' details.
+ \* **\*\*Description:\*\*** Build the essential admin screens for viewing and managing orders, customers, and the broker discount system. The UI for these screens will be based on samples you provide.  
+ \* **\*\*User Goal:\*\*** As an Administrator, I need to be able to manage incoming orders and view my customers' details.
 
 \* **\*\*Epic 6: Integrated Marketing & CRM Platform\*\***  
-    \* **\*\*Description:\*\*** Build the full marketing suite as defined in the project brief. This includes:  
-        \* A central **\*\*CRM/Contacts\*\*** hub with detailed profiles, tagging, and segmentation.  
-        \* A visual **\*\*Email Builder\*\*** for creating responsive, branded emails.  
-        \* Functionality for **\*\*Email Broadcasts\*\*** for one-time campaigns.  
-        \* A rule-based **\*\*Automation\*\*** engine for marketing workflows.  
-        \* Detailed **\*\*Analytics\*\*** for tracking performance.  
-    \* **\*\*User Goal:\*\*** As an Administrator, I want to manage my customer list and send targeted marketing emails to drive sales and engagement.
+ \* **\*\*Description:\*\*** Build the full marketing suite as defined in the project brief. This includes:  
+ \* A central **\*\*CRM/Contacts\*\*** hub with detailed profiles, tagging, and segmentation.  
+ \* A visual **\*\*Email Builder\*\*** for creating responsive, branded emails.  
+ \* Functionality for **\*\*Email Broadcasts\*\*** for one-time campaigns.  
+ \* A rule-based **\*\*Automation\*\*** engine for marketing workflows.  
+ \* Detailed **\*\*Analytics\*\*** for tracking performance.  
+ \* **\*\*User Goal:\*\*** As an Administrator, I want to manage my customer list and send targeted marketing emails to drive sales and engagement.
 
 \* **\*\*Epic 7: Automated Vendor Order Placement (n8n.io)\*\***  
-    \* **\*\*Description:\*\*** Implement the integration with n8n.io to automate order placement with external vendors. This process will be triggered by **\*\*emails sent from the platform\*\*** to the vendor-specific incoming email addresses stored in the system.  
-    \* **\*\*User Goal:\*\*** As an Administrator, I want customer orders to be sent to my print vendors automatically so that I don't have to handle them manually.
+ \* **\*\*Description:\*\*** Implement the integration with n8n.io to automate order placement with external vendors. This process will be triggered by **\*\*emails sent from the platform\*\*** to the vendor-specific incoming email addresses stored in the system.  
+ \* **\*\*User Goal:\*\*** As an Administrator, I want customer orders to be sent to my print vendors automatically so that I don't have to handle them manually.
 
 \---
 
@@ -117,17 +116,17 @@ To maintain focus on the Phase 1 MVP, the following features and functionalities
 The success of the Phase 1 MVP will be measured against the following key performance indicators (KPIs):
 
 \* **\*\*Adoption & Engagement:\*\***  
-    \* Number of registered user accounts.  
-    \* Number of successful orders placed.  
-    \* Average items per order.  
+ \* Number of registered user accounts.  
+ \* Number of successful orders placed.  
+ \* Average items per order.  
 \* **\*\*Conversion & Commercial:\*\***  
-    \* Website conversion rate (percentage of visitors who complete an order).  
-    \* Cart abandonment rate.  
-    \* Total revenue processed through the platform.  
+ \* Website conversion rate (percentage of visitors who complete an order).  
+ \* Cart abandonment rate.  
+ \* Total revenue processed through the platform.  
 \* **\*\*User Experience & Performance:\*\***  
-    \* Customer satisfaction score (CSAT) collected via post-purchase surveys.  
-    \* Number of "Re-orders" placed, indicating satisfaction and convenience.  
-    \* Lighthouse performance scores for key pages, ensuring a fast user experience.
+ \* Customer satisfaction score (CSAT) collected via post-purchase surveys.  
+ \* Number of "Re-orders" placed, indicating satisfaction and convenience.  
+ \* Lighthouse performance scores for key pages, ensuring a fast user experience.
 
 \---
 
@@ -144,4 +143,3 @@ The following stakeholders have reviewed and approved this PRD, authorizing the 
 \* Product Owner  
 \* Design Architect  
 \* System Architect
-

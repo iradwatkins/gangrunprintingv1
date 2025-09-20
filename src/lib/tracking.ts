@@ -1,4 +1,5 @@
 import { type Carrier } from '@prisma/client'
+import { TRACKING_URLS } from '@/config/constants'
 
 export interface TrackingInfo {
   carrier: Carrier
@@ -10,11 +11,11 @@ export interface TrackingInfo {
 export function getTrackingUrl(carrier: Carrier, trackingNumber: string): string {
   switch (carrier) {
     case 'SOUTHWEST_CARGO':
-      return `https://www.swacargo.com/swacargo_com_ui/tracking-details?trackingId=526-${trackingNumber}`
+      return `${TRACKING_URLS.SWA_CARGO}${trackingNumber}`
     case 'FEDEX':
-      return `https://www.fedex.com/fedextrack/?cntry_code=us&tracknumbers=${trackingNumber}`
+      return `${TRACKING_URLS.FEDEX}${trackingNumber}`
     case 'UPS':
-      return `https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=${trackingNumber}`
+      return `${TRACKING_URLS.UPS}${trackingNumber}`
     default:
       return '#'
   }

@@ -9,11 +9,11 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load alerting rules
 rule_files:
-  - "alert-rules.yml"
+  - 'alert-rules.yml'
 
 scrape_configs:
   # Prometheus itself
@@ -55,10 +55,10 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://gangrunprinting.com
-        - https://gangrunprinting.com/api/health
-        - https://gangrunprinting.com/products
-        - https://gangrunprinting.com/admin
+          - https://gangrunprinting.com
+          - https://gangrunprinting.com/api/health
+          - https://gangrunprinting.com/products
+          - https://gangrunprinting.com/admin
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -74,9 +74,9 @@ scrape_configs:
       module: [ssl_expire]
     static_configs:
       - targets:
-        - gangrunprinting.com:443
-        - monitoring.gangrunprinting.com:443
-        - alerts.gangrunprinting.com:443
+          - gangrunprinting.com:443
+          - monitoring.gangrunprinting.com:443
+          - alerts.gangrunprinting.com:443
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -134,7 +134,6 @@ scrape_configs:
       - targets: ['grafana:3000']
     scrape_interval: 30s
     metrics_path: /metrics
-
 # Remote write configuration (for long-term storage)
 # Uncomment if using external time-series database
 # remote_write:

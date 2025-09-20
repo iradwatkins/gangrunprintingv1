@@ -1,27 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, CreditCard, Lock, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Checkbox } from '@/components/ui/checkbox'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, CreditCard, Loader2, Lock } from 'lucide-react'
+
 import { CheckoutItemImages } from '@/components/checkout/checkout-item-images'
 import { PaymentMethods } from '@/components/checkout/payment-methods'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { PageErrorBoundary } from '@/components/error-boundary'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const router = useRouter()
   const { items, subtotal, tax, shipping: _shipping, total: _total, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
   const [sameAsShipping, setSameAsShipping] = useState(true)
   const [paymentStep, setPaymentStep] = useState<'info' | 'payment' | 'card'>('info')
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [_selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -118,6 +120,11 @@ export default function CheckoutPage() {
         body: JSON.stringify(checkoutData),
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
+      }
+
       const result = await response.json()
 
       if (result.success && result.checkoutUrl) {
@@ -137,6 +144,8 @@ export default function CheckoutPage() {
       }
     } catch (error) {
       console.error('Square checkout error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process checkout'
+      toast.error(errorMessage)
       throw error
     }
   }
@@ -178,7 +187,7 @@ export default function CheckoutPage() {
     }
   }
 
-  const handleCardPaymentSuccess = (result: any) => {
+  const handleCardPaymentSuccess = (result: { paymentId?: string; orderId?: string }) => {
     toast.success('Payment processed successfully!')
 
     // Store success info
@@ -582,5 +591,13 @@ export default function CheckoutPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <PageErrorBoundary pageName="Checkout">
+      <CheckoutPageContent />
+    </PageErrorBoundary>
   )
 }

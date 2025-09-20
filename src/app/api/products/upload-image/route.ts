@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
           include: {
             ProductCategory: true,
             ProductImage: {
-              orderBy: { sortOrder: 'asc' }
-            }
-          }
+              orderBy: { sortOrder: 'asc' },
+            },
+          },
         })
 
         if (product) {

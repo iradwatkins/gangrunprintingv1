@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { EmailBuilder, type EmailTemplate } from '@/components/marketing/email-builder'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Save, Send, Eye } from 'lucide-react'
+import { ArrowLeft, Save, Send } from 'lucide-react'
 import {
   Dialog,
   DialogContent,

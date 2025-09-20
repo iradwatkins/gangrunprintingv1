@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Download, Smartphone } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Download, Smartphone, X } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 

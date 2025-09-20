@@ -1,7 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, GripVertical, ChevronDown, ChevronRight, Eye, Copy } from 'lucide-react'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  GripVertical,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Copy,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,7 +50,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -49,9 +58,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import {
-  useSortable,
-} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
@@ -85,14 +92,9 @@ interface PaperStockGroup {
 }
 
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -101,7 +103,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div ref={setNodeRef} className="flex items-center gap-2" style={style}>
       <div {...attributes} {...listeners} className="cursor-move">
         <GripVertical className="h-4 w-4 text-gray-400" />
       </div>
@@ -189,7 +191,7 @@ export default function PaperStockGroupsPage() {
             // Update sort orders
             const updatedItems = newItems.map((item, index) => ({
               ...item,
-              sortOrder: index
+              sortOrder: index,
             }))
 
             // Save the new order to the backend
@@ -211,9 +213,9 @@ export default function PaperStockGroupsPage() {
         body: JSON.stringify({
           items: items.map((item) => ({
             paperStockId: item.paperStockId,
-            sortOrder: item.sortOrder
-          }))
-        })
+            sortOrder: item.sortOrder,
+          })),
+        }),
       })
 
       if (!response.ok) {
@@ -252,7 +254,7 @@ export default function PaperStockGroupsPage() {
       const paperStocks = formData.selectedPaperStocks.map((stockId, index) => ({
         id: stockId,
         isDefault: stockId === defaultStock,
-        sortOrder: formData.paperStockOrders[stockId] || index
+        sortOrder: formData.paperStockOrders[stockId] || index,
       }))
 
       const response = await fetch(url, {
@@ -263,8 +265,8 @@ export default function PaperStockGroupsPage() {
           description: formData.description || null,
           sortOrder: formData.sortOrder,
           isActive: formData.isActive,
-          paperStocks
-        })
+          paperStocks,
+        }),
       })
 
       if (!response.ok) {
@@ -284,12 +286,16 @@ export default function PaperStockGroupsPage() {
   const handleEdit = (group: PaperStockGroup) => {
     setEditingGroup(group)
 
-    const selectedPaperStocks = group.paperStockItems.map(item => item.paperStockId)
-    const defaultPaperStock = group.paperStockItems.find(item => item.isDefault)?.paperStockId || ''
-    const paperStockOrders = group.paperStockItems.reduce((acc, item) => {
-      acc[item.paperStockId] = item.sortOrder
-      return acc
-    }, {} as Record<string, number>)
+    const selectedPaperStocks = group.paperStockItems.map((item) => item.paperStockId)
+    const defaultPaperStock =
+      group.paperStockItems.find((item) => item.isDefault)?.paperStockId || ''
+    const paperStockOrders = group.paperStockItems.reduce(
+      (acc, item) => {
+        acc[item.paperStockId] = item.sortOrder
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     setFormData({
       name: group.name,
@@ -298,7 +304,7 @@ export default function PaperStockGroupsPage() {
       isActive: group.isActive,
       selectedPaperStocks,
       defaultPaperStock,
-      paperStockOrders
+      paperStockOrders,
     })
     setDialogOpen(true)
   }
@@ -308,7 +314,7 @@ export default function PaperStockGroupsPage() {
 
     try {
       const response = await fetch(`/api/paper-stock-sets/${deletingGroup.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (!response.ok) {
@@ -328,12 +334,16 @@ export default function PaperStockGroupsPage() {
   const handleDuplicate = (group: PaperStockGroup) => {
     setEditingGroup(null)
 
-    const selectedPaperStocks = group.paperStockItems.map(item => item.paperStockId)
-    const defaultPaperStock = group.paperStockItems.find(item => item.isDefault)?.paperStockId || ''
-    const paperStockOrders = group.paperStockItems.reduce((acc, item) => {
-      acc[item.paperStockId] = item.sortOrder
-      return acc
-    }, {} as Record<string, number>)
+    const selectedPaperStocks = group.paperStockItems.map((item) => item.paperStockId)
+    const defaultPaperStock =
+      group.paperStockItems.find((item) => item.isDefault)?.paperStockId || ''
+    const paperStockOrders = group.paperStockItems.reduce(
+      (acc, item) => {
+        acc[item.paperStockId] = item.sortOrder
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     setFormData({
       name: `${group.name} - Copy`,
@@ -342,7 +352,7 @@ export default function PaperStockGroupsPage() {
       isActive: group.isActive,
       selectedPaperStocks,
       defaultPaperStock,
-      paperStockOrders
+      paperStockOrders,
     })
     setDialogOpen(true)
   }
@@ -361,12 +371,12 @@ export default function PaperStockGroupsPage() {
       isActive: true,
       selectedPaperStocks: [],
       defaultPaperStock: '',
-      paperStockOrders: {}
+      paperStockOrders: {},
     })
   }
 
   const toggleGroupExpansion = (groupId: string) => {
-    setExpandedGroups(prev => {
+    setExpandedGroups((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(groupId)) {
         newSet.delete(groupId)
@@ -461,19 +471,18 @@ export default function PaperStockGroupsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">
-                          {group.paperStockItems.length} stocks
-                        </Badge>
+                        <Badge variant="secondary">{group.paperStockItems.length} stocks</Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="font-medium">
-                            {group.paperStockItems.find(item => item.isDefault)?.paperStock.name ||
-                             group.paperStockItems[0]?.paperStock.name ||
-                             'None'}
+                            {group.paperStockItems.find((item) => item.isDefault)?.paperStock
+                              .name ||
+                              group.paperStockItems[0]?.paperStock.name ||
+                              'None'}
                           </span>
                           {group.paperStockItems.length > 0 && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge className="text-xs" variant="outline">
                               DEFAULT
                             </Badge>
                           )}
@@ -489,37 +498,37 @@ export default function PaperStockGroupsPage() {
                         <div className="flex justify-end gap-2">
                           <Button
                             size="sm"
+                            title="Preview"
                             variant="outline"
                             onClick={() => handlePreview(group)}
-                            title="Preview"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             size="sm"
+                            title="Duplicate"
                             variant="outline"
                             onClick={() => handleDuplicate(group)}
-                            title="Duplicate"
                           >
                             <Copy className="h-4 w-4" />
                           </Button>
                           <Button
                             size="sm"
+                            title="Edit"
                             variant="outline"
                             onClick={() => handleEdit(group)}
-                            title="Edit"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
+                            disabled={(group.productPaperStockGroups?.length ?? 0) > 0}
                             size="sm"
+                            title="Delete"
                             variant="outline"
                             onClick={() => {
                               setDeletingGroup(group)
                               setDeleteDialogOpen(true)
                             }}
-                            disabled={(group.productPaperStockGroups?.length ?? 0) > 0}
-                            title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -528,16 +537,18 @@ export default function PaperStockGroupsPage() {
                     </TableRow>
                     {expandedGroups.has(group.id) && (
                       <TableRow>
-                        <TableCell colSpan={7} className="bg-gray-50">
+                        <TableCell className="bg-gray-50" colSpan={7}>
                           <div className="p-4">
-                            <h4 className="font-medium mb-3">Paper Stocks in Group (drag to reorder):</h4>
+                            <h4 className="font-medium mb-3">
+                              Paper Stocks in Group (drag to reorder):
+                            </h4>
                             <DndContext
-                              sensors={sensors}
                               collisionDetection={closestCenter}
+                              sensors={sensors}
                               onDragEnd={(event) => handleDragEnd(event, group.id)}
                             >
                               <SortableContext
-                                items={group.paperStockItems.map(item => item.paperStockId)}
+                                items={group.paperStockItems.map((item) => item.paperStockId)}
                                 strategy={verticalListSortingStrategy}
                               >
                                 <div className="space-y-2">
@@ -549,7 +560,7 @@ export default function PaperStockGroupsPage() {
                                             {item.paperStock.name}
                                           </span>
                                           {item.isDefault && (
-                                            <Badge variant="secondary" className="text-xs">
+                                            <Badge className="text-xs" variant="secondary">
                                               DEFAULT
                                             </Badge>
                                           )}
@@ -557,7 +568,9 @@ export default function PaperStockGroupsPage() {
                                         <div className="flex items-center gap-2 text-sm text-gray-500">
                                           <span>Weight: {item.paperStock.weight}</span>
                                           <span>•</span>
-                                          <span>Price/sq in: ${item.paperStock.pricePerSqInch}</span>
+                                          <span>
+                                            Price/sq in: ${item.paperStock.pricePerSqInch}
+                                          </span>
                                         </div>
                                       </div>
                                     </SortableItem>
@@ -597,21 +610,23 @@ export default function PaperStockGroupsPage() {
                   <div className="space-y-2">
                     <Label htmlFor="name">Group Name *</Label>
                     <Input
-                      id="name"
                       required
+                      id="name"
+                      placeholder="e.g., Premium Cardstock Options"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Premium Cardstock Options"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sortOrder">Sort Order</Label>
                     <Input
                       id="sortOrder"
-                      type="number"
                       min="0"
+                      type="number"
                       value={formData.sortOrder}
-                      onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                      }
                     />
                   </div>
                 </div>
@@ -619,16 +634,16 @@ export default function PaperStockGroupsPage() {
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Optional description for this group"
                     rows={3}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
-                    id="isActive"
                     checked={formData.isActive}
+                    id="isActive"
                     onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                   />
                   <Label htmlFor="isActive">Active</Label>
@@ -642,30 +657,34 @@ export default function PaperStockGroupsPage() {
                   {allPaperStocks.map((stock) => (
                     <div key={stock.id} className="flex items-start space-x-3">
                       <Checkbox
-                        id={`stock-${stock.id}`}
                         checked={formData.selectedPaperStocks.includes(stock.id)}
+                        id={`stock-${stock.id}`}
                         onCheckedChange={(checked) => {
                           if (checked) {
                             setFormData({
                               ...formData,
                               selectedPaperStocks: [...formData.selectedPaperStocks, stock.id],
-                              defaultPaperStock: formData.selectedPaperStocks.length === 0
-                                ? stock.id
-                                : formData.defaultPaperStock
+                              defaultPaperStock:
+                                formData.selectedPaperStocks.length === 0
+                                  ? stock.id
+                                  : formData.defaultPaperStock,
                             })
                           } else {
                             setFormData({
                               ...formData,
-                              selectedPaperStocks: formData.selectedPaperStocks.filter(id => id !== stock.id),
-                              defaultPaperStock: formData.defaultPaperStock === stock.id
-                                ? ''
-                                : formData.defaultPaperStock
+                              selectedPaperStocks: formData.selectedPaperStocks.filter(
+                                (id) => id !== stock.id
+                              ),
+                              defaultPaperStock:
+                                formData.defaultPaperStock === stock.id
+                                  ? ''
+                                  : formData.defaultPaperStock,
                             })
                           }
                         }}
                       />
                       <div className="flex-1">
-                        <Label htmlFor={`stock-${stock.id}`} className="font-medium cursor-pointer">
+                        <Label className="font-medium cursor-pointer" htmlFor={`stock-${stock.id}`}>
                           {stock.name}
                         </Label>
                         {stock.tooltipText && (
@@ -682,25 +701,34 @@ export default function PaperStockGroupsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">Default Paper Stock</h3>
-                    <Badge variant="secondary" className="text-xs">Required</Badge>
+                    <Badge className="text-xs" variant="secondary">
+                      Required
+                    </Badge>
                   </div>
                   <p className="text-sm text-gray-500">
                     Select which paper stock should be pre-selected when customers view this group
                   </p>
                   <RadioGroup
                     value={formData.defaultPaperStock || formData.selectedPaperStocks[0]}
-                    onValueChange={(value) => setFormData({ ...formData, defaultPaperStock: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, defaultPaperStock: value })
+                    }
                   >
                     {formData.selectedPaperStocks.map((stockId) => {
-                      const stock = allPaperStocks.find(s => s.id === stockId)
+                      const stock = allPaperStocks.find((s) => s.id === stockId)
                       if (!stock) return null
                       return (
-                        <div key={stockId} className="flex items-center space-x-2 p-2 rounded hover:bg-gray-50">
-                          <RadioGroupItem value={stockId} id={`default-${stockId}`} />
-                          <Label htmlFor={`default-${stockId}`} className="cursor-pointer flex-1">
+                        <div
+                          key={stockId}
+                          className="flex items-center space-x-2 p-2 rounded hover:bg-gray-50"
+                        >
+                          <RadioGroupItem id={`default-${stockId}`} value={stockId} />
+                          <Label className="cursor-pointer flex-1" htmlFor={`default-${stockId}`}>
                             <span className="font-medium">{stock.name}</span>
                             {stock.tooltipText && (
-                              <span className="text-sm text-gray-500 block">{stock.tooltipText}</span>
+                              <span className="text-sm text-gray-500 block">
+                                {stock.tooltipText}
+                              </span>
                             )}
                           </Label>
                         </div>
@@ -715,9 +743,7 @@ export default function PaperStockGroupsPage() {
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                {editingGroup ? 'Update' : 'Create'}
-              </Button>
+              <Button type="submit">{editingGroup ? 'Update' : 'Create'}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -755,8 +781,10 @@ export default function PaperStockGroupsPage() {
           <div className="py-4">
             <Label className="text-base mb-3 block">Paper Type</Label>
             <Select
-              value={previewGroup?.paperStockItems.find(item => item.isDefault)?.paperStockId ||
-                     previewGroup?.paperStockItems[0]?.paperStockId}
+              value={
+                previewGroup?.paperStockItems.find((item) => item.isDefault)?.paperStockId ||
+                previewGroup?.paperStockItems[0]?.paperStockId
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -765,7 +793,7 @@ export default function PaperStockGroupsPage() {
                 {previewGroup?.paperStockItems.map((item) => (
                   <SelectItem key={item.paperStockId} value={item.paperStockId}>
                     {item.paperStock.name}
-                    {item.isDefault && " (Default)"}
+                    {item.isDefault && ' (Default)'}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -775,9 +803,7 @@ export default function PaperStockGroupsPage() {
             </p>
           </div>
           <DialogFooter>
-            <Button onClick={() => setPreviewDialogOpen(false)}>
-              Close
-            </Button>
+            <Button onClick={() => setPreviewDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

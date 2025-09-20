@@ -1,6 +1,6 @@
 'use client'
 
-import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react'
+import { ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'

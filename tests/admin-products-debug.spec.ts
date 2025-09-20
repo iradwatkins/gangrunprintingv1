@@ -3,20 +3,20 @@ import { test, expect } from '@playwright/test'
 test.describe('Admin Products New Page Enhanced Tests', () => {
   test('verify admin products page shows proper loading states', async ({ page }) => {
     // Enable console logging
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'log' || msg.type() === 'error') {
         console.log(`[${msg.type().toUpperCase()}] ${msg.text()}`)
       }
     })
 
     // Track network requests
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/')) {
         console.log(`[REQUEST] ${request.method()} ${request.url()}`)
       }
     })
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/')) {
         console.log(`[RESPONSE] ${response.status()} ${response.url()}`)
       }
@@ -51,10 +51,12 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
       try {
         await page.waitForFunction(
           () => {
-            return !document.querySelector('text=Verifying admin access...') ||
-                   document.querySelector('text=Redirecting to sign in...') ||
-                   document.querySelector('text=Create Product') ||
-                   document.querySelector('[role="alert"]')
+            return (
+              !document.querySelector('text=Verifying admin access...') ||
+              document.querySelector('text=Redirecting to sign in...') ||
+              document.querySelector('text=Create Product') ||
+              document.querySelector('[role="alert"]')
+            )
           },
           { timeout: 12000 }
         )
@@ -68,9 +70,9 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
       verifying: await verifyingText.isVisible(),
       redirecting: await redirectingText.isVisible(),
       accessDenied: await accessDeniedText.isVisible(),
-      hasSkeletons: await skeletonElements.count() > 0,
+      hasSkeletons: (await skeletonElements.count()) > 0,
       hasErrorAlert: await errorAlert.isVisible(),
-      hasForm: await formTitle.isVisible()
+      hasForm: await formTitle.isVisible(),
     }
 
     console.log('📊 Final page states:', finalStates)
@@ -115,7 +117,7 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
         paperStock: await page.locator('text=Paper Stock Options').isVisible(),
         sizeSet: await page.locator('text=Size Set').isVisible(),
         addOns: await page.locator('text=Add-on Options').isVisible(),
-        turnaround: await page.locator('text=Turnaround Times').isVisible()
+        turnaround: await page.locator('text=Turnaround Times').isVisible(),
       }
 
       console.log('📋 Form sections loaded:', formSections)
@@ -131,13 +133,13 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
 
     // Get console errors
     const errors = []
-    page.on('pageerror', error => errors.push(error.message))
+    page.on('pageerror', (error) => errors.push(error.message))
 
     console.log('📊 Final metrics:', {
       url: page.url(),
       title: await page.title(),
       loadState: await page.evaluate(() => document.readyState),
-      consoleErrors: errors.length
+      consoleErrors: errors.length,
     })
   })
 
@@ -153,7 +155,7 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
         '/api/paper-stocks',
         '/api/quantities',
         '/api/sizes',
-        '/api/add-ons'
+        '/api/add-ons',
       ]
 
       const results: Record<string, any> = {}
@@ -165,13 +167,13 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
           results[endpoint] = {
             status: response.status,
             dataLength: Array.isArray(data) ? data.length : 'N/A',
-            success: response.ok
+            success: response.ok,
           }
         } catch (error: any) {
           results[endpoint] = {
             status: 'ERROR',
             error: error.message,
-            success: false
+            success: false,
           }
         }
       }

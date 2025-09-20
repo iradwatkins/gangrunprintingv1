@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server'
-import { routing } from './routing'
+
 import { getCurrentTenant } from '@/lib/tenants/resolver'
 
 export default getRequestConfig(async ({ requestLocale }) => {

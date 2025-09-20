@@ -10,7 +10,7 @@ services:
     container_name: new_gangrunprinting_app
     restart: unless-stopped
     expose:
-      - "3002"
+      - '3002'
     environment:
       - NODE_ENV=production
       - PORT=3002
@@ -38,7 +38,7 @@ services:
       new_web_network:
         ipv4_address: 172.30.0.21
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002/api/health']
       interval: 30s
       timeout: 10s
       retries: 5

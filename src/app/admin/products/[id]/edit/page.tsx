@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
+
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator, Eye } from 'lucide-react'
 import Link from 'next/link'
@@ -145,7 +145,6 @@ function EditProductClient({ id }: { id: string }) {
       console.error('Failed to fetch data:', error)
     }
   }
-
 
   const testPrice = async () => {
     setTesting(true)
@@ -420,8 +419,8 @@ function EditProductClient({ id }: { id: string }) {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a paper stock set for this product. Customers will see the paper stocks from this set,
-              with the default paper stock pre-selected.
+              Select a paper stock set for this product. Customers will see the paper stocks from
+              this set, with the default paper stock pre-selected.
             </p>
             <div>
               <Label htmlFor="paper-stock-set">Paper Stock Set</Label>

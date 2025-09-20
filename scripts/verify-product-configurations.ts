@@ -10,8 +10,8 @@ async function verifyProductConfigurations() {
     const products = await prisma.product.findMany({
       where: {
         sku: {
-          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-PRO-001']
-        }
+          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-PRO-001'],
+        },
       },
       include: {
         productPaperStockSets: {
@@ -24,23 +24,23 @@ async function verifyProductConfigurations() {
                       include: {
                         paperStockCoatings: {
                           include: {
-                            coating: true
-                          }
+                            coating: true,
+                          },
                         },
                         paperStockSides: {
                           include: {
-                            sidesOption: true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                            sidesOption: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })
 
     for (const product of products) {
@@ -60,8 +60,10 @@ async function verifyProductConfigurations() {
           console.log(`      - Coating Options: ${paperStock.paperStockCoatings.length}`)
 
           if (paperStock.paperStockCoatings.length > 0) {
-            paperStock.paperStockCoatings.slice(0, 3).forEach(coating => {
-              console.log(`        • ${coating.coating.name} ${coating.isDefault ? '(Default)' : ''}`)
+            paperStock.paperStockCoatings.slice(0, 3).forEach((coating) => {
+              console.log(
+                `        • ${coating.coating.name} ${coating.isDefault ? '(Default)' : ''}`
+              )
             })
             if (paperStock.paperStockCoatings.length > 3) {
               console.log(`        ... and ${paperStock.paperStockCoatings.length - 3} more`)
@@ -71,7 +73,7 @@ async function verifyProductConfigurations() {
           console.log(`      - Sides Options: ${paperStock.paperStockSides.length}`)
 
           if (paperStock.paperStockSides.length > 0) {
-            paperStock.paperStockSides.slice(0, 3).forEach(side => {
+            paperStock.paperStockSides.slice(0, 3).forEach((side) => {
               console.log(`        • ${side.sidesOption.name} (${side.priceMultiplier}x)`)
             })
             if (paperStock.paperStockSides.length > 3) {
@@ -90,7 +92,6 @@ async function verifyProductConfigurations() {
     console.log(`   Total products checked: ${products.length}`)
     console.log(`   All products have paper stocks with coating and sides options configured`)
     console.log('\n✅ Configuration verification complete!')
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

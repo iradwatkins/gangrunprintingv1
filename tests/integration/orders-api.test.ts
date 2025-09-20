@@ -49,8 +49,8 @@ describe('Orders API Routes', () => {
           productId: 'test-product-id',
           quantity: 100,
           specifications: { size: '3.5x2', stock: 'premium' },
-          unitPrice: 50.00,
-          totalPrice: 50.00,
+          unitPrice: 50.0,
+          totalPrice: 50.0,
         },
       ],
       shippingAddress: {
@@ -70,10 +70,10 @@ describe('Orders API Routes', () => {
         country: 'US',
       },
       paymentMethodId: 'test-payment-method',
-      subtotal: 50.00,
-      tax: 4.00,
-      shipping: 5.00,
-      total: 59.00,
+      subtotal: 50.0,
+      tax: 4.0,
+      shipping: 5.0,
+      total: 59.0,
     }
 
     it('should create order for authenticated user', async () => {
@@ -90,7 +90,7 @@ describe('Orders API Routes', () => {
       expect(data.order).toBeDefined()
       expect(data.order.orderNumber).toMatch(/^GRP-/)
       expect(data.order.status).toBe('PENDING')
-      expect(data.order.total).toBe(59.00)
+      expect(data.order.total).toBe(59.0)
     })
 
     it('should validate required fields', async () => {
@@ -172,21 +172,21 @@ describe('Orders API Routes', () => {
             productId: testProduct.id,
             quantity: 100,
             specifications: { size: '3.5x2' },
-            unitPrice: 25.00,
-            totalPrice: 25.00,
+            unitPrice: 25.0,
+            totalPrice: 25.0,
           },
           {
             productId: testProduct.id,
             quantity: 200,
             specifications: { size: '4x6' },
-            unitPrice: 35.00,
-            totalPrice: 35.00,
+            unitPrice: 35.0,
+            totalPrice: 35.0,
           },
         ],
-        subtotal: 60.00,
-        tax: 4.80,
-        shipping: 5.00,
-        total: 69.80,
+        subtotal: 60.0,
+        tax: 4.8,
+        shipping: 5.0,
+        total: 69.8,
       }
 
       const request = new NextRequest('http://localhost:3002/api/orders', {
@@ -199,9 +199,9 @@ describe('Orders API Routes', () => {
       const data = await response.json()
 
       expect(response.status).toBe(201)
-      expect(data.order.subtotal).toBe(60.00)
-      expect(data.order.tax).toBe(4.80)
-      expect(data.order.total).toBe(69.80)
+      expect(data.order.subtotal).toBe(60.0)
+      expect(data.order.tax).toBe(4.8)
+      expect(data.order.total).toBe(69.8)
     })
   })
 
@@ -214,9 +214,9 @@ describe('Orders API Routes', () => {
           orderNumber: 'GRP-TEST-001',
           userId: testUser.id,
           status: 'PENDING',
-          total: 100.00,
-          subtotal: 90.00,
-          tax: 10.00,
+          total: 100.0,
+          subtotal: 90.0,
+          tax: 10.0,
           shippingAddress: {
             name: 'John Doe',
             street: '123 Main St',
@@ -255,9 +255,9 @@ describe('Orders API Routes', () => {
           orderNumber: `GRP-TEST-${i.toString().padStart(3, '0')}`,
           userId: testUser.id,
           status: 'PENDING',
-          total: 100.00,
-          subtotal: 90.00,
-          tax: 10.00,
+          total: 100.0,
+          subtotal: 90.0,
+          tax: 10.0,
           shippingAddress: {
             name: 'John Doe',
             street: '123 Main St',
@@ -297,9 +297,9 @@ describe('Orders API Routes', () => {
             orderNumber: 'GRP-PENDING-001',
             userId: testUser.id,
             status: 'PENDING',
-            total: 100.00,
-            subtotal: 90.00,
-            tax: 10.00,
+            total: 100.0,
+            subtotal: 90.0,
+            tax: 10.0,
             shippingAddress: {},
             billingAddress: {},
           },
@@ -307,9 +307,9 @@ describe('Orders API Routes', () => {
             orderNumber: 'GRP-COMPLETED-001',
             userId: testUser.id,
             status: 'COMPLETED',
-            total: 100.00,
-            subtotal: 90.00,
-            tax: 10.00,
+            total: 100.0,
+            subtotal: 90.0,
+            tax: 10.0,
             shippingAddress: {},
             billingAddress: {},
           },

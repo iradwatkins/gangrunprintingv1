@@ -1,108 +1,108 @@
 {
   "recommendations": [
     // Core Development Extensions
-    "dbaeumer.vscode-eslint",              // ESLint - JavaScript/TypeScript linting
-    "esbenp.prettier-vscode",               // Prettier - Code formatter
-    "bradlc.vscode-tailwindcss",            // Tailwind CSS IntelliSense
-    "prisma.prisma",                        // Prisma - Database ORM
-    
+    "dbaeumer.vscode-eslint", // ESLint - JavaScript/TypeScript linting
+    "esbenp.prettier-vscode", // Prettier - Code formatter
+    "bradlc.vscode-tailwindcss", // Tailwind CSS IntelliSense
+    "prisma.prisma", // Prisma - Database ORM
+
     // React/Next.js Development
-    "dsznajder.es7-react-js-snippets",      // React snippets and shortcuts
-    "burkeholland.simple-react-snippets",   // Simple React snippets
-    "pulkitgangwar.nextjs-snippets",        // Next.js specific snippets
+    "dsznajder.es7-react-js-snippets", // React snippets and shortcuts
+    "burkeholland.simple-react-snippets", // Simple React snippets
+    "pulkitgangwar.nextjs-snippets", // Next.js specific snippets
     "OfHumanBondage.react-proptypes-intellisense", // PropTypes IntelliSense
-    
+
     // TypeScript & JavaScript
-    "ms-vscode.vscode-typescript-next",     // Latest TypeScript features
-    "christian-kohler.path-intellisense",   // Path autocomplete
+    "ms-vscode.vscode-typescript-next", // Latest TypeScript features
+    "christian-kohler.path-intellisense", // Path autocomplete
     "wix.vscode-import-cost", // Display import/require package size
-    
+
     // Git & GitHub
-    "eamodio.gitlens",                      // Advanced Git features
-    "github.vscode-pull-request-github",    // GitHub Pull Requests
-    "github.copilot",                       // GitHub Copilot AI assistance
+    "eamodio.gitlens", // Advanced Git features
+    "github.vscode-pull-request-github", // GitHub Pull Requests
+    "github.copilot", // GitHub Copilot AI assistance
     "mtxr.sqltools", // SQL tools
-    "mtxr.sqltools-driver-pg",              // PostgreSQL driver
-    "cweijan.vscode-database-client2",      // Database GUI client
-    "rangav.vscode-thunder-client",         // API testing (like Postman)
-    "humao.rest-client",                     // REST API testing
-    "42Crunch.vscode-openapi",              // OpenAPI/Swagger support
-    
+    "mtxr.sqltools-driver-pg", // PostgreSQL driver
+    "cweijan.vscode-database-client2", // Database GUI client
+    "rangav.vscode-thunder-client", // API testing (like Postman)
+    "humao.rest-client", // REST API testing
+    "42Crunch.vscode-openapi", // OpenAPI/Swagger support
+
     // Docker & DevOps
-    "ms-azuretools.vscode-docker",          // Docker support
-    "ms-vscode-remote.remote-containers",   // Dev Containers
-    "ms-vscode-remote.remote-ssh",          // SSH remote development
+    "ms-azuretools.vscode-docker", // Docker support
+    "ms-vscode-remote.remote-containers", // Dev Containers
+    "ms-vscode-remote.remote-ssh", // SSH remote development
     "ms-vscode-remote.vscode-remote-extensionpack", // Complete remote pack
-    "formulahendry.docker-explorer",        // Docker explorer
+    "formulahendry.docker-explorer", // Docker explorer
     "ms-kubernetes-tools.vscode-kubernetes-tools", // Kubernetes
-    
+
     // UI/UX & Design
-    "antfu.icons-carbon",                   // Icon preview
+    "antfu.icons-carbon", // Icon preview
     "SimonSiefke.svg-preview", // SVG preview
-    "naumovs.color-highlight",              // Color highlighting
-    
+    "naumovs.color-highlight", // Color highlighting
+
     // Productivity & Code Quality
     "streetsidesoftware.code-spell-checker", // Spell checker
-    "wayou.vscode-todo-highlight",          // TODO highlighting
-    "gruntfuggly.todo-tree",                // TODO tree view
-    "chakrounanas.turbo-console-log",       // Quick console.log
+    "wayou.vscode-todo-highlight", // TODO highlighting
+    "gruntfuggly.todo-tree", // TODO tree view
+    "chakrounanas.turbo-console-log", // Quick console.log
     "SonarSource.sonarlint-vscode", // Code quality and security
-    
+
     // File Management
-    "sleistner.vscode-fileutils",           // File utilities
-    "russell.any-rule",                     // Common regex patterns
+    "sleistner.vscode-fileutils", // File utilities
+    "russell.any-rule", // Common regex patterns
     "redhat.vscode-yaml", // YAML support
-    
+
     // Testing
-    "Orta.vscode-jest",                     // Jest testing
-    "ms-playwright.playwright",             // Playwright testing
-    "hbenl.vscode-test-explorer",           // Test Explorer UI
-    
+    "Orta.vscode-jest", // Jest testing
+    "ms-playwright.playwright", // Playwright testing
+    "hbenl.vscode-test-explorer", // Test Explorer UI
+
     // AI & Productivity
     "Codeium.codeium", // Free AI autocomplete
-    
+
     // Markdown & Documentation
     "bierner.markdown-mermaid", // Mermaid diagrams
-    
+
     // Theme & Appearance
-    "PKief.material-icon-theme",            // Material Icon Theme
-    "zhuangtongfa.material-theme",          // One Dark Pro theme
-    "sdras.night-owl",                      // Night Owl theme
-    
+    "PKief.material-icon-theme", // Material Icon Theme
+    "zhuangtongfa.material-theme", // One Dark Pro theme
+    "sdras.night-owl", // Night Owl theme
+
     // Cloudflare Specific
     "cloudflare.cloudflare-workers-vscode", // Cloudflare Workers
-    
+
     // Infrastructure & Server Management
-    "matthewpi.caddyfile-support",          // Caddy server configuration
-    "redis.redis",                           // Redis client
-    
+    "matthewpi.caddyfile-support", // Caddy server configuration
+    "redis.redis", // Redis client
+
     // MCP & BMAD Support
-    "redhat.vscode-xml",                    // XML support for configs
-    "DotJoshJohnson.xml",                   // XML formatting
-    
+    "redhat.vscode-xml", // XML support for configs
+    "DotJoshJohnson.xml", // XML formatting
+
     // Code Navigation
-    "alefragnani.Bookmarks",                // Bookmarks for code navigation
-    "howardzuo.vscode-favorites",           // Favorite files/folders
-    
+    "alefragnani.Bookmarks", // Bookmarks for code navigation
+    "howardzuo.vscode-favorites", // Favorite files/folders
+
     // Live Collaboration
-    "MS-vsliveshare.vsliveshare",           // Live Share
-    
+    "MS-vsliveshare.vsliveshare", // Live Share
+
     // Performance & Optimization
-    "wix.vscode-import-cost",               // Show size of imported packages
-    "kisstkondoros.vscode-codemetrics",     // Code complexity metrics
-    
+    "wix.vscode-import-cost", // Show size of imported packages
+    "kisstkondoros.vscode-codemetrics", // Code complexity metrics
+
     // Security
     "snyk-security.snyk-vulnerability-scanner", // Security vulnerability scanning
-    
+
     // Formatting & Linting
     "foxundermoon.shell-format" // Shell script formatting
   ],
-  
+
   "unwantedRecommendations": [
     // Extensions that might conflict or are redundant
-    "hookyqr.beautify",                     // Use Prettier instead
-    "HookyQR.beautify",                     // Duplicate
+    "hookyqr.beautify", // Use Prettier instead
+    "HookyQR.beautify", // Duplicate
     "ms-vscode.vscode-typescript-tslint-plugin", // Deprecated, use ESLint
-    "eg2.tslint"                            // Deprecated, use ESLint
+    "eg2.tslint" // Deprecated, use ESLint
   ]
 }

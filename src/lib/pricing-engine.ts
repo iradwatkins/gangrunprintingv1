@@ -12,6 +12,8 @@
  * 5. Calculated_Product_Subtotal_Before_Shipping_Tax = Price_After_Turnaround + Sum of all selected discrete Add-on Services
  */
 
+import { PRICING } from '@/config/constants'
+
 export interface PaperStock {
   id: string
   name: string
@@ -382,11 +384,17 @@ export class PricingEngine {
 
       switch (addons.design.serviceType) {
         case 'standard_custom':
-          cost = addons.design.sides === 'one' ? 90.0 : 135.0
+          cost =
+            addons.design.sides === 'one'
+              ? PRICING.DESIGN_COST_ONE_SIDE
+              : PRICING.DESIGN_COST_TWO_SIDE
           description = `Standard Custom Design (${addons.design.sides} side${addons.design.sides === 'two' ? 's' : ''})`
           break
         case 'rush_custom':
-          cost = addons.design.sides === 'one' ? 160.0 : 240.0
+          cost =
+            addons.design.sides === 'one'
+              ? PRICING.BUSINESS_CARD_DESIGN_ONE_SIDE
+              : PRICING.BUSINESS_CARD_DESIGN_TWO_SIDE
           description = `Rush Custom Design (${addons.design.sides} side${addons.design.sides === 'two' ? 's' : ''})`
           break
         case 'minor_changes':
@@ -410,7 +418,7 @@ export class PricingEngine {
 
     // Banding - $0.75/bundle
     if (addons.banding?.selected) {
-      const itemsPerBundle = addons.banding.itemsPerBundle || 100
+      const itemsPerBundle = addons.banding.itemsPerBundle || PRICING.DEFAULT_ITEMS_PER_BUNDLE
       const pricePerBundle = addons.banding.pricePerBundle || 0.75
       const bundles = Math.ceil(config.quantity / itemsPerBundle)
       const cost = bundles * pricePerBundle
@@ -423,7 +431,8 @@ export class PricingEngine {
 
     // Shrink Wrapping - $0.30/bundle
     if (addons.shrinkWrapping?.selected) {
-      const itemsPerBundle = addons.shrinkWrapping.itemsPerBundle || 100
+      const itemsPerBundle =
+        addons.shrinkWrapping.itemsPerBundle || PRICING.DEFAULT_ITEMS_PER_BUNDLE
       const pricePerBundle = addons.shrinkWrapping.pricePerBundle || 0.3
       const bundles = Math.ceil(config.quantity / itemsPerBundle)
       const cost = bundles * pricePerBundle
@@ -457,8 +466,8 @@ export class PricingEngine {
 
     // EDDM Process & Postage - $50.00 + $0.239/piece
     if (addons.eddmProcess?.selected) {
-      const setupFee = addons.eddmProcess.setupFee || 50.0
-      const pricePerPiece = addons.eddmProcess.pricePerPiece || 0.239
+      const setupFee = addons.eddmProcess.setupFee || PRICING.EDDM_BASE_FEE
+      const pricePerPiece = addons.eddmProcess.pricePerPiece || PRICING.EDDM_PRICE_PER_PIECE
       const cost = setupFee + pricePerPiece * config.quantity
       costs.push({
         name: 'EDDM Process & Postage',

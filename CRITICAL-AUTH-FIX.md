@@ -1,7 +1,9 @@
 # CRITICAL: Google Authentication Fix
 
 ## The Problem
+
 Google OAuth is failing with "Configuration Error" because:
+
 1. Missing or incorrect environment variables in production
 2. NextAuth v5 requires explicit secret configuration
 3. Google OAuth redirect URIs may not be configured correctly
@@ -22,6 +24,7 @@ https://www.gangrunprinting.com/api/auth/callback/google
 ```
 
 4. **DELETE ALL EXISTING JavaScript Origins** and add ONLY these:
+
 ```
 https://gangrunprinting.com
 https://www.gangrunprinting.com
@@ -79,7 +82,6 @@ After updating environment variables in Dokploy:
    - Click "Settings" or "Environment Variables"
    - Replace ALL variables with the above
    - Save changes
-   
 2. Force rebuild:
    - Click "Deploy" or "Rebuild"
    - Select "No Cache" option if available
@@ -137,7 +139,6 @@ docker logs gangrunprinting-app --tail 50
 1. Clear ALL browser data:
    - Open Chrome DevTools (F12)
    - Application tab > Storage > Clear site data
-   
 2. Test authentication:
    - Go to https://gangrunprinting.com/auth/signin
    - Click "Sign in with Google"
@@ -146,6 +147,7 @@ docker logs gangrunprinting-app --tail 50
 ### If Still Not Working
 
 Check these:
+
 1. Google OAuth is in PRODUCTION mode (not testing)
 2. Domain verification completed in Google Cloud Console
 3. No typos in the Client ID or Secret
@@ -166,7 +168,9 @@ docker logs gangrunprinting-app --tail 100 | grep -i auth
 ```
 
 ## Root Cause
+
 The authentication was failing because:
+
 1. NextAuth v5 requires explicit secret configuration
 2. Environment variables were not properly set in production
 3. The auth configuration was not properly handling missing credentials

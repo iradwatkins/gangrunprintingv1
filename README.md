@@ -1,16 +1,19 @@
 # GangrunPrinting v1 - Containerized Print Broker Platform
 
 A fully containerized print broker platform built with Next.js 15.5.2, featuring Square payments, image processing with Sharp, and cloud storage. Optimized for Docker deployment with external PostgreSQL and Redis.
+
 - Any existing websites on the server must NOT be altered
 - NO direct server configuration changes outside of Dokploy
 
 ### ✅ ALLOWED SHARED RESOURCES
+
 - **N8N** (port 5678) - Workflow automation
 - **Ollama** (port 11434) - AI integration
 - **MinIO** - Shared object storage
 - **PostgreSQL** - New databases only (do not touch existing databases)
 
 ### DEPLOYMENT RULE
+
 - **ONLY use Dokploy** to deploy GangRun Printing
 - All deployments must be isolated from existing applications
 
@@ -49,32 +52,38 @@ A fully containerized print broker platform built with Next.js 15.5.2, featuring
 ### Development Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/gangrunprinting.git
 cd gangrunprinting
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Copy the environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 4. Start the development database and MinIO:
+
 ```bash
 docker-compose -f docker-compose.dev.yml up -d
 ```
 
 5. Run database migrations:
+
 ```bash
 npx prisma migrate dev
 ```
 
 6. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -84,11 +93,13 @@ The application will be available at `http://localhost:3000`
 ### Production Deployment
 
 1. Build the Docker image:
+
 ```bash
 docker-compose build
 ```
 
 2. Start all services:
+
 ```bash
 docker-compose up -d
 ```
@@ -98,6 +109,7 @@ docker-compose up -d
 See `.env.example` for required environment variables.
 
 Key variables:
+
 - `AUTH_GOOGLE_ID` - Google OAuth client ID
 - `AUTH_GOOGLE_SECRET` - Google OAuth client secret
 - `SQUARE_ACCESS_TOKEN` - Square payment token

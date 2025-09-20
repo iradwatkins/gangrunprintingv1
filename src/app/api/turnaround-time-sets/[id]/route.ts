@@ -1,11 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/turnaround-time-sets/[id] - Get a single turnaround time set
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -24,27 +21,18 @@ export async function GET(
     })
 
     if (!set) {
-      return NextResponse.json(
-        { error: 'Turnaround time set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Turnaround time set not found' }, { status: 404 })
     }
 
     return NextResponse.json(set)
   } catch (error) {
     console.error('[TurnaroundTimeSet] GET error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch turnaround time set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch turnaround time set' }, { status: 500 })
   }
 }
 
 // PUT /api/turnaround-time-sets/[id] - Update a turnaround time set
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
@@ -99,10 +87,7 @@ export async function PUT(
     return NextResponse.json(set)
   } catch (error) {
     console.error('[TurnaroundTimeSet] PUT error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update turnaround time set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update turnaround time set' }, { status: 500 })
   }
 }
 
@@ -121,7 +106,9 @@ export async function DELETE(
 
     if (productsUsingSet > 0) {
       return NextResponse.json(
-        { error: `This set is used by ${productsUsingSet} product(s). Remove from products before deleting.` },
+        {
+          error: `This set is used by ${productsUsingSet} product(s). Remove from products before deleting.`,
+        },
         { status: 400 }
       )
     }
@@ -134,9 +121,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[TurnaroundTimeSet] DELETE error:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete turnaround time set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete turnaround time set' }, { status: 500 })
   }
 }

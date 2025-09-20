@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { sendBatchEmails } from '@/lib/resend'
 
 // This endpoint can be called by a cron job service
 // or Vercel Cron Jobs if deployed on Vercel

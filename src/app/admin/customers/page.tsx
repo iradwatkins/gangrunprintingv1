@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CustomersTable } from '@/components/admin/customers-table'
 import { Users, UserPlus, ShoppingCart, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

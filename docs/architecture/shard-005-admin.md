@@ -1,6 +1,7 @@
 # Architecture Shard 005: Admin Dashboard & Management
 
 ## Overview
+
 **Epic**: Admin Order & User Management
 **Status**: 25% Complete - Basic structure in place
 **Priority**: High - Required for MVP
@@ -8,40 +9,42 @@
 ## Technical Requirements
 
 ### Admin Dashboard Components
+
 ```typescript
 // Required admin modules
 interface AdminModules {
   dashboard: {
-    metrics: OrderMetrics;
-    recentOrders: Order[];
-    userActivity: UserActivity[];
-  };
+    metrics: OrderMetrics
+    recentOrders: Order[]
+    userActivity: UserActivity[]
+  }
   orders: {
-    management: OrderManagement;
-    processing: OrderProcessing;
-    fulfillment: VendorIntegration;
-  };
+    management: OrderManagement
+    processing: OrderProcessing
+    fulfillment: VendorIntegration
+  }
   products: {
-    catalog: ProductCatalog;
-    pricing: PricingEngine;
-    inventory: InventoryTracking;
-  };
+    catalog: ProductCatalog
+    pricing: PricingEngine
+    inventory: InventoryTracking
+  }
   customers: {
-    profiles: CustomerProfiles;
-    brokers: BrokerManagement;
-    segmentation: CustomerSegmentation;
-  };
+    profiles: CustomerProfiles
+    brokers: BrokerManagement
+    segmentation: CustomerSegmentation
+  }
   reports: {
-    sales: SalesReports;
-    analytics: BusinessAnalytics;
-    exports: DataExports;
-  };
+    sales: SalesReports
+    analytics: BusinessAnalytics
+    exports: DataExports
+  }
 }
 ```
 
 ### Implementation Tasks
 
 #### 1. Dashboard Overview Page
+
 - [ ] Create admin layout with sidebar navigation
 - [ ] Build metrics dashboard with charts (recharts)
 - [ ] Implement real-time order notifications
@@ -49,6 +52,7 @@ interface AdminModules {
 - [ ] Create activity feed component
 
 #### 2. Order Management System
+
 - [ ] Order list with advanced filtering
 - [ ] Order detail view with timeline
 - [ ] Status update workflow
@@ -57,6 +61,7 @@ interface AdminModules {
 - [ ] Bulk order operations
 
 #### 3. Product Management
+
 - [ ] Product CRUD operations
 - [ ] Bulk import/export
 - [ ] Pricing rule configuration
@@ -65,6 +70,7 @@ interface AdminModules {
 - [ ] SEO metadata editing
 
 #### 4. Customer Management
+
 - [ ] Customer list with search
 - [ ] Customer profiles with order history
 - [ ] Broker tier management
@@ -73,6 +79,7 @@ interface AdminModules {
 - [ ] Export customer data
 
 #### 5. Reporting & Analytics
+
 - [ ] Sales reports by period
 - [ ] Product performance metrics
 - [ ] Customer lifetime value

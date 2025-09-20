@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { DATABASE_CONFIG } from '@/config/constants'
 
 // Global singleton for Prisma Client - critical for serverless
 declare global {
@@ -16,13 +17,13 @@ const createPrismaClient = () => {
 
   // In production: 5 connections max (serverless best practice)
   // In development: 10 connections for better DX
-  const connectionLimit = isProduction ? 5 : 10
+  const connectionLimit = isProduction ? 5 : DATABASE_CONFIG.CONNECTION_LIMIT
 
   // Build connection string with optimized parameters
   let pooledUrl = databaseUrl
   if (!databaseUrl?.includes('connection_limit')) {
     const separator = databaseUrl?.includes('?') ? '&' : '?'
-    pooledUrl = `${databaseUrl}${separator}connection_limit=${connectionLimit}&pool_timeout=15&connect_timeout=10&statement_timeout=20000&idle_in_transaction_session_timeout=20000`
+    pooledUrl = `${databaseUrl}${separator}connection_limit=${connectionLimit}&pool_timeout=${DATABASE_CONFIG.POOL_TIMEOUT}&connect_timeout=${DATABASE_CONFIG.CONNECT_TIMEOUT}&statement_timeout=${DATABASE_CONFIG.STATEMENT_TIMEOUT}&idle_in_transaction_session_timeout=${DATABASE_CONFIG.IDLE_IN_TRANSACTION_TIMEOUT}`
   }
 
   console.log(`[Prisma] Initializing with connection limit: ${connectionLimit}`)
@@ -33,9 +34,7 @@ const createPrismaClient = () => {
         url: pooledUrl,
       },
     },
-    log: process.env.NODE_ENV === 'development'
-      ? ['query', 'error', 'warn']
-      : ['error', 'warn'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error', 'warn'],
   })
 }
 
@@ -68,5 +67,5 @@ if (process.env.NODE_ENV === 'production') {
         console.error('[Prisma] Reconnection failed:', reconnectError)
       }
     }
-  }, 30000) // Every 30 seconds
+  }, DATABASE_CONFIG.HEALTH_CHECK_INTERVAL)
 }

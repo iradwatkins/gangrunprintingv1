@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
-import ReactFlow, {
+import { useState, useCallback } from 'react'
+import {
   Node,
   Edge,
   addEdge,
@@ -17,7 +17,7 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,8 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs'
+
 import {
   Dialog,
   DialogContent,

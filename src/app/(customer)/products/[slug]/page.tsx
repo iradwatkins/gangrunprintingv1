@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import ProductDetailClient from '@/components/product/product-detail-client'
+import { ComponentErrorBoundary } from '@/components/error-boundary'
 
 // This is a SERVER COMPONENT - no 'use client' directive
 // It fetches data on the server and avoids all JSON parsing issues
@@ -56,14 +57,21 @@ async function getProduct(slug: string) {
   }
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Await params to fix Next.js 15 warning
+  const { slug } = await params
+
   // Fetch product data on the server
-  const product = await getProduct(params.slug)
+  const product = await getProduct(slug)
 
   if (!product) {
     notFound()
   }
 
   // Pass the server-fetched data to the client component
-  return <ProductDetailClient product={product} />
+  return (
+    <ComponentErrorBoundary componentName="ProductDetailClient">
+      <ProductDetailClient product={product} />
+    </ComponentErrorBoundary>
+  )
 }

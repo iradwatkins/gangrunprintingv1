@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { type N8NWebhook } from '@prisma/client'
+import { SERVICE_ENDPOINTS } from '@/config/constants'
 
 export interface N8NWorkflowConfig {
   id: string
@@ -27,7 +28,7 @@ export interface N8NExecutionResult {
 }
 
 export class N8NIntegration {
-  private static readonly N8N_BASE_URL = process.env.N8N_BASE_URL || 'http://n8n.agistaffers.com'
+  private static readonly N8N_BASE_URL = SERVICE_ENDPOINTS.N8N_BASE
   private static readonly N8N_API_KEY = process.env.N8N_API_KEY
   private static readonly WEBHOOK_SECRET =
     process.env.N8N_WEBHOOK_SECRET || 'gangrun-webhook-secret'

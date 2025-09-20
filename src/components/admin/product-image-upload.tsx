@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -409,8 +409,13 @@ export function ProductImageUpload({
       <div
         className={`
           border-2 border-dashed rounded-lg p-8 text-center transition-colors
-          ${!canAddMore ? 'border-muted-foreground/10 bg-muted/50 cursor-not-allowed' :
-            isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary cursor-pointer'}
+          ${
+            !canAddMore
+              ? 'border-muted-foreground/10 bg-muted/50 cursor-not-allowed'
+              : isDragActive
+                ? 'border-primary bg-primary/5'
+                : 'border-muted-foreground/25 hover:border-primary cursor-pointer'
+          }
         `}
         onClick={() => canAddMore && fileInputRef.current?.click()}
         onDragLeave={handleDragLeave}
@@ -422,11 +427,13 @@ export function ProductImageUpload({
           multiple
           accept="image/*"
           className="hidden"
-          type="file"
           disabled={!canAddMore}
+          type="file"
           onChange={handleFileInput}
         />
-        <Upload className={`mx-auto h-12 w-12 mb-4 ${!canAddMore ? 'text-muted-foreground/30' : 'text-muted-foreground'}`} />
+        <Upload
+          className={`mx-auto h-12 w-12 mb-4 ${!canAddMore ? 'text-muted-foreground/30' : 'text-muted-foreground'}`}
+        />
         {canAddMore ? (
           <>
             <p className="text-sm font-medium">
@@ -455,9 +462,11 @@ export function ProductImageUpload({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Label>Product Images ({Array.isArray(images) ? images.length : 0}/{MAX_IMAGES})</Label>
-              {images.find(img => img.isPrimary) && (
-                <Badge variant="default" className="text-xs">
+              <Label>
+                Product Images ({Array.isArray(images) ? images.length : 0}/{MAX_IMAGES})
+              </Label>
+              {images.find((img) => img.isPrimary) && (
+                <Badge className="text-xs" variant="default">
                   <Star className="h-3 w-3 mr-1 fill-current" />
                   Primary Set
                 </Badge>

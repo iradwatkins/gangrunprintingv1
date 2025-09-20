@@ -9,6 +9,7 @@ The error "Access blocked: Authorization Error" occurs when the redirect URIs do
 ### 1. Update Local Environment Variables
 
 In your `.env.local` file, update:
+
 ```
 NEXTAUTH_URL=http://localhost:3013
 ```
@@ -25,11 +26,13 @@ NEXTAUTH_URL=http://localhost:3013
 Add ALL of these URIs to the "Authorized redirect URIs" section:
 
 **For Local Development:**
+
 - `http://localhost:3013/api/auth/callback/google`
 - `http://localhost:3000/api/auth/callback/google`
 - `http://localhost:3001/api/auth/callback/google`
 
 **For Production:**
+
 - `https://gangrunprinting.com/api/auth/callback/google`
 - `https://www.gangrunprinting.com/api/auth/callback/google`
 
@@ -38,17 +41,20 @@ Add ALL of these URIs to the "Authorized redirect URIs" section:
 Add these to "Authorized JavaScript origins":
 
 **For Local Development:**
+
 - `http://localhost:3013`
 - `http://localhost:3000`
 - `http://localhost:3001`
 
 **For Production:**
+
 - `https://gangrunprinting.com`
 - `https://www.gangrunprinting.com`
 
 ### 5. OAuth Consent Screen
 
 Make sure your OAuth consent screen is configured:
+
 1. Go to **APIs & Services** → **OAuth consent screen**
 2. Configure the following:
    - App name: GangRun Printing
@@ -60,6 +66,7 @@ Make sure your OAuth consent screen is configured:
 ### 6. Development vs Production
 
 **For Development (.env.local):**
+
 ```env
 NEXTAUTH_URL=http://localhost:3013
 AUTH_GOOGLE_ID=your-dev-client-id
@@ -67,6 +74,7 @@ AUTH_GOOGLE_SECRET=your-dev-client-secret
 ```
 
 **For Production (.env.production):**
+
 ```env
 NEXTAUTH_URL=https://gangrunprinting.com
 AUTH_GOOGLE_ID=your-prod-client-id
@@ -88,6 +96,7 @@ If you need to create new credentials:
 ## Testing
 
 After making these changes:
+
 1. Restart your development server
 2. Clear your browser cookies for localhost
 3. Try signing in with Google again
@@ -101,6 +110,7 @@ After making these changes:
 ## Note for Email Provider
 
 The app also supports magic link authentication via email. Make sure you have configured:
+
 - `SENDGRID_API_KEY`
 - `SENDGRID_FROM_EMAIL`
 

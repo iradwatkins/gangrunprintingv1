@@ -46,7 +46,6 @@ export class PerformanceMonitor {
   end(operation: string, metadata?: Record<string, any>): number {
     const startTime = this.startTimes.get(operation)
     if (!startTime) {
-      console.warn(`No start time found for operation: ${operation}`)
       return 0
     }
 

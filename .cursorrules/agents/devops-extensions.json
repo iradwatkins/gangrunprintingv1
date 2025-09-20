@@ -1,16 +1,9 @@
 {
   "agent": "devops",
   "extensions": {
-    "required": [
-      "ms-azuretools.vscode-docker",
-      "mikestead.dotenv",
-      "redhat.vscode-yaml"
-    ],
+    "required": ["ms-azuretools.vscode-docker", "mikestead.dotenv", "redhat.vscode-yaml"],
     "autoActivate": true,
-    "commands": [
-      "docker-explorer.focus",
-      "git-graph.view"
-    ],
+    "commands": ["docker-explorer.focus", "git-graph.view"],
     "mcpIntegration": {
       "git": ["gitlens"],
       "context7": ["docker"]

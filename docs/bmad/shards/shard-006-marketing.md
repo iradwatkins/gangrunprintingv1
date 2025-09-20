@@ -7,6 +7,7 @@
 **Objective**: Develop a complete marketing automation system with visual email builders, workflow automation, customer segmentation, and analytics to rival enterprise solutions like HubSpot and Mailchimp.
 
 **Key Components**:
+
 - Visual email campaign builder
 - Marketing automation workflows
 - Customer segmentation engine
@@ -21,6 +22,7 @@
 Alex studied enterprise marketing platforms, understanding the complex requirements needed to build a comprehensive solution:
 
 ### Campaign Management
+
 1. **Email Campaigns**: Visual drag-and-drop builder with templates
 2. **SMS Marketing**: Text messaging campaigns with opt-in management
 3. **Multi-channel**: Coordinated campaigns across email and SMS
@@ -28,6 +30,7 @@ Alex studied enterprise marketing platforms, understanding the complex requireme
 5. **Personalization**: Dynamic content based on customer data
 
 ### Automation Workflows
+
 1. **Visual Workflow Builder**: Drag-and-drop workflow designer
 2. **Trigger Events**: Customer actions, time-based, webhooks
 3. **Conditional Logic**: If/then branches, wait steps, goals
@@ -35,6 +38,7 @@ Alex studied enterprise marketing platforms, understanding the complex requireme
 5. **N8N Integration**: Advanced automation via webhooks
 
 ### Customer Segmentation
+
 1. **Dynamic Segments**: Real-time customer grouping
 2. **Behavioral Tracking**: Actions, purchases, engagement
 3. **Demographics**: Location, language, preferences
@@ -389,22 +393,22 @@ export function EmailBuilder({
 
 ```typescript
 // lib/marketing/workflow-engine.ts
-import { prisma } from '@/lib/prisma';
-import { sendEmail } from '@/lib/email';
-import { sendSMS } from '@/lib/sms';
-import { callN8NWebhook } from '@/lib/n8n';
+import { prisma } from '@/lib/prisma'
+import { sendEmail } from '@/lib/email'
+import { sendSMS } from '@/lib/sms'
+import { callN8NWebhook } from '@/lib/n8n'
 
 interface WorkflowStep {
-  id: string;
-  type: 'email' | 'sms' | 'wait' | 'condition' | 'webhook' | 'tag' | 'score';
-  config: any;
+  id: string
+  type: 'email' | 'sms' | 'wait' | 'condition' | 'webhook' | 'tag' | 'score'
+  config: any
   nextSteps: {
-    default?: string;
+    default?: string
     branches?: Array<{
-      condition: any;
-      stepId: string;
-    }>;
-  };
+      condition: any
+      stepId: string
+    }>
+  }
 }
 
 export class WorkflowEngine {
@@ -413,70 +417,70 @@ export class WorkflowEngine {
       where: { id: enrollmentId },
       include: {
         workflow: true,
-        customer: true
-      }
-    });
+        customer: true,
+      },
+    })
 
     if (!enrollment || enrollment.status !== 'ACTIVE') {
-      return;
+      return
     }
 
-    const steps: WorkflowStep[] = JSON.parse(enrollment.workflow.steps);
-    const currentStep = steps.find(s => s.id === enrollment.currentStep);
+    const steps: WorkflowStep[] = JSON.parse(enrollment.workflow.steps)
+    const currentStep = steps.find((s) => s.id === enrollment.currentStep)
 
     if (!currentStep) {
-      await this.completeEnrollment(enrollmentId);
-      return;
+      await this.completeEnrollment(enrollmentId)
+      return
     }
 
     try {
-      const result = await this.executeStep(currentStep, enrollment);
-      const nextStepId = this.determineNextStep(currentStep, result);
+      const result = await this.executeStep(currentStep, enrollment)
+      const nextStepId = this.determineNextStep(currentStep, result)
 
       if (nextStepId) {
         await prisma.workflowEnrollment.update({
           where: { id: enrollmentId },
-          data: { currentStep: nextStepId }
-        });
+          data: { currentStep: nextStepId },
+        })
 
         // Process next step immediately or schedule it
-        const nextStep = steps.find(s => s.id === nextStepId);
+        const nextStep = steps.find((s) => s.id === nextStepId)
         if (nextStep?.type !== 'wait') {
-          await this.processEnrollment(enrollmentId);
+          await this.processEnrollment(enrollmentId)
         }
       } else {
-        await this.completeEnrollment(enrollmentId);
+        await this.completeEnrollment(enrollmentId)
       }
     } catch (error) {
-      await this.handleError(enrollmentId, error);
+      await this.handleError(enrollmentId, error)
     }
   }
 
   private async executeStep(step: WorkflowStep, enrollment: any) {
     switch (step.type) {
       case 'email':
-        return await this.sendEmailStep(step.config, enrollment.customer);
+        return await this.sendEmailStep(step.config, enrollment.customer)
 
       case 'sms':
-        return await this.sendSMSStep(step.config, enrollment.customer);
+        return await this.sendSMSStep(step.config, enrollment.customer)
 
       case 'wait':
-        return await this.scheduleWaitStep(step.config, enrollment.id);
+        return await this.scheduleWaitStep(step.config, enrollment.id)
 
       case 'condition':
-        return await this.evaluateCondition(step.config, enrollment);
+        return await this.evaluateCondition(step.config, enrollment)
 
       case 'webhook':
-        return await this.callWebhook(step.config, enrollment);
+        return await this.callWebhook(step.config, enrollment)
 
       case 'tag':
-        return await this.applyTag(step.config, enrollment.customerId);
+        return await this.applyTag(step.config, enrollment.customerId)
 
       case 'score':
-        return await this.updateScore(step.config, enrollment.customerId);
+        return await this.updateScore(step.config, enrollment.customerId)
 
       default:
-        throw new Error(`Unknown step type: ${step.type}`);
+        throw new Error(`Unknown step type: ${step.type}`)
     }
   }
 
@@ -485,24 +489,24 @@ export class WorkflowEngine {
       to: customer.email,
       subject: this.personalizeContent(config.subject, customer),
       html: this.personalizeContent(config.html, customer),
-      text: this.personalizeContent(config.text, customer)
-    };
+      text: this.personalizeContent(config.text, customer),
+    }
 
-    const result = await sendEmail(emailData);
+    const result = await sendEmail(emailData)
 
     // Track engagement
     await prisma.customerEngagement.upsert({
       where: { customerId: customer.id },
       create: {
         customerId: customer.id,
-        emailsSent: 1
+        emailsSent: 1,
       },
       update: {
-        emailsSent: { increment: 1 }
-      }
-    });
+        emailsSent: { increment: 1 },
+      },
+    })
 
-    return result;
+    return result
   }
 
   private personalizeContent(content: string, customer: any): string {
@@ -510,45 +514,45 @@ export class WorkflowEngine {
       .replace(/{{firstName}}/g, customer.firstName || '')
       .replace(/{{lastName}}/g, customer.lastName || '')
       .replace(/{{email}}/g, customer.email || '')
-      .replace(/{{company}}/g, customer.company || '');
+      .replace(/{{company}}/g, customer.company || '')
   }
 
   private async evaluateCondition(config: any, enrollment: any) {
-    const { field, operator, value } = config;
-    const customerData = enrollment.customer;
+    const { field, operator, value } = config
+    const customerData = enrollment.customer
 
-    let fieldValue = this.getNestedValue(customerData, field);
+    let fieldValue = this.getNestedValue(customerData, field)
 
     switch (operator) {
       case 'equals':
-        return fieldValue === value;
+        return fieldValue === value
       case 'not_equals':
-        return fieldValue !== value;
+        return fieldValue !== value
       case 'contains':
-        return String(fieldValue).includes(value);
+        return String(fieldValue).includes(value)
       case 'greater_than':
-        return Number(fieldValue) > Number(value);
+        return Number(fieldValue) > Number(value)
       case 'less_than':
-        return Number(fieldValue) < Number(value);
+        return Number(fieldValue) < Number(value)
       case 'is_empty':
-        return !fieldValue;
+        return !fieldValue
       case 'is_not_empty':
-        return !!fieldValue;
+        return !!fieldValue
       default:
-        return false;
+        return false
     }
   }
 
   private async callWebhook(config: any, enrollment: any) {
-    const { url, method = 'POST', headers = {} } = config;
+    const { url, method = 'POST', headers = {} } = config
 
     // If it's an N8N webhook, use the specialized handler
     if (url.includes('n8n')) {
       return await callN8NWebhook(url, {
         enrollment,
         customer: enrollment.customer,
-        workflow: enrollment.workflow
-      });
+        workflow: enrollment.workflow,
+      })
     }
 
     // Generic webhook call
@@ -556,15 +560,15 @@ export class WorkflowEngine {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...headers
+        ...headers,
       },
       body: JSON.stringify({
         enrollment,
-        customer: enrollment.customer
-      })
-    });
+        customer: enrollment.customer,
+      }),
+    })
 
-    return response.json();
+    return response.json()
   }
 }
 ```
@@ -574,88 +578,88 @@ export class WorkflowEngine {
 ```typescript
 // lib/marketing/segmentation.ts
 interface SegmentRule {
-  field: string;
-  operator: string;
-  value: any;
-  connector?: 'AND' | 'OR';
+  field: string
+  operator: string
+  value: any
+  connector?: 'AND' | 'OR'
 }
 
 export class SegmentationService {
   async computeSegment(segmentId: string) {
     const segment = await prisma.segment.findUnique({
-      where: { id: segmentId }
-    });
+      where: { id: segmentId },
+    })
 
     if (!segment || segment.type !== 'DYNAMIC') {
-      return;
+      return
     }
 
-    const rules: SegmentRule[] = JSON.parse(segment.rules);
-    const query = this.buildQuery(rules);
+    const rules: SegmentRule[] = JSON.parse(segment.rules)
+    const query = this.buildQuery(rules)
 
     const members = await prisma.user.findMany({
       where: query,
-      select: { id: true }
-    });
+      select: { id: true },
+    })
 
     await prisma.segment.update({
       where: { id: segmentId },
       data: {
-        memberIds: members.map(m => m.id),
+        memberIds: members.map((m) => m.id),
         memberCount: members.length,
-        lastComputed: new Date()
-      }
-    });
+        lastComputed: new Date(),
+      },
+    })
 
-    return members.length;
+    return members.length
   }
 
   private buildQuery(rules: SegmentRule[]) {
-    const conditions: any[] = [];
+    const conditions: any[] = []
 
     for (const rule of rules) {
-      const condition = this.ruleToCondition(rule);
+      const condition = this.ruleToCondition(rule)
       if (condition) {
-        conditions.push(condition);
+        conditions.push(condition)
       }
     }
 
     // Handle AND/OR connectors
-    if (rules.some(r => r.connector === 'OR')) {
-      return { OR: conditions };
+    if (rules.some((r) => r.connector === 'OR')) {
+      return { OR: conditions }
     } else {
-      return { AND: conditions };
+      return { AND: conditions }
     }
   }
 
   private ruleToCondition(rule: SegmentRule) {
-    const { field, operator, value } = rule;
+    const { field, operator, value } = rule
 
     switch (operator) {
       case 'equals':
-        return { [field]: value };
+        return { [field]: value }
       case 'not_equals':
-        return { [field]: { not: value } };
+        return { [field]: { not: value } }
       case 'contains':
-        return { [field]: { contains: value } };
+        return { [field]: { contains: value } }
       case 'starts_with':
-        return { [field]: { startsWith: value } };
+        return { [field]: { startsWith: value } }
       case 'ends_with':
-        return { [field]: { endsWith: value } };
+        return { [field]: { endsWith: value } }
       case 'greater_than':
-        return { [field]: { gt: value } };
+        return { [field]: { gt: value } }
       case 'less_than':
-        return { [field]: { lt: value } };
+        return { [field]: { lt: value } }
       case 'in_list':
-        return { [field]: { in: value } };
+        return { [field]: { in: value } }
       case 'not_in_list':
-        return { [field]: { notIn: value } };
+        return { [field]: { notIn: value } }
       case 'is_null':
-        return { [field]: null };
+        return { [field]: null }
       case 'is_not_null':
-        return { [field]: { not: null } };
+        return { [field]: { not: null } }
       default:
-        return null;
+        return null
     }
   }
 
@@ -663,54 +667,54 @@ export class SegmentationService {
     const orders = await prisma.order.findMany({
       where: {
         customerId,
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
-      orderBy: { createdAt: 'desc' }
-    });
+      orderBy: { createdAt: 'desc' },
+    })
 
     if (orders.length === 0) {
-      return { recency: 0, frequency: 0, monetary: 0 };
+      return { recency: 0, frequency: 0, monetary: 0 }
     }
 
     // Recency: Days since last order
-    const lastOrder = orders[0];
+    const lastOrder = orders[0]
     const daysSinceLastOrder = Math.floor(
       (Date.now() - lastOrder.createdAt.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const recency = this.scoreRecency(daysSinceLastOrder);
+    )
+    const recency = this.scoreRecency(daysSinceLastOrder)
 
     // Frequency: Number of orders
-    const frequency = this.scoreFrequency(orders.length);
+    const frequency = this.scoreFrequency(orders.length)
 
     // Monetary: Total spent
-    const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
-    const monetary = this.scoreMonetary(totalSpent);
+    const totalSpent = orders.reduce((sum, order) => sum + order.total, 0)
+    const monetary = this.scoreMonetary(totalSpent)
 
-    return { recency, frequency, monetary };
+    return { recency, frequency, monetary }
   }
 
   private scoreRecency(days: number): number {
-    if (days <= 7) return 5;
-    if (days <= 30) return 4;
-    if (days <= 90) return 3;
-    if (days <= 180) return 2;
-    return 1;
+    if (days <= 7) return 5
+    if (days <= 30) return 4
+    if (days <= 90) return 3
+    if (days <= 180) return 2
+    return 1
   }
 
   private scoreFrequency(count: number): number {
-    if (count >= 10) return 5;
-    if (count >= 5) return 4;
-    if (count >= 3) return 3;
-    if (count >= 2) return 2;
-    return 1;
+    if (count >= 10) return 5
+    if (count >= 5) return 4
+    if (count >= 3) return 3
+    if (count >= 2) return 2
+    return 1
   }
 
   private scoreMonetary(amount: number): number {
-    if (amount >= 1000) return 5;
-    if (amount >= 500) return 4;
-    if (amount >= 200) return 3;
-    if (amount >= 50) return 2;
-    return 1;
+    if (amount >= 1000) return 5
+    if (amount >= 500) return 4
+    if (amount >= 200) return 3
+    if (amount >= 50) return 2
+    return 1
   }
 }
 ```
@@ -727,92 +731,87 @@ export class ABTestingService {
   async selectVariant(campaignId: string, recipientId: string) {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
-      include: { variants: true }
-    });
+      include: { variants: true },
+    })
 
     if (!campaign?.isAbTest || campaign.variants.length === 0) {
-      return null;
+      return null
     }
 
     // Use consistent hashing to ensure same recipient always gets same variant
-    const hash = this.hashString(`${campaignId}-${recipientId}`);
-    const random = hash / 0xFFFFFFFF; // Convert to 0-1 range
+    const hash = this.hashString(`${campaignId}-${recipientId}`)
+    const random = hash / 0xffffffff // Convert to 0-1 range
 
-    let cumulativeWeight = 0;
+    let cumulativeWeight = 0
     for (const variant of campaign.variants) {
-      cumulativeWeight += variant.weight / 100;
+      cumulativeWeight += variant.weight / 100
       if (random <= cumulativeWeight) {
-        return variant;
+        return variant
       }
     }
 
-    return campaign.variants[0];
+    return campaign.variants[0]
   }
 
   async determineWinner(campaignId: string) {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
-      include: { variants: true }
-    });
+      include: { variants: true },
+    })
 
-    if (!campaign?.isAbTest) return null;
+    if (!campaign?.isAbTest) return null
 
     // Calculate conversion rate for each variant
-    const variantScores = campaign.variants.map(variant => {
-      const conversionRate = variant.sentCount > 0
-        ? variant.conversionCount / variant.sentCount
-        : 0;
+    const variantScores = campaign.variants.map((variant) => {
+      const conversionRate = variant.sentCount > 0 ? variant.conversionCount / variant.sentCount : 0
 
       return {
         variantId: variant.id,
         score: conversionRate,
-        confidence: this.calculateConfidence(
-          variant.conversionCount,
-          variant.sentCount
-        )
-      };
-    });
+        confidence: this.calculateConfidence(variant.conversionCount, variant.sentCount),
+      }
+    })
 
     // Select winner with statistical significance
     const winner = variantScores.reduce((best, current) => {
-      if (current.confidence < 0.95) return best; // Need 95% confidence
-      return current.score > best.score ? current : best;
-    }, variantScores[0]);
+      if (current.confidence < 0.95) return best // Need 95% confidence
+      return current.score > best.score ? current : best
+    }, variantScores[0])
 
     if (winner.confidence >= 0.95) {
       await prisma.campaign.update({
         where: { id: campaignId },
-        data: { winnerVariant: winner.variantId }
-      });
-      return winner.variantId;
+        data: { winnerVariant: winner.variantId },
+      })
+      return winner.variantId
     }
 
-    return null; // No clear winner yet
+    return null // No clear winner yet
   }
 
   private calculateConfidence(conversions: number, total: number): number {
-    if (total < 30) return 0; // Need minimum sample size
+    if (total < 30) return 0 // Need minimum sample size
 
-    const p = conversions / total;
-    const z = 1.96; // 95% confidence interval
-    const n = total;
+    const p = conversions / total
+    const z = 1.96 // 95% confidence interval
+    const n = total
 
     // Wilson score interval
-    const denominator = 1 + z * z / n;
-    const phat = (p + z * z / (2 * n)) / denominator;
-    const error = z * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denominator;
+    const denominator = 1 + (z * z) / n
+    const phat = (p + (z * z) / (2 * n)) / denominator
+    const error = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / denominator
 
-    return 1 - error / phat; // Simplified confidence score
+    return 1 - error / phat // Simplified confidence score
   }
 
   private hashString(str: string): number {
-    let hash = 0;
+    let hash = 0
     for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      const char = str.charCodeAt(i)
+      hash = (hash << 5) - hash + char
+      hash = hash & hash // Convert to 32-bit integer
     }
-    return Math.abs(hash);
+    return Math.abs(hash)
   }
 }
 ```
@@ -822,92 +821,93 @@ export class ABTestingService {
 ```typescript
 // lib/n8n/integration.ts
 export class N8NIntegration {
-  private baseUrl = process.env.N8N_BASE_URL || 'http://localhost:5678';
-  private apiKey = process.env.N8N_API_KEY;
+  private baseUrl = process.env.N8N_BASE_URL || 'http://localhost:5678'
+  private apiKey = process.env.N8N_API_KEY
 
   async createWorkflow(name: string, nodes: any[]) {
     const response = await fetch(`${this.baseUrl}/api/v1/workflows`, {
       method: 'POST',
       headers: {
         'X-N8N-API-KEY': this.apiKey!,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         name,
         nodes,
         connections: this.generateConnections(nodes),
         settings: {
-          executionOrder: 'v1'
-        }
-      })
-    });
+          executionOrder: 'v1',
+        },
+      }),
+    })
 
-    return response.json();
+    return response.json()
   }
 
   async triggerWebhook(webhookUrl: string, data: any) {
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data)
-    });
+      body: JSON.stringify(data),
+    })
 
-    return response.json();
+    return response.json()
   }
 
   private generateConnections(nodes: any[]) {
-    const connections: any = {};
+    const connections: any = {}
 
     for (let i = 0; i < nodes.length - 1; i++) {
-      const currentNode = nodes[i];
-      const nextNode = nodes[i + 1];
+      const currentNode = nodes[i]
+      const nextNode = nodes[i + 1]
 
       connections[currentNode.name] = {
-        main: [[{
-          node: nextNode.name,
-          type: 'main',
-          index: 0
-        }]]
-      };
+        main: [
+          [
+            {
+              node: nextNode.name,
+              type: 'main',
+              index: 0,
+            },
+          ],
+        ],
+      }
     }
 
-    return connections;
+    return connections
   }
 
   async syncMarketingWorkflow(workflowId: string) {
     const workflow = await prisma.workflow.findUnique({
-      where: { id: workflowId }
-    });
+      where: { id: workflowId },
+    })
 
-    if (!workflow) return;
+    if (!workflow) return
 
-    const steps = JSON.parse(workflow.steps);
-    const n8nNodes = this.convertToN8NNodes(steps);
+    const steps = JSON.parse(workflow.steps)
+    const n8nNodes = this.convertToN8NNodes(steps)
 
-    const n8nWorkflow = await this.createWorkflow(
-      workflow.name,
-      n8nNodes
-    );
+    const n8nWorkflow = await this.createWorkflow(workflow.name, n8nNodes)
 
     // Get webhook URL from the created workflow
-    const webhookNode = n8nNodes.find(n => n.type === 'n8n-nodes-base.webhook');
-    const webhookUrl = `${this.baseUrl}/webhook/${n8nWorkflow.id}/${webhookNode?.id}`;
+    const webhookNode = n8nNodes.find((n) => n.type === 'n8n-nodes-base.webhook')
+    const webhookUrl = `${this.baseUrl}/webhook/${n8nWorkflow.id}/${webhookNode?.id}`
 
     await prisma.workflow.update({
       where: { id: workflowId },
       data: {
         n8nWorkflowId: n8nWorkflow.id,
-        n8nWebhookUrl: webhookUrl
-      }
-    });
+        n8nWebhookUrl: webhookUrl,
+      },
+    })
 
-    return n8nWorkflow;
+    return n8nWorkflow
   }
 
   private convertToN8NNodes(steps: any[]): any[] {
-    const nodes: any[] = [];
+    const nodes: any[] = []
 
     // Add webhook trigger
     nodes.push({
@@ -917,23 +917,23 @@ export class N8NIntegration {
       parameters: {
         path: 'marketing-trigger',
         responseMode: 'onReceived',
-        responseData: 'firstEntryJson'
-      }
-    });
+        responseData: 'firstEntryJson',
+      },
+    })
 
     // Convert each step to N8N node
     steps.forEach((step, index) => {
-      const node = this.stepToN8NNode(step, index);
+      const node = this.stepToN8NNode(step, index)
       if (node) {
-        nodes.push(node);
+        nodes.push(node)
       }
-    });
+    })
 
-    return nodes;
+    return nodes
   }
 
   private stepToN8NNode(step: any, index: number): any {
-    const position = [250 + (index + 1) * 200, 300];
+    const position = [250 + (index + 1) * 200, 300]
 
     switch (step.type) {
       case 'email':
@@ -945,9 +945,9 @@ export class N8NIntegration {
             fromEmail: step.config.fromEmail,
             toEmail: '={{$json["customer"]["email"]}}',
             subject: step.config.subject,
-            html: step.config.html
-          }
-        };
+            html: step.config.html,
+          },
+        }
 
       case 'webhook':
         return {
@@ -961,12 +961,12 @@ export class N8NIntegration {
               parameter: [
                 {
                   name: 'data',
-                  value: '={{$json}}'
-                }
-              ]
-            }
-          }
-        };
+                  value: '={{$json}}',
+                },
+              ],
+            },
+          },
+        }
 
       case 'wait':
         return {
@@ -975,12 +975,12 @@ export class N8NIntegration {
           position,
           parameters: {
             amount: step.config.amount,
-            unit: step.config.unit
-          }
-        };
+            unit: step.config.unit,
+          },
+        }
 
       default:
-        return null;
+        return null
     }
   }
 }
@@ -1115,4 +1115,4 @@ export default async function MarketingAnalytics() {
 
 ---
 
-*This shard documents the implementation of GangRun Printing's comprehensive marketing automation platform, demonstrating how Alex built an enterprise-grade solution that rivals established platforms while maintaining the flexibility and customization needed for the printing industry.*
+_This shard documents the implementation of GangRun Printing's comprehensive marketing automation platform, demonstrating how Alex built an enterprise-grade solution that rivals established platforms while maintaining the flexibility and customization needed for the printing industry._

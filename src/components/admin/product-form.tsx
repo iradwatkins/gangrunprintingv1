@@ -16,9 +16,10 @@ import {
 } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
+
 import { Separator } from '@/components/ui/separator'
 import toast from '@/lib/toast'
+import { generateSlug } from '@/lib/utils'
 import {
   Package,
   DollarSign,
@@ -105,13 +106,6 @@ export function ProductForm({ product }: ProductFormProps) {
     } catch (error) {
       console.error('Failed to fetch paper stocks:', error)
     }
-  }
-
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
   }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

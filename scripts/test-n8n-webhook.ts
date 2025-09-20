@@ -43,24 +43,24 @@ const testEvents: TestEvent[] = [
             size: '3.5" x 2"',
             paperStock: '16pt Silk',
             coating: 'UV Coating',
-            sides: 'Double'
-          }
+            sides: 'Double',
+          },
         },
         {
           productName: 'Flyers',
           quantity: 500,
-          price: 150.00,
+          price: 150.0,
           options: {
             size: '8.5" x 11"',
             paperStock: '100lb Gloss',
             coating: 'Aqueous',
-            sides: 'Double'
-          }
-        }
+            sides: 'Double',
+          },
+        },
       ],
       status: 'PENDING_PAYMENT',
-      createdAt: new Date().toISOString()
-    }
+      createdAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Payment Received',
@@ -72,8 +72,8 @@ const testEvents: TestEvent[] = [
       paymentMethod: 'card',
       transactionId: 'sq_trans_123456789',
       customerEmail: 'test@example.com',
-      receivedAt: new Date().toISOString()
-    }
+      receivedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Order Status Changed',
@@ -84,8 +84,8 @@ const testEvents: TestEvent[] = [
       previousStatus: 'PENDING_PAYMENT',
       newStatus: 'PAID',
       customerEmail: 'test@example.com',
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'File Uploaded',
@@ -97,8 +97,8 @@ const testEvents: TestEvent[] = [
       fileSize: 2548576,
       fileType: 'application/pdf',
       uploadedBy: 'test@example.com',
-      uploadedAt: new Date().toISOString()
-    }
+      uploadedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Vendor Assigned',
@@ -109,8 +109,8 @@ const testEvents: TestEvent[] = [
       vendorId: 'vendor-001',
       vendorName: 'Premium Print Co',
       vendorEmail: 'orders@premiumprint.com',
-      assignedAt: new Date().toISOString()
-    }
+      assignedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Order Shipped',
@@ -122,8 +122,8 @@ const testEvents: TestEvent[] = [
       carrier: 'UPS',
       estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
       customerEmail: 'test@example.com',
-      shippedAt: new Date().toISOString()
-    }
+      shippedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Low Stock Alert',
@@ -134,8 +134,8 @@ const testEvents: TestEvent[] = [
       currentStock: 5,
       minimumStock: 10,
       sku: 'BC-16PT-SILK',
-      alertedAt: new Date().toISOString()
-    }
+      alertedAt: new Date().toISOString(),
+    },
   },
   {
     name: 'Daily Report',
@@ -146,12 +146,10 @@ const testEvents: TestEvent[] = [
       ordersCompleted: 12,
       totalRevenue: 4567.89,
       pendingOrders: 8,
-      issues: [
-        { orderId: 'issue-001', type: 'file_missing', severity: 'medium' }
-      ],
-      generatedAt: new Date().toISOString()
-    }
-  }
+      issues: [{ orderId: 'issue-001', type: 'file_missing', severity: 'medium' }],
+      generatedAt: new Date().toISOString(),
+    },
+  },
 ]
 
 // Send webhook
@@ -161,16 +159,16 @@ async function sendWebhook(event: TestEvent): Promise<boolean> {
       event: event.event,
       data: event.data,
       timestamp: new Date().toISOString(),
-      source: 'gangrunprinting-test'
+      source: 'gangrunprinting-test',
     }
 
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(N8N_API_KEY && { 'X-N8N-API-Key': N8N_API_KEY })
+        ...(N8N_API_KEY && { 'X-N8N-API-Key': N8N_API_KEY }),
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     if (response.ok) {
@@ -206,12 +204,12 @@ async function sendWebhook(event: TestEvent): Promise<boolean> {
 async function testConnection(): Promise<boolean> {
   console.log(`\n${BLUE}Testing N8N Connection...${RESET}`)
   console.log(`URL: ${N8N_WEBHOOK_URL}`)
-  
+
   try {
     const response = await fetch(N8N_WEBHOOK_URL, {
-      method: 'GET'
+      method: 'GET',
     })
-    
+
     if (response.status === 404) {
       console.log(`${YELLOW}⚠${RESET} Webhook endpoint not found (404)`)
       console.log('  └─ This is expected if the webhook only accepts POST requests')
@@ -240,7 +238,7 @@ async function main() {
 
   // Test connection first
   const connected = await testConnection()
-  
+
   if (!connected) {
     console.log(`\n${RED}Cannot connect to N8N webhook. Please check:${RESET}`)
     console.log('1. N8N workflow is active')
@@ -253,34 +251,38 @@ async function main() {
   console.log('================================================\n')
 
   const results: { name: string; success: boolean }[] = []
-  
+
   for (const event of testEvents) {
     const success = await sendWebhook(event)
     results.push({ name: event.name, success })
-    
+
     // Small delay between requests
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 500))
   }
 
   // Summary
   console.log('\n================================================')
   console.log('  Test Summary')
   console.log('================================================')
-  
-  const successful = results.filter(r => r.success).length
-  const failed = results.filter(r => !r.success).length
-  
+
+  const successful = results.filter((r) => r.success).length
+  const failed = results.filter((r) => !r.success).length
+
   console.log(`\n  Total: ${results.length}`)
   console.log(`  ${GREEN}Successful: ${successful}${RESET}`)
   console.log(`  ${RED}Failed: ${failed}${RESET}`)
 
   if (failed > 0) {
     console.log('\n  Failed Events:')
-    results.filter(r => !r.success).forEach(r => {
-      console.log(`  ${RED}✗ ${r.name}${RESET}`)
-    })
-    
-    console.log(`\n${YELLOW}Note:${RESET} If all events failed with 404, the webhook may not be configured in N8N yet.`)
+    results
+      .filter((r) => !r.success)
+      .forEach((r) => {
+        console.log(`  ${RED}✗ ${r.name}${RESET}`)
+      })
+
+    console.log(
+      `\n${YELLOW}Note:${RESET} If all events failed with 404, the webhook may not be configured in N8N yet.`
+    )
     console.log('Follow the setup instructions in n8n/README.md')
   } else {
     console.log(`\n${GREEN}✓ All webhook events sent successfully!${RESET}`)
@@ -295,20 +297,26 @@ async function main() {
   if (N8N_API_KEY) {
     console.log(`  -H "X-N8N-API-Key: ${N8N_API_KEY}" \\`)
   }
-  console.log(`  -d '${JSON.stringify({
-    event: 'order.created',
-    data: {
-      orderNumber: 'TEST-001',
-      customerEmail: 'test@example.com',
-      total: 99.99
-    },
-    timestamp: new Date().toISOString(),
-    source: 'gangrunprinting'
-  }, null, 2)}'`)
+  console.log(
+    `  -d '${JSON.stringify(
+      {
+        event: 'order.created',
+        data: {
+          orderNumber: 'TEST-001',
+          customerEmail: 'test@example.com',
+          total: 99.99,
+        },
+        timestamp: new Date().toISOString(),
+        source: 'gangrunprinting',
+      },
+      null,
+      2
+    )}'`
+  )
 }
 
 // Run tests
-main().catch(error => {
+main().catch((error) => {
   console.error(`\n${RED}Fatal error:${RESET}`, error)
   process.exit(1)
 })

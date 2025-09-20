@@ -11,42 +11,42 @@ async function seedQuantities() {
       value: 250,
       isCustom: false,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: '500',
       value: 500,
       isCustom: false,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: '1000',
       value: 1000,
       isCustom: false,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: '2500',
       value: 2500,
       isCustom: false,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: '5000',
       value: 5000,
       isCustom: false,
       sortOrder: 5,
-      isActive: true
+      isActive: true,
     },
     {
       name: '10000',
       value: 10000,
       isCustom: false,
       sortOrder: 6,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Custom...',
@@ -55,8 +55,8 @@ async function seedQuantities() {
       minValue: 100,
       maxValue: 100000,
       sortOrder: 7,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   for (const quantity of quantitiesData) {
@@ -64,7 +64,7 @@ async function seedQuantities() {
       await prisma.quantity.upsert({
         where: { name: quantity.name },
         update: quantity,
-        create: quantity
+        create: quantity,
       })
       console.log(`✓ Seeded quantity: ${quantity.name}`)
     } catch (error) {

@@ -12,10 +12,10 @@ async function createRealProducts() {
     const sizeGroups = await prisma.sizeGroup.findMany()
     const quantityGroups = await prisma.quantityGroup.findMany()
 
-    const categoryMap = Object.fromEntries(categories.map(c => [c.name, c.id]))
-    const paperStockSetMap = Object.fromEntries(paperStockSets.map(p => [p.name, p.id]))
-    const sizeGroupMap = Object.fromEntries(sizeGroups.map(s => [s.name, s.id]))
-    const quantityGroupMap = Object.fromEntries(quantityGroups.map(q => [q.name, q.id]))
+    const categoryMap = Object.fromEntries(categories.map((c) => [c.name, c.id]))
+    const paperStockSetMap = Object.fromEntries(paperStockSets.map((p) => [p.name, p.id]))
+    const sizeGroupMap = Object.fromEntries(sizeGroups.map((s) => [s.name, s.id]))
+    const quantityGroupMap = Object.fromEntries(quantityGroups.map((q) => [q.name, q.id]))
 
     console.log('📋 Available mappings:')
     console.log('Categories:', Object.keys(categoryMap))
@@ -29,7 +29,8 @@ async function createRealProducts() {
         name: 'Premium Business Cards',
         slug: 'premium-business-cards',
         sku: 'BC-PREM-001',
-        description: 'Professional business cards with full-color printing on premium 16pt card stock. Features silk lamination for a smooth, luxurious feel that resists water, smudges, and daily wear. Perfect for making a lasting impression at networking events and meetings.',
+        description:
+          'Professional business cards with full-color printing on premium 16pt card stock. Features silk lamination for a smooth, luxurious feel that resists water, smudges, and daily wear. Perfect for making a lasting impression at networking events and meetings.',
         shortDescription: 'Premium 16pt business cards with silk lamination',
         categoryId: categoryMap['Business Cards'] || null,
         basePrice: 24.99,
@@ -40,7 +41,7 @@ async function createRealProducts() {
         maxGangQuantity: 5000,
         rushAvailable: true,
         rushDays: 1,
-        rushFee: 35.00,
+        rushFee: 35.0,
         isFeatured: true,
         isActive: true,
         createdAt: new Date(),
@@ -50,7 +51,8 @@ async function createRealProducts() {
         name: 'Marketing Flyers',
         slug: 'marketing-flyers',
         sku: 'FLY-MKT-001',
-        description: 'High-quality marketing flyers printed on 100lb gloss text paper with vibrant full-color printing. Perfect for promotional campaigns, event announcements, and direct mail marketing. Features aqueous coating for enhanced durability and color pop.',
+        description:
+          'High-quality marketing flyers printed on 100lb gloss text paper with vibrant full-color printing. Perfect for promotional campaigns, event announcements, and direct mail marketing. Features aqueous coating for enhanced durability and color pop.',
         shortDescription: 'Full-color flyers on 100lb gloss text',
         categoryId: categoryMap['Flyers & Brochures'] || null,
         basePrice: 39.99,
@@ -61,7 +63,7 @@ async function createRealProducts() {
         maxGangQuantity: 10000,
         rushAvailable: true,
         rushDays: 1,
-        rushFee: 45.00,
+        rushFee: 45.0,
         isFeatured: true,
         isActive: true,
         createdAt: new Date(),
@@ -71,7 +73,8 @@ async function createRealProducts() {
         name: 'Large Format Posters',
         slug: 'large-format-posters',
         sku: 'POS-LRG-001',
-        description: 'Eye-catching large format posters printed on heavy 14pt C2S poster stock with semi-gloss finish. Ideal for trade shows, retail displays, and event promotions. Suitable for both indoor and outdoor use with optional lamination for extended durability.',
+        description:
+          'Eye-catching large format posters printed on heavy 14pt C2S poster stock with semi-gloss finish. Ideal for trade shows, retail displays, and event promotions. Suitable for both indoor and outdoor use with optional lamination for extended durability.',
         shortDescription: '18" x 24" posters on 14pt stock',
         categoryId: categoryMap['Posters'] || null,
         basePrice: 19.99,
@@ -82,12 +85,12 @@ async function createRealProducts() {
         maxGangQuantity: null,
         rushAvailable: true,
         rushDays: 0, // Same day
-        rushFee: 25.00,
+        rushFee: 25.0,
         isFeatured: true,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
     ]
 
     // Create products
@@ -95,7 +98,7 @@ async function createRealProducts() {
       try {
         // Check if product already exists
         const existing = await prisma.product.findUnique({
-          where: { sku: productData.sku }
+          where: { sku: productData.sku },
         })
 
         if (existing) {
@@ -105,7 +108,7 @@ async function createRealProducts() {
 
         // Create the product
         const product = await prisma.product.create({
-          data: productData
+          data: productData,
         })
 
         console.log(`✅ Created product: ${product.name}`)
@@ -116,8 +119,8 @@ async function createRealProducts() {
             data: {
               productId: product.id,
               paperStockSetId: paperStockSetMap['Standard Cardstock Set'],
-              isDefault: true
-            }
+              isDefault: true,
+            },
           })
           console.log(`   📎 Linked paper stock set`)
         }
@@ -136,15 +139,18 @@ async function createRealProducts() {
           await prisma.productSizeGroup.create({
             data: {
               productId: product.id,
-              sizeGroupId: sizeGroupId
-            }
+              sizeGroupId: sizeGroupId,
+            },
           })
           console.log(`   📐 Linked size group`)
         }
 
         // Add quantity group association
         let quantityGroupId = null
-        if (product.name.includes('Business Cards') && quantityGroupMap['Business Card Quantities']) {
+        if (
+          product.name.includes('Business Cards') &&
+          quantityGroupMap['Business Card Quantities']
+        ) {
           quantityGroupId = quantityGroupMap['Business Card Quantities']
         } else if (quantityGroupMap['Basic Gangrun Price']) {
           quantityGroupId = quantityGroupMap['Basic Gangrun Price']
@@ -154,14 +160,13 @@ async function createRealProducts() {
           await prisma.productQuantityGroup.create({
             data: {
               productId: product.id,
-              quantityGroupId: quantityGroupId
-            }
+              quantityGroupId: quantityGroupId,
+            },
           })
           console.log(`   🔢 Linked quantity group`)
         }
 
         console.log(`   ✨ Product setup complete: ${product.name}`)
-
       } catch (error) {
         console.error(`❌ Error creating product ${productData.name}:`, error)
       }
@@ -171,19 +176,19 @@ async function createRealProducts() {
     const createdProducts = await prisma.product.findMany({
       where: {
         sku: {
-          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-LRG-001']
-        }
+          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-LRG-001'],
+        },
       },
       include: {
         ProductCategory: true,
         productPaperStockSets: true,
         productSizeGroups: true,
-        productQuantityGroups: true
-      }
+        productQuantityGroups: true,
+      },
     })
 
     console.log('\n📊 Summary of created products:')
-    createdProducts.forEach(product => {
+    createdProducts.forEach((product) => {
       console.log(`\n${product.name}:`)
       console.log(`  - SKU: ${product.sku}`)
       console.log(`  - Category: ${product.ProductCategory?.name || 'None'}`)
@@ -193,7 +198,6 @@ async function createRealProducts() {
       console.log(`  - Quantity Groups: ${product.productQuantityGroups.length}`)
       console.log(`  - URL: http://localhost:3002/products/${product.slug}`)
     })
-
   } catch (error) {
     console.error('Fatal error:', error)
   } finally {

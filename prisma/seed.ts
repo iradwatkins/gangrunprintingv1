@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 async function main() {
   // Create admin user
   const hashedPassword = await bcrypt.hash('Iw2006js!', 10)
-  
+
   const adminUser = await prisma.user.upsert({
     where: { email: 'iradwatkins@gmail.com' },
     update: {
@@ -31,7 +31,7 @@ async function main() {
     'Banners',
     'Stickers',
     'T-Shirts',
-    'Promotional Items'
+    'Promotional Items',
   ]
 
   // Create sample products
@@ -81,7 +81,7 @@ async function main() {
       description: 'Durable outdoor vinyl banners',
       category: 'Banners',
       basePrice: 79.99,
-      sizes: ['2\' x 4\'', '3\' x 6\'', '4\' x 8\''],
+      sizes: ["2' x 4'", "3' x 6'", "4' x 8'"],
       paperTypes: ['13oz Vinyl', '18oz Vinyl'],
       finishes: ['Matte', 'Gloss'],
       turnaroundDays: 7,
@@ -105,11 +105,11 @@ async function main() {
       paperTypes: ['100% Cotton', '50/50 Blend', 'Tri-Blend'],
       finishes: ['Screen Print', 'DTG', 'Vinyl Transfer'],
       turnaroundDays: 10,
-    }
+    },
   ]
 
   console.log('Seeding products...')
-  
+
   for (const product of products) {
     await prisma.$executeRaw`
       INSERT INTO "Product" (name, description, category, "basePrice", sizes, "paperTypes", finishes, "turnaroundDays", "createdAt", "updatedAt")

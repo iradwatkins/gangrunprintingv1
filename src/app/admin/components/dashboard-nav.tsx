@@ -2,19 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
 import {
-  Home,
-  ShoppingCart,
-  Package,
-  Users,
   BarChart3,
-  Settings,
+  CreditCard,
+  FileText,
+  Home,
+  Package,
   Palette,
   Printer,
-  FileText,
-  CreditCard,
+  Settings,
+  ShoppingCart,
+  Users,
 } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
 
 const items = [
   {

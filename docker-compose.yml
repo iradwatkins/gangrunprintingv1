@@ -9,7 +9,7 @@ services:
     image: gangrunprinting:v1
     container_name: gangrunprinting_app
     ports:
-      - "3002:3002"
+      - '3002:3002'
     env_file:
       - .env
     environment:
@@ -18,10 +18,10 @@ services:
       - PORT=3002
       - HOSTNAME=0.0.0.0
       - TZ=America/Chicago
-      
+
       # Database - PostgreSQL
       - DATABASE_URL=${DATABASE_URL:-postgresql://gangrun_user:GangRun2024Secure@172.22.0.1:5432/gangrun_db}
-      
+
       # Redis
       - REDIS_URL=${REDIS_URL:-redis://redis_cache:6379}
       # Auth (Lucia)
@@ -29,13 +29,13 @@ services:
       - NEXTAUTH_URL=${NEXTAUTH_URL:-https://gangrunprinting.com}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://gangrunprinting.com}
       - AUTH_TRUST_HOST=true
-      
+
       # OAuth Providers (optional)
       - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
       - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
       # Admin
       - ADMIN_EMAIL=${ADMIN_EMAIL:-iradwatkins@gmail.com}
-      
+
       # Square Payments (Primary)
       - SQUARE_ACCESS_TOKEN=${SQUARE_ACCESS_TOKEN}
       - SQUARE_ENVIRONMENT=${SQUARE_ENVIRONMENT:-production}
@@ -58,7 +58,7 @@ services:
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
       - R2_BUCKET_NAME=${R2_BUCKET_NAME:-gangrun-files}
       - R2_PUBLIC_URL=${R2_PUBLIC_URL}
-      
+
       # Email (Resend)
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-support@gangrunprinting.com}
@@ -67,7 +67,7 @@ services:
       - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
       - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
       - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:support@gangrunprinting.com}
-      
+
       # Bull Queue
       - BULL_REDIS_HOST=redis_cache
       - BULL_REDIS_PORT=6379

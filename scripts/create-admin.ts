@@ -21,7 +21,7 @@ async function createAdminUser() {
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
 
     if (existingUser) {
@@ -31,8 +31,8 @@ async function createAdminUser() {
         data: {
           role: 'ADMIN',
           password: hashedPassword,
-          name: 'Ira Watkins'
-        }
+          name: 'Ira Watkins',
+        },
       })
       console.log('✅ Updated existing user to admin:', updatedUser.email)
     } else {
@@ -43,8 +43,8 @@ async function createAdminUser() {
           password: hashedPassword,
           name: 'Ira Watkins',
           role: 'ADMIN',
-          emailVerified: new Date()
-        }
+          emailVerified: new Date(),
+        },
       })
       console.log('✅ Created new admin user:', newUser.email)
     }
@@ -54,7 +54,6 @@ async function createAdminUser() {
     console.log('Role: ADMIN')
     console.log('\n🔗 Login URL: https://gangrunprinting.com/admin/login')
     console.log('\n🔒 Note: Use the password you provided via ADMIN_PASSWORD environment variable')
-
   } catch (error) {
     console.error('❌ Error creating admin user:', error)
   } finally {

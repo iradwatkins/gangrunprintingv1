@@ -14,6 +14,7 @@
    - Click **Save**
 
 4. **Add Environment Variables** (copy this entire block):
+
 ```
 DATABASE_URL=postgresql://gangrun_user:GangRun2024Secure@postgres:5432/gangrun_db
 AUTH_SECRET=MBRKOKyebhm9xOfSyP/IAPKAmTu8nGhhZx710URU6bo=
@@ -44,11 +45,13 @@ SENDGRID_FROM_EMAIL=support@gangrunprinting.com
 ## 🎯 Success Indicators
 
 After clicking Deploy, you should see:
+
 1. "Building image..." ✅
 2. "Container started" ✅
 3. "Health check passed" ✅
 
 Then visit: **https://gangrunprinting.com**
+
 - No more 502! ✅
 - Login works! ✅
 - Admin dashboard accessible! ✅
@@ -56,6 +59,7 @@ Then visit: **https://gangrunprinting.com**
 ## 🔧 If Any Issues
 
 The docker-compose.yml now has:
+
 - Proper health checks with 60s startup time
 - Dokploy network configuration
 - All Traefik labels for routing

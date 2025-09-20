@@ -1,24 +1,30 @@
 # Product Page Rendering Fix
 
 ## Issue Summary
+
 **Date**: 2025-09-18
 **Problem**: Product page at `/products/large-format-posters` was showing JSON parsing errors and containers were not rendering despite the sidebar working correctly.
 
 ## Error Details
+
 ```
 SyntaxError: Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)
 ```
+
 The error indicated a BOM (Byte Order Mark) character `﻿` at the beginning of JSON responses.
 
 ## Root Cause Analysis
 
 ### Primary Issue: useApi Hook Complexity
+
 The product page was using the `useApi` hook with complex caching, retry logic, and promise management that was:
+
 1. Causing race conditions during data fetching
 2. Preventing proper error recovery
 3. Similar to the issue we fixed in `/admin/products/new` with `useApiBundle`
 
 ### Secondary Issue: JSON Parsing
+
 BOM characters or malformed responses were causing JSON parsing failures without proper error handling.
 
 ## Solution Implemented
@@ -26,14 +32,17 @@ BOM characters or malformed responses were causing JSON parsing failures without
 ### 1. Replaced useApi Hook with Simple Fetch Pattern
 
 **Before:**
+
 ```tsx
-const { data: productData, loading: productLoading, error: productError } = useApi<{ product: Product }>(
-  `/api/products/by-slug/${params.slug}`,
-  { ttl: 2 * 60 * 1000 }
-)
+const {
+  data: productData,
+  loading: productLoading,
+  error: productError,
+} = useApi<{ product: Product }>(`/api/products/by-slug/${params.slug}`, { ttl: 2 * 60 * 1000 })
 ```
 
 **After:**
+
 ```tsx
 useEffect(() => {
   const fetchProductData = async () => {
@@ -57,6 +66,7 @@ useEffect(() => {
 ### 2. Enhanced JSON Parsing in api-cache.ts
 
 Added `parseJsonSafely()` function that:
+
 - Detects and removes BOM characters (0xFEFF)
 - Provides detailed error logging with character codes
 - Shows response preview for debugging
@@ -65,7 +75,7 @@ Added `parseJsonSafely()` function that:
 function parseJsonSafely<T>(text: string, url: string): T {
   // Remove BOM if present
   let cleanText = text
-  if (text.charCodeAt(0) === 0xFEFF) {
+  if (text.charCodeAt(0) === 0xfeff) {
     console.warn(`BOM character detected in response from ${url}`)
     cleanText = text.slice(1)
   }
@@ -80,7 +90,10 @@ function parseJsonSafely<T>(text: string, url: string): T {
       url,
       error: error.message,
       preview: text.substring(0, 100),
-      charCodes: text.substring(0, 10).split('').map(c => c.charCodeAt(0))
+      charCodes: text
+        .substring(0, 10)
+        .split('')
+        .map((c) => c.charCodeAt(0)),
     })
     throw new Error(`JSON parse error for ${url}`)
   }
@@ -90,6 +103,7 @@ function parseJsonSafely<T>(text: string, url: string): T {
 ### 3. Improved Error Handling
 
 Added comprehensive error states with debugging information:
+
 - Shows failing URL
 - Displays error details
 - Provides slug and endpoint information
@@ -98,6 +112,7 @@ Added comprehensive error states with debugging information:
 ### 4. Created Debug Page
 
 Added `/products/[slug]/debug-page.tsx` for isolating data fetching issues:
+
 - Minimal UI to test data fetching
 - Detailed console logging
 - Raw response display

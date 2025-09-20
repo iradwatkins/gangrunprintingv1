@@ -7,7 +7,6 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
     // Remove BOM (Byte Order Mark) if present
     let cleanText = text
     if (text.charCodeAt(0) === 0xfeff) {
-      console.warn(`BOM character detected${context ? ` in ${context}` : ''}`)
       cleanText = text.slice(1)
     }
 
@@ -30,13 +29,11 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
       .map((c) => c.charCodeAt(0))
       .join(', ')
 
-    console.error('JSON Parse Error Details:', {
-      context,
+    console.error('JSON parsing failed:', {
       error: errorMessage,
       preview,
       charCodes,
-      textLength: text.length,
-      startsWithBOM: text.charCodeAt(0) === 0xfeff,
+      context,
     })
 
     throw new Error(`JSON parse error${context ? ` for ${context}` : ''}: ${errorMessage}`)

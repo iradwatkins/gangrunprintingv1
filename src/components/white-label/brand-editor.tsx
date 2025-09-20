@@ -15,14 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs'
 import { ColorPicker } from '@/components/ui/color-picker'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { CodeEditor } from '@/components/ui/code-editor'
 import { useToast } from '@/hooks/use-toast'
-import { Save, RefreshCw, Eye, Copy, Download, Upload } from 'lucide-react'
+import { Save, RefreshCw, Eye, Download, Upload } from 'lucide-react'
 
 interface BrandEditorProps {
   section: 'colors' | 'typography' | 'logos' | 'layout' | 'custom' | 'email'

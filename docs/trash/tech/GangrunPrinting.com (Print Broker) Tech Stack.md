@@ -36,4 +36,3 @@
 \- Bull (order routing)  
 \- Sharp (image processing)  
 \- Resend (email)
-

@@ -3,20 +3,20 @@ import { test, expect } from '@playwright/test'
 test.describe('Admin Products Page Tests', () => {
   test('should display products list with newly seeded products', async ({ page }) => {
     // Enable console logging for debugging
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'log' || msg.type() === 'error') {
         console.log(`[${msg.type().toUpperCase()}] ${msg.text()}`)
       }
     })
 
     // Track network requests to API
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/')) {
         console.log(`[REQUEST] ${request.method()} ${request.url()}`)
       }
     })
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/')) {
         console.log(`[RESPONSE] ${response.status()} ${response.url()}`)
       }
@@ -63,7 +63,7 @@ test.describe('Admin Products Page Tests', () => {
         'Full Color Flyers',
         'Glossy Postcards',
         'Large Format Posters',
-        'Die Cut Stickers'
+        'Die Cut Stickers',
       ]
 
       for (const productName of expectedProducts) {
@@ -94,7 +94,9 @@ test.describe('Admin Products Page Tests', () => {
       }
 
       // Check stats cards at the top
-      const statsCards = page.locator('[class*="card"]').filter({ hasText: /Total Products|Featured|Gang Run|With Images/ })
+      const statsCards = page
+        .locator('[class*="card"]')
+        .filter({ hasText: /Total Products|Featured|Gang Run|With Images/ })
       const statsCount = await statsCards.count()
       console.log('📈 Stats cards found:', statsCount)
 
@@ -106,7 +108,9 @@ test.describe('Admin Products Page Tests', () => {
       }
 
       // Test "Add Product" button functionality
-      const addButton = page.locator('text=Add Product').or(page.locator('a[href*="/admin/products/new"]'))
+      const addButton = page
+        .locator('text=Add Product')
+        .or(page.locator('a[href*="/admin/products/new"]'))
       const addButtonVisible = await addButton.isVisible()
       console.log('➕ Add Product button visible:', addButtonVisible)
 
@@ -130,7 +134,10 @@ test.describe('Admin Products Page Tests', () => {
             // Check for key form elements
             const nameField = await page.locator('input[id="name"]').isVisible()
             const skuField = await page.locator('input[id="sku"]').isVisible()
-            const categorySelect = await page.locator('select, [role="combobox"]').first().isVisible()
+            const categorySelect = await page
+              .locator('select, [role="combobox"]')
+              .first()
+              .isVisible()
 
             console.log('📋 Form fields:')
             console.log(`   Name field: ${nameField}`)
@@ -139,14 +146,15 @@ test.describe('Admin Products Page Tests', () => {
           }
         }
       }
-
     } else {
       // Check for "no products" message
       const noProductsMessage = await page.locator('text*=No products').isVisible()
       console.log('📭 "No products" message visible:', noProductsMessage)
 
       if (noProductsMessage) {
-        console.log('⚠️ No products are displayed - this suggests the seeding may not have worked or there\'s a loading issue')
+        console.log(
+          "⚠️ No products are displayed - this suggests the seeding may not have worked or there's a loading issue"
+        )
       }
     }
 
@@ -156,7 +164,7 @@ test.describe('Admin Products Page Tests', () => {
 
     // Check for any JavaScript errors in console
     const errors = []
-    page.on('pageerror', error => errors.push(error.message))
+    page.on('pageerror', (error) => errors.push(error.message))
 
     console.log('🔍 Final test summary:')
     console.log(`   URL: ${page.url()}`)
@@ -188,17 +196,26 @@ test.describe('Admin Products Page Tests', () => {
       console.log('🎯 Testing actions for:', productName)
 
       // Test View button (eye icon)
-      const viewButton = firstProductRow.locator('button, a').filter({ has: page.locator('[data-testid="eye"], .lucide-eye, svg') }).first()
+      const viewButton = firstProductRow
+        .locator('button, a')
+        .filter({ has: page.locator('[data-testid="eye"], .lucide-eye, svg') })
+        .first()
       const viewButtonExists = await viewButton.isVisible()
       console.log('👁️ View button visible:', viewButtonExists)
 
       // Test Edit button
-      const editButton = firstProductRow.locator('button, a').filter({ has: page.locator('[data-testid="edit"], .lucide-edit, svg') }).first()
+      const editButton = firstProductRow
+        .locator('button, a')
+        .filter({ has: page.locator('[data-testid="edit"], .lucide-edit, svg') })
+        .first()
       const editButtonExists = await editButton.isVisible()
       console.log('✏️ Edit button visible:', editButtonExists)
 
       // Test Delete button
-      const deleteButton = firstProductRow.locator('button').filter({ has: page.locator('[data-testid="trash"], .lucide-trash, svg') }).first()
+      const deleteButton = firstProductRow
+        .locator('button')
+        .filter({ has: page.locator('[data-testid="trash"], .lucide-trash, svg') })
+        .first()
       const deleteButtonExists = await deleteButton.isVisible()
       console.log('🗑️ Delete button visible:', deleteButtonExists)
 

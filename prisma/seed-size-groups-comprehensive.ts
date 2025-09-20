@@ -16,7 +16,7 @@ async function main() {
       customMinHeight: 1.5,
       customMaxHeight: 3.5,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Postcard Sizes',
@@ -28,7 +28,7 @@ async function main() {
       customMinHeight: 3.5,
       customMaxHeight: 11,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Flyer Sizes',
@@ -40,7 +40,7 @@ async function main() {
       customMinHeight: 4,
       customMaxHeight: 17,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Brochure Sizes',
@@ -52,7 +52,7 @@ async function main() {
       customMinHeight: 8,
       customMaxHeight: 17,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Poster Sizes',
@@ -64,7 +64,7 @@ async function main() {
       customMinHeight: 11,
       customMaxHeight: 96,
       sortOrder: 5,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Banner Sizes',
@@ -76,7 +76,7 @@ async function main() {
       customMinHeight: 2,
       customMaxHeight: 50,
       sortOrder: 6,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Sticker Sizes',
@@ -88,7 +88,7 @@ async function main() {
       customMinHeight: 0.5,
       customMaxHeight: 12,
       sortOrder: 7,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Label Sizes',
@@ -100,7 +100,7 @@ async function main() {
       customMinHeight: 0.5,
       customMaxHeight: 11,
       sortOrder: 8,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Envelope Sizes',
@@ -112,7 +112,7 @@ async function main() {
       customMinHeight: 3.5,
       customMaxHeight: 13,
       sortOrder: 9,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Letterhead Sizes',
@@ -124,7 +124,7 @@ async function main() {
       customMinHeight: 8,
       customMaxHeight: 14,
       sortOrder: 10,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Greeting Card Sizes',
@@ -136,7 +136,7 @@ async function main() {
       customMinHeight: 5,
       customMaxHeight: 11,
       sortOrder: 11,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Bookmark Sizes',
@@ -148,7 +148,7 @@ async function main() {
       customMinHeight: 4,
       customMaxHeight: 10,
       sortOrder: 12,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Rack Card Sizes',
@@ -160,7 +160,7 @@ async function main() {
       customMinHeight: 8,
       customMaxHeight: 11,
       sortOrder: 13,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Door Hanger Sizes',
@@ -172,7 +172,7 @@ async function main() {
       customMinHeight: 8,
       customMaxHeight: 14,
       sortOrder: 14,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Presentation Folder Sizes',
@@ -184,8 +184,8 @@ async function main() {
       customMinHeight: 12,
       customMaxHeight: 18,
       sortOrder: 15,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   let createdCount = 0
@@ -194,7 +194,7 @@ async function main() {
       await prisma.sizeGroup.upsert({
         where: { name: sizeGroup.name },
         update: sizeGroup,
-        create: sizeGroup
+        create: sizeGroup,
       })
       createdCount++
       console.log(`✓ Created/Updated size group: ${sizeGroup.name}`)

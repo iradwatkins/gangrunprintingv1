@@ -12,26 +12,30 @@
 All shared services are already deployed and managed separately:
 
 ### 1. N8N Automation
+
 - **URL**: https://n8n.agistaffers.com
 - **Purpose**: Order automation, vendor integration, workflow management
 - **Webhook Endpoint**: https://n8n.agistaffers.com/webhook/gangrunprinting
 - **Configuration**: Set N8N_API_KEY in environment
 
 ### 2. Chatwoot Support
+
 - **URL**: https://chatwoot.agistaffers.com
 - **Purpose**: Live chat support for customers
-- **Configuration**: 
+- **Configuration**:
   1. Create new inbox for GangRun Printing in Chatwoot admin
   2. Get website token from inbox settings
   3. Set NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN in environment
 
 ### 3. Ollama AI
+
 - **URL**: http://72.60.28.175:11434
 - **Purpose**: AI-powered chat assistant
 - **Model**: llama3
 - **Note**: Shared instance, no additional configuration needed
 
 ### 4. MinIO Storage
+
 - **Endpoint**: Configured via Dokploy
 - **Bucket**: gangrun-files
 - **Purpose**: File storage for uploads and documents
@@ -98,6 +102,7 @@ npx tsx prisma/seed-products-comprehensive.ts
 ### 3. Configure Shared Services
 
 #### N8N Workflow
+
 1. Access N8N at https://n8n.agistaffers.com
 2. Create new workflow for GangRun Printing
 3. Add webhook trigger with path `/webhook/gangrunprinting`
@@ -105,6 +110,7 @@ npx tsx prisma/seed-products-comprehensive.ts
 5. Save and activate workflow
 
 #### Chatwoot Inbox
+
 1. Access Chatwoot at https://chatwoot.agistaffers.com
 2. Create new website inbox for gangrunprinting.com
 3. Copy website token
@@ -133,17 +139,20 @@ curl -X POST https://gangrunprinting.com/api/webhooks/n8n \
 ### Automated Backups
 
 Add to crontab on server:
+
 ```bash
 # Daily backup at 2 AM
 0 2 * * * /app/scripts/backup.sh
 ```
 
 ### Manual Backup
+
 ```bash
 ./scripts/backup.sh
 ```
 
 ### Restore from Backup
+
 ```bash
 ./scripts/restore.sh
 # Follow prompts to select backup file
@@ -152,11 +161,13 @@ Add to crontab on server:
 ## Monitoring
 
 ### Health Check Endpoints
+
 - Application: https://gangrunprinting.com/api/health
 - Chat Service: https://gangrunprinting.com/api/chat (GET)
 - N8N Webhook: https://gangrunprinting.com/api/webhooks/n8n (GET)
 
 ### Logs
+
 - Application logs: Available in Dokploy dashboard
 - N8N workflows: Check execution history in N8N
 - Chatwoot conversations: Monitor in Chatwoot dashboard

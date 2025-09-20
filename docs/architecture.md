@@ -14,10 +14,10 @@ The project was built from scratch using Next.js 15 with modern best practices. 
 
 ### Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-09-14 | 1.0 | Initial architecture document based on deployed implementation | Winston (Architect) |
-| 2025-09-15 | 1.1 | Updated with BMad Method compliance and remaining implementation details | Winston (Architect) |
+| Date       | Version | Description                                                              | Author              |
+| ---------- | ------- | ------------------------------------------------------------------------ | ------------------- |
+| 2025-09-14 | 1.0     | Initial architecture document based on deployed implementation           | Winston (Architect) |
+| 2025-09-15 | 1.1     | Updated with BMad Method compliance and remaining implementation details | Winston (Architect) |
 
 ## High Level Architecture
 
@@ -95,36 +95,38 @@ graph TB
 
 ### Technology Stack Table
 
-| Category | Technology | Version | Purpose | Rationale |
-|----------|------------|---------|---------|-----------|
-| Frontend Language | TypeScript | 5.9.2 | Type-safe development | Catch errors at compile time, better IDE support |
-| Frontend Framework | Next.js | 15.5.2 | Full-stack React framework | App Router, RSC, built-in optimization |
-| UI Component Library | shadcn/ui | Latest | Accessible components | Customizable, owns the code, Radix UI based |
-| State Management | Zustand | 5.0.4 | Client state management | Simple, TypeScript-friendly, minimal boilerplate |
-| Backend Language | TypeScript | 5.9.2 | Type-safe backend | Shared types with frontend |
-| Backend Framework | Next.js API Routes | 15.5.2 | API endpoints | Integrated with frontend, serverless-ready |
-| API Style | REST | - | HTTP APIs | Simple, well-understood, cacheable |
-| Database | PostgreSQL | 15 | Primary database | ACID compliance, JSON support for flexibility |
-| Cache | Redis | 7.0 | Session & data cache | High performance, pub/sub capability |
-| File Storage | MinIO | Latest | Object storage | S3-compatible, self-hosted option |
-| Authentication | NextAuth.js | 5.0.0-beta | Auth system | Flexible providers, database sessions |
-| Frontend Testing | Jest + React Testing Library | 29.5 | Unit/integration tests | Standard React testing stack |
-| Backend Testing | Jest | 29.5 | API testing | Consistent with frontend |
-| E2E Testing | Playwright | 1.49 | End-to-end tests | Cross-browser, reliable |
-| Build Tool | Next.js CLI | 15.5.2 | Build system | Integrated webpack config |
-| Bundler | Webpack (via Next.js) | 5 | Module bundling | Optimized by Next.js |
-| IaC Tool | Docker Compose | 2.0 | Infrastructure | Container orchestration |
-| CI/CD | GitHub Actions | - | Automation | Native GitHub integration |
-| Monitoring | Custom logging | - | Application logs | Simple file-based logging |
-| Logging | File-based | - | Log storage | Local file system |
-| CSS Framework | Tailwind CSS | 4.1.13 | Utility-first CSS | Rapid development, consistent design |
+| Category             | Technology                   | Version    | Purpose                    | Rationale                                        |
+| -------------------- | ---------------------------- | ---------- | -------------------------- | ------------------------------------------------ |
+| Frontend Language    | TypeScript                   | 5.9.2      | Type-safe development      | Catch errors at compile time, better IDE support |
+| Frontend Framework   | Next.js                      | 15.5.2     | Full-stack React framework | App Router, RSC, built-in optimization           |
+| UI Component Library | shadcn/ui                    | Latest     | Accessible components      | Customizable, owns the code, Radix UI based      |
+| State Management     | Zustand                      | 5.0.4      | Client state management    | Simple, TypeScript-friendly, minimal boilerplate |
+| Backend Language     | TypeScript                   | 5.9.2      | Type-safe backend          | Shared types with frontend                       |
+| Backend Framework    | Next.js API Routes           | 15.5.2     | API endpoints              | Integrated with frontend, serverless-ready       |
+| API Style            | REST                         | -          | HTTP APIs                  | Simple, well-understood, cacheable               |
+| Database             | PostgreSQL                   | 15         | Primary database           | ACID compliance, JSON support for flexibility    |
+| Cache                | Redis                        | 7.0        | Session & data cache       | High performance, pub/sub capability             |
+| File Storage         | MinIO                        | Latest     | Object storage             | S3-compatible, self-hosted option                |
+| Authentication       | NextAuth.js                  | 5.0.0-beta | Auth system                | Flexible providers, database sessions            |
+| Frontend Testing     | Jest + React Testing Library | 29.5       | Unit/integration tests     | Standard React testing stack                     |
+| Backend Testing      | Jest                         | 29.5       | API testing                | Consistent with frontend                         |
+| E2E Testing          | Playwright                   | 1.49       | End-to-end tests           | Cross-browser, reliable                          |
+| Build Tool           | Next.js CLI                  | 15.5.2     | Build system               | Integrated webpack config                        |
+| Bundler              | Webpack (via Next.js)        | 5          | Module bundling            | Optimized by Next.js                             |
+| IaC Tool             | Docker Compose               | 2.0        | Infrastructure             | Container orchestration                          |
+| CI/CD                | GitHub Actions               | -          | Automation                 | Native GitHub integration                        |
+| Monitoring           | Custom logging               | -          | Application logs           | Simple file-based logging                        |
+| Logging              | File-based                   | -          | Log storage                | Local file system                                |
+| CSS Framework        | Tailwind CSS                 | 4.1.13     | Utility-first CSS          | Rapid development, consistent design             |
 
 ## Data Models
 
 ### User
+
 **Purpose:** Represents system users including customers, brokers, and administrators
 
 **Key Attributes:**
+
 - id: String (cuid) - Unique identifier
 - email: String - User email address
 - name: String? - Display name
@@ -133,29 +135,33 @@ graph TB
 - image: String? - Profile image URL
 
 **TypeScript Interface:**
+
 ```typescript
 interface User {
-  id: string;
-  email: string;
-  name?: string | null;
-  role: 'CUSTOMER' | 'BROKER' | 'STAFF' | 'ADMIN';
-  emailVerified?: Date | null;
-  image?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  email: string
+  name?: string | null
+  role: 'CUSTOMER' | 'BROKER' | 'STAFF' | 'ADMIN'
+  emailVerified?: Date | null
+  image?: string | null
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
 **Relationships:**
+
 - Has many Orders
 - Has many Carts
 - Has many Accounts (OAuth providers)
 - Has many Sessions
 
 ### Product
+
 **Purpose:** Represents configurable printing products with dynamic pricing
 
 **Key Attributes:**
+
 - id: String - Unique identifier
 - name: String - Product name
 - slug: String - URL-friendly identifier
@@ -168,41 +174,45 @@ interface User {
 - options: JSON - Configuration options
 
 **TypeScript Interface:**
+
 ```typescript
 interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string | null;
-  category: string;
-  basePrice: number;
-  featured: boolean;
-  images: string[];
-  attributes: Record<string, any>;
-  options: ProductOption[];
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  category: string
+  basePrice: number
+  featured: boolean
+  images: string[]
+  attributes: Record<string, any>
+  options: ProductOption[]
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface ProductOption {
-  name: string;
-  type: 'select' | 'number' | 'checkbox';
+  name: string
+  type: 'select' | 'number' | 'checkbox'
   values: Array<{
-    label: string;
-    value: string;
-    priceModifier?: number;
-  }>;
+    label: string
+    value: string
+    priceModifier?: number
+  }>
 }
 ```
 
 **Relationships:**
+
 - Has many CartItems
 - Has many OrderItems
 
 ### Order
+
 **Purpose:** Represents customer orders with full transaction details
 
 **Key Attributes:**
+
 - id: String - Unique identifier
 - orderNumber: String - GRP-prefixed order number
 - userId: String - Customer reference
@@ -214,36 +224,38 @@ interface ProductOption {
 - billingAddress: JSON - Payment address
 
 **TypeScript Interface:**
+
 ```typescript
 interface Order {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
-  shippingAddress: Address;
-  billingAddress: Address;
-  paymentMethod?: string;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  orderNumber: string
+  userId: string
+  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+  subtotal: number
+  tax: number
+  shipping: number
+  total: number
+  shippingAddress: Address
+  billingAddress: Address
+  paymentMethod?: string
+  notes?: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface Address {
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  phone?: string;
+  name: string
+  street: string
+  city: string
+  state: string
+  zipCode: string
+  country: string
+  phone?: string
 }
 ```
 
 **Relationships:**
+
 - Belongs to User
 - Has many OrderItems
 - Has one Payment
@@ -422,9 +434,11 @@ components:
 ## Components
 
 ### Frontend Application
+
 **Responsibility:** Customer-facing web interface with PWA capabilities
 
 **Key Interfaces:**
+
 - React components for UI rendering
 - API client services for backend communication
 - Zustand stores for state management
@@ -434,22 +448,26 @@ components:
 **Technology Stack:** TypeScript, React 19, Next.js 15 App Router
 
 ### API Layer
+
 **Responsibility:** RESTful API endpoints for all business operations
 
 **Key Interfaces:**
-- /api/auth/* - Authentication endpoints
-- /api/products/* - Product management
-- /api/orders/* - Order processing
-- /api/cart/* - Shopping cart operations
+
+- /api/auth/\* - Authentication endpoints
+- /api/products/\* - Product management
+- /api/orders/\* - Order processing
+- /api/cart/\* - Shopping cart operations
 
 **Dependencies:** Prisma ORM, NextAuth.js, PostgreSQL
 
 **Technology Stack:** Next.js API Routes, TypeScript, Prisma
 
 ### Authentication Service
+
 **Responsibility:** User authentication and session management
 
 **Key Interfaces:**
+
 - OAuth providers (Google)
 - Email/password authentication
 - Session management
@@ -460,9 +478,11 @@ components:
 **Technology Stack:** NextAuth.js v5, JWT/Database sessions
 
 ### File Storage Service
+
 **Responsibility:** Artwork and asset file management
 
 **Key Interfaces:**
+
 - Upload API for artwork files
 - Image optimization for products
 - Secure file access with presigned URLs
@@ -472,9 +492,11 @@ components:
 **Technology Stack:** MinIO (S3-compatible), Next.js Image optimization
 
 ### Email Service
+
 **Responsibility:** Transactional and marketing email delivery
 
 **Key Interfaces:**
+
 - Order confirmation emails
 - Password reset emails
 - Marketing campaigns
@@ -485,9 +507,11 @@ components:
 **Technology Stack:** Resend, React Email templates
 
 ### Payment Processing
+
 **Responsibility:** Handle payment transactions
 
 **Key Interfaces:**
+
 - Square payment integration
 - Payment method storage
 - Refund processing
@@ -498,9 +522,11 @@ components:
 **Technology Stack:** Square API, Webhook processing
 
 ### Cache Layer
+
 **Responsibility:** Performance optimization through caching
 
 **Key Interfaces:**
+
 - Session storage
 - API response caching
 - Product catalog caching
@@ -544,6 +570,7 @@ graph LR
 ## External APIs
 
 ### Resend API
+
 - **Purpose:** Email delivery service for transactional and marketing emails
 - **Documentation:** https://resend.com/docs
 - **Base URL(s):** https://api.resend.com
@@ -551,6 +578,7 @@ graph LR
 - **Rate Limits:** 100 emails/day (free tier), 10,000/month (paid)
 
 **Key Endpoints Used:**
+
 - `POST /emails` - Send transactional emails
 - `POST /batch` - Send bulk emails
 - `GET /emails/{id}` - Check email status
@@ -558,6 +586,7 @@ graph LR
 **Integration Notes:** Integrated with React Email for template rendering
 
 ### Square API
+
 - **Purpose:** Payment processing and transaction management
 - **Documentation:** https://developer.squareup.com/docs
 - **Base URL(s):** https://connect.squareup.com
@@ -565,6 +594,7 @@ graph LR
 - **Rate Limits:** 700 requests/minute
 
 **Key Endpoints Used:**
+
 - `POST /v2/payments` - Process payments
 - `POST /v2/customers` - Create customer profiles
 - `POST /v2/cards` - Store payment methods
@@ -573,6 +603,7 @@ graph LR
 **Integration Notes:** Webhook handlers for payment events
 
 ### Google Analytics
+
 - **Purpose:** Website analytics and user behavior tracking
 - **Documentation:** https://developers.google.com/analytics
 - **Base URL(s):** https://www.google-analytics.com
@@ -580,6 +611,7 @@ graph LR
 - **Rate Limits:** 10 million hits per month per property
 
 **Key Endpoints Used:**
+
 - `POST /mp/collect` - Send events (GA4)
 - Page view tracking (automatic)
 - Custom events for e-commerce
@@ -725,6 +757,7 @@ CREATE INDEX "Cart_sessionId_idx" ON "Cart"("sessionId");
 ### Component Architecture
 
 #### Component Organization
+
 ```text
 src/components/
 ├── ui/                 # shadcn/ui base components
@@ -756,6 +789,7 @@ src/components/
 ```
 
 #### Component Template
+
 ```typescript
 import { FC } from 'react';
 import { cn } from '@/lib/utils';
@@ -780,29 +814,31 @@ export const Component: FC<ComponentProps> = ({
 ### State Management Architecture
 
 #### State Structure
+
 ```typescript
 interface AppState {
   // User state
-  user: User | null;
-  isAuthenticated: boolean;
+  user: User | null
+  isAuthenticated: boolean
 
   // Cart state
   cart: {
-    items: CartItem[];
-    total: number;
-    isOpen: boolean;
-  };
+    items: CartItem[]
+    total: number
+    isOpen: boolean
+  }
 
   // UI state
   ui: {
-    isSidebarOpen: boolean;
-    isLoading: boolean;
-    notifications: Notification[];
-  };
+    isSidebarOpen: boolean
+    isLoading: boolean
+    notifications: Notification[]
+  }
 }
 ```
 
 #### State Management Patterns
+
 - Use Zustand for global client state
 - Server state managed by React Query
 - Form state managed by React Hook Form
@@ -812,6 +848,7 @@ interface AppState {
 ### Routing Architecture
 
 #### Route Organization
+
 ```text
 src/app/
 ├── (customer)/         # Customer routes
@@ -836,6 +873,7 @@ src/app/
 ```
 
 #### Protected Route Pattern
+
 ```typescript
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
@@ -854,65 +892,64 @@ export default async function ProtectedPage() {
 ### Frontend Services Layer
 
 #### API Client Setup
+
 ```typescript
 // lib/api-client.ts
 class ApiClient {
-  private baseURL = process.env.NEXT_PUBLIC_API_URL || '/api';
+  private baseURL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
-  private async request<T>(
-    endpoint: string,
-    options?: RequestInit
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...options?.headers,
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+      throw new Error(`API Error: ${response.statusText}`)
     }
 
-    return response.json();
+    return response.json()
   }
 
   get<T>(endpoint: string) {
-    return this.request<T>(endpoint, { method: 'GET' });
+    return this.request<T>(endpoint, { method: 'GET' })
   }
 
   post<T>(endpoint: string, data: any) {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    })
   }
 }
 
-export const api = new ApiClient();
+export const api = new ApiClient()
 ```
 
 #### Service Example
+
 ```typescript
 // services/products.ts
-import { api } from '@/lib/api-client';
+import { api } from '@/lib/api-client'
 
 export const productService = {
   async getAll(params?: ProductFilters) {
-    return api.get<Product[]>('/products', { params });
+    return api.get<Product[]>('/products', { params })
   },
 
   async getBySlug(slug: string) {
-    return api.get<Product>(`/products/${slug}`);
+    return api.get<Product>(`/products/${slug}`)
   },
 
   async search(query: string) {
     return api.get<SearchResults>('/search', {
-      params: { q: query }
-    });
+      params: { q: query },
+    })
   },
-};
+}
 ```
 
 ## Backend Architecture
@@ -922,6 +959,7 @@ export const productService = {
 #### Traditional Server
 
 ##### Controller/Route Organization
+
 ```text
 src/app/api/
 ├── auth/
@@ -946,38 +984,33 @@ src/app/api/
 ```
 
 ##### Controller Template
+
 ```typescript
 // app/api/products/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
 const querySchema = z.object({
   category: z.string().optional(),
   page: z.coerce.number().default(1),
   limit: z.coerce.number().default(20),
-});
+})
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const query = querySchema.parse(
-      Object.fromEntries(searchParams)
-    );
+    const { searchParams } = new URL(request.url)
+    const query = querySchema.parse(Object.fromEntries(searchParams))
 
     const products = await prisma.product.findMany({
-      where: query.category ?
-        { category: query.category } : {},
+      where: query.category ? { category: query.category } : {},
       skip: (query.page - 1) * query.limit,
       take: query.limit,
-    });
+    })
 
-    return NextResponse.json({ products });
+    return NextResponse.json({ products })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 ```
@@ -985,50 +1018,53 @@ export async function GET(request: NextRequest) {
 ### Database Architecture
 
 #### Schema Design
+
 ```sql
 -- See Database Schema section above for complete schema
 ```
 
 #### Data Access Layer
+
 ```typescript
 // lib/repositories/product.repository.ts
-import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 export class ProductRepository {
   async findAll(params: {
-    where?: Prisma.ProductWhereInput;
-    orderBy?: Prisma.ProductOrderByWithRelationInput;
-    skip?: number;
-    take?: number;
+    where?: Prisma.ProductWhereInput
+    orderBy?: Prisma.ProductOrderByWithRelationInput
+    skip?: number
+    take?: number
   }) {
-    return prisma.product.findMany(params);
+    return prisma.product.findMany(params)
   }
 
   async findBySlug(slug: string) {
     return prisma.product.findUnique({
       where: { slug },
-    });
+    })
   }
 
   async create(data: Prisma.ProductCreateInput) {
-    return prisma.product.create({ data });
+    return prisma.product.create({ data })
   }
 
   async update(id: string, data: Prisma.ProductUpdateInput) {
     return prisma.product.update({
       where: { id },
       data,
-    });
+    })
   }
 }
 
-export const productRepo = new ProductRepository();
+export const productRepo = new ProductRepository()
 ```
 
 ### Authentication and Authorization
 
 #### Auth Flow
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -1050,29 +1086,30 @@ sequenceDiagram
 ```
 
 #### Middleware/Guards
+
 ```typescript
 // middleware.ts
-import { withAuth } from 'next-auth/middleware';
+import { withAuth } from 'next-auth/middleware'
 
 export default withAuth({
   callbacks: {
     authorized: ({ req, token }) => {
       // Admin routes require admin role
       if (req.nextUrl.pathname.startsWith('/admin')) {
-        return token?.role === 'ADMIN';
+        return token?.role === 'ADMIN'
       }
       // User routes require authentication
       if (req.nextUrl.pathname.startsWith('/account')) {
-        return !!token;
+        return !!token
       }
-      return true;
+      return true
     },
   },
-});
+})
 
 export const config = {
   matcher: ['/admin/:path*', '/account/:path*'],
-};
+}
 ```
 
 ## Unified Project Structure
@@ -1132,6 +1169,7 @@ gangrunprinting/
 ### Local Development Setup
 
 #### Prerequisites
+
 ```bash
 # Required software
 node --version  # v20.x or higher
@@ -1144,6 +1182,7 @@ redis-server --version  # Redis 7.0+
 ```
 
 #### Initial Setup
+
 ```bash
 # Clone repository
 git clone https://github.com/iradwatkins/gangrunprinting.git
@@ -1165,6 +1204,7 @@ npm run db:seed
 ```
 
 #### Development Commands
+
 ```bash
 # Start all services
 npm run dev
@@ -1184,6 +1224,7 @@ npm run test:all    # All tests
 ### Environment Configuration
 
 #### Required Environment Variables
+
 ```bash
 # Frontend (.env.local)
 NEXT_PUBLIC_APP_URL=http://localhost:3002
@@ -1211,17 +1252,20 @@ NODE_ENV=development
 ### Deployment Strategy
 
 **Frontend Deployment:**
+
 - **Platform:** VPS with Dokploy
 - **Build Command:** `npm run build`
 - **Output Directory:** `.next`
 - **CDN/Edge:** Cloudflare (future)
 
 **Backend Deployment:**
+
 - **Platform:** Same VPS (monolithic)
 - **Build Command:** `npm run build`
 - **Deployment Method:** PM2 process manager via Dokploy
 
 ### CI/CD Pipeline
+
 ```yaml
 # .github/workflows/deploy.yaml
 name: Deploy to Production
@@ -1269,27 +1313,30 @@ jobs:
 
 ### Environments
 
-| Environment | Frontend URL | Backend URL | Purpose |
-|------------|--------------|-------------|---------|
-| Development | http://localhost:3002 | http://localhost:3002/api | Local development |
-| Staging | https://staging.gangrunprinting.com | https://staging.gangrunprinting.com/api | Pre-production testing |
-| Production | https://gangrunprinting.com | https://gangrunprinting.com/api | Live environment |
+| Environment | Frontend URL                        | Backend URL                             | Purpose                |
+| ----------- | ----------------------------------- | --------------------------------------- | ---------------------- |
+| Development | http://localhost:3002               | http://localhost:3002/api               | Local development      |
+| Staging     | https://staging.gangrunprinting.com | https://staging.gangrunprinting.com/api | Pre-production testing |
+| Production  | https://gangrunprinting.com         | https://gangrunprinting.com/api         | Live environment       |
 
 ## Security and Performance
 
 ### Security Requirements
 
 **Frontend Security:**
+
 - CSP Headers: `default-src 'self'; script-src 'self' 'unsafe-inline' *.google-analytics.com`
 - XSS Prevention: React's built-in escaping, sanitize user input
 - Secure Storage: HttpOnly cookies for sessions, no sensitive data in localStorage
 
 **Backend Security:**
+
 - Input Validation: Zod schemas on all API endpoints
 - Rate Limiting: 100 requests per minute per IP
 - CORS Policy: Configured for specific origins only
 
 **Authentication Security:**
+
 - Token Storage: HttpOnly cookies with SameSite=Strict
 - Session Management: Database sessions with 30-day expiry
 - Password Policy: Minimum 8 characters, complexity requirements
@@ -1297,11 +1344,13 @@ jobs:
 ### Performance Optimization
 
 **Frontend Performance:**
+
 - Bundle Size Target: < 300KB gzipped
 - Loading Strategy: Code splitting, lazy loading, dynamic imports
 - Caching Strategy: SWR for data fetching, service worker for assets
 
 **Backend Performance:**
+
 - Response Time Target: < 200ms p95
 - Database Optimization: Indexed queries, connection pooling
 - Caching Strategy: Redis for sessions, API response caching
@@ -1309,6 +1358,7 @@ jobs:
 ## Testing Strategy
 
 ### Testing Pyramid
+
 ```text
         E2E Tests
        /        \
@@ -1320,6 +1370,7 @@ Frontend Unit  Backend Unit
 ### Test Organization
 
 #### Frontend Tests
+
 ```text
 tests/
 ├── unit/
@@ -1332,6 +1383,7 @@ tests/
 ```
 
 #### Backend Tests
+
 ```text
 tests/
 ├── unit/
@@ -1344,6 +1396,7 @@ tests/
 ```
 
 #### E2E Tests
+
 ```text
 tests/
 └── e2e/
@@ -1355,6 +1408,7 @@ tests/
 ### Test Examples
 
 #### Frontend Component Test
+
 ```typescript
 import { render, screen } from '@testing-library/react';
 import { ProductCard } from '@/components/products/ProductCard';
@@ -1376,43 +1430,44 @@ describe('ProductCard', () => {
 ```
 
 #### Backend API Test
+
 ```typescript
-import request from 'supertest';
-import { app } from '@/app';
+import request from 'supertest'
+import { app } from '@/app'
 
 describe('GET /api/products', () => {
   it('returns product list', async () => {
-    const response = await request(app)
-      .get('/api/products')
-      .expect(200);
+    const response = await request(app).get('/api/products').expect(200)
 
-    expect(response.body).toHaveProperty('products');
-    expect(Array.isArray(response.body.products)).toBe(true);
-  });
-});
+    expect(response.body).toHaveProperty('products')
+    expect(Array.isArray(response.body.products)).toBe(true)
+  })
+})
 ```
 
 #### E2E Test
+
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
 test('complete checkout flow', async ({ page }) => {
-  await page.goto('/products');
-  await page.click('text=Business Cards');
-  await page.click('text=Add to Cart');
-  await page.click('text=Checkout');
+  await page.goto('/products')
+  await page.click('text=Business Cards')
+  await page.click('text=Add to Cart')
+  await page.click('text=Checkout')
 
-  await page.fill('[name=email]', 'test@example.com');
-  await page.fill('[name=cardNumber]', '4242424242424242');
-  await page.click('text=Place Order');
+  await page.fill('[name=email]', 'test@example.com')
+  await page.fill('[name=cardNumber]', '4242424242424242')
+  await page.click('text=Place Order')
 
-  await expect(page).toHaveURL(/\/order-confirmation/);
-});
+  await expect(page).toHaveURL(/\/order-confirmation/)
+})
 ```
 
 ## Coding Standards
 
 ### Critical Fullstack Rules
+
 - **Type Sharing:** Always define shared types in src/types and import from there
 - **API Calls:** Never make direct fetch calls - use the service layer
 - **Environment Variables:** Access only through config objects, never process.env directly
@@ -1424,16 +1479,17 @@ test('complete checkout flow', async ({ page }) => {
 
 ### Naming Conventions
 
-| Element | Frontend | Backend | Example |
-|---------|----------|---------|---------|
-| Components | PascalCase | - | `UserProfile.tsx` |
-| Hooks | camelCase with 'use' | - | `useAuth.ts` |
-| API Routes | - | kebab-case | `/api/user-profile` |
-| Database Tables | - | snake_case | `user_profiles` |
+| Element         | Frontend             | Backend    | Example             |
+| --------------- | -------------------- | ---------- | ------------------- |
+| Components      | PascalCase           | -          | `UserProfile.tsx`   |
+| Hooks           | camelCase with 'use' | -          | `useAuth.ts`        |
+| API Routes      | -                    | kebab-case | `/api/user-profile` |
+| Database Tables | -                    | snake_case | `user_profiles`     |
 
 ## Error Handling Strategy
 
 ### Error Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -1451,19 +1507,21 @@ sequenceDiagram
 ```
 
 ### Error Response Format
+
 ```typescript
 interface ApiError {
   error: {
-    code: string;
-    message: string;
-    details?: Record<string, any>;
-    timestamp: string;
-    requestId: string;
-  };
+    code: string
+    message: string
+    details?: Record<string, any>
+    timestamp: string
+    requestId: string
+  }
 }
 ```
 
 ### Frontend Error Handling
+
 ```typescript
 // lib/error-handler.ts
 export class ApiError extends Error {
@@ -1472,19 +1530,20 @@ export class ApiError extends Error {
     public message: string,
     public details?: any
   ) {
-    super(message);
+    super(message)
   }
 }
 
 export function handleApiError(error: unknown): string {
   if (error instanceof ApiError) {
-    return error.message;
+    return error.message
   }
-  return 'An unexpected error occurred';
+  return 'An unexpected error occurred'
 }
 ```
 
 ### Backend Error Handling
+
 ```typescript
 // lib/api-error.ts
 export class AppError extends Error {
@@ -1494,7 +1553,7 @@ export class AppError extends Error {
     message: string,
     public details?: any
   ) {
-    super(message);
+    super(message)
   }
 }
 
@@ -1511,32 +1570,33 @@ export function errorHandler(error: unknown) {
         },
       },
       { status: error.statusCode }
-    );
+    )
   }
 
-  return NextResponse.json(
-    { error: { message: 'Internal server error' } },
-    { status: 500 }
-  );
+  return NextResponse.json({ error: { message: 'Internal server error' } }, { status: 500 })
 }
 ```
 
 ## Monitoring and Observability
 
 ### Monitoring Stack
+
 - **Frontend Monitoring:** Custom error logging to file
 - **Backend Monitoring:** Winston logger with file rotation
 - **Error Tracking:** Logged to /var/log/gangrunprinting.log
 - **Performance Monitoring:** Lighthouse CI (planned)
 
 ### Key Metrics
+
 **Frontend Metrics:**
+
 - Core Web Vitals
 - JavaScript errors
 - API response times
 - User interactions
 
 **Backend Metrics:**
+
 - Request rate
 - Error rate
 - Response time

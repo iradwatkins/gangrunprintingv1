@@ -1,9 +1,10 @@
 import { SquareClient, SquareEnvironment, SquareError } from 'square'
 import * as crypto from 'crypto'
+import { SQUARE_CONFIG, PRICING } from '@/config/constants'
 
 // Initialize Square client
 const client = new SquareClient({
-  squareVersion: '2024-08-21',
+  squareVersion: SQUARE_CONFIG.API_VERSION,
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
   environment:
     process.env.SQUARE_ENVIRONMENT === 'production'
@@ -67,7 +68,6 @@ export async function createSquareCheckout(orderData: {
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error)
       throw new Error(`Square checkout failed: ${error.message || 'Unknown error'}`)
     }
     throw error
@@ -90,7 +90,6 @@ export async function retrieveSquarePayment(paymentId: string) {
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error)
       throw new Error(`Failed to retrieve payment: ${error.message || 'Unknown error'}`)
     }
     throw error
@@ -145,7 +144,6 @@ export async function createOrUpdateSquareCustomer(email: string, name?: string,
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error)
       throw new Error(`Customer operation failed: ${error.message || 'Unknown error'}`)
     }
     throw error
@@ -188,7 +186,6 @@ export async function createSquareOrder(orderData: {
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error)
       throw new Error(`Order creation failed: ${error.message || 'Unknown error'}`)
     }
     throw error
@@ -210,7 +207,6 @@ export async function retrieveSquareOrder(orderId: string) {
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error)
       throw new Error(`Failed to retrieve order: ${error.message || 'Unknown error'}`)
     }
     throw error
@@ -242,7 +238,6 @@ export async function updateSquareFulfillment(
     }
   } catch (error) {
     if (error instanceof SquareError) {
-      console.error('Square API error:', error.result)
       throw new Error(
         `Fulfillment update failed: ${error.result.errors?.[0]?.detail || 'Unknown error'}`
       )
@@ -254,7 +249,7 @@ export async function updateSquareFulfillment(
 // Calculate order amount including taxes
 export async function calculateOrderAmount(
   subtotal: number,
-  taxRate: number = 0.0825 // Default 8.25% tax rate
+  taxRate: number = PRICING.SQUARE_TAX_RATE
 ): Promise<{
   subtotal: number
   tax: number
@@ -277,7 +272,7 @@ export function verifyWebhookSignature(
   signatureKey: string,
   requestUrl: string
 ): boolean {
-  const hmac = crypto.createHmac('sha256', signatureKey)
+  const hmac = crypto.createHmac(SQUARE_CONFIG.WEBHOOK_SIGNATURE_ALGORITHM, signatureKey)
   hmac.update(requestUrl + body)
   const hash = hmac.digest('base64')
   return hash === signature

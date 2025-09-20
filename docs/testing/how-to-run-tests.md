@@ -19,6 +19,7 @@ npm run test:e2e
 ## Prerequisites
 
 ### System Requirements
+
 - Node.js 20+
 - PostgreSQL 14+
 - Redis (for session storage)
@@ -27,23 +28,27 @@ npm run test:e2e
 ### Environment Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/iradwatkins/gangrunprinting.git
    cd gangrunprinting
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up test environment file**
+
    ```bash
    cp .env.example .env.test
    # Edit .env.test with test-specific values
    ```
 
 4. **Set up test database**
+
    ```bash
    # Create test database
    createdb gangrunprinting_test
@@ -68,6 +73,7 @@ npm run test:e2e
 ### Unit and Integration Tests
 
 #### Basic Commands
+
 ```bash
 # Run tests in watch mode
 npm test
@@ -83,6 +89,7 @@ npm test -- --grep "authentication"
 ```
 
 #### Coverage Commands
+
 ```bash
 # Run with coverage
 npm run test:coverage
@@ -92,6 +99,7 @@ npm run test:coverage && open coverage/index.html
 ```
 
 #### Test UI
+
 ```bash
 # Open Vitest UI (interactive test runner)
 npm run test:ui
@@ -100,6 +108,7 @@ npm run test:ui
 ### End-to-End Tests
 
 #### Basic E2E Commands
+
 ```bash
 # Run all E2E tests
 npm run test:e2e
@@ -115,6 +124,7 @@ npm run test:e2e tests/e2e/auth.spec.ts
 ```
 
 #### Browser-Specific Tests
+
 ```bash
 # Run tests on specific browser
 npm run test:e2e -- --project=chromium
@@ -126,6 +136,7 @@ npm run test:e2e -- --project="Mobile Chrome"
 ```
 
 #### E2E Test Options
+
 ```bash
 # Run tests with headed browser (visible)
 npm run test:e2e -- --headed
@@ -156,6 +167,7 @@ dotenv -e .env.test -- node prisma/seed-custom.js
 ## Test Filtering and Selection
 
 ### By File Pattern
+
 ```bash
 # Run all auth tests
 npm test auth
@@ -171,6 +183,7 @@ npm test tests/integration
 ```
 
 ### By Test Name Pattern
+
 ```bash
 # Run tests with "login" in the name
 npm test -- --grep "login"
@@ -183,6 +196,7 @@ npm test -- --grep "skip" --invert
 ```
 
 ### By Test Status
+
 ```bash
 # Run only failing tests
 npm test -- --reporter=verbose --run-only-failed
@@ -201,11 +215,13 @@ npm test -- --changed
    - Execute test commands
 
 2. **Using Node Inspector**
+
    ```bash
    node --inspect-brk ./node_modules/.bin/vitest run tests/unit/auth.test.ts
    ```
 
 3. **Console Debugging**
+
    ```bash
    # Verbose output
    npm test -- --reporter=verbose
@@ -217,6 +233,7 @@ npm test -- --changed
 ### E2E Test Debugging
 
 1. **Visual Debugging**
+
    ```bash
    # Run with UI for step-by-step debugging
    npm run test:e2e:ui
@@ -226,6 +243,7 @@ npm test -- --changed
    ```
 
 2. **Debug Mode**
+
    ```bash
    # Pause on first line of test
    npm run test:e2e:debug
@@ -246,6 +264,7 @@ npm test -- --changed
 ### Test Environment Variables
 
 Create `.env.test` with these variables:
+
 ```env
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/gangrunprinting_test"
@@ -274,7 +293,9 @@ REDIS_URL="redis://localhost:6379/1"
 ```
 
 ### Port Configuration
+
 Tests use specific ports to avoid conflicts:
+
 - **Application**: 3002 (not 3000, which is reserved for Dokploy)
 - **Database**: 5432
 - **Redis**: 6379
@@ -283,12 +304,15 @@ Tests use specific ports to avoid conflicts:
 ## Continuous Integration
 
 ### GitHub Actions
+
 Tests automatically run on:
+
 - Push to main/develop branches
 - Pull requests to main
 - Manual workflow dispatch
 
 ### Local CI Simulation
+
 ```bash
 # Run the same tests as CI
 npm run test:run
@@ -300,6 +324,7 @@ npx tsc --noEmit
 ## Performance Optimization
 
 ### Faster Test Execution
+
 ```bash
 # Run tests in parallel (default)
 npm test
@@ -312,6 +337,7 @@ npm test -- --no-threads
 ```
 
 ### Database Optimization
+
 ```bash
 # Use transactions for faster cleanup
 export TEST_DATABASE_STRATEGY=transaction
@@ -323,6 +349,7 @@ export TEST_DATABASE_URL="sqlite::memory:"
 ## Common Issues and Solutions
 
 ### Database Issues
+
 ```bash
 # Connection refused
 # Solution: Ensure PostgreSQL is running
@@ -335,6 +362,7 @@ createdb gangrunprinting_test
 ```
 
 ### Port Conflicts
+
 ```bash
 # Port 3002 already in use
 # Solution: Kill process or change port
@@ -343,6 +371,7 @@ lsof -ti:3002 | xargs kill
 ```
 
 ### Playwright Issues
+
 ```bash
 # Browsers not installed
 npx playwright install
@@ -352,6 +381,7 @@ npx playwright install --with-deps
 ```
 
 ### Mock Service Worker Issues
+
 ```bash
 # MSW not intercepting requests
 # Solution: Check server setup in tests/setup.ts
@@ -361,17 +391,20 @@ npx playwright install --with-deps
 ## Test Reports
 
 ### Coverage Reports
+
 - **HTML**: `coverage/index.html`
 - **LCOV**: `coverage/lcov.info`
 - **JSON**: `coverage/coverage-final.json`
 
 ### E2E Test Reports
+
 - **HTML Report**: `playwright-report/index.html`
 - **Videos**: `test-results/*/video.webm`
 - **Screenshots**: `test-results/*/screenshot.png`
 - **Traces**: `test-results/*/trace.zip`
 
 ### Viewing Reports
+
 ```bash
 # Open coverage report
 open coverage/index.html
@@ -387,6 +420,7 @@ npx playwright show-report
 ## Best Practices
 
 ### Before Running Tests
+
 1. Ensure clean git working directory
 2. Pull latest changes
 3. Install/update dependencies
@@ -394,6 +428,7 @@ npx playwright show-report
 5. Check environment variables
 
 ### During Development
+
 1. Run tests frequently
 2. Write tests for new features
 3. Update tests for bug fixes
@@ -401,6 +436,7 @@ npx playwright show-report
 5. Use descriptive test names
 
 ### After Changes
+
 1. Run full test suite
 2. Check coverage reports
 3. Review failed tests
@@ -410,11 +446,13 @@ npx playwright show-report
 ## Getting Help
 
 ### Documentation
+
 - Check `/docs/testing/` directory
 - Review test examples in codebase
 - Consult tool documentation
 
 ### Common Commands Reference
+
 ```bash
 # Quick test run
 npm test

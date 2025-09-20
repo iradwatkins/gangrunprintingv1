@@ -7,10 +7,7 @@
       "ryanluker.vscode-coverage-gutters"
     ],
     "autoActivate": true,
-    "commands": [
-      "testing.viewAsTree",
-      "coverage-gutters.displayCoverage"
-    ],
+    "commands": ["testing.viewAsTree", "coverage-gutters.displayCoverage"],
     "mcpIntegration": {
       "playwright": ["playwright-extension"],
       "ref-tools": ["test-references"]

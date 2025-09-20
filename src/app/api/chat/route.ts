@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434'
+import { SERVICE_ENDPOINTS } from '@/config/constants'
+
+const OLLAMA_URL = SERVICE_ENDPOINTS.OLLAMA
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3'
 
 // System prompt for the printing assistant

@@ -1,7 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, GripVertical, ChevronDown, ChevronRight, Eye, Copy } from 'lucide-react'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  GripVertical,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Copy,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,7 +50,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -86,7 +95,7 @@ function SortableSetItem({
   onToggle,
   onRemove,
   onSetDefault,
-  onUpdatePriceOverride
+  onUpdatePriceOverride,
 }: {
   item: TurnaroundTimeSetItem
   onToggle: () => void
@@ -94,14 +103,9 @@ function SortableSetItem({
   onSetDefault: () => void
   onUpdatePriceOverride: (price: number | null) => void
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -112,10 +116,10 @@ function SortableSetItem({
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={`flex items-center gap-3 p-3 bg-gray-50 rounded-lg ${
         isDragging ? 'shadow-lg' : ''
       }`}
+      style={style}
     >
       <div {...attributes} {...listeners} className="cursor-grab">
         <GripVertical className="h-4 w-4 text-gray-400" />
@@ -123,38 +127,33 @@ function SortableSetItem({
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium">{item.turnaroundTime.displayName}</span>
-          {item.isDefault && <Badge variant="default" className="text-xs">Default</Badge>}
+          {item.isDefault && (
+            <Badge className="text-xs" variant="default">
+              Default
+            </Badge>
+          )}
         </div>
         <div className="text-sm text-gray-500">
           {item.turnaroundTime.daysMin}-{item.turnaroundTime.daysMax || 'same'} days •
           {item.turnaroundTime.priceMultiplier > 1
             ? ` ${((item.turnaroundTime.priceMultiplier - 1) * 100).toFixed(0)}% surcharge`
-            : ` +$${item.turnaroundTime.basePrice.toFixed(2)}`
-          }
+            : ` +$${item.turnaroundTime.basePrice.toFixed(2)}`}
         </div>
       </div>
       <div className="flex items-center gap-2">
         <Input
-          type="number"
-          placeholder="Override price"
-          value={item.priceOverride || ''}
-          onChange={(e) => onUpdatePriceOverride(e.target.value ? parseFloat(e.target.value) : null)}
           className="w-24"
+          placeholder="Override price"
+          type="number"
+          value={item.priceOverride || ''}
+          onChange={(e) =>
+            onUpdatePriceOverride(e.target.value ? parseFloat(e.target.value) : null)
+          }
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onSetDefault}
-          disabled={item.isDefault}
-        >
+        <Button disabled={item.isDefault} size="sm" variant="ghost" onClick={onSetDefault}>
           Set Default
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onRemove}
-          className="h-8 w-8"
-        >
+        <Button className="h-8 w-8" size="icon" variant="ghost" onClick={onRemove}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
@@ -265,20 +264,16 @@ export default function TurnaroundTimeSetsPage() {
 
     if (!over || active.id === over.id) return
 
-    const set = sets.find(s => s.id === setId)
+    const set = sets.find((s) => s.id === setId)
     if (!set) return
 
-    const oldIndex = set.turnaroundTimeItems.findIndex(item => item.id === active.id)
-    const newIndex = set.turnaroundTimeItems.findIndex(item => item.id === over.id)
+    const oldIndex = set.turnaroundTimeItems.findIndex((item) => item.id === active.id)
+    const newIndex = set.turnaroundTimeItems.findIndex((item) => item.id === over.id)
 
     const newItems = arrayMove(set.turnaroundTimeItems, oldIndex, newIndex)
 
     // Update local state immediately
-    setSets(sets.map(s =>
-      s.id === setId
-        ? { ...s, turnaroundTimeItems: newItems }
-        : s
-    ))
+    setSets(sets.map((s) => (s.id === setId ? { ...s, turnaroundTimeItems: newItems } : s)))
 
     // Save to backend
     try {
@@ -286,7 +281,7 @@ export default function TurnaroundTimeSetsPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          itemIds: newItems.map(item => item.id),
+          itemIds: newItems.map((item) => item.id),
         }),
       })
 
@@ -306,7 +301,7 @@ export default function TurnaroundTimeSetsPage() {
           name: `${set.name} (Copy)`,
           description: set.description,
           isActive: set.isActive,
-          turnaroundTimeIds: set.turnaroundTimeItems.map(item => item.turnaroundTimeId),
+          turnaroundTimeIds: set.turnaroundTimeItems.map((item) => item.turnaroundTimeId),
         }),
       })
 
@@ -320,7 +315,7 @@ export default function TurnaroundTimeSetsPage() {
   }
 
   const toggleExpanded = (setId: string) => {
-    setExpandedSets(prev => {
+    setExpandedSets((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(setId)) {
         newSet.delete(setId)
@@ -347,7 +342,7 @@ export default function TurnaroundTimeSetsPage() {
       name: set.name,
       description: set.description || '',
       isActive: set.isActive,
-      selectedTurnaroundTimes: set.turnaroundTimeItems.map(item => item.turnaroundTimeId),
+      selectedTurnaroundTimes: set.turnaroundTimeItems.map((item) => item.turnaroundTimeId),
     })
     setShowDialog(true)
   }
@@ -373,7 +368,7 @@ export default function TurnaroundTimeSetsPage() {
         <Card>
           <CardContent className="text-center py-8">
             <p className="text-gray-500">No turnaround time sets found.</p>
-            <Button onClick={() => setShowDialog(true)} className="mt-4">
+            <Button className="mt-4" onClick={() => setShowDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create First Set
             </Button>
@@ -387,8 +382,8 @@ export default function TurnaroundTimeSetsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => toggleExpanded(set.id)}
                       className="p-1 hover:bg-gray-100 rounded"
+                      onClick={() => toggleExpanded(set.id)}
                     >
                       {expandedSets.has(set.id) ? (
                         <ChevronDown className="h-4 w-4" />
@@ -398,37 +393,21 @@ export default function TurnaroundTimeSetsPage() {
                     </button>
                     <div>
                       <CardTitle className="text-xl">{set.name}</CardTitle>
-                      {set.description && (
-                        <CardDescription>{set.description}</CardDescription>
-                      )}
+                      {set.description && <CardDescription>{set.description}</CardDescription>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={set.isActive ? 'default' : 'secondary'}>
                       {set.isActive ? 'Active' : 'Inactive'}
                     </Badge>
-                    <Badge variant="outline">
-                      {set.turnaroundTimeItems.length} options
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDuplicate(set)}
-                    >
+                    <Badge variant="outline">{set.turnaroundTimeItems.length} options</Badge>
+                    <Button size="icon" variant="ghost" onClick={() => handleDuplicate(set)}>
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEditDialog(set)}
-                    >
+                    <Button size="icon" variant="ghost" onClick={() => openEditDialog(set)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(set.id)}
-                    >
+                    <Button size="icon" variant="ghost" onClick={() => handleDelete(set.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -438,12 +417,12 @@ export default function TurnaroundTimeSetsPage() {
               {expandedSets.has(set.id) && (
                 <CardContent>
                   <DndContext
-                    sensors={sensors}
                     collisionDetection={closestCenter}
+                    sensors={sensors}
                     onDragEnd={(event) => handleDragEnd(event, set.id)}
                   >
                     <SortableContext
-                      items={set.turnaroundTimeItems.map(item => item.id)}
+                      items={set.turnaroundTimeItems.map((item) => item.id)}
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="space-y-2">
@@ -451,9 +430,9 @@ export default function TurnaroundTimeSetsPage() {
                           <SortableSetItem
                             key={item.id}
                             item={item}
-                            onToggle={() => {}}
                             onRemove={() => {}}
                             onSetDefault={() => {}}
+                            onToggle={() => {}}
                             onUpdatePriceOverride={() => {}}
                           />
                         ))}
@@ -483,9 +462,9 @@ export default function TurnaroundTimeSetsPage() {
               <Label htmlFor="name">Set Name</Label>
               <Input
                 id="name"
+                placeholder="e.g., Standard Printing, Rush Orders"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Standard Printing, Rush Orders"
               />
             </div>
 
@@ -493,18 +472,18 @@ export default function TurnaroundTimeSetsPage() {
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Optional description for this set"
                 rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
 
             <div className="flex items-center justify-between">
               <Label htmlFor="active">Active</Label>
               <Switch
-                id="active"
                 checked={formData.isActive}
+                id="active"
                 onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
               />
             </div>
@@ -515,8 +494,8 @@ export default function TurnaroundTimeSetsPage() {
                 {turnaroundTimes.map((tt) => (
                   <div key={tt.id} className="flex items-center space-x-2">
                     <Checkbox
-                      id={tt.id}
                       checked={formData.selectedTurnaroundTimes.includes(tt.id)}
+                      id={tt.id}
                       onCheckedChange={(checked) => {
                         if (checked) {
                           setFormData({
@@ -526,15 +505,14 @@ export default function TurnaroundTimeSetsPage() {
                         } else {
                           setFormData({
                             ...formData,
-                            selectedTurnaroundTimes: formData.selectedTurnaroundTimes.filter(id => id !== tt.id),
+                            selectedTurnaroundTimes: formData.selectedTurnaroundTimes.filter(
+                              (id) => id !== tt.id
+                            ),
                           })
                         }
                       }}
                     />
-                    <label
-                      htmlFor={tt.id}
-                      className="flex-1 cursor-pointer"
-                    >
+                    <label className="flex-1 cursor-pointer" htmlFor={tt.id}>
                       <div>
                         <span className="font-medium">{tt.displayName}</span>
                         <span className="ml-2 text-sm text-gray-500">
@@ -552,9 +530,7 @@ export default function TurnaroundTimeSetsPage() {
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
-              {editingSet ? 'Update' : 'Create'} Set
-            </Button>
+            <Button onClick={handleSave}>{editingSet ? 'Update' : 'Create'} Set</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

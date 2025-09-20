@@ -7,6 +7,7 @@
 **Objective**: Build a robust shopping cart system with persistent storage, real-time updates, and seamless checkout flow supporting multiple payment methods and order management.
 
 **Key Components**:
+
 - Floating mini-cart with real-time updates
 - Persistent cart storage (database + local storage)
 - Multi-step checkout process
@@ -19,6 +20,7 @@
 Alex analyzed the complex requirements for the cart and checkout system:
 
 ### Cart Functionality
+
 1. **Persistent Storage**: Cart survives browser sessions and device switches
 2. **Real-time Updates**: Immediate price recalculations on quantity changes
 3. **Configuration Editing**: Modify product options from cart
@@ -26,6 +28,7 @@ Alex analyzed the complex requirements for the cart and checkout system:
 5. **Guest vs. Authenticated**: Different storage strategies
 
 ### Checkout Process
+
 1. **Multi-step Flow**: Customer info → Shipping → Payment → Confirmation
 2. **Address Management**: Billing and shipping address handling
 3. **Payment Methods**: Square, CashApp, PayPal integration
@@ -33,6 +36,7 @@ Alex analyzed the complex requirements for the cart and checkout system:
 5. **Email Confirmations**: Order confirmations and status updates
 
 ### Order Management
+
 1. **Order Tracking**: Unique GRP-prefixed order numbers
 2. **Status Management**: From confirmation through fulfillment
 3. **Customer Portal**: Order history and tracking
@@ -63,17 +67,17 @@ model CartItem {
   cart            Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId       String
   product         Product @relation(fields: [productId], references: [id])
-  
+
   // Configuration
   quantity        Int
   configuration   Json   // Selected attributes and options
   addOns         String[] // Selected add-on IDs
   artworkFiles   String[] // Uploaded file URLs
-  
+
   // Pricing (cached for performance)
   unitPrice      Decimal  @db.Decimal(10, 2)
   totalPrice     Decimal  @db.Decimal(10, 2)
-  
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -83,34 +87,34 @@ model CartItem {
 model Order {
   id                String      @id @default(cuid())
   orderNumber       String      @unique // GRP-12345 format
-  
+
   // Customer Information
   userId            String?
   user              User?       @relation(fields: [userId], references: [id])
   customerEmail     String
   customerName      String
   customerPhone     String?
-  
+
   // Addresses
   billingAddress    Json
   shippingAddress   Json
-  
+
   // Order Details
   items             OrderItem[]
   subtotal          Decimal     @db.Decimal(10, 2)
   tax               Decimal     @db.Decimal(10, 2)
   shipping          Decimal     @db.Decimal(10, 2)
   total             Decimal     @db.Decimal(10, 2)
-  
+
   // Payment
   paymentMethod     PaymentMethod
   paymentStatus     PaymentStatus @default(PENDING)
   paymentId         String?     // External payment ID
-  
+
   // Status and Tracking
   status            OrderStatus @default(PENDING)
   notes             String?
-  
+
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 
@@ -123,12 +127,12 @@ model OrderItem {
   order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId       String
   product         Product @relation(fields: [productId], references: [id])
-  
+
   quantity        Int
   configuration   Json    // Product configuration at time of order
   addOns         String[]
   artworkFiles   String[]
-  
+
   unitPrice      Decimal  @db.Decimal(10, 2)
   totalPrice     Decimal  @db.Decimal(10, 2)
 
@@ -184,8 +188,8 @@ export function MiniCart() {
         <Button variant="outline" size="icon" className="relative">
           <ShoppingCart className="h-4 w-4" />
           {itemCount > 0 && (
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
             >
               {itemCount}
@@ -193,12 +197,12 @@ export function MiniCart() {
           )}
         </Button>
       </SheetTrigger>
-      
+
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>Shopping Cart ({itemCount})</SheetTitle>
         </SheetHeader>
-        
+
         <div className="mt-6">
           {items.length === 0 ? (
             <div className="text-center py-8">
@@ -220,12 +224,12 @@ export function MiniCart() {
                   />
                 ))}
               </div>
-              
+
               <div className="border-t pt-4 space-y-4">
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total: {formatCurrency(total)}</span>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Link href="/cart" className="w-full">
                     <Button variant="outline" className="w-full" onClick={() => setIsOpen(false)}>
@@ -258,7 +262,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
         <h4 className="text-sm font-medium truncate">{item.product.name}</h4>
         <p className="text-sm text-gray-500">{formatCurrency(item.unitPrice)} each</p>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <Button
           variant="outline"
@@ -268,9 +272,9 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
         >
           <Minus className="h-3 w-3" />
         </Button>
-        
+
         <span className="w-8 text-center text-sm">{item.quantity}</span>
-        
+
         <Button
           variant="outline"
           size="icon"
@@ -280,7 +284,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
           <Plus className="h-3 w-3" />
         </Button>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <span className="text-sm font-medium">{formatCurrency(item.totalPrice)}</span>
         <Button
@@ -301,17 +305,17 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
 
 ```typescript
 // src/hooks/useCart.ts
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useLocalStorage } from "./useLocalStorage"
-import { CartItem } from "@/types/cart"
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useLocalStorage } from './useLocalStorage'
+import { CartItem } from '@/types/cart'
 
 export function useCart() {
   const { data: session } = useSession()
   const [items, setItems] = useState<CartItem[]>([])
-  const [guestCart, setGuestCart] = useLocalStorage<CartItem[]>("guest-cart", [])
+  const [guestCart, setGuestCart] = useLocalStorage<CartItem[]>('guest-cart', [])
   const [loading, setLoading] = useState(true)
 
   // Sync with database or local storage
@@ -328,30 +332,30 @@ export function useCart() {
 
   const loadCartFromDatabase = async () => {
     try {
-      const response = await fetch("/api/cart")
+      const response = await fetch('/api/cart')
       const cart = await response.json()
       setItems(cart.items || [])
     } catch (error) {
-      console.error("Failed to load cart:", error)
+      console.error('Failed to load cart:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const addItem = async (item: Omit<CartItem, "id" | "cartId">) => {
+  const addItem = async (item: Omit<CartItem, 'id' | 'cartId'>) => {
     const newItem = { ...item, id: crypto.randomUUID() }
-    
+
     if (session?.user) {
       // Save to database
       try {
-        await fetch("/api/cart/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item)
+        await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item),
         })
         await loadCartFromDatabase()
       } catch (error) {
-        console.error("Failed to add item to cart:", error)
+        console.error('Failed to add item to cart:', error)
       }
     } else {
       // Save to local storage
@@ -364,19 +368,17 @@ export function useCart() {
   const updateQuantity = async (itemId: string, quantity: number) => {
     if (session?.user) {
       try {
-        await fetch("/api/cart/update", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemId, quantity })
+        await fetch('/api/cart/update', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId, quantity }),
         })
         await loadCartFromDatabase()
       } catch (error) {
-        console.error("Failed to update cart:", error)
+        console.error('Failed to update cart:', error)
       }
     } else {
-      const updatedCart = items.map(item =>
-        item.id === itemId ? { ...item, quantity } : item
-      )
+      const updatedCart = items.map((item) => (item.id === itemId ? { ...item, quantity } : item))
       setItems(updatedCart)
       setGuestCart(updatedCart)
     }
@@ -385,17 +387,17 @@ export function useCart() {
   const removeItem = async (itemId: string) => {
     if (session?.user) {
       try {
-        await fetch("/api/cart/remove", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemId })
+        await fetch('/api/cart/remove', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId }),
         })
         await loadCartFromDatabase()
       } catch (error) {
-        console.error("Failed to remove item:", error)
+        console.error('Failed to remove item:', error)
       }
     } else {
-      const updatedCart = items.filter(item => item.id !== itemId)
+      const updatedCart = items.filter((item) => item.id !== itemId)
       setItems(updatedCart)
       setGuestCart(updatedCart)
     }
@@ -404,10 +406,10 @@ export function useCart() {
   const clearCart = async () => {
     if (session?.user) {
       try {
-        await fetch("/api/cart/clear", { method: "POST" })
+        await fetch('/api/cart/clear', { method: 'POST' })
         setItems([])
       } catch (error) {
-        console.error("Failed to clear cart:", error)
+        console.error('Failed to clear cart:', error)
       }
     } else {
       setItems([])
@@ -426,7 +428,7 @@ export function useCart() {
     addItem,
     updateQuantity,
     removeItem,
-    clearCart
+    clearCart,
   }
 }
 ```
@@ -478,11 +480,11 @@ export default function CheckoutPage() {
     <div className="container mx-auto py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <CheckoutSteps steps={steps} currentStep={currentStep} />
-            
+
             <Card className="mt-6">
               <CardContent className="pt-6">
                 <CurrentStepComponent
@@ -493,7 +495,7 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
           </div>
-          
+
           <div>
             <OrderSummary items={items} total={total} />
           </div>
@@ -508,13 +510,11 @@ export default function CheckoutPage() {
 
 ```typescript
 // src/lib/payments/square.ts
-import { Client, Environment } from "square"
+import { Client, Environment } from 'square'
 
 const client = new Client({
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
-  environment: process.env.NODE_ENV === "production" 
-    ? Environment.Production 
-    : Environment.Sandbox
+  environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox,
 })
 
 export class SquarePayment {
@@ -530,24 +530,24 @@ export class SquarePayment {
         sourceId: paymentData.sourceId,
         amountMoney: {
           amount: BigInt(Math.round(paymentData.amount * 100)), // Convert to cents
-          currency: paymentData.currency as any
+          currency: paymentData.currency as any,
         },
         idempotencyKey: crypto.randomUUID(),
         referenceId: paymentData.orderId,
         buyerEmailAddress: paymentData.customerEmail,
-        autocomplete: true
+        autocomplete: true,
       })
 
       return {
         success: true,
         paymentId: result.payment?.id,
-        status: result.payment?.status
+        status: result.payment?.status,
       }
     } catch (error) {
-      console.error("Square payment failed:", error)
+      console.error('Square payment failed:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Payment failed"
+        error: error instanceof Error ? error.message : 'Payment failed',
       }
     }
   }
@@ -558,21 +558,21 @@ export class SquarePayment {
         paymentId,
         amountMoney: {
           amount: BigInt(Math.round(amount * 100)),
-          currency: "USD"
+          currency: 'USD',
         },
-        idempotencyKey: crypto.randomUUID()
+        idempotencyKey: crypto.randomUUID(),
       })
 
       return {
         success: true,
         refundId: result.refund?.id,
-        status: result.refund?.status
+        status: result.refund?.status,
       }
     } catch (error) {
-      console.error("Square refund failed:", error)
+      console.error('Square refund failed:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Refund failed"
+        error: error instanceof Error ? error.message : 'Refund failed',
       }
     }
   }
@@ -594,9 +594,12 @@ export class OrderService {
 
   static async createOrder(checkoutData: CheckoutData, cartItems: CartItem[]): Promise<Order> {
     const orderNumber = this.generateOrderNumber()
-    
+
     // Calculate totals
-    const subtotal = cartItems.reduce((sum, item) => sum + parseFloat(item.totalPrice.toString()), 0)
+    const subtotal = cartItems.reduce(
+      (sum, item) => sum + parseFloat(item.totalPrice.toString()),
+      0
+    )
     const tax = subtotal * 0.08 // 8% tax rate
     const shipping = this.calculateShipping(checkoutData.shippingAddress)
     const total = subtotal + tax + shipping
@@ -615,27 +618,27 @@ export class OrderService {
         total,
         paymentMethod: checkoutData.paymentMethod,
         items: {
-          create: cartItems.map(item => ({
+          create: cartItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             configuration: item.configuration,
             addOns: item.addOns,
             artworkFiles: item.artworkFiles,
             unitPrice: item.unitPrice,
-            totalPrice: item.totalPrice
-          }))
-        }
+            totalPrice: item.totalPrice,
+          })),
+        },
       },
       include: {
         items: {
-          include: { product: true }
-        }
-      }
+          include: { product: true },
+        },
+      },
     })
 
     // Send confirmation email
     await this.sendOrderConfirmation(order)
-    
+
     return order
   }
 
@@ -671,7 +674,7 @@ const statusConfig = {
 
 export function OrderTracker({ order }: { order: Order }) {
   const currentStatusIndex = Object.keys(statusConfig).indexOf(order.status)
-  
+
   return (
     <Card>
       <CardHeader>
@@ -683,7 +686,7 @@ export function OrderTracker({ order }: { order: Order }) {
             const Icon = config.icon
             const isActive = index <= currentStatusIndex
             const isCurrent = index === currentStatusIndex
-            
+
             return (
               <div key={status} className="flex items-center space-x-4">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -752,6 +755,7 @@ export function OrderTracker({ order }: { order: Order }) {
 ## Files Created/Modified
 
 ### Created
+
 - `/src/components/features/cart/MiniCart.tsx` - Floating mini-cart component
 - `/src/components/features/checkout/CheckoutSteps.tsx` - Multi-step checkout flow
 - `/src/hooks/useCart.ts` - Cart management hook
@@ -762,6 +766,7 @@ export function OrderTracker({ order }: { order: Order }) {
 - `/src/app/api/cart/route.ts` - Cart API endpoints
 
 ### Modified
+
 - `/prisma/schema.prisma` - Cart, Order, and OrderItem tables
 - `/src/app/layout.tsx` - Cart provider integration
 
@@ -789,4 +794,4 @@ export function OrderTracker({ order }: { order: Order }) {
 
 ---
 
-*This cart and checkout system provides a seamless shopping experience that converts browsers into customers while maintaining data integrity and payment security throughout the entire process.*
+_This cart and checkout system provides a seamless shopping experience that converts browsers into customers while maintaining data integrity and payment security throughout the entire process._

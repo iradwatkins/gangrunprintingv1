@@ -3,7 +3,7 @@
  * Provides helpers for memoization, debouncing, and performance monitoring
  */
 
-import { useEffect, useRef, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { DEBOUNCE_DELAY } from '@/config/constants'
 
 /**
@@ -53,10 +53,13 @@ export function throttle<T extends (...args: any[]) => any>(
         clearTimeout(timeoutId)
       }
 
-      timeoutId = setTimeout(() => {
-        lastTime = Date.now()
-        fn(...args)
-      }, interval - (now - lastTime))
+      timeoutId = setTimeout(
+        () => {
+          lastTime = Date.now()
+          fn(...args)
+        },
+        interval - (now - lastTime)
+      )
     }
   }
 }
@@ -264,10 +267,10 @@ export function batchUpdates(updates: (() => void)[]) {
   // React 18+ automatically batches updates, but this ensures compatibility
   if ('startTransition' in React) {
     React.startTransition(() => {
-      updates.forEach(update => update())
+      updates.forEach((update) => update())
     })
   } else {
-    updates.forEach(update => update())
+    updates.forEach((update) => update())
   }
 }
 
@@ -277,10 +280,7 @@ export function batchUpdates(updates: (() => void)[]) {
  * @param fn - Function to measure
  * @returns Function result
  */
-export async function measurePerformance<T>(
-  name: string,
-  fn: () => T | Promise<T>
-): Promise<T> {
+export async function measurePerformance<T>(name: string, fn: () => T | Promise<T>): Promise<T> {
   const start = performance.now()
 
   try {
@@ -314,16 +314,15 @@ export function createSelector<T extends readonly ((...args: any[]) => any)[], R
   let lastCombined: R | null = null
 
   return (...args: Parameters<T[0]>) => {
-    const results = selectors.map(selector => selector(...args))
+    const results = selectors.map((selector) => selector(...args))
 
     // Check if results have changed
-    const hasChanged = !lastResults ||
-      results.some((result, i) => result !== lastResults![i])
+    const hasChanged = !lastResults || results.some((result, i) => result !== lastResults![i])
 
     if (hasChanged) {
       lastArgs = args
       lastResults = results
-      lastCombined = combiner(...results as any)
+      lastCombined = combiner(...(results as any))
     }
 
     return lastCombined!

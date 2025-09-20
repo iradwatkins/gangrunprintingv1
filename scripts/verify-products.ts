@@ -18,24 +18,24 @@ async function verifyProducts() {
               include: {
                 paperStockItems: {
                   include: {
-                    paperStock: true
-                  }
-                }
-              }
-            }
-          }
+                    paperStock: true,
+                  },
+                },
+              },
+            },
+          },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true
-          }
+            sizeGroup: true,
+          },
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true
-          }
-        }
-      }
+            quantityGroup: true,
+          },
+        },
+      },
     })
 
     if (product) {
@@ -56,7 +56,9 @@ async function verifyProducts() {
       // Paper stocks
       if (product.productPaperStockSets.length > 0) {
         const paperStockSet = product.productPaperStockSets[0].paperStockSet
-        console.log(`   Paper Stock Set: ${paperStockSet.name} (${paperStockSet.paperStockItems.length} options)`)
+        console.log(
+          `   Paper Stock Set: ${paperStockSet.name} (${paperStockSet.paperStockItems.length} options)`
+        )
       }
 
       // Sizes
@@ -84,7 +86,7 @@ async function verifyProducts() {
   // Summary
   const allProducts = await prisma.product.count()
   const activeProducts = await prisma.product.count({
-    where: { isActive: true }
+    where: { isActive: true },
   })
 
   console.log('📊 Summary:')
