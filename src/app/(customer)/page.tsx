@@ -88,6 +88,218 @@ const productCategories = [
   },
 ]
 
+// Variant-specific product data
+const variantProducts = {
+  LIMITED_TIME_OFFER: [
+    {
+      name: 'Premium Business Cards',
+      price: 'Starting at $19.99',
+      originalPrice: '$29.99',
+      image: '/images/business-cards.jpg',
+      badge: 'SAVE $10',
+      urgent: true,
+    },
+    {
+      name: 'Custom Flyers',
+      price: 'Starting at $34.99',
+      originalPrice: '$49.99',
+      image: '/images/flyers.jpg',
+      badge: 'SAVE $15',
+      urgent: true,
+    },
+  ],
+  FEATURED_PRODUCT: [
+    {
+      name: 'Premium Business Cards',
+      price: 'Starting at $29.99',
+      image: '/images/business-cards.jpg',
+      badge: 'Most Popular',
+      featured: true,
+    },
+    {
+      name: 'Custom Flyers',
+      price: 'Starting at $49.99',
+      image: '/images/flyers.jpg',
+      badge: 'Best Quality',
+    },
+    {
+      name: 'Vinyl Banners',
+      price: 'Starting at $89.99',
+      image: '/images/banners.jpg',
+      badge: 'Durable',
+    },
+    {
+      name: 'Die-Cut Stickers',
+      price: 'Starting at $24.99',
+      image: '/images/stickers.jpg',
+      badge: 'Waterproof',
+    },
+  ],
+  NEW_CUSTOMER_WELCOME: [
+    {
+      name: 'Starter Business Cards',
+      price: 'Starting at $22.49',
+      originalPrice: '$29.99',
+      image: '/images/business-cards.jpg',
+      badge: 'Perfect for Starters',
+      newCustomer: true,
+    },
+    {
+      name: 'Simple Flyers',
+      price: 'Starting at $37.49',
+      originalPrice: '$49.99',
+      image: '/images/flyers.jpg',
+      badge: 'Easy to Design',
+      newCustomer: true,
+    },
+    {
+      name: 'Basic Postcards',
+      price: 'Starting at $18.74',
+      originalPrice: '$24.99',
+      image: '/images/postcards.jpg',
+      badge: 'Great First Project',
+      newCustomer: true,
+    },
+  ],
+  SEASONAL_HOLIDAY: [
+    {
+      name: 'Holiday Cards',
+      price: 'Starting at $34.99',
+      image: '/images/business-cards.jpg',
+      badge: '🎄 Holiday Special',
+      seasonal: true,
+    },
+    {
+      name: 'Event Invitations',
+      price: 'Starting at $44.99',
+      image: '/images/flyers.jpg',
+      badge: '🎉 Party Ready',
+      seasonal: true,
+    },
+    {
+      name: 'Gift Tags & Labels',
+      price: 'Starting at $19.99',
+      image: '/images/stickers.jpg',
+      badge: '🎁 Festive',
+      seasonal: true,
+    },
+  ],
+  BULK_VOLUME_DISCOUNTS: [
+    {
+      name: 'Bulk Business Cards',
+      price: 'Starting at $19.99',
+      bulkPrice: '1000+ qty',
+      image: '/images/business-cards.jpg',
+      badge: 'Volume Discount',
+      bulk: true,
+    },
+    {
+      name: 'Corporate Flyers',
+      price: 'Starting at $39.99',
+      bulkPrice: '500+ qty',
+      image: '/images/flyers.jpg',
+      badge: 'Bulk Savings',
+      bulk: true,
+    },
+    {
+      name: 'Marketing Materials',
+      price: 'Starting at $69.99',
+      bulkPrice: '250+ qty',
+      image: '/images/banners.jpg',
+      badge: 'Business Package',
+      bulk: true,
+    },
+    {
+      name: 'Branded Stickers',
+      price: 'Starting at $14.99',
+      bulkPrice: '1000+ qty',
+      image: '/images/stickers.jpg',
+      badge: 'Volume Pricing',
+      bulk: true,
+    },
+  ],
+  FAST_TURNAROUND: [
+    {
+      name: 'Rush Business Cards',
+      price: 'Starting at $39.99',
+      image: '/images/business-cards.jpg',
+      badge: '24hr Delivery',
+      rush: true,
+    },
+    {
+      name: 'Express Flyers',
+      price: 'Starting at $59.99',
+      image: '/images/flyers.jpg',
+      badge: 'Same Day',
+      rush: true,
+    },
+  ],
+  LOCAL_COMMUNITY: [
+    {
+      name: 'Community Event Cards',
+      price: 'Starting at $24.99',
+      image: '/images/business-cards.jpg',
+      badge: 'Local Favorite',
+      community: true,
+    },
+    {
+      name: 'Neighborhood Flyers',
+      price: 'Starting at $44.99',
+      image: '/images/flyers.jpg',
+      badge: 'Community Special',
+      community: true,
+    },
+    {
+      name: 'Local Business Signs',
+      price: 'Starting at $79.99',
+      image: '/images/banners.jpg',
+      badge: 'Support Local',
+      community: true,
+    },
+  ],
+}
+
+// Variant-specific categories
+const variantCategories = {
+  LIMITED_TIME_OFFER: [
+    { ...productCategories[0], badge: '30% OFF', urgent: true },
+    { ...productCategories[1], badge: '25% OFF', urgent: true },
+    { ...productCategories[3], badge: '35% OFF', urgent: true },
+  ],
+  FEATURED_PRODUCT: [
+    { ...productCategories[0], badge: 'Featured' },
+    { ...productCategories[1], badge: 'Popular' },
+    { ...productCategories[2], badge: 'Trending' },
+    { ...productCategories[3], badge: 'Best Seller' },
+  ],
+  NEW_CUSTOMER_WELCOME: [
+    { ...productCategories[0], badge: 'Great Start' },
+    { ...productCategories[1], badge: 'Easy to Use' },
+    { ...productCategories[5], badge: 'Beginner Friendly' },
+  ],
+  SEASONAL_HOLIDAY: [
+    { ...productCategories[0], badge: '🎄 Holiday' },
+    { ...productCategories[1], badge: '🎉 Festive' },
+    { ...productCategories[5], badge: '🎁 Seasonal' },
+  ],
+  BULK_VOLUME_DISCOUNTS: [
+    { ...productCategories[0], badge: 'Bulk Discount' },
+    { ...productCategories[1], badge: 'Volume Pricing' },
+    { ...productCategories[2], badge: 'Business Solutions' },
+    { ...productCategories[4], badge: 'Corporate Orders' },
+  ],
+  FAST_TURNAROUND: [
+    { ...productCategories[0], badge: 'Same Day' },
+    { ...productCategories[1], badge: 'Rush Available' },
+    { ...productCategories[3], badge: '24hr Service' },
+  ],
+  LOCAL_COMMUNITY: [
+    { ...productCategories[0], badge: 'Local Business' },
+    { ...productCategories[1], badge: 'Community Events' },
+    { ...productCategories[2], badge: 'Neighborhood' },
+  ],
+}
+
 const featuredProducts = [
   {
     name: 'Premium Business Cards',
@@ -144,6 +356,70 @@ const testimonials = [
   },
 ]
 
+// Variant-specific theme configurations
+const variantThemes = {
+  LIMITED_TIME_OFFER: {
+    primaryColor: 'from-red-500/20 to-orange-500/20',
+    accentColor: 'border-red-500/20 bg-red-50 text-red-700',
+    urgencyClass: 'animate-pulse',
+    badgeClass: 'bg-red-500 text-white',
+    gradientClass: 'from-red-500/10 via-orange-500/5 to-background',
+    heroGradient: 'from-red-500/15 via-orange-500/10 to-background',
+  },
+  FEATURED_PRODUCT: {
+    primaryColor: 'from-blue-500/20 to-indigo-500/20',
+    accentColor: 'border-blue-500/20 bg-blue-50 text-blue-700',
+    urgencyClass: '',
+    badgeClass: 'bg-blue-500 text-white',
+    gradientClass: 'from-blue-500/10 via-indigo-500/5 to-background',
+    heroGradient: 'from-blue-500/15 via-indigo-500/10 to-background',
+  },
+  NEW_CUSTOMER_WELCOME: {
+    primaryColor: 'from-green-500/20 to-emerald-500/20',
+    accentColor: 'border-green-500/20 bg-green-50 text-green-700',
+    urgencyClass: '',
+    badgeClass: 'bg-green-500 text-white',
+    gradientClass: 'from-green-500/10 via-emerald-500/5 to-background',
+    heroGradient: 'from-green-500/15 via-emerald-500/10 to-background',
+  },
+  SEASONAL_HOLIDAY: {
+    primaryColor: 'from-purple-500/20 to-pink-500/20',
+    accentColor: 'border-purple-500/20 bg-purple-50 text-purple-700',
+    urgencyClass: '',
+    badgeClass: 'bg-purple-500 text-white',
+    gradientClass: 'from-purple-500/10 via-pink-500/5 to-background',
+    heroGradient: 'from-purple-500/15 via-pink-500/10 to-background',
+  },
+  BULK_VOLUME_DISCOUNTS: {
+    primaryColor: 'from-yellow-500/20 to-amber-500/20',
+    accentColor: 'border-yellow-500/20 bg-yellow-50 text-yellow-700',
+    urgencyClass: '',
+    badgeClass: 'bg-yellow-500 text-white',
+    gradientClass: 'from-yellow-500/10 via-amber-500/5 to-background',
+    heroGradient: 'from-yellow-500/15 via-amber-500/10 to-background',
+  },
+  FAST_TURNAROUND: {
+    primaryColor: 'from-cyan-500/20 to-teal-500/20',
+    accentColor: 'border-cyan-500/20 bg-cyan-50 text-cyan-700',
+    urgencyClass: 'animate-bounce',
+    badgeClass: 'bg-cyan-500 text-white',
+    gradientClass: 'from-cyan-500/10 via-teal-500/5 to-background',
+    heroGradient: 'from-cyan-500/15 via-teal-500/10 to-background',
+  },
+  LOCAL_COMMUNITY: {
+    primaryColor: 'from-slate-500/20 to-gray-500/20',
+    accentColor: 'border-slate-500/20 bg-slate-50 text-slate-700',
+    urgencyClass: '',
+    badgeClass: 'bg-slate-500 text-white',
+    gradientClass: 'from-slate-500/10 via-gray-500/5 to-background',
+    heroGradient: 'from-slate-500/15 via-gray-500/10 to-background',
+  },
+}
+
+const getVariantTheme = (variantType: string) => {
+  return variantThemes[variantType as keyof typeof variantThemes] || variantThemes.LIMITED_TIME_OFFER
+}
+
 export default function Home() {
   const [homepage, setHomepage] = useState<HomepageVariant | null>(null)
   const [loading, setLoading] = useState(true)
@@ -172,17 +448,18 @@ export default function Home() {
     if (!section.isVisible) return null
 
     const { content } = section
+    const theme = getVariantTheme(homepage?.type || '')
 
     switch (section.sectionType) {
       case 'hero':
         return (
-          <section key={section.id} className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
+          <section key={section.id} className={`relative overflow-hidden bg-gradient-to-br ${theme.heroGradient}`}>
             <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
             <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 xl:py-32">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                 <div className="space-y-8 animate-slide-up">
                   {content.badge && (
-                    <Badge className="inline-flex items-center gap-1 px-3 py-1">
+                    <Badge className={`inline-flex items-center gap-1 px-3 py-1 ${theme.badgeClass} ${theme.urgencyClass}`}>
                       <Zap className="w-3 h-3" />
                       {content.badge}
                     </Badge>
@@ -252,7 +529,7 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
                 {content.features?.map((feature: any, index: number) => (
                   <div key={index} className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className={`w-16 h-16 bg-gradient-to-br ${theme.primaryColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                       {getFeatureIcon(index)}
                     </div>
                     <h3 className="font-semibold mb-2">{feature.title}</h3>
@@ -268,7 +545,7 @@ export default function Home() {
 
       case 'cta':
         return (
-          <section key={section.id} className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+          <section key={section.id} className={`py-12 sm:py-16 lg:py-20 bg-gradient-to-r ${theme.gradientClass}`}>
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-3xl font-bold mb-4">
                 {content.title || 'Ready to Start Your Project?'}
@@ -292,6 +569,20 @@ export default function Home() {
           </section>
         )
 
+      case 'featured-products-2':
+      case 'featured-products-3':
+      case 'featured-products-4':
+        return renderFeaturedProducts(section, content)
+
+      case 'product-categories':
+        return renderProductCategories(section, content)
+
+      case 'testimonials':
+        return renderTestimonials(section, content)
+
+      case 'quick-stats':
+        return renderQuickStats(section, content)
+
       default:
         return null
     }
@@ -300,6 +591,204 @@ export default function Home() {
   const getFeatureIcon = (index: number) => {
     const icons = [<Clock key="clock" className="h-8 w-8 text-primary" />, <Shield key="shield" className="h-8 w-8 text-primary" />, <Users key="users" className="h-8 w-8 text-primary" />, <TrendingUp key="trending" className="h-8 w-8 text-primary" />]
     return icons[index % icons.length]
+  }
+
+  const renderFeaturedProducts = (section: ContentSection, content: any) => {
+    const variantType = content.variantType || homepage?.type
+    const products = content.products || variantProducts[variantType as keyof typeof variantProducts] || featuredProducts
+    const productCount = parseInt(section.sectionType.split('-')[2]) || 4
+    const displayProducts = products.slice(0, productCount)
+    const theme = getVariantTheme(variantType || '')
+
+    const getGridClasses = () => {
+      switch (productCount) {
+        case 2: return 'grid-cols-1 md:grid-cols-2'
+        case 3: return 'grid-cols-1 md:grid-cols-3'
+        case 4: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+        default: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+      }
+    }
+
+    return (
+      <section key={section.id} className={`py-12 sm:py-16 lg:py-20 bg-gradient-to-r ${theme.gradientClass}`}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+              {content.title || 'Featured Products'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {content.description || 'Discover our most popular printing solutions'}
+            </p>
+          </div>
+          <div className={`grid ${getGridClasses()} gap-6`}>
+            {displayProducts.map((product: any, index: number) => (
+              <Card key={index} className={`hover:shadow-lg transition-shadow ${theme.urgencyClass}`}>
+                <div className={`aspect-square bg-gradient-to-br ${theme.primaryColor} rounded-t-lg flex items-center justify-center relative`}>
+                  <Package className="h-16 w-16 text-primary/40" />
+                  {product.badge && (
+                    <Badge
+                      className={`absolute top-3 right-3 ${theme.badgeClass} ${theme.urgencyClass}`}
+                    >
+                      {product.badge}
+                    </Badge>
+                  )}
+                </div>
+                <CardContent className="p-4">
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">{product.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <p className="text-primary font-medium">{product.price}</p>
+                      {product.originalPrice && (
+                        <p className="text-sm text-muted-foreground line-through">
+                          {product.originalPrice}
+                        </p>
+                      )}
+                    </div>
+                    {product.bulkPrice && (
+                      <p className="text-xs text-muted-foreground">
+                        {product.bulkPrice}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const renderProductCategories = (section: ContentSection, content: any) => {
+    const variantType = content.variantType || homepage?.type
+    const categories = content.categories || variantCategories[variantType as keyof typeof variantCategories] || productCategories.slice(0, 4)
+    const theme = getVariantTheme(variantType || '')
+
+    return (
+      <section key={section.id} className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+              {content.title || 'Product Categories'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {content.description || 'Explore our complete range of printing services'}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((category: any, index: number) => (
+              <Link key={index} href={category.href}>
+                <Card className="group hover:shadow-lg transition-all h-full overflow-hidden">
+                  <div className={`relative aspect-video bg-gradient-to-br ${theme.primaryColor}`}>
+                    {category.badge && (
+                      <Badge
+                        className={`absolute top-3 right-3 ${theme.badgeClass} ${
+                          category.urgent ? theme.urgencyClass : ''
+                        }`}
+                      >
+                        {category.badge}
+                      </Badge>
+                    )}
+                    <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                      <div className="w-full h-full bg-white/50 rounded-lg shadow-sm flex items-center justify-center">
+                        <div className="text-center">
+                          <Package className="h-16 w-16 text-primary/40 mx-auto mb-2" />
+                          <span className="text-xs text-muted-foreground">Sample Image</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="group-hover:text-primary transition-colors">
+                      {category.title}
+                    </CardTitle>
+                    <CardDescription>{category.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const renderTestimonials = (section: ContentSection, content: any) => {
+    const sectionTestimonials = content.testimonials || testimonials.slice(0, 3)
+    const variantType = homepage?.type
+    const theme = getVariantTheme(variantType || '')
+
+    return (
+      <section key={section.id} className={`py-12 sm:py-16 lg:py-20 bg-gradient-to-r ${theme.gradientClass}`}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+              {content.title || 'What Our Customers Say'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {content.description || 'Don\'t just take our word for it - hear from our satisfied customers'}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {sectionTestimonials.map((testimonial: any, index: number) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        {testimonial.avatar}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-sm">{testimonial.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {testimonial.role}, {testimonial.company}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const renderQuickStats = (section: ContentSection, content: any) => {
+    const stats = content.stats || [
+      { number: '10,000+', label: 'Happy Customers' },
+      { number: '50,000+', label: 'Orders Completed' },
+      { number: '24hr', label: 'Fast Turnaround' },
+      { number: '99.9%', label: 'Satisfaction Rate' },
+    ]
+    const variantType = homepage?.type
+    const theme = getVariantTheme(variantType || '')
+
+    return (
+      <section key={section.id} className={`border-y bg-gradient-to-r ${theme.gradientClass}`}>
+        <div className="container mx-auto px-4 py-6 sm:py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
+            {stats.map((stat: any, index: number) => (
+              <div key={index} className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-primary">
+                  {stat.number}
+                </div>
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
   }
 
   const renderFallbackContent = () => (

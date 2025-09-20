@@ -58,41 +58,8 @@ async function main() {
       create: variant,
     })
 
-    // Create default content sections for each homepage variant
-    const defaultContent = [
-      {
-        homepageVariantId: homepage.id,
-        sectionType: 'hero',
-        position: 1,
-        content: {
-          headline: getDefaultHeadline(variant.type),
-          subtext: getDefaultSubtext(variant.type),
-          ctaText: 'Start Your Order',
-          ctaSecondaryText: 'Track Order',
-          badge: getDefaultBadge(variant.type),
-        },
-      },
-      {
-        homepageVariantId: homepage.id,
-        sectionType: 'features',
-        position: 2,
-        content: {
-          title: 'Why Choose GangRun Printing?',
-          features: getDefaultFeatures(variant.type),
-        },
-      },
-      {
-        homepageVariantId: homepage.id,
-        sectionType: 'cta',
-        position: 3,
-        content: {
-          title: 'Ready to Start Your Project?',
-          description: getDefaultCTADescription(variant.type),
-          primaryButton: 'Browse Products',
-          secondaryButton: 'Track Your Order',
-        },
-      },
-    ]
+    // Create variant-specific content sections
+    const defaultContent = getVariantSections(homepage.id, variant.type)
 
     for (const content of defaultContent) {
       await prisma.homepageContent.upsert({
@@ -234,6 +201,371 @@ function getDefaultCTADescription(type: HomepageType): string {
       return 'Support local and get exceptional service. Contact us for community pricing.'
     default:
       return 'Choose from our wide selection of products and upload your design. Our team is ready to bring your vision to life.'
+  }
+}
+
+function getVariantSections(homepageVariantId: string, type: HomepageType) {
+  const baseContent = [
+    {
+      homepageVariantId,
+      sectionType: 'hero',
+      content: {
+        headline: getDefaultHeadline(type),
+        subtext: getDefaultSubtext(type),
+        badge: getDefaultBadge(type),
+        ctaText: 'Start Your Order',
+        ctaSecondaryText: 'Track Order',
+      },
+      position: 1,
+      isVisible: true,
+    },
+  ]
+
+  // Variant-specific content sections with different product arrangements
+  switch (type) {
+    case 'LIMITED_TIME_OFFER':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-4',
+          content: {
+            title: 'Limited Time Offers - Act Fast!',
+            subtitle: 'These deals won\'t last long',
+            showTimer: true,
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'features',
+          content: {
+            title: 'Why Act Now?',
+            features: getDefaultFeatures(type),
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Don\'t Miss Out - Order Today!',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Shop Now',
+            secondaryButton: 'View All Deals',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'FEATURED_PRODUCT':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-2',
+          content: {
+            title: 'Featured Premium Products',
+            subtitle: 'Hand-picked for quality and value',
+            layout: 'spotlight',
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'testimonials',
+          content: {
+            title: 'What Our Customers Say',
+            testimonials: [
+              {
+                name: 'Sarah Johnson',
+                company: 'Creative Agency',
+                text: 'The business cards exceeded our expectations. Premium quality at an unbeatable price!',
+                rating: 5,
+              },
+              {
+                name: 'Mike Chen',
+                company: 'Tech Startup',
+                text: 'Fast turnaround and excellent customer service. Our go-to printing partner.',
+                rating: 5,
+              },
+            ],
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Experience Premium Quality',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Order Featured Products',
+            secondaryButton: 'Browse All Products',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'NEW_CUSTOMER_WELCOME':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-3',
+          content: {
+            title: 'Perfect Starter Products',
+            subtitle: 'Ideal for your first order with us',
+            highlightDiscount: true,
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'quick-stats',
+          content: {
+            title: 'Join Thousands of Happy Customers',
+            stats: [
+              { number: '50,000+', label: 'Orders Completed' },
+              { number: '4.9/5', label: 'Customer Rating' },
+              { number: '24hr', label: 'Average Turnaround' },
+              { number: '100%', label: 'Satisfaction Guarantee' },
+            ],
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Welcome to Quality Printing',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Claim New Customer Discount',
+            secondaryButton: 'Browse Products',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'SEASONAL_HOLIDAY':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-3',
+          content: {
+            title: 'Holiday Special Collection',
+            subtitle: 'Festive designs and seasonal themes',
+            theme: 'holiday',
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'features',
+          content: {
+            title: 'Holiday Printing Made Easy',
+            features: getDefaultFeatures(type),
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Celebrate in Style',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Shop Holiday Collection',
+            secondaryButton: 'Custom Holiday Designs',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'BULK_VOLUME_DISCOUNTS':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-4',
+          content: {
+            title: 'Bulk Order Specials',
+            subtitle: 'The more you order, the more you save',
+            showVolumeDiscounts: true,
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'quick-stats',
+          content: {
+            title: 'Bulk Order Benefits',
+            stats: [
+              { number: 'Up to 50%', label: 'Volume Savings' },
+              { number: '500+', label: 'Minimum for Discount' },
+              { number: 'Free', label: 'Bulk Shipping' },
+              { number: '48hr', label: 'Bulk Processing' },
+            ],
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Ready for Big Savings?',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Get Bulk Quote',
+            secondaryButton: 'View Volume Pricing',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'FAST_TURNAROUND':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-2',
+          content: {
+            title: 'Rush Order Available',
+            subtitle: 'Same-day and next-day printing',
+            emphasizeSpeed: true,
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'quick-stats',
+          content: {
+            title: 'Speed That Delivers',
+            stats: [
+              { number: '2hrs', label: 'Fastest Turnaround' },
+              { number: '99.5%', label: 'On-Time Delivery' },
+              { number: '24/7', label: 'Rush Processing' },
+              { number: 'Same Day', label: 'Local Pickup' },
+            ],
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Need It Fast? We\'ve Got You!',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Order Rush Service',
+            secondaryButton: 'Check Turnaround Times',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    case 'LOCAL_COMMUNITY':
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-3',
+          content: {
+            title: 'Community Favorites',
+            subtitle: 'Supporting local businesses and events',
+            highlightLocal: true,
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'testimonials',
+          content: {
+            title: 'Local Businesses Love Us',
+            testimonials: [
+              {
+                name: 'Maria Gonzalez',
+                company: 'Local Restaurant',
+                text: 'They understand our community and deliver exactly what we need for our events.',
+                rating: 5,
+              },
+              {
+                name: 'Tom Wilson',
+                company: 'Community Center',
+                text: 'Reliable local partner for all our printing needs. Fast and affordable.',
+                rating: 5,
+              },
+            ],
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Support Local, Get Exceptional Service',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Get Community Pricing',
+            secondaryButton: 'Contact Local Team',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
+
+    default:
+      return [
+        ...baseContent,
+        {
+          homepageVariantId,
+          sectionType: 'featured-products-3',
+          content: {
+            title: 'Popular Products',
+            subtitle: 'Our customers\' top choices',
+          },
+          position: 2,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'features',
+          content: {
+            title: 'Why Choose Us?',
+            features: getDefaultFeatures(type),
+          },
+          position: 3,
+          isVisible: true,
+        },
+        {
+          homepageVariantId,
+          sectionType: 'cta',
+          content: {
+            title: 'Ready to Start Your Project?',
+            description: getDefaultCTADescription(type),
+            primaryButton: 'Browse Products',
+            secondaryButton: 'Track Your Order',
+          },
+          position: 4,
+          isVisible: true,
+        },
+      ]
   }
 }
 
