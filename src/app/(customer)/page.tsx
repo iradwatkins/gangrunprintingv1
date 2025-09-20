@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight,
@@ -23,6 +24,24 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+
+interface ContentSection {
+  id: string
+  sectionType: string
+  content: any
+  position: number
+  isVisible: boolean
+}
+
+interface HomepageVariant {
+  id: string
+  name: string
+  type: string
+  description: string | null
+  isActive: boolean
+  isEnabled: boolean
+  content: ContentSection[]
+}
 
 const productCategories = [
   {
@@ -126,9 +145,166 @@ const testimonials = [
 ]
 
 export default function Home() {
-  return (
+  const [homepage, setHomepage] = useState<HomepageVariant | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchActiveHomepage()
+  }, [])
+
+  const fetchActiveHomepage = async () => {
+    try {
+      const response = await fetch('/api/home-pages/active')
+      if (response.ok) {
+        const data = await response.json()
+        setHomepage(data)
+      } else {
+        console.warn('No active homepage found, using fallback content')
+      }
+    } catch (error) {
+      console.error('Error fetching active homepage:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const renderDynamicSection = (section: ContentSection) => {
+    if (!section.isVisible) return null
+
+    const { content } = section
+
+    switch (section.sectionType) {
+      case 'hero':
+        return (
+          <section key={section.id} className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
+            <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+            <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 xl:py-32">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <div className="space-y-8 animate-slide-up">
+                  {content.badge && (
+                    <Badge className="inline-flex items-center gap-1 px-3 py-1">
+                      <Zap className="w-3 h-3" />
+                      {content.badge}
+                    </Badge>
+                  )}
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight">
+                    {content.headline || 'Professional Printing'}
+                    <span className="text-primary"> Made Simple</span>
+                  </h1>
+                  <p className="text-lg sm:text-xl text-muted-foreground">
+                    {content.subtext || 'High-quality printing services with fast turnaround times. From business cards to banners, we bring your ideas to life.'}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button asChild className="group" size="lg">
+                      <Link href="/products">
+                        <Package className="mr-2 h-5 w-5" />
+                        {content.ctaText || 'Start Your Order'}
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline">
+                      <Link href="/track">{content.ctaSecondaryText || 'Track Order'}</Link>
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-8 pt-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <span className="text-xs sm:text-sm">Free Design Review</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <span className="text-xs sm:text-sm">100% Satisfaction</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative order-first lg:order-last">
+                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 p-4 sm:p-6 md:p-8">
+                      {['Business Cards', 'Flyers', 'Banners', 'Stickers'].map((item, i) => (
+                        <div
+                          key={i}
+                          className="bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 transform hover:scale-105 transition-transform"
+                        >
+                          <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded mb-1 sm:mb-2" />
+                          <p className="text-xs sm:text-sm font-medium text-center">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+
+      case 'features':
+        return (
+          <section key={section.id} className="py-12 sm:py-16 lg:py-20">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+                  {content.title || 'Why Choose GangRun Printing?'}
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  We combine quality, speed, and service to deliver exceptional printing solutions
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                {content.features?.map((feature: any, index: number) => (
+                  <div key={index} className="text-center">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      {getFeatureIcon(index)}
+                    </div>
+                    <h3 className="font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+
+      case 'cta':
+        return (
+          <section key={section.id} className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+            <div className="container mx-auto px-4 text-center">
+              <h2 className="text-3xl font-bold mb-4">
+                {content.title || 'Ready to Start Your Project?'}
+              </h2>
+              <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+                {content.description || 'Choose from our wide selection of products and upload your design. Our team is ready to bring your vision to life.'}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild className="group" size="lg">
+                  <Link href="/products">
+                    <Package className="mr-2 h-5 w-5" />
+                    {content.primaryButton || 'Browse Products'}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/track">{content.secondaryButton || 'Track Your Order'}</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  const getFeatureIcon = (index: number) => {
+    const icons = [<Clock key="clock" className="h-8 w-8 text-primary" />, <Shield key="shield" className="h-8 w-8 text-primary" />, <Users key="users" className="h-8 w-8 text-primary" />, <TrendingUp key="trending" className="h-8 w-8 text-primary" />]
+    return icons[index % icons.length]
+  }
+
+  const renderFallbackContent = () => (
     <main className="min-h-screen">
-      {/* Hero Section */}
+      {/* Fallback Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
         <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
         <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 xl:py-32">
@@ -157,16 +333,6 @@ export default function Home() {
                 <Button asChild size="lg" variant="outline">
                   <Link href="/track">Track Order</Link>
                 </Button>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 sm:gap-8 pt-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <span className="text-xs sm:text-sm">Free Design Review</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <span className="text-xs sm:text-sm">100% Satisfaction</span>
-                </div>
               </div>
             </div>
             <div className="relative order-first lg:order-last">
@@ -411,6 +577,31 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
-  )
+    )
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </main>
+    )
+  }
+
+  // Render dynamic content if homepage variant is available
+  if (homepage && homepage.content) {
+    return (
+      <main className="min-h-screen">
+        {homepage.content
+          .filter(section => section.isVisible)
+          .sort((a, b) => a.position - b.position)
+          .map((section) => renderDynamicSection(section))}
+
+        {/* Always include featured products and categories after dynamic content */}
+        {renderFallbackContent().props.children.slice(1)}
+      </main>
+    )
+  }
+
+  // Fallback to static content
+  return renderFallbackContent()
 }

@@ -1718,3 +1718,69 @@ model ProductTurnaroundTimeSet {
   @@index([productId])
   @@index([turnaroundTimeSetId])
 }
+
+// ==========================================
+// HOMEPAGE VARIANT SYSTEM
+// ==========================================
+
+model HomepageVariant {
+  id               String   @id @default(cuid())
+  name             String   @unique // "Limited Time Offer", "Featured Product", etc.
+  type             HomepageType
+  description      String?
+  isActive         Boolean  @default(false)
+
+  // Preview and metadata
+  thumbnailUrl     String?  // Preview thumbnail
+  lastActivatedAt  DateTime?
+  activatedBy      String? // User ID who activated it
+
+  // Display order and status
+  sortOrder        Int      @default(0)
+  isEnabled        Boolean  @default(true)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  content          HomepageContent[]
+
+  @@index([isActive])
+  @@index([type])
+  @@index([sortOrder])
+}
+
+model HomepageContent {
+  id                String   @id @default(cuid())
+  homepageVariantId String
+  sectionType       String   // "hero", "features", "cta", "testimonials", etc.
+
+  // Content data stored as JSON for flexibility
+  content           Json     // Flexible content structure
+
+  // Position and display
+  position          Int      @default(0)
+  isVisible         Boolean  @default(true)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  homepageVariant   HomepageVariant @relation(fields: [homepageVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([homepageVariantId, sectionType])
+  @@index([homepageVariantId])
+  @@index([sectionType])
+  @@index([position])
+}
+
+// Enum for the 7 homepage types
+enum HomepageType {
+  LIMITED_TIME_OFFER
+  FEATURED_PRODUCT
+  NEW_CUSTOMER_WELCOME
+  SEASONAL_HOLIDAY
+  BULK_VOLUME_DISCOUNTS
+  FAST_TURNAROUND
+  LOCAL_COMMUNITY
+}
