@@ -564,14 +564,14 @@ export default function NewProductPage() {
             )}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button disabled={loading || uploadingImages} onClick={handleSubmit}>
-            {loading || uploadingImages ? (
+          <Button disabled={loading || uploadingImage} onClick={handleSubmit}>
+            {loading || uploadingImage ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
             )}
             <span className="ml-2">
-              {uploadingImages ? uploadProgress : loading ? 'Saving...' : 'Save Product'}
+              {uploadingImage ? 'Uploading...' : loading ? 'Saving...' : 'Save Product'}
             </span>
           </Button>
         </div>
