@@ -12,8 +12,7 @@ import {
 } from '@/components/ui/select'
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
-import AddonAccordion from './AddonAccordion'
-import VariableDataAddon from './VariableDataAddon'
+import AddonAccordionWithVariable from './AddonAccordionWithVariable'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -476,7 +475,7 @@ export default function SimpleConfigurationForm({
   }
 
   // Handle Variable Data changes
-  const handleVariableDataChange = (variableData: VariableDataConfig, variableDataPrice: number) => {
+  const handleVariableDataChange = (variableData: VariableDataConfig) => {
     const newConfig = { ...configuration, variableDataConfig: variableData }
     setConfiguration(newConfig)
 
@@ -921,19 +920,15 @@ export default function SimpleConfigurationForm({
         />
       </div>
 
-      {/* Variable Data Add-on */}
-      <VariableDataAddon
-        quantity={getQuantityValue(configuration)}
-        onChange={handleVariableDataChange}
-        disabled={loading}
-      />
-
-      {/* Add-ons & Upgrades Section */}
-      <AddonAccordion
-        addons={(configData.addons || []).filter(addon => addon.configuration?.type !== 'variable_data')}
+      {/* Add-ons & Upgrades Section (includes Variable Data) */}
+      <AddonAccordionWithVariable
+        addons={configData.addons || []}
         disabled={loading}
         selectedAddons={configuration.selectedAddons}
         onAddonChange={handleAddonChange}
+        variableDataConfig={configuration.variableDataConfig}
+        onVariableDataChange={handleVariableDataChange}
+        quantity={getQuantityValue(configuration)}
       />
 
       {/* Turnaround Time Selection */}
