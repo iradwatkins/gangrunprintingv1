@@ -27,10 +27,10 @@ export async function GET(request: NextRequest) {
       orderBy: { sortOrder: 'asc' },
     })
 
-    console.log(`Found ${addOns.length} add-ons, returning as plain array`)
+    console.log(`Found ${addOns.length} add-ons`)
 
-    // Return the most basic response possible
-    return new Response(JSON.stringify(addOns), {
+    // Return data wrapped in { data: [...] } format for consistency
+    return new Response(JSON.stringify({ data: addOns }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
