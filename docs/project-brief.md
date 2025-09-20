@@ -22,7 +22,7 @@ Markdown
 
 \#\# 3\. Key Features & Scope (MVP)
 
-*\*(The MVP scope encompasses the full functionality defined in the UI/UX, Frontend Architecture, and System Architecture documents, to be built out in prioritized phases.)\**
+\*\*(The MVP scope encompasses the full functionality defined in the UI/UX, Frontend Architecture, and System Architecture documents, to be built out in prioritized phases.)\*\*
 
 \#\#\# 3.1. Core E-commerce Functionality  
 \* **\*\*Dynamic Product Configuration:\*\*** A flexible system allowing customers to configure complex print products based on attributes like Paper Stocks, Print Sizes, Coatings, and Sides.  
@@ -35,9 +35,9 @@ Markdown
 
 \#\#\# 3.2. UI/UX & Frontend Features  
 \* **\*\*Flexible UI Components:\*\*** The platform will support multiple UI styles controllable by an admin, including:  
-    \* **\*\*Navigation:\*\*** Both simple dropdowns and a "mega menu" style.  
-    \* **\*\*Product Page Flow:\*\*** Both a guided, step-by-step configuration and an "all-in-one-form" approach.  
-    \* **\*\*Checkout Flow:\*\*** Both a multi-step and a one-page checkout process.  
+ \* **\*\*Navigation:\*\*** Both simple dropdowns and a "mega menu" style.  
+ \* **\*\*Product Page Flow:\*\*** Both a guided, step-by-step configuration and an "all-in-one-form" approach.  
+ \* **\*\*Checkout Flow:\*\*** Both a multi-step and a one-page checkout process.  
 \* **\*\*Floating Side Cart (Mini Cart):\*\*** A site-wide slide-out cart for an enhanced user experience.  
 \* **\*\*Customer Account Section:\*\*** A comprehensive "My Account" area where users can view order history (with status filters and search), see order details, re-order products, and track quotes.  
 \* **\*\*Branding & Theming:\*\*** A powerful admin "Theme Editor" to manage multiple logos (light/dark themes, favicon, OG image), a full light/dark mode color palette, and selectable fonts for headings and body text to support the white-label-ready architecture.  
@@ -46,19 +46,19 @@ Markdown
 \#\#\# 3.3. System & Automation Features  
 \* **\*\*Payment Gateways:\*\*** Integration with **\*\*Square, CashApp, and PayPal\*\*** using their standard checkout flows. The system will support saved payment methods for registered users. All payments are capture-at-time-of-order (no pre-authorizations).  
 \* **\*\*Marketing & Email Platform:\*\*** The MVP will include the full, comprehensive system as analyzed from the Funnel Kit reference material. This includes:  
-    \* A central **\*\*CRM/Contacts\*\*** hub with detailed profiles, tagging, and segmentation.  
-    \* A visual **\*\*Email Builder\*\*** for creating responsive, branded emails.  
-    \* **\*\*Email Broadcasts\*\*** for one-time campaigns.  
-    \* A rule-based **\*\*Automation\*\*** engine.  
-    \* Detailed **\*\*Analytics\*\*** for tracking performance.  
+ \* A central **\*\*CRM/Contacts\*\*** hub with detailed profiles, tagging, and segmentation.  
+ \* A visual **\*\*Email Builder\*\*** for creating responsive, branded emails.  
+ \* **\*\*Email Broadcasts\*\*** for one-time campaigns.  
+ \* A rule-based **\*\*Automation\*\*** engine.  
+ \* Detailed **\*\*Analytics\*\*** for tracking performance.  
 \* **\*\*Admin Controls:\*\***  
-    \* **\*\*Website Identity Management:\*\*** The ability to change the core brand identity (logo, name, address, etc.) from a central admin page.  
-    \* **\*\*Automation Control:\*\*** Both a global on/off switch for order automation and per-order buttons to "Start Automation" or "Handle Manually".  
+ \* **\*\*Website Identity Management:\*\*** The ability to change the core brand identity (logo, name, address, etc.) from a central admin page.  
+ \* **\*\*Automation Control:\*\*** Both a global on/off switch for order automation and per-order buttons to "Start Automation" or "Handle Manually".  
 \* **\*\*N8n.io Integration:\*\*** Deep integration with n8n.io for automating order placement with external vendors and other workflows, facilitated by a custom API from the main platform.
 
 \#\# 4\. Known Technical Constraints or Preferences
 
-*\*(This section is guided by the \`\# Technical Preferences for {Project Name}.txt\` document.)\**  
+\*\*(This section is guided by the \`\# Technical Preferences for {Project Name}.txt\` document.)\*\*  
 \* **\*\*Overall Architecture:\*\*** Polyrepo approach; **\*\*Supabase\*\*** as the primary BaaS.  
 \* **\*\*Frontend:\*\*** **\*\*React\*\*** with **\*\*Vite\*\*** and **\*\*TypeScript\*\***.  
 \* **\*\*Styling & Components:\*\*** **\*\*Tailwind CSS\*\*** with **\*\*Shadcn/UI\*\***.  
@@ -66,4 +66,3 @@ Markdown
 \* **\*\*Key Libraries:\*\*** **\*\*Zod\*\***, **\*\*CVA/clsx/Tailwind Merge\*\***, **\*\*date-fns\*\***.  
 \* **\*\*Backend:\*\*** Serverless Functions on Supabase; **\*\*Node.js/Express.js\*\*** if a custom service is needed.  
 \* **\*\*CI/CD & Hosting:\*\*** **\*\*GitHub Actions\*\*** for CI/CD, deploying to **\*\*Vercel or Netlify\*\***.
-

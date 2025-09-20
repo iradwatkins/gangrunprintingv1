@@ -1,13 +1,14 @@
 import { Redis } from 'ioredis'
+import { REDIS_CONFIG } from '@/config/constants'
 
 // Create Redis client
 const redis = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
+  port: parseInt(process.env.REDIS_PORT || String(REDIS_CONFIG.DEFAULT_PORT)),
   password: process.env.REDIS_PASSWORD,
   db: parseInt(process.env.REDIS_DB || '0'),
   retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000)
+    const delay = Math.min(times * REDIS_CONFIG.RETRY_DELAY_MIN, REDIS_CONFIG.RETRY_DELAY_MAX)
     return delay
   },
   maxRetriesPerRequest: 3,
@@ -17,12 +18,10 @@ const redis = new Redis({
 
 // Error handling
 redis.on('error', (err) => {
-  console.error('Redis Client Error:', err)
+  // Redis client error - connection will retry automatically
 })
 
-redis.on('connect', () => {
-  console.log('Redis Client Connected')
-})
+redis.on('connect', () => {})
 
 // Cache utilities
 export const cache = {
@@ -32,7 +31,6 @@ export const cache = {
       const value = await redis.get(key)
       return value ? JSON.parse(value) : null
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error)
       return null
     }
   },
@@ -48,7 +46,6 @@ export const cache = {
       }
       return true
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error)
       return false
     }
   },
@@ -59,7 +56,6 @@ export const cache = {
       const result = await redis.del(key)
       return result > 0
     } catch (error) {
-      console.error(`Cache delete error for key ${key}:`, error)
       return false
     }
   },
@@ -72,7 +68,6 @@ export const cache = {
       const result = await redis.del(...keys)
       return result
     } catch (error) {
-      console.error(`Cache clear pattern error for ${pattern}:`, error)
       return 0
     }
   },
@@ -83,7 +78,6 @@ export const cache = {
       const result = await redis.exists(key)
       return result === 1
     } catch (error) {
-      console.error(`Cache exists error for key ${key}:`, error)
       return false
     }
   },
@@ -93,7 +87,6 @@ export const cache = {
     try {
       return await redis.ttl(key)
     } catch (error) {
-      console.error(`Cache TTL error for key ${key}:`, error)
       return -1
     }
   },
@@ -107,7 +100,6 @@ export const cache = {
       }
       return result
     } catch (error) {
-      console.error(`Cache incr error for key ${key}:`, error)
       return 0
     }
   },
@@ -117,7 +109,6 @@ export const cache = {
     try {
       return await redis.decr(key)
     } catch (error) {
-      console.error(`Cache decr error for key ${key}:`, error)
       return 0
     }
   },
@@ -127,7 +118,6 @@ export const cache = {
     try {
       return await redis.sadd(key, ...members)
     } catch (error) {
-      console.error(`Cache sadd error for key ${key}:`, error)
       return 0
     }
   },
@@ -137,7 +127,6 @@ export const cache = {
     try {
       return await redis.smembers(key)
     } catch (error) {
-      console.error(`Cache smembers error for key ${key}:`, error)
       return []
     }
   },
@@ -147,7 +136,6 @@ export const cache = {
     try {
       return await redis.srem(key, ...members)
     } catch (error) {
-      console.error(`Cache srem error for key ${key}:`, error)
       return 0
     }
   },
@@ -189,7 +177,7 @@ export const cacheKeys = {
 export function withCache<T extends (...args: any[]) => Promise<any>>(
   fn: T,
   keyGenerator: (...args: Parameters<T>) => string,
-  ttl: number = 3600
+  ttl: number = REDIS_CONFIG.DEFAULT_TTL
 ): T {
   return (async (...args: Parameters<T>) => {
     const key = keyGenerator(...args)
@@ -232,7 +220,11 @@ export const sessionStore = {
     return cache.get(cacheKeys.userSession(sessionId))
   },
 
-  async set(sessionId: string, data: any, ttl: number = 86400): Promise<boolean> {
+  async set(
+    sessionId: string,
+    data: any,
+    ttl: number = REDIS_CONFIG.SESSION_TTL
+  ): Promise<boolean> {
     return cache.set(cacheKeys.userSession(sessionId), data, ttl)
   },
 
@@ -240,7 +232,7 @@ export const sessionStore = {
     return cache.del(cacheKeys.userSession(sessionId))
   },
 
-  async touch(sessionId: string, ttl: number = 86400): Promise<boolean> {
+  async touch(sessionId: string, ttl: number = REDIS_CONFIG.SESSION_TTL): Promise<boolean> {
     const key = cacheKeys.userSession(sessionId)
     const data = await cache.get(key)
     if (data) {
@@ -258,7 +250,6 @@ export const pubsub = {
       await redis.publish(channel, serialized)
       return true
     } catch (error) {
-      console.error(`PubSub publish error:`, error)
       return false
     }
   },
@@ -266,7 +257,7 @@ export const pubsub = {
   subscribe: (channel: string, callback: (message: any) => void) => {
     const subscriber = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
+      port: parseInt(process.env.REDIS_PORT || String(REDIS_CONFIG.DEFAULT_PORT)),
       password: process.env.REDIS_PASSWORD,
     })
 
@@ -276,9 +267,7 @@ export const pubsub = {
         try {
           const parsed = JSON.parse(message)
           callback(parsed)
-        } catch (error) {
-          console.error(`PubSub message parse error:`, error)
-        }
+        } catch (error) {}
       }
     })
 

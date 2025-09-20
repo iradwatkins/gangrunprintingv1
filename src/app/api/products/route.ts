@@ -4,46 +4,45 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // Comprehensive Zod schema for product creation
-const createProductSchema = z
-  .object({
-    name: z.string().min(1, 'Product name is required').max(255).trim(),
-    sku: z
-      .string()
-      .min(1, 'SKU is required')
-      .max(100)
-      .regex(/^[a-z0-9-]+$/)
-      .trim(),
-    categoryId: z.string().cuid('Category ID must be valid'),
-    description: z.string().max(5000).optional().nullable(),
-    shortDescription: z.string().max(500).optional().nullable(),
-    isActive: z.boolean().default(true),
-    isFeatured: z.boolean().default(false),
-    images: z
-      .array(
-        z.object({
-          url: z.string().url(),
-          thumbnailUrl: z.string().url().optional(),
-          alt: z.string().max(255).optional(),
-          caption: z.string().max(500).optional(),
-          isPrimary: z.boolean().optional(),
-          width: z.number().int().positive().optional(),
-          height: z.number().int().positive().optional(),
-          fileSize: z.number().int().positive().optional(),
-          mimeType: z.string().optional(),
-        })
-      )
-      .default([]),
-    paperStockSetId: z.string().cuid('Paper stock set ID must be valid'),
-    selectedQuantityGroup: z.string().cuid(),
-    selectedSizeGroup: z.string().cuid(),
-    selectedAddOns: z.array(z.string().cuid()).default([]),
-    productionTime: z.number().int().min(1).max(365).default(3),
-    rushAvailable: z.boolean().default(false),
-    rushDays: z.number().int().min(1).max(30).optional().nullable(),
-    rushFee: z.number().min(0).max(10000).optional().nullable(),
-    basePrice: z.number().min(0).max(100000).default(0),
-    setupFee: z.number().min(0).max(10000).default(0),
-  })
+const createProductSchema = z.object({
+  name: z.string().min(1, 'Product name is required').max(255).trim(),
+  sku: z
+    .string()
+    .min(1, 'SKU is required')
+    .max(100)
+    .regex(/^[a-z0-9-]+$/)
+    .trim(),
+  categoryId: z.string().cuid('Category ID must be valid'),
+  description: z.string().max(5000).optional().nullable(),
+  shortDescription: z.string().max(500).optional().nullable(),
+  isActive: z.boolean().default(true),
+  isFeatured: z.boolean().default(false),
+  images: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        thumbnailUrl: z.string().url().optional(),
+        alt: z.string().max(255).optional(),
+        caption: z.string().max(500).optional(),
+        isPrimary: z.boolean().optional(),
+        width: z.number().int().positive().optional(),
+        height: z.number().int().positive().optional(),
+        fileSize: z.number().int().positive().optional(),
+        mimeType: z.string().optional(),
+      })
+    )
+    .default([]),
+  paperStockSetId: z.string().cuid('Paper stock set ID must be valid'),
+  selectedQuantityGroup: z.string().cuid(),
+  selectedSizeGroup: z.string().cuid(),
+  selectedAddOns: z.array(z.string().cuid()).default([]),
+  productionTime: z.number().int().min(1).max(365).default(3),
+  rushAvailable: z.boolean().default(false),
+  rushDays: z.number().int().min(1).max(30).optional().nullable(),
+  rushFee: z.number().min(0).max(10000).optional().nullable(),
+  basePrice: z.number().min(0).max(100000).default(0),
+  setupFee: z.number().min(0).max(10000).default(0),
+})
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {

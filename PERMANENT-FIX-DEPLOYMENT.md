@@ -17,6 +17,7 @@ Go to: **http://72.60.28.175:3000**
 Navigate to your **gangrunprinting** application and update:
 
 #### General Settings:
+
 ```
 Source Type: GitHub
 Repository: https://github.com/iradwatkins/gangrunprinting.git
@@ -25,6 +26,7 @@ Build Path: /
 ```
 
 #### Advanced Settings:
+
 ```
 Compose Type: Docker Compose
 Compose Path: ./docker-compose.yml
@@ -101,18 +103,21 @@ docker exec gangrunprinting-app npx prisma studio
 ## 🔍 VERIFY DEPLOYMENT
 
 ### 1. Check Container Status
+
 ```bash
 docker ps | grep gangrunprinting
 # Should show: gangrunprinting-app running on port 3000
 ```
 
 ### 2. Check Health Endpoint
+
 ```bash
 curl http://localhost:3000/api/health
 # Should return: {"status":"healthy",...}
 ```
 
 ### 3. Check Website
+
 - Visit: https://gangrunprinting.com
 - Should load without 502 error
 - Login: iradwatkins@gmail.com
@@ -123,22 +128,26 @@ curl http://localhost:3000/api/health
 ### If 502 Error Persists:
 
 1. **Check Docker Network**:
+
 ```bash
 docker network ls | grep dokploy
 # Should show: dokploy-network
 ```
 
 2. **Check Container Logs**:
+
 ```bash
 docker logs gangrunprinting-app --tail 50
 ```
 
 3. **Check Database Connection**:
+
 ```bash
 docker exec gangrunprinting-app npx prisma db pull
 ```
 
 4. **Restart with Clean State**:
+
 ```bash
 docker compose -p gangrunprinting down
 docker compose -p gangrunprinting up -d --build

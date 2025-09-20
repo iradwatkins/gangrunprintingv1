@@ -1,6 +1,11 @@
 export * from './minio'
 import { uploadFile } from './minio'
-import { processProductImage, validateProductImage, generateAltText, ProcessedImage } from './image-processor'
+import {
+  processProductImage,
+  validateProductImage,
+  generateAltText,
+  ProcessedImage,
+} from './image-processor'
 
 export interface UploadedProductImages {
   original: string
@@ -99,7 +104,9 @@ export const uploadProductImage = async (
     }
   } catch (error) {
     console.error('Error uploading product image:', error)
-    throw new Error(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 

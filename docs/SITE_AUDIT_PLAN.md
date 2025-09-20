@@ -1,11 +1,13 @@
 # GangRun Printing Site Audit Plan
 
 ## Executive Summary
+
 Comprehensive site audit to verify all links, buttons, forms, and functionality are working correctly.
 
 ## Audit Scope
 
 ### 1. Public Pages (Customer-Facing)
+
 - **Home Page** - `/`
 - **Products Catalog** - `/products`
 - **Individual Product Pages** - `/products/[id]`
@@ -24,10 +26,12 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - **Privacy Policy** - `/privacy-policy`
 
 ### 2. Authentication Pages
+
 - **Sign In** - `/sign-in` and `/auth/signin`
 - **Verify Email** - `/auth/verify`
 
 ### 3. Account Dashboard
+
 - **Dashboard** - `/account/dashboard`
 - **Account Details** - `/account/details`
 - **Orders** - `/account/orders`
@@ -37,6 +41,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - **Payment Methods** - `/account/payment-methods`
 
 ### 4. Admin Portal
+
 - **Admin Dashboard** - `/admin` and `/admin/dashboard`
 - **Products Management** - `/admin/products`
 - **Product Creation** - `/admin/products/new`
@@ -59,6 +64,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - **Billing** - `/admin/billing`
 
 ### 5. Admin Configuration Pages
+
 - **Print Options** - `/admin/print-options`
 - **Add-ons** - `/admin/add-ons`
 - **Material Types** - `/admin/material-types`
@@ -68,6 +74,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - **Quantities** - `/admin/quantities`
 
 ### 6. Marketing Module
+
 - **Campaigns** - `/admin/marketing/campaigns`
 - **Email Builder** - `/admin/marketing/email-builder`
 - **Automation** - `/admin/marketing/automation`
@@ -76,11 +83,13 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - **Analytics** - `/admin/marketing/analytics`
 
 ### 7. Test Pages
+
 - **Test Page** - `/test`
 - **Payment Test** - `/test/payment`
 - **N8N Test** - `/test/n8n`
 
 ### 8. Internationalization Pages
+
 - **Locale Home** - `/[locale]`
 - **Translations Admin** - `/[locale]/admin/translations`
 - **White Label Admin** - `/[locale]/admin/white-label`
@@ -88,6 +97,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 ## Testing Checklist
 
 ### Navigation Testing
+
 - [ ] Header navigation links
 - [ ] Footer navigation links
 - [ ] Breadcrumb navigation
@@ -96,6 +106,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - [ ] Admin sidebar navigation
 
 ### Button Functionality
+
 - [ ] Add to Cart buttons
 - [ ] Quantity adjustment buttons
 - [ ] Submit buttons on forms
@@ -106,6 +117,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - [ ] Download buttons
 
 ### Form Testing
+
 - [ ] Contact form submission
 - [ ] Quote request form
 - [ ] Login/Sign-up forms
@@ -115,6 +127,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - [ ] Admin CRUD forms
 
 ### API Endpoints
+
 - [ ] Authentication endpoints
 - [ ] Product data endpoints
 - [ ] Order processing endpoints
@@ -123,6 +136,7 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - [ ] Admin CRUD endpoints
 
 ### Interactive Features
+
 - [ ] Product image galleries
 - [ ] Cart functionality
 - [ ] Search functionality
@@ -132,12 +146,14 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 - [ ] Language switching
 
 ### Responsiveness
+
 - [ ] Desktop view (1920px)
 - [ ] Laptop view (1366px)
 - [ ] Tablet view (768px)
 - [ ] Mobile view (375px)
 
 ### Performance Checks
+
 - [ ] Page load times
 - [ ] Image optimization
 - [ ] JavaScript errors
@@ -147,24 +163,28 @@ Comprehensive site audit to verify all links, buttons, forms, and functionality 
 ## Testing Tools & Methods
 
 ### Automated Testing
+
 1. **Link Checker**: Verify all internal and external links
 2. **Form Testing**: Submit test data through all forms
 3. **API Testing**: Test all endpoints for proper responses
 4. **Console Monitoring**: Check for JavaScript errors
 
 ### Manual Testing
+
 1. **Visual Inspection**: Check layout and design consistency
 2. **User Flow Testing**: Complete full user journeys
 3. **Cross-browser Testing**: Test on Chrome, Firefox, Safari, Edge
 4. **Mobile Testing**: Test on actual mobile devices
 
 ### Using MCP IDE Integration
+
 - Use `mcp__ide__getDiagnostics` to check for TypeScript/JavaScript errors
 - Monitor real-time errors during testing
 
 ## Audit Output Format
 
 ### For Each Issue Found:
+
 ```
 Page: [URL]
 Element: [Button/Link/Form]
@@ -181,28 +201,33 @@ Console Error: [If applicable]
 ## Priority Levels
 
 ### Critical (P1)
+
 - Broken checkout process
 - Authentication failures
 - Payment processing errors
 - Data loss issues
 
 ### High (P2)
+
 - Broken navigation links
 - Non-functional forms
 - Cart issues
 - Missing product data
 
 ### Medium (P3)
+
 - UI/UX inconsistencies
 - Slow performance
 - Minor responsive issues
 
 ### Low (P4)
+
 - Cosmetic issues
 - Minor text errors
 - Non-critical console warnings
 
 ## Execution Timeline
+
 1. **Phase 1**: Public pages and navigation (30 min)
 2. **Phase 2**: Forms and submissions (30 min)
 3. **Phase 3**: Account and authentication (20 min)

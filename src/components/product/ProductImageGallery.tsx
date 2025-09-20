@@ -3,13 +3,9 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Expand, ZoomIn } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Expand } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 interface ProductImage {
   id: string
@@ -61,11 +57,11 @@ export function ProductImageGallery({
     return (
       <div className={cn('relative aspect-square bg-gray-100 rounded-lg', className)}>
         <Image
-          src="/images/product-placeholder.jpg"
-          alt={`${productName} - No image available`}
           fill
+          alt={`${productName} - No image available`}
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 50vw"
+          src="/images/product-placeholder.jpg"
         />
       </div>
     )
@@ -104,22 +100,19 @@ export function ProductImageGallery({
           >
             {/* Use picture element for WebP support with fallback */}
             <picture>
-              <source
-                srcSet={currentImage.webpUrl || currentImage.url}
-                type="image/webp"
-              />
+              <source srcSet={currentImage.webpUrl || currentImage.url} type="image/webp" />
               <Image
-                src={currentImage.largeUrl || currentImage.url}
-                alt={getAltText(currentImage, selectedIndex)}
                 fill
-                priority={selectedIndex === 0}
+                alt={getAltText(currentImage, selectedIndex)}
+                blurDataURL={currentImage.blurDataUrl}
                 className={cn(
                   'object-cover transition-transform duration-300',
                   isZoomed && 'scale-125'
                 )}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 placeholder={currentImage.blurDataUrl ? 'blur' : 'empty'}
-                blurDataURL={currentImage.blurDataUrl}
+                priority={selectedIndex === 0}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                src={currentImage.largeUrl || currentImage.url}
                 onMouseEnter={() => enableZoom && setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
               />
@@ -127,31 +120,29 @@ export function ProductImageGallery({
 
             {/* Primary Badge */}
             {currentImage.isPrimary && (
-              <Badge className="absolute top-2 left-2 z-10">
-                Primary
-              </Badge>
+              <Badge className="absolute top-2 left-2 z-10">Primary</Badge>
             )}
 
             {/* Navigation Arrows (for multiple images) */}
             {sortedImages.length > 1 && (
               <>
                 <button
+                  aria-label="Previous image"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
                   onClick={(e) => {
                     e.stopPropagation()
                     handlePrevious()
                   }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
-                  aria-label="Previous image"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
+                  aria-label="Next image"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
                   onClick={(e) => {
                     e.stopPropagation()
                     handleNext()
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
-                  aria-label="Next image"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
@@ -180,26 +171,24 @@ export function ProductImageGallery({
             {sortedImages.map((image, index) => (
               <button
                 key={image.id}
-                onClick={() => setSelectedIndex(index)}
+                aria-label={`View image ${index + 1}`}
                 className={cn(
                   'relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all',
                   selectedIndex === index
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-transparent hover:border-gray-300'
                 )}
-                aria-label={`View image ${index + 1}`}
+                onClick={() => setSelectedIndex(index)}
               >
                 <Image
-                  src={image.thumbnailUrl || image.url}
-                  alt={`${productName} thumbnail ${index + 1}`}
                   fill
+                  alt={`${productName} thumbnail ${index + 1}`}
                   className="object-cover"
-                  sizes="80px"
                   loading="lazy"
+                  sizes="80px"
+                  src={image.thumbnailUrl || image.url}
                 />
-                {image.isPrimary && (
-                  <div className="absolute inset-0 bg-primary/10" />
-                )}
+                {image.isPrimary && <div className="absolute inset-0 bg-primary/10" />}
               </button>
             ))}
           </div>
@@ -210,33 +199,31 @@ export function ProductImageGallery({
       {enableLightbox && (
         <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
           <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
-            <DialogTitle className="sr-only">
-              {productName} - Full size image view
-            </DialogTitle>
+            <DialogTitle className="sr-only">{productName} - Full size image view</DialogTitle>
             <div className="relative">
               <Image
-                src={currentImage.largeUrl || currentImage.url}
-                alt={getAltText(currentImage, selectedIndex)}
-                width={currentImage.width || 1200}
-                height={currentImage.height || 1200}
-                className="w-full h-auto max-h-[85vh] object-contain"
                 priority
+                alt={getAltText(currentImage, selectedIndex)}
+                className="w-full h-auto max-h-[85vh] object-contain"
+                height={currentImage.height || 1200}
+                src={currentImage.largeUrl || currentImage.url}
+                width={currentImage.width || 1200}
               />
 
               {/* Lightbox Navigation */}
               {sortedImages.length > 1 && (
                 <>
                   <button
-                    onClick={handlePrevious}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 hover:bg-white shadow-lg"
                     aria-label="Previous image"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 hover:bg-white shadow-lg"
+                    onClick={handlePrevious}
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                   <button
-                    onClick={handleNext}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 hover:bg-white shadow-lg"
                     aria-label="Next image"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 hover:bg-white shadow-lg"
+                    onClick={handleNext}
                   >
                     <ChevronRight className="h-6 w-6" />
                   </button>

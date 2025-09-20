@@ -360,7 +360,22 @@ export default function LocationsPage() {
     })
   }, [searchQuery, selectedState])
 
-  const LocationCard = ({ location, type }: { location: any; type: 'retail' | 'cargo' }) => (
+  interface LocationData {
+    id: string
+    name: string
+    address: string
+    city: string
+    state: string
+    zip: string
+    code?: string
+    carrier?: string
+    operator?: string
+    hours: Record<string, string>
+    phone?: string
+    type?: string
+  }
+
+  const LocationCard = ({ location, type }: { location: LocationData; type: 'retail' | 'cargo' }) => (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between">

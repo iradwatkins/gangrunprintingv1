@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server'
+
 import { validateRequest } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { createSquareCheckout, createOrUpdateSquareCustomer, createSquareOrder } from '@/lib/square'
-import { sendEmail } from '@/lib/resend'
 import { getOrderConfirmationEmail } from '@/lib/email-templates'
 import { N8NWorkflows } from '@/lib/n8n'
+import { prisma } from '@/lib/prisma'
+import { sendEmail } from '@/lib/resend'
+import { createOrUpdateSquareCustomer, createSquareCheckout, createSquareOrder } from '@/lib/square'
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase()
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
         referenceNumber,
         email,
         phone,
-        userId: userId || null,
+        userId: user?.id || null,
         subtotal,
         tax,
         shipping,

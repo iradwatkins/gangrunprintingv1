@@ -3,7 +3,6 @@ import { uploadFile, BUCKETS, initializeBuckets, isMinioAvailable } from '@/lib/
 import { randomUUID } from 'crypto'
 import sharp from 'sharp'
 import path from 'path'
-import fs from 'fs/promises'
 
 // Configuration
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB per file
@@ -23,12 +22,7 @@ const ALLOWED_TYPES = [
   'application/vnd.adobe.illustrator',
 ]
 
-const IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp'
-]
+const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 // Generate session ID from request
 function getSessionId(request: NextRequest): string {
@@ -57,8 +51,10 @@ async function validateFileType(file: File): Promise<boolean> {
   }
 
   // JPEG signature
-  if ((file.type === 'image/jpeg' || file.type === 'image/jpg') &&
-      !signature.startsWith('ffd8ff')) {
+  if (
+    (file.type === 'image/jpeg' || file.type === 'image/jpg') &&
+    !signature.startsWith('ffd8ff')
+  ) {
     return false
   }
 
@@ -80,7 +76,7 @@ async function generateThumbnail(buffer: Buffer, mimeType: string): Promise<Buff
     return await sharp(buffer)
       .resize(300, 300, {
         fit: 'inside',
-        withoutEnlargement: true
+        withoutEnlargement: true,
       })
       .jpeg({ quality: 80 })
       .toBuffer()
@@ -125,29 +121,41 @@ export async function POST(request: NextRequest) {
     }
 
     if (files.length > MAX_FILES) {
-      return NextResponse.json({
-        error: `Maximum ${MAX_FILES} files allowed`
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: `Maximum ${MAX_FILES} files allowed`,
+        },
+        { status: 400 }
+      )
     }
 
     if (totalSize > MAX_TOTAL_SIZE) {
-      return NextResponse.json({
-        error: `Total file size exceeds ${MAX_TOTAL_SIZE / 1024 / 1024}MB limit`
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: `Total file size exceeds ${MAX_TOTAL_SIZE / 1024 / 1024}MB limit`,
+        },
+        { status: 400 }
+      )
     }
 
     // Validate each file
     for (const file of files) {
       if (file.size > MAX_FILE_SIZE) {
-        return NextResponse.json({
-          error: `File "${file.name}" exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: `File "${file.name}" exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`,
+          },
+          { status: 400 }
+        )
       }
 
       if (!(await validateFileType(file))) {
-        return NextResponse.json({
-          error: `File "${file.name}" has invalid file type`
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: `File "${file.name}" has invalid file type`,
+          },
+          { status: 400 }
+        )
       }
     }
 
@@ -174,7 +182,7 @@ export async function POST(request: NextRequest) {
         'session-id': sessionId,
         'upload-date': uploadTimestamp,
         'file-id': fileId,
-        'temp-upload': 'true'
+        'temp-upload': 'true',
       })
 
       // Generate and upload thumbnail if it's an image
@@ -186,7 +194,7 @@ export async function POST(request: NextRequest) {
           'content-type': 'image/jpeg',
           'session-id': sessionId,
           'upload-date': uploadTimestamp,
-          'temp-upload': 'true'
+          'temp-upload': 'true',
         })
         thumbnailUrl = `/api/upload/temporary/thumbnail/${fileId}`
       }
@@ -199,7 +207,7 @@ export async function POST(request: NextRequest) {
         path: originalPath,
         thumbnailUrl,
         uploadedAt: uploadTimestamp,
-        isImage: IMAGE_TYPES.includes(file.type)
+        isImage: IMAGE_TYPES.includes(file.type),
       })
     }
 
@@ -210,14 +218,16 @@ export async function POST(request: NextRequest) {
       files: uploadResults,
       totalFiles: files.length,
       totalSize,
-      uploadedAt: uploadTimestamp
+      uploadedAt: uploadTimestamp,
     })
-
   } catch (error) {
     console.error('Temporary upload error:', error)
-    return NextResponse.json({
-      error: 'Failed to upload files. Please try again.'
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to upload files. Please try again.',
+      },
+      { status: 500 }
+    )
   }
 }
 

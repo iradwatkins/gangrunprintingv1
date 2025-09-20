@@ -49,7 +49,7 @@ export const handlers = [
       id: 'test-order-1',
       orderNumber: 'ORD-001',
       status: 'PENDING',
-      total: 100.00,
+      total: 100.0,
     })
   }),
 
@@ -59,7 +59,7 @@ export const handlers = [
         id: 'test-order-1',
         orderNumber: 'ORD-001',
         status: 'PENDING',
-        total: 100.00,
+        total: 100.0,
         createdAt: new Date().toISOString(),
       },
     ])
@@ -84,8 +84,8 @@ export const handlers = [
       id: 'test-quote-1',
       productId: 'test-product-1',
       quantity: 100,
-      price: 50.00,
-      totalPrice: 50.00,
+      price: 50.0,
+      totalPrice: 50.0,
     })
   }),
 

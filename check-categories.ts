@@ -8,7 +8,7 @@ async function main() {
   if (categories.length === 0) {
     console.log('No categories found. Run: npx tsx prisma/seed-categories.ts')
   } else {
-    categories.forEach(c => console.log(`- ${c.name} (${c.id})`))
+    categories.forEach((c) => console.log(`- ${c.name} (${c.id})`))
   }
 }
 

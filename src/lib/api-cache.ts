@@ -15,7 +15,6 @@ function parseJsonSafely<T>(text: string, url: string): T {
     // Remove BOM (Byte Order Mark) if present
     let cleanText = text
     if (text.charCodeAt(0) === 0xfeff) {
-      console.warn(`BOM character detected in response from ${url}`)
       cleanText = text.slice(1)
     }
 
@@ -33,13 +32,7 @@ function parseJsonSafely<T>(text: string, url: string): T {
       .map((c) => c.charCodeAt(0))
       .join(', ')
 
-    console.error('JSON Parse Error Details:', {
-      url,
-      error: errorMessage,
-      preview,
-      charCodes,
-      textLength: text.length,
-    })
+    // JSON parsing failed for response
 
     throw new Error(
       `JSON parse error for ${url}: ${errorMessage}. Preview: "${preview}" (char codes: ${charCodes})`

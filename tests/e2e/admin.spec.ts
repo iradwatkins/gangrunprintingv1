@@ -13,7 +13,7 @@ test.describe('Admin Dashboard', () => {
     ])
 
     // Mock admin user validation
-    await page.route('**/api/auth/me', route => {
+    await page.route('**/api/auth/me', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
@@ -28,12 +28,12 @@ test.describe('Admin Dashboard', () => {
     })
 
     // Mock dashboard data
-    await page.route('**/api/admin/dashboard', route => {
+    await page.route('**/api/admin/dashboard', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
           totalOrders: 1247,
-          totalRevenue: 87650.50,
+          totalRevenue: 87650.5,
           pendingOrders: 23,
           completedOrders: 1224,
           monthlyStats: [
@@ -64,7 +64,7 @@ test.describe('Admin Dashboard', () => {
 
   test('should manage orders', async ({ page }) => {
     // Mock orders API
-    await page.route('**/api/orders*', route => {
+    await page.route('**/api/orders*', (route) => {
       const url = new URL(route.request().url())
       const status = url.searchParams.get('status')
 
@@ -73,7 +73,7 @@ test.describe('Admin Dashboard', () => {
           id: 'order-1',
           orderNumber: 'GRP-20250915-001',
           status: 'PENDING',
-          total: 125.50,
+          total: 125.5,
           customerName: 'John Doe',
           createdAt: '2025-09-15T10:00:00Z',
         },
@@ -89,14 +89,14 @@ test.describe('Admin Dashboard', () => {
           id: 'order-3',
           orderNumber: 'GRP-20250915-003',
           status: 'COMPLETED',
-          total: 256.00,
+          total: 256.0,
           customerName: 'Bob Johnson',
           createdAt: '2025-09-15T12:00:00Z',
         },
       ]
 
       if (status) {
-        orders = orders.filter(order => order.status === status)
+        orders = orders.filter((order) => order.status === status)
       }
 
       route.fulfill({
@@ -127,7 +127,7 @@ test.describe('Admin Dashboard', () => {
     await page.selectOption('[data-testid="status-select-GRP-20250915-001"]', 'PROCESSING')
 
     // Mock status update API
-    await page.route('**/api/orders/order-1/status', route => {
+    await page.route('**/api/orders/order-1/status', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({ success: true }),
@@ -135,12 +135,14 @@ test.describe('Admin Dashboard', () => {
     })
 
     await page.click('[data-testid="update-status-GRP-20250915-001"]')
-    await expect(page.locator('[data-testid="success-notification"]')).toContainText('Order status updated')
+    await expect(page.locator('[data-testid="success-notification"]')).toContainText(
+      'Order status updated'
+    )
   })
 
   test('should manage products', async ({ page }) => {
     // Mock products API
-    await page.route('**/api/products*', route => {
+    await page.route('**/api/products*', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -180,7 +182,7 @@ test.describe('Admin Dashboard', () => {
     await page.check('[data-testid="product-active"]')
 
     // Mock create product API
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
@@ -197,17 +199,22 @@ test.describe('Admin Dashboard', () => {
     })
 
     await page.click('[data-testid="save-product-button"]')
-    await expect(page.locator('[data-testid="success-notification"]')).toContainText('Product created')
+    await expect(page.locator('[data-testid="success-notification"]')).toContainText(
+      'Product created'
+    )
     await expect(page).toHaveURL('/admin/products')
 
     // Edit existing product
     await page.click('[data-testid="edit-business-cards"]')
     await expect(page).toHaveURL('/admin/products/business-cards')
 
-    await page.fill('[data-testid="product-description"]', 'Premium business cards with multiple finishes')
+    await page.fill(
+      '[data-testid="product-description"]',
+      'Premium business cards with multiple finishes'
+    )
 
     // Mock update product API
-    await page.route('**/api/products/business-cards', route => {
+    await page.route('**/api/products/business-cards', (route) => {
       if (route.request().method() === 'PUT') {
         route.fulfill({
           contentType: 'application/json',
@@ -217,12 +224,14 @@ test.describe('Admin Dashboard', () => {
     })
 
     await page.click('[data-testid="save-product-button"]')
-    await expect(page.locator('[data-testid="success-notification"]')).toContainText('Product updated')
+    await expect(page.locator('[data-testid="success-notification"]')).toContainText(
+      'Product updated'
+    )
   })
 
   test('should manage vendors', async ({ page }) => {
     // Mock vendors API
-    await page.route('**/api/admin/vendors*', route => {
+    await page.route('**/api/admin/vendors*', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -251,7 +260,7 @@ test.describe('Admin Dashboard', () => {
     await expect(page.locator('[data-testid="vendor-row"]')).toHaveCount(2)
 
     // Assign order to vendor
-    await page.route('**/api/orders/order-1/assign-vendor', route => {
+    await page.route('**/api/orders/order-1/assign-vendor', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({ success: true }),
@@ -263,12 +272,14 @@ test.describe('Admin Dashboard', () => {
     await page.selectOption('[data-testid="vendor-select"]', 'vendor-1')
     await page.click('[data-testid="confirm-assignment"]')
 
-    await expect(page.locator('[data-testid="success-notification"]')).toContainText('Vendor assigned')
+    await expect(page.locator('[data-testid="success-notification"]')).toContainText(
+      'Vendor assigned'
+    )
   })
 
   test('should handle user management', async ({ page }) => {
     // Mock users API
-    await page.route('**/api/admin/users*', route => {
+    await page.route('**/api/admin/users*', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -304,7 +315,7 @@ test.describe('Admin Dashboard', () => {
     await page.fill('[data-testid="discount-MARKETING"]', '15')
 
     // Mock user update API
-    await page.route('**/api/admin/users/user-1', route => {
+    await page.route('**/api/admin/users/user-1', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({ success: true }),
@@ -327,7 +338,7 @@ test.describe('Admin Dashboard', () => {
       },
     ])
 
-    await page.route('**/api/auth/me', route => {
+    await page.route('**/api/auth/me', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
@@ -361,7 +372,7 @@ test.describe('Admin Dashboard', () => {
     await page.selectOption('[data-testid="bulk-status-select"]', 'PROCESSING')
 
     // Mock bulk update API
-    await page.route('**/api/admin/orders/bulk-update', route => {
+    await page.route('**/api/admin/orders/bulk-update', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({ success: true, updated: 2 }),
@@ -369,6 +380,8 @@ test.describe('Admin Dashboard', () => {
     })
 
     await page.click('[data-testid="apply-bulk-action"]')
-    await expect(page.locator('[data-testid="success-notification"]')).toContainText('2 orders updated')
+    await expect(page.locator('[data-testid="success-notification"]')).toContainText(
+      '2 orders updated'
+    )
   })
 })

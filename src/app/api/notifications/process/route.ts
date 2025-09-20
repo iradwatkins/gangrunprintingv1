@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
-import { sendBatchEmails, sendEmail } from '@/lib/resend'
+import { sendBatchEmails } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   try {

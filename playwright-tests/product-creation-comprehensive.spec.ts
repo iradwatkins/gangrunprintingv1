@@ -4,7 +4,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
   // Helper function to set up admin authentication
   async function setupAdminAuth(page) {
     // Mock admin authentication
-    await page.route('**/api/auth/validate', route => {
+    await page.route('**/api/auth/validate', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
@@ -13,14 +13,14 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             email: 'iradwatkins@gmail.com',
             name: 'Admin User',
             role: 'ADMIN',
-            emailVerified: true
+            emailVerified: true,
           },
           session: {
             id: 'admin-session-id',
             userId: 'admin-user-id',
-            expiresAt: new Date(Date.now() + 86400000).toISOString()
-          }
-        })
+            expiresAt: new Date(Date.now() + 86400000).toISOString(),
+          },
+        }),
       })
     })
 
@@ -32,15 +32,15 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
         domain: 'localhost',
         path: '/',
         httpOnly: true,
-        secure: false
-      }
+        secure: false,
+      },
     ])
   }
 
   // Helper function to mock successful API dependencies
   async function mockSuccessfulAPIs(page) {
     // Mock categories
-    await page.route('**/api/product-categories', route => {
+    await page.route('**/api/product-categories', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -49,21 +49,21 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             name: 'Business Cards',
             slug: 'business-cards',
             description: 'Professional business cards',
-            isActive: true
+            isActive: true,
           },
           {
             id: 'cat-flyers',
             name: 'Flyers',
             slug: 'flyers',
             description: 'Marketing flyers',
-            isActive: true
-          }
-        ])
+            isActive: true,
+          },
+        ]),
       })
     })
 
     // Mock paper stocks
-    await page.route('**/api/paper-stocks', route => {
+    await page.route('**/api/paper-stocks', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -72,21 +72,21 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             name: 'Matte',
             weight: 100,
             pricePerSqInch: 0.05,
-            isActive: true
+            isActive: true,
           },
           {
             id: 'ps-gloss',
             name: 'Gloss',
             weight: 100,
             pricePerSqInch: 0.06,
-            isActive: true
-          }
-        ])
+            isActive: true,
+          },
+        ]),
       })
     })
 
     // Mock quantity groups
-    await page.route('**/api/quantities', route => {
+    await page.route('**/api/quantities', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -97,14 +97,14 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             values: '100,250,500,1000,2500',
             valuesList: ['100', '250', '500', '1000', '2500'],
             defaultValue: '250',
-            isActive: true
-          }
-        ])
+            isActive: true,
+          },
+        ]),
       })
     })
 
     // Mock size groups
-    await page.route('**/api/sizes', route => {
+    await page.route('**/api/sizes', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -116,14 +116,14 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             valuesList: ['3.5x2', '4x2.5'],
             defaultValue: '3.5x2',
             hasCustomOption: false,
-            isActive: true
-          }
-        ])
+            isActive: true,
+          },
+        ]),
       })
     })
 
     // Mock add-ons
-    await page.route('**/api/add-ons', route => {
+    await page.route('**/api/add-ons', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -133,7 +133,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             description: 'Round the corners of your cards',
             pricingModel: 'FLAT',
             configuration: { price: 5 },
-            isActive: true
+            isActive: true,
           },
           {
             id: 'ao-spot-uv',
@@ -141,9 +141,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             description: 'Add spot UV coating',
             pricingModel: 'FLAT',
             configuration: { price: 15 },
-            isActive: true
-          }
-        ])
+            isActive: true,
+          },
+        ]),
       })
     })
   }
@@ -157,7 +157,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('🔍 Testing successful product creation...')
 
     // Mock successful product creation
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
@@ -170,10 +170,10 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             categoryId: 'cat-business-cards',
             isActive: true,
             basePrice: 25.99,
-            setupFee: 10.00,
+            setupFee: 10.0,
             productionTime: 3,
-            createdAt: new Date().toISOString()
-          })
+            createdAt: new Date().toISOString(),
+          }),
         })
       } else {
         route.continue()
@@ -219,25 +219,25 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('🔒 Testing authentication error handling...')
 
     // Override auth to return unauthorized
-    await page.route('**/api/auth/validate', route => {
+    await page.route('**/api/auth/validate', (route) => {
       route.fulfill({
         contentType: 'application/json',
         status: 401,
         body: JSON.stringify({
-          error: 'Unauthorized - Admin access required'
-        })
+          error: 'Unauthorized - Admin access required',
+        }),
       })
     })
 
     // Mock product creation to return 401
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
           status: 401,
           body: JSON.stringify({
-            error: 'Unauthorized - Admin access required'
-          })
+            error: 'Unauthorized - Admin access required',
+          }),
         })
       } else {
         route.continue()
@@ -250,7 +250,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     await page.waitForTimeout(3000)
 
     const url = page.url()
-    const hasAuthError = await page.locator('text=/unauthorized|access denied/i').count() > 0
+    const hasAuthError = (await page.locator('text=/unauthorized|access denied/i').count()) > 0
 
     expect(url.includes('/auth/signin') || hasAuthError).toBeTruthy()
 
@@ -261,7 +261,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('⚠️ Testing validation error handling...')
 
     // Mock validation error response
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
@@ -272,15 +272,15 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
               {
                 field: 'name',
                 message: 'Product name is required',
-                received: ''
+                received: '',
               },
               {
                 field: 'selectedPaperStocks',
                 message: 'At least one paper stock must be selected',
-                received: []
-              }
-            ]
-          })
+                received: [],
+              },
+            ],
+          }),
         })
       } else {
         route.continue()
@@ -303,15 +303,15 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('🚫 Testing database constraint handling...')
 
     // Mock constraint violation (duplicate SKU)
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
           status: 400,
           body: JSON.stringify({
             error: 'A product with this sku already exists',
-            field: 'sku'
-          })
+            field: 'sku',
+          }),
         })
       } else {
         route.continue()
@@ -339,14 +339,14 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('🔗 Testing foreign key validation...')
 
     // Mock foreign key error
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         route.fulfill({
           contentType: 'application/json',
           status: 400,
           body: JSON.stringify({
-            error: 'Category with ID invalid-category-id not found'
-          })
+            error: 'Category with ID invalid-category-id not found',
+          }),
         })
       } else {
         route.continue()
@@ -370,7 +370,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('⏱️ Testing transaction timeout handling...')
 
     // Mock transaction timeout
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         // Simulate timeout by delaying response
         setTimeout(() => {
@@ -379,8 +379,8 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             status: 408,
             body: JSON.stringify({
               error: 'Product creation timed out. Please try again.',
-              requestId: 'test-request-id'
-            })
+              requestId: 'test-request-id',
+            }),
           })
         }, 1000)
       } else {
@@ -406,26 +406,28 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     console.log('📡 Testing dependency API failure handling...')
 
     // Mock API failures for dependencies
-    await page.route('**/api/product-categories', route => {
+    await page.route('**/api/product-categories', (route) => {
       route.fulfill({
         contentType: 'application/json',
         status: 500,
-        body: JSON.stringify({ error: 'Failed to load categories' })
+        body: JSON.stringify({ error: 'Failed to load categories' }),
       })
     })
 
-    await page.route('**/api/paper-stocks', route => {
+    await page.route('**/api/paper-stocks', (route) => {
       route.fulfill({
         contentType: 'application/json',
         status: 500,
-        body: JSON.stringify({ error: 'Failed to load paper stocks' })
+        body: JSON.stringify({ error: 'Failed to load paper stocks' }),
       })
     })
 
     await page.goto('http://localhost:3002/admin/products/new')
 
     // Should show error state for failed data loading
-    await expect(page.locator('text=/Failed to Load Required Data|error/i')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=/Failed to Load Required Data|error/i')).toBeVisible({
+      timeout: 10000,
+    })
 
     // Should show retry button
     await expect(page.locator('button:has-text("Retry Loading")')).toBeVisible()
@@ -439,7 +441,7 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     let productCreationCalled = false
 
     // Mock successful product creation and track if it's called
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
         productCreationCalled = true
         const requestData = route.request().postData()
@@ -456,19 +458,19 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
             categoryId: 'cat-business-cards',
             isActive: true,
             basePrice: 19.99,
-            setupFee: 5.00,
+            setupFee: 5.0,
             productionTime: 2,
             createdAt: new Date().toISOString(),
             ProductCategory: {
-              name: 'Business Cards'
+              name: 'Business Cards',
             },
             productPaperStocks: [
               {
                 paperStock: { name: 'Matte' },
-                isDefault: true
-              }
-            ]
-          })
+                isDefault: true,
+              },
+            ],
+          }),
         })
       } else {
         route.continue()
@@ -514,19 +516,19 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     const consoleErrors: string[] = []
     const networkErrors: string[] = []
 
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text())
       }
     })
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.status() >= 400) {
         networkErrors.push(`${response.status()} ${response.url()}`)
       }
     })
 
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       consoleErrors.push(`PageError: ${error.message}`)
     })
 
@@ -543,21 +545,22 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     await page.waitForTimeout(3000)
 
     // Filter out expected errors (auth, redirects, etc.)
-    const criticalErrors = consoleErrors.filter(err =>
-      !err.includes('404') &&
-      !err.includes('401') &&
-      !err.includes('auth') &&
-      !err.toLowerCase().includes('network')
+    const criticalErrors = consoleErrors.filter(
+      (err) =>
+        !err.includes('404') &&
+        !err.includes('401') &&
+        !err.includes('auth') &&
+        !err.toLowerCase().includes('network')
     )
 
     if (criticalErrors.length > 0) {
       console.log('Console errors found:')
-      criticalErrors.forEach(err => console.log(`  - ${err}`))
+      criticalErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     if (networkErrors.length > 0) {
       console.log('Network errors found:')
-      networkErrors.forEach(err => console.log(`  - ${err}`))
+      networkErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     // We should have minimal critical errors
@@ -574,7 +577,7 @@ test.describe('Product Creation Performance Tests', () => {
     const startTime = Date.now()
 
     await page.goto('http://localhost:3002/admin/products/new', {
-      waitUntil: 'domcontentloaded'
+      waitUntil: 'domcontentloaded',
     })
 
     const domLoadTime = Date.now() - startTime

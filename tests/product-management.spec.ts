@@ -101,7 +101,9 @@ test.describe('Product Management', () => {
     const productRow = page.locator(`tr:has-text("${productName}")`)
 
     // Find and click the active status badge
-    const statusBadge = productRow.locator('div:has-text("Active"), div:has-text("Inactive")').first()
+    const statusBadge = productRow
+      .locator('div:has-text("Active"), div:has-text("Inactive")')
+      .first()
     const initialStatus = await statusBadge.textContent()
 
     await statusBadge.click()
@@ -127,7 +129,7 @@ test.describe('Product Management', () => {
     await productRow.locator('button[title="Delete Product"]').click()
 
     // Handle confirmation dialog (using browser's confirm)
-    page.on('dialog', dialog => dialog.accept())
+    page.on('dialog', (dialog) => dialog.accept())
 
     // Wait for the product to be removed
     await page.waitForTimeout(2000)
@@ -146,7 +148,9 @@ test.describe('Product Management', () => {
     await page.click('button:has-text("Create Product")')
 
     // Should see an error message (toast or inline)
-    await expect(page.locator('text=/Please fill in all required fields|required/i')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=/Please fill in all required fields|required/i')).toBeVisible({
+      timeout: 5000,
+    })
 
     // The form should still be on the same page
     await expect(page).toHaveURL(/.*\/admin\/products\/simple/)
@@ -182,12 +186,12 @@ test.describe('Product API Tests', () => {
       sizeGroupId: 'cmfk2y9bs000k10ij4vmmgkgf',
       basePrice: 0,
       setupFee: 0,
-      productionTime: 3
+      productionTime: 3,
     }
 
     // Note: In a real test, you'd need to handle authentication
     const response = await request.post('http://localhost:3002/api/products/simple', {
-      data: productData
+      data: productData,
     })
 
     // For now, we expect 401 since we're not authenticated

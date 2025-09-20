@@ -57,15 +57,16 @@ async function testSquare() {
   const client = new SquareClient({
     squareVersion: '2024-08-21',
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
-    environment: process.env.SQUARE_ENVIRONMENT === 'production' 
-      ? SquareEnvironment.Production 
-      : SquareEnvironment.Sandbox,
+    environment:
+      process.env.SQUARE_ENVIRONMENT === 'production'
+        ? SquareEnvironment.Production
+        : SquareEnvironment.Sandbox,
   } as any)
 
   try {
     // Test with a simple API call to list locations
     const { locations } = await client.locations.list()
-    
+
     if (locations && locations.length > 0) {
       const location = locations[0]
       console.log(`  └─ Location: ${location.name || 'Unknown'}`)
@@ -89,22 +90,22 @@ async function testSendGrid() {
   }
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-  
+
   // Verify sender
   const msg = {
     to: 'test@example.com',
     from: {
       email: process.env.SENDGRID_FROM_EMAIL || 'test@gangrunprinting.com',
-      name: process.env.SENDGRID_FROM_NAME || 'GangRun Printing'
+      name: process.env.SENDGRID_FROM_NAME || 'GangRun Printing',
     },
     subject: 'Test Email - Do Not Send',
     text: 'This is a test',
     html: '<p>This is a test</p>',
     mailSettings: {
       sandboxMode: {
-        enable: true // This prevents actual sending
-      }
-    }
+        enable: true, // This prevents actual sending
+      },
+    },
   }
 
   await sgMail.send(msg as any)
@@ -128,7 +129,7 @@ async function testMinIO() {
 
   const bucketName = process.env.MINIO_BUCKET_NAME || 'gangrun-uploads'
   const exists = await minioClient.bucketExists(bucketName)
-  
+
   if (!exists) {
     console.log(`  └─ Creating bucket: ${bucketName}`)
     await minioClient.makeBucket(bucketName, 'us-east-1')
@@ -146,7 +147,7 @@ async function testN8N() {
   const testPayload = {
     event: 'test',
     timestamp: new Date().toISOString(),
-    source: 'integration-test'
+    source: 'integration-test',
   }
 
   const response = await fetch(process.env.N8N_WEBHOOK_URL, {
@@ -154,10 +155,10 @@ async function testN8N() {
     headers: {
       'Content-Type': 'application/json',
       ...(process.env.N8N_API_KEY && {
-        'Authorization': `Bearer ${process.env.N8N_API_KEY}`
-      })
+        Authorization: `Bearer ${process.env.N8N_API_KEY}`,
+      }),
     },
-    body: JSON.stringify(testPayload)
+    body: JSON.stringify(testPayload),
   })
 
   if (!response.ok) {
@@ -200,20 +201,22 @@ async function main() {
   console.log('\n================================================')
   console.log('  Test Summary')
   console.log('================================================')
-  
-  const passed = tests.filter(t => t.success).length
-  const failed = tests.filter(t => !t.success).length
-  
+
+  const passed = tests.filter((t) => t.success).length
+  const failed = tests.filter((t) => !t.success).length
+
   console.log(`\n  Total: ${tests.length}`)
   console.log(`  ${GREEN}Passed: ${passed}${RESET}`)
   console.log(`  ${RED}Failed: ${failed}${RESET}`)
 
   if (failed > 0) {
     console.log('\n  Failed Tests:')
-    tests.filter(t => !t.success).forEach(t => {
-      console.log(`  ${RED}✗ ${t.name}${RESET}`)
-      console.log(`    └─ ${t.message}`)
-    })
+    tests
+      .filter((t) => !t.success)
+      .forEach((t) => {
+        console.log(`  ${RED}✗ ${t.name}${RESET}`)
+        console.log(`    └─ ${t.message}`)
+      })
     process.exit(1)
   } else {
     console.log(`\n  ${GREEN}✓ All tests passed! Ready for deployment.${RESET}\n`)
@@ -221,7 +224,7 @@ async function main() {
 }
 
 // Error handling
-main().catch(error => {
+main().catch((error) => {
   console.error(`\n${RED}Fatal error:${RESET}`, error)
   process.exit(1)
 })

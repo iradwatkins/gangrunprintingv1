@@ -3,17 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from '@/lib/date'
-import {
-  Package,
-  RefreshCw,
-  Eye,
-  Filter,
-  Search,
-  Calendar,
-  FileText,
-  Download,
-  ChevronRight,
-} from 'lucide-react'
+import { RefreshCw, Eye, Search, Calendar, Download, ChevronRight } from 'lucide-react'
 import { TrackingButton } from '@/components/tracking/tracking-button'
 import { type Carrier } from '@prisma/client'
 import { Button } from '@/components/ui/button'
@@ -108,9 +98,11 @@ export default function OrderHistory() {
       }
     } catch (error) {
       console.error('Error fetching data:', error)
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unable to retrieve order information'
       toast({
-        title: 'Error',
-        description: 'Failed to load data',
+        title: 'Loading Error',
+        description: `Failed to load order history: ${errorMessage}`,
         variant: 'destructive',
       })
     } finally {

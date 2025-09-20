@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
+
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Hash, Layers, Plus, X } from 'lucide-react'
+import { Hash, Layers, Plus } from 'lucide-react'
 import toast from '@/lib/toast'
 
 interface Quantity {

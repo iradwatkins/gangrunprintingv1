@@ -13,7 +13,7 @@ test.describe('Checkout Flow', () => {
     ])
 
     // Mock API responses
-    await page.route('**/api/products', route => {
+    await page.route('**/api/products', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify([
@@ -29,15 +29,15 @@ test.describe('Checkout Flow', () => {
       })
     })
 
-    await page.route('**/api/quotes', route => {
+    await page.route('**/api/quotes', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
           id: 'quote-1',
           productId: 'business-cards',
           quantity: 500,
-          price: 45.00,
-          totalPrice: 45.00,
+          price: 45.0,
+          totalPrice: 45.0,
         }),
       })
     })
@@ -93,7 +93,7 @@ test.describe('Checkout Flow', () => {
     await page.fill('[data-testid="cardholder-name"]', 'John Doe')
 
     // Mock successful payment
-    await page.route('**/api/orders', route => {
+    await page.route('**/api/orders', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
@@ -101,7 +101,7 @@ test.describe('Checkout Flow', () => {
             id: 'order-1',
             orderNumber: 'GRP-20250915-001',
             status: 'PENDING',
-            total: 54.00, // includes tax and shipping
+            total: 54.0, // includes tax and shipping
           },
           paymentId: 'payment-1',
         }),
@@ -115,7 +115,9 @@ test.describe('Checkout Flow', () => {
     await expect(page).toHaveURL(/\/orders\/confirmation/)
     await expect(page.locator('[data-testid="order-number"]')).toContainText('GRP-20250915-001')
     await expect(page.locator('[data-testid="order-total"]')).toContainText('$54.00')
-    await expect(page.locator('[data-testid="success-message"]')).toContainText('Order placed successfully')
+    await expect(page.locator('[data-testid="success-message"]')).toContainText(
+      'Order placed successfully'
+    )
   })
 
   test('should validate shipping information', async ({ page }) => {
@@ -145,8 +147,12 @@ test.describe('Checkout Flow', () => {
     // Try to place order without payment info
     await page.click('[data-testid="place-order-button"]')
 
-    await expect(page.locator('[data-testid="card-error"]')).toContainText('Card number is required')
-    await expect(page.locator('[data-testid="expiry-error"]')).toContainText('Expiry date is required')
+    await expect(page.locator('[data-testid="card-error"]')).toContainText(
+      'Card number is required'
+    )
+    await expect(page.locator('[data-testid="expiry-error"]')).toContainText(
+      'Expiry date is required'
+    )
     await expect(page.locator('[data-testid="cvv-error"]')).toContainText('CVV is required')
   })
 
@@ -169,7 +175,7 @@ test.describe('Checkout Flow', () => {
     await page.fill('[data-testid="cardholder-name"]', 'John Doe')
 
     // Mock payment failure
-    await page.route('**/api/orders', route => {
+    await page.route('**/api/orders', (route) => {
       route.fulfill({
         status: 400,
         contentType: 'application/json',
@@ -181,7 +187,9 @@ test.describe('Checkout Flow', () => {
 
     await page.click('[data-testid="place-order-button"]')
 
-    await expect(page.locator('[data-testid="payment-error"]')).toContainText('Payment failed: Card declined')
+    await expect(page.locator('[data-testid="payment-error"]')).toContainText(
+      'Payment failed: Card declined'
+    )
     await expect(page).toHaveURL('/checkout') // Should stay on checkout page
   })
 
@@ -192,15 +200,15 @@ test.describe('Checkout Flow', () => {
     await expect(page.locator('[data-testid="subtotal"]')).toContainText('$45.00')
 
     // Add another item to cart
-    await page.route('**/api/quotes', route => {
+    await page.route('**/api/quotes', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
           id: 'quote-2',
           productId: 'flyers',
           quantity: 1000,
-          price: 85.00,
-          totalPrice: 85.00,
+          price: 85.0,
+          totalPrice: 85.0,
         }),
       })
     })
@@ -223,7 +231,7 @@ test.describe('Checkout Flow', () => {
   })
 
   test('should handle empty cart', async ({ page }) => {
-    await page.route('**/api/cart', route => {
+    await page.route('**/api/cart', (route) => {
       route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({ items: [] }),
@@ -232,7 +240,9 @@ test.describe('Checkout Flow', () => {
 
     await page.goto('/cart')
 
-    await expect(page.locator('[data-testid="empty-cart-message"]')).toContainText('Your cart is empty')
+    await expect(page.locator('[data-testid="empty-cart-message"]')).toContainText(
+      'Your cart is empty'
+    )
     await expect(page.locator('[data-testid="checkout-button"]')).not.toBeVisible()
     await expect(page.locator('[data-testid="continue-shopping"]')).toBeVisible()
   })

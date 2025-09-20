@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { HexColorPicker, HexColorInput } from 'react-colorful'
+import { HexColorPicker, HexColor } from 'react-colorful'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Palette } from 'lucide-react'
 
 interface ColorPickerProps {
   value: string

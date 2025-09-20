@@ -259,7 +259,17 @@ export class ThemeManager {
   /**
    * Map Prisma theme to ThemeConfig
    */
-  private mapPrismaThemeToConfig(theme: any): ThemeConfig {
+  private mapPrismaThemeToConfig(theme: {
+    id: string
+    name: string
+    description: string | null
+    cssVariables: unknown
+    darkModeVariables: unknown
+    customCSS: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+  }): ThemeConfig {
     return {
       id: theme.id,
       name: theme.name,
@@ -304,7 +314,7 @@ export class ThemeManager {
       // Write updated globals.css
       await fs.writeFile(globalsPath, cssContent, 'utf-8')
 
-      console.log('Updated globals.css with new theme:', theme.name)
+      console.warn('Updated globals.css with new theme:', theme.name)
     } catch (error) {
       console.error('Error updating globals.css:', error)
       throw error

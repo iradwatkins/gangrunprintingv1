@@ -14,20 +14,20 @@ async function testOrderWorkflow() {
         ProductCategory: true,
         productPaperStocks: {
           include: {
-            paperStock: true
-          }
+            paperStock: true,
+          },
         },
-        PricingTier: true
-      }
+        PricingTier: true,
+      },
     })
-    
+
     if (products.length === 0) {
       console.log('❌ No products found. Run seed scripts first.')
       return
     }
-    
+
     console.log(`✅ Found ${products.length} products`)
-    products.forEach(p => {
+    products.forEach((p) => {
       console.log(`   - ${p.name} (${p.ProductCategory.name})`)
       console.log(`     Base price: $${p.basePrice}`)
       console.log(`     Paper stocks: ${p.productPaperStocks.length}`)
@@ -38,7 +38,7 @@ async function testOrderWorkflow() {
     console.log('\n2️⃣ Checking paper stocks...')
     const paperStocks = await prisma.paperStock.findMany({ take: 5 })
     console.log(`✅ Found ${paperStocks.length} paper stocks`)
-    paperStocks.forEach(ps => {
+    paperStocks.forEach((ps) => {
       console.log(`   - ${ps.name} (${ps.category})`)
     })
 
@@ -46,7 +46,7 @@ async function testOrderWorkflow() {
     console.log('\n3️⃣ Checking size groups...')
     const sizeGroups = await prisma.sizeGroup.findMany({ take: 5 })
     console.log(`✅ Found ${sizeGroups.length} size groups`)
-    sizeGroups.forEach(sg => {
+    sizeGroups.forEach((sg) => {
       console.log(`   - ${sg.name}: ${sg.values}`)
     })
 
@@ -54,7 +54,7 @@ async function testOrderWorkflow() {
     console.log('\n4️⃣ Checking quantity groups...')
     const quantityGroups = await prisma.quantityGroup.findMany({ take: 5 })
     console.log(`✅ Found ${quantityGroups.length} quantity groups`)
-    quantityGroups.forEach(qg => {
+    quantityGroups.forEach((qg) => {
       console.log(`   - ${qg.name}: ${qg.values}`)
     })
 
@@ -62,23 +62,23 @@ async function testOrderWorkflow() {
     console.log('\n5️⃣ Checking add-ons...')
     const addOns = await prisma.addOn.findMany({ take: 5 })
     console.log(`✅ Found ${addOns.length} add-ons`)
-    addOns.forEach(ao => {
+    addOns.forEach((ao) => {
       console.log(`   - ${ao.name}: ${ao.pricingModel}`)
     })
 
     // 6. Create a test order
     console.log('\n6️⃣ Creating test order...')
     const testOrderNumber = `TEST-${Date.now()}`
-    
+
     const testOrder = await prisma.order.create({
       data: {
         orderNumber: testOrderNumber,
         email: 'test@gangrunprinting.com',
         phone: '555-0123',
         subtotal: 9999, // $99.99
-        tax: 825,       // $8.25
+        tax: 825, // $8.25
         shipping: 1000, // $10.00
-        total: 11824,   // $118.24
+        total: 11824, // $118.24
         status: 'PENDING_PAYMENT',
         shippingAddress: {
           name: 'Test Customer',
@@ -86,34 +86,36 @@ async function testOrderWorkflow() {
           city: 'Houston',
           state: 'TX',
           zipCode: '77001',
-          country: 'US'
+          country: 'US',
         },
         OrderItem: {
-          create: [{
-            id: `${testOrderNumber}-item-1`,
-            productName: 'Standard Business Cards',
-            productSku: 'BC-STD-001',
-            quantity: 500,
-            price: 1999, // $19.99 per 500
-            options: {
-              size: '2x3.5',
-              paperStock: '14pt Gloss Cover',
-              sides: 'Double'
-            }
-          }]
+          create: [
+            {
+              id: `${testOrderNumber}-item-1`,
+              productName: 'Standard Business Cards',
+              productSku: 'BC-STD-001',
+              quantity: 500,
+              price: 1999, // $19.99 per 500
+              options: {
+                size: '2x3.5',
+                paperStock: '14pt Gloss Cover',
+                sides: 'Double',
+              },
+            },
+          ],
         },
         StatusHistory: {
           create: {
             id: `${testOrderNumber}-status-1`,
             toStatus: 'PENDING_PAYMENT',
-            changedBy: 'System Test'
-          }
-        }
+            changedBy: 'System Test',
+          },
+        },
       },
       include: {
         OrderItem: true,
-        StatusHistory: true
-      }
+        StatusHistory: true,
+      },
     })
 
     console.log(`✅ Created test order: ${testOrder.orderNumber}`)
@@ -133,10 +135,10 @@ async function testOrderWorkflow() {
             id: `${testOrderNumber}-status-2`,
             fromStatus: 'PENDING_PAYMENT',
             toStatus: 'PAID',
-            changedBy: 'System Test'
-          }
-        }
-      }
+            changedBy: 'System Test',
+          },
+        },
+      },
     })
     console.log(`✅ Updated order status to: ${updatedOrder.status}`)
 
@@ -147,8 +149,8 @@ async function testOrderWorkflow() {
         id: `${testOrderNumber}-notif-1`,
         orderId: testOrder.id,
         type: 'ORDER_CONFIRMED',
-        sent: false
-      }
+        sent: false,
+      },
     })
     console.log(`✅ Created notification: ${notification.type}`)
 
@@ -161,7 +163,7 @@ async function testOrderWorkflow() {
     console.log('✅ Test data cleaned up')
 
     console.log('\n✨ Order workflow test completed successfully!')
-    
+
     // Summary
     console.log('\n📊 Summary:')
     console.log('- Products are properly configured')
@@ -171,7 +173,6 @@ async function testOrderWorkflow() {
     console.log('- Order creation and updates work')
     console.log('- Notification system is functional')
     console.log('\n🎉 The order workflow is ready for production!')
-
   } catch (error) {
     console.error('❌ Test failed:', error)
     process.exit(1)

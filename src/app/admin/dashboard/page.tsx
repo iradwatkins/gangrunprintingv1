@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { StatsCard } from '@/components/admin/stats-cards'
-import { PrintQueueTable } from '@/components/admin/print-queue-table'
+
 import { GangRunSchedule } from '@/components/admin/gang-run-schedule'
 import { ProductionChart } from '@/components/admin/production-chart'
 import { RecentOrdersTable } from '@/components/admin/recent-orders-table'

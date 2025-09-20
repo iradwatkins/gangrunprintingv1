@@ -6,16 +6,16 @@ async function testFrontendDisplay() {
   const products = [
     {
       name: 'Premium Business Cards',
-      url: 'http://localhost:3002/products/premium-business-cards'
+      url: 'http://localhost:3002/products/premium-business-cards',
     },
     {
       name: 'Marketing Flyers',
-      url: 'http://localhost:3002/products/marketing-flyers'
+      url: 'http://localhost:3002/products/marketing-flyers',
     },
     {
       name: 'Professional Large Format Posters',
-      url: 'http://localhost:3002/products/professional-large-format-posters'
-    }
+      url: 'http://localhost:3002/products/professional-large-format-posters',
+    },
   ]
 
   console.log('🔍 Testing Frontend Display of Configuration Options...\n')
@@ -37,23 +37,29 @@ async function testFrontendDisplay() {
       console.log(`   Configuration Elements:`)
       console.log(`   ✅ Quantity: ${hasQuantityLabel ? 'Present' : '❌ Missing'}`)
       console.log(`   ✅ Size: ${hasSizeLabel ? 'Present' : '❌ Missing'}`)
-      console.log(`   ${hasSidesLabel ? '✅' : '❌'} Sides: ${hasSidesLabel ? 'Present' : 'Missing'}`)
-      console.log(`   ${hasPaperLabel ? '✅' : '❌'} Paper: ${hasPaperLabel ? 'Present' : 'Missing'}`)
-      console.log(`   ${hasCoatingLabel ? '✅' : '❌'} Coating: ${hasCoatingLabel ? 'Present' : 'Missing'}`)
+      console.log(
+        `   ${hasSidesLabel ? '✅' : '❌'} Sides: ${hasSidesLabel ? 'Present' : 'Missing'}`
+      )
+      console.log(
+        `   ${hasPaperLabel ? '✅' : '❌'} Paper: ${hasPaperLabel ? 'Present' : 'Missing'}`
+      )
+      console.log(
+        `   ${hasCoatingLabel ? '✅' : '❌'} Coating: ${hasCoatingLabel ? 'Present' : 'Missing'}`
+      )
 
       // Check for dropdown/select elements
       const selectCount = (html.match(/role="combobox"/g) || []).length
       console.log(`   Total Dropdowns: ${selectCount}`)
 
       // Check for error messages
-      const hasError = html.includes('Error loading configuration') ||
-                      html.includes('Failed to fetch configuration')
+      const hasError =
+        html.includes('Error loading configuration') ||
+        html.includes('Failed to fetch configuration')
       if (hasError) {
         console.log(`   ⚠️  Error message detected`)
       }
 
       console.log('')
-
     } catch (error) {
       console.log(`❌ ${product.name} - Error: ${error}`)
       console.log('')

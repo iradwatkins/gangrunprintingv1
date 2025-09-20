@@ -6,7 +6,7 @@ test('Admin products page renders correctly', async ({ page }) => {
   // Go to the admin page
   await page.goto('https://gangrunprinting.com/admin/products/new', {
     waitUntil: 'networkidle',
-    timeout: 30000
+    timeout: 30000,
   })
 
   // Wait a bit for any redirects or loading
@@ -27,10 +27,22 @@ test('Admin products page renders correctly', async ({ page }) => {
     console.log('✅ Still on admin page - checking content...')
 
     // Check if the page has the expected content
-    const hasLoadingMessage = await page.locator('text=Verifying admin access').isVisible().catch(() => false)
-    const hasProductForm = await page.locator('text=Product Name').isVisible().catch(() => false)
-    const hasCreateButton = await page.locator('text=Create Product').isVisible().catch(() => false)
-    const hasSidebar = await page.locator('text=Dashboard').isVisible().catch(() => false)
+    const hasLoadingMessage = await page
+      .locator('text=Verifying admin access')
+      .isVisible()
+      .catch(() => false)
+    const hasProductForm = await page
+      .locator('text=Product Name')
+      .isVisible()
+      .catch(() => false)
+    const hasCreateButton = await page
+      .locator('text=Create Product')
+      .isVisible()
+      .catch(() => false)
+    const hasSidebar = await page
+      .locator('text=Dashboard')
+      .isVisible()
+      .catch(() => false)
 
     console.log('Has loading message:', hasLoadingMessage)
     console.log('Has product form:', hasProductForm)

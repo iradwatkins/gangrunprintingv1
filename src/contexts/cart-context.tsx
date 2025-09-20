@@ -1,7 +1,8 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
-import { type CartState, type CartItem, type CartContextType } from '@/lib/cart-types'
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
+
+import { type CartContextType, type CartItem, type CartState } from '@/lib/cart-types'
 
 const TAX_RATE = 0.0825
 const SHIPPING_RATE = 10.0
@@ -124,7 +125,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           dispatch({ type: 'LOAD_CART', payload: parsedCart })
         }
       } catch (error) {
-        console.error('Failed to load cart from localStorage:', error)
       } finally {
         setIsLoading(false)
       }

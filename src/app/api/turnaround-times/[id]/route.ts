@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -19,10 +19,7 @@ const updateTurnaroundTimeSchema = z.object({
 })
 
 // GET /api/turnaround-times/[id]
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -38,27 +35,18 @@ export async function GET(
     })
 
     if (!turnaroundTime) {
-      return NextResponse.json(
-        { error: 'Turnaround time not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Turnaround time not found' }, { status: 404 })
     }
 
     return NextResponse.json(turnaroundTime)
   } catch (error) {
     console.error('Failed to fetch turnaround time:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch turnaround time' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch turnaround time' }, { status: 500 })
   }
 }
 
 // PUT /api/turnaround-times/[id]
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
@@ -79,10 +67,7 @@ export async function PUT(
     }
 
     console.error('Failed to update turnaround time:', error)
-    return NextResponse.json(
-      { error: 'Failed to update turnaround time' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update turnaround time' }, { status: 500 })
   }
 }
 
@@ -101,9 +86,6 @@ export async function DELETE(
     return NextResponse.json({ message: 'Turnaround time deleted successfully' })
   } catch (error) {
     console.error('Failed to delete turnaround time:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete turnaround time' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete turnaround time' }, { status: 500 })
   }
 }

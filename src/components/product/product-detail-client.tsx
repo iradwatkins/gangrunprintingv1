@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Upload, ShoppingCart, Clock, Check, X, Loader2 } from 'lucide-react'
+import { ArrowLeft, Upload, ShoppingCart, Clock, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+
 import {
   Select,
   SelectContent,
@@ -197,7 +196,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   // Handle add to cart
   const handleAddToCart = () => {
-    if (!productConfiguration || !productConfiguration.uploadedFiles || productConfiguration.uploadedFiles.length === 0) {
+    if (
+      !productConfiguration ||
+      !productConfiguration.uploadedFiles ||
+      productConfiguration.uploadedFiles.length === 0
+    ) {
       toast.error('Please upload your design file')
       return
     }
@@ -251,12 +254,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Product Images - Now using optimized gallery */}
         <div>
           <ProductImageGallery
-            images={product.ProductImage}
-            productName={product.name}
-            productCategory={product.ProductCategory.name}
-            showThumbnails={true}
-            enableZoom={true}
             enableLightbox={true}
+            enableZoom={true}
+            images={product.ProductImage}
+            productCategory={product.ProductCategory.name}
+            productName={product.name}
+            showThumbnails={true}
           />
         </div>
 
@@ -355,10 +358,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Add to Cart Button */}
             <Button
-              onClick={handleAddToCart}
-              size="lg"
               className="w-full"
               disabled={!productConfiguration?.uploadedFiles?.length || !isConfigurationComplete}
+              size="lg"
+              onClick={handleAddToCart}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
               Add to Cart

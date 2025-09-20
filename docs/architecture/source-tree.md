@@ -123,21 +123,27 @@ gangrunprinting/
 ## Key Directories Explained
 
 ### `/src/app/` - Next.js App Router
+
 The main application routing structure using Next.js 15's App Router pattern. Routes are file-system based with special file conventions.
 
 ### `/src/components/` - Component Library
+
 Reusable React components organized by feature. The `ui/` folder contains shadcn/ui base components.
 
 ### `/src/lib/` - Core Libraries
+
 Utility functions, service configurations, and shared logic. Critical integrations like auth, database, and external services.
 
 ### `/prisma/` - Database Management
+
 Prisma ORM schema and migration files. The single source of truth for database structure.
 
 ### `/docs/` - Documentation
+
 Comprehensive project documentation following BMad Method. Includes architecture, requirements, and progress tracking.
 
 ### `/.bmad-core/` - BMad Configuration
+
 BMad Method templates, agents, and workflows for AI-assisted development.
 
 ## File Naming Conventions
@@ -150,16 +156,19 @@ BMad Method templates, agents, and workflows for AI-assisted development.
 ## Important Files
 
 ### Configuration Files
+
 - `next.config.js` - Next.js configuration with PWA setup
 - `tailwind.config.ts` - Tailwind CSS theme and plugins
 - `tsconfig.json` - TypeScript compiler options
 - `prisma/schema.prisma` - Database schema definition
 
 ### Environment Configuration
+
 - `.env` - Production environment variables
 - `.env.example` - Template for environment setup
 
 ### Documentation
+
 - `docs/prd.md` - Product requirements document
 - `docs/architecture.md` - System architecture
 - `docs/bmad/progress.md` - Development progress tracker
@@ -173,16 +182,19 @@ BMad Method templates, agents, and workflows for AI-assisted development.
 ## Development Patterns
 
 ### Route Groups
+
 - `(customer)` - Customer-facing routes without URL prefix
 - `admin` - Admin routes with /admin prefix
 - `api` - API endpoints under /api
 
 ### Component Organization
+
 - Feature-based grouping (cart/, products/, etc.)
 - Shared UI components in ui/
 - Form components separated for reusability
 
 ### State Management
+
 - Server state: React Server Components
 - Client state: Zustand stores
 - Form state: React Hook Form
@@ -222,6 +234,7 @@ tests/                          # Test files (planned)
 ## Deployment Structure
 
 The application is deployed as a monolithic Next.js application with:
+
 - PostgreSQL database (separate container)
 - Redis cache (separate container)
 - MinIO storage (separate container)

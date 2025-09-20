@@ -9,19 +9,11 @@ import { PATTERNS, MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from '@/config/constants
 // Common Zod schemas
 export const emailSchema = z.string().email('Invalid email address')
 
-export const phoneSchema = z
-  .string()
-  .regex(PATTERNS.PHONE, 'Invalid phone number')
-  .optional()
+export const phoneSchema = z.string().regex(PATTERNS.PHONE, 'Invalid phone number').optional()
 
-export const zipCodeSchema = z
-  .string()
-  .regex(PATTERNS.ZIP_CODE, 'Invalid ZIP code')
+export const zipCodeSchema = z.string().regex(PATTERNS.ZIP_CODE, 'Invalid ZIP code')
 
-export const urlSchema = z
-  .string()
-  .regex(PATTERNS.URL, 'Invalid URL')
-  .optional()
+export const urlSchema = z.string().regex(PATTERNS.URL, 'Invalid URL').optional()
 
 export const passwordSchema = z
   .string()
@@ -63,12 +55,14 @@ export const orderSchema = z.object({
   shippingAddress: addressSchema,
   billingAddress: addressSchema.optional(),
   shippingMethod: z.enum(['standard', 'express', 'pickup']),
-  items: z.array(z.object({
-    productId: z.string(),
-    quantity: z.number().min(1),
-    price: z.number().min(0),
-    options: z.record(z.unknown()).optional(),
-  })),
+  items: z.array(
+    z.object({
+      productId: z.string(),
+      quantity: z.number().min(1),
+      price: z.number().min(0),
+      options: z.record(z.unknown()).optional(),
+    })
+  ),
 })
 
 // File validation schema
@@ -76,7 +70,7 @@ export const imageFileSchema = z.custom<File>(
   (file) => {
     if (!(file instanceof File)) return false
     if (file.size > MAX_FILE_SIZE) return false
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) return false
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type as string)) return false
     return true
   },
   {

@@ -5,6 +5,7 @@
 You need to add the following redirect URI to your Google OAuth 2.0 Client ID configuration:
 
 ### Redirect URI to Add:
+
 ```
 https://gangrunprinting.com/api/auth/google/callback
 ```
@@ -43,6 +44,7 @@ https://gangrunprinting.com/api/auth/google/callback
 ## Testing:
 
 After adding the redirect URI in Google Cloud Console:
+
 1. Wait 1-2 minutes for changes to propagate
 2. Try signing in again at: https://gangrunprinting.com/auth/signin
 3. Click "Continue with Google"
@@ -50,6 +52,7 @@ After adding the redirect URI in Google Cloud Console:
 ## Troubleshooting:
 
 If you still get redirect_uri_mismatch error:
+
 - Ensure the URL is exactly: `https://gangrunprinting.com/api/auth/google/callback`
 - Check there are no typos or extra characters
 - Verify you saved the changes in Google Cloud Console
@@ -59,6 +62,7 @@ If you still get redirect_uri_mismatch error:
 ## Additional URIs (Optional):
 
 For development/testing, you might also want to add:
+
 - `http://localhost:3002/api/auth/google/callback` (for local development)
 
 ## Security Note:

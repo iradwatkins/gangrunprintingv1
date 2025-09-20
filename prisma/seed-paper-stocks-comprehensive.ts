@@ -26,7 +26,7 @@ async function main() {
       reorderQuantity: 25000,
       sheetsInStock: 15000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: '14pt Matte Cover',
@@ -47,7 +47,7 @@ async function main() {
       reorderQuantity: 25000,
       sheetsInStock: 12000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: '16pt Premium Cover',
@@ -61,14 +61,14 @@ async function main() {
       pricePerSqInch: 0.0015,
       secondSideMarkupPercent: 50.0,
       tooltipText: 'Extra thick premium stock with UV coating for maximum impact',
-      costPerSheet: 0.10,
+      costPerSheet: 0.1,
       thickness: 0.016,
       isEcoFriendly: false,
       reorderPoint: 3000,
       reorderQuantity: 15000,
       sheetsInStock: 8000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: '32pt Suede',
@@ -79,7 +79,7 @@ async function main() {
       opacity: 100,
       brightness: 90,
       priceMultiplier: 2.5,
-      pricePerSqInch: 0.0030,
+      pricePerSqInch: 0.003,
       secondSideMarkupPercent: 50.0,
       tooltipText: 'Luxury suede finish - ultra-thick with velvet-like texture',
       costPerSheet: 0.25,
@@ -89,7 +89,7 @@ async function main() {
       reorderQuantity: 5000,
       sheetsInStock: 2500,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
 
     // Flyer/Brochure Stocks
@@ -112,7 +112,7 @@ async function main() {
       reorderQuantity: 50000,
       sheetsInStock: 30000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: '100lb Matte Text',
@@ -133,7 +133,7 @@ async function main() {
       reorderQuantity: 50000,
       sheetsInStock: 25000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: '80lb Gloss Cover',
@@ -154,7 +154,7 @@ async function main() {
       reorderQuantity: 40000,
       sheetsInStock: 20000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
 
     // Poster/Large Format Stocks
@@ -167,7 +167,7 @@ async function main() {
       opacity: 95,
       brightness: 88,
       priceMultiplier: 0.9,
-      pricePerSqInch: 0.0010,
+      pricePerSqInch: 0.001,
       secondSideMarkupPercent: 60.0,
       tooltipText: 'Standard poster stock with satin finish - good for indoor use',
       costPerSheet: 0.15,
@@ -177,7 +177,7 @@ async function main() {
       reorderQuantity: 10000,
       sheetsInStock: 5000,
       sides: 'Single',
-      isActive: true
+      isActive: true,
     },
     {
       name: '24pt Styrene',
@@ -191,14 +191,14 @@ async function main() {
       pricePerSqInch: 0.0025,
       secondSideMarkupPercent: 80.0,
       tooltipText: 'Rigid plastic poster board - waterproof and durable for outdoor use',
-      costPerSheet: 0.50,
+      costPerSheet: 0.5,
       thickness: 0.024,
       isEcoFriendly: false,
       reorderPoint: 500,
       reorderQuantity: 2500,
       sheetsInStock: 1200,
       sides: 'Single',
-      isActive: true
+      isActive: true,
     },
 
     // Sticker/Label Stocks
@@ -214,14 +214,14 @@ async function main() {
       pricePerSqInch: 0.0018,
       secondSideMarkupPercent: 0.0,
       tooltipText: 'Waterproof vinyl stickers with permanent adhesive',
-      costPerSheet: 0.20,
+      costPerSheet: 0.2,
       thickness: 0.004,
       isEcoFriendly: false,
       reorderPoint: 3000,
       reorderQuantity: 15000,
       sheetsInStock: 8000,
       sides: 'Single',
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Clear Vinyl Adhesive',
@@ -242,7 +242,7 @@ async function main() {
       reorderQuantity: 10000,
       sheetsInStock: 5000,
       sides: 'Single',
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Paper Matte Labels',
@@ -263,7 +263,7 @@ async function main() {
       reorderQuantity: 25000,
       sheetsInStock: 15000,
       sides: 'Single',
-      isActive: true
+      isActive: true,
     },
 
     // Eco-Friendly Options
@@ -286,7 +286,7 @@ async function main() {
       reorderQuantity: 15000,
       sheetsInStock: 8000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Bamboo Card Stock',
@@ -307,7 +307,7 @@ async function main() {
       reorderQuantity: 10000,
       sheetsInStock: 5000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
 
     // Specialty Stocks
@@ -330,7 +330,7 @@ async function main() {
       reorderQuantity: 5000,
       sheetsInStock: 2500,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Black Edge Cards',
@@ -344,14 +344,14 @@ async function main() {
       pricePerSqInch: 0.0036,
       secondSideMarkupPercent: 50.0,
       tooltipText: 'Triple-layered cards with black core - premium luxury option',
-      costPerSheet: 0.30,
+      costPerSheet: 0.3,
       thickness: 0.032,
       isEcoFriendly: false,
       reorderPoint: 500,
       reorderQuantity: 2500,
       sheetsInStock: 1000,
       sides: 'Double',
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Kraft Brown',
@@ -365,15 +365,15 @@ async function main() {
       pricePerSqInch: 0.0014,
       secondSideMarkupPercent: 50.0,
       tooltipText: 'Natural brown kraft paper for rustic, organic look',
-      costPerSheet: 0.10,
+      costPerSheet: 0.1,
       thickness: 0.018,
       isEcoFriendly: true,
       reorderPoint: 2000,
       reorderQuantity: 10000,
       sheetsInStock: 5000,
       sides: 'Double',
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   let createdCount = 0
@@ -382,7 +382,7 @@ async function main() {
       await prisma.paperStock.upsert({
         where: { name: stock.name },
         update: stock,
-        create: stock
+        create: stock,
       })
       createdCount++
       console.log(`✓ Created/Updated paper stock: ${stock.name}`)

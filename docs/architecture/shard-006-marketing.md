@@ -1,6 +1,7 @@
 # Architecture Shard 006: Marketing & Automation Platform
 
 ## Overview
+
 **Epic**: Integrated Marketing & CRM Platform
 **Status**: 0% Complete - Not started
 **Priority**: High - Required for Phase 1 MVP
@@ -8,38 +9,40 @@
 ## Technical Requirements
 
 ### Marketing Platform Components
+
 ```typescript
 interface MarketingPlatform {
   crm: {
-    contacts: ContactManagement;
-    segments: CustomerSegmentation;
-    tags: TagSystem;
-    activities: ActivityTracking;
-  };
+    contacts: ContactManagement
+    segments: CustomerSegmentation
+    tags: TagSystem
+    activities: ActivityTracking
+  }
   email: {
-    builder: VisualEmailBuilder;
-    templates: EmailTemplates;
-    campaigns: CampaignManagement;
-    broadcasts: BroadcastSystem;
-  };
+    builder: VisualEmailBuilder
+    templates: EmailTemplates
+    campaigns: CampaignManagement
+    broadcasts: BroadcastSystem
+  }
   automation: {
-    workflows: WorkflowEngine;
-    triggers: EventTriggers;
-    actions: AutomationActions;
-    conditions: RuleEngine;
-  };
+    workflows: WorkflowEngine
+    triggers: EventTriggers
+    actions: AutomationActions
+    conditions: RuleEngine
+  }
   analytics: {
-    performance: CampaignMetrics;
-    engagement: UserEngagement;
-    conversion: ConversionTracking;
-    reports: CustomReports;
-  };
+    performance: CampaignMetrics
+    engagement: UserEngagement
+    conversion: ConversionTracking
+    reports: CustomReports
+  }
 }
 ```
 
 ### Implementation Tasks
 
 #### 1. CRM/Contacts Hub
+
 - [ ] Contact database with custom fields
 - [ ] Import/export functionality
 - [ ] Tagging and categorization system
@@ -50,6 +53,7 @@ interface MarketingPlatform {
 - [ ] Duplicate detection and merging
 
 #### 2. Visual Email Builder
+
 - [ ] Drag-and-drop email composer
 - [ ] Responsive email templates
 - [ ] Custom HTML blocks
@@ -60,6 +64,7 @@ interface MarketingPlatform {
 - [ ] Personalization tokens
 
 #### 3. Email Campaigns & Broadcasts
+
 - [ ] Campaign creation wizard
 - [ ] Recipient selection interface
 - [ ] A/B testing setup
@@ -70,6 +75,7 @@ interface MarketingPlatform {
 - [ ] Campaign duplication
 
 #### 4. Marketing Automation
+
 - [ ] Visual workflow builder
 - [ ] Trigger configuration
 - [ ] Action node library
@@ -80,6 +86,7 @@ interface MarketingPlatform {
 - [ ] Performance monitoring
 
 #### 5. Analytics & Reporting
+
 - [ ] Email performance metrics
 - [ ] Contact engagement scoring
 - [ ] Campaign comparison
@@ -215,27 +222,27 @@ CREATE TABLE "WorkflowExecution" (
 // Email builder components
 interface EmailBuilder {
   canvas: {
-    rows: Row[];
-    settings: CanvasSettings;
-  };
+    rows: Row[]
+    settings: CanvasSettings
+  }
   components: {
-    text: TextBlock;
-    image: ImageBlock;
-    button: ButtonBlock;
-    divider: DividerBlock;
-    spacer: SpacerBlock;
-    columns: ColumnBlock;
-    social: SocialBlock;
-  };
+    text: TextBlock
+    image: ImageBlock
+    button: ButtonBlock
+    divider: DividerBlock
+    spacer: SpacerBlock
+    columns: ColumnBlock
+    social: SocialBlock
+  }
   styles: {
-    theme: EmailTheme;
-    responsive: ResponsiveRules;
-  };
+    theme: EmailTheme
+    responsive: ResponsiveRules
+  }
 }
 
 // Drag-and-drop implementation
 class EmailBuilderCanvas {
-  private rows: Row[] = [];
+  private rows: Row[] = []
 
   addRow(position: number) {}
   removeRow(id: string) {}
@@ -260,22 +267,22 @@ class EmailBuilderCanvas {
 // Workflow execution engine
 class WorkflowEngine {
   async execute(workflow: Workflow, contact: Contact) {
-    const execution = await this.createExecution(workflow, contact);
+    const execution = await this.createExecution(workflow, contact)
 
     for (const node of workflow.nodes) {
       switch (node.type) {
         case 'trigger':
-          await this.evaluateTrigger(node, contact);
-          break;
+          await this.evaluateTrigger(node, contact)
+          break
         case 'condition':
-          const result = await this.evaluateCondition(node, contact);
-          if (!result) break;
+          const result = await this.evaluateCondition(node, contact)
+          if (!result) break
         case 'action':
-          await this.executeAction(node, contact, execution);
-          break;
+          await this.executeAction(node, contact, execution)
+          break
         case 'delay':
-          await this.scheduleDelay(node, execution);
-          break;
+          await this.scheduleDelay(node, execution)
+          break
       }
     }
   }
@@ -283,17 +290,17 @@ class WorkflowEngine {
   private async executeAction(node: ActionNode, contact: Contact) {
     switch (node.action) {
       case 'sendEmail':
-        await this.sendEmail(node.emailId, contact);
-        break;
+        await this.sendEmail(node.emailId, contact)
+        break
       case 'addTag':
-        await this.addTag(contact, node.tag);
-        break;
+        await this.addTag(contact, node.tag)
+        break
       case 'updateField':
-        await this.updateField(contact, node.field, node.value);
-        break;
+        await this.updateField(contact, node.field, node.value)
+        break
       case 'webhook':
-        await this.callWebhook(node.url, contact);
-        break;
+        await this.callWebhook(node.url, contact)
+        break
     }
   }
 }
@@ -305,17 +312,17 @@ class WorkflowEngine {
 // N8N workflow triggers
 interface N8NIntegration {
   triggers: {
-    orderPlaced: OrderTrigger;
-    contactCreated: ContactTrigger;
-    campaignSent: CampaignTrigger;
-    workflowCompleted: WorkflowTrigger;
-  };
+    orderPlaced: OrderTrigger
+    contactCreated: ContactTrigger
+    campaignSent: CampaignTrigger
+    workflowCompleted: WorkflowTrigger
+  }
   actions: {
-    createContact: CreateContactAction;
-    sendEmail: SendEmailAction;
-    updateOrder: UpdateOrderAction;
-    notifyVendor: NotifyVendorAction;
-  };
+    createContact: CreateContactAction
+    sendEmail: SendEmailAction
+    updateOrder: UpdateOrderAction
+    notifyVendor: NotifyVendorAction
+  }
 }
 
 // Webhook configuration for N8N
@@ -330,7 +337,7 @@ const n8nWebhooks = {
     type: 'bearer',
     token: process.env.N8N_API_TOKEN,
   },
-};
+}
 ```
 
 ### Performance Optimization

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Package, Eye } from 'lucide-react'
+import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

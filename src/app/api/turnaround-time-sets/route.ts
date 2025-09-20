@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/turnaround-time-sets - List all turnaround time sets
@@ -23,10 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(sets)
   } catch (error) {
     console.error('[TurnaroundTimeSet] GET error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch turnaround time sets' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch turnaround time sets' }, { status: 500 })
   }
 }
 
@@ -38,10 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
     // Create the set with items
@@ -51,11 +45,12 @@ export async function POST(request: NextRequest) {
         description,
         isActive: isActive ?? true,
         turnaroundTimeItems: {
-          create: turnaroundTimeIds?.map((turnaroundTimeId: string, index: number) => ({
-            turnaroundTimeId,
-            sortOrder: index,
-            isDefault: index === 0,
-          })) || [],
+          create:
+            turnaroundTimeIds?.map((turnaroundTimeId: string, index: number) => ({
+              turnaroundTimeId,
+              sortOrder: index,
+              isDefault: index === 0,
+            })) || [],
         },
       },
       include: {
@@ -73,9 +68,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(set, { status: 201 })
   } catch (error) {
     console.error('[TurnaroundTimeSet] POST error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create turnaround time set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create turnaround time set' }, { status: 500 })
   }
 }

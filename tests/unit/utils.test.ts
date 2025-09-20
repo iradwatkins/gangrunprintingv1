@@ -21,7 +21,7 @@ describe('Utility Functions', () => {
 
   describe('calculateTax', () => {
     it('should calculate tax correctly', () => {
-      expect(calculateTax(100, 0.08)).toBe(8.00)
+      expect(calculateTax(100, 0.08)).toBe(8.0)
       expect(calculateTax(250, 0.0625)).toBe(15.63)
     })
 

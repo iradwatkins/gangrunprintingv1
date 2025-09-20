@@ -31,7 +31,6 @@ export function useOrderUpdates(orderId: string | null) {
     eventSource.onopen = () => {
       setIsConnected(true)
       setError(null)
-      console.log('SSE connection established for order:', orderId)
     }
 
     eventSource.onmessage = (event) => {
@@ -39,7 +38,6 @@ export function useOrderUpdates(orderId: string | null) {
         const data: OrderUpdate = JSON.parse(event.data)
 
         if (data.type === 'connected') {
-          console.log('Connected to order updates:', data)
         } else if (data.type === 'update') {
           setLatestUpdate(data)
           setUpdates((prev) => [...prev, data])
@@ -56,13 +54,10 @@ export function useOrderUpdates(orderId: string | null) {
             })
           }
         }
-      } catch (err) {
-        console.error('Error parsing SSE data:', err)
-      }
+      } catch (err) {}
     }
 
     eventSource.onerror = (err) => {
-      console.error('SSE connection error:', err)
       setError('Connection lost. Retrying...')
       setIsConnected(false)
 

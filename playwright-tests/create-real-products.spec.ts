@@ -7,7 +7,8 @@ test.describe('Create Real Commercial Products', () => {
       name: 'Premium Business Cards',
       sku: 'BC-PREM-001',
       category: 'Business Cards',
-      description: 'Professional business cards with full-color printing on premium 16pt card stock. Features silk lamination for a smooth, luxurious feel that resists water, smudges, and daily wear. Perfect for making a lasting impression at networking events and meetings.',
+      description:
+        'Professional business cards with full-color printing on premium 16pt card stock. Features silk lamination for a smooth, luxurious feel that resists water, smudges, and daily wear. Perfect for making a lasting impression at networking events and meetings.',
       shortDescription: 'Premium 16pt business cards with silk lamination',
       basePrice: 24.99,
       setupFee: 0,
@@ -17,7 +18,7 @@ test.describe('Create Real Commercial Products', () => {
       maxGangQuantity: 5000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 35.00,
+      rushFee: 35.0,
       isFeatured: true,
       sizeGroup: 'Business Card Sizes', // 3.5" x 2" standard
       quantityGroup: 'Business Card Quantities', // 100, 250, 500, 1000, 2500, 5000
@@ -27,14 +28,15 @@ test.describe('Create Real Commercial Products', () => {
         bleedSize: '3.75" x 2.25"',
         safeArea: '3.36" x 1.86"',
         resolution: '300 DPI minimum',
-        colorMode: '4/4 (Full color both sides)'
-      }
+        colorMode: '4/4 (Full color both sides)',
+      },
     },
     {
       name: 'Marketing Flyers',
       sku: 'FLY-MKT-001',
       category: 'Flyers & Brochures',
-      description: 'High-quality marketing flyers printed on 100lb gloss text paper with vibrant full-color printing. Perfect for promotional campaigns, event announcements, and direct mail marketing. Features aqueous coating for enhanced durability and color pop.',
+      description:
+        'High-quality marketing flyers printed on 100lb gloss text paper with vibrant full-color printing. Perfect for promotional campaigns, event announcements, and direct mail marketing. Features aqueous coating for enhanced durability and color pop.',
       shortDescription: 'Full-color flyers on 100lb gloss text',
       basePrice: 39.99,
       setupFee: 0,
@@ -44,7 +46,7 @@ test.describe('Create Real Commercial Products', () => {
       maxGangQuantity: 10000,
       rushAvailable: true,
       rushDays: 1,
-      rushFee: 45.00,
+      rushFee: 45.0,
       isFeatured: true,
       sizeGroup: 'Flyer Sizes', // 8.5" x 11" standard
       quantityGroup: 'Basic Gangrun Price', // Various quantities
@@ -54,14 +56,15 @@ test.describe('Create Real Commercial Products', () => {
         bleedSize: '8.75" x 11.25"',
         paperWeight: '100lb Gloss Text',
         coating: 'Aqueous coating both sides',
-        colorMode: '4/4 (Full color both sides)'
-      }
+        colorMode: '4/4 (Full color both sides)',
+      },
     },
     {
       name: 'Large Format Posters',
       sku: 'POS-LRG-001',
       category: 'Posters',
-      description: 'Eye-catching large format posters printed on heavy 14pt C2S poster stock with semi-gloss finish. Ideal for trade shows, retail displays, and event promotions. Suitable for both indoor and outdoor use with optional lamination for extended durability.',
+      description:
+        'Eye-catching large format posters printed on heavy 14pt C2S poster stock with semi-gloss finish. Ideal for trade shows, retail displays, and event promotions. Suitable for both indoor and outdoor use with optional lamination for extended durability.',
       shortDescription: '18" x 24" posters on 14pt stock',
       basePrice: 19.99,
       setupFee: 0,
@@ -69,7 +72,7 @@ test.describe('Create Real Commercial Products', () => {
       gangRunEligible: false,
       rushAvailable: true,
       rushDays: 0, // Same day
-      rushFee: 25.00,
+      rushFee: 25.0,
       isFeatured: true,
       sizeGroup: 'Poster Sizes', // 18" x 24" medium
       quantityGroup: 'Basic Gangrun Price',
@@ -79,9 +82,9 @@ test.describe('Create Real Commercial Products', () => {
         bleedSize: '18.25" x 24.25"',
         paperType: '14pt C2S (Coated 2 Sides)',
         finish: 'Semi-gloss',
-        colorMode: '4/0 (Full color front only)'
-      }
-    }
+        colorMode: '4/0 (Full color front only)',
+      },
+    },
   ]
 
   test.beforeEach(async ({ page }) => {
@@ -156,19 +159,25 @@ test.describe('Create Real Commercial Products', () => {
       }
 
       // Select Paper Stock Set - click the button that contains "Select paper stock"
-      const paperStockButton = await page.locator('button[role="combobox"]').filter({ hasText: 'paper stock' })
+      const paperStockButton = await page
+        .locator('button[role="combobox"]')
+        .filter({ hasText: 'paper stock' })
       await paperStockButton.click()
       await page.waitForTimeout(500)
       await page.click(`div[role="option"]:has-text("${product.paperStockSet}")`)
 
       // Select Size Group - click the button that contains "Select size group"
-      const sizeButton = await page.locator('button[role="combobox"]').filter({ hasText: 'size group' })
+      const sizeButton = await page
+        .locator('button[role="combobox"]')
+        .filter({ hasText: 'size group' })
       await sizeButton.click()
       await page.waitForTimeout(500)
       await page.click(`div[role="option"]:has-text("${product.sizeGroup}")`)
 
       // Select Quantity Group - click the button that contains "Select quantity group"
-      const quantityButton = await page.locator('button[role="combobox"]').filter({ hasText: 'quantity group' })
+      const quantityButton = await page
+        .locator('button[role="combobox"]')
+        .filter({ hasText: 'quantity group' })
       await quantityButton.click()
       await page.waitForTimeout(500)
       await page.click(`div[role="option"]:has-text("${product.quantityGroup}")`)

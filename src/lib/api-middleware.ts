@@ -1,6 +1,5 @@
 import { type NextRequest } from 'next/server'
 import { reportError, addBreadcrumb } from '@/lib/sentry'
-import { v4 as uuidv4 } from 'uuid'
 
 // Generate correlation ID for request tracking
 export function generateCorrelationId(): string {

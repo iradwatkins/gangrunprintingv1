@@ -8,7 +8,15 @@ import { useSearchParams } from 'next/navigation'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
-  const [orderInfo, setOrderInfo] = useState<any>(null)
+  const [orderInfo, setOrderInfo] = useState<{
+    orderId: string
+    total: number
+    items: Array<{
+      name: string
+      quantity: number
+      price: number
+    }>
+  } | null>(null)
 
   useEffect(() => {
     // Get order info from session storage or query params

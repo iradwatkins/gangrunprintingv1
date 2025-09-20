@@ -24,7 +24,9 @@ test.describe('Authentication Flow', () => {
     // Try invalid email format
     await page.fill('input[type="email"]', 'invalid-email')
     await page.click('button[type="submit"]')
-    await expect(page.locator('[data-testid="error-message"]')).toContainText('Invalid email format')
+    await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      'Invalid email format'
+    )
   })
 
   test('should send magic link for valid email', async ({ page }) => {
@@ -97,11 +99,11 @@ test.describe('Authentication Flow', () => {
     await page.goto('/auth/signin')
 
     // Mock Google OAuth
-    await page.route('**/api/auth/google', route => {
+    await page.route('**/api/auth/google', (route) => {
       route.fulfill({
         status: 302,
         headers: {
-          'Location': 'https://accounts.google.com/oauth/authorize?...',
+          Location: 'https://accounts.google.com/oauth/authorize?...',
         },
       })
     })

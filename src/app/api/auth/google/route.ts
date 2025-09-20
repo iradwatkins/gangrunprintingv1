@@ -16,7 +16,6 @@ export async function GET(): Promise<NextResponse> {
     maxAge: 60 * 10, // 10 minutes
     sameSite: 'lax',
   })
-
   ;(await cookies()).set('google_oauth_code_verifier', codeVerifier, {
     secure: process.env.NODE_ENV === 'production',
     path: '/',

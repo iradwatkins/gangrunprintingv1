@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Check, ShoppingCart, Clock, Package, Truck } from 'lucide-react'
-import Image from 'next/image'
 
 interface PaperStock {
   id: string
@@ -30,7 +29,7 @@ interface PaperStock {
   defaultSides: string
 }
 
-interface QuantityOption {
+interface _QuantityOption {
   value: number
   basePrice: number
   isPopular?: boolean
@@ -104,7 +103,7 @@ export default function FlyerProductPage() {
         setCalculatedPrice(Math.round(retailPrice * 100) / 100)
       }
     }
-  }, [selectedPaperStock, selectedCoating, selectedSides, selectedQuantity, currentPaperStock])
+  }, [selectedPaperStock, selectedCoating, selectedSides, selectedQuantity, currentPaperStock, quantityOptions])
 
   return (
     <div className="container mx-auto py-8">

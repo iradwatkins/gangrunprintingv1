@@ -7,6 +7,7 @@
 **Objective**: Build a powerful localization and white-label platform supporting multiple languages, automatic translations with manual overrides, customizable branding systems, multi-tenant architecture, and region-specific configurations to enable global expansion and white-label partnerships.
 
 **Key Components**:
+
 - Multi-language support with English/Spanish primary focus
 - Auto-translation system with manual override capabilities
 - White-label theming and branding customization
@@ -22,6 +23,7 @@
 Alex identified the complex requirements for building a scalable localization and white-label system:
 
 ### Localization Features
+
 1. **Multi-language Support**: Primary English/Spanish with extensibility for additional languages
 2. **Translation Management**: Auto-translation with manual override system and approval workflow
 3. **Content Localization**: Product descriptions, UI text, emails, legal documents
@@ -29,6 +31,7 @@ Alex identified the complex requirements for building a scalable localization an
 5. **Cultural Adaptation**: Color schemes, imagery, cultural preferences, payment methods
 
 ### White-label Architecture
+
 1. **Multi-tenant System**: Complete brand isolation with shared infrastructure
 2. **Custom Branding**: Logos, colors, fonts, layouts, custom CSS injection
 3. **Domain Management**: Custom domains, SSL certificates, subdomain routing
@@ -36,6 +39,7 @@ Alex identified the complex requirements for building a scalable localization an
 5. **API White-labeling**: Branded documentation, custom endpoints, rate limiting per tenant
 
 ### Business Logic Localization
+
 1. **Pricing Management**: Multi-currency support, regional pricing strategies, tax calculations
 2. **Payment Integration**: Region-specific payment methods, currency conversion
 3. **Shipping Rules**: International shipping, customs, regional carriers
@@ -43,6 +47,7 @@ Alex identified the complex requirements for building a scalable localization an
 5. **Business Hours**: Time zone support, regional holiday calendars
 
 ### Content Management
+
 1. **Translation Workflow**: Professional translator interface, approval processes
 2. **Version Control**: Translation history, rollback capabilities, change tracking
 3. **Quality Assurance**: Translation validation, cultural review, A/B testing
@@ -324,7 +329,7 @@ import { prisma } from '@/lib/prisma'
 const intlMiddleware = createIntlMiddleware({
   locales: ['en', 'es', 'fr', 'de', 'pt', 'zh'],
   defaultLocale: 'en',
-  localePrefix: 'as-needed'
+  localePrefix: 'as-needed',
 })
 
 export async function middleware(request: NextRequest) {
@@ -372,8 +377,8 @@ async function resolveTenant(hostname: string, request: NextRequest) {
         defaultLanguage: true,
         supportedLanguages: true,
         branding: true,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     if (tenant) return tenant
@@ -391,8 +396,8 @@ async function resolveTenant(hostname: string, request: NextRequest) {
           defaultLanguage: true,
           supportedLanguages: true,
           branding: true,
-          isActive: true
-        }
+          isActive: true,
+        },
       })
     }
 
@@ -408,8 +413,8 @@ async function resolveTenant(hostname: string, request: NextRequest) {
           defaultLanguage: true,
           supportedLanguages: true,
           branding: true,
-          isActive: true
-        }
+          isActive: true,
+        },
       })
     }
 
@@ -421,11 +426,7 @@ async function resolveTenant(hostname: string, request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next|_vercel|.*\\..*).*)',
-    '/',
-    '/(en|es|fr|de|pt|zh)/:path*'
-  ]
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)', '/', '/(en|es|fr|de|pt|zh)/:path*'],
 }
 ```
 
@@ -468,8 +469,8 @@ export async function getCurrentTenant(): Promise<TenantContext | null> {
         supportedLanguages: true,
         defaultCurrency: true,
         timezone: true,
-        features: true
-      }
+        features: true,
+      },
     })
 
     return tenant
@@ -486,7 +487,7 @@ export function getTenantFromHeaders(): Partial<TenantContext> {
     id: headersList.get('x-tenant-id') || undefined,
     slug: headersList.get('x-tenant-slug') || undefined,
     defaultLanguage: headersList.get('x-default-locale') || 'en',
-    supportedLanguages: headersList.get('x-supported-locales')?.split(',') || ['en']
+    supportedLanguages: headersList.get('x-supported-locales')?.split(',') || ['en'],
   }
 }
 
@@ -496,8 +497,8 @@ export async function getTenantBranding(tenantId: string) {
     select: {
       branding: true,
       customCss: true,
-      faviconUrl: true
-    }
+      faviconUrl: true,
+    },
   })
 
   return tenant
@@ -519,8 +520,8 @@ export default getRequestConfig(async ({ locale }) => {
     timeZone: headersList.get('x-tenant-timezone') || 'America/Chicago',
     defaultTranslationValues: {
       important: (chunks: any) => `<strong>${chunks}</strong>`,
-      code: (chunks: any) => `<code>${chunks}</code>`
-    }
+      code: (chunks: any) => `<code>${chunks}</code>`,
+    },
   }
 })
 
@@ -537,20 +538,21 @@ async function getMessages(locale: string, tenantId: string | null) {
       where: {
         language: locale,
         tenantId,
-        isApproved: true
+        isApproved: true,
       },
       select: {
         key: true,
         namespace: true,
-        value: true
-      }
+        value: true,
+      },
     })
 
     // Merge base messages with tenant translations
     const tenantMessages = translations.reduce((acc, translation) => {
-      const key = translation.namespace === 'common'
-        ? translation.key
-        : `${translation.namespace}.${translation.key}`
+      const key =
+        translation.namespace === 'common'
+          ? translation.key
+          : `${translation.namespace}.${translation.key}`
 
       setNestedValue(acc, key, translation.value)
       return acc
@@ -1602,10 +1604,10 @@ export class AutoTranslator {
       model: 'gpt-4',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: text }
+        { role: 'user', content: text },
       ],
       temperature: 0.3,
-      max_tokens: context.maxLength ? Math.min(context.maxLength * 2, 1000) : 500
+      max_tokens: context.maxLength ? Math.min(context.maxLength * 2, 1000) : 500,
     })
 
     return response.choices[0]?.message?.content?.trim() || text
@@ -1617,7 +1619,7 @@ export class AutoTranslator {
       fr: 'French',
       de: 'German',
       pt: 'Portuguese',
-      zh: 'Chinese (Simplified)'
+      zh: 'Chinese (Simplified)',
     }
 
     const languageName = languageNames[language] || language
@@ -1651,11 +1653,7 @@ Return only the translated text without any explanations or additional formattin
     tenantId?: string
   ): Promise<{ translatedText: string; confidence: number }> {
     try {
-      const translatedText = await this.translateWithContext(
-        sourceText,
-        targetLanguage,
-        context
-      )
+      const translatedText = await this.translateWithContext(sourceText, targetLanguage, context)
 
       // Calculate confidence based on various factors
       const confidence = this.calculateConfidence(sourceText, translatedText, context)
@@ -1670,7 +1668,7 @@ Return only the translated text without any explanations or additional formattin
         translatedText,
         context: JSON.stringify(context),
         confidence,
-        tenantId
+        tenantId,
       })
 
       return { translatedText, confidence }
@@ -1714,8 +1712,8 @@ Return only the translated text without any explanations or additional formattin
           ...data,
           status: data.confidence > 0.7 ? 'COMPLETED' : 'NEEDS_REVIEW',
           submittedAt: new Date(),
-          completedAt: new Date()
-        }
+          completedAt: new Date(),
+        },
       })
     } catch (error) {
       console.error('Error storing translation request:', error)
@@ -1742,7 +1740,7 @@ Return only the translated text without any explanations or additional formattin
           {
             key: request.key,
             namespace: request.namespace,
-            ...request.context
+            ...request.context,
           },
           tenantId
         )
@@ -1750,17 +1748,17 @@ Return only the translated text without any explanations or additional formattin
         results.push({
           key: request.key,
           translatedText: result.translatedText,
-          confidence: result.confidence
+          confidence: result.confidence,
         })
 
         // Add delay between requests to respect rate limits
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
       } catch (error) {
         console.error(`Error translating ${request.key}:`, error)
         results.push({
           key: request.key,
           translatedText: request.sourceText,
-          confidence: 0
+          confidence: 0,
         })
       }
     }
@@ -1810,7 +1808,7 @@ export class CurrencyManager {
           from: 'USD',
           to: currency,
           rate: rate as number,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         })
       })
     } catch (error) {
@@ -1827,7 +1825,7 @@ export class CurrencyManager {
       'USD-CAD': 1.25,
       'USD-MXN': 18.5,
       'USD-JPY': 110.0,
-      'USD-AUD': 1.35
+      'USD-AUD': 1.35,
     }
 
     Object.entries(fallbackRates).forEach(([pair, rate]) => {
@@ -1836,7 +1834,7 @@ export class CurrencyManager {
         from,
         to,
         rate,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       })
     })
   }
@@ -1850,8 +1848,7 @@ export class CurrencyManager {
     if (fromCurrency === toCurrency) return amount
 
     // Check for regional pricing adjustments
-    const regionalPricing = tenantId ?
-      await this.getRegionalPricing(tenantId, toCurrency) : null
+    const regionalPricing = tenantId ? await this.getRegionalPricing(tenantId, toCurrency) : null
 
     const rateKey = `${fromCurrency}-${toCurrency}`
     const rate = this.rates.get(rateKey)
@@ -1870,17 +1867,14 @@ export class CurrencyManager {
     return Math.round(convertedAmount * 100) / 100
   }
 
-  async getRegionalPricing(
-    tenantId: string,
-    currency: string
-  ): Promise<RegionalPricing | null> {
+  async getRegionalPricing(tenantId: string, currency: string): Promise<RegionalPricing | null> {
     try {
       const tenant = await prisma.tenant.findUnique({
         where: { id: tenantId },
         select: {
           defaultCurrency: true,
-          features: true
-        }
+          features: true,
+        },
       })
 
       if (!tenant) return null
@@ -1893,7 +1887,7 @@ export class CurrencyManager {
         region: regionalSettings?.region || 'US',
         baseMultiplier: regionalSettings?.priceMultiplier || 1.0,
         taxRate: regionalSettings?.taxRate || 0,
-        shippingRates: regionalSettings?.shippingRates || {}
+        shippingRates: regionalSettings?.shippingRates || {},
       }
     } catch (error) {
       console.error('Error fetching regional pricing:', error)
@@ -1905,7 +1899,7 @@ export class CurrencyManager {
     try {
       return new Intl.NumberFormat(locale || 'en-US', {
         style: 'currency',
-        currency: currency
+        currency: currency,
       }).format(amount)
     } catch (error) {
       console.error('Error formatting price:', error)
@@ -1928,7 +1922,7 @@ export class CurrencyManager {
     return {
       subtotal,
       tax: Math.round(tax * 100) / 100,
-      total: Math.round(total * 100) / 100
+      total: Math.round(total * 100) / 100,
     }
   }
 }
@@ -1964,12 +1958,9 @@ export class DomainManager {
       // Check if domain is already in use
       const existingTenant = await prisma.tenant.findFirst({
         where: {
-          OR: [
-            { domain },
-            { subdomain }
-          ],
-          NOT: { id: tenantId }
-        }
+          OR: [{ domain }, { subdomain }],
+          NOT: { id: tenantId },
+        },
       })
 
       if (existingTenant) {
@@ -1982,8 +1973,8 @@ export class DomainManager {
         data: {
           domain,
           subdomain,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // TODO: Configure Traefik/Dokploy routing
@@ -2018,8 +2009,8 @@ export class DomainManager {
       target: 'gangrunprinting.com:3002',
       headers: {
         'x-tenant-id': tenantId,
-        'x-tenant-domain': domain
-      }
+        'x-tenant-domain': domain,
+      },
     })
   }
 
@@ -2032,16 +2023,13 @@ export class DomainManager {
     try {
       const tenant = await prisma.tenant.findFirst({
         where: {
-          OR: [
-            { domain },
-            { subdomain: domain.split('.')[0] }
-          ]
+          OR: [{ domain }, { subdomain: domain.split('.')[0] }],
         },
         select: {
           domain: true,
           subdomain: true,
-          features: true
-        }
+          features: true,
+        },
       })
 
       if (!tenant) return null
@@ -2053,7 +2041,7 @@ export class DomainManager {
         subdomain: tenant.subdomain || undefined,
         sslEnabled: features?.sslEnabled || false,
         redirects: features?.redirects || {},
-        customHeaders: features?.customHeaders || {}
+        customHeaders: features?.customHeaders || {},
       }
     } catch (error) {
       console.error('Error fetching domain config:', error)
@@ -2061,10 +2049,7 @@ export class DomainManager {
     }
   }
 
-  static async validateDomainOwnership(
-    domain: string,
-    tenantId: string
-  ): Promise<boolean> {
+  static async validateDomainOwnership(domain: string, tenantId: string): Promise<boolean> {
     try {
       // Generate verification token
       const verificationToken = `grp-verify-${tenantId}-${Date.now()}`
@@ -2074,9 +2059,9 @@ export class DomainManager {
         where: { id: tenantId },
         data: {
           features: {
-            verificationToken
-          }
-        }
+            verificationToken,
+          },
+        },
       })
 
       return true

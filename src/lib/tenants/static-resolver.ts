@@ -1,6 +1,8 @@
 import { cache } from 'react'
-import type { TenantInfo, TenantContext } from './resolver'
+
 import { prisma } from '@/lib/prisma'
+
+import type { TenantContext, TenantInfo } from './resolver'
 
 // Default tenant configuration for static generation
 const DEFAULT_TENANT: TenantInfo = {
@@ -81,9 +83,7 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         currency: tenant.currency,
       }
     }
-  } catch (error) {
-    console.error('Error fetching static tenant:', error)
-  }
+  } catch (_error) {}
 
   return DEFAULT_TENANT
 })
@@ -145,9 +145,7 @@ export async function getUniversalTenantContext(
     if (dynamicContext) {
       return dynamicContext
     }
-  } catch (error) {
-    console.log('Dynamic tenant resolution not available, using static context')
-  }
+  } catch (_error) {}
 
   // Fallback to static context
   return getStaticTenantContext(locale)

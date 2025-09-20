@@ -8,7 +8,7 @@ async function fixBusinessCardsPaper() {
   try {
     // Find the Premium Business Cards product
     const product = await prisma.product.findUnique({
-      where: { sku: 'BC-PREM-001' }
+      where: { sku: 'BC-PREM-001' },
     })
 
     if (!product) {
@@ -20,7 +20,7 @@ async function fixBusinessCardsPaper() {
 
     // Find Standard Cardstock Set
     const paperStockSet = await prisma.paperStockSet.findFirst({
-      where: { name: 'Standard Cardstock Set' }
+      where: { name: 'Standard Cardstock Set' },
     })
 
     if (!paperStockSet) {
@@ -34,8 +34,8 @@ async function fixBusinessCardsPaper() {
     const existing = await prisma.productPaperStockSet.findFirst({
       where: {
         productId: product.id,
-        paperStockSetId: paperStockSet.id
-      }
+        paperStockSetId: paperStockSet.id,
+      },
     })
 
     if (existing) {
@@ -46,31 +46,31 @@ async function fixBusinessCardsPaper() {
         data: {
           productId: product.id,
           paperStockSetId: paperStockSet.id,
-          isDefault: true
-        }
+          isDefault: true,
+        },
       })
       console.log('✅ Successfully linked paper stock set to product!')
     }
 
     // Also fix the missing size group
     const sizeGroup = await prisma.sizeGroup.findFirst({
-      where: { name: 'Business Card Sizes' }
+      where: { name: 'Business Card Sizes' },
     })
 
     if (sizeGroup) {
       const existingSize = await prisma.productSizeGroup.findFirst({
         where: {
           productId: product.id,
-          sizeGroupId: sizeGroup.id
-        }
+          sizeGroupId: sizeGroup.id,
+        },
       })
 
       if (!existingSize) {
         await prisma.productSizeGroup.create({
           data: {
             productId: product.id,
-            sizeGroupId: sizeGroup.id
-          }
+            sizeGroupId: sizeGroup.id,
+          },
         })
         console.log('✅ Also linked size group!')
       }
@@ -82,20 +82,20 @@ async function fixBusinessCardsPaper() {
       include: {
         productPaperStockSets: {
           include: {
-            paperStockSet: true
-          }
+            paperStockSet: true,
+          },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true
-          }
+            sizeGroup: true,
+          },
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true
-          }
-        }
-      }
+            quantityGroup: true,
+          },
+        },
+      },
     })
 
     console.log('\n📊 Updated Configuration:')
@@ -104,7 +104,6 @@ async function fixBusinessCardsPaper() {
     console.log(`   Quantity Groups: ${updatedProduct?.productQuantityGroups.length}`)
 
     console.log('\n✅ Business Cards configuration fixed!')
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { sendEmail, emailTemplates } from '@/lib/resend'
+import { sendEmail } from '@/lib/resend'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {

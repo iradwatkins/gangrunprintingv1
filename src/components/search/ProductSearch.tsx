@@ -21,7 +21,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
+
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { logSearch } from '@/components/GoogleAnalytics'

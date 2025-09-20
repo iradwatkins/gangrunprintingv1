@@ -9,7 +9,7 @@
         "installed": true
       },
       "memory": {
-        "status": "active", 
+        "status": "active",
         "purpose": "Knowledge graph-based persistent memory system",
         "command": "npx -y @modelcontextprotocol/server-memory",
         "installed": true

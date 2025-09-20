@@ -11,28 +11,32 @@ test.describe('Admin Dashboard Theme Verification', () => {
 
     // Check if primary color (Tangerine) is applied
     const primaryElement = await page.locator('.bg-primary').first()
-    if (await primaryElement.count() > 0) {
-      const bgColor = await primaryElement.evaluate(el => 
-        window.getComputedStyle(el).backgroundColor
+    if ((await primaryElement.count()) > 0) {
+      const bgColor = await primaryElement.evaluate(
+        (el) => window.getComputedStyle(el).backgroundColor
       )
       // Should be orange/tangerine color (HSL: 25 95% 53%)
       expect(bgColor).toMatch(/rgb/)
     }
 
     // Check stats cards have theme colors
-    const statsCards = page.locator('[class*="bg-primary/10"], [class*="bg-accent/10"], [class*="bg-secondary/10"], [class*="bg-chart"]')
+    const statsCards = page.locator(
+      '[class*="bg-primary/10"], [class*="bg-accent/10"], [class*="bg-secondary/10"], [class*="bg-chart"]'
+    )
     const cardCount = await statsCards.count()
     expect(cardCount).toBeGreaterThan(0)
 
     // Check that no hardcoded colors are present
-    const hardcodedColors = page.locator('[class*="bg-green-100"], [class*="bg-blue-100"], [class*="bg-purple-100"], [class*="bg-yellow-100"]')
+    const hardcodedColors = page.locator(
+      '[class*="bg-green-100"], [class*="bg-blue-100"], [class*="bg-purple-100"], [class*="bg-yellow-100"]'
+    )
     const hardcodedCount = await hardcodedColors.count()
     expect(hardcodedCount).toBe(0)
 
     // Take screenshot for visual verification
-    await page.screenshot({ 
+    await page.screenshot({
       path: 'tests/screenshots/admin-dashboard-theme.png',
-      fullPage: true 
+      fullPage: true,
     })
   })
 
@@ -40,7 +44,7 @@ test.describe('Admin Dashboard Theme Verification', () => {
     // Check text visibility on primary background
     const buttons = page.locator('button').filter({ hasText: /Add Job|Export CSV/ })
     const buttonCount = await buttons.count()
-    
+
     if (buttonCount > 0) {
       const button = buttons.first()
       const isVisible = await button.isVisible()
@@ -58,12 +62,7 @@ test.describe('Admin Dashboard Theme Verification', () => {
     await expect(page.locator('h1')).toContainText('Gang Run Printing Dashboard')
 
     // Check for print-specific stats
-    const statsTexts = [
-      "Today's Revenue",
-      'Jobs in Queue',
-      'Gang Runs Today',
-      'Completion Rate'
-    ]
+    const statsTexts = ["Today's Revenue", 'Jobs in Queue', 'Gang Runs Today', 'Completion Rate']
 
     for (const text of statsTexts) {
       const element = page.locator('text=' + text)
@@ -82,20 +81,20 @@ test.describe('Admin Dashboard Theme Verification', () => {
 
   test('visual regression - dashboard appearance', async ({ page }) => {
     await page.waitForLoadState('networkidle')
-    
+
     // Capture different sections
     const sections = [
       { name: 'stats-cards', selector: '.grid.gap-4.md\\:grid-cols-2.lg\\:grid-cols-4' },
       { name: 'production-chart', selector: 'text=Production Overview >> xpath=../../..' },
       { name: 'gang-runs', selector: "text=Today's Gang Runs >> xpath=../../.." },
-      { name: 'print-queue', selector: 'text=Active Print Queue >> xpath=../../..' }
+      { name: 'print-queue', selector: 'text=Active Print Queue >> xpath=../../..' },
     ]
 
     for (const section of sections) {
       const element = page.locator(section.selector).first()
-      if (await element.count() > 0) {
-        await element.screenshot({ 
-          path: `tests/screenshots/${section.name}.png` 
+      if ((await element.count()) > 0) {
+        await element.screenshot({
+          path: `tests/screenshots/${section.name}.png`,
         })
       }
     }
@@ -110,7 +109,7 @@ test.describe('Admin Dashboard Theme Verification', () => {
         primary: styles.getPropertyValue('--primary'),
         accent: styles.getPropertyValue('--accent'),
         secondary: styles.getPropertyValue('--secondary'),
-        background: styles.getPropertyValue('--background')
+        background: styles.getPropertyValue('--background'),
       }
     })
 
@@ -118,7 +117,7 @@ test.describe('Admin Dashboard Theme Verification', () => {
     expect(rootStyles.primary).toMatch(/^\d+\s+\d+%\s+\d+%$/)
     expect(rootStyles.accent).toMatch(/^\d+\s+\d+%\s+\d+%$/)
     expect(rootStyles.secondary).toMatch(/^\d+\s+\d+%\s+\d+%$/)
-    
+
     // Primary should be orange/tangerine (hue around 25)
     const primaryHue = parseInt(rootStyles.primary.split(' ')[0])
     expect(primaryHue).toBeGreaterThan(15)

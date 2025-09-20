@@ -10,7 +10,10 @@ test.describe('BMAD Data Flow Validation', () => {
     await page.goto('http://localhost:3002')
   })
 
-  test('Complete user journey: Sign up → Create product → Dashboard display', async ({ page, browser }) => {
+  test('Complete user journey: Sign up → Create product → Dashboard display', async ({
+    page,
+    browser,
+  }) => {
     // Phase 1: Authentication Flow
     console.log('Testing authentication flow...')
 
@@ -41,7 +44,10 @@ test.describe('BMAD Data Flow Validation', () => {
     // Fill product form
     await adminPage.fill('[data-testid="product-name"] input', testProductName)
     await adminPage.selectOption('select[name="categoryId"]', { index: 1 })
-    await adminPage.fill('textarea[name="description"]', 'Test product description for BMAD validation')
+    await adminPage.fill(
+      'textarea[name="description"]',
+      'Test product description for BMAD validation'
+    )
 
     // Test the new bundled API loading
     await expect(adminPage.locator('text=Loading product data')).not.toBeVisible()
@@ -64,7 +70,9 @@ test.describe('BMAD Data Flow Validation', () => {
     await adminPage.click('button:has-text("Save Product")')
 
     // Verify successful creation
-    await expect(adminPage.locator('text=Product created successfully')).toBeVisible({ timeout: 15000 })
+    await expect(adminPage.locator('text=Product created successfully')).toBeVisible({
+      timeout: 15000,
+    })
     await expect(adminPage).toHaveURL(/.*admin\/products/, { timeout: 10000 })
 
     console.log('Product creation successful')
@@ -98,7 +106,7 @@ test.describe('BMAD Data Flow Validation', () => {
     await fileInput.setInputFiles({
       name: 'test-design.jpg',
       mimeType: 'image/jpeg',
-      buffer: Buffer.from('fake image data')
+      buffer: Buffer.from('fake image data'),
     })
 
     // Verify upload processing
@@ -127,7 +135,7 @@ test.describe('BMAD Data Flow Validation', () => {
       { link: 'text=Upcoming', expectedUrl: /.*dashboard\/upcoming/ },
       { link: 'text=Saved', expectedUrl: /.*dashboard\/saved/ },
       { link: 'text=Payments', expectedUrl: /.*dashboard\/payments/ },
-      { link: 'text=Notifications', expectedUrl: /.*dashboard\/notifications/ }
+      { link: 'text=Notifications', expectedUrl: /.*dashboard\/notifications/ },
     ]
 
     for (const route of dashboardRoutes) {
@@ -206,7 +214,7 @@ test.describe('BMAD Data Flow Validation', () => {
     await page.waitForTimeout(2000)
 
     // Simulate network failure
-    await page.route('**/api/**', route => route.abort())
+    await page.route('**/api/**', (route) => route.abort())
 
     // Reload page to trigger error state
     await page.reload()
@@ -230,9 +238,7 @@ test.describe('BMAD Data Flow Validation', () => {
     // Make multiple rapid requests to test deduplication
     const promises = []
     for (let i = 0; i < 10; i++) {
-      promises.push(
-        page.request.get('http://localhost:3002/api/product-categories')
-      )
+      promises.push(page.request.get('http://localhost:3002/api/product-categories'))
     }
 
     const responses = await Promise.all(promises)

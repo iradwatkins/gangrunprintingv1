@@ -36,13 +36,11 @@ export async function sendEmail(template: EmailTemplate) {
     })
 
     if (error) {
-      console.error('Resend error:', error)
       throw new Error(`Failed to send email: ${error.message}`)
     }
 
     return { success: true, messageId: data?.id }
   } catch (error) {
-    console.error('Email sending error:', error)
     throw error
   }
 }

@@ -50,20 +50,20 @@ async function seedCategories() {
     'Tear Off Flyer',
     'Tickets',
     'Wrapping paper',
-    'Wristband'
+    'Wristband',
   ]
 
   let sortOrder = 1
-  
+
   for (const categoryName of categoriesData) {
     // Create slug from name
     const slug = categoryName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
-    
+
     const categoryId = `cat_${slug.replace(/-/g, '_')}`
-    
+
     const category = {
       id: categoryId,
       name: categoryName,
@@ -71,20 +71,20 @@ async function seedCategories() {
       description: `${categoryName} printing services`,
       sortOrder,
       isActive: true,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
-    
+
     await prisma.productCategory.upsert({
       where: { slug },
       update: {
         name: categoryName,
         sortOrder,
         isActive: true,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
-      create: category
+      create: category,
     })
-    
+
     console.log(`✅ Created/Updated category: ${categoryName}`)
     sortOrder++
   }

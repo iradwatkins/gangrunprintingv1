@@ -19,7 +19,7 @@ async function main() {
       opacity: 95,
       brightness: 92,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '100lb Matte Text',
@@ -33,7 +33,7 @@ async function main() {
       opacity: 95,
       brightness: 90,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '14pt Gloss Cover',
@@ -47,7 +47,7 @@ async function main() {
       opacity: 99,
       brightness: 94,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '14pt Matte Cover',
@@ -61,7 +61,7 @@ async function main() {
       opacity: 99,
       brightness: 92,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '16pt Gloss Cover',
@@ -69,13 +69,13 @@ async function main() {
       coating: 'Gloss',
       weight: '16pt',
       finish: 'Smooth',
-      costPerSheet: 0.10,
+      costPerSheet: 0.1,
       priceMultiplier: 1.3,
       thickness: 0.016,
       opacity: 100,
       brightness: 95,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '16pt Matte Cover',
@@ -83,13 +83,13 @@ async function main() {
       coating: 'Matte',
       weight: '16pt',
       finish: 'Smooth',
-      costPerSheet: 0.10,
+      costPerSheet: 0.1,
       priceMultiplier: 1.3,
       thickness: 0.016,
       opacity: 100,
       brightness: 93,
       isEcoFriendly: false,
-      isActive: true
+      isActive: true,
     },
     {
       name: '100% Recycled Matte',
@@ -103,15 +103,15 @@ async function main() {
       opacity: 96,
       brightness: 88,
       isEcoFriendly: true,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   for (const stock of paperStocks) {
     const created = await prisma.paperStock.upsert({
       where: { name: stock.name },
       update: stock,
-      create: stock
+      create: stock,
     })
     console.log(`✓ Upserted paper stock: ${created.name}`)
   }
@@ -121,30 +121,30 @@ async function main() {
     {
       name: 'No Coating',
       description: 'Uncoated paper finish',
-      additionalCost: 0
+      additionalCost: 0,
     },
     {
       name: 'UV Coating',
       description: 'High gloss UV coating for extra shine and protection',
-      additionalCost: 0.15
+      additionalCost: 0.15,
     },
     {
       name: 'Aqueous Coating',
       description: 'Water-based coating for protection',
-      additionalCost: 0.10
+      additionalCost: 0.1,
     },
     {
       name: 'Soft Touch',
       description: 'Velvety soft touch lamination',
-      additionalCost: 0.25
-    }
+      additionalCost: 0.25,
+    },
   ]
 
   for (const coating of coatingOptions) {
     const created = await prisma.coatingOption.upsert({
       where: { name: coating.name },
       update: coating,
-      create: coating
+      create: coating,
     })
     console.log(`✓ Upserted coating option: ${created.name}`)
   }
@@ -155,33 +155,33 @@ async function main() {
       name: 'Single Sided (4/0)',
       code: '4/0',
       description: 'Full color front, blank back',
-      isDefault: false
+      isDefault: false,
     },
     {
       name: 'Double Sided (4/4)',
       code: '4/4',
       description: 'Full color both sides',
-      isDefault: true
+      isDefault: true,
     },
     {
       name: 'Black & White Single (1/0)',
       code: '1/0',
       description: 'Black ink front, blank back',
-      isDefault: false
+      isDefault: false,
     },
     {
       name: 'Black & White Double (1/1)',
       code: '1/1',
       description: 'Black ink both sides',
-      isDefault: false
-    }
+      isDefault: false,
+    },
   ]
 
   for (const side of sidesOptions) {
     const created = await prisma.sidesOption.upsert({
       where: { name: side.name },
       update: side,
-      create: side
+      create: side,
     })
     console.log(`✓ Upserted sides option: ${created.name}`)
   }
@@ -194,12 +194,12 @@ async function main() {
       tooltipText: 'Add rounded corners for a professional, modern look',
       pricingModel: 'FLAT',
       configuration: {
-        flatFee: 15.00,
-        radius: ['1/8"', '1/4"', '3/8"', '1/2"']
+        flatFee: 15.0,
+        radius: ['1/8"', '1/4"', '3/8"', '1/2"'],
       },
       additionalTurnaroundDays: 1,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Folding',
@@ -208,11 +208,11 @@ async function main() {
       pricingModel: 'PER_UNIT',
       configuration: {
         perUnit: 0.05,
-        types: ['Half Fold', 'Tri-Fold', 'Z-Fold', 'Gate Fold']
+        types: ['Half Fold', 'Tri-Fold', 'Z-Fold', 'Gate Fold'],
       },
       additionalTurnaroundDays: 1,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Hole Drilling',
@@ -220,12 +220,12 @@ async function main() {
       tooltipText: 'Standard 3-hole punch or custom hole placement',
       pricingModel: 'FLAT',
       configuration: {
-        flatFee: 20.00,
-        options: ['3-Hole Punch', '2-Hole Punch', 'Custom']
+        flatFee: 20.0,
+        options: ['3-Hole Punch', '2-Hole Punch', 'Custom'],
       },
       additionalTurnaroundDays: 1,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Perforation',
@@ -233,12 +233,12 @@ async function main() {
       tooltipText: 'Create tear-off coupons or response cards',
       pricingModel: 'FLAT',
       configuration: {
-        flatFee: 25.00,
-        placement: ['Horizontal', 'Vertical', 'Custom']
+        flatFee: 25.0,
+        placement: ['Horizontal', 'Vertical', 'Custom'],
       },
       additionalTurnaroundDays: 1,
       sortOrder: 4,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Scoring',
@@ -247,11 +247,11 @@ async function main() {
       pricingModel: 'PER_UNIT',
       configuration: {
         perUnit: 0.03,
-        lines: [1, 2, 3, 4]
+        lines: [1, 2, 3, 4],
       },
       additionalTurnaroundDays: 1,
       sortOrder: 5,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Numbering',
@@ -259,13 +259,13 @@ async function main() {
       tooltipText: 'Add sequential numbers for tracking',
       pricingModel: 'PER_UNIT',
       configuration: {
-        perUnit: 0.10,
+        perUnit: 0.1,
         startNumber: 1,
-        placement: ['Top Right', 'Bottom Right', 'Custom']
+        placement: ['Top Right', 'Bottom Right', 'Custom'],
       },
       additionalTurnaroundDays: 2,
       sortOrder: 6,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Foil Stamping',
@@ -274,11 +274,11 @@ async function main() {
       pricingModel: 'PERCENTAGE',
       configuration: {
         percentage: 25,
-        colors: ['Gold', 'Silver', 'Rose Gold', 'Copper', 'Custom']
+        colors: ['Gold', 'Silver', 'Rose Gold', 'Copper', 'Custom'],
       },
       additionalTurnaroundDays: 3,
       sortOrder: 7,
-      isActive: true
+      isActive: true,
     },
     {
       name: 'Spot UV',
@@ -287,19 +287,19 @@ async function main() {
       pricingModel: 'PERCENTAGE',
       configuration: {
         percentage: 20,
-        coverage: ['Logo Only', 'Text Only', 'Custom Pattern']
+        coverage: ['Logo Only', 'Text Only', 'Custom Pattern'],
       },
       additionalTurnaroundDays: 2,
       sortOrder: 8,
-      isActive: true
-    }
+      isActive: true,
+    },
   ]
 
   for (const addOn of addOns) {
     const created = await prisma.addOn.upsert({
       where: { name: addOn.name },
       update: addOn,
-      create: addOn
+      create: addOn,
     })
     console.log(`✓ Upserted add-on: ${created.name}`)
   }

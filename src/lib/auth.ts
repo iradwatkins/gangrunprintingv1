@@ -1,11 +1,13 @@
+import { cache } from 'react'
+import { cookies } from 'next/headers'
 import { Lucia } from 'lucia'
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
-import { cookies } from 'next/headers'
-import { cache } from 'react'
 import { generateRandomString } from 'oslo/crypto'
-import resend from '@/lib/resend'
-import { prisma } from '@/lib/prisma'
+
+import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION } from '@/config/constants'
 import { authLogger } from '@/lib/logger'
+import { prisma } from '@/lib/prisma'
+import resend from '@/lib/resend'
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user)
 
@@ -82,8 +84,8 @@ export const validateRequest = cache(
 
 // Magic Link Authentication Functions
 export async function generateMagicLink(email: string): Promise<string> {
-  const token = generateRandomString(32, 'abcdefghijklmnopqrstuvwxyz0123456789')
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+  const token = generateRandomString(STRING_GENERATION.TOKEN_LENGTH, STRING_GENERATION.TOKEN_CHARS)
+  const expiresAt = new Date(Date.now() + MAGIC_LINK_EXPIRY)
 
   // Delete any existing tokens for this email
   await prisma.verificationToken.deleteMany({
@@ -112,8 +114,7 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
   // console.log('Token length:', token.length);
 
   // Use API route for verification to properly handle cookies
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
+  const baseUrl = SERVICE_ENDPOINTS.APP_BASE_URL
   const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`
 
   // console.log('Generated magic link:', magicLink);

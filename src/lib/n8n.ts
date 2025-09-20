@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
+import { SERVICE_ENDPOINTS } from '@/config/constants'
 
-const N8N_BASE_URL = process.env.N8N_WEBHOOK_URL || 'http://n8n.agistaffers.com/webhook'
+const N8N_BASE_URL = SERVICE_ENDPOINTS.N8N_WEBHOOK
 const N8N_API_KEY = process.env.N8N_API_KEY || ''
 
 interface N8NWebhookPayload {
@@ -55,7 +56,6 @@ export class N8NClient {
         data: result,
       }
     } catch (error) {
-      console.error('N8N webhook error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

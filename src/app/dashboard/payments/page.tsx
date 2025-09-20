@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, CreditCard, DollarSign, Receipt, Download, Calendar } from 'lucide-react'
+import { ArrowLeft, CreditCard, DollarSign, Receipt, Download } from 'lucide-react'
 import Link from 'next/link'
 
 async function getPaymentData(userId: string) {

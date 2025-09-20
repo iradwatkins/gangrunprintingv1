@@ -7,6 +7,7 @@
 **Objective**: Build a flexible product catalog system that can handle complex printing products with multiple configuration options, dynamic pricing, and broker-specific pricing rules.
 
 **Key Components**:
+
 - Product catalog with categories and attributes
 - Dynamic product configuration system
 - Pricing engine with broker discounts
@@ -19,6 +20,7 @@
 Alex analyzed the unique requirements for printing products:
 
 ### Product Types
+
 1. **Business Cards**: Standard sizes, paper types, finishes
 2. **Flyers**: Variable sizes, paper stocks, quantities
 3. **Banners**: Custom dimensions, materials, finishing options
@@ -26,12 +28,14 @@ Alex analyzed the unique requirements for printing products:
 5. **Custom Products**: Fully configurable dimensions and materials
 
 ### Configuration Attributes
+
 1. **Base Attributes**: Size, quantity, paper type
 2. **Finish Options**: Matte, glossy, UV coating, embossing
 3. **Add-on Services**: Design help, proofing, rush orders
 4. **Specifications**: Color mode, bleeds, folding options
 
 ### Pricing Complexity
+
 1. **Base Pricing**: Quantity-based tier pricing
 2. **Material Costs**: Different papers and finishes
 3. **Add-on Pricing**: Fixed fees or percentage markups
@@ -68,17 +72,17 @@ model Product {
   shortDescription String?
   categoryId       String
   category         Category          @relation(fields: [categoryId], references: [id])
-  
+
   // Product configuration
   attributes       ProductAttribute[]
   addOns          ProductAddOn[]
   pricing         ProductPricing[]
-  
+
   // Media and SEO
   images          ProductImage[]
   seoTitle        String?
   seoDescription  String?
-  
+
   // Status and metadata
   isActive        Boolean           @default(true)
   isCustomizable  Boolean           @default(true)
@@ -102,13 +106,13 @@ model ProductAttribute {
   isRequired  Boolean                   @default(true)
   sortOrder   Int                       @default(0)
   options     ProductAttributeOption[]
-  
+
   @@map("product_attributes")
 }
 
 enum ProductAttributeType {
   SELECT        // Dropdown selection
-  MULTI_SELECT  // Multiple checkboxes  
+  MULTI_SELECT  // Multiple checkboxes
   NUMBER        // Numeric input (quantity, dimensions)
   TEXT          // Text input (custom text)
   FILE          // File upload
@@ -123,7 +127,7 @@ model ProductAttributeOption {
   pricingRule   Json?            // Pricing adjustments for this option
   isDefault     Boolean          @default(false)
   sortOrder     Int              @default(0)
-  
+
   @@map("product_attribute_options")
 }
 
@@ -131,18 +135,18 @@ model ProductPricing {
   id              String   @id @default(cuid())
   productId       String
   product         Product  @relation(fields: [productId], references: [id])
-  
+
   // Quantity-based pricing
   minQuantity     Int
   maxQuantity     Int?
   basePrice       Decimal  @db.Decimal(10, 2)
-  
+
   // Broker pricing
   brokerDiscounts Json?    // Tier-specific discounts
-  
+
   // Attribute-based pricing
   attributePricing Json?   // Additional costs for specific attributes
-  
+
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -154,16 +158,16 @@ model ProductAddOn {
   id            String             @id @default(cuid())
   productId     String?
   product       Product?           @relation(fields: [productId], references: [id])
-  
+
   name          String
   description   String?
   type          ProductAddOnType
   pricing       ProductAddOnPricing
-  
+
   // Conditions
   isGlobal      Boolean            @default(false) // Available for all products
   categories    String[]           // Category IDs where this applies
-  
+
   isActive      Boolean            @default(true)
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
@@ -252,7 +256,7 @@ export function ProductConfigurator({ product, onConfigurationChange }: ProductC
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       })
-      
+
       const { price } = await response.json()
       setCurrentPrice(price)
       onConfigurationChange(form.getValues(), price)
@@ -379,19 +383,12 @@ export class PricingEngine {
     totalPrice += attributeAdjustments
 
     // 3. Add add-on services
-    const addOnCosts = await this.calculateAddOnPricing(
-      config.addOns,
-      config.quantity,
-      totalPrice
-    )
+    const addOnCosts = await this.calculateAddOnPricing(config.addOns, config.quantity, totalPrice)
     totalPrice += addOnCosts
 
     // 4. Apply broker discounts
     if (config.brokerTier) {
-      const discount = await this.getBrokerDiscount(
-        config.productId,
-        config.brokerTier
-      )
+      const discount = await this.getBrokerDiscount(config.productId, config.brokerTier)
       totalPrice = totalPrice * (1 - discount)
     }
 
@@ -403,12 +400,9 @@ export class PricingEngine {
       where: {
         productId,
         minQuantity: { lte: quantity },
-        OR: [
-          { maxQuantity: { gte: quantity } },
-          { maxQuantity: null }
-        ]
+        OR: [{ maxQuantity: { gte: quantity } }, { maxQuantity: null }],
       },
-      orderBy: { minQuantity: "desc" }
+      orderBy: { minQuantity: 'desc' },
     })
 
     return pricing ? parseFloat(pricing.basePrice.toString()) * quantity : 0
@@ -422,7 +416,7 @@ export class PricingEngine {
 
     for (const [attributeId, optionId] of Object.entries(attributes)) {
       const option = await prisma.productAttributeOption.findUnique({
-        where: { id: optionId }
+        where: { id: optionId },
       })
 
       if (option?.pricingRule) {
@@ -442,18 +436,18 @@ export class PricingEngine {
     let addOnTotal = 0
 
     const addOns = await prisma.productAddOn.findMany({
-      where: { id: { in: addOnIds } }
+      where: { id: { in: addOnIds } },
     })
 
     for (const addOn of addOns) {
       switch (addOn.pricing) {
-        case "FIXED_FEE":
+        case 'FIXED_FEE':
           addOnTotal += (addOn as any).amount
           break
-        case "PERCENTAGE":
+        case 'PERCENTAGE':
           addOnTotal += basePrice * ((addOn as any).percentage / 100)
           break
-        case "PER_UNIT":
+        case 'PER_UNIT':
           addOnTotal += quantity * (addOn as any).perUnit
           break
       }
@@ -462,22 +456,19 @@ export class PricingEngine {
     return addOnTotal
   }
 
-  private static async getBrokerDiscount(
-    productId: string,
-    brokerTier: string
-  ): Promise<number> {
+  private static async getBrokerDiscount(productId: string, brokerTier: string): Promise<number> {
     // Get product-specific or category-wide broker discounts
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: { category: true }
+      include: { category: true },
     })
 
     // Return tier-based discount percentage
     const discounts = {
-      BRONZE: 0.05,   // 5% discount
-      SILVER: 0.10,   // 10% discount
-      GOLD: 0.15,     // 15% discount
-      PLATINUM: 0.20  // 20% discount
+      BRONZE: 0.05, // 5% discount
+      SILVER: 0.1, // 10% discount
+      GOLD: 0.15, // 15% discount
+      PLATINUM: 0.2, // 20% discount
     }
 
     return discounts[brokerTier as keyof typeof discounts] || 0
@@ -585,7 +576,7 @@ export default function ProductsPage() {
           value={filters.search}
           onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
         />
-        
+
         <Select onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
           <SelectTrigger>
             <SelectValue placeholder="All Categories" />
@@ -597,7 +588,7 @@ export default function ProductsPage() {
             <SelectItem value="banners">Banners</SelectItem>
           </SelectContent>
         </Select>
-        
+
         <Select onValueChange={(value) => setFilters(prev => ({ ...prev, sortBy: value }))}>
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
@@ -656,6 +647,7 @@ export default function ProductsPage() {
 ## Files Created/Modified
 
 ### Created
+
 - `/src/components/features/product/ProductConfigurator.tsx` - Main configuration component
 - `/src/components/features/product/ProductGrid.tsx` - Product listing grid
 - `/src/components/features/product/ArtworkUpload.tsx` - File upload component
@@ -665,6 +657,7 @@ export default function ProductsPage() {
 - `/src/app/(customer)/products/[slug]/page.tsx` - Individual product page
 
 ### Modified
+
 - `/prisma/schema.prisma` - Product and pricing tables
 - `/src/lib/minio.ts` - File upload utilities
 
@@ -692,4 +685,4 @@ export default function ProductsPage() {
 
 ---
 
-*This product catalog system forms the core of the GangRun Printing platform, enabling customers to configure complex printing products with confidence in pricing accuracy and system reliability.*
+_This product catalog system forms the core of the GangRun Printing platform, enabling customers to configure complex printing products with confidence in pricing accuracy and system reliability._

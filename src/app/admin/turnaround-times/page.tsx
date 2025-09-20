@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
+
 import { Plus, Edit, Trash2, Clock } from 'lucide-react'
 import toast from '@/lib/toast'
 
@@ -206,9 +206,7 @@ export default function TurnaroundTimesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Turnaround Times</h1>
-          <p className="text-muted-foreground">
-            Manage turnaround time options for products
-          </p>
+          <p className="text-muted-foreground">Manage turnaround time options for products</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -226,26 +224,26 @@ export default function TurnaroundTimesPage() {
                 Configure turnaround time options with pricing adjustments
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
+                    required
                     id="name"
+                    placeholder="Economy, Fast, etc."
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Economy, Fast, etc."
-                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="displayName">Display Name</Label>
                   <Input
+                    required
                     id="displayName"
+                    placeholder="Economy (2-4 Days)"
                     value={formData.displayName}
                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                    placeholder="Economy (2-4 Days)"
-                    required
                   />
                 </div>
               </div>
@@ -254,9 +252,9 @@ export default function TurnaroundTimesPage() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
+                  placeholder="Standard processing time"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Standard processing time"
                 />
               </div>
 
@@ -264,27 +262,31 @@ export default function TurnaroundTimesPage() {
                 <div className="space-y-2">
                   <Label htmlFor="daysMin">Minimum Days</Label>
                   <Input
-                    id="daysMin"
-                    type="number"
-                    min="0"
-                    max="30"
-                    value={formData.daysMin}
-                    onChange={(e) => setFormData({ ...formData, daysMin: parseInt(e.target.value) })}
                     required
+                    id="daysMin"
+                    max="30"
+                    min="0"
+                    type="number"
+                    value={formData.daysMin}
+                    onChange={(e) =>
+                      setFormData({ ...formData, daysMin: parseInt(e.target.value) })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="daysMax">Maximum Days (optional)</Label>
                   <Input
                     id="daysMax"
-                    type="number"
-                    min="0"
                     max="30"
+                    min="0"
+                    type="number"
                     value={formData.daysMax || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      daysMax: e.target.value ? parseInt(e.target.value) : null
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        daysMax: e.target.value ? parseInt(e.target.value) : null,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -294,7 +296,9 @@ export default function TurnaroundTimesPage() {
                   <Label htmlFor="pricingModel">Pricing Model</Label>
                   <Select
                     value={formData.pricingModel}
-                    onValueChange={(value: any) => setFormData({ ...formData, pricingModel: value })}
+                    onValueChange={(value: any) =>
+                      setFormData({ ...formData, pricingModel: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -311,23 +315,27 @@ export default function TurnaroundTimesPage() {
                   <Label htmlFor="basePrice">Base Price</Label>
                   <Input
                     id="basePrice"
-                    type="number"
-                    step="0.01"
                     min="0"
+                    step="0.01"
+                    type="number"
                     value={formData.basePrice}
-                    onChange={(e) => setFormData({ ...formData, basePrice: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, basePrice: parseFloat(e.target.value) })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="priceMultiplier">Price Multiplier</Label>
                   <Input
                     id="priceMultiplier"
-                    type="number"
-                    step="0.01"
-                    min="0.1"
                     max="10"
+                    min="0.1"
+                    step="0.01"
+                    type="number"
                     value={formData.priceMultiplier}
-                    onChange={(e) => setFormData({ ...formData, priceMultiplier: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, priceMultiplier: parseFloat(e.target.value) })
+                    }
                   />
                 </div>
               </div>
@@ -339,22 +347,26 @@ export default function TurnaroundTimesPage() {
                     id="sortOrder"
                     type="number"
                     value={formData.sortOrder}
-                    onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sortOrder: parseInt(e.target.value) })
+                    }
                   />
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Switch
-                      id="requiresNoCoating"
                       checked={formData.requiresNoCoating}
-                      onCheckedChange={(checked) => setFormData({ ...formData, requiresNoCoating: checked })}
+                      id="requiresNoCoating"
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, requiresNoCoating: checked })
+                      }
                     />
                     <Label htmlFor="requiresNoCoating">Requires No Coating</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
-                      id="isActive"
                       checked={formData.isActive}
+                      id="isActive"
                       onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                     />
                     <Label htmlFor="isActive">Active</Label>
@@ -366,9 +378,7 @@ export default function TurnaroundTimesPage() {
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingItem ? 'Update' : 'Create'}
-                </Button>
+                <Button type="submit">{editingItem ? 'Update' : 'Create'}</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -390,13 +400,13 @@ export default function TurnaroundTimesPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell className="text-center py-8" colSpan={6}>
                   Loading turnaround times...
                 </TableCell>
               </TableRow>
             ) : turnaroundTimes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell className="text-center py-8 text-muted-foreground" colSpan={6}>
                   No turnaround times found. Create your first one to get started.
                 </TableCell>
               </TableRow>
@@ -421,9 +431,7 @@ export default function TurnaroundTimesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {item.requiresNoCoating && (
-                      <Badge variant="outline">No Coating Required</Badge>
-                    )}
+                    {item.requiresNoCoating && <Badge variant="outline">No Coating Required</Badge>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={item.isActive ? 'default' : 'secondary'}>
@@ -432,18 +440,10 @@ export default function TurnaroundTimesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(item)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleEdit(item)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(item.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

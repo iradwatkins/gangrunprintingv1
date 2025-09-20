@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -8,18 +8,19 @@ const updatePaperStockSetSchema = z.object({
   description: z.string().nullable().optional(),
   sortOrder: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),
-  paperStocks: z.array(z.object({
-    id: z.string(),
-    isDefault: z.boolean().default(false),
-    sortOrder: z.number().int().min(0).default(0)
-  })).optional()
+  paperStocks: z
+    .array(
+      z.object({
+        id: z.string(),
+        isDefault: z.boolean().default(false),
+        sortOrder: z.number().int().min(0).default(0),
+      })
+    )
+    .optional(),
 })
 
 // GET - Get a single paper stock set
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
@@ -30,66 +31,54 @@ export async function GET(
               include: {
                 paperStockCoatings: {
                   include: {
-                    coating: true
-                  }
+                    coating: true,
+                  },
                 },
                 paperStockSides: {
                   include: {
-                    sidesOption: true
-                  }
-                }
-              }
-            }
+                    sidesOption: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: {
-            sortOrder: 'asc'
-          }
-        }
-      }
+            sortOrder: 'asc',
+          },
+        },
+      },
     })
 
     if (!group) {
-      return NextResponse.json(
-        { error: 'Paper stock set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Paper stock set not found' }, { status: 404 })
     }
 
     return NextResponse.json(group)
   } catch (error) {
     console.error('Error fetching paper stock set:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch paper stock set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch paper stock set' }, { status: 500 })
   }
 }
 
 // PUT - Update a paper stock set
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const validatedData = updatePaperStockSetSchema.parse(body)
 
     // Check if group exists
     const existingGroup = await prisma.paperStockSet.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!existingGroup) {
-      return NextResponse.json(
-        { error: 'Paper stock set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Paper stock set not found' }, { status: 404 })
     }
 
     // Check if new name already exists (if changing name)
     if (validatedData.name && validatedData.name !== existingGroup.name) {
       const nameExists = await prisma.paperStockSet.findUnique({
-        where: { name: validatedData.name }
+        where: { name: validatedData.name },
       })
 
       if (nameExists) {
@@ -109,22 +98,22 @@ export async function PUT(
           name: validatedData.name,
           description: validatedData.description,
           sortOrder: validatedData.sortOrder,
-          isActive: validatedData.isActive
-        }
+          isActive: validatedData.isActive,
+        },
       })
 
       // If paper stocks are provided, update them
       if (validatedData.paperStocks !== undefined) {
         // Delete existing paper stock items
         await tx.paperStockSetItem.deleteMany({
-          where: { paperStockSetId: params.id }
+          where: { paperStockSetId: params.id },
         })
 
         // Create new paper stock items
         if (validatedData.paperStocks.length > 0) {
           // Ensure exactly one item is marked as default
           let paperStocksWithDefault = [...validatedData.paperStocks]
-          const defaultStocks = paperStocksWithDefault.filter(s => s.isDefault)
+          const defaultStocks = paperStocksWithDefault.filter((s) => s.isDefault)
 
           if (defaultStocks.length === 0) {
             // No default set, make the first one default
@@ -133,7 +122,7 @@ export async function PUT(
             // Multiple defaults set, keep only the first one as default
             paperStocksWithDefault = paperStocksWithDefault.map((stock, index) => ({
               ...stock,
-              isDefault: stock === defaultStocks[0]
+              isDefault: stock === defaultStocks[0],
             }))
           }
 
@@ -142,8 +131,8 @@ export async function PUT(
               paperStockSetId: params.id,
               paperStockId: stock.id,
               isDefault: stock.isDefault,
-              sortOrder: stock.sortOrder || index
-            }))
+              sortOrder: stock.sortOrder || index,
+            })),
           })
         }
       }
@@ -158,22 +147,22 @@ export async function PUT(
                 include: {
                   paperStockCoatings: {
                     include: {
-                      coating: true
-                    }
+                      coating: true,
+                    },
                   },
                   paperStockSides: {
                     include: {
-                      sidesOption: true
-                    }
-                  }
-                }
-              }
+                      sidesOption: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
-              sortOrder: 'asc'
-            }
-          }
-        }
+              sortOrder: 'asc',
+            },
+          },
+        },
       })
     })
 
@@ -187,32 +176,23 @@ export async function PUT(
     }
 
     console.error('Error updating paper stock set:', error)
-    return NextResponse.json(
-      { error: 'Failed to update paper stock set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update paper stock set' }, { status: 500 })
   }
 }
 
 // DELETE - Delete a paper stock set
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     // Check if group exists
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        productPaperStockSets: true
-      }
+        productPaperStockSets: true,
+      },
     })
 
     if (!group) {
-      return NextResponse.json(
-        { error: 'Paper stock set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Paper stock set not found' }, { status: 404 })
     }
 
     // Check if group is being used by any products
@@ -225,15 +205,12 @@ export async function DELETE(
 
     // Delete the group (cascade will handle paperStockSetItems)
     await prisma.paperStockSet.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     return NextResponse.json({ message: 'Paper stock set deleted successfully' })
   } catch (error) {
     console.error('Error deleting paper stock set:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete paper stock set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete paper stock set' }, { status: 500 })
   }
 }

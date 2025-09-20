@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { cache, cacheKeys } from '@/lib/redis'
+
 import { logSearch } from '@/components/GoogleAnalytics'
+import { prisma } from '@/lib/prisma'
+import { cache } from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { addBreadcrumb } from '@/lib/sentry'
 import { v4 as uuidv4 } from 'uuid'
+
+import { addBreadcrumb } from '@/lib/sentry'
+
 // All i18n functionality temporarily disabled
 // import createMiddleware from 'next-intl/middleware';
 // import { routing } from '@/lib/i18n/routing';
@@ -80,7 +82,7 @@ export async function middleware(request: NextRequest) {
   // Internationalization middleware completely removed
 
   // Public routes that don't require authentication
-  const publicRoutes = [
+  const _publicRoutes = [
     '/',
     '/auth',
     '/products',

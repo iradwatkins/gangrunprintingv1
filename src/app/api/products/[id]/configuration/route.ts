@@ -1,16 +1,42 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// Simple static configuration for testing
+import { prisma } from '@/lib/prisma'
+import { transformSizeGroup } from '@/lib/utils/size-transformer'
+
+// Helper function to transform quantity values
+function transformQuantityValues(quantityGroup: any) {
+  if (!quantityGroup?.values) return []
+
+  const values = quantityGroup.values.split(',').map((v: string) => v.trim())
+  const quantities = values.map((value: string, index: number) => {
+    // Check if this is the Custom option
+    if (value.toLowerCase() === 'custom') {
+      return {
+        id: `qty_custom`,
+        value: null, // Custom has no preset value
+        label: 'Custom',
+        isCustom: true,
+        customMin: quantityGroup.customMin || 55000,
+        customMax: quantityGroup.customMax || 100000,
+      }
+    }
+
+    // Regular quantity option
+    const numValue = parseInt(value)
+    return {
+      id: `qty_${index}`,
+      value: numValue,
+      label: value,
+      isCustom: false,
+    }
+  })
+
+  return quantities
+}
+
+// Dynamic configuration - will be replaced with real data
 const SIMPLE_CONFIG = {
-  quantities: [
-    { id: 'qty_0', value: 25, label: '25' },
-    { id: 'qty_1', value: 50, label: '50' },
-    { id: 'qty_2', value: 100, label: '100' },
-    { id: 'qty_3', value: 250, label: '250' },
-    { id: 'qty_4', value: 500, label: '500' },
-    { id: 'qty_5', value: 1000, label: '1000' },
-  ],
+  quantities: [], // Will be populated dynamically
   sizes: [
     {
       id: 'size_0',
@@ -20,7 +46,7 @@ const SIMPLE_CONFIG = {
       height: 17,
       squareInches: 187,
       priceMultiplier: 1.0,
-      isDefault: false
+      isDefault: false,
     },
     {
       id: 'size_1',
@@ -30,7 +56,7 @@ const SIMPLE_CONFIG = {
       height: 18,
       squareInches: 216,
       priceMultiplier: 1.15,
-      isDefault: false
+      isDefault: false,
     },
     {
       id: 'size_2',
@@ -40,7 +66,7 @@ const SIMPLE_CONFIG = {
       height: 24,
       squareInches: 432,
       priceMultiplier: 2.3,
-      isDefault: true
+      isDefault: true,
     },
     {
       id: 'size_3',
@@ -50,7 +76,7 @@ const SIMPLE_CONFIG = {
       height: 36,
       squareInches: 864,
       priceMultiplier: 4.6,
-      isDefault: false
+      isDefault: false,
     },
     {
       id: 'size_4',
@@ -60,7 +86,7 @@ const SIMPLE_CONFIG = {
       height: 48,
       squareInches: 1728,
       priceMultiplier: 9.2,
-      isDefault: false
+      isDefault: false,
     },
   ],
   paperStocks: [
@@ -77,7 +103,7 @@ const SIMPLE_CONFIG = {
       sides: [
         { id: 'sides_1', name: 'Front Only', priceMultiplier: 1.0, isDefault: true },
         { id: 'sides_2', name: 'Both Sides', priceMultiplier: 1.8, isDefault: false },
-      ]
+      ],
     },
     {
       id: 'paper_2',
@@ -91,7 +117,7 @@ const SIMPLE_CONFIG = {
       sides: [
         { id: 'sides_1', name: 'Front Only', priceMultiplier: 1.0, isDefault: true },
         { id: 'sides_2', name: 'Both Sides', priceMultiplier: 1.8, isDefault: false },
-      ]
+      ],
     },
     {
       id: 'paper_3',
@@ -105,7 +131,7 @@ const SIMPLE_CONFIG = {
       sides: [
         { id: 'sides_1', name: 'Front Only', priceMultiplier: 1.0, isDefault: true },
         { id: 'sides_2', name: 'Both Sides', priceMultiplier: 1.8, isDefault: false },
-      ]
+      ],
     },
   ],
   addons: [
@@ -114,20 +140,20 @@ const SIMPLE_CONFIG = {
       name: 'Rounded Corners',
       description: 'Round the corners of your prints for a professional finish',
       pricingModel: 'FIXED_FEE',
-      price: 15.00,
+      price: 15.0,
       priceDisplay: '$15',
       isDefault: false,
-      additionalTurnaroundDays: 1
+      additionalTurnaroundDays: 1,
     },
     {
       id: 'addon_2',
       name: 'Spot UV Coating',
       description: 'High-gloss UV coating applied to specific areas for enhanced visual impact',
       pricingModel: 'FIXED_FEE',
-      price: 25.00,
+      price: 25.0,
       priceDisplay: '$25',
       isDefault: false,
-      additionalTurnaroundDays: 2
+      additionalTurnaroundDays: 2,
     },
     {
       id: 'addon_3',
@@ -137,28 +163,28 @@ const SIMPLE_CONFIG = {
       price: 0.15,
       priceDisplay: '15%',
       isDefault: false,
-      additionalTurnaroundDays: 1
+      additionalTurnaroundDays: 1,
     },
     {
       id: 'addon_4',
       name: 'Die Cutting',
       description: 'Custom shape cutting for unique designs',
       pricingModel: 'FIXED_FEE',
-      price: 35.00,
+      price: 35.0,
       priceDisplay: '$35',
       isDefault: false,
-      additionalTurnaroundDays: 2
+      additionalTurnaroundDays: 2,
     },
     {
       id: 'addon_5',
       name: 'Foil Stamping',
       description: 'Metallic foil accents for premium appearance',
       pricingModel: 'PERCENTAGE',
-      price: 0.20,
+      price: 0.2,
       priceDisplay: '20%',
       isDefault: false,
-      additionalTurnaroundDays: 3
-    }
+      additionalTurnaroundDays: 3,
+    },
   ],
   turnaroundTimes: [
     {
@@ -173,7 +199,7 @@ const SIMPLE_CONFIG = {
       priceMultiplier: 1.0,
       requiresNoCoating: false,
       restrictedCoatings: [],
-      isDefault: true
+      isDefault: true,
     },
     {
       id: 'turnaround_2',
@@ -187,7 +213,7 @@ const SIMPLE_CONFIG = {
       priceMultiplier: 1.25,
       requiresNoCoating: false,
       restrictedCoatings: [],
-      isDefault: false
+      isDefault: false,
     },
     {
       id: 'turnaround_3',
@@ -201,7 +227,7 @@ const SIMPLE_CONFIG = {
       priceMultiplier: 1.54,
       requiresNoCoating: false,
       restrictedCoatings: [],
-      isDefault: false
+      isDefault: false,
     },
     {
       id: 'turnaround_4',
@@ -215,8 +241,8 @@ const SIMPLE_CONFIG = {
       priceMultiplier: 4.98,
       requiresNoCoating: true,
       restrictedCoatings: ['coating_1', 'coating_3'],
-      isDefault: false
-    }
+      isDefault: false,
+    },
   ],
   defaults: {
     quantity: 'qty_2',
@@ -225,23 +251,72 @@ const SIMPLE_CONFIG = {
     coating: 'coating_1',
     sides: 'sides_1',
     addons: [],
-    turnaround: 'turnaround_1'
-  }
+    turnaround: 'turnaround_1',
+  },
 }
 
 // GET /api/products/[id]/configuration - Fetch turnaround times from database
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: productId } = await params
 
     if (!productId) {
-      return NextResponse.json(
-        { error: 'Product ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
+    }
+
+    // Try to fetch quantities from database
+    let quantities = SIMPLE_CONFIG.quantities // Default fallback
+
+    try {
+      // Fetch the Basic Gangrun Price quantity group
+      console.log('[Config API] Fetching Basic Gangrun Price quantity group...')
+      const quantityData = await prisma.quantityGroup.findFirst({
+        where: {
+          name: 'Basic Gangrun Price',
+          isActive: true,
+        },
+      })
+
+      if (quantityData) {
+        console.log('[Config API] Found quantity data:', quantityData.name, 'with values:', quantityData.values)
+        quantities = transformQuantityValues(quantityData)
+        console.log('[Config API] Transformed quantities count:', quantities.length)
+      } else {
+        console.log('[Config API] No Basic Gangrun Price quantity group found')
+      }
+    } catch (dbError) {
+      console.error('[Config API] Database error fetching quantities:', dbError)
+      // Continue with hardcoded fallback
+    }
+
+    // Try to fetch sizes from database
+    let sizes = SIMPLE_CONFIG.sizes // Default fallback
+
+    try {
+      // Fetch Business Card Sizes or any available size group
+      console.log('[Config API] Fetching size groups...')
+      const sizeData = await prisma.sizeGroup.findFirst({
+        where: {
+          OR: [
+            { name: 'Business Card Sizes' },
+            { isActive: true }
+          ]
+        },
+        orderBy: {
+          sortOrder: 'asc'
+        }
+      })
+
+      if (sizeData) {
+        console.log('[Config API] Found size data:', sizeData.name, 'with values:', sizeData.values)
+        sizes = transformSizeGroup(sizeData)
+        console.log('[Config API] Transformed sizes count:', sizes.length)
+      } else {
+        console.log('[Config API] No size groups found')
+      }
+    } catch (dbError) {
+      console.error('[Config API] Database error fetching sizes:', dbError)
+      // Continue with hardcoded fallback
     }
 
     // Try to fetch turnaround times from database
@@ -252,42 +327,44 @@ export async function GET(
       const productTurnaroundTimeSet = await prisma.productTurnaroundTimeSet.findFirst({
         where: {
           productId,
-          isDefault: true
+          isDefault: true,
         },
         include: {
           turnaroundTimeSet: {
             include: {
               turnaroundTimeItems: {
                 include: {
-                  turnaroundTime: true
+                  turnaroundTime: true,
                 },
                 orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
-          }
-        }
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
       })
 
       // If no default set, try to get any assigned set
-      const assignedSet = productTurnaroundTimeSet || await prisma.productTurnaroundTimeSet.findFirst({
-        where: { productId },
-        include: {
-          turnaroundTimeSet: {
-            include: {
-              turnaroundTimeItems: {
-                include: {
-                  turnaroundTime: true
+      const assignedSet =
+        productTurnaroundTimeSet ||
+        (await prisma.productTurnaroundTimeSet.findFirst({
+          where: { productId },
+          include: {
+            turnaroundTimeSet: {
+              include: {
+                turnaroundTimeItems: {
+                  include: {
+                    turnaroundTime: true,
+                  },
+                  orderBy: {
+                    sortOrder: 'asc',
+                  },
                 },
-                orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
-          }
-        }
-      })
+              },
+            },
+          },
+        }))
 
       if (assignedSet?.turnaroundTimeSet?.turnaroundTimeItems) {
         // Map the database turnaround times to the API format
@@ -305,33 +382,52 @@ export async function GET(
             priceMultiplier: tt.priceMultiplier,
             requiresNoCoating: tt.requiresNoCoating,
             restrictedCoatings: tt.restrictedCoatings || [],
-            isDefault: item.isDefault || (index === 0) // First one is default if none specified
+            isDefault: item.isDefault || index === 0, // First one is default if none specified
           }
         })
 
-        console.log(`[Config API] Loaded ${turnaroundTimes.length} turnaround times from set "${assignedSet.turnaroundTimeSet.name}" for product: ${productId}`)
+        console.log(
+          `[Config API] Loaded ${turnaroundTimes.length} turnaround times from set "${assignedSet.turnaroundTimeSet.name}" for product: ${productId}`
+        )
       } else {
-        console.log(`[Config API] No turnaround time set assigned, using default hardcoded values for product: ${productId}`)
+        console.log(
+          `[Config API] No turnaround time set assigned, using default hardcoded values for product: ${productId}`
+        )
       }
     } catch (dbError) {
       console.error('[Config API] Database error fetching turnaround times:', dbError)
       // Continue with hardcoded fallback
     }
 
-    // Build the configuration object with dynamic turnaround times
+    // Build the configuration object with dynamic quantities, sizes and turnaround times
     const config = {
       ...SIMPLE_CONFIG,
-      turnaroundTimes
+      quantities,
+      sizes,
+      turnaroundTimes,
     }
 
-    // Update the defaults to use the first turnaround time if available
-    if (turnaroundTimes.length > 0) {
-      const defaultTurnaround = turnaroundTimes.find(t => t.isDefault) || turnaroundTimes[0]
-      config.defaults = {
-        ...SIMPLE_CONFIG.defaults,
-        turnaround: defaultTurnaround.id
-      }
+    // Update the defaults for quantities, sizes and turnaround times
+    const updatedDefaults = { ...SIMPLE_CONFIG.defaults }
+
+    if (quantities.length > 0) {
+      // Default to 5000 or the first available quantity
+      const defaultQuantity = quantities.find((q) => q.value === 5000) || quantities[0]
+      updatedDefaults.quantity = defaultQuantity.id
     }
+
+    if (sizes.length > 0) {
+      // Find default size or use first one
+      const defaultSize = sizes.find((s) => s.isDefault) || sizes[0]
+      updatedDefaults.size = defaultSize.id
+    }
+
+    if (turnaroundTimes.length > 0) {
+      const defaultTurnaround = turnaroundTimes.find((t) => t.isDefault) || turnaroundTimes[0]
+      updatedDefaults.turnaround = defaultTurnaround.id
+    }
+
+    config.defaults = updatedDefaults
 
     return NextResponse.json(config, {
       status: 200,
@@ -339,8 +435,8 @@ export async function GET(
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60',
         'X-API-Version': 'v2-dynamic',
-        'X-Product-Id': productId
-      }
+        'X-Product-Id': productId,
+      },
     })
   } catch (error) {
     console.error('[Config API] Error:', error)
@@ -350,8 +446,8 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Version': 'v1-fallback'
-      }
+        'X-API-Version': 'v1-fallback',
+      },
     })
   }
 }

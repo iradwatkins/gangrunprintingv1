@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Star, Heart, ShoppingCart, Bookmark, Package, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 async function getSavedData(userId: string) {
   // Get recently completed orders as "saved" items (users might want to reorder)

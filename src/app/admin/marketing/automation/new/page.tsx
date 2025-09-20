@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { WorkflowDesigner } from '@/components/marketing/workflow-designer'
 import { Button } from '@/components/ui/button'

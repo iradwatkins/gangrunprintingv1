@@ -7,10 +7,7 @@
       "wix.vscode-import-cost"
     ],
     "autoActivate": true,
-    "commands": [
-      "editor.action.organizeImports",
-      "import-cost.toggle"
-    ],
+    "commands": ["editor.action.organizeImports", "import-cost.toggle"],
     "mcpIntegration": {
       "shadcn-ui": ["auto-rename-tag"],
       "git": ["gitlens"],

@@ -128,15 +128,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 }
               : undefined,
           // Recreate paper stock set association
-          productPaperStockSets:
-            paperStockSetId
-              ? {
-                  create: {
-                    paperStockSetId: paperStockSetId,
-                    isDefault: true,
-                  },
-                }
-              : undefined,
+          productPaperStockSets: paperStockSetId
+            ? {
+                create: {
+                  paperStockSetId: paperStockSetId,
+                  isDefault: true,
+                },
+              }
+            : undefined,
           // Recreate options with values
           ProductOption:
             options?.length > 0

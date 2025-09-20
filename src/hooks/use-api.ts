@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import { API_REQUEST_TIMEOUT, API_RETRY_ATTEMPTS, API_RETRY_DELAY } from '@/config/constants'
 import { cachedFetch } from '@/lib/api-cache'
 
 interface UseApiOptions {
@@ -18,7 +20,13 @@ interface UseApiResult<T> {
 }
 
 export function useApi<T>(url: string | null, options: UseApiOptions = {}): UseApiResult<T> {
-  const { enabled = true, ttl, skipCache = false, retry = 3, retryDelay = 1000 } = options
+  const {
+    enabled = true,
+    ttl,
+    skipCache = false,
+    retry = API_RETRY_ATTEMPTS,
+    retryDelay = API_RETRY_DELAY,
+  } = options
 
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(false)
@@ -44,18 +52,9 @@ export function useApi<T>(url: string | null, options: UseApiOptions = {}): UseA
       } catch (err) {
         lastError = err instanceof Error ? err : new Error('Unknown error')
 
-        // Enhanced error logging for debugging
-        console.error(`useApi fetch attempt ${attempt + 1}/${retry} failed for ${url}:`, {
-          error: lastError.message,
-          attempt: attempt + 1,
-          url,
-          options: { ttl, skipCache, retry, retryDelay },
-        })
-
         attempt++
 
         if (attempt < retry) {
-          console.log(`Retrying ${url} in ${retryDelay * attempt}ms...`)
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, retryDelay * attempt))
         }
@@ -63,15 +62,8 @@ export function useApi<T>(url: string | null, options: UseApiOptions = {}): UseA
     }
 
     // All retries failed - provide detailed error message
-    const errorMessage = lastError?.message || 'Failed to fetch data'
-    const detailedError = `Failed to fetch ${url} after ${retry} attempts: ${errorMessage}`
-
-    console.error('useApi: All retries exhausted:', {
-      url,
-      attempts: retry,
-      finalError: errorMessage,
-      options: { ttl, skipCache, retry, retryDelay },
-    })
+    const errorMessage = lastError?.message || 'Network request failed'
+    const detailedError = `Unable to complete request to ${url} after ${retry} attempts. ${errorMessage}`
 
     setError(detailedError)
     setData(null)
@@ -163,7 +155,10 @@ export function useApiBundle<T extends Record<string, any>>(
     // Add timeout wrapper for each fetch
     const fetchWithTimeout = async (key: string, url: string) => {
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Request timeout for ${key} (${url})`)), 10000)
+        setTimeout(
+          () => reject(new Error(`Request timeout for ${key} (${url})`)),
+          API_REQUEST_TIMEOUT
+        )
       )
 
       const fetchPromise = cachedFetch(url as string, {
@@ -173,18 +168,9 @@ export function useApiBundle<T extends Record<string, any>>(
 
       try {
         const result = await Promise.race([fetchPromise, timeoutPromise])
-        console.log(`useApiBundle: Successfully fetched ${key} from ${url}`)
         return { key, result, error: null }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-        // Enhanced error logging for debugging
-        console.error(`useApiBundle: Error fetching ${key} from ${url}:`, {
-          key,
-          url,
-          error: errorMessage,
-          stack: error instanceof Error ? error.stack : undefined,
-        })
 
         return {
           key,
@@ -214,7 +200,6 @@ export function useApiBundle<T extends Record<string, any>>(
       } else {
         const key = validUrls[index][0] as keyof T
         const errorMessage = result.reason?.message || 'Unknown error'
-        console.error(`useApiBundle: ${key} promise rejected:`, errorMessage)
         newErrors[key] = errorMessage
       }
     })

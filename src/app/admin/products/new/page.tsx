@@ -77,15 +77,14 @@ export default function NewProductPage() {
   const fetchAllData = async () => {
     try {
       setApiLoading(true)
-      const [categoriesRes, paperStockGroupsRes, quantitiesRes, sizesRes, addOnsRes] = await Promise.all(
-        [
+      const [categoriesRes, paperStockGroupsRes, quantitiesRes, sizesRes, addOnsRes] =
+        await Promise.all([
           fetch('/api/product-categories'),
           fetch('/api/paper-stock-sets'),
           fetch('/api/quantities'),
           fetch('/api/sizes'),
           fetch('/api/add-ons'),
-        ]
-      )
+        ])
 
       const newErrors = {}
 
@@ -178,7 +177,6 @@ export default function NewProductPage() {
       setFormData((prev) => ({ ...prev, selectedSizeGroup: sizeGroups[0].id }))
     }
   }, [sizeGroups, formData.selectedSizeGroup])
-
 
   const testPrice = async () => {
     setTesting(true)
@@ -447,7 +445,9 @@ export default function NewProductPage() {
               <p className="mb-2">The following data loaded successfully:</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {categories.length > 0 && <div>✓ Categories: {categories.length} items</div>}
-                {paperStockSets.length > 0 && <div>✓ Paper Stock Sets: {paperStockSets.length} items</div>}
+                {paperStockSets.length > 0 && (
+                  <div>✓ Paper Stock Sets: {paperStockSets.length} items</div>
+                )}
                 {quantityGroups.length > 0 && (
                   <div>✓ Quantity Groups: {quantityGroups.length} items</div>
                 )}
@@ -653,8 +653,8 @@ export default function NewProductPage() {
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select a paper stock set for this product. Customers will see the paper stocks from this set,
-              with the default paper stock pre-selected.
+              Select a paper stock set for this product. Customers will see the paper stocks from
+              this set, with the default paper stock pre-selected.
             </p>
             <div>
               <Label htmlFor="paper-stock-set">Paper Stock Set</Label>

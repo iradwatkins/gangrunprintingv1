@@ -38,6 +38,7 @@ tests/
 ## Running Tests
 
 ### All Tests
+
 ```bash
 npm test                    # Watch mode
 npm run test:run           # Single run
@@ -45,16 +46,19 @@ npm run test:coverage      # With coverage
 ```
 
 ### Unit Tests
+
 ```bash
 npm test tests/unit
 ```
 
 ### Integration Tests
+
 ```bash
 npm test tests/integration
 ```
 
 ### End-to-End Tests
+
 ```bash
 npm run test:e2e           # All browsers
 npm run test:e2e:ui        # Interactive mode
@@ -62,6 +66,7 @@ npm run test:e2e:debug     # Debug mode
 ```
 
 ### Test UI
+
 ```bash
 npm run test:ui            # Vitest UI
 npm run test:e2e:ui        # Playwright UI
@@ -70,6 +75,7 @@ npm run test:e2e:ui        # Playwright UI
 ## Test Database Setup
 
 ### Initial Setup
+
 ```bash
 # Setup test database
 npm run test:db:setup
@@ -82,7 +88,9 @@ npm run test:db:reset
 ```
 
 ### Environment Variables
+
 Create `.env.test` with test-specific configurations:
+
 ```env
 NODE_ENV=test
 DATABASE_URL="postgresql://username:password@localhost:5432/gangrunprinting_test"
@@ -100,9 +108,11 @@ NEXTAUTH_SECRET=test-secret-key
 ## Test Categories
 
 ### 1. Unit Tests
+
 Test individual functions and components in isolation.
 
 **Coverage Areas**:
+
 - Authentication utilities
 - Utility functions
 - Form validation
@@ -110,9 +120,11 @@ Test individual functions and components in isolation.
 - React components
 
 ### 2. Integration Tests
+
 Test API routes and database interactions.
 
 **Coverage Areas**:
+
 - Authentication flows
 - Order processing
 - Payment integration
@@ -120,9 +132,11 @@ Test API routes and database interactions.
 - Database operations
 
 ### 3. End-to-End Tests
+
 Test complete user journeys across the application.
 
 **Coverage Areas**:
+
 - User authentication
 - Product browsing
 - Quote generation
@@ -133,12 +147,14 @@ Test complete user journeys across the application.
 ## Critical Test Scenarios
 
 ### Authentication
+
 - Magic link sign-in
 - Google OAuth
 - Session management
 - Access control
 
 ### E-commerce Flow
+
 - Product configuration
 - Quote generation
 - Cart management
@@ -147,6 +163,7 @@ Test complete user journeys across the application.
 - Order confirmation
 
 ### Admin Functions
+
 - Order management
 - Product management
 - User management
@@ -156,11 +173,13 @@ Test complete user journeys across the application.
 ## Mock Strategy
 
 ### API Mocking (MSW)
+
 - Mock external APIs (Square, Google, etc.)
 - Simulate various response scenarios
 - Test error conditions
 
 ### Database Mocking
+
 - Use test database with clean slate per test
 - Factory functions for test data
 - Automated cleanup
@@ -168,6 +187,7 @@ Test complete user journeys across the application.
 ## Best Practices
 
 ### Writing Tests
+
 1. Use descriptive test names
 2. Follow AAA pattern (Arrange, Act, Assert)
 3. Test both happy and error paths
@@ -175,12 +195,14 @@ Test complete user journeys across the application.
 5. Keep tests independent and idempotent
 
 ### Test Data
+
 1. Use factory functions for consistent test data
 2. Clean up after each test
 3. Use realistic but safe test data
 4. Avoid hardcoded values where possible
 
 ### Performance
+
 1. Run unit tests in parallel
 2. Use database transactions for faster cleanup
 3. Mock external services appropriately
@@ -189,6 +211,7 @@ Test complete user journeys across the application.
 ## Continuous Integration
 
 ### GitHub Actions Workflow
+
 - Automated testing on push/PR
 - Multi-browser E2E testing
 - Coverage reporting
@@ -196,6 +219,7 @@ Test complete user journeys across the application.
 - Build verification
 
 ### Quality Gates
+
 - All tests must pass
 - Coverage thresholds must be met
 - No high-severity security vulnerabilities
@@ -204,18 +228,21 @@ Test complete user journeys across the application.
 ## Debugging Tests
 
 ### Unit/Integration Tests
+
 ```bash
 npm test -- --reporter=verbose
 npm run test:ui  # Visual debugging
 ```
 
 ### E2E Tests
+
 ```bash
 npm run test:e2e:debug     # Debug mode
 npm run test:e2e -- --headed  # See browser
 ```
 
 ### Common Issues
+
 - Database connection issues
 - Mock data inconsistencies
 - Timing issues in E2E tests
@@ -224,6 +251,7 @@ npm run test:e2e -- --headed  # See browser
 ## Maintenance
 
 ### Regular Tasks
+
 - Update test dependencies
 - Review and update mock data
 - Monitor test performance
@@ -231,6 +259,7 @@ npm run test:e2e -- --headed  # See browser
 - Review coverage reports
 
 ### Adding New Tests
+
 1. Identify test category (unit/integration/e2e)
 2. Follow existing patterns
 3. Add appropriate mock data
@@ -247,6 +276,7 @@ npm run test:e2e -- --headed  # See browser
 ## Support
 
 For testing questions or issues:
+
 1. Check this documentation
 2. Review existing test files for patterns
 3. Consult team members

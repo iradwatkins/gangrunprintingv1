@@ -1,6 +1,7 @@
 # Google OAuth Configuration Fix
 
 ## Problem
+
 Getting "Authentication Error: Configuration" when trying to sign in with Google.
 
 ## Solution
@@ -21,6 +22,7 @@ http://www.gangrunprinting.com/api/auth/callback/google
 ```
 
 4. Add Authorized JavaScript origins:
+
 ```
 https://gangrunprinting.com
 https://www.gangrunprinting.com
@@ -51,6 +53,7 @@ AUTH_TRUST_HOST=true
 ### 4. Test the Fix
 
 After updating:
+
 1. Wait 5-10 minutes for Google to propagate changes
 2. Clear your browser cache
 3. Try signing in again at https://gangrunprinting.com/auth/signin

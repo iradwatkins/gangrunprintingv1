@@ -1,4 +1,5 @@
 # BMAD Fix Report: Magic Link Authentication Issue
+
 **Date**: 2025-09-14
 **Issue Type**: Bug
 **Severity**: Critical
@@ -7,52 +8,65 @@
 ## 🐛 BUG DESCRIPTION
 
 ### Problem Statement
+
 Magic link authentication was failing with "Invalid or Expired Link" error immediately after clicking the link, even when clicked within seconds of receiving the email.
 
 ### Symptoms
+
 1. User receives magic link email
 2. Clicks link immediately (within seconds)
 3. Gets "Invalid or Expired Link" error
 4. Authentication fails
 
 ### Initial Error Messages
+
 - **User-facing**: "The magic link has expired or is invalid. Please request a new one."
 - **Console**: Multiple cascading errors during verification
 
 ## 🔍 ROOT CAUSE ANALYSIS
 
 ### Issue #1: URL Double-Encoding
+
 **Problem**: Email parameter was being double-encoded
+
 - Code was using `encodeURIComponent(email)` in magic link generation
 - Next.js automatically encodes URL parameters
 - Result: `user@example.com` → `user%40example.com` → `user%2540example.com`
 - Database lookup failed due to encoding mismatch
 
 ### Issue #2: Cookie Setting in Wrong Context
+
 **Problem**: Attempting to set cookies in React Server Component
+
 - Error: "Cookies can only be modified in a Server Action or Route Handler"
 - Location: `/auth/verify` page component
 - Context: React Server Components cannot modify cookies directly
 
 ### Issue #3: Incorrect Dashboard Redirect
+
 **Problem**: Redirecting to non-existent `/dashboard` route
+
 - Actual dashboard location: `/account/dashboard`
 - Result: 404 error after successful authentication
 
 ## ✅ SOLUTION IMPLEMENTATION
 
 ### Fix #1: Remove Manual URL Encoding
+
 **File**: `/src/lib/auth.ts`
+
 ```typescript
 // BEFORE (Line 104)
-const magicLink = `${process.env.NEXTAUTH_URL}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`;
+const magicLink = `${process.env.NEXTAUTH_URL}/auth/verify?token=${token}&email=${encodeURIComponent(email)}`
 
 // AFTER
-const magicLink = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}&email=${email}`;
+const magicLink = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}&email=${email}`
 ```
 
 ### Fix #2: Create API Route Handler
+
 **New File**: `/src/app/api/auth/verify/route.ts`
+
 ```typescript
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyMagicLink } from '@/lib/auth'
@@ -63,9 +77,7 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get('email')
 
   if (!token || !email) {
-    return NextResponse.redirect(
-      new URL('/auth/verify?error=missing_params', request.url)
-    )
+    return NextResponse.redirect(new URL('/auth/verify?error=missing_params', request.url))
   }
 
   try {
@@ -76,21 +88,23 @@ export async function GET(request: NextRequest) {
     if (error && typeof error === 'object' && 'code' in error) {
       errorCode = (error as any).code
     }
-    return NextResponse.redirect(
-      new URL(`/auth/verify?error=${errorCode}`, request.url)
-    )
+    return NextResponse.redirect(new URL(`/auth/verify?error=${errorCode}`, request.url))
   }
 }
 ```
 
 ### Fix #3: Update Verification Page
+
 **File**: `/src/app/auth/verify/page.tsx`
+
 - Converted from verification handler to error display page
 - Now only shows error messages when redirected with error parameter
 - Removed all verification logic (moved to API route)
 
 ### Fix #4: Enhanced Error Handling
+
 **File**: `/src/lib/auth.ts`
+
 - Added custom `MagicLinkError` class with specific error codes
 - Added comprehensive debug logging
 - Improved error messages for different failure scenarios:
@@ -103,12 +117,14 @@ export async function GET(request: NextRequest) {
 ## 📋 VERIFICATION CHECKLIST
 
 ### Pre-Fix Issues ❌
+
 - [ ] ~~Magic links fail with "expired" error immediately~~
 - [ ] ~~Console shows "Cookies can only be modified" error~~
 - [ ] ~~Successful auth redirects to 404 page~~
 - [ ] ~~Generic error messages don't help debugging~~
 
 ### Post-Fix Verification ✅
+
 - [x] Magic links work when clicked immediately
 - [x] No cookie modification errors in console
 - [x] Successful auth redirects to `/account/dashboard`
@@ -139,6 +155,7 @@ export async function GET(request: NextRequest) {
 ## 📊 TESTING RESULTS
 
 ### Test Scenarios
+
 1. **New user registration**: ✅ Creates account and logs in
 2. **Existing user login**: ✅ Updates verification status and logs in
 3. **Expired token**: ✅ Shows "Token Expired" error
@@ -149,12 +166,14 @@ export async function GET(request: NextRequest) {
 ## 🚀 DEPLOYMENT
 
 ### Build & Deploy Commands
+
 ```bash
 npm run build
 pm2 restart gangrunprinting
 ```
 
 ### Production URL
+
 - Site: https://gangrunprinting.com
 - Magic Link Endpoint: `/api/auth/verify`
 - Dashboard: `/account/dashboard`

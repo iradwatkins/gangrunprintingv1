@@ -4,6 +4,12 @@
  */
 
 import { logger } from '@/lib/logger'
+import {
+  API_TIMEOUT,
+  API_RETRY_ATTEMPTS,
+  API_RETRY_DELAY,
+  API_REQUEST_TIMEOUT,
+} from '@/config/constants'
 
 export interface ApiClientConfig {
   baseUrl?: string
@@ -39,8 +45,8 @@ class ApiClient {
 
   constructor(config: ApiClientConfig = {}) {
     this.baseUrl = config.baseUrl || ''
-    this.timeout = config.timeout || 30000
-    this.retries = config.retries || 3
+    this.timeout = config.timeout || API_TIMEOUT
+    this.retries = config.retries || API_RETRY_ATTEMPTS
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       ...config.headers,
@@ -57,7 +63,11 @@ class ApiClient {
   /**
    * Performs a POST request
    */
-  async post<T = unknown>(url: string, data?: unknown, options?: RequestInit): Promise<ApiResponse<T>> {
+  async post<T = unknown>(
+    url: string,
+    data?: unknown,
+    options?: RequestInit
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       ...options,
       method: 'POST',
@@ -68,7 +78,11 @@ class ApiClient {
   /**
    * Performs a PUT request
    */
-  async put<T = unknown>(url: string, data?: unknown, options?: RequestInit): Promise<ApiResponse<T>> {
+  async put<T = unknown>(
+    url: string,
+    data?: unknown,
+    options?: RequestInit
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       ...options,
       method: 'PUT',
@@ -86,7 +100,11 @@ class ApiClient {
   /**
    * Uploads a file using FormData
    */
-  async upload<T = unknown>(url: string, formData: FormData, options?: RequestInit): Promise<ApiResponse<T>> {
+  async upload<T = unknown>(
+    url: string,
+    formData: FormData,
+    options?: RequestInit
+  ): Promise<ApiResponse<T>> {
     const headers = { ...this.defaultHeaders }
     delete (headers as Record<string, string>)['Content-Type'] // Let browser set content-type for FormData
 
@@ -147,7 +165,10 @@ class ApiClient {
 
         // Don't retry on client errors (4xx)
         if (error instanceof ApiError && error.statusCode >= 400 && error.statusCode < 500) {
-          logger.warn(`API client error: ${error.message}`, { url: fullUrl, statusCode: error.statusCode })
+          logger.warn(`API client error: ${error.message}`, {
+            url: fullUrl,
+            statusCode: error.statusCode,
+          })
           return {
             success: false,
             error: error.message,
@@ -167,8 +188,10 @@ class ApiClient {
 
         // Log retry attempt
         if (attempt < this.retries - 1) {
-          logger.debug(`Retrying request (attempt ${attempt + 1}/${this.retries})`, { url: fullUrl })
-          await this.delay(Math.pow(2, attempt) * 1000) // Exponential backoff
+          logger.debug(`Retrying request (attempt ${attempt + 1}/${this.retries})`, {
+            url: fullUrl,
+          })
+          await this.delay(Math.pow(2, attempt) * API_RETRY_DELAY) // Exponential backoff
         }
       }
     }
@@ -209,7 +232,7 @@ class ApiClient {
    * Delay helper for retry backoff
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
 

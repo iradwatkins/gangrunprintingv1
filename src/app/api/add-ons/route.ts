@@ -1,6 +1,22 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { validateRequest } from '@/lib/auth'
+import { withAuth } from '@/lib/api/auth'
+import { successResponse, handleApiError, commonErrors } from '@/lib/api/responses'
+import { validateSearchParams, querySchemas } from '@/lib/api/validation'
+
+// Add-on creation schema
+const createAddOnSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional(),
+  tooltipText: z.string().optional(),
+  pricingModel: z.enum(['FIXED_FEE', 'PERCENTAGE', 'PER_UNIT']),
+  configuration: z.record(z.any()).default({}),
+  additionalTurnaroundDays: z.number().min(0).default(0),
+  sortOrder: z.number().min(0).default(0),
+  isActive: z.boolean().default(true),
+  adminNotes: z.string().optional(),
+})
 
 // GET /api/add-ons - List all add-ons
 export async function GET(request: NextRequest) {
@@ -8,77 +24,49 @@ export async function GET(request: NextRequest) {
     console.log('Fetching add-ons from database...')
 
     const searchParams = request.nextUrl.searchParams
-    const isActive = searchParams.get('active')
+    const validation = validateSearchParams(searchParams, querySchemas.activeFilter)
 
-    const where = isActive !== null ? { isActive: isActive === 'true' } : {}
+    if (!validation.success) {
+      return commonErrors.badRequest(`Invalid query parameters: ${validation.errors.join(', ')}`)
+    }
 
-    // Simplified query without includes first
+    const { active } = validation.data
+    const where = active !== undefined ? { isActive: active } : {}
+
     const addOns = await prisma.addOn.findMany({
       where,
       orderBy: { sortOrder: 'asc' },
     })
 
     console.log(`Found ${addOns.length} add-ons`)
-
-    return NextResponse.json(addOns)
+    return successResponse(addOns)
   } catch (error) {
     console.error('Error fetching add-ons:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch add-ons',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to fetch add-ons')
   }
 }
 
 // POST /api/add-ons - Create a new add-on
-export async function POST(request: NextRequest) {
-  try {
-    const { user, session } = await validateRequest()
-    if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const POST = withAuth(
+  async (request, context, auth) => {
+    try {
+      const body = await request.json()
+      const validation = createAddOnSchema.safeParse(body)
+
+      if (!validation.success) {
+        const errors = validation.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`)
+        return commonErrors.validationError(`Validation failed: ${errors.join(', ')}`)
+      }
+
+      const addOn = await prisma.addOn.create({
+        data: validation.data,
+      })
+
+      return successResponse(addOn, 201)
+    } catch (error) {
+      console.error('Error creating add-on:', error)
+      return handleApiError(error, 'Failed to create add-on')
     }
-
-    const body = await request.json()
-
-    const {
-      name,
-      description,
-      tooltipText,
-      pricingModel,
-      configuration,
-      additionalTurnaroundDays,
-      sortOrder,
-      isActive,
-      adminNotes,
-    } = body
-
-    // Create add-on without sub-options for now
-    const addOn = await prisma.addOn.create({
-      data: {
-        name,
-        description,
-        tooltipText,
-        pricingModel,
-        configuration: configuration || {},
-        additionalTurnaroundDays: additionalTurnaroundDays || 0,
-        sortOrder: sortOrder || 0,
-        isActive: isActive !== undefined ? isActive : true,
-        adminNotes,
-      },
-    })
-
-    return NextResponse.json(addOn, { status: 201 })
-  } catch (error) {
-    console.error('Error creating add-on:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to create add-on',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
-  }
-}
+  },
+  { requireAdmin: true }
+)

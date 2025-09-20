@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductImageUpload } from '../product-image-upload'
 import { Info, Package, Camera, Sparkles, RefreshCw } from 'lucide-react'

@@ -1,9 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
+import {
+  Activity,
+  DollarSign,
+  ShoppingCart,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
+
 import { Badge } from '@/components/ui/badge'
-import { Activity, DollarSign, ShoppingCart, Users, TrendingUp, TrendingDown } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface StatData {
   label: string

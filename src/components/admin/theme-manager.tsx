@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Palette, Upload, Download, Trash2, Check, Eye, Code, FileText } from 'lucide-react'
+import { Palette, Upload, Download, Trash2, Check, Eye, Code } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface Theme {

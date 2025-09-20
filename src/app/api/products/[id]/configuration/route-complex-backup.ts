@@ -24,7 +24,7 @@ async function retryOperation<T>(
     } catch (error) {
       if (attempt === maxAttempts - 1) throw error
       const delay = baseDelay * Math.pow(2, attempt)
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
   throw new Error('Max retry attempts reached')
@@ -33,16 +33,13 @@ async function retryOperation<T>(
 // GET /api/products/[id]/configuration - Get all configuration options for a product
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const startTime = Date.now()
-  let dbConnected = false
+  const dbConnected = false
 
   try {
     const productId = params.id
 
     if (!productId) {
-      return NextResponse.json(
-        { error: 'Product ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
     }
 
     // Check cache first - this is critical for reducing database load
@@ -53,8 +50,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         status: 200,
         headers: {
           'X-Cache': 'HIT',
-          'X-Response-Time': `${Date.now() - startTime}ms`
-        }
+          'X-Response-Time': `${Date.now() - startTime}ms`,
+        },
       })
     }
 
@@ -77,8 +74,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         status: 200,
         headers: {
           'X-Cache': 'CIRCUIT-BREAKER',
-          'X-Response-Time': `${Date.now() - startTime}ms`
-        }
+          'X-Response-Time': `${Date.now() - startTime}ms`,
+        },
       })
     }
 
@@ -90,146 +87,161 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     // Use optimized queries with selective loading
     // First, check if product exists and is active with retry
-    const productExists = await retryOperation(async () => {
-      return await prisma.product.findFirst({
-        where: {
-          id: productId,
-          isActive: true,
-        },
-        select: {
-          id: true,
-        },
-      })
-    }, 2, 50) // Fewer retries for initial check
+    const productExists = await retryOperation(
+      async () => {
+        return await prisma.product.findFirst({
+          where: {
+            id: productId,
+            isActive: true,
+          },
+          select: {
+            id: true,
+          },
+        })
+      },
+      2,
+      50
+    ) // Fewer retries for initial check
 
     if (!productExists) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     // Fetch configuration data using parallel queries for better performance with retry
-    const [productData, paperStockData, quantityData, sizeData] = await retryOperation(async () => {
-      return await Promise.all([
-      // Basic product data
-      prisma.product.findUnique({
-        where: { id: productId },
-        select: {
-          id: true,
-          name: true,
-          basePrice: true,
-        },
-      }),
-
-      // Paper stock data with reduced nesting
-      prisma.productPaperStockSet.findMany({
-        where: { productId },
-        select: {
-          paperStockSet: {
+    const [productData, paperStockData, quantityData, sizeData] = await retryOperation(
+      async () => {
+        return await Promise.all([
+          // Basic product data
+          prisma.product.findUnique({
+            where: { id: productId },
             select: {
-              paperStockItems: {
+              id: true,
+              name: true,
+              basePrice: true,
+            },
+          }),
+
+          // Paper stock data with reduced nesting
+          prisma.productPaperStockSet.findMany({
+            where: { productId },
+            select: {
+              paperStockSet: {
                 select: {
-                  isDefault: true,
-                  sortOrder: true,
-                  paperStock: {
+                  paperStockItems: {
                     select: {
-                      id: true,
-                      name: true,
-                      weight: true,
-                      pricePerSqInch: true,
-                      tooltipText: true,
+                      isDefault: true,
+                      sortOrder: true,
+                      paperStock: {
+                        select: {
+                          id: true,
+                          name: true,
+                          weight: true,
+                          pricePerSqInch: true,
+                          tooltipText: true,
+                        },
+                      },
                     },
+                    orderBy: { sortOrder: 'asc' },
                   },
                 },
-                orderBy: { sortOrder: 'asc' },
               },
             },
-          },
-        },
-      }),
+          }),
 
-      // Quantity groups
-      prisma.productQuantityGroup.findMany({
-        where: { productId },
-        select: {
-          quantityGroup: {
+          // Quantity groups
+          prisma.productQuantityGroup.findMany({
+            where: { productId },
             select: {
-              id: true,
-              name: true,
-              values: true,
+              quantityGroup: {
+                select: {
+                  id: true,
+                  name: true,
+                  values: true,
+                },
+              },
             },
-          },
-        },
-      }),
+          }),
 
-      // Size groups
-      prisma.productSizeGroup.findMany({
-        where: { productId },
-        select: {
-          sizeGroup: {
+          // Size groups
+          prisma.productSizeGroup.findMany({
+            where: { productId },
             select: {
-              id: true,
-              name: true,
-              values: true,
+              sizeGroup: {
+                select: {
+                  id: true,
+                  name: true,
+                  values: true,
+                },
+              },
             },
-          },
-        },
-      }),
-    ])
-  }, 3, 100) // 3 attempts with 100ms base delay
+          }),
+        ])
+      },
+      3,
+      100
+    ) // 3 attempts with 100ms base delay
 
     // Get paper stock IDs for coating and sides data
     const paperStockIds = paperStockData
-      .flatMap(psd => psd.paperStockSet?.paperStockItems || [])
-      .map(item => item.paperStock.id)
+      .flatMap((psd) => psd.paperStockSet?.paperStockItems || [])
+      .map((item) => item.paperStock.id)
       .filter(Boolean)
 
     // Fetch coatings and sides separately to avoid deep nesting with retry
-    const [coatingsData, sidesData] = await retryOperation(async () => {
-      return await Promise.all([
-      prisma.paperStockCoating.findMany({
-        where: { paperStockId: { in: paperStockIds } },
-        select: {
-          paperStockId: true,
-          coatingId: true,
-          isDefault: true,
-          coating: {
+    const [coatingsData, sidesData] = await retryOperation(
+      async () => {
+        return await Promise.all([
+          prisma.paperStockCoating.findMany({
+            where: { paperStockId: { in: paperStockIds } },
             select: {
-              id: true,
-              name: true,
+              paperStockId: true,
+              coatingId: true,
+              isDefault: true,
+              coating: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
-          },
-        },
-      }),
-      prisma.paperStockSides.findMany({
-        where: { paperStockId: { in: paperStockIds } },
-        select: {
-          paperStockId: true,
-          sidesOptionId: true,
-          priceMultiplier: true,
-          isEnabled: true,
-          sidesOption: {
+          }),
+          prisma.paperStockSides.findMany({
+            where: { paperStockId: { in: paperStockIds } },
             select: {
-              id: true,
-              name: true,
+              paperStockId: true,
+              sidesOptionId: true,
+              priceMultiplier: true,
+              isEnabled: true,
+              sidesOption: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
-          },
-        },
-      }),
-    ])
-  }, 3, 100) // 3 attempts with 100ms base delay
+          }),
+        ])
+      },
+      3,
+      100
+    ) // 3 attempts with 100ms base delay
 
     // Reorganize data into the expected format
     const product = {
       ...productData,
-      productPaperStockSets: paperStockData.map(psd => ({
+      productPaperStockSets: paperStockData.map((psd) => ({
         paperStockSet: {
-          paperStockItems: psd.paperStockSet?.paperStockItems.map(item => ({
-            ...item,
-            paperStock: {
-              ...item.paperStock,
-              paperStockCoatings: coatingsData.filter(c => c.paperStockId === item.paperStock.id),
-              paperStockSides: sidesData.filter(s => s.paperStockId === item.paperStock.id),
-            },
-          })) || [],
+          paperStockItems:
+            psd.paperStockSet?.paperStockItems.map((item) => ({
+              ...item,
+              paperStock: {
+                ...item.paperStock,
+                paperStockCoatings: coatingsData.filter(
+                  (c) => c.paperStockId === item.paperStock.id
+                ),
+                paperStockSides: sidesData.filter((s) => s.paperStockId === item.paperStock.id),
+              },
+            })) || [],
         },
       })),
       productQuantityGroups: quantityData,
@@ -251,10 +263,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       const quantityGroup = product.productQuantityGroups[0].quantityGroup
       const quantityValues = quantityGroup.values
         .split(',')
-        .map(v => v.trim())
-        .filter(v => v && v !== 'custom')
-        .map(v => parseInt(v))
-        .filter(v => !isNaN(v))
+        .map((v) => v.trim())
+        .filter((v) => v && v !== 'custom')
+        .map((v) => parseInt(v))
+        .filter((v) => !isNaN(v))
 
       quantityValues.forEach((value, index) => {
         quantities.push({
@@ -279,8 +291,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       const sizeGroup = product.productSizeGroups[0].sizeGroup
       const sizeValues = sizeGroup.values
         .split(',')
-        .map(v => v.trim())
-        .filter(v => v && v !== 'custom')
+        .map((v) => v.trim())
+        .filter((v) => v && v !== 'custom')
 
       sizeValues.forEach((sizeValue, index) => {
         // Parse size format like "4x6" or "5x5"
@@ -328,14 +340,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (product.productPaperStockSets.length > 0) {
       const paperStockSet = product.productPaperStockSets[0].paperStockSet
 
-      paperStockSet.paperStockItems.forEach(item => {
+      paperStockSet.paperStockItems.forEach((item) => {
         paperStocks.push({
           id: item.paperStock.id,
           name: item.paperStock.name,
           weight: item.paperStock.weight,
           pricePerSqInch: item.paperStock.pricePerSqInch,
           tooltipText: item.paperStock.tooltipText || undefined,
-          paperStockCoatings: item.paperStock.paperStockCoatings.map(psc => ({
+          paperStockCoatings: item.paperStock.paperStockCoatings.map((psc) => ({
             coatingId: psc.coatingId,
             isDefault: psc.isDefault,
             coating: {
@@ -343,7 +355,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
               name: psc.coating.name,
             },
           })),
-          paperStockSides: item.paperStock.paperStockSides.map(pss => ({
+          paperStockSides: item.paperStock.paperStockSides.map((pss) => ({
             sidesOptionId: pss.sidesOptionId,
             priceMultiplier: pss.priceMultiplier,
             isEnabled: pss.isEnabled,
@@ -360,22 +372,28 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const defaults = {
       quantity: quantities[0]?.id || '',
       size: sizes[0]?.id || '',
-      paper: paperStocks.find(p =>
-        product.productPaperStockSets[0]?.paperStockSet?.paperStockItems
-          .find(item => item.paperStock.id === p.id)?.isDefault
-      )?.id || paperStocks[0]?.id || '',
+      paper:
+        paperStocks.find(
+          (p) =>
+            product.productPaperStockSets[0]?.paperStockSet?.paperStockItems.find(
+              (item) => item.paperStock.id === p.id
+            )?.isDefault
+        )?.id ||
+        paperStocks[0]?.id ||
+        '',
       coating: '',
       sides: '',
     }
 
     // Set default coating and sides based on default paper
     if (defaults.paper) {
-      const defaultPaper = paperStocks.find(p => p.id === defaults.paper)
+      const defaultPaper = paperStocks.find((p) => p.id === defaults.paper)
       if (defaultPaper) {
-        const defaultCoating = defaultPaper.paperStockCoatings.find(c => c.isDefault)
-        defaults.coating = defaultCoating?.coatingId || defaultPaper.paperStockCoatings[0]?.coatingId || ''
+        const defaultCoating = defaultPaper.paperStockCoatings.find((c) => c.isDefault)
+        defaults.coating =
+          defaultCoating?.coatingId || defaultPaper.paperStockCoatings[0]?.coatingId || ''
 
-        const firstEnabledSide = defaultPaper.paperStockSides.find(s => s.isEnabled)
+        const firstEnabledSide = defaultPaper.paperStockSides.find((s) => s.isEnabled)
         defaults.sides = firstEnabledSide?.sidesOptionId || ''
       }
     }
@@ -409,8 +427,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       headers: {
         'X-Cache': 'MISS',
         'X-Response-Time': `${Date.now() - startTime}ms`,
-        'X-DB-Connected': 'true'
-      }
+        'X-DB-Connected': 'true',
+      },
     })
   } catch (error) {
     console.error('Error fetching product configuration:', error)
@@ -423,10 +441,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     // Check for specific Prisma errors
     if (error instanceof Error) {
       // Connection pool exhaustion or timeout errors
-      if (error.message.includes('P2024') ||
-          error.message.includes('connect ETIMEDOUT') ||
-          error.message.includes('Connection pool timeout') ||
-          error.message.includes('P2028')) {
+      if (
+        error.message.includes('P2024') ||
+        error.message.includes('connect ETIMEDOUT') ||
+        error.message.includes('Connection pool timeout') ||
+        error.message.includes('P2028')
+      ) {
         console.error('Database connection pool issue:', error.message)
 
         // Return fallback immediately for database connection issues
@@ -441,22 +461,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           headers: {
             'X-Cache': 'DB-ERROR-FALLBACK',
             'X-Error': 'Database temporarily unavailable, using fallback',
-            'X-Response-Time': `${Date.now() - startTime}ms`
-          }
+            'X-Response-Time': `${Date.now() - startTime}ms`,
+          },
         })
       }
 
       if (error.message.includes('P2002')) {
-        return NextResponse.json(
-          { error: 'Database constraint violation' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Database constraint violation' }, { status: 400 })
       }
       if (error.message.includes('P2025')) {
-        return NextResponse.json(
-          { error: 'Record not found' },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: 'Record not found' }, { status: 404 })
       }
 
       // Log the full error in production for debugging
@@ -464,7 +478,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         message: error.message,
         stack: error.stack,
         productId: params.id,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -477,8 +491,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         headers: {
           'X-Cache': 'STALE',
           'X-Error': 'Database error, returning cached data',
-          'X-Response-Time': `${Date.now() - startTime}ms`
-        }
+          'X-Response-Time': `${Date.now() - startTime}ms`,
+        },
       })
     }
 
@@ -497,8 +511,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       headers: {
         'X-Cache': 'FALLBACK',
         'X-Error': 'Using fallback configuration',
-        'X-Response-Time': `${Date.now() - startTime}ms`
-      }
+        'X-Response-Time': `${Date.now() - startTime}ms`,
+      },
     })
   }
 }

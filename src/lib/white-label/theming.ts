@@ -164,7 +164,7 @@ export class ThemeEngine {
   /**
    * Generate CSS classes for component overrides
    */
-  private generateCSSClasses(config: ThemeConfig): string {
+  private generateCSSClasses(_config: ThemeConfig): string {
     return `
       .theme-primary-bg {
         background-color: hsl(var(--primary));

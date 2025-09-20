@@ -1,6 +1,7 @@
 # Architecture Shard 007: Localization & White-Label System
 
 ## Overview
+
 **Epic**: Multi-language Support & White-Label Architecture
 **Status**: 0% Complete - Not started
 **Priority**: Medium - Phase 2 feature
@@ -8,48 +9,50 @@
 ## Technical Requirements
 
 ### Localization System
+
 ```typescript
 interface LocalizationSystem {
   languages: {
-    supported: ['en', 'es'];
-    default: 'en';
-    autoDetect: boolean;
-  };
+    supported: ['en', 'es']
+    default: 'en'
+    autoDetect: boolean
+  }
   translations: {
-    static: StaticTranslations;
-    dynamic: DynamicContent;
-    userGenerated: ContentTranslation;
-  };
+    static: StaticTranslations
+    dynamic: DynamicContent
+    userGenerated: ContentTranslation
+  }
   regional: {
-    currency: CurrencySettings;
-    dateFormat: DateFormatSettings;
-    numberFormat: NumberFormatSettings;
-  };
+    currency: CurrencySettings
+    dateFormat: DateFormatSettings
+    numberFormat: NumberFormatSettings
+  }
 }
 
 interface WhiteLabelSystem {
   branding: {
-    logo: LogoConfiguration;
-    colors: ColorPalette;
-    fonts: Typography;
-    favicon: FaviconSettings;
-  };
+    logo: LogoConfiguration
+    colors: ColorPalette
+    fonts: Typography
+    favicon: FaviconSettings
+  }
   content: {
-    companyInfo: CompanyDetails;
-    legalPages: LegalContent;
-    emailTemplates: BrandedEmails;
-  };
+    companyInfo: CompanyDetails
+    legalPages: LegalContent
+    emailTemplates: BrandedEmails
+  }
   domains: {
-    custom: CustomDomain[];
-    subdomains: SubdomainMapping;
-    ssl: SSLConfiguration;
-  };
+    custom: CustomDomain[]
+    subdomains: SubdomainMapping
+    ssl: SSLConfiguration
+  }
 }
 ```
 
 ### Implementation Tasks
 
 #### 1. Internationalization (i18n) Setup
+
 - [ ] Configure next-i18next
 - [ ] Create translation file structure
 - [ ] Implement language switcher
@@ -60,6 +63,7 @@ interface WhiteLabelSystem {
 - [ ] Plural forms handling
 
 #### 2. Content Translation
+
 - [ ] Static content translation files
 - [ ] Database content translation
 - [ ] Product description translations
@@ -70,6 +74,7 @@ interface WhiteLabelSystem {
 - [ ] Image alt text translations
 
 #### 3. White-Label Theme System
+
 - [ ] Theme configuration interface
 - [ ] Dynamic CSS variable injection
 - [ ] Logo upload and management
@@ -80,6 +85,7 @@ interface WhiteLabelSystem {
 - [ ] Theme export/import
 
 #### 4. Multi-Tenant Architecture
+
 - [ ] Tenant identification system
 - [ ] Database isolation strategy
 - [ ] Tenant-specific configurations
@@ -90,6 +96,7 @@ interface WhiteLabelSystem {
 - [ ] Billing integration
 
 #### 5. Domain Management
+
 - [ ] Custom domain configuration
 - [ ] SSL certificate automation
 - [ ] Subdomain routing
@@ -174,60 +181,56 @@ CREATE TABLE "UserTenant" (
 ```typescript
 // Translation service
 class TranslationService {
-  private cache = new Map<string, Map<string, string>>();
+  private cache = new Map<string, Map<string, string>>()
 
   async loadTranslations(language: string) {
     if (this.cache.has(language)) {
-      return this.cache.get(language);
+      return this.cache.get(language)
     }
 
     const translations = await prisma.translation.findMany({
       where: { language, isApproved: true },
-    });
+    })
 
-    const translationMap = new Map(
-      translations.map(t => [t.key, t.value])
-    );
+    const translationMap = new Map(translations.map((t) => [t.key, t.value]))
 
-    this.cache.set(language, translationMap);
-    return translationMap;
+    this.cache.set(language, translationMap)
+    return translationMap
   }
 
   async translate(key: string, language: string, params?: Record<string, any>) {
-    const translations = await this.loadTranslations(language);
-    let text = translations.get(key) || key;
+    const translations = await this.loadTranslations(language)
+    let text = translations.get(key) || key
 
     // Replace parameters
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
-        text = text.replace(`{{${k}}}`, String(v));
-      });
+        text = text.replace(`{{${k}}}`, String(v))
+      })
     }
 
-    return text;
+    return text
   }
 
   async translateContent(content: any, language: string) {
     // Deep translate object properties
     if (typeof content === 'string') {
-      return this.translate(content, language);
+      return this.translate(content, language)
     }
 
     if (Array.isArray(content)) {
-      return Promise.all(
-        content.map(item => this.translateContent(item, language))
-      );
+      return Promise.all(content.map((item) => this.translateContent(item, language)))
     }
 
     if (typeof content === 'object' && content !== null) {
-      const translated: any = {};
+      const translated: any = {}
       for (const [key, value] of Object.entries(content)) {
-        translated[key] = await this.translateContent(value, language);
+        translated[key] = await this.translateContent(value, language)
       }
-      return translated;
+      return translated
     }
 
-    return content;
+    return content
   }
 }
 ```
@@ -307,38 +310,38 @@ export function ThemeProvider({ tenant, children }: ThemeProviderProps) {
 ```typescript
 // Tenant detection middleware
 export async function tenantMiddleware(request: NextRequest) {
-  const hostname = request.headers.get('host') || '';
+  const hostname = request.headers.get('host') || ''
 
   // Check for custom domain
   let tenant = await prisma.tenant.findFirst({
     where: { domain: hostname, isActive: true },
-  });
+  })
 
   // Check for subdomain
   if (!tenant) {
-    const subdomain = hostname.split('.')[0];
+    const subdomain = hostname.split('.')[0]
     tenant = await prisma.tenant.findFirst({
       where: { subdomain, isActive: true },
-    });
+    })
   }
 
   // Default tenant
   if (!tenant) {
     tenant = await prisma.tenant.findFirst({
       where: { slug: 'default' },
-    });
+    })
   }
 
   // Add tenant to request context
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', tenant.id);
-  requestHeaders.set('x-tenant-slug', tenant.slug);
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-tenant-id', tenant.id)
+  requestHeaders.set('x-tenant-slug', tenant.slug)
 
   return NextResponse.next({
     request: {
       headers: requestHeaders,
     },
-  });
+  })
 }
 ```
 

@@ -1,6 +1,7 @@
 # Cloudflare Complete Setup Guide for GangRun Printing
 
 ## Overview
+
 This guide covers the complete Cloudflare integration including R2 storage, Workers, KV, D1, Pages, and more.
 
 ## Quick Start
@@ -29,6 +30,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
 ### 2. R2 Storage Setup (Replaces MinIO)
 
 1. **Create R2 Bucket**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/r2/overview
    # Click "Create bucket"
@@ -54,6 +56,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
 ### 3. Workers Setup (Edge Functions)
 
 1. **Create Worker**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/workers
    # Click "Create a Service"
@@ -62,36 +65,38 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
    ```
 
 2. **Deploy Worker**
+
    ```javascript
    // Example worker for image optimization
    export default {
      async fetch(request, env) {
-       const url = new URL(request.url);
-       
+       const url = new URL(request.url)
+
        // Handle R2 requests
        if (url.pathname.startsWith('/assets/')) {
-         const key = url.pathname.slice(8);
-         const object = await env.GANGRUN_BUCKET.get(key);
-         
+         const key = url.pathname.slice(8)
+         const object = await env.GANGRUN_BUCKET.get(key)
+
          if (object === null) {
-           return new Response('Not found', { status: 404 });
+           return new Response('Not found', { status: 404 })
          }
-         
-         const headers = new Headers();
-         object.writeHttpMetadata(headers);
-         headers.set('etag', object.httpEtag);
-         
-         return new Response(object.body, { headers });
+
+         const headers = new Headers()
+         object.writeHttpMetadata(headers)
+         headers.set('etag', object.httpEtag)
+
+         return new Response(object.body, { headers })
        }
-       
-       return new Response('GangRun Printing API', { status: 200 });
-     }
-   };
+
+       return new Response('GangRun Printing API', { status: 200 })
+     },
+   }
    ```
 
 ### 4. KV Namespace Setup (Key-Value Storage)
 
 1. **Create KV Namespace**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/workers/kv/namespaces
    # Click "Create namespace"
@@ -107,6 +112,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
 ### 5. D1 Database Setup (SQLite at Edge)
 
 1. **Create D1 Database**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/workers/d1
    # Click "Create database"
@@ -115,6 +121,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
    ```
 
 2. **Initialize Schema**
+
    ```sql
    CREATE TABLE products (
      id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,7 +131,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
      image_url TEXT,
      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
    );
-   
+
    CREATE TABLE orders (
      id INTEGER PRIMARY KEY AUTOINCREMENT,
      customer_email TEXT NOT NULL,
@@ -137,6 +144,7 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
 ### 6. Pages Setup (Static Site Hosting)
 
 1. **Create Pages Project**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/pages
    # Connect to Git repository
@@ -152,31 +160,34 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
 ### 7. Images Setup (Automatic Optimization)
 
 1. **Enable Cloudflare Images**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/images
    # Subscribe to Images plan ($5/month for 100,000 images)
    ```
 
 2. **Upload Images via API**
+
    ```javascript
-   const formData = new FormData();
-   formData.append('file', imageFile);
-   
+   const formData = new FormData()
+   formData.append('file', imageFile)
+
    const response = await fetch(
      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/images/v1`,
      {
        method: 'POST',
        headers: {
-         'Authorization': `Bearer ${API_TOKEN}`
+         Authorization: `Bearer ${API_TOKEN}`,
        },
-       body: formData
+       body: formData,
      }
-   );
+   )
    ```
 
 ### 8. Stream Setup (Video Hosting)
 
 1. **Enable Stream**
+
    ```bash
    # Go to: https://dash.cloudflare.com/[account-id]/stream
    # Subscribe to Stream plan
@@ -189,15 +200,15 @@ This guide covers the complete Cloudflare integration including R2 storage, Work
      {
        method: 'POST',
        headers: {
-         'Authorization': `Bearer ${API_TOKEN}`,
-         'Content-Type': 'application/json'
+         Authorization: `Bearer ${API_TOKEN}`,
+         'Content-Type': 'application/json',
        },
        body: JSON.stringify({
          url: 'https://example.com/video.mp4',
-         meta: { name: 'Product Demo' }
-       })
+         meta: { name: 'Product Demo' },
+       }),
      }
-   );
+   )
    ```
 
 ## Environment Variables Checklist
@@ -238,43 +249,47 @@ CLOUDFLARE_STREAM_API_TOKEN=same_as_api_token
 The Cloudflare MCP server is now installed and configured. You can use it to:
 
 1. **Manage DNS Records**
+
    ```javascript
    // List DNS records
-   await cloudflare.dns.list(zoneId);
-   
+   await cloudflare.dns.list(zoneId)
+
    // Create DNS record
    await cloudflare.dns.create(zoneId, {
      type: 'A',
      name: 'api',
      content: '192.0.2.1',
-     ttl: 3600
-   });
+     ttl: 3600,
+   })
    ```
 
 2. **Manage R2 Storage**
+
    ```javascript
    // Upload to R2
-   await cloudflare.r2.put(bucketName, key, data);
-   
+   await cloudflare.r2.put(bucketName, key, data)
+
    // Get from R2
-   const object = await cloudflare.r2.get(bucketName, key);
-   
+   const object = await cloudflare.r2.get(bucketName, key)
+
    // Delete from R2
-   await cloudflare.r2.delete(bucketName, key);
+   await cloudflare.r2.delete(bucketName, key)
    ```
 
 3. **Deploy Workers**
+
    ```javascript
    // Update worker code
-   await cloudflare.workers.update(scriptName, workerCode);
-   
+   await cloudflare.workers.update(scriptName, workerCode)
+
    // Create route
-   await cloudflare.workers.createRoute(pattern, scriptName);
+   await cloudflare.workers.createRoute(pattern, scriptName)
    ```
 
 ## Testing Cloudflare Connection
 
 Run the test script:
+
 ```bash
 ./test-cloudflare.sh
 ```

@@ -15,13 +15,11 @@ export class ServiceWorkerManager {
 
   async register(): Promise<ServiceWorkerRegistration | null> {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-      console.log('Service Workers not supported')
       return null
     }
 
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js')
-      console.log('Service Worker registered successfully:', this.registration)
 
       // Wait for service worker to be ready
       await navigator.serviceWorker.ready
@@ -31,15 +29,13 @@ export class ServiceWorkerManager {
 
       return this.registration
     } catch (error) {
-      console.error('Service Worker registration failed:', error)
+      // Service Worker registration failed - PWA features unavailable
       return null
     }
   }
 
   private setupMessageListener() {
     navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log('Message from service worker:', event.data)
-
       if (event.data.type === 'NOTIFICATION_CLICKED') {
         // Handle notification click from service worker
         const { url, orderId } = event.data
@@ -64,7 +60,6 @@ export class ServiceWorkerManager {
     try {
       return await this.registration.pushManager.getSubscription()
     } catch (error) {
-      console.error('Error getting push subscription:', error)
       return null
     }
   }
@@ -84,10 +79,8 @@ export class ServiceWorkerManager {
         applicationServerKey: this.urlBase64ToUint8Array(publicKey),
       })
 
-      console.log('Push subscription created:', subscription)
       return subscription
     } catch (error) {
-      console.error('Error creating push subscription:', error)
       throw error
     }
   }
@@ -101,10 +94,8 @@ export class ServiceWorkerManager {
 
     try {
       const result = await subscription.unsubscribe()
-      console.log('Push subscription removed:', result)
       return result
     } catch (error) {
-      console.error('Error removing push subscription:', error)
       return false
     }
   }
@@ -209,7 +200,6 @@ export class ServiceWorkerManager {
     if (event) {
       event.prompt()
       const { outcome } = await event.userChoice
-      console.log('PWA install prompt outcome:', outcome)
 
       if (outcome === 'accepted') {
         ;(window as any).deferredPrompt = null

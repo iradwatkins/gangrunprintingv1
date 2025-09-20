@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Accordion,
@@ -42,7 +41,7 @@ export default function AddonAccordion({
   selectedAddons,
   onAddonChange,
   turnaroundTimes = [],
-  disabled = false
+  disabled = false,
 }: AddonAccordionProps) {
   const handleAddonToggle = (addonId: string, checked: boolean) => {
     if (disabled) return
@@ -54,7 +53,7 @@ export default function AddonAccordion({
       newSelectedAddons = [...selectedAddons, addonId]
     } else {
       // Remove addon if currently selected
-      newSelectedAddons = selectedAddons.filter(id => id !== addonId)
+      newSelectedAddons = selectedAddons.filter((id) => id !== addonId)
     }
 
     onAddonChange(newSelectedAddons)
@@ -67,13 +66,11 @@ export default function AddonAccordion({
 
   return (
     <div className="space-y-3">
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="addons" className="border rounded-lg">
+      <Accordion collapsible className="w-full" type="single">
+        <AccordionItem className="border rounded-lg" value="addons">
           <AccordionTrigger className="px-4 py-3 hover:no-underline">
             <div className="flex items-center justify-between w-full mr-4">
-              <h3 className="text-base font-medium text-gray-900">
-                Add-ons & Upgrades
-              </h3>
+              <h3 className="text-base font-medium text-gray-900">Add-ons & Upgrades</h3>
               {selectedAddons.length > 0 && (
                 <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
                   {selectedAddons.length} selected
@@ -84,18 +81,27 @@ export default function AddonAccordion({
           <AccordionContent className="px-4 pb-4">
             <div className="space-y-4">
               <p className="text-sm text-gray-600 mb-4">
-                Enhance your order with professional add-ons. Select any combination that meets your needs.
+                Enhance your order with professional add-ons. Select any combination that meets your
+                needs.
               </p>
 
               {/* Available Turnaround Times Info */}
               {turnaroundTimes && turnaroundTimes.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <h4 className="text-sm font-medium text-blue-900 mb-2">Available Turnaround Times:</h4>
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">
+                    Available Turnaround Times:
+                  </h4>
                   <div className="text-xs text-blue-800 space-y-1">
                     {turnaroundTimes.map((turnaround) => (
                       <div key={turnaround.id} className="flex justify-between">
                         <span>{turnaround.displayName}</span>
-                        <span>{turnaround.daysMin}{turnaround.daysMax && turnaround.daysMax !== turnaround.daysMin ? `-${turnaround.daysMax}` : ''} days</span>
+                        <span>
+                          {turnaround.daysMin}
+                          {turnaround.daysMax && turnaround.daysMax !== turnaround.daysMin
+                            ? `-${turnaround.daysMax}`
+                            : ''}{' '}
+                          days
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -120,41 +126,40 @@ export default function AddonAccordion({
                       onClick={() => !disabled && handleAddonToggle(addon.id, !isSelected)}
                     >
                       <Checkbox
-                        id={addon.id}
                         checked={isSelected}
+                        className="mt-0.5"
+                        disabled={disabled}
+                        id={addon.id}
                         onCheckedChange={(checked) =>
                           handleAddonToggle(addon.id, checked as boolean)
                         }
-                        disabled={disabled}
-                        className="mt-0.5"
                       />
 
                       <div className="flex-1 min-w-0">
                         <Label
-                          htmlFor={addon.id}
                           className={`block font-medium cursor-pointer ${
                             disabled ? 'cursor-not-allowed' : ''
                           }`}
+                          htmlFor={addon.id}
                         >
                           <div className="flex justify-between items-start">
-                            <span className="text-sm font-medium text-gray-900">
-                              {addon.name}
-                            </span>
-                            <span className={`text-sm font-semibold ml-2 ${
-                              isSelected ? 'text-blue-600' : 'text-gray-700'
-                            }`}>
+                            <span className="text-sm font-medium text-gray-900">{addon.name}</span>
+                            <span
+                              className={`text-sm font-semibold ml-2 ${
+                                isSelected ? 'text-blue-600' : 'text-gray-700'
+                              }`}
+                            >
                               {addon.priceDisplay}
                             </span>
                           </div>
                         </Label>
 
-                        <p className="text-xs text-gray-600 mt-1">
-                          {addon.description}
-                        </p>
+                        <p className="text-xs text-gray-600 mt-1">{addon.description}</p>
 
                         {addon.additionalTurnaroundDays > 0 && (
                           <p className="text-xs text-amber-600 mt-1">
-                            +{addon.additionalTurnaroundDays} day{addon.additionalTurnaroundDays > 1 ? 's' : ''} turnaround
+                            +{addon.additionalTurnaroundDays} day
+                            {addon.additionalTurnaroundDays > 1 ? 's' : ''} turnaround
                           </p>
                         )}
                       </div>
@@ -166,7 +171,8 @@ export default function AddonAccordion({
               {selectedAddons.length > 0 && (
                 <div className="pt-3 border-t">
                   <p className="text-sm text-gray-600">
-                    <strong>{selectedAddons.length}</strong> add-on{selectedAddons.length > 1 ? 's' : ''} selected
+                    <strong>{selectedAddons.length}</strong> add-on
+                    {selectedAddons.length > 1 ? 's' : ''} selected
                   </p>
                 </div>
               )}

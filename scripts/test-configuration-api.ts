@@ -10,9 +10,9 @@ async function testConfigurationAPI() {
     const products = await prisma.product.findMany({
       where: {
         sku: {
-          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-PRO-001']
-        }
-      }
+          in: ['BC-PREM-001', 'FLY-MKT-001', 'POS-PRO-001'],
+        },
+      },
     })
 
     for (const product of products) {
@@ -43,7 +43,9 @@ async function testConfigurationAPI() {
             if (firstPaper.paperStockCoatings?.length > 0) {
               console.log(`      - Available Coatings:`)
               firstPaper.paperStockCoatings.slice(0, 3).forEach((coating: any) => {
-                console.log(`        • ${coating.coating.name} ${coating.isDefault ? '(Default)' : ''}`)
+                console.log(
+                  `        • ${coating.coating.name} ${coating.isDefault ? '(Default)' : ''}`
+                )
               })
             }
 
@@ -73,7 +75,6 @@ async function testConfigurationAPI() {
     }
 
     console.log('✅ Configuration API test complete!')
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

@@ -5,46 +5,46 @@
  * Direct API calls with valid database IDs
  */
 
-const { PrismaClient } = require('@prisma/client');
-const { Lucia } = require("lucia");
-const { PrismaAdapter } = require("@lucia-auth/adapter-prisma");
+const { PrismaClient } = require('@prisma/client')
+const { Lucia } = require('lucia')
+const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function createProducts() {
-  console.log('🚀 DIRECT API PRODUCT CREATION TEST');
-  console.log('=====================================\n');
+  console.log('🚀 DIRECT API PRODUCT CREATION TEST')
+  console.log('=====================================\n')
 
   try {
     // Create authentication session
-    console.log('🔑 Creating admin authentication...');
-    const adapter = new PrismaAdapter(prisma.session, prisma.user);
+    console.log('🔑 Creating admin authentication...')
+    const adapter = new PrismaAdapter(prisma.session, prisma.user)
     const lucia = new Lucia(adapter, {
-      sessionCookie: { attributes: { secure: process.env.NODE_ENV === "production" } },
+      sessionCookie: { attributes: { secure: process.env.NODE_ENV === 'production' } },
       getUserAttributes: (attributes) => ({
         email: attributes.email,
         name: attributes.name,
         role: attributes.role,
-        emailVerified: attributes.emailVerified
-      })
-    });
+        emailVerified: attributes.emailVerified,
+      }),
+    })
 
-    const adminUser = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
+    const adminUser = await prisma.user.findFirst({ where: { role: 'ADMIN' } })
     if (!adminUser) {
-      throw new Error('No admin user found');
+      throw new Error('No admin user found')
     }
 
-    const session = await lucia.createSession(adminUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    console.log('   ✅ Admin session created\n');
+    const session = await lucia.createSession(adminUser.id, {})
+    const sessionCookie = lucia.createSessionCookie(session.id)
+    console.log('   ✅ Admin session created\n')
 
     // Verified valid IDs from database
     const validData = {
       paperStockId: 'cmfmved0f000013pxt2616umy', // 16pt C2S Cardstock
       quantityGroupId: 'cmfk2y9d0000u10ij4f2rvy3g', // Business Card Quantities
       sizeGroupId: 'cmfk2y9bs000k10ij4vmmgkgf', // Business Card Sizes
-      categoryId: 'business-cards' // Business Cards
-    };
+      categoryId: 'business-cards', // Business Cards
+    }
 
     // Test products to create
     const products = [
@@ -58,9 +58,9 @@ async function createProducts() {
         selectedQuantityGroup: validData.quantityGroupId,
         selectedSizeGroup: validData.sizeGroupId,
         basePrice: 29.99,
-        setupFee: 15.00,
+        setupFee: 15.0,
         productionTime: 3,
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Full-Color Flyers',
@@ -72,9 +72,9 @@ async function createProducts() {
         selectedQuantityGroup: validData.quantityGroupId,
         selectedSizeGroup: validData.sizeGroupId,
         basePrice: 49.99,
-        setupFee: 25.00,
+        setupFee: 25.0,
         productionTime: 5,
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Glossy Postcards',
@@ -86,9 +86,9 @@ async function createProducts() {
         selectedQuantityGroup: validData.quantityGroupId,
         selectedSizeGroup: validData.sizeGroupId,
         basePrice: 39.99,
-        setupFee: 20.00,
+        setupFee: 20.0,
         productionTime: 4,
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Large Format Posters',
@@ -100,51 +100,52 @@ async function createProducts() {
         selectedQuantityGroup: validData.quantityGroupId,
         selectedSizeGroup: validData.sizeGroupId,
         basePrice: 79.99,
-        setupFee: 35.00,
+        setupFee: 35.0,
         productionTime: 7,
-        isActive: true
-      }
-    ];
+        isActive: true,
+      },
+    ]
 
     // Create products using direct API calls
     for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      console.log(`📦 Creating Product ${i + 1}: ${product.name}`);
+      const product = products[i]
+      console.log(`📦 Creating Product ${i + 1}: ${product.name}`)
 
       try {
         const response = await fetch('https://gangrunprinting.com/api/products', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Cookie': `${sessionCookie.name}=${sessionCookie.value}`,
-            'Accept': 'application/json'
+            Cookie: `${sessionCookie.name}=${sessionCookie.value}`,
+            Accept: 'application/json',
           },
-          body: JSON.stringify(product)
-        });
+          body: JSON.stringify(product),
+        })
 
         if (response.ok) {
-          const data = await response.json();
-          console.log(`   ✅ Product created successfully! ID: ${data.id}`);
+          const data = await response.json()
+          console.log(`   ✅ Product created successfully! ID: ${data.id}`)
         } else {
-          const errorData = await response.json().catch(() => ({}));
-          console.log(`   ❌ Failed (${response.status}): ${errorData.error || errorData.details || 'Unknown error'}`);
+          const errorData = await response.json().catch(() => ({}))
+          console.log(
+            `   ❌ Failed (${response.status}): ${errorData.error || errorData.details || 'Unknown error'}`
+          )
 
           if (errorData.details) {
-            console.log(`   📋 Details: ${errorData.details}`);
+            console.log(`   📋 Details: ${errorData.details}`)
           }
         }
       } catch (error) {
-        console.log(`   ❌ Request failed: ${error.message}`);
+        console.log(`   ❌ Request failed: ${error.message}`)
       }
 
-      console.log(''); // Empty line
+      console.log('') // Empty line
     }
-
   } catch (error) {
-    console.error(`❌ Test failed: ${error.message}`);
+    console.error(`❌ Test failed: ${error.message}`)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-createProducts().catch(console.error);
+createProducts().catch(console.error)

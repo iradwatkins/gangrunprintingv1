@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import { StaffTable } from '@/components/admin/staff/staff-table'
 import { RolePermissionsTable } from '@/components/admin/staff/role-permissions-table'
-import { ActivityLogTable } from '@/components/admin/staff/activity-log-table'
+
 import { AddStaffDialog } from '@/components/admin/staff/add-staff-dialog'
 
 interface StaffMember {

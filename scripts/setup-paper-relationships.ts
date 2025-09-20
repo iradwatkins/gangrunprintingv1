@@ -21,11 +21,11 @@ async function setupPaperRelationships() {
 
       // Check existing relationships
       const existingCoatings = await prisma.paperStockCoating.count({
-        where: { paperStockId: paperStock.id }
+        where: { paperStockId: paperStock.id },
       })
 
       const existingSides = await prisma.paperStockSides.count({
-        where: { paperStockId: paperStock.id }
+        where: { paperStockId: paperStock.id },
       })
 
       // Add coating relationships if none exist
@@ -41,8 +41,8 @@ async function setupPaperRelationships() {
             data: {
               paperStockId: paperStock.id,
               coatingId: coating.id,
-              isDefault: i === 0 // First coating as default
-            }
+              isDefault: i === 0, // First coating as default
+            },
           })
         }
         console.log(`   ✅ Added ${coatings.length - 1} coating options`)
@@ -59,18 +59,21 @@ async function setupPaperRelationships() {
           // Skip test/invalid sides
           if (side.name === 'shsdghas') continue
 
-          const priceMultiplier =
-            side.name.includes('Both Sides') ? 1.5 :
-            side.name.includes('Front Only') ? 1.0 :
-            side.name.includes('Different') ? 1.75 : 1.25
+          const priceMultiplier = side.name.includes('Both Sides')
+            ? 1.5
+            : side.name.includes('Front Only')
+              ? 1.0
+              : side.name.includes('Different')
+                ? 1.75
+                : 1.25
 
           await prisma.paperStockSides.create({
             data: {
               paperStockId: paperStock.id,
               sidesOptionId: side.id,
               priceMultiplier,
-              isEnabled: true
-            }
+              isEnabled: true,
+            },
           })
         }
         console.log(`   ✅ Added ${sidesOptions.length - 1} sides options`)
@@ -83,17 +86,16 @@ async function setupPaperRelationships() {
     console.log('\n📊 Verification:')
     for (const paperStock of paperStocks) {
       const coatingCount = await prisma.paperStockCoating.count({
-        where: { paperStockId: paperStock.id }
+        where: { paperStockId: paperStock.id },
       })
       const sidesCount = await prisma.paperStockSides.count({
-        where: { paperStockId: paperStock.id }
+        where: { paperStockId: paperStock.id },
       })
 
       console.log(`${paperStock.name}: ${coatingCount} coatings, ${sidesCount} sides`)
     }
 
     console.log('\n✅ Paper stock relationships configured successfully!')
-
   } catch (error) {
     console.error('❌ Error setting up relationships:', error)
   } finally {

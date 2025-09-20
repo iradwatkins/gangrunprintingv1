@@ -1,5 +1,6 @@
 import sharp from 'sharp'
 import { Buffer } from 'buffer'
+import { IMAGE_SIZES } from '@/config/constants'
 
 export interface ProcessedImage {
   original: Buffer
@@ -27,9 +28,9 @@ export interface ImageProcessingOptions {
 
 const DEFAULT_OPTIONS: ImageProcessingOptions = {
   quality: 85,
-  thumbnailSize: 150,
-  mediumSize: 600,
-  largeSize: 1200,
+  thumbnailSize: IMAGE_SIZES.THUMBNAIL,
+  mediumSize: IMAGE_SIZES.MEDIUM,
+  largeSize: IMAGE_SIZES.LARGE,
   generateWebP: true,
   generateBlurPlaceholder: true,
 }
@@ -128,7 +129,9 @@ export async function processProductImage(
     }
   } catch (error) {
     console.error('Error processing image:', error)
-    throw new Error(`Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
@@ -164,18 +167,18 @@ export async function validateProductImage(
     }
 
     // Check minimum dimensions (at least 300x300)
-    if (metadata.width < 300 || metadata.height < 300) {
+    if (metadata.width < IMAGE_SIZES.MIN_DIMENSION || metadata.height < IMAGE_SIZES.MIN_DIMENSION) {
       return {
         valid: false,
-        error: 'Image must be at least 300x300 pixels',
+        error: `Image must be at least ${IMAGE_SIZES.MIN_DIMENSION}x${IMAGE_SIZES.MIN_DIMENSION} pixels`,
       }
     }
 
     // Check maximum dimensions (no larger than 5000x5000)
-    if (metadata.width > 5000 || metadata.height > 5000) {
+    if (metadata.width > IMAGE_SIZES.MAX_DIMENSION || metadata.height > IMAGE_SIZES.MAX_DIMENSION) {
       return {
         valid: false,
-        error: 'Image dimensions exceed 5000x5000 pixels',
+        error: `Image dimensions exceed ${IMAGE_SIZES.MAX_DIMENSION}x${IMAGE_SIZES.MAX_DIMENSION} pixels`,
       }
     }
 

@@ -1,5 +1,4 @@
 import { reportError, addBreadcrumb } from '@/lib/sentry'
-import { v4 as uuidv4 } from 'uuid'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 export type LogContext =

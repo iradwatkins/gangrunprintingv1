@@ -7,10 +7,7 @@
       "pranaygp.vscode-css-peek"
     ],
     "autoActivate": true,
-    "commands": [
-      "tailwindCSS.showOutput",
-      "color-highlight.activate"
-    ],
+    "commands": ["tailwindCSS.showOutput", "color-highlight.activate"],
     "mcpIntegration": {
       "shadcn-ui": ["vscode-tailwindcss"],
       "playwright": ["coverage-gutters"]

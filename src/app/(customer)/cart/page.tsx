@@ -11,8 +11,9 @@ import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import Image from 'next/image'
 import toast from '@/lib/toast'
+import { PageErrorBoundary } from '@/components/error-boundary'
 
-export default function CartPage() {
+function CartPageContent() {
   const router = useRouter()
   const {
     items: cartItems,
@@ -229,5 +230,13 @@ export default function CartPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CartPage() {
+  return (
+    <PageErrorBoundary pageName="Cart">
+      <CartPageContent />
+    </PageErrorBoundary>
   )
 }

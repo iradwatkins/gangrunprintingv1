@@ -9,8 +9,8 @@
       "MCP Tools Active: ${3:Tools}",
       "Progress: [██████████░░░░░░] ${4:65}%",
       "Next Agent: ${5:Next Agent}",
-      "════════════════════"
-    ]
+      "════════════════════",
+    ],
   },
   "Next.js Page Component": {
     "prefix": "bmad-page",
@@ -27,7 +27,7 @@
       "      ${0:// Component content}",
       "    </div>",
       "  )",
-      "}"
-    ]
-  }
+      "}",
+    ],
+  },
 }
