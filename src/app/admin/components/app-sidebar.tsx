@@ -31,7 +31,6 @@ import {
   TestTube,
   Settings,
   Wrench,
-  Layout,
 } from 'lucide-react'
 
 import { NavMain } from './nav-main'
@@ -156,45 +155,6 @@ const data = {
         {
           title: 'Analytics',
           url: '/admin/marketing/analytics',
-        },
-      ],
-    },
-    {
-      title: 'Home Pages',
-      url: '/admin/home-pages',
-      icon: Layout,
-      items: [
-        {
-          title: 'Manage Pages',
-          url: '/admin/home-pages',
-        },
-        {
-          title: 'Limited Time Offer',
-          url: '/admin/home-pages/limited-time-offer',
-        },
-        {
-          title: 'Featured Product',
-          url: '/admin/home-pages/featured-product',
-        },
-        {
-          title: 'New Customer Welcome',
-          url: '/admin/home-pages/new-customer',
-        },
-        {
-          title: 'Seasonal/Holiday',
-          url: '/admin/home-pages/seasonal',
-        },
-        {
-          title: 'Bulk Discounts',
-          url: '/admin/home-pages/bulk-discounts',
-        },
-        {
-          title: 'Fast Turnaround',
-          url: '/admin/home-pages/fast-turnaround',
-        },
-        {
-          title: 'Local Community',
-          url: '/admin/home-pages/local-community',
         },
       ],
     },
