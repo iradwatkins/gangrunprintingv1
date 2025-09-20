@@ -82,6 +82,7 @@ const data = {
       title: 'Products',
       url: '/admin/products',
       icon: Package,
+      isActive: true,
       items: [
         {
           title: 'All Products',
