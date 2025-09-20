@@ -114,10 +114,12 @@ export default function AddOnsPage() {
       const response = await fetch('/api/add-ons')
       if (!response.ok) throw new Error('Failed to fetch')
       const data = await response.json()
-      setAddOns(data)
+      // Ensure data is always an array
+      setAddOns(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Error fetching add-ons:', error)
       toast.error('Failed to fetch add-ons')
+      setAddOns([]) // Set empty array on error
     } finally {
       setLoading(false)
     }
@@ -320,11 +322,13 @@ export default function AddOnsPage() {
     setDeleteDialogOpen(true)
   }
 
-  const filteredAddOns = addOns.filter(
-    (addOn) =>
-      addOn.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      addOn.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredAddOns = Array.isArray(addOns)
+    ? addOns.filter(
+        (addOn) =>
+          addOn.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          addOn.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : []
 
   const formatPriceDisplay = (addOn: AddOn) => {
     const config = addOn.configuration as any
