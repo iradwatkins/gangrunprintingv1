@@ -21,6 +21,9 @@ const simpleProductSchema = z.object({
   addOnSetId: z.string().optional().nullable(),
   turnaroundTimeSetId: z.string().optional().nullable(),
 
+  // Image URL - optional
+  imageUrl: z.string().optional().nullable(),
+
   // Basic numeric fields - optional for now
   basePrice: z.number().default(0),
   setupFee: z.number().default(0),
@@ -131,9 +134,25 @@ export async function POST(request: NextRequest) {
             isDefault: true,
           },
         } : undefined,
+
+        // Create product image if provided
+        ProductImage: validatedData.imageUrl ? {
+          create: {
+            url: validatedData.imageUrl,
+            thumbnailUrl: validatedData.imageUrl, // Use same URL for simplicity
+            alt: `${validatedData.name} product image`,
+            isPrimary: true,
+            sortOrder: 0,
+          },
+        } : undefined,
       },
       include: {
         ProductCategory: true,
+        ProductImage: {
+          orderBy: {
+            sortOrder: 'asc',
+          },
+        },
         productPaperStockSets: {
           include: {
             paperStockSet: {
