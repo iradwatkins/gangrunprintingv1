@@ -39,106 +39,36 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
 
-const products = [
-  {
-    id: '1',
-    name: 'Business Cards',
-    category: 'Marketing Materials',
-    description: 'Premium quality business cards with various finishes',
-    startingPrice: 29.99,
-    image: '/images/business-cards.jpg',
-    turnaround: '3-5 business days',
-    popular: true,
-    sizes: ['Standard', 'Square', 'Mini'],
-    finishes: ['Matte', 'Gloss', 'UV Coating'],
-  },
-  {
-    id: '2',
-    name: 'Flyers & Brochures',
-    category: 'Marketing Materials',
-    description: 'Eye-catching flyers and brochures for your marketing campaigns',
-    startingPrice: 49.99,
-    image: '/images/flyers.jpg',
-    turnaround: '5-7 business days',
-    popular: false,
-    sizes: ['8.5x11', '5.5x8.5', 'Tri-fold'],
-    finishes: ['Matte', 'Gloss'],
-  },
-  {
-    id: '3',
-    name: 'Posters',
-    category: 'Large Format',
-    description: 'High-quality posters in various sizes',
-    startingPrice: 19.99,
-    image: '/images/posters.jpg',
-    turnaround: '3-5 business days',
-    popular: true,
-    sizes: ['11x17', '18x24', '24x36'],
-    finishes: ['Matte', 'Gloss'],
-  },
-  {
-    id: '4',
-    name: 'Banners',
-    category: 'Large Format',
-    description: 'Durable vinyl banners for indoor and outdoor use',
-    startingPrice: 89.99,
-    image: '/images/banners.jpg',
-    turnaround: '5-7 business days',
-    popular: false,
-    sizes: ['2x4', '3x6', '4x8'],
-    finishes: ['Vinyl', 'Mesh'],
-  },
-  {
-    id: '5',
-    name: 'T-Shirts',
-    category: 'Apparel',
-    description: 'Custom printed t-shirts with your design',
-    startingPrice: 14.99,
-    image: '/images/tshirts.jpg',
-    turnaround: '7-10 business days',
-    popular: true,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    finishes: ['Screen Print', 'DTG'],
-  },
-  {
-    id: '6',
-    name: 'Stickers & Labels',
-    category: 'Marketing Materials',
-    description: 'Custom die-cut stickers and product labels',
-    startingPrice: 24.99,
-    image: '/images/stickers.jpg',
-    turnaround: '3-5 business days',
-    popular: false,
-    sizes: ['2x2', '3x3', 'Custom'],
-    finishes: ['Matte', 'Gloss', 'Clear'],
-  },
-  {
-    id: '7',
-    name: 'Postcards',
-    category: 'Marketing Materials',
-    description: 'Professional postcards for direct mail campaigns',
-    startingPrice: 39.99,
-    image: '/images/postcards.jpg',
-    turnaround: '3-5 business days',
-    popular: false,
-    sizes: ['4x6', '5x7', '6x9'],
-    finishes: ['Matte', 'Gloss', 'UV Coating'],
-  },
-  {
-    id: '8',
-    name: 'Yard Signs',
-    category: 'Large Format',
-    description: 'Weather-resistant yard signs with H-stakes',
-    startingPrice: 34.99,
-    image: '/images/yard-signs.jpg',
-    turnaround: '5-7 business days',
-    popular: false,
-    sizes: ['18x24', '24x36'],
-    finishes: ['Corrugated Plastic'],
-  },
-]
+// Types for API data
+type ProductCategory = {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  sortOrder: number
+  isActive: boolean
+  _count: {
+    Product: number
+  }
+}
 
-const categories = ['All', 'Marketing Materials', 'Large Format', 'Apparel']
+type Product = {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  shortDescription?: string
+  basePrice: number
+  isActive: boolean
+  isFeatured: boolean
+  ProductCategory: ProductCategory
+  ProductImage: Array<{
+    url: string
+    thumbnailUrl?: string
+    alt?: string
+    isPrimary: boolean
+  }>
+}
 const sortOptions = [
   { label: 'Featured', value: 'featured' },
   { label: 'Price: Low to High', value: 'price-asc' },
@@ -146,71 +76,94 @@ const sortOptions = [
   { label: 'Name A-Z', value: 'name-asc' },
 ]
 
-const turnaroundOptions = ['3-5 business days', '5-7 business days', '7-10 business days']
-const finishOptions = ['Matte', 'Gloss', 'UV Coating', 'Vinyl', 'Screen Print', 'DTG']
-
 function ProductsPageContent() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedTurnarounds, setSelectedTurnarounds] = useState<string[]>([])
-  const [selectedFinishes, setSelectedFinishes] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState([0, 200])
   const [sortBy, setSortBy] = useState('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [isLoading, _setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+
+  // API data state
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<ProductCategory[]>([])
+  const [fetchError, setFetchError] = useState<string | null>(null)
+
+  // Fetch categories and products
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        setFetchError(null)
+
+        // Fetch categories and products in parallel
+        const [categoriesResponse, productsResponse] = await Promise.all([
+          fetch('/api/product-categories?active=true&withProducts=true'),
+          fetch('/api/products?isActive=true')
+        ])
+
+        if (!categoriesResponse.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+        if (!productsResponse.ok) {
+          throw new Error('Failed to fetch products')
+        }
+
+        const [categoriesData, productsData] = await Promise.all([
+          categoriesResponse.json(),
+          productsResponse.json()
+        ])
+
+        setCategories(categoriesData)
+        setProducts(productsData)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setFetchError(error instanceof Error ? error.message : 'Failed to load data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   // Handle URL search parameters
   useEffect(() => {
     const categoryParam = searchParams.get('category')
-    if (categoryParam) {
-      // Map URL category to display category name
-      const categoryMap: Record<string, string> = {
-        'business-cards': 'Marketing Materials',
-        flyers: 'Marketing Materials',
-        banners: 'Large Format',
-        stickers: 'Marketing Materials',
-        apparel: 'Apparel',
-        postcards: 'Marketing Materials',
-      }
-
-      const displayCategory = categoryMap[categoryParam]
-      if (displayCategory && !selectedCategories.includes(displayCategory)) {
-        setSelectedCategories([displayCategory])
+    if (categoryParam && categories.length > 0) {
+      // Find category by slug
+      const category = categories.find(cat => cat.slug === categoryParam)
+      if (category && !selectedCategories.includes(category.name)) {
+        setSelectedCategories([category.name])
       }
     }
-  }, [searchParams, selectedCategories])
+  }, [searchParams, selectedCategories, categories])
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (product.shortDescription && product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
       const matchesCategory =
-        selectedCategories.length === 0 || selectedCategories.includes(product.category)
-      const matchesTurnaround =
-        selectedTurnarounds.length === 0 || selectedTurnarounds.includes(product.turnaround)
-      const matchesFinish =
-        selectedFinishes.length === 0 || product.finishes.some((f) => selectedFinishes.includes(f))
-      const matchesPrice =
-        product.startingPrice >= priceRange[0] && product.startingPrice <= priceRange[1]
+        selectedCategories.length === 0 || selectedCategories.includes(product.ProductCategory.name)
 
-      return matchesSearch && matchesCategory && matchesTurnaround && matchesFinish && matchesPrice
+      return matchesSearch && matchesCategory
     })
-  }, [searchQuery, selectedCategories, selectedTurnarounds, selectedFinishes, priceRange])
+  }, [searchQuery, selectedCategories, products])
 
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts]
     switch (sortBy) {
       case 'price-asc':
-        return sorted.sort((a, b) => a.startingPrice - b.startingPrice)
+        return sorted.sort((a, b) => a.basePrice - b.basePrice)
       case 'price-desc':
-        return sorted.sort((a, b) => b.startingPrice - a.startingPrice)
+        return sorted.sort((a, b) => b.basePrice - a.basePrice)
       case 'name-asc':
         return sorted.sort((a, b) => a.name.localeCompare(b.name))
       default: // featured
-        return sorted.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0))
+        return sorted.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0))
     }
   }, [filteredProducts, sortBy])
 
@@ -220,37 +173,17 @@ function ProductsPageContent() {
     )
   }
 
-  const toggleTurnaround = (turnaround: string) => {
-    setSelectedTurnarounds((prev) =>
-      prev.includes(turnaround) ? prev.filter((t) => t !== turnaround) : [...prev, turnaround]
-    )
-  }
-
-  const toggleFinish = (finish: string) => {
-    setSelectedFinishes((prev) =>
-      prev.includes(finish) ? prev.filter((f) => f !== finish) : [...prev, finish]
-    )
-  }
-
   const clearFilters = () => {
     setSelectedCategories([])
-    setSelectedTurnarounds([])
-    setSelectedFinishes([])
-    setPriceRange([0, 200])
     setSearchQuery('')
   }
 
-  const activeFiltersCount =
-    selectedCategories.length +
-    selectedTurnarounds.length +
-    selectedFinishes.length +
-    (priceRange[0] > 0 || priceRange[1] < 200 ? 1 : 0)
+  const activeFiltersCount = selectedCategories.length
 
   const FilterContent = () => (
     <div className="space-y-6">
       {/* Categories */}
       <div>
-        <h3 className="font-semibold mb-3">Categories</h3>
         <div className="space-y-2">
           {categories
             .filter((c) => c !== 'All')
@@ -273,71 +206,9 @@ function ProductsPageContent() {
         </div>
       </div>
 
-      {/* Price Range */}
-      <div>
-        <h3 className="font-semibold mb-3">Price Range</h3>
-        <div className="space-y-3">
-          <Slider
-            className="[&_[role=slider]]:bg-primary"
-            max={200}
-            min={0}
-            step={10}
-            value={priceRange}
-            onValueChange={setPriceRange}
-          />
-          <div className="flex items-center justify-between text-sm">
-            <span>${priceRange[0]}</span>
-            <span>${priceRange[1]}+</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Turnaround Time */}
-      <div>
-        <h3 className="font-semibold mb-3">Turnaround Time</h3>
-        <div className="space-y-2">
-          {turnaroundOptions.map((turnaround) => (
-            <div key={turnaround} className="flex items-center space-x-2">
-              <Checkbox
-                checked={selectedTurnarounds.includes(turnaround)}
-                className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                id={`turnaround-${turnaround}`}
-                onCheckedChange={() => toggleTurnaround(turnaround)}
-              />
-              <Label
-                className="text-sm font-normal cursor-pointer"
-                htmlFor={`turnaround-${turnaround}`}
-              >
-                {turnaround}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Finish Options */}
-      <div>
-        <h3 className="font-semibold mb-3">Finish</h3>
-        <div className="space-y-2">
-          {finishOptions.map((finish) => (
-            <div key={finish} className="flex items-center space-x-2">
-              <Checkbox
-                checked={selectedFinishes.includes(finish)}
-                className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                id={`finish-${finish}`}
-                onCheckedChange={() => toggleFinish(finish)}
-              />
-              <Label className="text-sm font-normal cursor-pointer" htmlFor={`finish-${finish}`}>
-                {finish}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {activeFiltersCount > 0 && (
-        <Button className="w-full" variant="outline" onClick={clearFilters}>
-          Clear All Filters
+      {selectedCategories.length > 0 && (
+        <Button className="w-full" variant="outline" onClick={() => setSelectedCategories([])}>
+          Clear Categories
         </Button>
       )}
     </div>
@@ -370,12 +241,12 @@ function ProductsPageContent() {
 
           {/* Controls */}
           <div className="flex gap-2">
-            {/* Mobile Filter Toggle */}
+            {/* Mobile Categories Toggle */}
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
                 <Button className="lg:hidden" variant="outline">
                   <SlidersHorizontal className="mr-2 h-4 w-4" />
-                  Filters
+                  Categories
                   {activeFiltersCount > 0 && (
                     <Badge className="ml-2 bg-primary text-primary-foreground">
                       {activeFiltersCount}
@@ -383,10 +254,10 @@ function ProductsPageContent() {
                   )}
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[300px]" side="left">
+              <SheetContent className="w-[300px]" side="right">
                 <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                  <SheetDescription>Refine your product search</SheetDescription>
+                  <SheetTitle>Product Categories</SheetTitle>
+                  <SheetDescription>Browse products by category</SheetDescription>
                 </SheetHeader>
                 <div className="mt-6">
                   <FilterContent />
@@ -440,7 +311,7 @@ function ProductsPageContent() {
           </div>
         </div>
 
-        {/* Active Filters Display */}
+        {/* Active Categories Display */}
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2">
             {selectedCategories.map((category) => (
@@ -458,66 +329,12 @@ function ProductsPageContent() {
                 </button>
               </Badge>
             ))}
-            {selectedTurnarounds.map((turnaround) => (
-              <Badge
-                key={turnaround}
-                className="bg-primary/10 text-primary border-primary/20"
-                variant="secondary"
-              >
-                {turnaround}
-                <button
-                  className="ml-2 hover:text-primary-foreground"
-                  onClick={() => toggleTurnaround(turnaround)}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-            {selectedFinishes.map((finish) => (
-              <Badge
-                key={finish}
-                className="bg-primary/10 text-primary border-primary/20"
-                variant="secondary"
-              >
-                {finish}
-                <button
-                  className="ml-2 hover:text-primary-foreground"
-                  onClick={() => toggleFinish(finish)}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-            {(priceRange[0] > 0 || priceRange[1] < 200) && (
-              <Badge className="bg-primary/10 text-primary border-primary/20" variant="secondary">
-                ${priceRange[0]} - ${priceRange[1]}
-                <button
-                  className="ml-2 hover:text-primary-foreground"
-                  onClick={() => setPriceRange([0, 200])}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )}
           </div>
         )}
       </div>
 
       {/* Main Content */}
       <div className="flex gap-8">
-        {/* Desktop Filters Sidebar */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">Filters</h2>
-              {activeFiltersCount > 0 && (
-                <Badge className="bg-primary text-primary-foreground">{activeFiltersCount}</Badge>
-              )}
-            </div>
-            <FilterContent />
-          </Card>
-        </aside>
-
         {/* Products Grid/List */}
         <div className="flex-1">
           <div className="flex items-center justify-between mb-4">
@@ -649,6 +466,19 @@ function ProductsPageContent() {
             </Card>
           )}
         </div>
+
+        {/* Desktop Categories Sidebar - Right Side */}
+        <aside className="hidden lg:block w-64 flex-shrink-0">
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold">Product Categories</h2>
+              {activeFiltersCount > 0 && (
+                <Badge className="bg-primary text-primary-foreground">{activeFiltersCount}</Badge>
+              )}
+            </div>
+            <FilterContent />
+          </Card>
+        </aside>
       </div>
     </div>
   )
