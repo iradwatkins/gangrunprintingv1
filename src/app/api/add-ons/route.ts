@@ -1,4 +1,4 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/api/auth'
@@ -10,7 +10,7 @@ const createAddOnSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   tooltipText: z.string().optional(),
-  pricingModel: z.enum(['FIXED_FEE', 'PERCENTAGE', 'PER_UNIT']),
+  pricingModel: z.enum(['FLAT', 'PERCENTAGE', 'PER_UNIT', 'CUSTOM']),
   configuration: z.record(z.any()).default({}),
   additionalTurnaroundDays: z.number().min(0).default(0),
   sortOrder: z.number().min(0).default(0),
@@ -39,7 +39,8 @@ export async function GET(request: NextRequest) {
     })
 
     console.log(`Found ${addOns.length} add-ons`)
-    return successResponse(addOns)
+    // Return the array directly for compatibility with frontend
+    return NextResponse.json(addOns)
   } catch (error) {
     console.error('Error fetching add-ons:', error)
     return handleApiError(error, 'Failed to fetch add-ons')
