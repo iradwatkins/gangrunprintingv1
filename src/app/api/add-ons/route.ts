@@ -23,27 +23,27 @@ export async function GET(request: NextRequest) {
   try {
     console.log('Fetching add-ons from database...')
 
-    const searchParams = request.nextUrl.searchParams
-    const validation = validateSearchParams(searchParams, querySchemas.activeFilter)
-
-    if (!validation.success) {
-      return commonErrors.badRequest(`Invalid query parameters: ${validation.errors.join(', ')}`)
-    }
-
-    const { active } = validation.data
-    const where = active !== undefined ? { isActive: active } : {}
-
     const addOns = await prisma.addOn.findMany({
-      where,
       orderBy: { sortOrder: 'asc' },
     })
 
-    console.log(`Found ${addOns.length} add-ons`)
-    // Return the array directly for compatibility with frontend
-    return NextResponse.json(addOns)
+    console.log(`Found ${addOns.length} add-ons, returning as plain array`)
+
+    // Return the most basic response possible
+    return new Response(JSON.stringify(addOns), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   } catch (error) {
     console.error('Error fetching add-ons:', error)
-    return handleApiError(error, 'Failed to fetch add-ons')
+    return new Response(JSON.stringify({ error: 'Failed to fetch add-ons' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   }
 }
 
