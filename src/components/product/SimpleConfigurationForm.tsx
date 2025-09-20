@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
-import AddonAccordion from './AddonAccordion'
+import AddonAccordionEnhanced from './AddonAccordionEnhanced'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -63,11 +63,18 @@ interface SimpleConfigData {
     id: string
     name: string
     description: string
-    pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT'
-    price: number
-    priceDisplay: string
-    isDefault: boolean
-    additionalTurnaroundDays: number
+    pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM' | 'FLAT'
+    price?: number
+    priceDisplay?: string
+    configuration?: {
+      type?: string
+      basePrice?: number
+      pricePerPiece?: number
+      displayPrice?: string
+      [key: string]: any
+    }
+    isDefault?: boolean
+    additionalTurnaroundDays?: number
   }>
   turnaroundTimes: Array<{
     id: string
@@ -104,6 +111,11 @@ interface UploadedFile {
   isImage: boolean
 }
 
+interface VariableDataConfig {
+  locationsCount: number
+  locations: string[]
+}
+
 interface SimpleProductConfiguration {
   quantity: string
   customQuantity?: number // For custom quantity input when "Custom" is selected
@@ -116,6 +128,7 @@ interface SimpleProductConfiguration {
   turnaround: string
   uploadedFiles: UploadedFile[]
   selectedAddons: string[]
+  variableDataConfig?: VariableDataConfig // For Variable Data add-on
 }
 
 interface SimpleConfigurationFormProps {
@@ -153,6 +166,7 @@ export default function SimpleConfigurationForm({
     turnaround: '',
     uploadedFiles: [],
     selectedAddons: [],
+    variableDataConfig: undefined,
   })
 
   // Fetch configuration data
@@ -283,16 +297,24 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          switch (addon.pricingModel) {
-            case 'FIXED_FEE':
-              addonCosts += addon.price
-              break
-            case 'PERCENTAGE':
-              addonCosts += baseProductPrice * addon.price
-              break
-            case 'PER_UNIT':
-              addonCosts += quantity * addon.price
-              break
+          // Handle Variable Data addon with custom pricing
+          if (addon.pricingModel === 'CUSTOM' && addon.configuration?.type === 'variable_data') {
+            const basePrice = addon.configuration.basePrice || 60
+            const pricePerPiece = addon.configuration.pricePerPiece || 0.02
+            addonCosts += basePrice + (pricePerPiece * quantity)
+          } else {
+            switch (addon.pricingModel) {
+              case 'FIXED_FEE':
+              case 'FLAT':
+                addonCosts += addon.price || 0
+                break
+              case 'PERCENTAGE':
+                addonCosts += baseProductPrice * (addon.price || 0)
+                break
+              case 'PER_UNIT':
+                addonCosts += quantity * (addon.price || 0)
+                break
+            }
           }
         }
       })
@@ -367,16 +389,24 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          switch (addon.pricingModel) {
-            case 'FIXED_FEE':
-              addonCosts += addon.price
-              break
-            case 'PERCENTAGE':
-              addonCosts += baseProductPrice * addon.price
-              break
-            case 'PER_UNIT':
-              addonCosts += quantity * addon.price
-              break
+          // Handle Variable Data addon with custom pricing
+          if (addon.pricingModel === 'CUSTOM' && addon.configuration?.type === 'variable_data') {
+            const basePrice = addon.configuration.basePrice || 60
+            const pricePerPiece = addon.configuration.pricePerPiece || 0.02
+            addonCosts += basePrice + (pricePerPiece * quantity)
+          } else {
+            switch (addon.pricingModel) {
+              case 'FIXED_FEE':
+              case 'FLAT':
+                addonCosts += addon.price || 0
+                break
+              case 'PERCENTAGE':
+                addonCosts += baseProductPrice * (addon.price || 0)
+                break
+              case 'PER_UNIT':
+                addonCosts += quantity * (addon.price || 0)
+                break
+            }
           }
         }
       })
@@ -427,8 +457,8 @@ export default function SimpleConfigurationForm({
   }
 
   // Handle addon changes
-  const handleAddonChange = (selectedAddonIds: string[]) => {
-    const newConfig = { ...configuration, selectedAddons: selectedAddonIds }
+  const handleAddonChange = (selectedAddonIds: string[], variableData?: VariableDataConfig) => {
+    const newConfig = { ...configuration, selectedAddons: selectedAddonIds, variableDataConfig: variableData }
     setConfiguration(newConfig)
 
     const price = calculatePrice(newConfig)
@@ -873,11 +903,13 @@ export default function SimpleConfigurationForm({
       </div>
 
       {/* Add-ons & Upgrades Section */}
-      <AddonAccordion
+      <AddonAccordionEnhanced
         addons={configData.addons || []}
         disabled={loading}
         selectedAddons={configuration.selectedAddons}
+        variableDataConfig={configuration.variableDataConfig}
         onAddonChange={handleAddonChange}
+        quantity={getQuantityValue(configuration)}
       />
 
       {/* Turnaround Time Selection */}

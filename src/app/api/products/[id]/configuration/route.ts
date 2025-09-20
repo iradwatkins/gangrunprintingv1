@@ -319,6 +319,81 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Continue with hardcoded fallback
     }
 
+    // Try to fetch add-ons from database
+    let addons = SIMPLE_CONFIG.addons // Default fallback
+
+    try {
+      console.log('[Config API] Fetching add-ons...')
+      const addOnsData = await prisma.addOn.findMany({
+        where: {
+          isActive: true,
+        },
+        orderBy: {
+          sortOrder: 'asc',
+        },
+      })
+
+      if (addOnsData.length > 0) {
+        console.log('[Config API] Found', addOnsData.length, 'add-ons')
+        addons = addOnsData.map((addon, index) => {
+          // Handle Variable Data addon specially
+          if (addon.configuration && typeof addon.configuration === 'object') {
+            const config = addon.configuration as any
+            if (config.type === 'variable_data') {
+              return {
+                id: addon.id,
+                name: addon.name,
+                description: addon.description || '',
+                pricingModel: addon.pricingModel,
+                configuration: config,
+                priceDisplay: config.displayPrice || '',
+                isDefault: false,
+                additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
+              }
+            }
+          }
+
+          // For other add-ons, determine the price display
+          let priceDisplay = ''
+          let price = 0
+
+          const config = addon.configuration as any
+          if (config) {
+            if (config.price !== undefined) {
+              price = config.price
+              priceDisplay = `$${config.price}`
+            } else if (config.basePrice !== undefined) {
+              price = config.basePrice
+              priceDisplay = `$${config.basePrice}`
+            } else if (config.percentage !== undefined) {
+              price = config.percentage
+              priceDisplay = `${config.percentage}%`
+            } else if (config.pricePerUnit !== undefined) {
+              price = config.pricePerUnit
+              priceDisplay = `$${config.pricePerUnit}/pc`
+            }
+          }
+
+          return {
+            id: addon.id,
+            name: addon.name,
+            description: addon.description || '',
+            pricingModel: addon.pricingModel,
+            price,
+            priceDisplay,
+            configuration: config || {},
+            isDefault: false,
+            additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
+          }
+        })
+      } else {
+        console.log('[Config API] No add-ons found, using defaults')
+      }
+    } catch (dbError) {
+      console.error('[Config API] Database error fetching add-ons:', dbError)
+      // Continue with hardcoded fallback
+    }
+
     // Try to fetch turnaround times from database
     let turnaroundTimes = SIMPLE_CONFIG.turnaroundTimes // Default fallback
 
@@ -399,11 +474,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Continue with hardcoded fallback
     }
 
-    // Build the configuration object with dynamic quantities, sizes and turnaround times
+    // Build the configuration object with dynamic quantities, sizes, addons and turnaround times
     const config = {
       ...SIMPLE_CONFIG,
       quantities,
       sizes,
+      addons,
       turnaroundTimes,
     }
 
