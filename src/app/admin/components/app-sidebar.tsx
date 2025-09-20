@@ -112,6 +112,10 @@ const data = {
           url: '/admin/add-ons',
         },
         {
+          title: 'Add-on Sets',
+          url: '/admin/addon-sets',
+        },
+        {
           title: 'Turnaround Times',
           url: '/admin/turnaround-times',
         },

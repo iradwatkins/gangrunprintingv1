@@ -79,6 +79,12 @@ const navigationStructure = [
         description: 'Printing add-ons',
       },
       {
+        title: 'Add-on Sets',
+        href: '/admin/addon-sets',
+        icon: Layers,
+        description: 'Manage add-on sets',
+      },
+      {
         title: 'Quantities',
         href: '/admin/quantities',
         icon: Grid3x3,
