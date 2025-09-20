@@ -557,7 +557,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     config.defaults = updatedDefaults
 
     // Fetch AddOn Sets for this product
-    let addonsGrouped = null
+    let addonSetsGrouped = null
     try {
       console.log('[Config API] Fetching AddOn Sets for product:', productId)
 
@@ -620,7 +620,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           }
         })
 
-        addonsGrouped = {
+        addonSetsGrouped = {
           aboveDropdown,
           inDropdown,
           belowDropdown,
@@ -640,10 +640,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       console.error('[Config API] Error fetching AddOn Sets:', addOnError)
     }
 
-    // Add addonsGrouped to the response
+    // Add addonsGrouped to the response (use the new addonSetsGrouped if available, otherwise use the existing one)
     const responseData = {
       ...config,
-      addonsGrouped,
+      addonsGrouped: addonSetsGrouped || addonsGrouped,
     }
 
     return NextResponse.json(responseData, {
