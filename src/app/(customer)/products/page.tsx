@@ -1,11 +1,13 @@
 'use client'
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   ArrowUpDown,
   ChevronDown,
+  ChevronRight,
   Grid3x3,
   List,
   Package,
@@ -18,6 +20,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Collapsible,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +43,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Slider } from '@/components/ui/slider'
 
 // Types for API data
 type ProductCategory = {
@@ -89,6 +94,10 @@ function ProductsPageContent() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<ProductCategory[]>([])
   const [fetchError, setFetchError] = useState<string | null>(null)
+
+  // Category expansion state for dropdowns
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([])
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([])
 
   // Fetch categories and products
   useEffect(() => {
@@ -146,12 +155,16 @@ function ProductsPageContent() {
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (product.shortDescription && product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
-      const matchesCategory =
-        selectedCategories.length === 0 || selectedCategories.includes(product.ProductCategory.name)
 
-      return matchesSearch && matchesCategory
+      // Filter by selected categories OR selected individual products
+      const matchesSelection =
+        (selectedCategories.length === 0 && selectedProducts.length === 0) ||
+        selectedCategories.includes(product.ProductCategory.name) ||
+        selectedProducts.includes(product.id)
+
+      return matchesSearch && matchesSelection
     })
-  }, [searchQuery, selectedCategories, products])
+  }, [searchQuery, selectedCategories, selectedProducts, products])
 
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts]
@@ -171,44 +184,121 @@ function ProductsPageContent() {
     setSelectedCategories((prev) =>
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     )
+    // Clear any individually selected products from this category when toggling category
+    if (!selectedCategories.includes(category)) {
+      const categoryProducts = products.filter(p => p.ProductCategory.name === category).map(p => p.id)
+      setSelectedProducts(prev => prev.filter(id => !categoryProducts.includes(id)))
+    }
+  }
+
+  const toggleProduct = (productId: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    )
+  }
+
+  const toggleCategoryExpansion = (categoryId: string) => {
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
+    )
   }
 
   const clearFilters = () => {
     setSelectedCategories([])
+    setSelectedProducts([])
     setSearchQuery('')
   }
 
-  const activeFiltersCount = selectedCategories.length
+  const activeFiltersCount = selectedCategories.length + selectedProducts.length
+
+  // Group products by category for dropdown display
+  const productsByCategory = useMemo(() => {
+    const grouped: Record<string, Product[]> = {}
+    products.forEach((product) => {
+      const categoryName = product.ProductCategory.name
+      if (!grouped[categoryName]) {
+        grouped[categoryName] = []
+      }
+      grouped[categoryName].push(product)
+    })
+    return grouped
+  }, [products])
 
   const FilterContent = () => (
-    <div className="space-y-6">
-      {/* Categories */}
-      <div>
-        <div className="space-y-2">
-          {categories
-            .filter((c) => c !== 'All')
-            .map((category) => (
-              <div key={category} className="flex items-center space-x-2">
-                <Checkbox
-                  checked={selectedCategories.includes(category)}
-                  className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  id={`category-${category}`}
-                  onCheckedChange={() => toggleCategory(category)}
-                />
-                <Label
-                  className="text-sm font-normal cursor-pointer"
-                  htmlFor={`category-${category}`}
-                >
-                  {category}
-                </Label>
+    <div className="space-y-4">
+      {/* Categories with Product Dropdowns */}
+      <div className="space-y-2">
+        {categories
+          .filter((category) => category.isActive)
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((category) => {
+            const categoryProducts = productsByCategory[category.name] || []
+            const isExpanded = expandedCategories.includes(category.id)
+
+            return (
+              <div key={category.id} className="border rounded-lg">
+                {/* Category Header */}
+                <div className="flex items-center space-x-2 p-3">
+                  <Checkbox
+                    checked={selectedCategories.includes(category.name)}
+                    className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    id={`category-${category.id}`}
+                    onCheckedChange={() => toggleCategory(category.name)}
+                  />
+                  <Label
+                    className="text-sm font-medium cursor-pointer flex-1"
+                    htmlFor={`category-${category.id}`}
+                  >
+                    {category.name}
+                    <span className="text-xs text-muted-foreground ml-1">
+                      ({category._count.Product})
+                    </span>
+                  </Label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => toggleCategoryExpansion(category.id)}
+                  >
+                    {isExpanded ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+
+                {/* Product Dropdown */}
+                <Collapsible open={isExpanded}>
+                  <CollapsibleContent className="px-6 pb-3">
+                    <div className="space-y-2 border-t pt-2">
+                      {categoryProducts.map((product) => (
+                        <div key={product.id} className="flex items-center space-x-2 pl-4">
+                          <Checkbox
+                            checked={selectedProducts.includes(product.id)}
+                            className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            id={`product-${product.id}`}
+                            onCheckedChange={() => toggleProduct(product.id)}
+                          />
+                          <Label
+                            className="text-xs font-normal cursor-pointer text-muted-foreground"
+                            htmlFor={`product-${product.id}`}
+                          >
+                            {product.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
-            ))}
-        </div>
+            )
+          })}
       </div>
 
-      {selectedCategories.length > 0 && (
-        <Button className="w-full" variant="outline" onClick={() => setSelectedCategories([])}>
-          Clear Categories
+      {activeFiltersCount > 0 && (
+        <Button className="w-full" variant="outline" onClick={clearFilters}>
+          Clear All
         </Button>
       )}
     </div>
@@ -311,16 +401,16 @@ function ProductsPageContent() {
           </div>
         </div>
 
-        {/* Active Categories Display */}
+        {/* Active Filters Display */}
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2">
             {selectedCategories.map((category) => (
               <Badge
-                key={category}
+                key={`category-${category}`}
                 className="bg-primary/10 text-primary border-primary/20"
                 variant="secondary"
               >
-                {category}
+                {category} (Category)
                 <button
                   className="ml-2 hover:text-primary-foreground"
                   onClick={() => toggleCategory(category)}
@@ -329,6 +419,24 @@ function ProductsPageContent() {
                 </button>
               </Badge>
             ))}
+            {selectedProducts.map((productId) => {
+              const product = products.find(p => p.id === productId)
+              return product ? (
+                <Badge
+                  key={`product-${productId}`}
+                  className="bg-secondary/10 text-secondary-foreground border-secondary/20"
+                  variant="secondary"
+                >
+                  {product.name}
+                  <button
+                    className="ml-2 hover:text-secondary-foreground"
+                    onClick={() => toggleProduct(productId)}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ) : null
+            })}
           </div>
         )}
       </div>
@@ -343,7 +451,19 @@ function ProductsPageContent() {
             </p>
           </div>
 
-          {isLoading ? (
+          {fetchError ? (
+            <Card className="p-12">
+              <div className="text-center">
+                <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">
+                  Error loading products: {fetchError}
+                </p>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Try Again
+                </Button>
+              </div>
+            </Card>
+          ) : isLoading ? (
             <div
               className={
                 viewMode === 'grid'
@@ -364,91 +484,99 @@ function ProductsPageContent() {
             </div>
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sortedProducts.map((product) => (
-                <Link key={product.id} href={`/products/${product.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
-                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
-                      {product.popular && (
-                        <Badge className="absolute top-3 right-3 z-10 bg-primary text-primary-foreground">
-                          Popular
-                        </Badge>
-                      )}
-                      <div className="w-full h-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Package className="h-20 w-20 text-primary/30" />
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
-                        {product.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
-                      <p className="text-sm mb-3 line-clamp-2">{product.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-sm text-muted-foreground">Starting at</span>
-                          <p className="text-lg font-bold text-primary">${product.startingPrice}</p>
-                        </div>
-                        <Badge className="text-xs" variant="outline">
-                          {product.turnaround}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sortedProducts.map((product) => (
-                <Link key={product.id} href={`/products/${product.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
-                    <div className="flex">
-                      <div className="w-48 bg-gradient-to-br from-primary/10 to-primary/5 relative flex-shrink-0">
-                        {product.popular && (
-                          <Badge className="absolute top-3 left-3 z-10 bg-primary text-primary-foreground">
-                            Popular
+              {sortedProducts.map((product) => {
+                const primaryImage = product.ProductImage.find(img => img.isPrimary) || product.ProductImage[0]
+                return (
+                  <Link key={product.id} href={`/products/${product.slug}`}>
+                    <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
+                      <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
+                        {product.isFeatured && (
+                          <Badge className="absolute top-3 right-3 z-10 bg-primary text-primary-foreground">
+                            Featured
                           </Badge>
                         )}
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="h-16 w-16 text-primary/30" />
+                        <div className="w-full h-full flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                          {primaryImage ? (
+                            <Image
+                              alt={primaryImage.alt || product.name}
+                              className="w-full h-full object-cover"
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              src={primaryImage.thumbnailUrl || primaryImage.url}
+                            />
+                          ) : (
+                            <Package className="h-20 w-20 text-primary/30" />
+                          )}
                         </div>
                       </div>
-                      <CardContent className="flex-1 p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-xl mb-1 group-hover:text-primary transition-colors">
-                              {product.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
-                            <p className="text-sm mb-3">{product.description}</p>
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              {product.sizes.slice(0, 3).map((size) => (
-                                <Badge key={size} className="text-xs" variant="outline">
-                                  {size}
-                                </Badge>
-                              ))}
-                              {product.sizes.length > 3 && (
-                                <Badge className="text-xs" variant="outline">
-                                  +{product.sizes.length - 3} more
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-right ml-4">
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
+                          {product.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-2">{product.ProductCategory.name}</p>
+                        <p className="text-sm mb-3 line-clamp-2">{product.shortDescription || product.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div>
                             <span className="text-sm text-muted-foreground">Starting at</span>
-                            <p className="text-2xl font-bold text-primary">
-                              ${product.startingPrice}
-                            </p>
-                            <Badge className="mt-2" variant="outline">
-                              {product.turnaround}
-                            </Badge>
+                            <p className="text-lg font-bold text-primary">${product.basePrice.toFixed(2)}</p>
                           </div>
                         </div>
                       </CardContent>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {sortedProducts.map((product) => {
+                const primaryImage = product.ProductImage.find(img => img.isPrimary) || product.ProductImage[0]
+                return (
+                  <Link key={product.id} href={`/products/${product.slug}`}>
+                    <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
+                      <div className="flex">
+                        <div className="w-48 bg-gradient-to-br from-primary/10 to-primary/5 relative flex-shrink-0">
+                          {product.isFeatured && (
+                            <Badge className="absolute top-3 left-3 z-10 bg-primary text-primary-foreground">
+                              Featured
+                            </Badge>
+                          )}
+                          <div className="w-full h-full flex items-center justify-center relative">
+                            {primaryImage ? (
+                              <Image
+                                alt={primaryImage.alt || product.name}
+                                className="w-full h-full object-cover"
+                                fill
+                                sizes="192px"
+                                src={primaryImage.thumbnailUrl || primaryImage.url}
+                              />
+                            ) : (
+                              <Package className="h-16 w-16 text-primary/30" />
+                            )}
+                          </div>
+                        </div>
+                        <CardContent className="flex-1 p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-xl mb-1 group-hover:text-primary transition-colors">
+                                {product.name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground mb-2">{product.ProductCategory.name}</p>
+                              <p className="text-sm mb-3">{product.shortDescription || product.description}</p>
+                            </div>
+                            <div className="text-right ml-4">
+                              <span className="text-sm text-muted-foreground">Starting at</span>
+                              <p className="text-2xl font-bold text-primary">
+                                ${product.basePrice.toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </div>
+                    </Card>
+                  </Link>
+                )
+              })}
             </div>
           )}
 

@@ -58,14 +58,10 @@ export default function NewProductPage() {
     selectedTurnaroundTimeSet: '', // Single turnaround time set ID
 
     // Turnaround
-    productionTime: 3,
     rushAvailable: false,
     rushDays: 1,
     rushFee: 0,
 
-    // Pricing
-    basePrice: 0,
-    setupFee: 0,
   })
 
   // Fetch data on component mount - simple pattern like paper-stocks page
@@ -207,8 +203,6 @@ export default function NewProductPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          basePrice: formData.basePrice,
-          setupFee: formData.setupFee,
           paperStockSet: formData.selectedPaperStockSet,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
@@ -321,9 +315,6 @@ export default function NewProductPage() {
       paperStockSetId: formData.selectedPaperStockSet,
       quantityGroupId: formData.selectedQuantityGroup,
       sizeGroupId: formData.selectedSizeGroup,
-      basePrice: formData.basePrice || 0,
-      setupFee: formData.setupFee || 0,
-      productionTime: formData.productionTime || 3,
       imageUrl: formData.imageUrl || null,
     }
 
@@ -1086,54 +1077,6 @@ export default function NewProductPage() {
         </CardContent>
       </Card>
 
-      {/* Pricing */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Pricing</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="base-price">Base Price ($)</Label>
-              <Input
-                id="base-price"
-                step="0.01"
-                type="number"
-                value={formData.basePrice}
-                onChange={(e) =>
-                  setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="setup-fee">Setup Fee ($)</Label>
-              <Input
-                id="setup-fee"
-                step="0.01"
-                type="number"
-                value={formData.setupFee}
-                onChange={(e) =>
-                  setFormData({ ...formData, setupFee: parseFloat(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="production">Default Production Time (days)</Label>
-              <Input
-                id="production"
-                type="number"
-                value={formData.productionTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
