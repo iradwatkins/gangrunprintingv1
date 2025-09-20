@@ -140,7 +140,11 @@ function EditProductClient({ id }: { id: string }) {
       if (paperRes.ok) setPaperStockSets(await paperRes.json())
       if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
       if (sizeRes.ok) setSizeGroups(await sizeRes.json())
-      if (addOnRes.ok) setAddOns(await addOnRes.json())
+      if (addOnRes.ok) {
+        const addOnData = await addOnRes.json()
+        // Handle both array and object with data property
+        setAddOns(Array.isArray(addOnData) ? addOnData : (addOnData.data || []))
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error)
     }
@@ -572,7 +576,7 @@ function EditProductClient({ id }: { id: string }) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            {addOns
+            {Array.isArray(addOns) && addOns
               .filter((addon) => addon.isActive)
               .map((addon) => (
                 <div key={addon.id} className="flex items-center gap-2">
