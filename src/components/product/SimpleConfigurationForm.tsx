@@ -117,6 +117,25 @@ interface VariableDataConfig {
   locations: string
 }
 
+interface PerforationConfig {
+  enabled: boolean
+  verticalCount: string
+  verticalPosition: string
+  horizontalCount: string
+  horizontalPosition: string
+}
+
+interface BandingConfig {
+  enabled: boolean
+  bandingType: string
+  itemsPerBundle: number
+}
+
+interface CornerRoundingConfig {
+  enabled: boolean
+  cornerType: string
+}
+
 interface SimpleProductConfiguration {
   quantity: string
   customQuantity?: number // For custom quantity input when "Custom" is selected
@@ -130,6 +149,9 @@ interface SimpleProductConfiguration {
   uploadedFiles: UploadedFile[]
   selectedAddons: string[]
   variableDataConfig?: VariableDataConfig // For Variable Data add-on
+  perforationConfig?: PerforationConfig // For Perforation add-on
+  bandingConfig?: BandingConfig // For Banding add-on
+  cornerRoundingConfig?: CornerRoundingConfig // For Corner Rounding add-on
 }
 
 interface SimpleConfigurationFormProps {
@@ -168,6 +190,9 @@ export default function SimpleConfigurationForm({
     uploadedFiles: [],
     selectedAddons: [],
     variableDataConfig: undefined,
+    perforationConfig: undefined,
+    bandingConfig: undefined,
+    cornerRoundingConfig: undefined,
   })
 
   // Fetch configuration data
@@ -298,8 +323,8 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          // Skip Variable Data addon as it's handled separately
-          if (addon.configuration?.type === 'variable_data') {
+          // Skip Variable Data, Perforation, and Banding addons as they're handled separately
+          if (addon.configuration?.type === 'variable_data' || addon.configuration?.type === 'perforation' || addon.configuration?.type === 'banding') {
             return
           }
 
@@ -323,6 +348,25 @@ export default function SimpleConfigurationForm({
     if (config.variableDataConfig?.enabled) {
       const variableDataCost = 60 + (0.02 * quantity)
       addonCosts += variableDataCost
+    }
+
+    // Add Perforation cost if enabled
+    if (config.perforationConfig?.enabled) {
+      const perforationCost = 20 + (0.01 * quantity)
+      addonCosts += perforationCost
+    }
+
+    // Add Banding cost if enabled
+    if (config.bandingConfig?.enabled && config.bandingConfig.itemsPerBundle > 0) {
+      const numberOfBundles = Math.ceil(quantity / config.bandingConfig.itemsPerBundle)
+      const bandingCost = numberOfBundles * 0.75
+      addonCosts += bandingCost
+    }
+
+    // Add Corner Rounding cost if enabled
+    if (config.cornerRoundingConfig?.enabled) {
+      const cornerRoundingCost = 20 + (0.01 * quantity)
+      addonCosts += cornerRoundingCost
     }
 
     const subtotalWithAddons = baseProductPrice + addonCosts
@@ -394,8 +438,8 @@ export default function SimpleConfigurationForm({
       config.selectedAddons.forEach((addonId) => {
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
-          // Skip Variable Data addon as it's handled separately
-          if (addon.configuration?.type === 'variable_data') {
+          // Skip Variable Data, Perforation, and Banding addons as they're handled separately
+          if (addon.configuration?.type === 'variable_data' || addon.configuration?.type === 'perforation' || addon.configuration?.type === 'banding') {
             return
           }
 
@@ -419,6 +463,25 @@ export default function SimpleConfigurationForm({
     if (config.variableDataConfig?.enabled) {
       const variableDataCost = 60 + (0.02 * quantity)
       addonCosts += variableDataCost
+    }
+
+    // Add Perforation cost if enabled
+    if (config.perforationConfig?.enabled) {
+      const perforationCost = 20 + (0.01 * quantity)
+      addonCosts += perforationCost
+    }
+
+    // Add Banding cost if enabled
+    if (config.bandingConfig?.enabled && config.bandingConfig.itemsPerBundle > 0) {
+      const numberOfBundles = Math.ceil(quantity / config.bandingConfig.itemsPerBundle)
+      const bandingCost = numberOfBundles * 0.75
+      addonCosts += bandingCost
+    }
+
+    // Add Corner Rounding cost if enabled
+    if (config.cornerRoundingConfig?.enabled) {
+      const cornerRoundingCost = 20 + (0.01 * quantity)
+      addonCosts += cornerRoundingCost
     }
 
     return baseProductPrice + addonCosts
@@ -477,6 +540,33 @@ export default function SimpleConfigurationForm({
   // Handle Variable Data changes
   const handleVariableDataChange = (variableData: VariableDataConfig) => {
     const newConfig = { ...configuration, variableDataConfig: variableData }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle Perforation changes
+  const handlePerforationChange = (perforation: PerforationConfig) => {
+    const newConfig = { ...configuration, perforationConfig: perforation }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle Banding changes
+  const handleBandingChange = (banding: BandingConfig) => {
+    const newConfig = { ...configuration, bandingConfig: banding }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle Corner Rounding changes
+  const handleCornerRoundingChange = (cornerRounding: CornerRoundingConfig) => {
+    const newConfig = { ...configuration, cornerRoundingConfig: cornerRounding }
     setConfiguration(newConfig)
 
     const price = calculatePrice(newConfig)
@@ -928,6 +1018,12 @@ export default function SimpleConfigurationForm({
         onAddonChange={handleAddonChange}
         variableDataConfig={configuration.variableDataConfig}
         onVariableDataChange={handleVariableDataChange}
+        perforationConfig={configuration.perforationConfig}
+        onPerforationChange={handlePerforationChange}
+        bandingConfig={configuration.bandingConfig}
+        onBandingChange={handleBandingChange}
+        cornerRoundingConfig={configuration.cornerRoundingConfig}
+        onCornerRoundingChange={handleCornerRoundingChange}
         quantity={getQuantityValue(configuration)}
       />
 

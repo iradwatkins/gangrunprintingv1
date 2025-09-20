@@ -186,6 +186,7 @@ model Product {
   PricingTier           PricingTier[]
   ProductCategory       ProductCategory        @relation(fields: [categoryId], references: [id])
   productAddOns         ProductAddOn[]
+  productAddOnSets      ProductAddOnSet[]
   ProductImage          ProductImage[]
   ProductOption         ProductOption[]
   productPaperStocks    ProductPaperStock[]
@@ -412,6 +413,7 @@ model AddOn {
   subOptions               AddOnSubOption[]
   orderItemAddOns          OrderItemAddOn[]
   productAddOns            ProductAddOn[]
+  addOnSetItems            AddOnSetItem[]
 }
 
 model AddOnSubOption {
@@ -455,6 +457,54 @@ model OrderItemAddOn {
   orderItem       OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 
   @@unique([orderItemId, addOnId])
+}
+
+model AddOnSet {
+  id              String  @id @default(cuid())
+  name            String  @unique
+  description     String?
+  sortOrder       Int     @default(0)
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  addOnSetItems        AddOnSetItem[]
+  productAddOnSets     ProductAddOnSet[]
+}
+
+model AddOnSetItem {
+  id               String   @id @default(cuid())
+  addOnSetId       String
+  addOnId          String
+  displayPosition  DisplayPosition  @default(IN_DROPDOWN)
+  isDefault        Boolean @default(false)
+  sortOrder        Int     @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  addOnSet         AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
+  addOn            AddOn @relation(fields: [addOnId], references: [id], onDelete: Cascade)
+
+  @@unique([addOnSetId, addOnId])
+  @@index([addOnSetId])
+  @@index([addOnId])
+}
+
+model ProductAddOnSet {
+  id            String  @id @default(cuid())
+  productId     String
+  addOnSetId    String
+  isDefault     Boolean @default(false)
+  sortOrder     Int     @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  addOnSet      AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, addOnSetId])
+  @@index([productId])
+  @@index([addOnSetId])
 }
 
 model QuantityGroup {
@@ -685,6 +735,12 @@ enum QuoteStatus {
   REJECTED
   EXPIRED
   CONVERTED
+}
+
+enum DisplayPosition {
+  ABOVE_DROPDOWN
+  IN_DROPDOWN
+  BELOW_DROPDOWN
 }
 
 // Marketing & Automation System Models

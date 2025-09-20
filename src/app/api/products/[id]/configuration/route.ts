@@ -319,78 +319,128 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Continue with hardcoded fallback
     }
 
-    // Try to fetch add-ons from database
+    // Try to fetch add-ons from addon sets for this product
     let addons = SIMPLE_CONFIG.addons // Default fallback
+    let addonsGrouped = {
+      aboveDropdown: [],
+      inDropdown: [],
+      belowDropdown: []
+    }
 
     try {
-      console.log('[Config API] Fetching add-ons...')
-      const addOnsData = await prisma.addOn.findMany({
+      console.log('[Config API] Fetching add-ons from addon sets...')
+
+      // Get addon sets for this product
+      const productAddOnSets = await prisma.productAddOnSet.findMany({
         where: {
-          isActive: true,
+          productId,
+        },
+        include: {
+          addOnSet: {
+            include: {
+              addOnSetItems: {
+                include: {
+                  addOn: true,
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
         },
         orderBy: {
           sortOrder: 'asc',
         },
       })
 
-      if (addOnsData.length > 0) {
-        console.log('[Config API] Found', addOnsData.length, 'add-ons')
-        addons = addOnsData.map((addon, index) => {
-          // Handle Variable Data addon specially
-          if (addon.configuration && typeof addon.configuration === 'object') {
+      if (productAddOnSets.length > 0) {
+        console.log('[Config API] Found', productAddOnSets.length, 'addon sets for product')
+
+        const allAddons: any[] = []
+        const aboveDropdown: any[] = []
+        const inDropdown: any[] = []
+        const belowDropdown: any[] = []
+
+        // Process each addon set
+        for (const productAddOnSet of productAddOnSets) {
+          for (const setItem of productAddOnSet.addOnSet.addOnSetItems) {
+            const addon = setItem.addOn
+
+            // Format addon data
+            const formattedAddon = {
+              id: addon.id,
+              name: addon.name,
+              description: addon.description || '',
+              pricingModel: addon.pricingModel,
+              configuration: addon.configuration || {},
+              isDefault: setItem.isDefault,
+              additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
+              displayPosition: setItem.displayPosition,
+            }
+
+            // Handle pricing display
+            let priceDisplay = ''
+            let price = 0
+
             const config = addon.configuration as any
-            if (config.type === 'variable_data') {
-              return {
-                id: addon.id,
-                name: addon.name,
-                description: addon.description || '',
-                pricingModel: addon.pricingModel,
-                configuration: config,
-                priceDisplay: config.displayPrice || '',
-                isDefault: false,
-                additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
+            if (config) {
+              if (config.displayPrice) {
+                priceDisplay = config.displayPrice
+              } else if (config.price !== undefined) {
+                price = config.price
+                priceDisplay = `$${config.price}`
+              } else if (config.basePrice !== undefined) {
+                price = config.basePrice
+                priceDisplay = `$${config.basePrice}`
+              } else if (config.percentage !== undefined) {
+                price = config.percentage
+                priceDisplay = `${config.percentage}%`
+              } else if (config.pricePerUnit !== undefined) {
+                price = config.pricePerUnit
+                priceDisplay = `$${config.pricePerUnit}/pc`
               }
             }
-          }
 
-          // For other add-ons, determine the price display
-          let priceDisplay = ''
-          let price = 0
+            formattedAddon.price = price
+            formattedAddon.priceDisplay = priceDisplay
 
-          const config = addon.configuration as any
-          if (config) {
-            if (config.price !== undefined) {
-              price = config.price
-              priceDisplay = `$${config.price}`
-            } else if (config.basePrice !== undefined) {
-              price = config.basePrice
-              priceDisplay = `$${config.basePrice}`
-            } else if (config.percentage !== undefined) {
-              price = config.percentage
-              priceDisplay = `${config.percentage}%`
-            } else if (config.pricePerUnit !== undefined) {
-              price = config.pricePerUnit
-              priceDisplay = `$${config.pricePerUnit}/pc`
+            // Add to appropriate groups
+            switch (setItem.displayPosition) {
+              case 'ABOVE_DROPDOWN':
+                aboveDropdown.push(formattedAddon)
+                break
+              case 'BELOW_DROPDOWN':
+                belowDropdown.push(formattedAddon)
+                break
+              case 'IN_DROPDOWN':
+              default:
+                inDropdown.push(formattedAddon)
+                break
             }
-          }
 
-          return {
-            id: addon.id,
-            name: addon.name,
-            description: addon.description || '',
-            pricingModel: addon.pricingModel,
-            price,
-            priceDisplay,
-            configuration: config || {},
-            isDefault: false,
-            additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
+            allAddons.push(formattedAddon)
           }
+        }
+
+        addons = allAddons
+        addonsGrouped = {
+          aboveDropdown,
+          inDropdown,
+          belowDropdown
+        }
+
+        console.log('[Config API] Grouped addons:', {
+          above: aboveDropdown.length,
+          in: inDropdown.length,
+          below: belowDropdown.length
         })
+
       } else {
-        console.log('[Config API] No add-ons found, using defaults')
+        console.log('[Config API] No addon sets found for product, using fallback')
       }
     } catch (dbError) {
-      console.error('[Config API] Database error fetching add-ons:', dbError)
+      console.error('[Config API] Database error fetching addon sets:', dbError)
       // Continue with hardcoded fallback
     }
 
@@ -480,6 +530,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       quantities,
       sizes,
       addons,
+      addonsGrouped,
       turnaroundTimes,
     }
 
@@ -505,7 +556,97 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     config.defaults = updatedDefaults
 
-    return NextResponse.json(config, {
+    // Fetch AddOn Sets for this product
+    let addonsGrouped = null
+    try {
+      console.log('[Config API] Fetching AddOn Sets for product:', productId)
+
+      const productAddOnSets = await prisma.productAddOnSet.findMany({
+        where: {
+          productId: productId,
+        },
+        include: {
+          addOnSet: {
+            include: {
+              addOnSetItems: {
+                include: {
+                  addOn: true,
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          sortOrder: 'asc',
+        },
+      })
+
+      if (productAddOnSets.length > 0) {
+        // Use the first (default) addon set
+        const defaultAddOnSet = productAddOnSets[0].addOnSet
+
+        // Group addons by display position
+        const aboveDropdown: any[] = []
+        const inDropdown: any[] = []
+        const belowDropdown: any[] = []
+
+        defaultAddOnSet.addOnSetItems.forEach((item) => {
+          const addon = {
+            id: item.addOn.id,
+            name: item.addOn.name,
+            description: item.addOn.description,
+            pricingModel: item.addOn.pricingModel,
+            price: item.addOn.price ? parseFloat(item.addOn.price.toString()) : undefined,
+            priceDisplay: item.addOn.priceDisplay,
+            configuration: item.addOn.configuration,
+            isDefault: item.isDefault,
+            additionalTurnaroundDays: item.addOn.additionalTurnaroundDays,
+          }
+
+          switch (item.displayPosition) {
+            case 'ABOVE_DROPDOWN':
+              aboveDropdown.push(addon)
+              break
+            case 'BELOW_DROPDOWN':
+              belowDropdown.push(addon)
+              break
+            case 'IN_DROPDOWN':
+            default:
+              inDropdown.push(addon)
+              break
+          }
+        })
+
+        addonsGrouped = {
+          aboveDropdown,
+          inDropdown,
+          belowDropdown,
+        }
+
+        console.log('[Config API] AddOn Sets found:', {
+          setName: defaultAddOnSet.name,
+          totalItems: defaultAddOnSet.addOnSetItems.length,
+          aboveDropdown: aboveDropdown.length,
+          inDropdown: inDropdown.length,
+          belowDropdown: belowDropdown.length,
+        })
+      } else {
+        console.log('[Config API] No AddOn Sets found for product:', productId)
+      }
+    } catch (addOnError) {
+      console.error('[Config API] Error fetching AddOn Sets:', addOnError)
+    }
+
+    // Add addonsGrouped to the response
+    const responseData = {
+      ...config,
+      addonsGrouped,
+    }
+
+    return NextResponse.json(responseData, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
