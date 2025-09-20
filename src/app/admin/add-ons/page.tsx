@@ -113,7 +113,15 @@ export default function AddOnsPage() {
       setLoading(true)
       const response = await fetch('/api/add-ons')
       if (!response.ok) throw new Error('Failed to fetch')
-      const data = await response.json()
+      const rawData = await response.json()
+
+      // Handle both formats: direct array or { data: array }
+      let data = rawData
+      if (rawData && typeof rawData === 'object' && 'data' in rawData) {
+        data = rawData.data
+      }
+
+      console.log('Fetched add-ons:', data)
       // Ensure data is always an array
       setAddOns(Array.isArray(data) ? data : [])
     } catch (error) {
