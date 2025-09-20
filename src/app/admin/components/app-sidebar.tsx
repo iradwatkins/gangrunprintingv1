@@ -159,6 +159,17 @@ const data = {
       ],
     },
     {
+      title: 'Design',
+      url: '/admin/design',
+      icon: Palette,
+      items: [
+        {
+          title: 'Theme Colors',
+          url: '/admin/theme-colors',
+        },
+      ],
+    },
+    {
       title: 'Settings',
       url: '/admin/settings',
       icon: Settings2,
@@ -178,10 +189,6 @@ const data = {
         {
           title: 'System Health',
           url: '/admin/monitoring',
-        },
-        {
-          title: 'Theme Colors',
-          url: '/admin/theme-colors',
         },
       ],
     },
