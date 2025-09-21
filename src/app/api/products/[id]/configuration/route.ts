@@ -518,10 +518,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           },
         }))
 
-      if (assignedSet?.turnaroundTimeSet?.turnaroundTimeItems) {
+      if (assignedSet?.turnaroundTimeSet?.TurnaroundTimeSetItem) {
         // Map the database turnaround times to the API format
-        turnaroundTimes = assignedSet.turnaroundTimeSet.turnaroundTimeItems.map((item, index) => {
-          const tt = item.turnaroundTime
+        turnaroundTimes = assignedSet.turnaroundTimeSet.TurnaroundTimeSetItem.map((item, index) => {
+          const tt = item.TurnaroundTime
           return {
             id: `turnaround_${index + 1}`,
             name: tt.name,

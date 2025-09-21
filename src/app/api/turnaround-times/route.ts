@@ -26,7 +26,7 @@ export async function GET() {
     const turnaroundTimes = await prisma.turnaroundTime.findMany({
       orderBy: [{ sortOrder: 'asc' }, { daysMin: 'asc' }],
       include: {
-        turnaroundTimeSetItems: {
+        TurnaroundTimeSetItem: {
           include: {
             TurnaroundTimeSet: true,
           },
