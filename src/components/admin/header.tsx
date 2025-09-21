@@ -54,16 +54,23 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
     try {
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
+        credentials: 'include'
       })
 
       if (response.ok) {
         setUser(null)
-        router.push('/auth/signin')
+        router.push('/auth/signin?message=signed_out')
       } else {
-        console.error('Failed to sign out')
+        console.error('Failed to sign out - server error')
+        // Still redirect to signin even if logout failed
+        setUser(null)
+        router.push('/auth/signin')
       }
     } catch (error) {
       console.error('Sign out error:', error)
+      // Still redirect to signin even if logout failed
+      setUser(null)
+      router.push('/auth/signin')
     }
   }
 

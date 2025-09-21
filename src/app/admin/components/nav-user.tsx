@@ -34,10 +34,23 @@ export function NavUser({
 
   const handleSignOut = async () => {
     try {
-      await fetch('/api/auth/signout', { method: 'POST' })
-      router.push('/')
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        // Redirect to signin page after successful logout
+        router.push('/auth/signin?message=signed_out')
+      } else {
+        console.error('Failed to sign out - server error')
+        // Still redirect to signin even if logout failed
+        router.push('/auth/signin')
+      }
     } catch (error) {
       console.error('Failed to sign out:', error)
+      // Still redirect to signin even if logout failed
+      router.push('/auth/signin')
     }
   }
 

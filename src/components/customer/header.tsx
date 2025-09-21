@@ -143,18 +143,26 @@ export default function Header() {
     try {
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
+        credentials: 'include'
       })
 
       if (response.ok) {
         setUser(null)
         setIsSignedIn(false)
-        router.refresh()
-        router.push('/')
+        router.push('/auth/signin?message=signed_out')
       } else {
-        console.error('Failed to sign out')
+        console.error('Failed to sign out - server error')
+        // Still update state and redirect even if logout failed
+        setUser(null)
+        setIsSignedIn(false)
+        router.push('/auth/signin')
       }
     } catch (error) {
       console.error('Sign out error:', error)
+      // Still update state and redirect even if logout failed
+      setUser(null)
+      setIsSignedIn(false)
+      router.push('/auth/signin')
     }
   }
 
