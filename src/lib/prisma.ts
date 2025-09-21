@@ -11,13 +11,11 @@ declare global {
 const createPrismaClient = () => {
   const databaseUrl = process.env.DATABASE_URL
 
-  // CRITICAL: For serverless/Next.js production, use SMALL connection pool
-  // Each serverless function gets its own pool, so keep it minimal
   const isProduction = process.env.NODE_ENV === 'production'
 
-  // In production: 5 connections max (serverless best practice)
-  // In development: 10 connections for better DX
-  const connectionLimit = isProduction ? 5 : DATABASE_CONFIG.CONNECTION_LIMIT
+  // Increased production connection limit to handle concurrent requests
+  // VPS deployment can handle more connections than serverless
+  const connectionLimit = isProduction ? 15 : DATABASE_CONFIG.CONNECTION_LIMIT
 
   // Build connection string with optimized parameters
   let pooledUrl = databaseUrl
@@ -50,22 +48,39 @@ if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma
 }
 
-// Production optimization: Disconnect idle connections
-if (process.env.NODE_ENV === 'production') {
-  // Set up periodic connection cleanup
-  setInterval(async () => {
-    try {
-      // This helps prevent connection leaks in long-running processes
-      await prisma.$executeRawUnsafe('SELECT 1')
-    } catch (error) {
-      console.error('[Prisma] Health check failed:', error)
-      // Attempt to reconnect
-      try {
-        await prisma.$disconnect()
-        await prisma.$connect()
-      } catch (reconnectError) {
-        console.error('[Prisma] Reconnection failed:', reconnectError)
-      }
+// Add connection health check utility for on-demand monitoring
+export const checkDatabaseHealth = async (): Promise<{ status: 'healthy' | 'unhealthy'; latency?: number; error?: string }> => {
+  const startTime = Date.now()
+  try {
+    await prisma.$executeRawUnsafe('SELECT 1')
+    const latency = Date.now() - startTime
+    console.log(`[Prisma] Database health check: healthy (${latency}ms)`)
+    return { status: 'healthy', latency }
+  } catch (error) {
+    const latency = Date.now() - startTime
+    console.error('[Prisma] Database health check failed:', error)
+    return {
+      status: 'unhealthy',
+      latency,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
-  }, DATABASE_CONFIG.HEALTH_CHECK_INTERVAL)
+  }
+}
+
+// Enhanced connection management with retry logic
+export const ensureDatabaseConnection = async (retries = 3): Promise<void> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await prisma.$connect()
+      console.log('[Prisma] Database connection established')
+      return
+    } catch (error) {
+      console.error(`[Prisma] Connection attempt ${i + 1} failed:`, error)
+      if (i === retries - 1) {
+        throw new Error(`Failed to connect to database after ${retries} attempts`)
+      }
+      // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000))
+    }
+  }
 }

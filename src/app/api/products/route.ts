@@ -46,11 +46,24 @@ const createProductSchema = z.object({
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {
+  const requestId = Math.random().toString(36).substring(7)
+  const startTime = Date.now()
+
   try {
+    console.log(`[${requestId}] GET /api/products - Request started`)
+
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get('categoryId')
     const isActive = searchParams.get('isActive')
     const gangRunEligible = searchParams.get('gangRunEligible')
+
+    console.log(`[${requestId}] Query params:`, {
+      categoryId,
+      isActive,
+      gangRunEligible,
+      userAgent: request.headers.get('user-agent')?.substring(0, 100),
+      referer: request.headers.get('referer'),
+    })
 
     const where: any = {}
     if (categoryId) where.categoryId = categoryId
@@ -61,6 +74,8 @@ export async function GET(request: NextRequest) {
     if (gangRunEligible !== null && gangRunEligible !== undefined) {
       where.gangRunEligible = gangRunEligible === 'true'
     }
+
+    console.log(`[${requestId}] Database query where clause:`, where)
 
     const products = await prisma.product.findMany({
       where,
@@ -122,10 +137,64 @@ export async function GET(request: NextRequest) {
       orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
 
-    return NextResponse.json(products)
-  } catch (error) {
-    console.error('Error fetching products:', error)
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
+    const responseTime = Date.now() - startTime
+    console.log(`[${requestId}] Query successful - Found ${products.length} products in ${responseTime}ms`)
+
+    return NextResponse.json(products, {
+      headers: {
+        'X-Request-ID': requestId,
+        'X-Response-Time': responseTime.toString(),
+      },
+    })
+  } catch (error: any) {
+    const responseTime = Date.now() - startTime
+    const errorDetails = {
+      requestId,
+      message: error.message,
+      code: error.code,
+      name: error.name,
+      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
+      responseTime,
+      timestamp: new Date().toISOString(),
+    }
+
+    console.error(`[${requestId}] === PRODUCTS API ERROR ===`)
+    console.error(`[${requestId}] Error details:`, errorDetails)
+
+    // Check for specific database errors
+    if (error.code === 'P1001' || error.code === 'P1008' || error.code === 'P1009') {
+      console.error(`[${requestId}] Database connection error detected`)
+      return NextResponse.json(
+        {
+          error: 'Database connection error',
+          requestId,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 503 }
+      )
+    }
+
+    // Check for timeout errors
+    if (error.name === 'PrismaClientUnknownRequestError' || error.message.includes('timeout')) {
+      console.error(`[${requestId}] Database timeout error detected`)
+      return NextResponse.json(
+        {
+          error: 'Database timeout error',
+          requestId,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 504 }
+      )
+    }
+
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch products',
+        requestId,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    )
   }
 }
 
