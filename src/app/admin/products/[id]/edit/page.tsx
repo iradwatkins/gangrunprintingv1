@@ -42,7 +42,7 @@ function EditProductClient({ id }: { id: string }) {
   const [paperStockSets, setPaperStockSets] = useState<any[]>([])
   const [quantityGroups, setQuantityGroups] = useState<any[]>([])
   const [sizeGroups, setSizeGroups] = useState<any[]>([])
-  const [addOns, setAddOns] = useState<any[]>([])
+  const [addOnSets, setAddOnSets] = useState<any[]>([])
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -62,8 +62,8 @@ function EditProductClient({ id }: { id: string }) {
     selectedQuantityGroup: '', // Single quantity group ID
     selectedSizeGroup: '', // Single size group ID
 
-    // Multiple selections
-    selectedAddOns: [] as string[], // Multiple add-ons
+    // Single selection
+    selectedAddOnSet: '', // Single AddOn Set ID
 
     // Turnaround
     productionTime: 3,
@@ -105,8 +105,8 @@ function EditProductClient({ id }: { id: string }) {
         selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
         selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || '',
 
-        // Map add-ons
-        selectedAddOns: data.productAddOns?.map((pa: any) => pa.addOnId) || [],
+        // Map AddOn Set
+        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || '',
 
         // Turnaround times
         productionTime: data.productionTime || 3,
@@ -128,22 +128,22 @@ function EditProductClient({ id }: { id: string }) {
 
   const fetchData = async () => {
     try {
-      const [catRes, paperRes, qtyRes, sizeRes, addOnRes] = await Promise.all([
+      const [catRes, paperRes, qtyRes, sizeRes, addOnSetRes] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
         fetch('/api/quantities'),
         fetch('/api/sizes'),
-        fetch('/api/add-ons'),
+        fetch('/api/addon-sets'),
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
       if (paperRes.ok) setPaperStockSets(await paperRes.json())
       if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
       if (sizeRes.ok) setSizeGroups(await sizeRes.json())
-      if (addOnRes.ok) {
-        const addOnData = await addOnRes.json()
+      if (addOnSetRes.ok) {
+        const addOnSetData = await addOnSetRes.json()
         // Handle both array and object with data property
-        setAddOns(Array.isArray(addOnData) ? addOnData : (addOnData.data || []))
+        setAddOnSets(Array.isArray(addOnSetData) ? addOnSetData : (addOnSetData.data || []))
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -162,7 +162,7 @@ function EditProductClient({ id }: { id: string }) {
           paperStockSetId: formData.selectedPaperStockSet,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
-          addOns: formData.selectedAddOns,
+          addOnSet: formData.selectedAddOnSet,
         }),
       })
 
@@ -569,39 +569,59 @@ function EditProductClient({ id }: { id: string }) {
         </CardContent>
       </Card>
 
-      {/* Add-on Options - Multiple selection */}
+      {/* AddOn Set - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Add-on Options (Choose Multiple)</CardTitle>
+          <CardTitle>Add-on Set (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {Array.isArray(addOns) && addOns
-              .filter((addon) => addon.isActive)
-              .map((addon) => (
-                <div key={addon.id} className="flex items-center gap-2">
-                  <Checkbox
-                    checked={formData.selectedAddOns.includes(addon.id)}
-                    id={`addon-${addon.id}`}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setFormData({
-                          ...formData,
-                          selectedAddOns: [...formData.selectedAddOns, addon.id],
-                        })
-                      } else {
-                        setFormData({
-                          ...formData,
-                          selectedAddOns: formData.selectedAddOns.filter((id) => id !== addon.id),
-                        })
-                      }
-                    }}
-                  />
-                  <Label className="cursor-pointer font-normal" htmlFor={`addon-${addon.id}`}>
-                    {addon.name}
-                  </Label>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select an addon set for this product. Customers will see the addons from this set,
+              allowing them to add extra features to their order.
+            </p>
+            <div>
+              <Label htmlFor="addon-set">AddOn Set</Label>
+              <Select
+                value={formData.selectedAddOnSet}
+                onValueChange={(value) => setFormData({ ...formData, selectedAddOnSet: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select addon set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {addOnSets.map((set) => (
+                    <SelectItem key={set.id} value={set.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{set.name}</span>
+                        {set.description && (
+                          <span className="text-xs text-muted-foreground">{set.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected addon set */}
+            {formData.selectedAddOnSet && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedSet = addOnSets.find((s) => s.id === formData.selectedAddOnSet)
+                  if (!selectedSet) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
+                      <div className="text-xs text-muted-foreground">
+                        Contains {selectedSet._count?.addOnSetItems || 0} add-ons
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
