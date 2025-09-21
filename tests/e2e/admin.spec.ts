@@ -5,7 +5,7 @@ test.describe('Admin Dashboard', () => {
     // Set up admin user session
     await context.addCookies([
       {
-        name: 'auth-session',
+        name: 'auth_session',
         value: 'admin-session-id',
         domain: 'localhost',
         path: '/',
@@ -331,7 +331,7 @@ test.describe('Admin Dashboard', () => {
     await context.clearCookies()
     await context.addCookies([
       {
-        name: 'auth-session',
+        name: 'auth_session',
         value: 'customer-session-id',
         domain: 'localhost',
         path: '/',

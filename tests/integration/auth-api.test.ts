@@ -206,7 +206,7 @@ describe('Auth API Routes', () => {
 
       const request = new NextRequest('http://localhost:3002/api/auth/me', {
         headers: {
-          Cookie: `auth-session=${session.id}`,
+          Cookie: `auth_session=${session.id}`,
         },
       })
 
@@ -231,7 +231,7 @@ describe('Auth API Routes', () => {
     it('should return 401 for invalid session', async () => {
       const request = new NextRequest('http://localhost:3002/api/auth/me', {
         headers: {
-          Cookie: `auth-session=invalid-session-id`,
+          Cookie: `auth_session=invalid-session-id`,
         },
       })
 
