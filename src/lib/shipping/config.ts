@@ -36,7 +36,7 @@ export const FEDEX_SERVICE_CODES = {
   FEDEX_GROUND: 'FEDEX_GROUND',
   GROUND_HOME_DELIVERY: 'GROUND_HOME_DELIVERY',
   FEDEX_2_DAY: 'FEDEX_2_DAY',
-  PRIORITY_OVERNIGHT: 'PRIORITY_OVERNIGHT',
+  STANDARD_OVERNIGHT: 'STANDARD_OVERNIGHT',
 } as const
 
 export const UPS_SERVICE_CODES = {
@@ -53,7 +53,7 @@ export const SERVICE_NAMES = {
   FEDEX_GROUND: 'FedEx Ground',
   GROUND_HOME_DELIVERY: 'FedEx Home Delivery',
   FEDEX_2_DAY: 'FedEx 2Day',
-  PRIORITY_OVERNIGHT: 'FedEx Priority Overnight',
+  STANDARD_OVERNIGHT: 'FedEx Standard Overnight',
 
   // UPS
   '03': 'UPS Ground',
