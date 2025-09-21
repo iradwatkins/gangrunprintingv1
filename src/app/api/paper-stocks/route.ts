@@ -9,12 +9,12 @@ export async function GET() {
       include: {
         paperStockCoatings: {
           include: {
-            coating: true,
+            CoatingOption: true,
           },
         },
         paperStockSides: {
           include: {
-            sidesOption: true,
+            SidesOption: true,
           },
         },
         paperStockSetItems: true,
@@ -55,7 +55,6 @@ export async function GET() {
         ''
 
       const defaultSides =
-        allSides.find((s) => s.isDefault)?.id ||
         sidesOptions.find((s) => s.enabled)?.id ||
         allSides[0]?.id ||
         ''
@@ -67,8 +66,14 @@ export async function GET() {
         pricePerSqInch: stock.pricePerSqInch,
         tooltipText: stock.tooltipText,
         isActive: stock.isActive,
-        paperStockCoatings: stock.paperStockCoatings,
-        paperStockSides: stock.paperStockSides,
+        paperStockCoatings: stock.paperStockCoatings.map(pc => ({
+          ...pc,
+          coating: pc.CoatingOption // Transform PascalCase to camelCase for frontend
+        })),
+        paperStockSides: stock.paperStockSides.map(ps => ({
+          ...ps,
+          sidesOption: ps.SidesOption // Transform PascalCase to camelCase for frontend
+        })),
         productsCount: stock.paperStockSetItems.length,
       }
     })
@@ -122,10 +127,10 @@ export async function POST(request: NextRequest) {
       },
       include: {
         paperStockCoatings: {
-          include: { coating: true },
+          include: { CoatingOption: true },
         },
         paperStockSides: {
-          include: { sidesOption: true },
+          include: { SidesOption: true },
         },
       },
     })

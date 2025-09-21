@@ -184,6 +184,7 @@ model CampaignSend {
 model CoatingOption {
   id                 String              @id
   name               String              @unique
+  description        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime
   paperStockCoatings PaperStockCoating[]
@@ -1020,6 +1021,8 @@ model ShippingRate {
 model SidesOption {
   id               String            @id
   name             String            @unique
+  code             String            @unique
+  description      String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime
   paperStockSides  PaperStockSides[]
