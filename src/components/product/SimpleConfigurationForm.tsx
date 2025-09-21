@@ -64,17 +64,11 @@ interface SimpleConfigData {
     name: string
     description: string
     pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM' | 'FLAT'
-    price?: number
-    priceDisplay?: string
-    configuration?: {
-      type?: string
-      basePrice?: number
-      pricePerPiece?: number
-      displayPrice?: string
-      [key: string]: any
-    }
-    isDefault?: boolean
-    additionalTurnaroundDays?: number
+    price: number
+    priceDisplay: string
+    isDefault: boolean
+    additionalTurnaroundDays: number
+    configuration?: any
   }>
   turnaroundTimes: Array<{
     id: string
@@ -331,13 +325,13 @@ export default function SimpleConfigurationForm({
           switch (addon.pricingModel) {
             case 'FIXED_FEE':
             case 'FLAT':
-              addonCosts += addon.price || 0
+              addonCosts += addon.price
               break
             case 'PERCENTAGE':
-              addonCosts += baseProductPrice * (addon.price || 0)
+              addonCosts += baseProductPrice * addon.price
               break
             case 'PER_UNIT':
-              addonCosts += quantity * (addon.price || 0)
+              addonCosts += quantity * addon.price
               break
           }
         }
@@ -446,13 +440,13 @@ export default function SimpleConfigurationForm({
           switch (addon.pricingModel) {
             case 'FIXED_FEE':
             case 'FLAT':
-              addonCosts += addon.price || 0
+              addonCosts += addon.price
               break
             case 'PERCENTAGE':
-              addonCosts += baseProductPrice * (addon.price || 0)
+              addonCosts += baseProductPrice * addon.price
               break
             case 'PER_UNIT':
-              addonCosts += quantity * (addon.price || 0)
+              addonCosts += quantity * addon.price
               break
           }
         }
@@ -1010,7 +1004,7 @@ export default function SimpleConfigurationForm({
         />
       </div>
 
-      {/* Add-ons & Upgrades Section (includes Variable Data) */}
+      {/* Add-ons & Upgrades Section (with positioning support) */}
       <AddonAccordionWithVariable
         addons={configData.addons || []}
         addonsGrouped={configData.addonsGrouped}

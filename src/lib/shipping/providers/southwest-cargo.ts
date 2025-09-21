@@ -18,7 +18,7 @@ export class SouthwestCargoProvider implements ShippingProvider {
   carrier = Carrier.SOUTHWEST_CARGO
 
   /**
-   * Calculate shipping rates based on weight
+   * Calculate shipping rates based on real Southwest Cargo pricing
    */
   async getRates(
     _fromAddress: ShippingAddress,
@@ -34,9 +34,9 @@ export class SouthwestCargoProvider implements ShippingProvider {
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
 
-    // Calculate standard rate
-    const standardRate = this.calculateRate(billableWeight)
-    const expressRate = standardRate * SOUTHWEST_CARGO_RATES.expressMultiplier
+    // Calculate pickup and dash rates
+    const pickupRate = this.calculatePickupRate(billableWeight)
+    const dashRate = this.calculateDashRate(billableWeight)
 
     // Apply markup if configured
     const markup = 1 + (southwestCargoConfig.markupPercentage || 0) / 100
@@ -44,20 +44,20 @@ export class SouthwestCargoProvider implements ShippingProvider {
     const rates: ShippingRate[] = [
       {
         carrier: this.carrier,
-        serviceCode: 'SOUTHWEST_CARGO_STANDARD',
-        serviceName: 'Southwest Cargo Standard',
-        rateAmount: roundWeight(standardRate * markup, 2),
+        serviceCode: 'SOUTHWEST_CARGO_PICKUP',
+        serviceName: 'Southwest Cargo Pickup',
+        rateAmount: roundWeight(pickupRate * markup, 2),
         currency: 'USD',
-        estimatedDays: 3, // Standard delivery time
+        estimatedDays: 3, // Standard pickup delivery time
         isGuaranteed: false,
       },
       {
         carrier: this.carrier,
-        serviceCode: 'SOUTHWEST_CARGO_EXPRESS',
-        serviceName: 'Southwest Cargo Express',
-        rateAmount: roundWeight(expressRate * markup, 2),
+        serviceCode: 'SOUTHWEST_CARGO_DASH',
+        serviceName: 'Southwest Cargo Dash',
+        rateAmount: roundWeight(dashRate * markup, 2),
         currency: 'USD',
-        estimatedDays: 1, // Express delivery
+        estimatedDays: 1, // Dash delivery (next available flight)
         isGuaranteed: true,
       },
     ]
@@ -69,10 +69,10 @@ export class SouthwestCargoProvider implements ShippingProvider {
    * Create a shipping label (manual process for Southwest Cargo)
    */
   async createLabel(
-    fromAddress: ShippingAddress,
-    toAddress: ShippingAddress,
-    packages: ShippingPackage[],
-    serviceCode: string
+    _fromAddress: ShippingAddress,
+    _toAddress: ShippingAddress,
+    _packages: ShippingPackage[],
+    _serviceCode: string
   ): Promise<ShippingLabel> {
     // Generate a mock tracking number for Southwest Cargo
     // In production, this would be obtained from Southwest's system
@@ -127,27 +127,54 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Calculate rate based on weight breaks
+   * Calculate Southwest Cargo Pickup rate based on real pricing structure
    */
-  private calculateRate(weight: number): number {
-    // Find the appropriate rate tier
-    const rateTier = SOUTHWEST_CARGO_RATES.weightBreaks.find(
-      (tier) => weight <= tier.upTo
-    )
+  private calculatePickupRate(weight: number): number {
+    const pickupTiers = SOUTHWEST_CARGO_RATES.pickup.weightTiers
 
-    if (!rateTier) {
-      // Use the last tier for weights above all breaks
-      const lastTier = SOUTHWEST_CARGO_RATES.weightBreaks[
-        SOUTHWEST_CARGO_RATES.weightBreaks.length - 1
-      ]
-      return Math.max(
-        weight * lastTier.ratePerPound,
-        SOUTHWEST_CARGO_RATES.minimumCharge
-      )
+    for (const tier of pickupTiers) {
+      if (weight <= tier.maxWeight) {
+        // Pickup always has additional per-pound charge on total weight
+        const additionalCost = weight * tier.additionalPerPound
+        return tier.baseRate + additionalCost + tier.handlingFee
+      }
     }
 
-    const calculatedRate = weight * rateTier.ratePerPound
-    return Math.max(calculatedRate, SOUTHWEST_CARGO_RATES.minimumCharge)
+    // Fallback (shouldn't happen with Infinity maxWeight)
+    const lastTier = pickupTiers[pickupTiers.length - 1]
+    const additionalCost = weight * lastTier.additionalPerPound
+    return lastTier.baseRate + additionalCost + lastTier.handlingFee
+  }
+
+  /**
+   * Calculate Southwest Cargo Dash rate based on real pricing structure
+   */
+  private calculateDashRate(weight: number): number {
+    const dashTiers = SOUTHWEST_CARGO_RATES.dash.weightTiers
+
+    // Find the correct tier
+    for (let i = 0; i < dashTiers.length; i++) {
+      const tier = dashTiers[i]
+
+      if (weight <= tier.maxWeight) {
+        // Base rate + handling fee + any additional per-pound charges
+        let additionalCost = 0
+
+        // For the 101+ lb tier, charge additional only for weight over 100 lbs
+        if (tier.additionalPerPound > 0 && i === dashTiers.length - 1 && weight > 100) {
+          const overageWeight = weight - 100
+          additionalCost = overageWeight * tier.additionalPerPound
+        }
+
+        return tier.baseRate + additionalCost + tier.handlingFee
+      }
+    }
+
+    // Fallback (shouldn't happen)
+    const lastTier = dashTiers[dashTiers.length - 1]
+    const overageWeight = Math.max(0, weight - 100)
+    const additionalCost = overageWeight * lastTier.additionalPerPound
+    return lastTier.baseRate + additionalCost + lastTier.handlingFee
   }
 
   /**

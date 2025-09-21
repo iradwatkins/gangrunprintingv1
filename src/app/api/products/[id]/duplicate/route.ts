@@ -45,7 +45,7 @@ export async function POST(
           include: {
             turnaroundTimeSet: {
               include: {
-                TurnaroundTimeSetItem: {
+                turnaroundTimeItems: {
                   include: {
                     turnaroundTime: true,
                   },

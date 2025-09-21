@@ -622,7 +622,7 @@ function EditProductClient({ id }: { id: string }) {
                     <div>
                       <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
                       <div className="space-y-1">
-                        {selectedSet.TurnaroundTimeSetItem?.map((item: any) => (
+                        {selectedSet.turnaroundTimeItems?.map((item: any) => (
                           <div
                             key={item.id}
                             className={`px-2 py-1 text-xs rounded flex items-center justify-between ${

@@ -37,6 +37,7 @@ export const FEDEX_SERVICE_CODES = {
   GROUND_HOME_DELIVERY: 'GROUND_HOME_DELIVERY',
   FEDEX_2_DAY: 'FEDEX_2_DAY',
   STANDARD_OVERNIGHT: 'STANDARD_OVERNIGHT',
+  PRIORITY_OVERNIGHT: 'PRIORITY_OVERNIGHT', // Accept but rename to Standard
 } as const
 
 export const UPS_SERVICE_CODES = {
@@ -54,6 +55,7 @@ export const SERVICE_NAMES = {
   GROUND_HOME_DELIVERY: 'FedEx Home Delivery',
   FEDEX_2_DAY: 'FedEx 2Day',
   STANDARD_OVERNIGHT: 'FedEx Standard Overnight',
+  PRIORITY_OVERNIGHT: 'FedEx Standard Overnight', // Display as Standard
 
   // UPS
   '03': 'UPS Ground',
@@ -63,8 +65,8 @@ export const SERVICE_NAMES = {
   '13': 'UPS Next Day Air Saver',
 
   // Southwest Cargo
-  SOUTHWEST_CARGO_STANDARD: 'Southwest Cargo Standard',
-  SOUTHWEST_CARGO_EXPRESS: 'Southwest Cargo Express',
+  SOUTHWEST_CARGO_PICKUP: 'Southwest Cargo Pickup',
+  SOUTHWEST_CARGO_DASH: 'Southwest Cargo Dash',
 } as const
 
 // Default sender address (your warehouse)
@@ -87,16 +89,46 @@ export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
   ], // Limited to Southwest's service area
 }
 
-// Weight-based pricing for Southwest Cargo
+// Real Southwest Cargo pricing based on actual rates
 export const SOUTHWEST_CARGO_RATES = {
-  baseRate: parseFloat(process.env.SOUTHWEST_CARGO_RATE_PER_POUND || '2.50'),
-  minimumCharge: parseFloat(process.env.SOUTHWEST_CARGO_MINIMUM_CHARGE || '25.00'),
-  weightBreaks: [
-    { upTo: 50, ratePerPound: 2.50 },
-    { upTo: 100, ratePerPound: 2.25 },
-    { upTo: 500, ratePerPound: 2.00 },
-    { upTo: 1000, ratePerPound: 1.75 },
-    { upTo: Infinity, ratePerPound: 1.50 },
-  ],
-  expressMultiplier: 1.5, // Express shipping is 1.5x standard rate
+  pickup: {
+    // Southwest Cargo Pickup pricing
+    weightTiers: [
+      {
+        maxWeight: 50,
+        baseRate: 80.00,
+        additionalPerPound: 1.75,
+        handlingFee: 0
+      },
+      {
+        maxWeight: Infinity,
+        baseRate: 102.00,
+        additionalPerPound: 1.75,
+        handlingFee: 0
+      },
+    ],
+  },
+  dash: {
+    // Southwest Cargo Dash pricing
+    weightTiers: [
+      {
+        maxWeight: 50,
+        baseRate: 85.00,
+        additionalPerPound: 0,
+        handlingFee: 10.00
+      },
+      {
+        maxWeight: 100,
+        baseRate: 133.00,
+        additionalPerPound: 0,
+        handlingFee: 10.00
+      },
+      {
+        maxWeight: Infinity,
+        baseRate: 133.00,
+        additionalPerPound: 1.75,
+        handlingFee: 10.00
+      },
+    ],
+  },
 }

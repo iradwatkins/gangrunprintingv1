@@ -268,11 +268,13 @@ model Order {
   packageDimensions   Json?           // Package dimensions
   shippingServiceCode String?         // Selected shipping service code
   shippingLabelUrl    String?         // URL to shipping label PDF
+  selectedAirportId   String?         // Selected airport for Southwest Cargo pickup
 
   File                File[]
   Notification        Notification[]
   user                User?           @relation(fields: [userId], references: [id])
   vendor              Vendor?         @relation(fields: [vendorId], references: [id])
+  selectedAirport     Airport?        @relation(fields: [selectedAirportId], references: [id])
   OrderItem           OrderItem[]
   StatusHistory       StatusHistory[]
   ShippingRate        ShippingRate[]
@@ -1751,6 +1753,29 @@ model ProductTurnaroundTimeSet {
   @@unique([productId, turnaroundTimeSetId])
   @@index([productId])
   @@index([turnaroundTimeSetId])
+}
+
+model Airport {
+  id          String   @id @default(cuid())
+  code        String   @unique // Airport code (e.g., "ALB", "ATL")
+  name        String   // Airport name (e.g., "Albany", "Atlanta")
+  carrier     String   // Usually "Southwest Airlines Cargo"
+  operator    String?  // Operating company (e.g., "Mobile Air Transport")
+  address     String   // Street address
+  city        String   // City name
+  state       String   // State abbreviation
+  zip         String   // ZIP code
+  hours       Json     // Operating hours (JSON object)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  orders      Order[]
+
+  @@index([code])
+  @@index([state])
+  @@index([isActive])
 }
 
 

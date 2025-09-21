@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Package, Download, Mail, Printer, Copy, Share2 } from 'lucide-react'
+import { ArrowLeft, Package, Download, Mail, Printer, Copy, Share2, Plane, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -23,6 +23,19 @@ interface OrderDetail {
   tax: number
   shipping: number
   shippingMethod?: string
+  shippingRate?: any
+  selectedAirportId?: string
+  selectedAirport?: {
+    id: string
+    code: string
+    name: string
+    address: string
+    city: string
+    state: string
+    zip: string
+    hours: any
+    operator?: string
+  }
   trackingNumber?: string
   carrier?: any
   createdAt: string
@@ -207,6 +220,69 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 showNumber={false}
                 trackingNumber={order.trackingNumber}
               />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Airport Pickup Information */}
+      {order.selectedAirport && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plane className="h-5 w-5" />
+              Airport Pickup Location
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-lg">
+                  {order.selectedAirport.name} ({order.selectedAirport.code})
+                </h4>
+                {order.selectedAirport.operator && (
+                  <p className="text-sm text-muted-foreground">
+                    Operated by: {order.selectedAirport.operator}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-start gap-3">
+                <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium">Pickup Address</p>
+                  <div className="text-sm text-muted-foreground">
+                    <p>{order.selectedAirport.address}</p>
+                    <p>
+                      {order.selectedAirport.city}, {order.selectedAirport.state} {order.selectedAirport.zip}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {order.selectedAirport.hours && (
+                <div>
+                  <p className="font-medium mb-2">Operating Hours</p>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    {Object.entries(order.selectedAirport.hours).map(([day, hours]) => (
+                      <div key={day} className="flex justify-between">
+                        <span className="capitalize">{day}:</span>
+                        <span>{typeof hours === 'string' ? hours : 'Closed'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm font-medium text-blue-900">Important Pickup Information</p>
+                <ul className="text-xs text-blue-800 mt-1 space-y-1">
+                  <li>• Please bring a valid photo ID for pickup</li>
+                  <li>• Packages must be picked up within 5 business days</li>
+                  <li>• Contact the location directly for specific pickup instructions</li>
+                  <li>• Additional storage fees may apply for extended storage</li>
+                </ul>
+              </div>
             </div>
           </CardContent>
         </Card>
