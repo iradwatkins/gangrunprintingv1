@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Package, Eye, ImageIcon } from 'lucide-react'
+import { Plus, Edit, Trash2, Package, Eye, ImageIcon, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -133,6 +133,26 @@ export default function ProductsPage() {
     } catch (error) {
       console.error('Error updating product:', error)
       toast.error('Failed to update product')
+    }
+  }
+
+  const handleDuplicate = async (id: string, name: string) => {
+    try {
+      const response = await fetch(`/api/products/${id}/duplicate`, {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        toast.success(`Product "${name}" duplicated successfully`)
+        fetchProducts()
+      } else {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to duplicate product')
+      }
+    } catch (error) {
+      console.error('Error duplicating product:', error)
+      toast.error('Failed to duplicate product')
     }
   }
 
@@ -321,6 +341,14 @@ export default function ProductsPage() {
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
+                        <Button
+                          size="sm"
+                          title="Duplicate Product"
+                          variant="ghost"
+                          onClick={() => handleDuplicate(product.id, product.name)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
                         <Button
                           size="sm"
                           title="Delete Product"
