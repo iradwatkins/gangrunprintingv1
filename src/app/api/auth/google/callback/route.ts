@@ -233,7 +233,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const session = await lucia.createSession(user.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
     console.log('Session created:', session.id)
-    ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+    console.log('Session cookie:', {
+      name: sessionCookie.name,
+      value: sessionCookie.value.substring(0, 20) + '...',
+      attributes: sessionCookie.attributes
+    })
+
+    // Set the session cookie
+    const cookieStore = await cookies()
+    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
     // Clear OAuth cookies
     ;(await cookies()).delete('google_oauth_state')
