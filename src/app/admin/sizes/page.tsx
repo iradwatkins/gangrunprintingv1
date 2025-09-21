@@ -490,21 +490,30 @@ export default function SizesPage() {
                   <Label htmlFor="defaultValue">
                     Default Size <span className="text-red-500">*</span>
                   </Label>
-                  <Select
-                    value={formData.defaultValue}
-                    onValueChange={(value) => setFormData({ ...formData, defaultValue: value })}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select the default size for this group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {parseValuesList(formData.values).map((value) => (
-                        <SelectItem key={value} value={value}>
-                          {formatSizeDisplay(value)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {parseValuesList(formData.values).length > 0 ? (
+                    <Select
+                      value={formData.defaultValue}
+                      onValueChange={(value) => setFormData({ ...formData, defaultValue: value })}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select the default size for this group" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {parseValuesList(formData.values).map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {formatSizeDisplay(value)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      className="w-full"
+                      disabled
+                      placeholder="Enter size values first to select a default"
+                      value=""
+                    />
+                  )}
                 </div>
               </div>
             </div>
