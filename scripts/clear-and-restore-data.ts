@@ -119,6 +119,7 @@ async function clearAndRestoreData() {
     const paperStocks = await Promise.all([
       prisma.paperStock.create({
         data: {
+          id: createId(),
           name: '14pt Card Stock',
           weight: 0.0014,  // Weight in pounds per square inch
           pricePerSqInch: 0.001,
@@ -128,6 +129,7 @@ async function clearAndRestoreData() {
       }),
       prisma.paperStock.create({
         data: {
+          id: createId(),
           name: '16pt Card Stock',
           weight: 0.0016,
           pricePerSqInch: 0.0011,
@@ -137,6 +139,7 @@ async function clearAndRestoreData() {
       }),
       prisma.paperStock.create({
         data: {
+          id: createId(),
           name: '32pt UltraThick',
           weight: 0.0032,
           pricePerSqInch: 0.0015,
@@ -146,6 +149,7 @@ async function clearAndRestoreData() {
       }),
       prisma.paperStock.create({
         data: {
+          id: createId(),
           name: '100lb Gloss Text',
           weight: 0.001,
           pricePerSqInch: 0.0008,
