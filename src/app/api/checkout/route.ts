@@ -149,7 +149,6 @@ export async function POST(request: NextRequest) {
     // Trigger N8N workflow for order creation
     try {
       await N8NWorkflows.onOrderCreated(order.id)
-      console.log(`N8N workflow triggered for order ${order.orderNumber}`)
     } catch (n8nError) {
       console.error('Failed to trigger N8N workflow:', n8nError)
       // Don't fail the order if N8N fails
@@ -174,8 +173,6 @@ export async function POST(request: NextRequest) {
         total,
         shippingAddress,
       })
-
-      console.log(`Enhanced order confirmation email sent to ${email}`)
     } catch (emailError) {
       console.error('Failed to send order confirmation email:', emailError)
       // Don't fail the order if email fails
@@ -205,8 +202,6 @@ export async function POST(request: NextRequest) {
         orderDate: order.createdAt,
         paymentStatus: 'PENDING_PAYMENT',
       })
-
-      console.log(`Admin notification email sent for order ${order.orderNumber}`)
     } catch (adminEmailError) {
       console.error('Failed to send admin notification email:', adminEmailError)
       // Don't fail the order if admin email fails

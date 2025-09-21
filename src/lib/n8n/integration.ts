@@ -481,9 +481,7 @@ export class N8NIntegration {
     for (const webhookData of webhooks) {
       try {
         await this.registerWebhook(webhookData.name, webhookData.trigger, webhookData.description)
-      } catch (error) {
-        console.log(`Webhook ${webhookData.name} may already exist`)
-      }
+      } catch (error) {}
     }
   }
 

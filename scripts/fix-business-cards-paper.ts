@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function fixBusinessCardsPaper() {
-  console.log('🔧 Fixing Premium Business Cards paper stock configuration...\n')
 
   try {
     // Find the Premium Business Cards product
@@ -12,11 +11,9 @@ async function fixBusinessCardsPaper() {
     })
 
     if (!product) {
-      console.log('❌ Product not found')
+
       return
     }
-
-    console.log(`Found: ${product.name}`)
 
     // Find Standard Cardstock Set
     const paperStockSet = await prisma.paperStockSet.findFirst({
@@ -24,11 +21,9 @@ async function fixBusinessCardsPaper() {
     })
 
     if (!paperStockSet) {
-      console.log('❌ Paper stock set not found')
+
       return
     }
-
-    console.log(`Found paper stock set: ${paperStockSet.name}`)
 
     // Check if already linked
     const existing = await prisma.productPaperStockSet.findFirst({
@@ -39,7 +34,7 @@ async function fixBusinessCardsPaper() {
     })
 
     if (existing) {
-      console.log('✅ Already linked!')
+
     } else {
       // Link the paper stock set to the product
       await prisma.productPaperStockSet.create({
@@ -49,7 +44,7 @@ async function fixBusinessCardsPaper() {
           isDefault: true,
         },
       })
-      console.log('✅ Successfully linked paper stock set to product!')
+
     }
 
     // Also fix the missing size group
@@ -72,7 +67,7 @@ async function fixBusinessCardsPaper() {
             sizeGroupId: sizeGroup.id,
           },
         })
-        console.log('✅ Also linked size group!')
+
       }
     }
 
@@ -98,12 +93,6 @@ async function fixBusinessCardsPaper() {
       },
     })
 
-    console.log('\n📊 Updated Configuration:')
-    console.log(`   Paper Stock Sets: ${updatedProduct?.productPaperStockSets.length}`)
-    console.log(`   Size Groups: ${updatedProduct?.productSizeGroups.length}`)
-    console.log(`   Quantity Groups: ${updatedProduct?.productQuantityGroups.length}`)
-
-    console.log('\n✅ Business Cards configuration fixed!')
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

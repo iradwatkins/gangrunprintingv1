@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
     }
 
     const event = JSON.parse(body)
-    console.log('Square webhook event:', event.type)
 
     // Handle different event types
     switch (event.type) {
@@ -68,7 +67,6 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        console.log('Unhandled event type:', event.type)
     }
 
     return NextResponse.json({ received: true })
@@ -119,8 +117,6 @@ async function handlePaymentCreated(data: any) {
         },
       })
     })
-
-    console.log(`Order ${order.orderNumber} marked as paid`)
 
     // Trigger N8N workflow for payment received
     try {
@@ -186,8 +182,6 @@ async function handleOrderCreated(data: any) {
         shippingAddress: {},
       },
     })
-
-    console.log(`Order ${order.orderNumber} created from Square`)
   }
 }
 
@@ -293,7 +287,5 @@ async function handleRefundCreated(data: any) {
         },
       })
     })
-
-    console.log(`Order ${order.orderNumber} refunded: $${(refund.amount_money?.amount || 0) / 100}`)
   }
 }

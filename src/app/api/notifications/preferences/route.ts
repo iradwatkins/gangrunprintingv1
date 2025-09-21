@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
 
     // In a real app, you'd save to database
     // For now, just return success
-    console.log('Saving notification preferences for user:', user.id, preferences)
 
     return NextResponse.json({
       success: true,

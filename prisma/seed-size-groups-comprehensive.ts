@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding comprehensive size groups...')
 
   const sizeGroups = [
     {
@@ -197,13 +196,12 @@ async function main() {
         create: sizeGroup,
       })
       createdCount++
-      console.log(`✓ Created/Updated size group: ${sizeGroup.name}`)
+
     } catch (error) {
       console.error(`✗ Error creating size group ${sizeGroup.name}:`, error)
     }
   }
 
-  console.log(`\n✅ Successfully seeded ${createdCount} size groups!`)
 }
 
 main()

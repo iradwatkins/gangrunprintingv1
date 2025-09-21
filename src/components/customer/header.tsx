@@ -143,7 +143,7 @@ export default function Header() {
     try {
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       })
 
       if (response.ok) {
@@ -172,7 +172,7 @@ export default function Header() {
     if (installEvent) {
       installEvent.prompt()
       const { outcome } = await installEvent.userChoice
-      console.log('PWA install outcome:', outcome)
+
       if (outcome === 'accepted') {
         setShowInstallOption(false)
       }

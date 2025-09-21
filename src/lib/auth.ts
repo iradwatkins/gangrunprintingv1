@@ -16,9 +16,10 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       // Fix domain configuration to work with port-based development and production
-      domain: process.env.NODE_ENV === 'production' ?
-        (process.env.COOKIE_DOMAIN || 'gangrunprinting.com') :
-        undefined,
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? process.env.COOKIE_DOMAIN || 'gangrunprinting.com'
+          : undefined,
       path: '/',
     },
   },
@@ -58,7 +59,9 @@ interface DatabaseUserAttributes {
   emailVerified: boolean
 }
 
-export const validateRequest = async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+export const validateRequest = async (): Promise<
+  { user: User; session: Session } | { user: null; session: null }
+> => {
   try {
     const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
     if (!sessionId) {

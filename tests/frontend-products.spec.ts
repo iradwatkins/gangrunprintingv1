@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Frontend Products Display Tests', () => {
   test('should display products on the main site', async ({ page }) => {
-    console.log('🛍️ Testing frontend product display...')
 
     // Navigate to the main site
     await page.goto('https://gangrunprinting.com/')
@@ -10,12 +9,9 @@ test.describe('Frontend Products Display Tests', () => {
     // Wait for page to load
     await page.waitForTimeout(3000)
 
-    console.log('🌐 Homepage loaded, looking for products...')
-
     // Check if there are product links or a products page
     const productsLink = page.locator('a[href*="/products"], a:has-text("Products"), a:has-text("Shop")')
     const productsLinkExists = await productsLink.first().isVisible()
-    console.log('🔗 Products link found:', productsLinkExists)
 
     if (productsLinkExists) {
       await productsLink.first().click()

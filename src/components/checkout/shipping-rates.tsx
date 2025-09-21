@@ -45,7 +45,12 @@ interface ShippingRatesProps {
   onAirportSelected?: (airportId: string | null) => void
 }
 
-export function ShippingRates({ toAddress, items, onRateSelected, onAirportSelected }: ShippingRatesProps) {
+export function ShippingRates({
+  toAddress,
+  items,
+  onRateSelected,
+  onAirportSelected,
+}: ShippingRatesProps) {
   const [rates, setRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -240,23 +245,23 @@ export function ShippingRates({ toAddress, items, onRateSelected, onAirportSelec
               return (
                 <label
                   key={rateId}
-                  htmlFor={rateId}
                   className={`
                     flex cursor-pointer rounded-lg border p-4 transition-all
                     ${isSelected ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}
                   `}
+                  htmlFor={rateId}
                 >
-                  <RadioGroupItem value={rateId} id={rateId} className="mt-1" />
+                  <RadioGroupItem className="mt-1" id={rateId} value={rateId} />
                   <div className="ml-3 flex flex-1 items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{rate.serviceName}</span>
-                        <Badge variant="secondary" className={getCarrierColor(rate.carrier)}>
+                        <Badge className={getCarrierColor(rate.carrier)} variant="secondary">
                           {getCarrierIcon(rate.carrier)}
                           <span className="ml-1">{rate.carrier}</span>
                         </Badge>
                         {rate.isGuaranteed && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="text-xs" variant="outline">
                             <Check className="mr-1 h-3 w-3" />
                             Guaranteed
                           </Badge>
@@ -275,9 +280,7 @@ export function ShippingRates({ toAddress, items, onRateSelected, onAirportSelec
                       </div>
                     </div>
                     <div className="ml-4 text-right">
-                      <div className="text-lg font-semibold">
-                        ${rate.rateAmount.toFixed(2)}
-                      </div>
+                      <div className="text-lg font-semibold">${rate.rateAmount.toFixed(2)}</div>
                     </div>
                   </div>
                 </label>
@@ -290,8 +293,8 @@ export function ShippingRates({ toAddress, items, onRateSelected, onAirportSelec
         {selectedRate.startsWith('SOUTHWEST_CARGO-') && (
           <div className="mt-6">
             <AirportSelector
-              onAirportSelected={handleAirportSelection}
               selectedAirportId={selectedAirportId}
+              onAirportSelected={handleAirportSelection}
             />
           </div>
         )}

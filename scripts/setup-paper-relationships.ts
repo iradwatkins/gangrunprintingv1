@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function setupPaperRelationships() {
-  console.log('🔧 Setting up paper stock relationships with coatings and sides...\n')
 
   try {
     // Get all paper stocks
@@ -11,13 +10,8 @@ async function setupPaperRelationships() {
     const coatings = await prisma.coatingOption.findMany()
     const sidesOptions = await prisma.sidesOption.findMany()
 
-    console.log(`Found ${paperStocks.length} paper stocks`)
-    console.log(`Found ${coatings.length} coating options`)
-    console.log(`Found ${sidesOptions.length} sides options\n`)
-
     // For each paper stock, create relationships
     for (const paperStock of paperStocks) {
-      console.log(`📄 Configuring: ${paperStock.name}`)
 
       // Check existing relationships
       const existingCoatings = await prisma.paperStockCoating.count({
@@ -45,9 +39,9 @@ async function setupPaperRelationships() {
             },
           })
         }
-        console.log(`   ✅ Added ${coatings.length - 1} coating options`)
+
       } else {
-        console.log(`   ⏭️  Already has ${existingCoatings} coating options`)
+
       }
 
       // Add sides relationships if none exist
@@ -76,14 +70,14 @@ async function setupPaperRelationships() {
             },
           })
         }
-        console.log(`   ✅ Added ${sidesOptions.length - 1} sides options`)
+
       } else {
-        console.log(`   ⏭️  Already has ${existingSides} sides options`)
+
       }
     }
 
     // Verify relationships
-    console.log('\n📊 Verification:')
+
     for (const paperStock of paperStocks) {
       const coatingCount = await prisma.paperStockCoating.count({
         where: { paperStockId: paperStock.id },
@@ -92,10 +86,8 @@ async function setupPaperRelationships() {
         where: { paperStockId: paperStock.id },
       })
 
-      console.log(`${paperStock.name}: ${coatingCount} coatings, ${sidesCount} sides`)
     }
 
-    console.log('\n✅ Paper stock relationships configured successfully!')
   } catch (error) {
     console.error('❌ Error setting up relationships:', error)
   } finally {

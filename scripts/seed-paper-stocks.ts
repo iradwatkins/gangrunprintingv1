@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStocks() {
-  console.log('🌱 Seeding paper stocks...')
 
   const paperStocks = [
     // Business Card Papers
@@ -109,17 +108,16 @@ async function seedPaperStocks() {
       update: stock,
       create: stock,
     })
-    console.log(`✅ Created/Updated paper stock: ${stock.name}`)
+
   }
 
-  console.log('✅ Paper stocks seeded successfully!')
 }
 
 // Run if executed directly
 if (require.main === module) {
   seedPaperStocks()
     .then(() => {
-      console.log('✨ Seed completed')
+
       process.exit(0)
     })
     .catch((error) => {

@@ -24,7 +24,7 @@ const colors = {
 }
 
 function log(message, color = colors.reset) {
-  console.log(`${color}${message}${colors.reset}`)
+
 }
 
 // Create test images with different colors/content

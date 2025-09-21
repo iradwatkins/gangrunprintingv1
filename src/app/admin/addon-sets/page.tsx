@@ -195,7 +195,7 @@ export default function AddOnSetsPage() {
 
     // Populate selected addons
     const selectedData: typeof selectedAddOns = {}
-    set.addOnSetItems.forEach(item => {
+    set.addOnSetItems.forEach((item) => {
       selectedData[item.addOnId] = {
         displayPosition: item.displayPosition,
         isDefault: item.isDefault,
@@ -287,7 +287,7 @@ export default function AddOnSetsPage() {
   }
 
   const handleToggleAddOn = (addOnId: string) => {
-    setSelectedAddOns(prev => {
+    setSelectedAddOns((prev) => {
       const newSelected = { ...prev }
       if (newSelected[addOnId]) {
         delete newSelected[addOnId]
@@ -306,7 +306,7 @@ export default function AddOnSetsPage() {
     field: 'displayPosition' | 'isDefault',
     value: any
   ) => {
-    setSelectedAddOns(prev => ({
+    setSelectedAddOns((prev) => ({
       ...prev,
       [addOnId]: {
         ...prev[addOnId],
@@ -365,14 +365,15 @@ export default function AddOnSetsPage() {
         <CardHeader>
           <CardTitle>Add-on Sets ({addOnSets.length})</CardTitle>
           <CardDescription>
-            Create and manage add-on sets that can be assigned to products with configurable display positions
+            Create and manage add-on sets that can be assigned to products with configurable display
+            positions
           </CardDescription>
         </CardHeader>
         <CardContent>
           {addOnSets.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No addon sets found</p>
-              <Button onClick={handleCreateSet} className="mt-4">
+              <Button className="mt-4" onClick={handleCreateSet}>
                 Create your first addon set
               </Button>
             </div>
@@ -383,8 +384,8 @@ export default function AddOnSetsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="ghost"
                         onClick={() => setExpandedSet(expandedSet === set.id ? null : set.id)}
                       >
                         {expandedSet === set.id ? (
@@ -414,25 +415,17 @@ export default function AddOnSetsPage() {
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleCloneSet(set)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleCloneSet(set)}>
                         <Copy className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditSet(set)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleEditSet(set)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteSet(set)}
                         disabled={set._count.productAddOnSets > 0}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteSet(set)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -444,15 +437,19 @@ export default function AddOnSetsPage() {
                       <div className="grid grid-cols-3 gap-4">
                         {/* Above Dropdown */}
                         <div>
-                          <h4 className="font-medium text-sm mb-2 text-green-700">Above Dropdown</h4>
+                          <h4 className="font-medium text-sm mb-2 text-green-700">
+                            Above Dropdown
+                          </h4>
                           <div className="space-y-2">
                             {set.addOnSetItems
-                              .filter(item => item.displayPosition === 'ABOVE_DROPDOWN')
-                              .map(item => (
+                              .filter((item) => item.displayPosition === 'ABOVE_DROPDOWN')
+                              .map((item) => (
                                 <div key={item.id} className="p-2 bg-green-50 rounded text-sm">
                                   <div className="font-medium">{item.addOn.name}</div>
                                   {item.isDefault && (
-                                    <Badge variant="outline" className="text-xs">Default</Badge>
+                                    <Badge className="text-xs" variant="outline">
+                                      Default
+                                    </Badge>
                                   )}
                                 </div>
                               ))}
@@ -464,12 +461,14 @@ export default function AddOnSetsPage() {
                           <h4 className="font-medium text-sm mb-2 text-blue-700">In Dropdown</h4>
                           <div className="space-y-2">
                             {set.addOnSetItems
-                              .filter(item => item.displayPosition === 'IN_DROPDOWN')
-                              .map(item => (
+                              .filter((item) => item.displayPosition === 'IN_DROPDOWN')
+                              .map((item) => (
                                 <div key={item.id} className="p-2 bg-blue-50 rounded text-sm">
                                   <div className="font-medium">{item.addOn.name}</div>
                                   {item.isDefault && (
-                                    <Badge variant="outline" className="text-xs">Default</Badge>
+                                    <Badge className="text-xs" variant="outline">
+                                      Default
+                                    </Badge>
                                   )}
                                 </div>
                               ))}
@@ -478,15 +477,19 @@ export default function AddOnSetsPage() {
 
                         {/* Below Dropdown */}
                         <div>
-                          <h4 className="font-medium text-sm mb-2 text-orange-700">Below Dropdown</h4>
+                          <h4 className="font-medium text-sm mb-2 text-orange-700">
+                            Below Dropdown
+                          </h4>
                           <div className="space-y-2">
                             {set.addOnSetItems
-                              .filter(item => item.displayPosition === 'BELOW_DROPDOWN')
-                              .map(item => (
+                              .filter((item) => item.displayPosition === 'BELOW_DROPDOWN')
+                              .map((item) => (
                                 <div key={item.id} className="p-2 bg-orange-50 rounded text-sm">
                                   <div className="font-medium">{item.addOn.name}</div>
                                   {item.isDefault && (
-                                    <Badge variant="outline" className="text-xs">Default</Badge>
+                                    <Badge className="text-xs" variant="outline">
+                                      Default
+                                    </Badge>
                                   )}
                                 </div>
                               ))}
@@ -506,9 +509,7 @@ export default function AddOnSetsPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {editingSet ? 'Edit Add-on Set' : 'Create Add-on Set'}
-            </DialogTitle>
+            <DialogTitle>{editingSet ? 'Edit Add-on Set' : 'Create Add-on Set'}</DialogTitle>
             <DialogDescription>
               Configure add-on collection with display positions for products
             </DialogDescription>
@@ -520,18 +521,20 @@ export default function AddOnSetsPage() {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Enter addon set name"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Enter description (optional)"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -560,7 +563,9 @@ export default function AddOnSetsPage() {
                       <div className="flex items-center space-x-2">
                         <Select
                           value={selectedAddOns[addon.id].displayPosition}
-                          onValueChange={(value) => handleAddOnConfigChange(addon.id, 'displayPosition', value)}
+                          onValueChange={(value) =>
+                            handleAddOnConfigChange(addon.id, 'displayPosition', value)
+                          }
                         >
                           <SelectTrigger className="w-32">
                             <SelectValue />
@@ -575,7 +580,9 @@ export default function AddOnSetsPage() {
                         <div className="flex items-center space-x-1">
                           <Checkbox
                             checked={selectedAddOns[addon.id].isDefault}
-                            onCheckedChange={(checked) => handleAddOnConfigChange(addon.id, 'isDefault', checked)}
+                            onCheckedChange={(checked) =>
+                              handleAddOnConfigChange(addon.id, 'isDefault', checked)
+                            }
                           />
                           <Label className="text-xs">Default</Label>
                         </div>
@@ -591,9 +598,7 @@ export default function AddOnSetsPage() {
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveSet}>
-              {editingSet ? 'Update' : 'Create'} Add-on Set
-            </Button>
+            <Button onClick={handleSaveSet}>{editingSet ? 'Update' : 'Create'} Add-on Set</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

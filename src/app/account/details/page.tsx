@@ -29,7 +29,6 @@ export default function AccountDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Update user profile with Lucia auth
-    console.log('Updating profile:', formData)
   }
 
   return (

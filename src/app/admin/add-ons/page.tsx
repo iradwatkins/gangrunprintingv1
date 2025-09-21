@@ -115,19 +115,14 @@ export default function AddOnsPage() {
       if (!response.ok) throw new Error('Failed to fetch')
       const rawData = await response.json()
 
-      console.log('Raw API response:', rawData)
-      console.log('Type of rawData:', typeof rawData)
       console.log('Is rawData an array?', Array.isArray(rawData))
-      console.log('Does rawData have data property?', rawData && 'data' in rawData)
 
       // Handle both formats: direct array or { data: array }
       let data = rawData
       if (rawData && typeof rawData === 'object' && 'data' in rawData) {
         data = rawData.data
-        console.log('Extracted data from wrapper:', data)
       }
 
-      console.log('Final data:', data)
       console.log('Is data an array?', Array.isArray(data))
 
       // Ensure data is always an array
@@ -472,9 +467,9 @@ export default function AddOnsPage() {
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end items-center">
                           <Switch
+                            aria-label={`Toggle ${addOn.name} active state`}
                             checked={addOn.isActive}
                             onCheckedChange={() => handleToggleActive(addOn)}
-                            aria-label={`Toggle ${addOn.name} active state`}
                           />
                           <Button
                             size="sm"

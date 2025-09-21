@@ -114,10 +114,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 // PATCH /api/add-ons/[id] - Partially update an add-on (e.g., toggle isActive)
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()

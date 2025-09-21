@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Starting add-ons seed with correct pricing from documentation...')
 
   // Create Add-ons with correct pricing from documentation
   const addOns = [
@@ -295,18 +294,16 @@ async function main() {
   ]
 
   // Delete existing add-ons to start fresh with correct pricing
-  console.log('Clearing existing add-ons...')
+
   await prisma.addOn.deleteMany()
 
   for (const addOn of addOns) {
     const created = await prisma.addOn.create({
       data: addOn,
     })
-    console.log(`✓ Created add-on: ${created.name} with correct pricing`)
+
   }
 
-  console.log('✅ Add-ons seed with correct pricing completed successfully!')
-  console.log(`Created ${addOns.length} add-ons with accurate pricing from documentation`)
 }
 
 main()

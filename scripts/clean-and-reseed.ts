@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function cleanAndReseed() {
-  console.log('🧹 Cleaning duplicate categories...')
 
   // First, delete all categories except our core 10
   const coreCategories = [
@@ -28,8 +27,6 @@ async function cleanAndReseed() {
     },
   })
 
-  console.log('✅ Cleaned up categories')
-
   // Verify counts
   const counts = await Promise.all([
     prisma.paperStock.count(),
@@ -41,16 +38,6 @@ async function cleanAndReseed() {
     prisma.coatingOption.count(),
   ])
 
-  console.log('\n📊 Current Database Status:')
-  console.log(`  Paper Stocks: ${counts[0]}`)
-  console.log(`  Size Groups: ${counts[1]}`)
-  console.log(`  Quantity Groups: ${counts[2]}`)
-  console.log(`  Add-ons: ${counts[3]}`)
-  console.log(`  Product Categories: ${counts[4]}`)
-  console.log(`  Sides Options: ${counts[5]}`)
-  console.log(`  Coating Options: ${counts[6]}`)
-
-  console.log('\n✨ Database is ready with all real data!')
 }
 
 cleanAndReseed()

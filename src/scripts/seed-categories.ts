@@ -162,8 +162,6 @@ const categories = [
 ]
 
 async function seedCategories() {
-  console.log('🌱 Seeding product categories...')
-
   for (const category of categories) {
     try {
       await prisma.productCategory.upsert({
@@ -185,13 +183,10 @@ async function seedCategories() {
           updatedAt: new Date(),
         },
       })
-      console.log(`✓ Created/Updated category: ${category.name}`)
     } catch (error) {
       console.error(`✗ Error with category ${category.name}:`, error)
     }
   }
-
-  console.log(`\n✅ Seeded ${categories.length} product categories`)
 }
 
 seedCategories()

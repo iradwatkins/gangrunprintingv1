@@ -3,12 +3,10 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedAddOnSets() {
-  console.log('🌱 Seeding AddOn Sets...')
 
   try {
     // First, get existing add-ons
     const addOns = await prisma.addOn.findMany()
-    console.log(`Found ${addOns.length} add-ons`)
 
     // Create AddOn Sets
     const addOnSets = [
@@ -69,7 +67,6 @@ async function seedAddOnSets() {
         update: setData,
         create: setData,
       })
-      console.log(`✅ Created/Updated AddOn Set: ${set.name}`)
 
       // Add some add-ons to each set if available
       if (addOns.length > 0) {
@@ -130,11 +127,10 @@ async function seedAddOnSets() {
             },
           })
         }
-        console.log(`  Added ${addOnsToAdd.length} add-ons to set`)
+
       }
     }
 
-    console.log('✅ AddOn Sets seeded successfully!')
   } catch (error) {
     console.error('❌ Error seeding AddOn Sets:', error)
     throw error
@@ -145,7 +141,7 @@ async function seedAddOnSets() {
 if (require.main === module) {
   seedAddOnSets()
     .then(() => {
-      console.log('✨ Seed completed')
+
       process.exit(0)
     })
     .catch((error) => {

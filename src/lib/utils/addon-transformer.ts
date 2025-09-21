@@ -97,7 +97,7 @@ export function transformAddonSets(productAddonSets: RawProductAddonSet[]): Stan
         priceDisplay,
         isDefault: setItem.isDefault,
         additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
-        configuration: addon.configuration || {}
+        configuration: addon.configuration || {},
       }
 
       allAddons.push(standardizedAddon)
@@ -117,7 +117,7 @@ export function transformAddonSets(productAddonSets: RawProductAddonSet[]): Stan
  * For backwards compatibility with existing systems
  */
 export function transformLegacyAddons(legacyAddons: any[]): StandardizedAddon[] {
-  return legacyAddons.map(addon => ({
+  return legacyAddons.map((addon) => ({
     id: addon.id,
     name: addon.name,
     description: addon.description || '',
@@ -126,7 +126,7 @@ export function transformLegacyAddons(legacyAddons: any[]): StandardizedAddon[] 
     priceDisplay: addon.priceDisplay || `$${addon.price || 0}`,
     isDefault: addon.isDefault || false,
     additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
-    configuration: addon.configuration || {}
+    configuration: addon.configuration || {},
   }))
 }
 
@@ -134,9 +134,7 @@ export function transformLegacyAddons(legacyAddons: any[]): StandardizedAddon[] 
  * Find default addons from a standardized array
  */
 export function findDefaultAddons(addons: StandardizedAddon[]): string[] {
-  return addons
-    .filter(addon => addon.isDefault)
-    .map(addon => addon.id)
+  return addons.filter((addon) => addon.isDefault).map((addon) => addon.id)
 }
 
 export type { RawAddon, RawAddonSetItem, RawProductAddonSet, StandardizedAddon }

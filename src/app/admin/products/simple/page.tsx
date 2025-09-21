@@ -76,25 +76,21 @@ export default function SimpleProductPage() {
       if (catRes.ok) {
         const data = await catRes.json()
         setCategories(data)
-        console.log('Categories loaded:', data.length)
       }
 
       if (paperRes.ok) {
         const data = await paperRes.json()
         setPaperStocks(data)
-        console.log('Paper stocks loaded:', data.length)
       }
 
       if (qtyRes.ok) {
         const data = await qtyRes.json()
         setQuantityGroups(data)
-        console.log('Quantity groups loaded:', data.length)
       }
 
       if (sizeRes.ok) {
         const data = await sizeRes.json()
         setSizeGroups(data)
-        console.log('Size groups loaded:', data.length)
       }
     } catch (error) {
       console.error('Error fetching dropdown data:', error)
@@ -120,7 +116,6 @@ export default function SimpleProductPage() {
     }
 
     setLoading(true)
-    console.log('Submitting form data:', formData)
 
     try {
       const response = await fetch('/api/products/simple', {
@@ -130,7 +125,6 @@ export default function SimpleProductPage() {
       })
 
       const result = await response.json()
-      console.log('Response:', response.status, result)
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to create product')

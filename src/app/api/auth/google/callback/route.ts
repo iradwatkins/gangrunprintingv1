@@ -6,25 +6,12 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  console.log('=== GOOGLE OAUTH CALLBACK START ===')
-
   const url = new URL(request.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
 
-  console.log('Received params:', {
-    code: code ? 'present' : 'missing',
-    state: state ? 'present' : 'missing',
-  })
-
   const storedState = (await cookies()).get('google_oauth_state')?.value ?? null
   const storedCodeVerifier = (await cookies()).get('google_oauth_code_verifier')?.value ?? null
-
-  console.log('Stored cookies:', {
-    storedState: storedState ? 'present' : 'missing',
-    storedCodeVerifier: storedCodeVerifier ? 'present' : 'missing',
-    stateMatch: state === storedState,
-  })
 
   if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
     console.error('OAuth validation failed:', {
@@ -40,9 +27,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    console.log('Validating authorization code...')
     const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier)
-    console.log('Authorization code validated successfully')
 
     // Arctic returns tokens as methods, not properties
     let accessToken: string
@@ -52,7 +37,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     try {
       accessToken = tokens.accessToken()
-      console.log('Access token extracted successfully')
     } catch (e) {
       console.error('Failed to extract access token:', e)
       throw new Error('Failed to extract access token from OAuth response')
@@ -60,40 +44,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     try {
       idToken = tokens.idToken()
-      console.log('ID token extracted successfully')
     } catch (e) {
       console.log('No ID token available (this is normal for non-OIDC flows)')
     }
 
     try {
       refreshToken = tokens.refreshToken()
-      console.log('Refresh token extracted')
-    } catch (e) {
-      console.log('No refresh token available')
-    }
+    } catch (e) {}
 
     try {
       expiresAt = tokens.accessTokenExpiresAt()
-      console.log('Token expiration extracted')
-    } catch (e) {
-      console.log('No token expiration available')
-    }
-
-    console.log('Tokens received:', {
-      hasAccessToken: !!accessToken,
-      hasIdToken: !!idToken,
-      hasRefreshToken: !!refreshToken,
-      expiresAt: expiresAt,
-    })
+    } catch (e) {}
 
     // Try to get user info from ID token first
     let googleUser: GoogleUser
 
     if (idToken) {
       try {
-        console.log('Attempting to decode ID token for user info...')
         const claims = decodeIdToken(idToken) as any
-        console.log('ID token claims:', claims)
 
         googleUser = {
           sub: claims.sub,
@@ -105,16 +73,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           picture: claims.picture || '',
           locale: claims.locale || 'en',
         }
-        console.log('User info extracted from ID token:', googleUser)
       } catch (e) {
-        console.log('Failed to decode ID token, falling back to userinfo API:', e)
         idToken = null // Reset to trigger API call below
       }
     }
 
     // Fall back to fetching from userinfo endpoint if no ID token
     if (!idToken) {
-      console.log('Fetching user info from Google userinfo API...')
       const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -133,15 +98,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
 
       googleUser = await response.json()
-      console.log('Raw Google user data from API:', googleUser)
     }
-
-    console.log('Final Google user data:', {
-      email: googleUser.email,
-      name: googleUser.name,
-      emailVerified: googleUser.email_verified,
-      sub: googleUser.sub,
-    })
 
     if (!googleUser.email) {
       console.error('No email received from Google')
@@ -229,10 +186,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Create session
-    console.log('Creating session for user:', user.id, 'Role:', user.role)
+
     const session = await lucia.createSession(user.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
-    console.log('Session created:', session.id)
 
     // Set the session cookie - CRITICAL: must be done before redirect
     const cookieStore = await cookies()
@@ -246,12 +202,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const redirectPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard'
 
     // Use consistent base URL resolution
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
-
-    console.log('=== GOOGLE OAUTH SUCCESS ===')
-    console.log('User role:', user.role)
-    console.log('User email:', user.email)
-    console.log('Redirecting to:', `${baseUrl}${redirectPath}`)
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
 
     return NextResponse.redirect(`${baseUrl}${redirectPath}`)
   } catch (error) {

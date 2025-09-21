@@ -22,8 +22,8 @@ export default function ShippingTestPage() {
   const [items] = useState([
     {
       quantity: 1000,
-      width: 8.5,  // inches
-      height: 11,   // inches
+      width: 8.5, // inches
+      height: 11, // inches
       paperStockWeight: 0.002, // 100lb text paper
     },
     {
@@ -106,9 +106,9 @@ export default function ShippingTestPage() {
                   <Label htmlFor="state">State</Label>
                   <Input
                     id="state"
+                    maxLength={2}
                     value={address.state}
                     onChange={(e) => handleAddressChange('state', e.target.value)}
-                    maxLength={2}
                   />
                 </div>
                 <div>
@@ -124,7 +124,7 @@ export default function ShippingTestPage() {
           </CardContent>
         </Card>
 
-        <ShippingRates toAddress={address} items={items} onRateSelected={handleRateSelected} />
+        <ShippingRates items={items} toAddress={address} onRateSelected={handleRateSelected} />
 
         {selectedRate && (
           <Card className="bg-primary/5">

@@ -49,7 +49,6 @@ export function GeneralSettingsForm() {
     try {
       // TODO: Implement settings update API
       await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
-      console.log('General settings updated:', formData)
     } catch (error) {
       console.error('Failed to update settings:', error)
     } finally {

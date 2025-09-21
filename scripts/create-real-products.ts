@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function createRealProducts() {
-  console.log('🚀 Creating real commercial printing products...')
 
   try {
     // Get existing data IDs
@@ -17,7 +16,6 @@ async function createRealProducts() {
     const sizeGroupMap = Object.fromEntries(sizeGroups.map((s) => [s.name, s.id]))
     const quantityGroupMap = Object.fromEntries(quantityGroups.map((q) => [q.name, q.id]))
 
-    console.log('📋 Available mappings:')
     console.log('Categories:', Object.keys(categoryMap))
     console.log('Paper Stock Sets:', Object.keys(paperStockSetMap))
     console.log('Size Groups:', Object.keys(sizeGroupMap))
@@ -102,7 +100,7 @@ async function createRealProducts() {
         })
 
         if (existing) {
-          console.log(`⚠️  Product already exists: ${productData.name}`)
+
           continue
         }
 
@@ -110,8 +108,6 @@ async function createRealProducts() {
         const product = await prisma.product.create({
           data: productData,
         })
-
-        console.log(`✅ Created product: ${product.name}`)
 
         // Add paper stock set association
         if (paperStockSetMap['Standard Cardstock Set']) {
@@ -122,7 +118,7 @@ async function createRealProducts() {
               isDefault: true,
             },
           })
-          console.log(`   📎 Linked paper stock set`)
+
         }
 
         // Add size group association
@@ -142,7 +138,7 @@ async function createRealProducts() {
               sizeGroupId: sizeGroupId,
             },
           })
-          console.log(`   📐 Linked size group`)
+
         }
 
         // Add quantity group association
@@ -163,10 +159,9 @@ async function createRealProducts() {
               quantityGroupId: quantityGroupId,
             },
           })
-          console.log(`   🔢 Linked quantity group`)
+
         }
 
-        console.log(`   ✨ Product setup complete: ${product.name}`)
       } catch (error) {
         console.error(`❌ Error creating product ${productData.name}:`, error)
       }
@@ -187,16 +182,8 @@ async function createRealProducts() {
       },
     })
 
-    console.log('\n📊 Summary of created products:')
     createdProducts.forEach((product) => {
-      console.log(`\n${product.name}:`)
-      console.log(`  - SKU: ${product.sku}`)
-      console.log(`  - Category: ${product.ProductCategory?.name || 'None'}`)
-      console.log(`  - Base Price: $${product.basePrice}`)
-      console.log(`  - Paper Stock Sets: ${product.productPaperStockSets.length}`)
-      console.log(`  - Size Groups: ${product.productSizeGroups.length}`)
-      console.log(`  - Quantity Groups: ${product.productQuantityGroups.length}`)
-      console.log(`  - URL: http://localhost:3002/products/${product.slug}`)
+
     })
   } catch (error) {
     console.error('Fatal error:', error)

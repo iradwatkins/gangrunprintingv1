@@ -144,7 +144,6 @@ export async function sendNotificationToUser(userId: string, type: NotificationT
     })
 
     if (subscriptions.length === 0) {
-      console.log(`No active subscriptions for user ${userId}`)
       return
     }
 
@@ -182,8 +181,6 @@ export async function sendNotificationToUser(userId: string, type: NotificationT
     // Log results
     const successful = results.filter((r) => r.status === 'fulfilled').length
     const failed = results.filter((r) => r.status === 'rejected').length
-
-    console.log(`Notifications sent: ${successful} successful, ${failed} failed`)
 
     // Store notification in database for history
     await prisma.pushNotification.create({
@@ -233,12 +230,6 @@ export async function sendNotificationToAll(type: NotificationType, data: any) {
 // Generate VAPID keys (run once during setup)
 export function generateVAPIDKeys() {
   const keys = webpush.generateVAPIDKeys()
-  console.log('VAPID Keys Generated:')
-  console.log('Public Key:', keys.publicKey)
-  console.log('Private Key:', keys.privateKey)
-  console.log('Add these to your .env.local file:')
-  console.log(`NEXT_PUBLIC_VAPID_PUBLIC_KEY="${keys.publicKey}"`)
-  console.log(`VAPID_PRIVATE_KEY="${keys.privateKey}"`)
-  console.log(`VAPID_SUBJECT="mailto:support@gangrunprinting.com"`)
+
   return keys
 }

@@ -16,9 +16,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: healthCheck.available && uploadTest.success,
-      message: healthCheck.available
-        ? 'MinIO is healthy and ready'
-        : 'MinIO connection failed',
+      message: healthCheck.available ? 'MinIO is healthy and ready' : 'MinIO connection failed',
       config: {
         ...config,
         // Don't expose credentials

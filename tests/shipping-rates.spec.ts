@@ -54,34 +54,18 @@ test.describe('Shipping Rate Calculation Tests', () => {
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
 
-    console.log('\n========================================')
-    console.log('📦 FEDEX SHIPPING RATES TEST RESULTS')
-    console.log('========================================')
-    console.log(`📍 Shipping to: ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`)
-    console.log(`⚖️  Total Weight: ${data.totalWeight} lbs`)
-    console.log(`📦 Package Details:`)
-    console.log(`   - 1 box @ 45 lbs`)
-    console.log(`   - 2 boxes @ 30 lbs each`)
-    console.log('----------------------------------------')
-    console.log('💰 FEDEX RATES:')
-    console.log('----------------------------------------')
-
     // Filter and display only FedEx rates
     const fedexRates = data.rates.filter((rate: any) => rate.carrier === 'FEDEX')
 
     fedexRates.forEach((rate: any) => {
-      console.log(`\n📦 ${rate.serviceName}`)
-      console.log(`   💵 Price: $${rate.rateAmount.toFixed(2)}`)
-      console.log(`   📅 Delivery: ${rate.estimatedDays} business day${rate.estimatedDays > 1 ? 's' : ''}`)
+
       if (rate.deliveryDate) {
-        console.log(`   📆 Est. Delivery Date: ${new Date(rate.deliveryDate).toLocaleDateString()}`)
+
       }
       if (rate.isGuaranteed) {
-        console.log(`   ✅ Guaranteed Delivery`)
+
       }
     })
-
-    console.log('\n========================================\n')
 
     // Store rates for assertions
     expect(fedexRates.length).toBeGreaterThan(0)
@@ -119,12 +103,10 @@ test.describe('Shipping Rate Calculation Tests', () => {
     const shippingOptions = page.locator('[role="radiogroup"] label')
     const count = await shippingOptions.count()
 
-    console.log(`\n📋 Available shipping options on UI: ${count}`)
-
     for (let i = 0; i < count; i++) {
       const option = shippingOptions.nth(i)
       const text = await option.textContent()
-      console.log(`   - ${text}`)
+
     }
   })
 })

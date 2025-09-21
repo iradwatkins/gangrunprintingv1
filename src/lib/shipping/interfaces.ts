@@ -1,4 +1,4 @@
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 
 export interface ShippingAddress {
   street: string
@@ -11,7 +11,7 @@ export interface ShippingAddress {
 }
 
 export interface ShippingDimensions {
-  width: number  // inches
+  width: number // inches
   height: number // inches
   length?: number // inches (for packages)
 }
@@ -87,9 +87,9 @@ export interface ShippingProvider {
 
 export interface WeightCalculationParams {
   paperStockWeight: number // weight per square inch
-  width: number            // inches
-  height: number           // inches
-  quantity: number         // number of items
+  width: number // inches
+  height: number // inches
+  quantity: number // number of items
 }
 
 export interface ShippingConfiguration {

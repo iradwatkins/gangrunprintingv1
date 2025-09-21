@@ -103,7 +103,14 @@ export default function FlyerProductPage() {
         setCalculatedPrice(Math.round(retailPrice * 100) / 100)
       }
     }
-  }, [selectedPaperStock, selectedCoating, selectedSides, selectedQuantity, currentPaperStock, quantityOptions])
+  }, [
+    selectedPaperStock,
+    selectedCoating,
+    selectedSides,
+    selectedQuantity,
+    currentPaperStock,
+    quantityOptions,
+  ])
 
   return (
     <div className="container mx-auto py-8">

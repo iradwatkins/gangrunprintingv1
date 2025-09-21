@@ -1,11 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { ShippingCalculator } from '@/lib/shipping/shipping-calculator'
 import { type ShippingAddress, type ShippingPackage } from '@/lib/shipping/interfaces'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { fromAddress, toAddress, packages }: {
+    const {
+      fromAddress,
+      toAddress,
+      packages,
+    }: {
       fromAddress: ShippingAddress
       toAddress: ShippingAddress
       packages: ShippingPackage[]
@@ -25,9 +29,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ rates })
   } catch (error) {
     console.error('Shipping rates API error:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate shipping rates' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
   }
 }

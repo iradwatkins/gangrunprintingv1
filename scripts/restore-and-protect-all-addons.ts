@@ -4,35 +4,33 @@ import { createId } from '@paralleldrive/cuid2'
 const prisma = new PrismaClient()
 
 async function restoreAndProtectAllAddons() {
-  console.log('🛡️ ADDON DATA RESTORATION & PROTECTION SYSTEM')
+
   console.log('=' .repeat(60))
-  console.log('Ensuring Corner Rounding and all addons are present and protected')
+
   console.log('=' .repeat(60))
 
   try {
     // First, verify Corner Rounding is safe
-    console.log('\n✅ VERIFYING CORNER ROUNDING STATUS:')
+
     const cornerRounding = await prisma.addOn.findFirst({
       where: { name: 'Corner Rounding' }
     })
 
     if (cornerRounding) {
-      console.log('✅ Corner Rounding EXISTS with ID:', cornerRounding.id)
+
       const config = cornerRounding.configuration as any
       if (config?.conditionalFields?.cornerType?.label === 'ROUNDED CORNERS') {
-        console.log('✅ ROUNDED CORNERS field is INTACT')
-        console.log('   Options count:', config.conditionalFields.cornerType.options.length)
+
       } else {
-        console.log('⚠️ Updating Corner Rounding to ensure ROUNDED CORNERS field...')
+
         await updateCornerRounding(cornerRounding.id)
       }
     } else {
-      console.log('❌ Corner Rounding MISSING - Creating it now...')
+
       await createCornerRounding()
     }
 
     // Now restore all missing addons
-    console.log('\n📦 RESTORING ALL MISSING ADDONS:')
 
     const allAddons = [
       {
@@ -295,37 +293,29 @@ async function restoreAndProtectAllAddons() {
             updatedAt: new Date()
           } as any
         })
-        console.log(`✅ Restored: ${addonData.name}`)
+
       } else {
-        console.log(`✓ Already exists: ${addonData.name}`)
+
       }
     }
 
     // Verify all addons are present
-    console.log('\n🔍 FINAL VERIFICATION:')
+
     const allAddonsInDb = await prisma.addOn.findMany({
       orderBy: { name: 'asc' }
     })
-
-    console.log(`Total addons in database: ${allAddonsInDb.length}`)
 
     // Specifically verify Corner Rounding
     const finalCornerCheck = allAddonsInDb.find(a => a.name === 'Corner Rounding')
     if (finalCornerCheck) {
       const config = finalCornerCheck.configuration as any
       if (config?.conditionalFields?.cornerType?.label === 'ROUNDED CORNERS') {
-        console.log('\n✅ SUCCESS: Corner Rounding with ROUNDED CORNERS is SAFE')
-        console.log('   - Field Label:', config.conditionalFields.cornerType.label)
-        console.log('   - Options Count:', config.conditionalFields.cornerType.options.length)
-        console.log('   - First Option:', config.conditionalFields.cornerType.options[0])
+
       }
     }
 
     // Create protection verification file
     await createProtectionVerificationFile()
-
-    console.log('\n✅ ALL ADDONS RESTORED AND PROTECTED!')
-    console.log('Total addons:', allAddonsInDb.length)
 
   } catch (error) {
     console.error('Error in restoration:', error)
@@ -431,7 +421,7 @@ echo "npx tsx scripts/restore-and-protect-all-addons.ts"
 
   const fs = require('fs').promises
   await fs.writeFile('/root/websites/gangrunprinting/verify-addons.sh', verificationScript)
-  console.log('\n✅ Created verify-addons.sh for ongoing protection')
+
 }
 
 restoreAndProtectAllAddons()

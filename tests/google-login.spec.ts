@@ -37,7 +37,6 @@ test.describe('Google OAuth Login Tests', () => {
   })
 
   test('Test 1: Google OAuth button exists and is clickable', async ({ page }) => {
-    console.log('🧪 Test 1: Checking Google OAuth button...')
 
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
@@ -64,7 +63,6 @@ test.describe('Google OAuth Login Tests', () => {
 
     // Check if redirected to Google or error page
     const currentUrl = page.url()
-    console.log('Current URL after click:', currentUrl)
 
     // Take screenshot after click
     await page.screenshot({ path: 'test-1-after-click.png' })
@@ -76,31 +74,28 @@ test.describe('Google OAuth Login Tests', () => {
       .catch(() => false)
 
     if (hasError) {
-      console.log('❌ Configuration error detected')
+
       const errorText = await page.locator('body').textContent()
       console.log('Error page content:', errorText?.substring(0, 500))
     } else if (currentUrl.includes('accounts.google.com')) {
-      console.log('✅ Successfully redirected to Google OAuth')
+
     } else if (currentUrl.includes('/auth/error')) {
-      console.log('❌ Redirected to auth error page')
+
       const errorMessage = await page
         .locator('[class*="error"], [id*="error"]')
         .textContent()
         .catch(() => 'No error message found')
-      console.log('Error message:', errorMessage)
+
     } else {
-      console.log('⚠️ Unexpected redirect:', currentUrl)
+
     }
   })
 
   test('Test 2: Check OAuth providers endpoint', async ({ page }) => {
-    console.log('🧪 Test 2: Checking OAuth providers endpoint...')
 
     // Make API request to check providers
     const response = await page.request.get(`${BASE_URL}/api/auth/providers`)
     const providers = await response.json()
-
-    console.log('Available providers:', providers)
 
     // Check if Google provider exists
     expect(providers).toHaveProperty('google')
@@ -108,11 +103,9 @@ test.describe('Google OAuth Login Tests', () => {
     expect(providers.google).toHaveProperty('name', 'Google')
     expect(providers.google).toHaveProperty('type', 'oauth')
 
-    console.log('✅ Google provider is configured correctly')
   })
 
   test('Test 3: Test OAuth flow with mock credentials', async ({ page }) => {
-    console.log('🧪 Test 3: Testing OAuth flow...')
 
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
@@ -155,10 +148,6 @@ test.describe('Google OAuth Login Tests', () => {
           .textContent()
           .catch(() => '')
 
-        console.log('❌ Auth error detected')
-        console.log('Error code:', errorCode)
-        console.log('Error message:', errorMessage)
-
         // Take screenshot of error
         await page.screenshot({ path: 'test-3-auth-error.png' })
 
@@ -171,22 +160,21 @@ test.describe('Google OAuth Login Tests', () => {
         })
 
         if (consoleErrors.length > 0) {
-          console.log('Console errors:', consoleErrors)
+
         }
       } else if (currentUrl.includes('accounts.google.com')) {
-        console.log('✅ Reached Google OAuth page')
+
         await page.screenshot({ path: 'test-3-google-oauth.png' })
       } else {
-        console.log('⚠️ Unexpected page:', currentUrl)
+
         await page.screenshot({ path: 'test-3-unexpected.png' })
       }
     } else {
-      console.log('❌ Google sign-in button not found')
+
     }
   })
 
   test('Test 4: Check session and CSRF token', async ({ page }) => {
-    console.log('🧪 Test 4: Checking session and CSRF token...')
 
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
@@ -195,18 +183,14 @@ test.describe('Google OAuth Login Tests', () => {
     const csrfResponse = await page.request.get(`${BASE_URL}/api/auth/csrf`)
     const csrfData = await csrfResponse.json()
 
-    console.log('CSRF token received:', csrfData.csrfToken ? '✅ Yes' : '❌ No')
-
     // Check session
     const sessionResponse = await page.request.get(`${BASE_URL}/api/auth/session`)
     const sessionData = await sessionResponse.json()
 
-    console.log('Session data:', sessionData)
-
     if (sessionData.user) {
-      console.log('✅ User is already logged in:', sessionData.user.email)
+
     } else {
-      console.log('⚠️ No active session')
+
     }
 
     // Try to initiate Google OAuth with CSRF token
@@ -232,11 +216,10 @@ test.describe('Google OAuth Login Tests', () => {
 
         // Check where we ended up
         const finalUrl = page.url()
-        console.log('Final URL:', finalUrl)
 
         await page.screenshot({ path: 'test-4-oauth-redirect.png' })
       } else {
-        console.log('❌ Failed to get OAuth URL')
+
         console.log('Response:', signInResponse.status(), await signInResponse.text())
       }
     }
@@ -246,18 +229,6 @@ test.describe('Google OAuth Login Tests', () => {
 // Summary test
 test.describe('Summary', () => {
   test('Generate test report', async ({ page }) => {
-    console.log('\n📊 TEST SUMMARY')
-    console.log('================')
-    console.log('Tests completed. Check the following:')
-    console.log('1. Screenshots: test-*.png files')
-    console.log('2. Console output above for detailed results')
-    console.log('3. Common issues found:')
-    console.log('   - Configuration error: Check environment variables')
-    console.log('   - Missing OAuth URL: Check Google Cloud Console settings')
-    console.log('   - CSRF token issues: Check session configuration')
-    console.log('\nNext steps:')
-    console.log('1. Review NEXTAUTH-V5-GOOGLE-FIX.md for configuration')
-    console.log('2. Ensure all environment variables are set in production')
-    console.log('3. Verify Google OAuth redirect URIs match exactly')
+
   })
 })

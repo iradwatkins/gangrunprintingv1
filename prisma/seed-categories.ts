@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedCategories() {
-  console.log('🌱 Seeding product categories...')
 
   const categoriesData = [
     'Banner',
@@ -85,11 +84,9 @@ async function seedCategories() {
       create: category,
     })
 
-    console.log(`✅ Created/Updated category: ${categoryName}`)
     sortOrder++
   }
 
-  console.log('✨ Product categories seeded successfully!')
 }
 
 seedCategories()

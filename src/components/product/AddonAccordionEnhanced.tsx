@@ -11,12 +11,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Info } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface ConditionalFieldConfig {
   locationsCount?: {
@@ -135,10 +130,7 @@ export default function AddonAccordionEnhanced({
       }
     }
 
-    onAddonChange(
-      newSelectedAddons,
-      isVariableData && checked ? variableData : undefined
-    )
+    onAddonChange(newSelectedAddons, isVariableData && checked ? variableData : undefined)
   }
 
   const handleLocationsCountChange = (value: string) => {
@@ -154,9 +146,7 @@ export default function AddonAccordionEnhanced({
 
     setVariableFieldErrors({ ...variableFieldErrors, locationsCount: undefined })
 
-    const newLocations = Array.from({ length: count }, (_, i) =>
-      variableData.locations[i] || ''
-    )
+    const newLocations = Array.from({ length: count }, (_, i) => variableData.locations[i] || '')
 
     const newVariableData = {
       locationsCount: count,
@@ -166,7 +156,7 @@ export default function AddonAccordionEnhanced({
     setVariableData(newVariableData)
 
     // Update parent component
-    const variableDataAddon = addons.find(a => a.configuration?.type === 'variable_data')
+    const variableDataAddon = addons.find((a) => a.configuration?.type === 'variable_data')
     if (variableDataAddon && selectedAddons.includes(variableDataAddon.id)) {
       onAddonChange(selectedAddons, newVariableData)
     }
@@ -184,7 +174,7 @@ export default function AddonAccordionEnhanced({
     setVariableData(newVariableData)
 
     // Update parent component
-    const variableDataAddon = addons.find(a => a.configuration?.type === 'variable_data')
+    const variableDataAddon = addons.find((a) => a.configuration?.type === 'variable_data')
     if (variableDataAddon && selectedAddons.includes(variableDataAddon.id)) {
       onAddonChange(selectedAddons, newVariableData)
     }
@@ -226,7 +216,7 @@ export default function AddonAccordionEnhanced({
     if (config?.type === 'variable_data') {
       const basePrice = config.basePrice || 60
       const pricePerPiece = config.pricePerPiece || 0.02
-      return basePrice + (pricePerPiece * quantity)
+      return basePrice + pricePerPiece * quantity
     }
     return 0
   }
@@ -287,9 +277,10 @@ export default function AddonAccordionEnhanced({
                 {addons.map((addon) => {
                   const isSelected = selectedAddons.includes(addon.id)
                   const isVariableData = addon.configuration?.type === 'variable_data'
-                  const displayPrice = isVariableData && isSelected
-                    ? `$${calculateVariableDataPrice(addon).toFixed(2)}`
-                    : formatPriceDisplay(addon)
+                  const displayPrice =
+                    isVariableData && isSelected
+                      ? `$${calculateVariableDataPrice(addon).toFixed(2)}`
+                      : formatPriceDisplay(addon)
 
                   return (
                     <div key={addon.id}>
@@ -324,7 +315,9 @@ export default function AddonAccordionEnhanced({
                             htmlFor={addon.id}
                           >
                             <div className="flex justify-between items-start">
-                              <span className="text-sm font-medium text-gray-900">{addon.name}</span>
+                              <span className="text-sm font-medium text-gray-900">
+                                {addon.name}
+                              </span>
                               <span
                                 className={`text-sm font-semibold ml-2 ${
                                   isSelected ? 'text-blue-600' : 'text-gray-700'
@@ -354,8 +347,9 @@ export default function AddonAccordionEnhanced({
                           {/* Locations Count Field */}
                           <div>
                             <div className="flex items-center gap-2 mb-1">
-                              <Label htmlFor="locationsCount" className="text-sm font-medium">
-                                How many locations for the variables? <span className="text-red-500">*</span>
+                              <Label className="text-sm font-medium" htmlFor="locationsCount">
+                                How many locations for the variables?{' '}
+                                <span className="text-red-500">*</span>
                               </Label>
                               <TooltipProvider>
                                 <Tooltip>
@@ -363,19 +357,23 @@ export default function AddonAccordionEnhanced({
                                     <Info className="h-3 w-3 text-gray-400" />
                                   </TooltipTrigger>
                                   <TooltipContent className="max-w-xs">
-                                    <p>Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.</p>
+                                    <p>
+                                      Enter the number of variables you are going to have on each
+                                      piece. If only a first name for example, this number should be
+                                      1.
+                                    </p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
                             <Input
+                              className="max-w-xs"
                               id="locationsCount"
-                              type="number"
-                              min="1"
                               max="10"
+                              min="1"
+                              type="number"
                               value={variableData.locationsCount}
                               onChange={(e) => handleLocationsCountChange(e.target.value)}
-                              className="max-w-xs"
                               onClick={(e) => e.stopPropagation()}
                             />
                             {variableFieldErrors.locationsCount && (
@@ -389,7 +387,8 @@ export default function AddonAccordionEnhanced({
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <Label className="text-sm font-medium">
-                                Where are the locations for the variables? <span className="text-red-500">*</span>
+                                Where are the locations for the variables?{' '}
+                                <span className="text-red-500">*</span>
                               </Label>
                               <TooltipProvider>
                                 <Tooltip>
@@ -397,7 +396,10 @@ export default function AddonAccordionEnhanced({
                                     <Info className="h-3 w-3 text-gray-400" />
                                   </TooltipTrigger>
                                   <TooltipContent className="max-w-xs">
-                                    <p>Enter the location(s) or word(s) that will be replaced with variable words.</p>
+                                    <p>
+                                      Enter the location(s) or word(s) that will be replaced with
+                                      variable words.
+                                    </p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -405,16 +407,25 @@ export default function AddonAccordionEnhanced({
                             <div className="space-y-2">
                               {Array.from({ length: variableData.locationsCount }, (_, index) => (
                                 <div key={index}>
-                                  <Label htmlFor={`location-${index}`} className="text-xs text-gray-600">
+                                  <Label
+                                    className="text-xs text-gray-600"
+                                    htmlFor={`location-${index}`}
+                                  >
                                     Variable Location {index + 1}
                                   </Label>
                                   <Input
+                                    className="max-w-md"
                                     id={`location-${index}`}
+                                    placeholder={
+                                      index === 0
+                                        ? '[FirstName]'
+                                        : index === 1
+                                          ? '[Number]'
+                                          : '[CustomText]'
+                                    }
                                     type="text"
-                                    placeholder={index === 0 ? '[FirstName]' : index === 1 ? '[Number]' : '[CustomText]'}
                                     value={variableData.locations[index] || ''}
                                     onChange={(e) => handleLocationChange(index, e.target.value)}
-                                    className="max-w-md"
                                     onClick={(e) => e.stopPropagation()}
                                   />
                                 </div>

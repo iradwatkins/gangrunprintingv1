@@ -18,12 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface VariableDataConfig {
   enabled: boolean
@@ -195,12 +190,12 @@ export default function AddonAccordionWithVariable({
 
   // Calculate Variable Data price
   const calculateVariableDataPrice = () => {
-    return 60 + (0.02 * quantity)
+    return 60 + 0.02 * quantity
   }
 
   // Calculate Perforation price
   const calculatePerforationPrice = () => {
-    return 20 + (0.01 * quantity)
+    return 20 + 0.01 * quantity
   }
 
   // Calculate Banding price
@@ -212,7 +207,7 @@ export default function AddonAccordionWithVariable({
 
   // Calculate Corner Rounding price
   const calculateCornerRoundingPrice = () => {
-    return 20 + (0.01 * quantity)
+    return 20 + 0.01 * quantity
   }
 
   // Handle Perforation checkbox
@@ -407,30 +402,31 @@ export default function AddonAccordionWithVariable({
           <div>
             <div className="flex items-start space-x-3">
               <Checkbox
-                id="variable-data"
                 checked={variableDataChecked}
-                onCheckedChange={handleVariableDataToggle}
-                disabled={disabled}
                 className="mt-0.5"
+                disabled={disabled}
+                id="variable-data"
+                onCheckedChange={handleVariableDataToggle}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <Label
-                    htmlFor="variable-data"
                     className="text-sm font-semibold cursor-pointer uppercase"
+                    htmlFor="variable-data"
                   >
                     VARIABLE DATA
                   </Label>
-                  <span className="text-sm font-medium">
-                    $60.00 + $.02/piece
-                  </span>
+                  <span className="text-sm font-medium">$60.00 + $.02/piece</span>
                   <TooltipProvider delayDuration={0}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Select this option if you need your order to have a unique name, number, or word on each card.</p>
+                        <p>
+                          Select this option if you need your order to have a unique name, number,
+                          or word on each card.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -443,7 +439,7 @@ export default function AddonAccordionWithVariable({
             <div className="ml-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="locations-count" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="locations-count">
                     How many locations for the variables?
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -452,27 +448,30 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.</p>
+                        <p>
+                          Enter the number of variables you are going to have on each piece. If only
+                          a first name for example, this number should be 1.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <Input
+                  className="max-w-full"
+                  disabled={disabled}
                   id="locations-count"
-                  type="number"
-                  min="1"
                   max="10"
+                  min="1"
+                  placeholder=""
+                  type="number"
                   value={locationsCount}
                   onChange={(e) => handleLocationsCountChange(e.target.value)}
-                  className="max-w-full"
-                  placeholder=""
-                  disabled={disabled}
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="locations-text" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="locations-text">
                     Where are the locations for the variables?
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -481,19 +480,22 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Enter the location(s) or word(s) that will be replaced with variable words.</p>
+                        <p>
+                          Enter the location(s) or word(s) that will be replaced with variable
+                          words.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <Input
+                  className="max-w-full"
+                  disabled={disabled}
                   id="locations-text"
+                  placeholder=""
                   type="text"
                   value={locations}
                   onChange={(e) => handleLocationsChange(e.target.value)}
-                  className="max-w-full"
-                  placeholder=""
-                  disabled={disabled}
                 />
               </div>
             </div>
@@ -508,15 +510,18 @@ export default function AddonAccordionWithVariable({
           <div>
             <div className="flex items-start space-x-3">
               <Checkbox
-                id="perforation"
                 checked={perforationChecked}
-                onCheckedChange={handlePerforationToggle}
-                disabled={disabled}
                 className="mt-0.5"
+                disabled={disabled}
+                id="perforation"
+                onCheckedChange={handlePerforationToggle}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="perforation" className="text-sm font-semibold cursor-pointer uppercase">
+                  <Label
+                    className="text-sm font-semibold cursor-pointer uppercase"
+                    htmlFor="perforation"
+                  >
                     PERFORATION
                   </Label>
                   <span className="text-sm font-medium">$20.00 + $.01/piece</span>
@@ -526,7 +531,11 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>A straight row of tiny holes punched in the paper so that a part can be torn off easily. This perforation row goes completely across the sheet from one side to the other.</p>
+                        <p>
+                          A straight row of tiny holes punched in the paper so that a part can be
+                          torn off easily. This perforation row goes completely across the sheet
+                          from one side to the other.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -539,7 +548,7 @@ export default function AddonAccordionWithVariable({
             <div className="ml-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="vertical-count" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="vertical-count">
                     How Many Vertical
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -553,8 +562,12 @@ export default function AddonAccordionWithVariable({
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Select value={verticalCount} onValueChange={handleVerticalCountChange} disabled={disabled}>
-                  <SelectTrigger id="vertical-count" className="max-w-full">
+                <Select
+                  disabled={disabled}
+                  value={verticalCount}
+                  onValueChange={handleVerticalCountChange}
+                >
+                  <SelectTrigger className="max-w-full" id="vertical-count">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -571,7 +584,7 @@ export default function AddonAccordionWithVariable({
               {verticalCount !== '0' && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="vertical-position" className="text-sm font-semibold uppercase">
+                    <Label className="text-sm font-semibold uppercase" htmlFor="vertical-position">
                       Vertical Position
                     </Label>
                     <TooltipProvider delayDuration={0}>
@@ -580,26 +593,29 @@ export default function AddonAccordionWithVariable({
                           <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                          <p>Enter the position of the vertical perforation. For example, 2 inches from the right front.</p>
+                          <p>
+                            Enter the position of the vertical perforation. For example, 2 inches
+                            from the right front.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
                   <Input
+                    className="max-w-full"
+                    disabled={disabled}
                     id="vertical-position"
+                    placeholder=""
                     type="text"
                     value={verticalPosition}
                     onChange={(e) => handleVerticalPositionChange(e.target.value)}
-                    className="max-w-full"
-                    placeholder=""
-                    disabled={disabled}
                   />
                 </div>
               )}
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="horizontal-count" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="horizontal-count">
                     How Many Horizontal
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -613,8 +629,12 @@ export default function AddonAccordionWithVariable({
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Select value={horizontalCount} onValueChange={handleHorizontalCountChange} disabled={disabled}>
-                  <SelectTrigger id="horizontal-count" className="max-w-full">
+                <Select
+                  disabled={disabled}
+                  value={horizontalCount}
+                  onValueChange={handleHorizontalCountChange}
+                >
+                  <SelectTrigger className="max-w-full" id="horizontal-count">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -631,7 +651,10 @@ export default function AddonAccordionWithVariable({
               {horizontalCount !== '0' && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="horizontal-position" className="text-sm font-semibold uppercase">
+                    <Label
+                      className="text-sm font-semibold uppercase"
+                      htmlFor="horizontal-position"
+                    >
                       Horizontal Position
                     </Label>
                     <TooltipProvider delayDuration={0}>
@@ -640,19 +663,22 @@ export default function AddonAccordionWithVariable({
                           <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                          <p>Enter the position of the horizontal perforation. For example, 2 inches from the top front.</p>
+                          <p>
+                            Enter the position of the horizontal perforation. For example, 2 inches
+                            from the top front.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
                   <Input
+                    className="max-w-full"
+                    disabled={disabled}
                     id="horizontal-position"
+                    placeholder=""
                     type="text"
                     value={horizontalPosition}
                     onChange={(e) => handleHorizontalPositionChange(e.target.value)}
-                    className="max-w-full"
-                    placeholder=""
-                    disabled={disabled}
                   />
                 </div>
               )}
@@ -668,15 +694,18 @@ export default function AddonAccordionWithVariable({
           <div>
             <div className="flex items-start space-x-3">
               <Checkbox
-                id="banding"
                 checked={bandingChecked}
-                onCheckedChange={handleBandingToggle}
-                disabled={disabled}
                 className="mt-0.5"
+                disabled={disabled}
+                id="banding"
+                onCheckedChange={handleBandingToggle}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="banding" className="text-sm font-semibold cursor-pointer uppercase">
+                  <Label
+                    className="text-sm font-semibold cursor-pointer uppercase"
+                    htmlFor="banding"
+                  >
                     BANDING
                   </Label>
                   <span className="text-sm font-medium">$.75/bundle</span>
@@ -686,7 +715,11 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Have your product bundled in specific individual quantity groups with paper bands or rubber bands. Please choose the amount you would like in each bundle.</p>
+                        <p>
+                          Have your product bundled in specific individual quantity groups with
+                          paper bands or rubber bands. Please choose the amount you would like in
+                          each bundle.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -699,7 +732,7 @@ export default function AddonAccordionWithVariable({
             <div className="ml-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="banding-type" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="banding-type">
                     Banding Type
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -708,13 +741,19 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Please select whether or not you want paper banding or rubber banding.</p>
+                        <p>
+                          Please select whether or not you want paper banding or rubber banding.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Select value={bandingType} onValueChange={handleBandingTypeChange} disabled={disabled}>
-                  <SelectTrigger id="banding-type" className="max-w-full">
+                <Select
+                  disabled={disabled}
+                  value={bandingType}
+                  onValueChange={handleBandingTypeChange}
+                >
+                  <SelectTrigger className="max-w-full" id="banding-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -726,7 +765,7 @@ export default function AddonAccordionWithVariable({
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="items-per-bundle" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="items-per-bundle">
                     Items/Bundle
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -735,21 +774,24 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Please enter the amount you want in each bundle. If you ordered 5000 quantity and entered 50, you would get 100 bundles.</p>
+                        <p>
+                          Please enter the amount you want in each bundle. If you ordered 5000
+                          quantity and entered 50, you would get 100 bundles.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <Input
+                  className="max-w-full"
+                  disabled={disabled}
                   id="items-per-bundle"
-                  type="number"
-                  min="1"
                   max="10000"
+                  min="1"
+                  placeholder="100"
+                  type="number"
                   value={itemsPerBundle}
                   onChange={(e) => handleItemsPerBundleChange(e.target.value)}
-                  className="max-w-full"
-                  placeholder="100"
-                  disabled={disabled}
                 />
                 {itemsPerBundle > 0 && (
                   <p className="text-xs text-gray-500">
@@ -770,15 +812,18 @@ export default function AddonAccordionWithVariable({
           <div>
             <div className="flex items-start space-x-3">
               <Checkbox
-                id="corner-rounding"
                 checked={cornerRoundingChecked}
-                onCheckedChange={handleCornerRoundingToggle}
-                disabled={disabled}
                 className="mt-0.5"
+                disabled={disabled}
+                id="corner-rounding"
+                onCheckedChange={handleCornerRoundingToggle}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="corner-rounding" className="text-sm font-semibold cursor-pointer uppercase">
+                  <Label
+                    className="text-sm font-semibold cursor-pointer uppercase"
+                    htmlFor="corner-rounding"
+                  >
                     CORNER ROUNDING
                   </Label>
                   <span className="text-sm font-medium">$20.00 + $.01/piece</span>
@@ -788,7 +833,11 @@ export default function AddonAccordionWithVariable({
                         <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                        <p>Corner Rounding is an option that will remove the sharp corners on your print job and add a 1/4 inch radius to business cards and a 3/16 inch radius to all other products.</p>
+                        <p>
+                          Corner Rounding is an option that will remove the sharp corners on your
+                          print job and add a 1/4 inch radius to business cards and a 3/16 inch
+                          radius to all other products.
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -801,7 +850,7 @@ export default function AddonAccordionWithVariable({
             <div className="ml-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="corner-type" className="text-sm font-semibold uppercase">
+                  <Label className="text-sm font-semibold uppercase" htmlFor="corner-type">
                     ROUNDED CORNERS
                   </Label>
                   <TooltipProvider delayDuration={0}>
@@ -815,8 +864,12 @@ export default function AddonAccordionWithVariable({
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Select value={cornerType} onValueChange={handleCornerTypeChange} disabled={disabled}>
-                  <SelectTrigger id="corner-type" className="max-w-full">
+                <Select
+                  disabled={disabled}
+                  value={cornerType}
+                  onValueChange={handleCornerTypeChange}
+                >
+                  <SelectTrigger className="max-w-full" id="corner-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -845,9 +898,7 @@ export default function AddonAccordionWithVariable({
       <div
         key={addon.id}
         className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors ${
-          isSelected
-            ? 'bg-blue-50 border-blue-200'
-            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+          isSelected ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={() => !disabled && handleAddonToggle(addon.id, !isSelected)}
       >
@@ -856,16 +907,12 @@ export default function AddonAccordionWithVariable({
           className="mt-0.5"
           disabled={disabled}
           id={addon.id}
-          onCheckedChange={(checked) =>
-            handleAddonToggle(addon.id, checked as boolean)
-          }
+          onCheckedChange={(checked) => handleAddonToggle(addon.id, checked as boolean)}
         />
 
         <div className="flex-1 min-w-0">
           <Label
-            className={`block font-medium cursor-pointer ${
-              disabled ? 'cursor-not-allowed' : ''
-            }`}
+            className={`block font-medium cursor-pointer ${disabled ? 'cursor-not-allowed' : ''}`}
             htmlFor={addon.id}
           >
             <div className="flex justify-between items-start">
@@ -894,7 +941,8 @@ export default function AddonAccordionWithVariable({
   }
 
   // Calculate total selected addons for display
-  const totalSelectedAddons = selectedAddons.length +
+  const totalSelectedAddons =
+    selectedAddons.length +
     (variableDataChecked ? 1 : 0) +
     (perforationChecked ? 1 : 0) +
     (bandingChecked ? 1 : 0) +
@@ -906,9 +954,7 @@ export default function AddonAccordionWithVariable({
       <div className="space-y-3">
         {/* Above Dropdown Addons - Always Visible */}
         {addonsGrouped.aboveDropdown.length > 0 && (
-          <div className="space-y-3">
-            {addonsGrouped.aboveDropdown.map(renderAddon)}
-          </div>
+          <div className="space-y-3">{addonsGrouped.aboveDropdown.map(renderAddon)}</div>
         )}
 
         {/* In Dropdown Addons - Accordion */}
@@ -928,7 +974,8 @@ export default function AddonAccordionWithVariable({
               <AccordionContent className="px-4 pb-4">
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600 mb-4">
-                    Enhance your order with professional add-ons. Select any combination that meets your needs.
+                    Enhance your order with professional add-ons. Select any combination that meets
+                    your needs.
                   </p>
 
                   {/* Available Turnaround Times Info */}
@@ -957,14 +1004,13 @@ export default function AddonAccordionWithVariable({
                     </div>
                   )}
 
-                  <div className="space-y-4">
-                    {addonsGrouped.inDropdown.map(renderAddon)}
-                  </div>
+                  <div className="space-y-4">{addonsGrouped.inDropdown.map(renderAddon)}</div>
 
                   {totalSelectedAddons > 0 && (
                     <div className="pt-3 border-t">
                       <p className="text-sm text-gray-600">
-                        <strong>{totalSelectedAddons}</strong> add-on{totalSelectedAddons > 1 ? 's' : ''} selected
+                        <strong>{totalSelectedAddons}</strong> add-on
+                        {totalSelectedAddons > 1 ? 's' : ''} selected
                       </p>
                     </div>
                   )}
@@ -976,9 +1022,7 @@ export default function AddonAccordionWithVariable({
 
         {/* Below Dropdown Addons - Always Visible */}
         {addonsGrouped.belowDropdown.length > 0 && (
-          <div className="space-y-3">
-            {addonsGrouped.belowDropdown.map(renderAddon)}
-          </div>
+          <div className="space-y-3">{addonsGrouped.belowDropdown.map(renderAddon)}</div>
         )}
       </div>
     )
@@ -1034,18 +1078,32 @@ export default function AddonAccordionWithVariable({
 
               <div className="space-y-4">
                 {/* Render special addons */}
-                {addons.filter(addon => ['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(addon.configuration?.type)).map(renderAddon)}
+                {addons
+                  .filter((addon) =>
+                    ['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
+                      addon.configuration?.type
+                    )
+                  )
+                  .map(renderAddon)}
 
                 {/* Render regular addons */}
                 <div className="grid gap-4">
-                  {addons.filter(addon => !['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(addon.configuration?.type)).map(renderAddon)}
+                  {addons
+                    .filter(
+                      (addon) =>
+                        !['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
+                          addon.configuration?.type
+                        )
+                    )
+                    .map(renderAddon)}
                 </div>
               </div>
 
               {totalSelectedAddons > 0 && (
                 <div className="pt-3 border-t">
                   <p className="text-sm text-gray-600">
-                    <strong>{totalSelectedAddons}</strong> add-on{totalSelectedAddons > 1 ? 's' : ''} selected
+                    <strong>{totalSelectedAddons}</strong> add-on
+                    {totalSelectedAddons > 1 ? 's' : ''} selected
                   </p>
                 </div>
               )}

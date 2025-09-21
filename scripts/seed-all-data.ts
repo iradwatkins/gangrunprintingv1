@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStocks() {
-  console.log('🌱 Seeding paper stocks...')
 
   const paperStocks = [
     // Business Card Papers
@@ -247,11 +246,9 @@ async function seedPaperStocks() {
     })
   }
 
-  console.log(`✅ Created ${paperStocks.length} paper stocks`)
 }
 
 async function seedSizeGroups() {
-  console.log('🌱 Seeding size groups...')
 
   const sizeGroups = [
     {
@@ -324,11 +321,9 @@ async function seedSizeGroups() {
     })
   }
 
-  console.log(`✅ Created ${sizeGroups.length} size groups`)
 }
 
 async function seedQuantityGroups() {
-  console.log('🌱 Seeding quantity groups...')
 
   const quantityGroups = [
     {
@@ -401,11 +396,9 @@ async function seedQuantityGroups() {
     })
   }
 
-  console.log(`✅ Created ${quantityGroups.length} quantity groups`)
 }
 
 async function seedAddOns() {
-  console.log('🌱 Seeding add-ons...')
 
   const addOns = [
     {
@@ -564,11 +557,9 @@ async function seedAddOns() {
     })
   }
 
-  console.log(`✅ Created ${addOns.length} add-ons`)
 }
 
 async function seedCategories() {
-  console.log('🌱 Seeding product categories...')
 
   const categories = [
     {
@@ -651,11 +642,9 @@ async function seedCategories() {
     })
   }
 
-  console.log(`✅ Created ${categories.length} product categories`)
 }
 
 async function seedSidesAndCoatings() {
-  console.log('🌱 Seeding sides and coating options...')
 
   // Sides options
   const sidesOptions = [
@@ -715,14 +704,10 @@ async function seedSidesAndCoatings() {
     })
   }
 
-  console.log(
-    `✅ Created ${sidesOptions.length} sides options and ${coatingOptions.length} coating options`
-  )
 }
 
 async function main() {
   try {
-    console.log('🚀 Starting comprehensive database seed...\n')
 
     await seedCategories()
     await seedPaperStocks()
@@ -731,7 +716,6 @@ async function main() {
     await seedAddOns()
     await seedSidesAndCoatings()
 
-    console.log('\n✨ Database seeding completed successfully!')
   } catch (error) {
     console.error('❌ Error seeding database:', error)
     throw error

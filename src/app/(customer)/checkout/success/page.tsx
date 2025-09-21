@@ -1,7 +1,17 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { CheckCircle, Download, Mail, Package, Truck, Clock, MapPin, User, CreditCard } from 'lucide-react'
+import {
+  CheckCircle,
+  Download,
+  Mail,
+  Package,
+  Truck,
+  Clock,
+  MapPin,
+  User,
+  CreditCard,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -137,7 +147,10 @@ function SuccessContent() {
             {orderInfo?.items && orderInfo.items.length > 0 ? (
               <>
                 {orderInfo.items.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start border-b border-border/50 pb-3 last:border-b-0">
+                  <div
+                    key={index}
+                    className="flex justify-between items-start border-b border-border/50 pb-3 last:border-b-0"
+                  >
                     <div className="flex-1">
                       <p className="font-medium">{item.productName}</p>
                       <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
@@ -243,7 +256,9 @@ function SuccessContent() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-muted rounded-full"></div>
-                <span className="text-sm text-muted-foreground">Design review notification (within 24 hours)</span>
+                <span className="text-sm text-muted-foreground">
+                  Design review notification (within 24 hours)
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-muted rounded-full"></div>
@@ -308,13 +323,13 @@ function SuccessContent() {
       <div className="text-center space-y-4">
         <div className="flex flex-wrap gap-4 justify-center">
           <Link href="/track">
-            <Button size="lg" className="min-w-40">
+            <Button className="min-w-40" size="lg">
               <Truck className="mr-2 h-4 w-4" />
               Track Your Order
             </Button>
           </Link>
           <Link href="/products">
-            <Button size="lg" variant="outline" className="min-w-40">
+            <Button className="min-w-40" size="lg" variant="outline">
               <Package className="mr-2 h-4 w-4" />
               Continue Shopping
             </Button>
@@ -341,7 +356,13 @@ function SuccessContent() {
         </div>
 
         <div className="text-sm text-muted-foreground mt-6">
-          <p>Need help? Contact us at <a href="mailto:support@gangrunprinting.com" className="text-primary hover:underline">support@gangrunprinting.com</a> or call 1-800-PRINTING</p>
+          <p>
+            Need help? Contact us at{' '}
+            <a className="text-primary hover:underline" href="mailto:support@gangrunprinting.com">
+              support@gangrunprinting.com
+            </a>{' '}
+            or call 1-800-PRINTING
+          </p>
         </div>
       </div>
     </div>

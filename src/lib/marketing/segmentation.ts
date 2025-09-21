@@ -730,9 +730,7 @@ export class SegmentationService {
     for (const segmentData of segments) {
       try {
         await this.createSegment(segmentData.name, segmentData.description, segmentData.rules)
-      } catch (error) {
-        console.log(`Segment ${segmentData.name} may already exist`)
-      }
+      } catch (error) {}
     }
   }
 }

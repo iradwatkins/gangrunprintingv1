@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding comprehensive products...')
 
   // Get references to existing data
   const categories = await prisma.productCategory.findMany()
@@ -501,13 +500,12 @@ async function main() {
       }
 
       createdCount++
-      console.log(`✓ Created/Updated product: ${product.name}`)
+
     } catch (error) {
       console.error(`✗ Error creating product ${productData.name}:`, error)
     }
   }
 
-  console.log(`\n✅ Successfully seeded ${createdCount} products!`)
 }
 
 main()

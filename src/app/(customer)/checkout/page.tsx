@@ -24,7 +24,13 @@ function CheckoutPageContent() {
   const [sameAsShipping, setSameAsShipping] = useState(true)
   const [paymentStep, setPaymentStep] = useState<'info' | 'payment' | 'card'>('info')
   const [_selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
-  const [selectedShippingRate, setSelectedShippingRate] = useState<any>(null)
+  const [selectedShippingRate, setSelectedShippingRate] = useState<{
+    carrier: string
+    serviceName: string
+    totalCost: number
+    transitDays: number
+    isAirportDelivery?: boolean
+  } | null>(null)
   const [selectedAirportId, setSelectedAirportId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: '',
@@ -201,7 +207,11 @@ function CheckoutPageContent() {
     }
   }
 
-  const handleCardPaymentSuccess = (result: { paymentId?: string; orderId?: string; orderNumber?: string }) => {
+  const handleCardPaymentSuccess = (result: {
+    paymentId?: string
+    orderId?: string
+    orderNumber?: string
+  }) => {
     toast.success('Payment processed successfully!')
 
     // Store success info
@@ -455,6 +465,12 @@ function CheckoutPageContent() {
             {/* Shipping Method */}
             {formData.address && formData.city && formData.state && formData.zipCode && (
               <ShippingRates
+                items={items.map((item) => ({
+                  quantity: item.quantity,
+                  width: 8.5, // Default width
+                  height: 11, // Default height
+                  paperStockWeight: 0.1, // Default weight
+                }))}
                 toAddress={{
                   street: formData.address,
                   city: formData.city,
@@ -462,14 +478,8 @@ function CheckoutPageContent() {
                   zipCode: formData.zipCode,
                   country: 'US',
                 }}
-                items={items.map(item => ({
-                  quantity: item.quantity,
-                  width: 8.5, // Default width
-                  height: 11, // Default height
-                  paperStockWeight: 0.1, // Default weight
-                }))}
-                onRateSelected={setSelectedShippingRate}
                 onAirportSelected={setSelectedAirportId}
+                onRateSelected={setSelectedShippingRate}
               />
             )}
           </div>

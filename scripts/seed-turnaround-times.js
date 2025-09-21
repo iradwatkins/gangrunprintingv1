@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function seedTurnaroundTimes() {
-  console.log('🕐 Seeding turnaround times...')
 
   const turnaroundTimes = [
     {
@@ -70,7 +69,7 @@ async function seedTurnaroundTimes() {
     })
 
     if (existing) {
-      console.log(`⚠️  Turnaround time "${turnaroundTime.name}" already exists, skipping...`)
+
       continue
     }
 
@@ -78,10 +77,8 @@ async function seedTurnaroundTimes() {
       data: turnaroundTime,
     })
 
-    console.log(`✅ Created turnaround time: ${turnaroundTime.displayName}`)
   }
 
-  console.log('🎉 Turnaround times seeding completed!')
 }
 
 seedTurnaroundTimes()

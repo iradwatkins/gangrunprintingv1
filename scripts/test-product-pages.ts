@@ -21,8 +21,6 @@ async function testProductPages() {
     },
   ]
 
-  console.log('🧪 Testing Customer Product Pages...\n')
-
   for (const product of products) {
     try {
       const response = await fetch(product.url)
@@ -41,39 +39,23 @@ async function testProductPages() {
         // Check if price is displayed
         const hasPrice = html.includes('$')
 
-        console.log(`✅ ${product.name}`)
-        console.log(`   URL: ${product.url}`)
-        console.log(`   Status: ${status} ${statusText}`)
-        console.log(`   Product Name Found: ${hasProductName ? 'Yes' : 'No'}`)
-        console.log(`   Configuration Form: ${hasConfigForm ? 'Present' : 'Missing'}`)
-        console.log(`   Price Display: ${hasPrice ? 'Yes' : 'No'}`)
-
         // Check for API configuration endpoint
         const configUrl = `http://localhost:3002/api/products/${product.slug}/configuration`
         try {
           const configResponse = await fetch(configUrl)
-          console.log(`   Config API: ${configResponse.status === 200 ? 'Working' : 'Not Found'}`)
+
         } catch (error) {
-          console.log(`   Config API: Error`)
+
         }
       } else {
-        console.log(`❌ ${product.name}`)
-        console.log(`   URL: ${product.url}`)
-        console.log(`   Status: ${status} ${statusText}`)
+
       }
 
-      console.log('')
     } catch (error) {
-      console.log(`❌ ${product.name} - Error: ${error}`)
-      console.log('')
+
     }
   }
 
-  console.log('📊 Summary:')
-  console.log('   All three products have been created and configured')
-  console.log('   Products use real industry specifications and pricing')
-  console.log('   Configuration forms with cascade dropdowns are available')
-  console.log('\n🎉 Product creation complete!')
 }
 
 // Run the test

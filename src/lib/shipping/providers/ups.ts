@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 import axiosRetry from 'axios-retry'
 import { Carrier } from '@prisma/client'
 import {
@@ -44,10 +44,7 @@ export class UPSProvider implements ShippingProvider {
       retries: 3,
       retryDelay: axiosRetry.exponentialDelay,
       retryCondition: (error) => {
-        return (
-          axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-          error.response?.status === 429
-        )
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response?.status === 429
       },
     })
   }
@@ -81,13 +78,10 @@ export class UPSProvider implements ShippingProvider {
 
       this.authToken = response.data
       // Set token expiry with 5-minute buffer
-      this.tokenExpiry = new Date(
-        Date.now() + (this.authToken.expires_in - 300) * 1000
-      )
+      this.tokenExpiry = new Date(Date.now() + (this.authToken.expires_in - 300) * 1000)
 
       // Update default headers
-      this.client.defaults.headers.common['Authorization'] =
-        `Bearer ${this.authToken.access_token}`
+      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
     } catch (error) {
       console.error('UPS authentication failed:', error)
       throw new Error('Failed to authenticate with UPS API')
@@ -161,32 +155,32 @@ export class UPSProvider implements ShippingProvider {
         return []
       }
 
-      const rates: ShippingRate[] = response.data.RateResponse.RatedShipment
-        .filter((shipment: any) => shipment.Service.Code in SERVICE_NAMES)
-        .map((shipment: any) => {
-          const serviceCode = shipment.Service.Code
-          const totalCharge = parseFloat(shipment.TotalCharges.MonetaryValue)
-          const estimatedDays = this.getEstimatedDays(serviceCode)
-          const markup = 1 + (upsConfig.markupPercentage || 0) / 100
+      const rates: ShippingRate[] = response.data.RateResponse.RatedShipment.filter(
+        (shipment: any) => shipment.Service.Code in SERVICE_NAMES
+      ).map((shipment: any) => {
+        const serviceCode = shipment.Service.Code
+        const totalCharge = parseFloat(shipment.TotalCharges.MonetaryValue)
+        const estimatedDays = this.getEstimatedDays(serviceCode)
+        const markup = 1 + (upsConfig.markupPercentage || 0) / 100
 
-          const timeInTransit = shipment.TimeInTransit
-          let deliveryDate: Date | undefined
-          if (timeInTransit?.ServiceSummary?.EstimatedArrival) {
-            const arrival = timeInTransit.ServiceSummary.EstimatedArrival
-            deliveryDate = new Date(`${arrival.Date}T${arrival.Time || '00:00:00'}`)
-          }
+        const timeInTransit = shipment.TimeInTransit
+        let deliveryDate: Date | undefined
+        if (timeInTransit?.ServiceSummary?.EstimatedArrival) {
+          const arrival = timeInTransit.ServiceSummary.EstimatedArrival
+          deliveryDate = new Date(`${arrival.Date}T${arrival.Time || '00:00:00'}`)
+        }
 
-          return {
-            carrier: this.carrier,
-            serviceCode,
-            serviceName: SERVICE_NAMES[serviceCode as keyof typeof SERVICE_NAMES],
-            rateAmount: roundWeight(totalCharge * markup, 2),
-            currency: shipment.TotalCharges.CurrencyCode,
-            estimatedDays,
-            deliveryDate,
-            isGuaranteed: shipment.GuaranteedDelivery?.BusinessDaysInTransit !== undefined,
-          }
-        })
+        return {
+          carrier: this.carrier,
+          serviceCode,
+          serviceName: SERVICE_NAMES[serviceCode as keyof typeof SERVICE_NAMES],
+          rateAmount: roundWeight(totalCharge * markup, 2),
+          currency: shipment.TotalCharges.CurrencyCode,
+          estimatedDays,
+          deliveryDate,
+          isGuaranteed: shipment.GuaranteedDelivery?.BusinessDaysInTransit !== undefined,
+        }
+      })
 
       return rates
     } catch (error) {

@@ -78,7 +78,7 @@ async function addPerforationAddOn() {
           adminNotes: 'Perforation service with conditional fields for vertical and horizontal positioning'
         }
       })
-      console.log('Perforation add-on updated:', updated.id)
+
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
@@ -149,7 +149,7 @@ async function addPerforationAddOn() {
           adminNotes: 'Perforation service with conditional fields for vertical and horizontal positioning'
         }
       })
-      console.log('Perforation add-on created:', newAddOn.id)
+
     }
 
     process.exit(0)

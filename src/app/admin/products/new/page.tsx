@@ -20,7 +20,16 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import toast from '@/lib/toast'
-import { ArrowLeft, Save, Loader2, Calculator, AlertCircle, RefreshCw, Upload, X } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Loader2,
+  Calculator,
+  AlertCircle,
+  RefreshCw,
+  Upload,
+  X,
+} from 'lucide-react'
 import { responseToJsonSafely } from '@/lib/safe-json'
 
 export default function NewProductPage() {
@@ -56,7 +65,6 @@ export default function NewProductPage() {
     selectedSizeGroup: '', // Single size group ID
     selectedAddOnSet: '', // Single addon set ID
     selectedTurnaroundTimeSet: '', // Single turnaround time set ID
-
   })
 
   // Fetch data on component mount - simple pattern like paper-stocks page
@@ -67,15 +75,21 @@ export default function NewProductPage() {
   const fetchAllData = async () => {
     try {
       setApiLoading(true)
-      const [categoriesRes, paperStockGroupsRes, quantitiesRes, sizesRes, addOnSetsRes, turnaroundTimeSetsRes] =
-        await Promise.all([
-          fetch('/api/product-categories'),
-          fetch('/api/paper-stock-sets'),
-          fetch('/api/quantities'),
-          fetch('/api/sizes'),
-          fetch('/api/addon-sets'),
-          fetch('/api/turnaround-time-sets'),
-        ])
+      const [
+        categoriesRes,
+        paperStockGroupsRes,
+        quantitiesRes,
+        sizesRes,
+        addOnSetsRes,
+        turnaroundTimeSetsRes,
+      ] = await Promise.all([
+        fetch('/api/product-categories'),
+        fetch('/api/paper-stock-sets'),
+        fetch('/api/quantities'),
+        fetch('/api/sizes'),
+        fetch('/api/addon-sets'),
+        fetch('/api/turnaround-time-sets'),
+      ])
 
       const newErrors = {}
 
@@ -232,7 +246,9 @@ export default function NewProductPage() {
     const maxSize = 10 * 1024 * 1024 // 10MB
     if (file.size > maxSize) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1)
-      toast.error(`Image is ${sizeMB}MB but must be less than 10MB. Please compress or resize the image.`)
+      toast.error(
+        `Image is ${sizeMB}MB but must be less than 10MB. Please compress or resize the image.`
+      )
       return
     }
 
@@ -252,7 +268,9 @@ export default function NewProductPage() {
       // Check maximum dimensions - reasonable limits for product display images
       // Allow slightly larger images since they'll be optimized for web
       if (img.width > 6000 || img.height > 6000) {
-        toast.error(`Image is ${img.width}x${img.height}px but cannot exceed 6000x6000 pixels for product display`)
+        toast.error(
+          `Image is ${img.width}x${img.height}px but cannot exceed 6000x6000 pixels for product display`
+        )
         return
       }
 
@@ -277,9 +295,9 @@ export default function NewProductPage() {
         const data = await response.json()
 
         // Update form data with the uploaded image URL
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          imageUrl: data.url
+          imageUrl: data.url,
         }))
 
         toast.success('Image uploaded successfully')
@@ -304,9 +322,9 @@ export default function NewProductPage() {
   }
 
   const handleRemoveImage = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      imageUrl: ''
+      imageUrl: '',
     }))
   }
 
@@ -349,8 +367,6 @@ export default function NewProductPage() {
       imageUrl: formData.imageUrl || null,
     }
 
-    console.log('Sending simplified data:', simplifiedData)
-
     try {
       // Use the working simple API endpoint
       const response = await fetch('/api/products/simple', {
@@ -360,8 +376,6 @@ export default function NewProductPage() {
       })
 
       const responseText = await response.text()
-      console.log('Response status:', response.status)
-      console.log('Response text:', responseText)
 
       if (!response.ok) {
         let errorMessage = 'Failed to create product'
@@ -386,7 +400,6 @@ export default function NewProductPage() {
       // Step 2: Handle images if needed (simplified for now)
       // TODO: Re-enable image upload after basic product creation works
       if (formData.images && formData.images.length > 0) {
-        console.log('Images detected but upload temporarily disabled for stability')
         // Will re-enable after confirming basic product creation works
       }
 
@@ -654,22 +667,24 @@ export default function NewProductPage() {
             {!formData.imageUrl ? (
               <div className="border-2 border-dashed rounded-lg p-8 text-center relative">
                 <input
-                  type="file"
-                  id="product-image"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleImageUpload}
                   disabled={uploadingImage}
+                  id="product-image"
+                  type="file"
+                  onChange={handleImageUpload}
                 />
                 <label
-                  htmlFor="product-image"
                   className={`cursor-pointer block ${uploadingImage ? 'opacity-50' : ''}`}
+                  htmlFor="product-image"
                 >
                   {uploadingImage ? (
                     <>
                       <Loader2 className="mx-auto h-8 w-8 animate-spin mb-4 text-primary" />
                       <p className="text-sm font-medium">Processing image...</p>
-                      <p className="text-xs text-muted-foreground mt-2">Please wait while we optimize your image</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Please wait while we optimize your image
+                      </p>
                     </>
                   ) : (
                     <>
@@ -687,9 +702,9 @@ export default function NewProductPage() {
                 <div className="flex items-start gap-4">
                   <div className="w-20 h-20 bg-muted rounded flex items-center justify-center">
                     <img
-                      src={formData.imageUrl}
                       alt="Product preview"
                       className="w-20 h-20 object-cover rounded"
+                      src={formData.imageUrl}
                       onError={(e) => {
                         // Hide broken image and show placeholder
                         e.currentTarget.style.display = 'none'
@@ -702,7 +717,10 @@ export default function NewProductPage() {
                         if (placeholder) placeholder.style.display = 'none'
                       }}
                     />
-                    <div className="flex flex-col items-center text-muted-foreground" style={{display: 'none'}}>
+                    <div
+                      className="flex flex-col items-center text-muted-foreground"
+                      style={{ display: 'none' }}
+                    >
                       <Upload className="h-6 w-6 mb-1" />
                       <span className="text-xs">Preview</span>
                     </div>
@@ -716,12 +734,7 @@ export default function NewProductPage() {
                       {formData.imageUrl}
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleRemoveImage}
-                  >
+                  <Button size="sm" type="button" variant="outline" onClick={handleRemoveImage}>
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -1108,7 +1121,6 @@ export default function NewProductPage() {
           </div>
         </CardContent>
       </Card>
-
     </div>
   )
 }

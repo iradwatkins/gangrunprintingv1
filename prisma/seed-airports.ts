@@ -1194,7 +1194,6 @@ const airports = [
 ]
 
 async function seedAirports() {
-  console.log('🛫 Starting airport seeding...')
 
   for (const airport of airports) {
     try {
@@ -1203,13 +1202,12 @@ async function seedAirports() {
         update: airport,
         create: airport,
       })
-      console.log(`✅ Seeded ${airport.name} (${airport.code})`)
+
     } catch (error) {
       console.error(`❌ Failed to seed ${airport.name} (${airport.code}):`, error)
     }
   }
 
-  console.log(`🎉 Airport seeding completed! Seeded ${airports.length} airports.`)
 }
 
 async function main() {

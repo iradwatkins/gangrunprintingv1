@@ -12,7 +12,6 @@ const { chromium } = require('playwright')
 const prisma = new PrismaClient()
 
 async function debugLuciaSession() {
-  console.log('🔍 Debugging lucia session creation and validation...')
 
   try {
     // Initialize lucia exactly like in the app
@@ -34,9 +33,6 @@ async function debugLuciaSession() {
       },
     })
 
-    console.log('✅ Lucia initialized')
-    console.log('📍 Session cookie name:', lucia.sessionCookieName)
-
     // Get admin user
     const adminUser = await prisma.user.findFirst({
       where: {
@@ -45,36 +41,29 @@ async function debugLuciaSession() {
     })
 
     if (!adminUser) {
-      console.log('❌ No admin user found')
+
       return
     }
 
-    console.log(`✅ Found admin user: ${adminUser.email}`)
-
     // Create a fresh session using lucia
-    console.log('\n🔑 Creating fresh session...')
+
     const session = await lucia.createSession(adminUser.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
 
     console.log('✅ Session created:', session.id.substring(0, 10) + '...')
-    console.log('📋 Session cookie:')
-    console.log('- Name:', sessionCookie.name)
+
     console.log('- Value:', sessionCookie.value.substring(0, 10) + '...')
-    console.log('- Attributes:', sessionCookie.attributes)
 
     // Test session validation immediately
-    console.log('\n🧪 Testing session validation...')
+
     const validationResult = await lucia.validateSession(session.id)
-    console.log('✅ Validation result:')
-    console.log('- Session valid:', !!validationResult.session)
-    console.log('- User found:', !!validationResult.user)
 
     if (validationResult.user) {
       console.log('- User:', validationResult.user.email, '(' + validationResult.user.role + ')')
     }
 
     // Test with browser
-    console.log('\n🌐 Testing with browser...')
+
     const browser = await chromium.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -101,13 +90,12 @@ async function debugLuciaSession() {
     const page = await context.newPage()
 
     // Test auth endpoint
-    console.log('🔍 Testing auth endpoint...')
+
     await page.goto('https://gangrunprinting.com/api/auth/me')
     const responseText = await page.textContent('body')
-    console.log('Auth API response:', responseText)
 
     // Test admin page
-    console.log('🔍 Testing admin page...')
+
     await page.goto('https://gangrunprinting.com/admin/products/new', {
       waitUntil: 'networkidle',
       timeout: 30000,
@@ -116,10 +104,8 @@ async function debugLuciaSession() {
     await page.waitForTimeout(5000)
 
     const nameInput = await page.locator('#name').count()
-    console.log('Name input found:', nameInput > 0)
 
     const loadingText = await page.locator('text=Verifying admin access...').count()
-    console.log('Still loading:', loadingText > 0)
 
     await page.screenshot({
       path: '/root/websites/gangrunprinting/debug-lucia-test.png',

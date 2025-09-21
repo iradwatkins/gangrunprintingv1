@@ -28,7 +28,10 @@ export function getMinioClient(): Minio.Client {
       secretKey: process.env.MINIO_SECRET_KEY || process.env.MINIO_ROOT_PASSWORD || 'minioadmin',
     })
 
-    console.log('MinIO client initialized successfully with endpoint: localhost:' + (process.env.MINIO_PORT || '9000'))
+    console.log(
+      'MinIO client initialized successfully with endpoint: localhost:' +
+        (process.env.MINIO_PORT || '9000')
+    )
     return minioClient
   } catch (error) {
     initError = error as Error
@@ -45,7 +48,6 @@ export async function ensureBucket() {
     const exists = await client.bucketExists(BUCKET_NAME)
     if (!exists) {
       await client.makeBucket(BUCKET_NAME, 'us-east-1')
-      console.log(`Bucket ${BUCKET_NAME} created successfully`)
     }
   } catch (error) {
     console.error('Error ensuring bucket:', error)
@@ -167,7 +169,6 @@ export async function getFileMetadata(objectName: string) {
 export async function initializeBuckets() {
   // Skip initialization during build
   if (process.env.NODE_ENV === 'production' && !process.env.MINIO_ENDPOINT) {
-    console.log('MinIO not configured, skipping bucket initialization')
     return
   }
 
@@ -179,7 +180,6 @@ export async function initializeBuckets() {
       const exists = await client.bucketExists(bucket)
       if (!exists) {
         await client.makeBucket(bucket, 'us-east-1')
-        console.log(`Bucket ${bucket} created successfully`)
       }
     } catch (error) {
       console.error(`Error creating bucket ${bucket}:`, error)

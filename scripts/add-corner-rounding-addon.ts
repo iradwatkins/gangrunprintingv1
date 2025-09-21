@@ -52,7 +52,7 @@ async function addCornerRoundingAddOn() {
           adminNotes: 'Corner Rounding service with multiple corner configuration options'
         }
       })
-      console.log('Corner Rounding add-on updated:', updated.id)
+
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
@@ -97,7 +97,7 @@ async function addCornerRoundingAddOn() {
           adminNotes: 'Corner Rounding service with multiple corner configuration options'
         }
       })
-      console.log('Corner Rounding add-on created:', newAddOn.id)
+
     }
 
     process.exit(0)

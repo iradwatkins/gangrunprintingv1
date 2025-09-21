@@ -82,21 +82,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const data = await request.json()
-    console.log('📝 API Request Data:', JSON.stringify(data, null, 2))
 
     const { images, paperStockSetId, quantityGroupId, sizeGroupId, turnaroundTimeSetId, addOnSetId, options, pricingTiers, ...productData } = data
-
-    console.log('📊 Extracted fields:', {
-      images: images?.length || 0,
-      paperStockSetId,
-      quantityGroupId,
-      sizeGroupId,
-      turnaroundTimeSetId,
-      addOnSetId,
-      options: options?.length || 0,
-      pricingTiers: pricingTiers?.length || 0,
-      productDataKeys: Object.keys(productData)
-    })
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({

@@ -30,7 +30,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   useEffect(() => {
-    let retryCount = 0
+    const retryCount = 0
     const maxRetries = 5 // Increased retries
     let timeoutId: NodeJS.Timeout
     let isMounted = true
@@ -38,11 +38,10 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
     const checkAdminAuth = async (attempt = 1) => {
       if (!isMounted) return
 
-      console.log(`AdminAuthWrapper: Starting authentication check (attempt ${attempt}/${maxRetries})`)
       try {
         // Reduced initial delay and progressive backoff
         const delay = attempt === 1 ? 200 : Math.min(attempt * 800, 3000)
-        await new Promise(resolve => setTimeout(resolve, delay))
+        await new Promise((resolve) => setTimeout(resolve, delay))
 
         if (!isMounted) return
 
@@ -66,23 +65,23 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         if (!isMounted) return
 
         if (!response.ok) {
-          console.log(`AdminAuthWrapper: Auth check failed - response not ok (attempt ${attempt})`, response.status)
+          console.log(
+            `AdminAuthWrapper: Auth check failed - response not ok (attempt ${attempt})`,
+            response.status
+          )
 
           // Differentiate between server errors (retry) and auth errors (redirect)
           if (response.status >= 500 && attempt < maxRetries) {
-            console.log('AdminAuthWrapper: Server error, retrying authentication check...')
             timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1500)
             return
           }
 
           if (attempt < maxRetries && (response.status === 0 || response.status >= 500)) {
-            console.log('AdminAuthWrapper: Network/server error, retrying authentication check...')
             timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1500)
             return
           }
 
           if (isMounted) {
-            console.log('AdminAuthWrapper: Authentication failed, redirecting to signin')
             setIsRedirecting(true)
             setIsLoading(false)
             router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
@@ -93,9 +92,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         const userData = await response.json()
 
         if (!userData.user) {
-          console.log(`AdminAuthWrapper: No user data found (attempt ${attempt})`)
           if (attempt < maxRetries) {
-            console.log('AdminAuthWrapper: Retrying authentication check...')
             timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1500)
             return
           }
@@ -108,7 +105,6 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         }
 
         if (userData.user.role !== 'ADMIN') {
-          console.log('AdminAuthWrapper: User is not an admin:', userData.user.email, 'Role:', userData.user.role)
           if (isMounted) {
             setIsRedirecting(true)
             setIsLoading(false)
@@ -118,7 +114,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         }
 
         // User is authenticated and is an admin
-        console.log('AdminAuthWrapper: User authenticated as admin:', userData.user.email)
+
         if (isMounted) {
           setUser(userData.user)
           setIsAuthorized(true)
@@ -128,18 +124,15 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         console.error(`AdminAuthWrapper: Auth check failed (attempt ${attempt}):`, error)
 
         // Handle specific error types
-        const isNetworkError = error instanceof Error &&
-          (error.name === 'AbortError' || error.message.includes('fetch'))
+        const isNetworkError =
+          error instanceof Error && (error.name === 'AbortError' || error.message.includes('fetch'))
         const isTimeoutError = error instanceof Error && error.name === 'AbortError'
 
         if (isTimeoutError) {
-          console.log('AdminAuthWrapper: Request timeout, retrying with longer delay...')
         } else if (isNetworkError) {
-          console.log('AdminAuthWrapper: Network error, retrying...')
         }
 
         if (attempt < maxRetries && isMounted && (isNetworkError || isTimeoutError)) {
-          console.log('AdminAuthWrapper: Retrying authentication check...')
           const retryDelay = isTimeoutError ? 3000 : 1500 // Longer delay for timeouts
           timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), retryDelay)
           return

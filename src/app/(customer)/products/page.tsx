@@ -20,10 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Collapsible,
-  CollapsibleContent,
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,7 +106,7 @@ function ProductsPageContent() {
         // Fetch categories and products in parallel
         const [categoriesResponse, productsResponse] = await Promise.all([
           fetch('/api/product-categories?active=true&withProducts=true'),
-          fetch('/api/products?isActive=true')
+          fetch('/api/products?isActive=true'),
         ])
 
         if (!categoriesResponse.ok) {
@@ -121,7 +118,7 @@ function ProductsPageContent() {
 
         const [categoriesData, productsData] = await Promise.all([
           categoriesResponse.json(),
-          productsResponse.json()
+          productsResponse.json(),
         ])
 
         setCategories(categoriesData)
@@ -142,7 +139,7 @@ function ProductsPageContent() {
     const categoryParam = searchParams.get('category')
     if (categoryParam && categories.length > 0) {
       // Find category by slug
-      const category = categories.find(cat => cat.slug === categoryParam)
+      const category = categories.find((cat) => cat.slug === categoryParam)
       if (category && !selectedCategories.includes(category.name)) {
         setSelectedCategories([category.name])
       }
@@ -153,8 +150,10 @@ function ProductsPageContent() {
     return products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (product.shortDescription && product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
+        (product.description &&
+          product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (product.shortDescription &&
+          product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
 
       // Filter by selected categories OR selected individual products
       const matchesSelection =
@@ -186,8 +185,10 @@ function ProductsPageContent() {
     )
     // Clear any individually selected products from this category when toggling category
     if (!selectedCategories.includes(category)) {
-      const categoryProducts = products.filter(p => p.ProductCategory.name === category).map(p => p.id)
-      setSelectedProducts(prev => prev.filter(id => !categoryProducts.includes(id)))
+      const categoryProducts = products
+        .filter((p) => p.ProductCategory.name === category)
+        .map((p) => p.id)
+      setSelectedProducts((prev) => prev.filter((id) => !categoryProducts.includes(id)))
     }
   }
 
@@ -255,9 +256,9 @@ function ProductsPageContent() {
                     </span>
                   </Label>
                   <Button
-                    variant="ghost"
-                    size="sm"
                     className="h-6 w-6 p-0"
+                    size="sm"
+                    variant="ghost"
                     onClick={() => toggleCategoryExpansion(category.id)}
                   >
                     {isExpanded ? (
@@ -420,7 +421,7 @@ function ProductsPageContent() {
               </Badge>
             ))}
             {selectedProducts.map((productId) => {
-              const product = products.find(p => p.id === productId)
+              const product = products.find((p) => p.id === productId)
               return product ? (
                 <Badge
                   key={`product-${productId}`}
@@ -455,9 +456,7 @@ function ProductsPageContent() {
             <Card className="p-12">
               <div className="text-center">
                 <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  Error loading products: {fetchError}
-                </p>
+                <p className="text-muted-foreground mb-4">Error loading products: {fetchError}</p>
                 <Button variant="outline" onClick={() => window.location.reload()}>
                   Try Again
                 </Button>
@@ -485,7 +484,8 @@ function ProductsPageContent() {
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {sortedProducts.map((product) => {
-                const primaryImage = product.ProductImage.find(img => img.isPrimary) || product.ProductImage[0]
+                const primaryImage =
+                  product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
                 return (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
@@ -498,9 +498,9 @@ function ProductsPageContent() {
                         <div className="w-full h-full flex items-center justify-center group-hover:scale-110 transition-transform relative">
                           {primaryImage ? (
                             <Image
+                              fill
                               alt={primaryImage.alt || product.name}
                               className="w-full h-full object-cover"
-                              fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               src={primaryImage.thumbnailUrl || primaryImage.url}
                             />
@@ -513,12 +513,18 @@ function ProductsPageContent() {
                         <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
                           {product.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-2">{product.ProductCategory.name}</p>
-                        <p className="text-sm mb-3 line-clamp-2">{product.shortDescription || product.description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {product.ProductCategory.name}
+                        </p>
+                        <p className="text-sm mb-3 line-clamp-2">
+                          {product.shortDescription || product.description}
+                        </p>
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm text-muted-foreground">Starting at</span>
-                            <p className="text-lg font-bold text-primary">${product.basePrice.toFixed(2)}</p>
+                            <p className="text-lg font-bold text-primary">
+                              ${product.basePrice.toFixed(2)}
+                            </p>
                           </div>
                         </div>
                       </CardContent>
@@ -530,7 +536,8 @@ function ProductsPageContent() {
           ) : (
             <div className="space-y-4">
               {sortedProducts.map((product) => {
-                const primaryImage = product.ProductImage.find(img => img.isPrimary) || product.ProductImage[0]
+                const primaryImage =
+                  product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
                 return (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
@@ -544,9 +551,9 @@ function ProductsPageContent() {
                           <div className="w-full h-full flex items-center justify-center relative">
                             {primaryImage ? (
                               <Image
+                                fill
                                 alt={primaryImage.alt || product.name}
                                 className="w-full h-full object-cover"
-                                fill
                                 sizes="192px"
                                 src={primaryImage.thumbnailUrl || primaryImage.url}
                               />
@@ -561,8 +568,12 @@ function ProductsPageContent() {
                               <h3 className="font-semibold text-xl mb-1 group-hover:text-primary transition-colors">
                                 {product.name}
                               </h3>
-                              <p className="text-sm text-muted-foreground mb-2">{product.ProductCategory.name}</p>
-                              <p className="text-sm mb-3">{product.shortDescription || product.description}</p>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {product.ProductCategory.name}
+                              </p>
+                              <p className="text-sm mb-3">
+                                {product.shortDescription || product.description}
+                              </p>
                             </div>
                             <div className="text-right ml-4">
                               <span className="text-sm text-muted-foreground">Starting at</span>

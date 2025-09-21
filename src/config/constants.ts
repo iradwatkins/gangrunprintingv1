@@ -210,7 +210,7 @@ export const IMAGE_SIZES = {
   THUMBNAIL: 150,
   MEDIUM: 600,
   LARGE: 1200,
-  MIN_DIMENSION: 100,  // Reduced from 300 to 100 for more flexibility
+  MIN_DIMENSION: 100, // Reduced from 300 to 100 for more flexibility
   MAX_DIMENSION: 5000,
 } as const
 
@@ -221,36 +221,36 @@ export const PRODUCT_IMAGE_PROFILES = {
     maxDimension: 800,
     quality: 80,
     thumbnailQuality: 75,
-    description: 'High quality for detailed business card designs'
+    description: 'High quality for detailed business card designs',
   },
   // Banners and posters can use lower quality, larger dimensions acceptable
   BANNER: {
     maxDimension: 1200,
     quality: 65,
     thumbnailQuality: 60,
-    description: 'Optimized for large format prints with aggressive compression'
+    description: 'Optimized for large format prints with aggressive compression',
   },
   // Flyers balanced approach
   FLYER: {
     maxDimension: 1000,
     quality: 75,
     thumbnailQuality: 70,
-    description: 'Balanced quality and size for flyer designs'
+    description: 'Balanced quality and size for flyer designs',
   },
   // Default profile for other products
   DEFAULT: {
     maxDimension: 1200,
     quality: 75,
     thumbnailQuality: 70,
-    description: 'Standard optimization for general products'
+    description: 'Standard optimization for general products',
   },
   // High detail products that need better quality
   PREMIUM: {
     maxDimension: 1200,
     quality: 85,
     thumbnailQuality: 80,
-    description: 'Higher quality for detailed premium products'
-  }
+    description: 'Higher quality for detailed premium products',
+  },
 } as const
 
 // Image Format Priorities (best to worst compression)
@@ -272,7 +272,7 @@ export const IMAGE_FORMAT_PRIORITY = {
     mimeType: 'image/jpeg',
     quality: 80,
     compressionRatio: 1.0, // Baseline
-  }
+  },
 } as const
 
 // Content Analysis Thresholds

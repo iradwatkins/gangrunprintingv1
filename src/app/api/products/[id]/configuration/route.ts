@@ -2,7 +2,11 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
 import { transformSizeGroup } from '@/lib/utils/size-transformer'
-import { transformAddonSets, transformLegacyAddons, findDefaultAddons } from '@/lib/utils/addon-transformer'
+import {
+  transformAddonSets,
+  transformLegacyAddons,
+  findDefaultAddons,
+} from '@/lib/utils/addon-transformer'
 
 // Helper function to calculate price display (from addon-transformer)
 function calculatePriceDisplay(addon: any): { price: number; priceDisplay: string } {
@@ -302,7 +306,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
       // Fetch the Basic Gangrun Price quantity group
-      console.log('[Config API] Fetching Basic Gangrun Price quantity group...')
+
       const quantityData = await prisma.quantityGroup.findFirst({
         where: {
           name: 'Basic Gangrun Price',
@@ -311,11 +315,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })
 
       if (quantityData) {
-        console.log('[Config API] Found quantity data:', quantityData.name, 'with values:', quantityData.values)
         quantities = transformQuantityValues(quantityData)
-        console.log('[Config API] Transformed quantities count:', quantities.length)
       } else {
-        console.log('[Config API] No Basic Gangrun Price quantity group found')
       }
     } catch (dbError) {
       console.error('[Config API] Database error fetching quantities:', dbError)
@@ -327,25 +328,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
       // Fetch Business Card Sizes or any available size group
-      console.log('[Config API] Fetching size groups...')
+
       const sizeData = await prisma.sizeGroup.findFirst({
         where: {
-          OR: [
-            { name: 'Business Card Sizes' },
-            { isActive: true }
-          ]
+          OR: [{ name: 'Business Card Sizes' }, { isActive: true }],
         },
         orderBy: {
-          sortOrder: 'asc'
-        }
+          sortOrder: 'asc',
+        },
       })
 
       if (sizeData) {
-        console.log('[Config API] Found size data:', sizeData.name, 'with values:', sizeData.values)
         sizes = transformSizeGroup(sizeData)
-        console.log('[Config API] Transformed sizes count:', sizes.length)
       } else {
-        console.log('[Config API] No size groups found')
       }
     } catch (dbError) {
       console.error('[Config API] Database error fetching sizes:', dbError)
@@ -356,8 +351,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     let addons = SIMPLE_CONFIG.addons // Default fallback
 
     try {
-      console.log('[Config API] Fetching add-ons from addon sets...')
-
       // Get addon sets for this product - simplified like sizes
       const productAddOnSets = await prisma.productAddOnSet.findMany({
         where: {
@@ -383,14 +376,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })
 
       if (productAddOnSets.length > 0) {
-        console.log('[Config API] Found', productAddOnSets.length, 'addon sets for product')
-
         // Transform using the new standardized approach like sizes
         addons = transformAddonSets(productAddOnSets)
-        console.log('[Config API] Transformed addons count:', addons.length)
-
       } else {
-        console.log('[Config API] No addon sets found for product, using fallback')
         // Transform legacy fallback to standardized format
         addons = transformLegacyAddons(SIMPLE_CONFIG.addons)
       }
@@ -404,12 +392,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     let addonsGrouped = {
       aboveDropdown: [],
       inDropdown: [],
-      belowDropdown: []
+      belowDropdown: [],
     }
 
     try {
-      console.log('[Config API] Building addonsGrouped for positioning...')
-
       // Get addon sets for this product for positioning
       const productAddOnSetsForGrouping = await prisma.productAddOnSet.findMany({
         where: {
@@ -478,14 +464,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         addonsGrouped = {
           aboveDropdown,
           inDropdown,
-          belowDropdown
+          belowDropdown,
         }
-
-        console.log('[Config API] Grouped addons for positioning:', {
-          above: aboveDropdown.length,
-          in: inDropdown.length,
-          below: belowDropdown.length
-        })
       }
     } catch (groupingError) {
       console.error('[Config API] Error building addonsGrouped:', groupingError)
@@ -557,14 +537,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             isDefault: item.isDefault || index === 0, // First one is default if none specified
           }
         })
-
-        console.log(
-          `[Config API] Loaded ${turnaroundTimes.length} turnaround times from set "${assignedSet.turnaroundTimeSet.name}" for product: ${productId}`
-        )
       } else {
-        console.log(
-          `[Config API] No turnaround time set assigned, using default hardcoded values for product: ${productId}`
-        )
       }
     } catch (dbError) {
       console.error('[Config API] Database error fetching turnaround times:', dbError)

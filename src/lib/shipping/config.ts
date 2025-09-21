@@ -80,10 +80,28 @@ export const DEFAULT_SENDER_ADDRESS = {
 // Carrier availability by state
 export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
   FEDEX: [], // Available in all states
-  UPS: [],   // Available in all states
+  UPS: [], // Available in all states
   SOUTHWEST_CARGO: [
-    'TX', 'OK', 'NM', 'AR', 'LA', 'AZ', 'CA', 'NV', 'CO', 'UT',
-    'FL', 'GA', 'AL', 'TN', 'MS', 'SC', 'NC', 'KY', 'MO', 'KS',
+    'TX',
+    'OK',
+    'NM',
+    'AR',
+    'LA',
+    'AZ',
+    'CA',
+    'NV',
+    'CO',
+    'UT',
+    'FL',
+    'GA',
+    'AL',
+    'TN',
+    'MS',
+    'SC',
+    'NC',
+    'KY',
+    'MO',
+    'KS',
   ], // Limited to Southwest's service area
 }
 
@@ -94,21 +112,21 @@ export const SOUTHWEST_CARGO_RATES = {
     weightTiers: [
       {
         maxWeight: 50,
-        baseRate: 85.00,
+        baseRate: 85.0,
         additionalPerPound: 0,
-        handlingFee: 10.00
+        handlingFee: 10.0,
       },
       {
         maxWeight: 100,
-        baseRate: 133.00,
+        baseRate: 133.0,
         additionalPerPound: 0,
-        handlingFee: 10.00
+        handlingFee: 10.0,
       },
       {
         maxWeight: Infinity,
-        baseRate: 133.00,
+        baseRate: 133.0,
         additionalPerPound: 1.75,
-        handlingFee: 10.00
+        handlingFee: 10.0,
       },
     ],
   },
@@ -117,15 +135,15 @@ export const SOUTHWEST_CARGO_RATES = {
     weightTiers: [
       {
         maxWeight: 50,
-        baseRate: 80.00,
+        baseRate: 80.0,
         additionalPerPound: 1.75,
-        handlingFee: 0
+        handlingFee: 0,
       },
       {
         maxWeight: Infinity,
-        baseRate: 102.00,
+        baseRate: 102.0,
         additionalPerPound: 1.75,
-        handlingFee: 0
+        handlingFee: 0,
       },
     ],
   },

@@ -4,7 +4,6 @@ const prisma = new PrismaClient()
 
 async function linkProductsToSets() {
   try {
-    console.log('🔗 Linking products to Sets...')
 
     // Get all products
     const products = await prisma.product.findMany()
@@ -15,7 +14,6 @@ async function linkProductsToSets() {
     const turnaroundSets = await prisma.turnaroundTimeSet.findMany()
 
     for (const product of products) {
-      console.log(`\nLinking ${product.name}...`)
 
       // Link appropriate Paper Stock Set based on product type
       if (product.name.includes('Business Card')) {
@@ -34,7 +32,7 @@ async function linkProductsToSets() {
               paperStockSetId: standardSet.id
             }
           })
-          console.log('  ✓ Linked to Standard Cardstock Set')
+
         }
 
         // Link to Premium Business Card Add-ons
@@ -53,7 +51,7 @@ async function linkProductsToSets() {
               addOnSetId: premiumAddons.id
             }
           })
-          console.log('  ✓ Linked to Premium Business Card Add-ons')
+
         }
 
         // Link to Business Card Turnaround
@@ -72,7 +70,7 @@ async function linkProductsToSets() {
               turnaroundTimeSetId: bcTurnaround.id
             }
           })
-          console.log('  ✓ Linked to Business Card Turnaround')
+
         }
       } else if (product.name.includes('Flyer')) {
         const marketingSet = paperStockSets.find(s => s.name === 'Marketing Materials Set')
@@ -90,7 +88,7 @@ async function linkProductsToSets() {
               paperStockSetId: marketingSet.id
             }
           })
-          console.log('  ✓ Linked to Marketing Materials Set')
+
         }
 
         // Link to Marketing Materials Add-ons
@@ -109,7 +107,7 @@ async function linkProductsToSets() {
               addOnSetId: marketingAddons.id
             }
           })
-          console.log('  ✓ Linked to Marketing Materials Add-ons')
+
         }
 
         // Link to Marketing Materials Turnaround
@@ -128,7 +126,7 @@ async function linkProductsToSets() {
               turnaroundTimeSetId: marketingTurnaround.id
             }
           })
-          console.log('  ✓ Linked to Marketing Materials Turnaround')
+
         }
       } else if (product.name.includes('Poster')) {
         const largeFormatSet = paperStockSets.find(s => s.name === 'Large Format Set')
@@ -146,7 +144,7 @@ async function linkProductsToSets() {
               paperStockSetId: largeFormatSet.id
             }
           })
-          console.log('  ✓ Linked to Large Format Set')
+
         }
 
         // Link to Large Format Add-ons
@@ -165,7 +163,7 @@ async function linkProductsToSets() {
               addOnSetId: largeAddons.id
             }
           })
-          console.log('  ✓ Linked to Large Format Add-ons')
+
         }
 
         // Link to Large Format Turnaround
@@ -184,12 +182,10 @@ async function linkProductsToSets() {
               turnaroundTimeSetId: largeTurnaround.id
             }
           })
-          console.log('  ✓ Linked to Large Format Turnaround')
+
         }
       }
     }
-
-    console.log('\n✅ Products successfully linked to Sets!')
 
   } catch (error) {
     console.error('Error linking products:', error)

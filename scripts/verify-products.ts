@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function verifyProducts() {
-  console.log('🔍 Verifying created products...\n')
 
   const productSkus = ['BC-PREM-001', 'FLY-MKT-001', 'POS-PRO-001']
 
@@ -39,18 +38,13 @@ async function verifyProducts() {
     })
 
     if (product) {
-      console.log(`✅ ${product.name}`)
-      console.log(`   SKU: ${product.sku}`)
-      console.log(`   Category: ${product.ProductCategory?.name || 'None'}`)
-      console.log(`   Base Price: $${product.basePrice}`)
-      console.log(`   Production Time: ${product.productionTime} days`)
 
       if (product.rushAvailable) {
-        console.log(`   Rush Available: Yes (${product.rushDays} days, +$${product.rushFee})`)
+
       }
 
       if (product.gangRunEligible) {
-        console.log(`   Gang Run: ${product.minGangQuantity} - ${product.maxGangQuantity} units`)
+
       }
 
       // Paper stocks
@@ -65,21 +59,18 @@ async function verifyProducts() {
       if (product.productSizeGroups.length > 0) {
         const sizeGroup = product.productSizeGroups[0].sizeGroup
         const sizes = sizeGroup.values.split(',').slice(0, 3).join(', ')
-        console.log(`   Sizes: ${sizes}...`)
+
       }
 
       // Quantities
       if (product.productQuantityGroups.length > 0) {
         const quantityGroup = product.productQuantityGroups[0].quantityGroup
         const quantities = quantityGroup.values.split(',').slice(0, 3).join(', ')
-        console.log(`   Quantities: ${quantities}...`)
+
       }
 
-      console.log(`   Status: ${product.isActive ? 'Active' : 'Inactive'}`)
-      console.log(`   URL: http://localhost:3002/products/${product.slug}`)
-      console.log('')
     } else {
-      console.log(`❌ Product not found: ${sku}\n`)
+
     }
   }
 
@@ -88,10 +79,6 @@ async function verifyProducts() {
   const activeProducts = await prisma.product.count({
     where: { isActive: true },
   })
-
-  console.log('📊 Summary:')
-  console.log(`   Total Products: ${allProducts}`)
-  console.log(`   Active Products: ${activeProducts}`)
 
   await prisma.$disconnect()
 }

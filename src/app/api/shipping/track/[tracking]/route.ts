@@ -1,21 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { Carrier } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { shippingCalculator } from '@/lib/shipping'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { tracking: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { tracking: string } }) {
   try {
     const trackingNumber = params.tracking
     const carrierParam = request.nextUrl.searchParams.get('carrier')
 
     if (!trackingNumber) {
-      return NextResponse.json(
-        { error: 'Tracking number is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Tracking number is required' }, { status: 400 })
     }
 
     // Try to find the order by tracking number to get the carrier
@@ -56,10 +50,7 @@ export async function GET(
     })
   } catch (error) {
     console.error('Tracking error:', error)
-    return NextResponse.json(
-      { error: 'Failed to track shipment' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to track shipment' }, { status: 500 })
   }
 }
 

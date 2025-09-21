@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 
 async function createTestAdmin() {
   try {
-    console.log('🔧 Creating test admin user...')
 
     // Generate session ID
     const sessionId = crypto.randomBytes(20).toString('hex')
@@ -17,7 +16,6 @@ async function createTestAdmin() {
     })
 
     if (existingUser) {
-      console.log('⚠️  User already exists, updating to admin role...')
 
       // Update user to admin
       const updatedUser = await prisma.user.update({
@@ -36,14 +34,6 @@ async function createTestAdmin() {
           expiresAt: sessionExpiresAt,
         },
       })
-
-      console.log('✅ User updated to admin')
-      console.log('📧 Email:', updatedUser.email)
-      console.log('🔑 Session ID:', session.id)
-      console.log(
-        '🍪 Session Cookie:',
-        `lucia_session=${session.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`
-      )
 
       return { user: updatedUser, session }
     }
@@ -66,17 +56,6 @@ async function createTestAdmin() {
         expiresAt: sessionExpiresAt,
       },
     })
-
-    console.log('✅ Test admin user created successfully!')
-    console.log('📧 Email:', newUser.email)
-    console.log('👤 Name:', newUser.name)
-    console.log('🛡️  Role:', newUser.role)
-    console.log('🔑 Session ID:', session.id)
-    console.log(
-      '🍪 Session Cookie:',
-      `lucia_session=${session.id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`
-    )
-    console.log('\nUse this session cookie in Playwright tests to authenticate as admin.')
 
     return { user: newUser, session }
   } catch (error) {

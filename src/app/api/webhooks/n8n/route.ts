@@ -13,8 +13,6 @@ export async function POST(request: NextRequest) {
     const data = await request.json()
     const { action, orderId, orderNumber, ...payload } = data
 
-    console.log('N8N webhook received:', { action, orderId, orderNumber })
-
     switch (action) {
       case 'order.created':
         return await handleOrderCreated(orderId || orderNumber, payload)

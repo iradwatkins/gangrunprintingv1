@@ -2,7 +2,17 @@
 
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Package, Download, Mail, Printer, Copy, Share2, Plane, MapPin } from 'lucide-react'
+import {
+  ArrowLeft,
+  Package,
+  Download,
+  Mail,
+  Printer,
+  Copy,
+  Share2,
+  Plane,
+  MapPin,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -254,7 +264,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                   <div className="text-sm text-muted-foreground">
                     <p>{order.selectedAirport.address}</p>
                     <p>
-                      {order.selectedAirport.city}, {order.selectedAirport.state} {order.selectedAirport.zip}
+                      {order.selectedAirport.city}, {order.selectedAirport.state}{' '}
+                      {order.selectedAirport.zip}
                     </p>
                   </div>
                 </div>

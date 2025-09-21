@@ -1,14 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  Activity,
-  DollarSign,
-  ShoppingCart,
-  TrendingDown,
-  TrendingUp,
-  Users,
-} from 'lucide-react'
+import { Activity, DollarSign, ShoppingCart, TrendingDown, TrendingUp, Users } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

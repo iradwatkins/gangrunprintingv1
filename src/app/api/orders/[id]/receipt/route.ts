@@ -1,20 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params
 
     // Find order by ID or order number
     const order = await prisma.order.findFirst({
       where: {
-        OR: [
-          { id },
-          { orderNumber: id },
-        ],
+        OR: [{ id }, { orderNumber: id }],
       },
       include: {
         OrderItem: true,
@@ -42,10 +36,7 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error generating receipt:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate receipt' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate receipt' }, { status: 500 })
   }
 }
 
@@ -60,9 +51,10 @@ function generateReceiptHtml(order: any): string {
       </tr>`
   ).join('')
 
-  const shippingAddress = typeof order.shippingAddress === 'string'
-    ? JSON.parse(order.shippingAddress)
-    : order.shippingAddress
+  const shippingAddress =
+    typeof order.shippingAddress === 'string'
+      ? JSON.parse(order.shippingAddress)
+      : order.shippingAddress
 
   return `
     <!DOCTYPE html>
@@ -173,11 +165,15 @@ function generateReceiptHtml(order: any): string {
 
         <div>
           <h3>Shipping Address</h3>
-          ${shippingAddress ? `
+          ${
+            shippingAddress
+              ? `
             <p>${shippingAddress.street || ''}</p>
             <p>${shippingAddress.city || ''}, ${shippingAddress.state || ''} ${shippingAddress.zipCode || ''}</p>
             <p>${shippingAddress.country || ''}</p>
-          ` : '<p>Not available</p>'}
+          `
+              : '<p>Not available</p>'
+          }
         </div>
       </div>
 
