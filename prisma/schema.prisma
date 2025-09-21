@@ -7,43 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  emailVerified   Boolean  @default(false)
-  image           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  name            String?
-  role            UserRole @default(CUSTOMER)
-  isBroker        Boolean  @default(false)
-  brokerDiscounts Json?
-
-  // Marketing preferences
-  marketingOptIn Boolean @default(true)
-  smsOptIn       Boolean @default(false)
-  phoneNumber    String?
-
-  // Existing relations
-  accounts          Account[]
-  orders            Order[]
-  pushNotifications PushNotification[]
-  pushSubscriptions PushSubscription[]
-  quotes            Quote[]
-  sessions          Session[]
-
-  // New marketing relations
-  campaignSends      CampaignSend[]
-  smsSends           SMSSend[]
-  workflowExecutions WorkflowExecution[]
-  journey            CustomerJourney?
-
-  // Multi-tenancy relations
-  tenantMemberships TenantUser[]
-}
-
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -55,229 +20,299 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-model Session {
-  id        String   @id
-  userId    String
-  expiresAt DateTime
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model AddOn {
+  id                       String           @id
+  name                     String           @unique
+  description              String?
+  tooltipText              String?
+  pricingModel             PricingModel
+  configuration            Json
+  additionalTurnaroundDays Int              @default(0)
+  sortOrder                Int              @default(0)
+  isActive                 Boolean          @default(true)
+  adminNotes               String?
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime
+  AddOnSetItem             AddOnSetItem[]
+  AddOnSubOption           AddOnSubOption[]
+  OrderItemAddOn           OrderItemAddOn[]
+  ProductAddOn             ProductAddOn[]
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model PaperStock {
-  id              String  @id @default(cuid())
-  name            String  @unique
-  weight          Float   @default(0.0015) // Weight in pounds per square inch
-  pricePerSqInch  Float   @default(0.001)
-  tooltipText     String?
-  isActive        Boolean @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  paperStockCoatings      PaperStockCoating[]
-  paperStockSides         PaperStockSides[]
-  productPaperStocks      ProductPaperStock[]
-  vendorPaperStocks       VendorPaperStock[]
-  paperException          PaperException?
-  paperStockSetItems      PaperStockSetItem[]
-  orderItems              OrderItem[]
-}
-
-model PaperStockSet {
-  id              String  @id @default(cuid())
-  name            String  @unique
+model AddOnSet {
+  id              String            @id
+  name            String            @unique
   description     String?
-  sortOrder       Int     @default(0)
-  isActive        Boolean @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  paperStockItems PaperStockSetItem[]
-  productPaperStockSets   ProductPaperStockSet[]
+  sortOrder       Int               @default(0)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  AddOnSetItem    AddOnSetItem[]
+  ProductAddOnSet ProductAddOnSet[]
 }
 
-model PaperStockSetItem {
-  id               String  @id @default(cuid())
-  paperStockSetId  String
-  paperStockId     String
-  isDefault        Boolean @default(false)
-  sortOrder        Int     @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  paperStockSet    PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
-  paperStock       PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+model AddOnSetItem {
+  id              String          @id
+  addOnSetId      String
+  addOnId         String
+  displayPosition DisplayPosition @default(IN_DROPDOWN)
+  isDefault       Boolean         @default(false)
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  AddOn           AddOn           @relation(fields: [addOnId], references: [id], onDelete: Cascade)
+  AddOnSet        AddOnSet        @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
 
-  @@unique([paperStockSetId, paperStockId])
-  @@index([paperStockSetId])
-  @@index([paperStockId])
+  @@unique([addOnSetId, addOnId])
+  @@index([addOnId])
+  @@index([addOnSetId])
+}
+
+model AddOnSubOption {
+  id             String   @id
+  addOnId        String
+  name           String
+  optionType     String
+  options        Json?
+  defaultValue   String?
+  isRequired     Boolean  @default(false)
+  affectsPricing Boolean  @default(false)
+  tooltipText    String?
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+  AddOn          AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
+}
+
+model Airport {
+  id        String   @id
+  code      String   @unique
+  name      String
+  carrier   String
+  operator  String?
+  address   String
+  city      String
+  state     String
+  zip       String
+  hours     Json
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Order     Order[]
+
+  @@index([code])
+  @@index([isActive])
+  @@index([state])
+}
+
+model CampaignABTest {
+  id                String            @id
+  campaignId        String
+  name              String
+  description       String?
+  testType          ABTestType
+  variants          Json
+  trafficSplit      Json
+  winnerCriteria    String
+  confidence        Float             @default(95.0)
+  isActive          Boolean           @default(true)
+  winnerId          String?
+  results           Json?
+  startedAt         DateTime?
+  endedAt           DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([isActive])
+}
+
+model CampaignAnalytics {
+  id                String            @id
+  campaignId        String
+  date              DateTime          @default(now())
+  sent              Int               @default(0)
+  delivered         Int               @default(0)
+  opened            Int               @default(0)
+  clicked           Int               @default(0)
+  bounced           Int               @default(0)
+  unsubscribed      Int               @default(0)
+  revenue           Float             @default(0)
+  orders            Int               @default(0)
+  uniqueOpens       Int               @default(0)
+  uniqueClicks      Int               @default(0)
+  MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, date])
+  @@index([campaignId])
+  @@index([date])
+}
+
+model CampaignSend {
+  id                String            @id
+  campaignId        String
+  recipientEmail    String
+  recipientName     String?
+  userId            String?
+  status            SendStatus        @default(PENDING)
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  openedAt          DateTime?
+  clickedAt         DateTime?
+  bouncedAt         DateTime?
+  unsubscribedAt    DateTime?
+  bounceReason      String?
+  errorMessage      String?
+  trackingData      Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  User              User?             @relation(fields: [userId], references: [id])
+
+  @@index([campaignId])
+  @@index([recipientEmail])
+  @@index([sentAt])
+  @@index([status])
 }
 
 model CoatingOption {
-  id                 String              @id @default(cuid())
-  name               String              @unique
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  paperStockCoatings PaperStockCoating[]
+  id                String              @id
+  name              String              @unique
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  PaperStockCoating PaperStockCoating[]
 }
 
-model PaperStockCoating {
-  paperStockId String
-  coatingId    String
-  isDefault    Boolean       @default(false)
-  coating      CoatingOption @relation(fields: [coatingId], references: [id], onDelete: Cascade)
-  paperStock   PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+model Currency {
+  id                 String   @id
+  code               String   @unique
+  name               String
+  symbol             String
+  exchangeRate       Float    @default(1.0)
+  lastUpdated        DateTime @default(now())
+  decimalPlaces      Int      @default(2)
+  thousandsSeparator String   @default(",")
+  decimalSeparator   String   @default(".")
+  symbolPosition     String   @default("before")
+  countries          String[]
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
 
-  @@id([paperStockId, coatingId])
-  @@index([paperStockId])
-  @@index([coatingId])
+  @@index([code])
+  @@index([isActive])
 }
 
-model SidesOption {
-  id              String            @id @default(cuid())
-  name            String            @unique
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  paperStockSides PaperStockSides[]
-}
-
-model PaperStockSides {
-  paperStockId    String
-  sidesOptionId   String
-  priceMultiplier Float       @default(1.0)
-  isEnabled       Boolean     @default(true)
-  paperStock      PaperStock  @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
-  sidesOption     SidesOption @relation(fields: [sidesOptionId], references: [id], onDelete: Cascade)
-
-  @@id([paperStockId, sidesOptionId])
-  @@index([paperStockId])
-  @@index([sidesOptionId])
-}
-
-model Product {
-  id                    String                 @id @default(cuid())
-  name                  String
-  slug                  String                 @unique
-  description           String?
-  categoryId            String
-  basePrice             Float
-  isActive              Boolean                @default(true)
-  isFeatured            Boolean                @default(false)
-  metadata              Json?
-  productionTime        Int
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  gangRunEligible       Boolean                @default(false)
-  maxGangQuantity       Int?
-  minGangQuantity       Int?
-  rushAvailable         Boolean                @default(false)
-  rushDays              Int?
-  rushFee               Float?
-  setupFee              Float                  @default(0)
-  shortDescription      String?
-  sku                   String                 @unique
-  PricingTier           PricingTier[]
-  ProductCategory       ProductCategory        @relation(fields: [categoryId], references: [id])
-  productAddOns         ProductAddOn[]
-  productAddOnSets      ProductAddOnSet[]
-  ProductImage          ProductImage[]
-  ProductOption         ProductOption[]
-  productPaperStocks    ProductPaperStock[]
-  productPaperStockSets   ProductPaperStockSet[]
-  productQuantityGroups ProductQuantityGroup[]
-  productSizeGroups     ProductSizeGroup[]
-  vendorProducts        VendorProduct[]
-  pricingConfig         ProductPricingConfig?
-  productSizes          ProductSize[]
-  productQuantities     ProductQuantity[]
-  productTurnaroundTimeSets ProductTurnaroundTimeSet[]
-
-  @@index([categoryId])
-  @@index([slug])
-}
-
-model ProductPaperStock {
-  productId      String
-  paperStockId   String
-  isDefault      Boolean    @default(false)
-  additionalCost Float      @default(0)
-  id             String     @id @default(cuid())
-  paperStock     PaperStock @relation(fields: [paperStockId], references: [id])
-  product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, paperStockId])
-  @@index([productId])
-  @@index([paperStockId])
-}
-
-model ProductPaperStockSet {
-  id                String  @id @default(cuid())
-  productId         String
-  paperStockSetId   String
-  isDefault         Boolean @default(false)
-  sortOrder         Int     @default(0)
+model CustomTheme {
+  id                String   @id
+  name              String
+  description       String?
+  cssVariables      Json
+  darkModeVariables Json?
+  customCSS         String?
+  isActive          Boolean  @default(false)
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  paperStockSet     PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
+  updatedAt         DateTime
 
-  @@unique([productId, paperStockSetId])
-  @@index([productId])
-  @@index([paperStockSetId])
+  @@index([isActive])
 }
 
-model Order {
-  id                  String          @id @default(cuid())
-  orderNumber         String          @unique @default(cuid())
-  referenceNumber     String?         @unique
-  userId              String?
-  vendorId            String?
-  subtotal            Float
-  tax                 Float
-  shipping            Float
-  total               Float
-  shippingMethod      String?
-  trackingNumber      String?
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  adminNotes          String?
-  carrier             Carrier?
-  deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
-  email               String
-  paidAt              DateTime?
-  phone               String?
-  refundAmount        Float?
-  refundedAt          DateTime?
-  squareCustomerId    String?
-  squareOrderId       String?
-  squarePaymentId     String?
-  status              OrderStatus     @default(PENDING_PAYMENT)
-  shippingAddress     Json
-  billingAddress      Json?
+model CustomerJourney {
+  id                 String               @id
+  userId             String               @unique
+  stage              CustomerStage        @default(LEAD)
+  score              Int                  @default(0)
+  lastActivity       DateTime             @default(now())
+  totalSpent         Float                @default(0)
+  orderCount         Int                  @default(0)
+  avgOrderValue      Float                @default(0)
+  daysSinceFirst     Int                  @default(0)
+  daysSinceLast      Int                  @default(0)
+  engagement         Json?
+  preferences        Json?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  CustomerTouchpoint CustomerTouchpoint[]
 
-  // New shipping fields
-  totalWeight         Float?          // Total weight in pounds
-  packageDimensions   Json?           // Package dimensions
-  shippingServiceCode String?         // Selected shipping service code
-  shippingLabelUrl    String?         // URL to shipping label PDF
-  selectedAirportId   String?         // Selected airport for Southwest Cargo pickup
+  @@index([lastActivity])
+  @@index([score])
+  @@index([stage])
+}
 
-  File                File[]
-  Notification        Notification[]
-  user                User?           @relation(fields: [userId], references: [id])
-  vendor              Vendor?         @relation(fields: [vendorId], references: [id])
-  selectedAirport     Airport?        @relation(fields: [selectedAirportId], references: [id])
-  OrderItem           OrderItem[]
-  StatusHistory       StatusHistory[]
-  ShippingRate        ShippingRate[]
+model CustomerSegment {
+  id                String              @id
+  name              String
+  description       String?
+  criteria          Json
+  isActive          Boolean             @default(true)
+  isDynamic         Boolean             @default(true)
+  customerIds       String[]
+  count             Int                 @default(0)
+  lastUpdated       DateTime            @default(now())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  MarketingCampaign MarketingCampaign[]
+  MarketingWorkflow MarketingWorkflow[]
+  SMSCampaign       SMSCampaign[]
+
+  @@index([isActive])
+  @@index([isDynamic])
+}
+
+model CustomerTouchpoint {
+  id              String          @id
+  journeyId       String
+  type            TouchpointType
+  channel         String
+  action          String
+  details         Json?
+  timestamp       DateTime        @default(now())
+  CustomerJourney CustomerJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+  @@index([timestamp])
+  @@index([type])
+}
+
+model EmailTemplate {
+  id          String   @id
+  name        String
+  category    String
+  subject     String
+  content     Json
+  previewText String?
+  thumbnail   String?
+  isPublic    Boolean  @default(false)
+  tags        String[]
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([category])
+  @@index([isPublic])
+}
+
+model ExchangeRate {
+  id           String    @id
+  fromCurrency String
+  toCurrency   String
+  rate         Float
+  source       String    @default("api")
+  validFrom    DateTime  @default(now())
+  validTo      DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([fromCurrency, toCurrency, validFrom])
+  @@index([fromCurrency])
+  @@index([toCurrency])
+  @@index([validFrom])
 }
 
 model File {
@@ -292,6 +327,129 @@ model File {
   createdAt  DateTime @default(now())
   updatedAt  DateTime
   Order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Locale {
+  id             String   @id
+  code           String   @unique
+  name           String
+  nativeName     String
+  direction      String   @default("ltr")
+  dateFormat     String   @default("MM/dd/yyyy")
+  timeFormat     String   @default("h:mm a")
+  numberFormat   Json
+  currencyFormat Json
+  flag           String?
+  isActive       Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model MarketingAsset {
+  id         String    @id
+  name       String
+  type       AssetType
+  url        String
+  fileSize   Int?
+  dimensions Json?
+  alt        String?
+  tags       String[]
+  folder     String?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+
+  @@index([folder])
+  @@index([type])
+}
+
+model MarketingCampaign {
+  id                String              @id
+  name              String
+  type              CampaignType
+  status            CampaignStatus      @default(DRAFT)
+  subject           String?
+  previewText       String?
+  content           Json
+  senderName        String              @default("GangRun Printing")
+  senderEmail       String              @default("noreply@gangrunprinting.com")
+  replyToEmail      String?
+  segmentId         String?
+  scheduledAt       DateTime?
+  sentAt            DateTime?
+  completedAt       DateTime?
+  isTemplate        Boolean             @default(false)
+  templateName      String?
+  tags              String[]
+  settings          Json?
+  trackingPixelUrl  String?
+  utmCampaign       String?
+  utmSource         String              @default("email")
+  utmMedium         String              @default("email")
+  createdBy         String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  CampaignABTest    CampaignABTest[]
+  CampaignAnalytics CampaignAnalytics[]
+  CampaignSend      CampaignSend[]
+  CustomerSegment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
+
+  @@index([createdAt])
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([type])
+}
+
+model MarketingWorkflow {
+  id                String              @id
+  name              String
+  description       String?
+  trigger           Json
+  steps             Json
+  isActive          Boolean             @default(false)
+  segmentId         String?
+  settings          Json?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  CustomerSegment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
+  WorkflowExecution WorkflowExecution[]
+
+  @@index([isActive])
+}
+
+model N8NWebhook {
+  id            String          @id
+  name          String
+  url           String          @unique
+  trigger       String
+  isActive      Boolean         @default(true)
+  description   String?
+  payload       Json?
+  lastTriggered DateTime?
+  triggerCount  Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  N8NWebhookLog N8NWebhookLog[]
+
+  @@index([isActive])
+  @@index([trigger])
+}
+
+model N8NWebhookLog {
+  id         String     @id
+  webhookId  String
+  payload    Json
+  response   Json?
+  status     Int        @default(200)
+  executedAt DateTime   @default(now())
+  N8NWebhook N8NWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([executedAt])
+  @@index([webhookId])
 }
 
 model Notification {
@@ -322,24 +480,161 @@ model OptionValue {
   @@index([optionId])
 }
 
+model Order {
+  id                  String          @id
+  orderNumber         String          @unique
+  referenceNumber     String?         @unique
+  userId              String?
+  vendorId            String?
+  subtotal            Float
+  tax                 Float
+  shipping            Float
+  total               Float
+  shippingMethod      String?
+  trackingNumber      String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime
+  adminNotes          String?
+  carrier             Carrier?
+  deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
+  email               String
+  paidAt              DateTime?
+  phone               String?
+  refundAmount        Float?
+  refundedAt          DateTime?
+  squareCustomerId    String?
+  squareOrderId       String?
+  squarePaymentId     String?
+  status              OrderStatus     @default(PENDING_PAYMENT)
+  shippingAddress     Json
+  billingAddress      Json?
+  packageDimensions   Json?
+  selectedAirportId   String?
+  shippingLabelUrl    String?
+  shippingServiceCode String?
+  totalWeight         Float?
+  File                File[]
+  Notification        Notification[]
+  Airport             Airport?        @relation(fields: [selectedAirportId], references: [id])
+  User                User?           @relation(fields: [userId], references: [id])
+  Vendor              Vendor?         @relation(fields: [vendorId], references: [id])
+  OrderItem           OrderItem[]
+  ShippingRate        ShippingRate[]
+  StatusHistory       StatusHistory[]
+}
+
 model OrderItem {
-  id              String           @id
-  orderId         String
-  quantity        Int
-  createdAt       DateTime         @default(now())
-  options         Json?
-  price           Float
-  productName     String
-  productSku      String
+  id               String           @id
+  orderId          String
+  quantity         Int
+  createdAt        DateTime         @default(now())
+  options          Json?
+  price            Float
+  productName      String
+  productSku       String
+  calculatedWeight Float?
+  dimensions       Json?
+  paperStockId     String?
+  Order            Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  PaperStock       PaperStock?      @relation(fields: [paperStockId], references: [id])
+  OrderItemAddOn   OrderItemAddOn[]
+}
 
-  // New fields for weight calculation
-  dimensions      Json?            // Width and height in inches
-  paperStockId    String?
-  calculatedWeight Float?          // Weight in pounds for this item
+model OrderItemAddOn {
+  id              String    @id
+  orderItemId     String
+  addOnId         String
+  configuration   Json
+  calculatedPrice Float
+  createdAt       DateTime  @default(now())
+  AddOn           AddOn     @relation(fields: [addOnId], references: [id])
+  OrderItem       OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 
-  Order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  paperStock      PaperStock?      @relation(fields: [paperStockId], references: [id])
-  orderItemAddOns OrderItemAddOn[]
+  @@unique([orderItemId, addOnId])
+}
+
+model PaperException {
+  id                    String     @id
+  paperStockId          String     @unique
+  exceptionType         String
+  doubleSidedMultiplier Float      @default(1.75)
+  description           String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime
+  PaperStock            PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+
+  @@index([exceptionType])
+}
+
+model PaperStock {
+  id                String              @id
+  name              String              @unique
+  pricePerSqInch    Float               @default(0.001)
+  tooltipText       String?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  weight            Float               @default(0.0015)
+  OrderItem         OrderItem[]
+  PaperException    PaperException?
+  PaperStockCoating PaperStockCoating[]
+  PaperStockSetItem PaperStockSetItem[]
+  PaperStockSides   PaperStockSides[]
+  ProductPaperStock ProductPaperStock[]
+  VendorPaperStock  VendorPaperStock[]
+}
+
+model PaperStockCoating {
+  paperStockId  String
+  coatingId     String
+  isDefault     Boolean       @default(false)
+  CoatingOption CoatingOption @relation(fields: [coatingId], references: [id], onDelete: Cascade)
+  PaperStock    PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+
+  @@id([paperStockId, coatingId])
+  @@index([coatingId])
+  @@index([paperStockId])
+}
+
+model PaperStockSet {
+  id                   String                 @id
+  name                 String                 @unique
+  description          String?
+  sortOrder            Int                    @default(0)
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  PaperStockSetItem    PaperStockSetItem[]
+  ProductPaperStockSet ProductPaperStockSet[]
+}
+
+model PaperStockSetItem {
+  id              String        @id
+  paperStockSetId String
+  paperStockId    String
+  isDefault       Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  PaperStock      PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+  PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
+
+  @@unique([paperStockSetId, paperStockId])
+  @@index([paperStockId])
+  @@index([paperStockSetId])
+}
+
+model PaperStockSides {
+  paperStockId    String
+  sidesOptionId   String
+  priceMultiplier Float       @default(1.0)
+  isEnabled       Boolean     @default(true)
+  PaperStock      PaperStock  @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+  SidesOption     SidesOption @relation(fields: [sidesOptionId], references: [id], onDelete: Cascade)
+
+  @@id([paperStockId, sidesOptionId])
+  @@index([paperStockId])
+  @@index([sidesOptionId])
 }
 
 model PricingTier {
@@ -357,6 +652,78 @@ model PricingTier {
   @@index([productId])
 }
 
+model Product {
+  id                       String                     @id
+  name                     String
+  slug                     String                     @unique
+  description              String?
+  categoryId               String
+  basePrice                Float
+  isActive                 Boolean                    @default(true)
+  isFeatured               Boolean                    @default(false)
+  metadata                 Json?
+  productionTime           Int
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime
+  gangRunEligible          Boolean                    @default(false)
+  maxGangQuantity          Int?
+  minGangQuantity          Int?
+  rushAvailable            Boolean                    @default(false)
+  rushDays                 Int?
+  rushFee                  Float?
+  setupFee                 Float                      @default(0)
+  shortDescription         String?
+  sku                      String                     @unique
+  PricingTier              PricingTier[]
+  ProductCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
+  ProductAddOn             ProductAddOn[]
+  ProductAddOnSet          ProductAddOnSet[]
+  ProductImage             ProductImage[]
+  ProductOption            ProductOption[]
+  ProductPaperStock        ProductPaperStock[]
+  ProductPaperStockSet     ProductPaperStockSet[]
+  ProductPricingConfig     ProductPricingConfig?
+  ProductQuantity          ProductQuantity[]
+  ProductQuantityGroup     ProductQuantityGroup[]
+  ProductSize              ProductSize[]
+  ProductSizeGroup         ProductSizeGroup[]
+  ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
+  VendorProduct            VendorProduct[]
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model ProductAddOn {
+  id            String   @id
+  productId     String
+  addOnId       String
+  priceOverride Float?
+  isMandatory   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  AddOn         AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
+  Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, addOnId])
+}
+
+model ProductAddOnSet {
+  id         String   @id
+  productId  String
+  addOnSetId String
+  isDefault  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  AddOnSet   AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
+  Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, addOnSetId])
+  @@index([addOnSetId])
+  @@index([productId])
+}
+
 model ProductCategory {
   id          String    @id
   name        String    @unique
@@ -370,7 +737,7 @@ model ProductCategory {
 }
 
 model ProductImage {
-  id           String   @id @default(cuid())
+  id           String   @id
   productId    String
   url          String
   thumbnailUrl String?
@@ -383,7 +750,7 @@ model ProductImage {
   fileSize     Int?
   mimeType     String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime
   Product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
@@ -404,6 +771,309 @@ model ProductOption {
   @@index([productId])
 }
 
+model ProductPaperStock {
+  productId      String
+  paperStockId   String
+  isDefault      Boolean    @default(false)
+  additionalCost Float      @default(0)
+  id             String     @id
+  PaperStock     PaperStock @relation(fields: [paperStockId], references: [id])
+  Product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, paperStockId])
+  @@index([paperStockId])
+  @@index([productId])
+}
+
+model ProductPaperStockSet {
+  id              String        @id
+  productId       String
+  paperStockSetId String
+  isDefault       Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
+  Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, paperStockSetId])
+  @@index([paperStockSetId])
+  @@index([productId])
+}
+
+model ProductPricingConfig {
+  id                  String   @id
+  productId           String   @unique
+  allowCustomSize     Boolean  @default(false)
+  allowCustomQuantity Boolean  @default(false)
+  minCustomWidth      Float?
+  maxCustomWidth      Float?
+  minCustomHeight     Float?
+  maxCustomHeight     Float?
+  minCustomQuantity   Int?
+  maxCustomQuantity   Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+  Product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductQuantity {
+  id                 String           @id
+  productId          String
+  standardQuantityId String
+  isDefault          Boolean          @default(false)
+  isActive           Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime
+  Product            Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  StandardQuantity   StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, standardQuantityId])
+  @@index([productId])
+  @@index([standardQuantityId])
+}
+
+model ProductQuantityGroup {
+  id              String        @id
+  productId       String
+  quantityGroupId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  QuantityGroup   QuantityGroup @relation(fields: [quantityGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, quantityGroupId])
+  @@index([productId])
+  @@index([quantityGroupId])
+}
+
+model ProductSize {
+  id             String       @id
+  productId      String
+  standardSizeId String
+  isDefault      Boolean      @default(false)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime
+  Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  StandardSize   StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, standardSizeId])
+  @@index([productId])
+  @@index([standardSizeId])
+}
+
+model ProductSizeGroup {
+  id          String    @id
+  productId   String
+  sizeGroupId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  SizeGroup   SizeGroup @relation(fields: [sizeGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, sizeGroupId])
+  @@index([productId])
+  @@index([sizeGroupId])
+}
+
+model ProductTurnaroundTimeSet {
+  id                  String            @id
+  productId           String
+  turnaroundTimeSetId String
+  isDefault           Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime
+  Product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, turnaroundTimeSetId])
+  @@index([productId])
+  @@index([turnaroundTimeSetId])
+}
+
+model PushNotification {
+  id     String    @id
+  userId String
+  type   String
+  title  String
+  body   String
+  data   Json?
+  read   Boolean   @default(false)
+  sentAt DateTime  @default(now())
+  readAt DateTime?
+  User   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sentAt])
+  @@index([userId, read])
+}
+
+model PushSubscription {
+  id           String   @id
+  userId       String?
+  endpoint     String   @unique
+  subscription Json
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  User         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([active])
+  @@index([userId])
+}
+
+model QuantityGroup {
+  id                   String                 @id
+  name                 String                 @unique
+  description          String?
+  values               String
+  defaultValue         String
+  customMin            Int?
+  customMax            Int?
+  sortOrder            Int                    @default(0)
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  ProductQuantityGroup ProductQuantityGroup[]
+}
+
+model Quote {
+  id                 String      @id
+  quoteNumber        String      @unique
+  userId             String?
+  customerEmail      String
+  customerName       String?
+  customerPhone      String?
+  productDetails     Json
+  pricing            Json
+  validUntil         DateTime
+  status             QuoteStatus @default(DRAFT)
+  notes              String?
+  createdBy          String?
+  convertedToOrderId String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime
+  User               User?       @relation(fields: [userId], references: [id])
+}
+
+model SMSCampaign {
+  id              String           @id
+  name            String
+  message         String
+  segmentId       String?
+  status          CampaignStatus   @default(DRAFT)
+  scheduledAt     DateTime?
+  sentAt          DateTime?
+  createdBy       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  CustomerSegment CustomerSegment? @relation(fields: [segmentId], references: [id])
+  SMSSend         SMSSend[]
+
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model SMSSend {
+  id           String      @id
+  campaignId   String
+  phoneNumber  String
+  userId       String?
+  status       SendStatus  @default(PENDING)
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  errorMessage String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime
+  SMSCampaign  SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  User         User?       @relation(fields: [userId], references: [id])
+
+  @@index([campaignId])
+  @@index([phoneNumber])
+  @@index([status])
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ShippingRate {
+  id            String   @id
+  orderId       String
+  carrier       Carrier
+  serviceName   String
+  serviceCode   String
+  estimatedDays Int
+  rateAmount    Float
+  isSelected    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime
+  Order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([orderId])
+}
+
+model SidesOption {
+  id              String            @id
+  name            String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  PaperStockSides PaperStockSides[]
+}
+
+model SizeGroup {
+  id               String             @id
+  name             String             @unique
+  description      String?
+  values           String
+  defaultValue     String
+  customMinWidth   Float?
+  customMaxWidth   Float?
+  customMinHeight  Float?
+  customMaxHeight  Float?
+  sortOrder        Int                @default(0)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  ProductSizeGroup ProductSizeGroup[]
+}
+
+model StandardQuantity {
+  id               String            @id
+  displayValue     Int               @unique
+  calculationValue Int
+  adjustmentValue  Int?
+  sortOrder        Int               @default(0)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  ProductQuantity  ProductQuantity[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model StandardSize {
+  id                 String        @id
+  name               String        @unique
+  displayName        String
+  width              Float
+  height             Float
+  preCalculatedValue Float
+  sortOrder          Int           @default(0)
+  isActive           Boolean       @default(true)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime
+  ProductSize        ProductSize[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
 model StatusHistory {
   id         String       @id
   orderId    String
@@ -415,178 +1085,275 @@ model StatusHistory {
   Order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
-model AddOn {
-  id                       String           @id @default(cuid())
-  name                     String           @unique
-  description              String?
-  tooltipText              String?
-  pricingModel             PricingModel
-  configuration            Json
-  additionalTurnaroundDays Int              @default(0)
-  sortOrder                Int              @default(0)
-  isActive                 Boolean          @default(true)
-  adminNotes               String?
-  createdAt                DateTime         @default(now())
-  updatedAt                DateTime         @updatedAt
-  subOptions               AddOnSubOption[]
-  orderItemAddOns          OrderItemAddOn[]
-  productAddOns            ProductAddOn[]
-  addOnSetItems            AddOnSetItem[]
+model Tenant {
+  id                 String               @id
+  name               String
+  slug               String               @unique
+  domain             String?              @unique
+  subdomain          String               @unique
+  isActive           Boolean              @default(true)
+  plan               TenantPlan           @default(BASIC)
+  settings           Json?
+  branding           Json?
+  locales            String[]             @default(["en"])
+  defaultLocale      String               @default("en")
+  timezone           String               @default("America/Chicago")
+  currency           String               @default("USD")
+  contactEmail       String
+  contactName        String?
+  contactPhone       String?
+  billingEmail       String?
+  features           Json?
+  trialEndsAt        DateTime?
+  suspendedAt        DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  TenantBrand        TenantBrand[]
+  TenantDomain       TenantDomain[]
+  TenantUser         TenantUser[]
+  Translation        Translation[]
+  TranslationRequest TranslationRequest[]
+
+  @@index([domain])
+  @@index([isActive])
+  @@index([slug])
+  @@index([subdomain])
 }
 
-model AddOnSubOption {
-  id             String   @id @default(cuid())
-  addOnId        String
-  name           String
-  optionType     String
-  options        Json?
-  defaultValue   String?
-  isRequired     Boolean  @default(false)
-  affectsPricing Boolean  @default(false)
-  tooltipText    String?
-  displayOrder   Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  addOn          AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
-}
-
-model ProductAddOn {
-  id            String   @id @default(cuid())
-  productId     String
-  addOnId       String
-  priceOverride Float?
-  isMandatory   Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  addOn         AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, addOnId])
-}
-
-model OrderItemAddOn {
-  id              String    @id @default(cuid())
-  orderItemId     String
-  addOnId         String
-  configuration   Json
-  calculatedPrice Float
-  createdAt       DateTime  @default(now())
-  addOn           AddOn     @relation(fields: [addOnId], references: [id])
-  orderItem       OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-
-  @@unique([orderItemId, addOnId])
-}
-
-model AddOnSet {
-  id              String  @id @default(cuid())
-  name            String  @unique
-  description     String?
-  sortOrder       Int     @default(0)
-  isActive        Boolean @default(true)
+model TenantBrand {
+  id              String   @id
+  tenantId        String
+  name            String
+  isDefault       Boolean  @default(false)
+  logoUrl         String?
+  logoText        String?
+  faviconUrl      String?
+  primaryColor    String   @default("#3b82f6")
+  secondaryColor  String   @default("#64748b")
+  accentColor     String   @default("#f59e0b")
+  backgroundColor String   @default("#ffffff")
+  textColor       String   @default("#1f2937")
+  primaryFont     String   @default("Inter")
+  secondaryFont   String   @default("Inter")
+  fontSize        String   @default("16px")
+  borderRadius    String   @default("8px")
+  spacing         String   @default("16px")
+  customCss       String?
+  customJs        String?
+  emailHeaderLogo String?
+  emailFooterText String?
+  emailColors     Json?
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime
+  Tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  addOnSetItems        AddOnSetItem[]
-  productAddOnSets     ProductAddOnSet[]
+  @@unique([tenantId, name])
+  @@index([isDefault])
+  @@index([tenantId])
 }
 
-model AddOnSetItem {
-  id               String   @id @default(cuid())
-  addOnSetId       String
-  addOnId          String
-  displayPosition  DisplayPosition  @default(IN_DROPDOWN)
-  isDefault        Boolean @default(false)
-  sortOrder        Int     @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+model TenantDomain {
+  id                 String    @id
+  tenantId           String
+  domain             String    @unique
+  isVerified         Boolean   @default(false)
+  isPrimary          Boolean   @default(false)
+  sslEnabled         Boolean   @default(false)
+  verificationToken  String?
+  verificationMethod String?
+  verificationStatus String?
+  sslCertificateId   String?
+  sslExpiresAt       DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime
+  Tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  addOnSet         AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
-  addOn            AddOn @relation(fields: [addOnId], references: [id], onDelete: Cascade)
-
-  @@unique([addOnSetId, addOnId])
-  @@index([addOnSetId])
-  @@index([addOnId])
+  @@index([domain])
+  @@index([isVerified])
+  @@index([tenantId])
 }
 
-model ProductAddOnSet {
-  id            String  @id @default(cuid())
-  productId     String
-  addOnSetId    String
-  isDefault     Boolean @default(false)
-  sortOrder     Int     @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model TenantUser {
+  id       String         @id
+  tenantId String
+  userId   String
+  role     TenantUserRole @default(MEMBER)
+  joinedAt DateTime       @default(now())
+  Tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  User     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  addOnSet      AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, addOnSetId])
-  @@index([productId])
-  @@index([addOnSetId])
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
 }
 
-model QuantityGroup {
-  id           String                 @id @default(cuid())
-  name         String                 @unique
-  description  String?
-  values       String
-  defaultValue String
-  customMin    Int?
-  customMax    Int?
-  sortOrder    Int                    @default(0)
-  isActive     Boolean                @default(true)
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  products     ProductQuantityGroup[]
+model ThemeTemplate {
+  id          String   @id
+  name        String   @unique
+  description String?
+  category    String   @default("business")
+  thumbnail   String?
+  previewUrl  String?
+  colors      Json
+  typography  Json
+  layout      Json
+  components  Json
+  isPremium   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  tags        String[] @default([])
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([category])
+  @@index([isActive])
+  @@index([isPremium])
 }
 
-model ProductQuantityGroup {
-  id              String        @id @default(cuid())
-  productId       String
-  quantityGroupId String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantityGroup   QuantityGroup @relation(fields: [quantityGroupId], references: [id], onDelete: Cascade)
+model Translation {
+  id               String            @id
+  tenantId         String?
+  key              String
+  namespace        String            @default("common")
+  locale           String
+  value            String
+  context          String?
+  pluralization    Json?
+  interpolation    String[]          @default([])
+  isApproved       Boolean           @default(false)
+  confidence       Float?
+  source           TranslationSource @default(MANUAL)
+  translatedBy     String?
+  autoTranslated   Boolean           @default(false)
+  originalText     String?
+  translationModel String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  Tenant           Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@unique([productId, quantityGroupId])
-  @@index([productId])
-  @@index([quantityGroupId])
+  @@unique([tenantId, key, namespace, locale])
+  @@index([isApproved])
+  @@index([key])
+  @@index([locale])
+  @@index([namespace])
+  @@index([source])
+  @@index([tenantId])
 }
 
-model SizeGroup {
-  id              String             @id @default(cuid())
-  name            String             @unique
-  description     String?
-  values          String
-  defaultValue    String
-  customMinWidth  Float?
-  customMaxWidth  Float?
-  customMinHeight Float?
-  customMaxHeight Float?
-  sortOrder       Int                @default(0)
-  isActive        Boolean            @default(true)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  products        ProductSizeGroup[]
+model TranslationRequest {
+  id             String              @id
+  tenantId       String?
+  key            String
+  namespace      String              @default("common")
+  sourceLocale   String              @default("en")
+  targetLocale   String
+  sourceText     String
+  translatedText String?
+  status         TranslationStatus   @default(PENDING)
+  priority       TranslationPriority @default(NORMAL)
+  context        String?
+  notes          String?
+  assignedTo     String?
+  assignedAt     DateTime?
+  completedAt    DateTime?
+  autoAttempted  Boolean             @default(false)
+  autoResult     String?
+  autoConfidence Float?
+  requestedBy    String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime
+  Tenant         Tenant?             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([assignedTo])
+  @@index([status])
+  @@index([targetLocale])
+  @@index([tenantId])
 }
 
-model ProductSizeGroup {
-  id          String    @id @default(cuid())
-  productId   String
-  sizeGroupId String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sizeGroup   SizeGroup @relation(fields: [sizeGroupId], references: [id], onDelete: Cascade)
+model TurnaroundTime {
+  id                    String                  @id
+  name                  String
+  displayName           String
+  description           String?
+  daysMin               Int
+  daysMax               Int?
+  pricingModel          PricingModel            @default(FLAT)
+  basePrice             Float                   @default(0)
+  priceMultiplier       Float                   @default(1.0)
+  isActive              Boolean                 @default(true)
+  sortOrder             Int                     @default(0)
+  requiresNoCoating     Boolean                 @default(false)
+  restrictedCoatings    String[]                @default([])
+  restrictedOptions     Json?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  TurnaroundTimeSetItem TurnaroundTimeSetItem[]
 
-  @@unique([productId, sizeGroupId])
-  @@index([productId])
-  @@index([sizeGroupId])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model TurnaroundTimeSet {
+  id                       String                     @id
+  name                     String                     @unique
+  description              String?
+  isActive                 Boolean                    @default(true)
+  sortOrder                Int                        @default(0)
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime
+  ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
+  TurnaroundTimeSetItem    TurnaroundTimeSetItem[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model TurnaroundTimeSetItem {
+  id                  String            @id
+  turnaroundTimeSetId String
+  turnaroundTimeId    String
+  isDefault           Boolean           @default(false)
+  sortOrder           Int               @default(0)
+  priceOverride       Float?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime
+  TurnaroundTime      TurnaroundTime    @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
+  TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
+
+  @@unique([turnaroundTimeSetId, turnaroundTimeId])
+  @@index([turnaroundTimeId])
+  @@index([turnaroundTimeSetId])
+}
+
+model User {
+  id                String              @id
+  email             String              @unique
+  emailVerified     Boolean             @default(false)
+  image             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  name              String?
+  role              UserRole            @default(CUSTOMER)
+  isBroker          Boolean             @default(false)
+  brokerDiscounts   Json?
+  marketingOptIn    Boolean             @default(true)
+  phoneNumber       String?
+  smsOptIn          Boolean             @default(false)
+  Account           Account[]
+  CampaignSend      CampaignSend[]
+  CustomerJourney   CustomerJourney?
+  Order             Order[]
+  PushNotification  PushNotification[]
+  PushSubscription  PushSubscription[]
+  Quote             Quote[]
+  SMSSend           SMSSend[]
+  Session           Session[]
+  TenantUser        TenantUser[]
+  WorkflowExecution WorkflowExecution[]
 }
 
 model Vendor {
-  id                  String             @id @default(cuid())
+  id                  String             @id
   name                String             @unique
   contactEmail        String
   orderEmail          String?
@@ -602,14 +1369,14 @@ model Vendor {
   n8nWebhookUrl       String?
   apiCredentials      Json?
   createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  orders              Order[]
-  vendorPaperStocks   VendorPaperStock[]
-  vendorProducts      VendorProduct[]
+  updatedAt           DateTime
+  Order               Order[]
+  VendorPaperStock    VendorPaperStock[]
+  VendorProduct       VendorProduct[]
 }
 
 model VendorPaperStock {
-  id           String     @id @default(cuid())
+  id           String     @id
   vendorId     String
   paperStockId String
   vendorSku    String?
@@ -617,15 +1384,15 @@ model VendorPaperStock {
   leadTime     Int?
   minQuantity  Int?
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  paperStock   PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
-  vendor       Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime
+  PaperStock   PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
+  Vendor       Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
   @@unique([vendorId, paperStockId])
 }
 
 model VendorProduct {
-  id          String   @id @default(cuid())
+  id          String   @id
   vendorId    String
   productId   String
   vendorSku   String?
@@ -633,83 +1400,117 @@ model VendorProduct {
   isPreferred Boolean  @default(false)
   notes       String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime
+  Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  Vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
   @@unique([vendorId, productId])
 }
 
-model Quote {
-  id                 String      @id @default(cuid())
-  quoteNumber        String      @unique
-  userId             String?
-  customerEmail      String
-  customerName       String?
-  customerPhone      String?
-  productDetails     Json
-  pricing            Json
-  validUntil         DateTime
-  status             QuoteStatus @default(DRAFT)
-  notes              String?
-  createdBy          String?
-  convertedToOrderId String?
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
-  user               User?       @relation(fields: [userId], references: [id])
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
-model PushSubscription {
-  id           String   @id @default(cuid())
-  userId       String?
-  endpoint     String   @unique
-  subscription Json
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+model WorkflowExecution {
+  id                String            @id
+  workflowId        String
+  userId            String?
+  triggerData       Json
+  currentStep       Int               @default(0)
+  status            ExecutionStatus   @default(RUNNING)
+  completedAt       DateTime?
+  errorMessage      String?
+  stepResults       Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  User              User?             @relation(fields: [userId], references: [id])
+  MarketingWorkflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
+  @@index([status])
   @@index([userId])
-  @@index([active])
+  @@index([workflowId])
 }
 
-model PushNotification {
-  id     String    @id @default(cuid())
-  userId String
-  type   String
-  title  String
-  body   String
-  data   Json?
-  read   Boolean   @default(false)
-  sentAt DateTime  @default(now())
-  readAt DateTime?
-  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, read])
-  @@index([sentAt])
+enum ABTestType {
+  SUBJECT_LINE
+  CONTENT
+  SEND_TIME
+  SENDER_NAME
 }
 
-enum UserRole {
-  CUSTOMER
-  ADMIN
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  TEMPLATE
 }
 
-model ShippingRate {
-  id            String   @id @default(cuid())
-  orderId       String
-  carrier       Carrier
-  serviceName   String
-  serviceCode   String
-  estimatedDays Int
-  rateAmount    Float
-  isSelected    Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  expiresAt     DateTime
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  PAUSED
+  CANCELLED
+}
 
-  Order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+enum CampaignType {
+  EMAIL
+  SMS
+  PUSH
+}
 
-  @@index([orderId])
-  @@index([expiresAt])
+enum Carrier {
+  FEDEX
+  UPS
+  SOUTHWEST_CARGO
+}
+
+enum CustomerStage {
+  LEAD
+  PROSPECT
+  FIRST_TIME
+  REPEAT
+  VIP
+  CHURNED
+  REACTIVATED
+}
+
+enum DisplayPosition {
+  ABOVE_DROPDOWN
+  IN_DROPDOWN
+  BELOW_DROPDOWN
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationType {
+  ORDER_CONFIRMED
+  PAYMENT_RECEIVED
+  ORDER_PROCESSING
+  ORDER_SHIPPED
+  ORDER_DELIVERED
+  ORDER_REFUNDED
+}
+
+enum OptionType {
+  SELECT
+  RADIO
+  CHECKBOX
+  TEXT
+  NUMBER
+  FILE
 }
 
 enum OrderStatus {
@@ -732,30 +1533,6 @@ enum OrderStatus {
   PAYMENT_FAILED
 }
 
-enum Carrier {
-  FEDEX
-  UPS
-  SOUTHWEST_CARGO
-}
-
-enum NotificationType {
-  ORDER_CONFIRMED
-  PAYMENT_RECEIVED
-  ORDER_PROCESSING
-  ORDER_SHIPPED
-  ORDER_DELIVERED
-  ORDER_REFUNDED
-}
-
-enum OptionType {
-  SELECT
-  RADIO
-  CHECKBOX
-  TEXT
-  NUMBER
-  FILE
-}
-
 enum PricingModel {
   FLAT
   PERCENTAGE
@@ -773,362 +1550,6 @@ enum QuoteStatus {
   CONVERTED
 }
 
-enum DisplayPosition {
-  ABOVE_DROPDOWN
-  IN_DROPDOWN
-  BELOW_DROPDOWN
-}
-
-// Marketing & Automation System Models
-
-model MarketingCampaign {
-  id               String         @id @default(cuid())
-  name             String
-  type             CampaignType
-  status           CampaignStatus @default(DRAFT)
-  subject          String?
-  previewText      String?
-  content          Json // Email template/content data
-  senderName       String         @default("GangRun Printing")
-  senderEmail      String         @default("noreply@gangrunprinting.com")
-  replyToEmail     String?
-  segmentId        String?
-  scheduledAt      DateTime?
-  sentAt           DateTime?
-  completedAt      DateTime?
-  isTemplate       Boolean        @default(false)
-  templateName     String?
-  tags             String[]
-  settings         Json? // Additional campaign settings
-  trackingPixelUrl String?
-  utmCampaign      String?
-  utmSource        String         @default("email")
-  utmMedium        String         @default("email")
-  createdBy        String
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-
-  // Relations
-  segment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
-  sends     CampaignSend[]
-  abTests   CampaignABTest[]
-  analytics CampaignAnalytics[]
-
-  @@index([status])
-  @@index([type])
-  @@index([scheduledAt])
-  @@index([createdAt])
-}
-
-model CustomerSegment {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  criteria    Json // Segmentation criteria and rules
-  isActive    Boolean  @default(true)
-  isDynamic   Boolean  @default(true) // Auto-update based on criteria
-  customerIds String[] // Cached customer IDs for performance
-  count       Int      @default(0)
-  lastUpdated DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  campaigns    MarketingCampaign[]
-  workflows    MarketingWorkflow[]
-  smsCampaigns SMSCampaign[]
-
-  @@index([isActive])
-  @@index([isDynamic])
-}
-
-model CampaignSend {
-  id             String     @id @default(cuid())
-  campaignId     String
-  recipientEmail String
-  recipientName  String?
-  userId         String?
-  status         SendStatus @default(PENDING)
-  sentAt         DateTime?
-  deliveredAt    DateTime?
-  openedAt       DateTime?
-  clickedAt      DateTime?
-  bouncedAt      DateTime?
-  unsubscribedAt DateTime?
-  bounceReason   String?
-  errorMessage   String?
-  trackingData   Json?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-
-  // Relations
-  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user     User?             @relation(fields: [userId], references: [id])
-
-  @@index([campaignId])
-  @@index([recipientEmail])
-  @@index([status])
-  @@index([sentAt])
-}
-
-model CampaignABTest {
-  id             String     @id @default(cuid())
-  campaignId     String
-  name           String
-  description    String?
-  testType       ABTestType
-  variants       Json // A/B test variant configurations
-  trafficSplit   Json // Percentage split between variants
-  winnerCriteria String // Which metric determines winner
-  confidence     Float      @default(95.0)
-  isActive       Boolean    @default(true)
-  winnerId       String? // ID of winning variant
-  results        Json? // Test results and statistics
-  startedAt      DateTime?
-  endedAt        DateTime?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-
-  // Relations
-  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-
-  @@index([campaignId])
-  @@index([isActive])
-}
-
-model CampaignAnalytics {
-  id           String   @id @default(cuid())
-  campaignId   String
-  date         DateTime @default(now())
-  sent         Int      @default(0)
-  delivered    Int      @default(0)
-  opened       Int      @default(0)
-  clicked      Int      @default(0)
-  bounced      Int      @default(0)
-  unsubscribed Int      @default(0)
-  revenue      Float    @default(0)
-  orders       Int      @default(0)
-  uniqueOpens  Int      @default(0)
-  uniqueClicks Int      @default(0)
-
-  // Relations
-  campaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-
-  @@unique([campaignId, date])
-  @@index([campaignId])
-  @@index([date])
-}
-
-model MarketingWorkflow {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  trigger     Json // Workflow trigger configuration
-  steps       Json // Workflow steps and actions
-  isActive    Boolean  @default(false)
-  segmentId   String?
-  settings    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  segment    CustomerSegment?    @relation(fields: [segmentId], references: [id])
-  executions WorkflowExecution[]
-
-  @@index([isActive])
-}
-
-model WorkflowExecution {
-  id           String          @id @default(cuid())
-  workflowId   String
-  userId       String?
-  triggerData  Json // Data that triggered the workflow
-  currentStep  Int             @default(0)
-  status       ExecutionStatus @default(RUNNING)
-  completedAt  DateTime?
-  errorMessage String?
-  stepResults  Json? // Results from each step
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-
-  // Relations
-  workflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  user     User?             @relation(fields: [userId], references: [id])
-
-  @@index([workflowId])
-  @@index([userId])
-  @@index([status])
-}
-
-model CustomerJourney {
-  id             String        @id @default(cuid())
-  userId         String
-  stage          CustomerStage @default(LEAD)
-  score          Int           @default(0)
-  lastActivity   DateTime      @default(now())
-  totalSpent     Float         @default(0)
-  orderCount     Int           @default(0)
-  avgOrderValue  Float         @default(0)
-  daysSinceFirst Int           @default(0)
-  daysSinceLast  Int           @default(0)
-  engagement     Json? // Engagement metrics
-  preferences    Json? // Customer preferences
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  // Relations
-  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  touchpoints CustomerTouchpoint[]
-
-  @@unique([userId])
-  @@index([stage])
-  @@index([score])
-  @@index([lastActivity])
-}
-
-model CustomerTouchpoint {
-  id        String         @id @default(cuid())
-  journeyId String
-  type      TouchpointType
-  channel   String
-  action    String
-  details   Json?
-  timestamp DateTime       @default(now())
-
-  // Relations
-  journey CustomerJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  @@index([journeyId])
-  @@index([type])
-  @@index([timestamp])
-}
-
-model SMSCampaign {
-  id          String         @id @default(cuid())
-  name        String
-  message     String
-  segmentId   String?
-  status      CampaignStatus @default(DRAFT)
-  scheduledAt DateTime?
-  sentAt      DateTime?
-  createdBy   String
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-
-  // Relations
-  segment CustomerSegment? @relation(fields: [segmentId], references: [id])
-  sends   SMSSend[]
-
-  @@index([status])
-  @@index([scheduledAt])
-}
-
-model SMSSend {
-  id           String     @id @default(cuid())
-  campaignId   String
-  phoneNumber  String
-  userId       String?
-  status       SendStatus @default(PENDING)
-  sentAt       DateTime?
-  deliveredAt  DateTime?
-  errorMessage String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  // Relations
-  campaign SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user     User?       @relation(fields: [userId], references: [id])
-
-  @@index([campaignId])
-  @@index([phoneNumber])
-  @@index([status])
-}
-
-model EmailTemplate {
-  id          String   @id @default(cuid())
-  name        String
-  category    String
-  subject     String
-  content     Json // Template content structure
-  previewText String?
-  thumbnail   String?
-  isPublic    Boolean  @default(false)
-  tags        String[]
-  createdBy   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([category])
-  @@index([isPublic])
-}
-
-model MarketingAsset {
-  id         String    @id @default(cuid())
-  name       String
-  type       AssetType
-  url        String
-  fileSize   Int?
-  dimensions Json? // Width/height for images
-  alt        String?
-  tags       String[]
-  folder     String?
-  createdBy  String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  @@index([type])
-  @@index([folder])
-}
-
-model N8NWebhook {
-  id            String          @id @default(cuid())
-  name          String
-  url           String          @unique
-  trigger       String // Event that triggers this webhook
-  isActive      Boolean         @default(true)
-  description   String?
-  payload       Json? // Expected payload structure
-  lastTriggered DateTime?
-  triggerCount  Int             @default(0)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  logs          N8NWebhookLog[]
-
-  @@index([trigger])
-  @@index([isActive])
-}
-
-model N8NWebhookLog {
-  id         String   @id @default(cuid())
-  webhookId  String
-  payload    Json
-  response   Json?
-  status     Int      @default(200)
-  executedAt DateTime @default(now())
-
-  // Relations
-  webhook N8NWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
-
-  @@index([webhookId])
-  @@index([executedAt])
-}
-
-// Enums for the marketing system
-enum CampaignType {
-  EMAIL
-  SMS
-  PUSH
-}
-
-enum CampaignStatus {
-  DRAFT
-  SCHEDULED
-  SENDING
-  SENT
-  PAUSED
-  CANCELLED
-}
-
 enum SendStatus {
   PENDING
   SENT
@@ -1139,366 +1560,6 @@ enum SendStatus {
   UNSUBSCRIBED
   FAILED
 }
-
-enum ABTestType {
-  SUBJECT_LINE
-  CONTENT
-  SEND_TIME
-  SENDER_NAME
-}
-
-enum ExecutionStatus {
-  PENDING
-  RUNNING
-  COMPLETED
-  FAILED
-  CANCELLED
-}
-
-enum CustomerStage {
-  LEAD
-  PROSPECT
-  FIRST_TIME
-  REPEAT
-  VIP
-  CHURNED
-  REACTIVATED
-}
-
-enum TouchpointType {
-  EMAIL_OPEN
-  EMAIL_CLICK
-  WEBSITE_VISIT
-  ORDER_PLACED
-  SUPPORT_CONTACT
-  SMS_RECEIVED
-  PUSH_RECEIVED
-  LOGIN
-  LOGOUT
-}
-
-enum AssetType {
-  IMAGE
-  VIDEO
-  AUDIO
-  DOCUMENT
-  TEMPLATE
-}
-
-// Localization & White-label Platform Models
-
-model Tenant {
-  id            String     @id @default(cuid())
-  name          String
-  slug          String     @unique
-  domain        String?    @unique // Custom domain
-  subdomain     String     @unique // tenant.gangrunprinting.com
-  isActive      Boolean    @default(true)
-  plan          TenantPlan @default(BASIC)
-  settings      Json? // Tenant-specific settings
-  branding      Json? // Branding configuration
-  locales       String[]   @default(["en"]) // Supported locales
-  defaultLocale String     @default("en")
-  timezone      String     @default("America/Chicago")
-  currency      String     @default("USD")
-
-  // Contact & billing info
-  contactEmail String
-  contactName  String?
-  contactPhone String?
-  billingEmail String?
-
-  // Feature flags
-  features Json? // Feature configuration per tenant
-
-  // Dates
-  trialEndsAt DateTime?
-  suspendedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relations
-  domains            TenantDomain[]
-  brands             TenantBrand[]
-  translations       Translation[]
-  users              TenantUser[]
-  TranslationRequest TranslationRequest[]
-
-  @@index([slug])
-  @@index([domain])
-  @@index([subdomain])
-  @@index([isActive])
-}
-
-model TenantDomain {
-  id         String  @id @default(cuid())
-  tenantId   String
-  domain     String  @unique
-  isVerified Boolean @default(false)
-  isPrimary  Boolean @default(false)
-  sslEnabled Boolean @default(false)
-
-  // DNS verification
-  verificationToken  String?
-  verificationMethod String? // TXT, CNAME, FILE
-  verificationStatus String? // PENDING, VERIFIED, FAILED
-
-  // SSL certificate info
-  sslCertificateId String?
-  sslExpiresAt     DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@index([tenantId])
-  @@index([domain])
-  @@index([isVerified])
-}
-
-model TenantUser {
-  id       String         @id @default(cuid())
-  tenantId String
-  userId   String
-  role     TenantUserRole @default(MEMBER)
-  joinedAt DateTime       @default(now())
-
-  // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([tenantId, userId])
-  @@index([tenantId])
-  @@index([userId])
-}
-
-model TenantBrand {
-  id        String  @id @default(cuid())
-  tenantId  String
-  name      String
-  isDefault Boolean @default(false)
-
-  // Visual branding
-  logoUrl    String?
-  logoText   String?
-  faviconUrl String?
-
-  // Color scheme
-  primaryColor    String @default("#3b82f6")
-  secondaryColor  String @default("#64748b")
-  accentColor     String @default("#f59e0b")
-  backgroundColor String @default("#ffffff")
-  textColor       String @default("#1f2937")
-
-  // Typography
-  primaryFont   String @default("Inter")
-  secondaryFont String @default("Inter")
-  fontSize      String @default("16px")
-
-  // Layout & spacing
-  borderRadius String @default("8px")
-  spacing      String @default("16px")
-
-  // Custom CSS
-  customCss String?
-  customJs  String?
-
-  // Email branding
-  emailHeaderLogo String?
-  emailFooterText String?
-  emailColors     Json?
-
-  // Dates
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([tenantId, name])
-  @@index([tenantId])
-  @@index([isDefault])
-}
-
-model Translation {
-  id        String  @id @default(cuid())
-  tenantId  String? // null for global translations
-  key       String // Translation key (e.g., "common.welcome")
-  namespace String  @default("common") // Namespace for organization
-  locale    String // Language code (en, es, fr, etc.)
-  value     String // Translated text
-
-  // Translation metadata
-  context       String? // Context for translators
-  pluralization Json? // Plural forms for different counts
-  interpolation String[] @default([]) // Variables that can be interpolated
-
-  // Quality & approval
-  isApproved   Boolean           @default(false)
-  confidence   Float? // Auto-translation confidence score
-  source       TranslationSource @default(MANUAL)
-  translatedBy String? // User ID who created/approved
-
-  // Auto-translation data
-  autoTranslated   Boolean @default(false)
-  originalText     String? // Original text before translation
-  translationModel String? // AI model used for translation
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@unique([tenantId, key, namespace, locale])
-  @@index([tenantId])
-  @@index([key])
-  @@index([namespace])
-  @@index([locale])
-  @@index([isApproved])
-  @@index([source])
-}
-
-model TranslationRequest {
-  id             String  @id @default(cuid())
-  tenantId       String?
-  key            String
-  namespace      String  @default("common")
-  sourceLocale   String  @default("en")
-  targetLocale   String
-  sourceText     String
-  translatedText String?
-
-  status   TranslationStatus   @default(PENDING)
-  priority TranslationPriority @default(NORMAL)
-  context  String?
-  notes    String?
-
-  // Assignment
-  assignedTo  String? // User ID
-  assignedAt  DateTime?
-  completedAt DateTime?
-
-  // Auto-translation
-  autoAttempted  Boolean @default(false)
-  autoResult     String?
-  autoConfidence Float?
-
-  requestedBy String // User ID who requested
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@index([tenantId])
-  @@index([status])
-  @@index([assignedTo])
-  @@index([targetLocale])
-}
-
-model Locale {
-  id         String @id @default(cuid())
-  code       String @unique // en, es, fr, etc.
-  name       String // English, Spanish, French
-  nativeName String // English, Español, Français
-  direction  String @default("ltr") // ltr or rtl
-
-  // Regional settings
-  dateFormat     String @default("MM/dd/yyyy")
-  timeFormat     String @default("h:mm a")
-  numberFormat   Json // Number formatting rules
-  currencyFormat Json // Currency formatting rules
-
-  // Display settings
-  flag      String? // Flag emoji or icon
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([code])
-  @@index([isActive])
-}
-
-model Currency {
-  id     String @id @default(cuid())
-  code   String @unique // USD, EUR, GBP, etc.
-  name   String // US Dollar, Euro, British Pound
-  symbol String // $, €, £
-
-  // Exchange rate (relative to USD)
-  exchangeRate Float    @default(1.0)
-  lastUpdated  DateTime @default(now())
-
-  // Formatting
-  decimalPlaces      Int    @default(2)
-  thousandsSeparator String @default(",")
-  decimalSeparator   String @default(".")
-  symbolPosition     String @default("before") // before, after
-
-  // Regional settings
-  countries String[] // Countries that use this currency
-  isActive  Boolean  @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([code])
-  @@index([isActive])
-}
-
-model ExchangeRate {
-  id           String @id @default(cuid())
-  fromCurrency String
-  toCurrency   String
-  rate         Float
-  source       String @default("api") // api, manual, calculated
-
-  validFrom DateTime  @default(now())
-  validTo   DateTime?
-  createdAt DateTime  @default(now())
-
-  @@unique([fromCurrency, toCurrency, validFrom])
-  @@index([fromCurrency])
-  @@index([toCurrency])
-  @@index([validFrom])
-}
-
-model ThemeTemplate {
-  id          String  @id @default(cuid())
-  name        String  @unique
-  description String?
-  category    String  @default("business")
-
-  // Preview
-  thumbnail  String?
-  previewUrl String?
-
-  // Theme configuration
-  colors     Json // Color palette
-  typography Json // Font settings
-  layout     Json // Layout settings
-  components Json // Component styles
-
-  // Metadata
-  isPremium Boolean  @default(false)
-  isActive  Boolean  @default(true)
-  tags      String[] @default([])
-
-  createdBy String // User ID
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([category])
-  @@index([isPremium])
-  @@index([isActive])
-}
-
-// Enums for Localization & White-label
 
 enum TenantPlan {
   BASIC
@@ -1513,6 +1574,25 @@ enum TenantUserRole {
   MANAGER
   MEMBER
   VIEWER
+}
+
+enum TouchpointType {
+  EMAIL_OPEN
+  EMAIL_CLICK
+  WEBSITE_VISIT
+  ORDER_PLACED
+  SUPPORT_CONTACT
+  SMS_RECEIVED
+  PUSH_RECEIVED
+  LOGIN
+  LOGOUT
+}
+
+enum TranslationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
 enum TranslationSource {
@@ -1531,251 +1611,7 @@ enum TranslationStatus {
   NEEDS_REVIEW
 }
 
-enum TranslationPriority {
-  LOW
-  NORMAL
-  HIGH
-  URGENT
+enum UserRole {
+  CUSTOMER
+  ADMIN
 }
-
-// CustomTheme model for theme management
-model CustomTheme {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-
-  // Theme variables stored as JSON
-  cssVariables      Json
-  darkModeVariables Json?
-  customCSS         String?
-
-  // Status
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([isActive])
-}
-
-// ==========================================
-// PRICING FORMULA TABLES
-// ==========================================
-
-// Pre-calculated standard sizes with backend values
-model StandardSize {
-  id                 String   @id @default(cuid())
-  name               String   @unique // "4x6", "5x5", etc.
-  displayName        String   // "4″ × 6″ Standard"
-  width              Float    // 4.0
-  height             Float    // 6.0
-  preCalculatedValue Float    // 24.0 - THE CRITICAL BACKEND VALUE
-  sortOrder          Int      @default(0)
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  // Relations
-  productSizes ProductSize[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-// Standard quantities with adjustment values
-model StandardQuantity {
-  id               String   @id @default(cuid())
-  displayValue     Int      @unique // 200 - what customer sees
-  calculationValue Int      // 250 - what backend uses (for <5000)
-  adjustmentValue  Int?     // Optional override for specific cases
-  sortOrder        Int      @default(0)
-  isActive         Boolean  @default(true)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  // Relations
-  productQuantities ProductQuantity[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-// Paper type exceptions for sides multiplier
-model PaperException {
-  id                    String     @id @default(cuid())
-  paperStockId          String     @unique
-  exceptionType         String     // "TEXT_PAPER", etc.
-  doubleSidedMultiplier Float      @default(1.75)
-  description           String?
-  createdAt             DateTime   @default(now())
-  updatedAt             DateTime   @updatedAt
-
-  // Relations
-  paperStock PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
-
-  @@index([exceptionType])
-}
-
-// Product-specific pricing configuration
-model ProductPricingConfig {
-  id                  String   @id @default(cuid())
-  productId           String   @unique
-  allowCustomSize     Boolean  @default(false)
-  allowCustomQuantity Boolean  @default(false)
-  minCustomWidth      Float?   // Minimum width for custom size
-  maxCustomWidth      Float?   // Maximum width for custom size
-  minCustomHeight     Float?   // Minimum height for custom size
-  maxCustomHeight     Float?   // Maximum height for custom size
-  minCustomQuantity   Int?     // Minimum custom quantity
-  maxCustomQuantity   Int?     // Maximum custom quantity
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  // Relations
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-// Product-to-Size relationship
-model ProductSize {
-  id             String   @id @default(cuid())
-  productId      String
-  standardSizeId String
-  isDefault      Boolean  @default(false)
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  standardSize StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, standardSizeId])
-  @@index([productId])
-  @@index([standardSizeId])
-}
-
-// Product-to-Quantity relationship
-model ProductQuantity {
-  id                 String   @id @default(cuid())
-  productId          String
-  standardQuantityId String
-  isDefault          Boolean  @default(false)
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  // Relations
-  product          Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  standardQuantity StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, standardQuantityId])
-  @@index([productId])
-  @@index([standardQuantityId])
-}
-
-// ==========================================
-// TURNAROUND TIME SYSTEM
-// ==========================================
-
-model TurnaroundTime {
-  id                    String      @id @default(cuid())
-  name                  String      // "Economy", "Fast", "Faster", "Fastest"
-  displayName           String      // "Economy (2-4 Days)"
-  description           String?     // "Standard processing time"
-  daysMin               Int         // 2
-  daysMax               Int?        // 4 (null for same-day)
-  pricingModel          PricingModel @default(FLAT) // FLAT, PERCENTAGE, PER_UNIT, CUSTOM
-  basePrice             Float       @default(0) // Base surcharge
-  priceMultiplier       Float       @default(1.0) // For percentage model
-  isActive              Boolean     @default(true)
-  sortOrder             Int         @default(0)
-
-  // Special constraints (e.g., "WITH NO COATING")
-  requiresNoCoating     Boolean     @default(false)
-  restrictedCoatings    String[]    @default([])
-  restrictedOptions     Json?       // Other restrictions
-
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-
-  // Relations
-  turnaroundTimeSetItems TurnaroundTimeSetItem[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-model TurnaroundTimeSet {
-  id                    String   @id @default(cuid())
-  name                  String   @unique // "Standard Posters", "Business Cards"
-  description           String?
-  isActive              Boolean  @default(true)
-  sortOrder             Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  // Relations
-  turnaroundTimeItems         TurnaroundTimeSetItem[]
-  productTurnaroundTimeSets   ProductTurnaroundTimeSet[]
-
-  @@index([isActive])
-  @@index([sortOrder])
-}
-
-model TurnaroundTimeSetItem {
-  id                    String   @id @default(cuid())
-  turnaroundTimeSetId   String
-  turnaroundTimeId      String
-  isDefault             Boolean  @default(false)
-  sortOrder             Int      @default(0)
-  priceOverride         Float?   // Override base price for this set
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  turnaroundTimeSet     TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
-  turnaroundTime        TurnaroundTime @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
-
-  @@unique([turnaroundTimeSetId, turnaroundTimeId])
-  @@index([turnaroundTimeSetId])
-  @@index([turnaroundTimeId])
-}
-
-model ProductTurnaroundTimeSet {
-  id                    String   @id @default(cuid())
-  productId             String
-  turnaroundTimeSetId   String
-  isDefault             Boolean  @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  product               Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  turnaroundTimeSet     TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, turnaroundTimeSetId])
-  @@index([productId])
-  @@index([turnaroundTimeSetId])
-}
-
-model Airport {
-  id          String   @id @default(cuid())
-  code        String   @unique // Airport code (e.g., "ALB", "ATL")
-  name        String   // Airport name (e.g., "Albany", "Atlanta")
-  carrier     String   // Usually "Southwest Airlines Cargo"
-  operator    String?  // Operating company (e.g., "Mobile Air Transport")
-  address     String   // Street address
-  city        String   // City name
-  state       String   // State abbreviation
-  zip         String   // ZIP code
-  hours       Json     // Operating hours (JSON object)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  orders      Order[]
-
-  @@index([code])
-  @@index([state])
-  @@index([isActive])
-}
-
-
