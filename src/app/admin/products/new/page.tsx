@@ -249,9 +249,10 @@ export default function NewProductPage() {
         return
       }
 
-      // Check maximum dimensions (5000x5000)
-      if (img.width > 5000 || img.height > 5000) {
-        toast.error(`Image is ${img.width}x${img.height}px but cannot exceed 5000x5000 pixels`)
+      // Check maximum dimensions - reasonable limits for product display images
+      // Allow slightly larger images since they'll be optimized for web
+      if (img.width > 6000 || img.height > 6000) {
+        toast.error(`Image is ${img.width}x${img.height}px but cannot exceed 6000x6000 pixels for product display`)
         return
       }
 
@@ -675,7 +676,7 @@ export default function NewProductPage() {
                       <Upload className="mx-auto h-8 w-8 mb-4 text-muted-foreground hover:text-primary transition-colors" />
                       <p className="text-sm font-medium">Click to upload product image</p>
                       <p className="text-xs text-muted-foreground mt-2">
-                        JPEG, PNG, WebP, GIF • Max 10MB • Min 100×100px • Max 5000×5000px
+                        JPEG, PNG, WebP, GIF • Max 10MB • Min 100×100px • Max 6000×6000px
                       </p>
                     </>
                   )}

@@ -33,8 +33,8 @@ const createProductSchema = z.object({
     )
     .default([]),
   paperStockSetId: z.string().cuid('Paper stock set ID must be valid'),
-  selectedQuantityGroup: z.string().cuid(),
-  selectedSizeGroup: z.string().cuid(),
+  quantityGroupId: z.string().cuid('Quantity group ID must be valid'),
+  sizeGroupId: z.string().cuid('Size group ID must be valid'),
   selectedAddOns: z.array(z.string().cuid()).default([]),
   productionTime: z.number().int().min(1).max(365).default(3),
   rushAvailable: z.boolean().default(false),
@@ -187,8 +187,8 @@ export async function POST(request: NextRequest) {
       isFeatured,
       images,
       paperStockSetId,
-      selectedQuantityGroup,
-      selectedSizeGroup,
+      quantityGroupId,
+      sizeGroupId,
       selectedAddOns,
       productionTime,
       rushAvailable,
@@ -204,8 +204,8 @@ export async function POST(request: NextRequest) {
       const [category, paperStockSet, quantityGroup, sizeGroup, addOns] = await Promise.all([
         prisma.productCategory.findUnique({ where: { id: categoryId } }),
         prisma.paperStockSet.findUnique({ where: { id: paperStockSetId } }),
-        prisma.quantityGroup.findUnique({ where: { id: selectedQuantityGroup } }),
-        prisma.sizeGroup.findUnique({ where: { id: selectedSizeGroup } }),
+        prisma.quantityGroup.findUnique({ where: { id: quantityGroupId } }),
+        prisma.sizeGroup.findUnique({ where: { id: sizeGroupId } }),
         selectedAddOns.length > 0
           ? prisma.addOn.findMany({ where: { id: { in: selectedAddOns } } })
           : [],
@@ -222,13 +222,13 @@ export async function POST(request: NextRequest) {
       }
       if (!quantityGroup) {
         return NextResponse.json(
-          { error: `Quantity group not found: ${selectedQuantityGroup}` },
+          { error: `Quantity group not found: ${quantityGroupId}` },
           { status: 400 }
         )
       }
       if (!sizeGroup) {
         return NextResponse.json(
-          { error: `Size group not found: ${selectedSizeGroup}` },
+          { error: `Size group not found: ${sizeGroupId}` },
           { status: 400 }
         )
       }
@@ -299,19 +299,19 @@ export async function POST(request: NextRequest) {
             },
 
             // Create quantity group association
-            productQuantityGroups: selectedQuantityGroup
+            productQuantityGroups: quantityGroupId
               ? {
                   create: {
-                    quantityGroupId: selectedQuantityGroup,
+                    quantityGroupId: quantityGroupId,
                   },
                 }
               : undefined,
 
             // Create size group association
-            productSizeGroups: selectedSizeGroup
+            productSizeGroups: sizeGroupId
               ? {
                   create: {
-                    sizeGroupId: selectedSizeGroup,
+                    sizeGroupId: sizeGroupId,
                   },
                 }
               : undefined,

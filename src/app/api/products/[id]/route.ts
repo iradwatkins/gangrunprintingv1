@@ -27,6 +27,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
+        productQuantityGroups: {
+          include: {
+            quantityGroup: true,
+          },
+        },
+        productSizeGroups: {
+          include: {
+            sizeGroup: true,
+          },
+        },
+        productAddOnSets: {
+          include: {
+            addOnSet: true,
+          },
+        },
+        productTurnaroundTimeSets: {
+          include: {
+            turnaroundTimeSet: true,
+          },
+        },
         ProductOption: {
           include: {
             OptionValue: {

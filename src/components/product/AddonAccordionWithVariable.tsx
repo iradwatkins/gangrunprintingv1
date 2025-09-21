@@ -907,7 +907,6 @@ export default function AddonAccordionWithVariable({
         {/* Above Dropdown Addons - Always Visible */}
         {addonsGrouped.aboveDropdown.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-base font-medium text-gray-900">Add-ons & Upgrades</h3>
             {addonsGrouped.aboveDropdown.map(renderAddon)}
           </div>
         )}
@@ -918,9 +917,7 @@ export default function AddonAccordionWithVariable({
             <AccordionItem className="border rounded-lg" value="addons">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
                 <div className="flex items-center justify-between w-full mr-4">
-                  <h3 className="text-base font-medium text-gray-900">
-                    {addonsGrouped.aboveDropdown.length > 0 ? 'More Add-ons' : 'Add-ons & Upgrades'}
-                  </h3>
+                  <h3 className="text-base font-medium text-gray-900">Add-ons & Upgrades</h3>
                   {totalSelectedAddons > 0 && (
                     <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
                       {totalSelectedAddons} selected
