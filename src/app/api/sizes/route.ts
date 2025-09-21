@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { randomUUID } from 'crypto'
 
 // GET /api/sizes - List all size groups
 export async function GET(request: NextRequest) {
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
 
     const sizeGroup = await prisma.sizeGroup.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         values,

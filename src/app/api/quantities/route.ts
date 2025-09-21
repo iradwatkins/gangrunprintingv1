@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { transformQuantityGroups } from '@/lib/utils/quantity-transformer'
+import { randomUUID } from 'crypto'
 
 // GET /api/quantities - List all quantity groups
 // Optional query params:
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
 
     const quantityGroup = await prisma.quantityGroup.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         values,

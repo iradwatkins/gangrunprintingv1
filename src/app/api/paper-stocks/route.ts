@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { randomUUID } from 'crypto'
 
 export async function GET() {
   try {
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
     // Create the paper stock with relationships
     const paperStock = await prisma.paperStock.create({
       data: {
+        id: randomUUID(),
         name,
         weight: weight || 0.0015,
         pricePerSqInch: pricePerSqInch || 0.0015,

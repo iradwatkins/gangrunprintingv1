@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/api/auth'
 import { successResponse, handleApiError, commonErrors } from '@/lib/api/responses'
 import { validateSearchParams, querySchemas } from '@/lib/api/validation'
+import { randomUUID } from 'crypto'
 
 // Add-on creation schema
 const createAddOnSchema = z.object({
@@ -56,7 +57,10 @@ export const POST = withAuth(
       }
 
       const addOn = await prisma.addOn.create({
-        data: validation.data,
+        data: {
+          id: randomUUID(),
+          ...validation.data,
+        },
       })
 
       return successResponse(addOn, 201)
