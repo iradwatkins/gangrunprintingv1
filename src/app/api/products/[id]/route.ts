@@ -7,7 +7,7 @@ import { validateRequest } from '@/lib/auth'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    const product = await prisma.product.findUnique({
+    const product = await prisma.Product.findUnique({
       where: { id },
       include: {
         ProductCategory: true,
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     // Get existing product to compare images
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await prisma.Product.findUnique({
       where: { id },
       include: {
         ProductImage: true,
@@ -117,17 +117,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Update product using transaction
     const product = await prisma.$transaction(async (tx) => {
       // Delete existing relations
-      await tx.productImage.deleteMany({ where: { productId: id } })
-      await tx.productPaperStockSet.deleteMany({ where: { productId: id } })
-      await tx.productQuantityGroup.deleteMany({ where: { productId: id } })
-      await tx.productSizeGroup.deleteMany({ where: { productId: id } })
-      await tx.productTurnaroundTimeSet.deleteMany({ where: { productId: id } })
-      await tx.productAddOnSet.deleteMany({ where: { productId: id } })
-      await tx.productOption.deleteMany({ where: { productId: id } })
-      await tx.pricingTier.deleteMany({ where: { productId: id } })
+      await tx.ProductImage.deleteMany({ where: { productId: id } })
+      await tx.ProductPaperStockSet.deleteMany({ where: { productId: id } })
+      await tx.ProductQuantityGroup.deleteMany({ where: { productId: id } })
+      await tx.ProductSizeGroup.deleteMany({ where: { productId: id } })
+      await tx.ProductTurnaroundTimeSet.deleteMany({ where: { productId: id } })
+      await tx.ProductAddOnSet.deleteMany({ where: { productId: id } })
+      await tx.ProductOption.deleteMany({ where: { productId: id } })
+      await tx.PricingTier.deleteMany({ where: { productId: id } })
 
       // Update product with new data
-      return await tx.product.update({
+      return await tx.Product.update({
         where: { id },
         data: {
           ...productData,
@@ -329,7 +329,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const data = await request.json()
 
     // Update product with simple fields
-    const product = await prisma.product.update({
+    const product = await prisma.Product.update({
       where: { id },
       data,
       include: {
@@ -357,7 +357,7 @@ export async function DELETE(
     }
 
     // Get product with images to delete from MinIO
-    const product = await prisma.product.findUnique({
+    const product = await prisma.Product.findUnique({
       where: { id },
       include: {
         ProductImage: true,
@@ -378,7 +378,7 @@ export async function DELETE(
     }
 
     // Delete product (cascade will handle relations)
-    await prisma.product.delete({
+    await prisma.Product.delete({
       where: { id },
     })
 
