@@ -99,8 +99,11 @@ export default function QuantitiesPage() {
       if (!response.ok) throw new Error('Failed to fetch')
       const data = await response.json()
 
+      // Ensure data is an array
+      const dataArray = Array.isArray(data) ? data : []
+
       // Process groups to add derived properties
-      const processedGroups = data.map((group: QuantityGroup) => ({
+      const processedGroups = dataArray.map((group: QuantityGroup) => ({
         ...group,
         valuesList: parseValuesList(group.values || ''),
         hasCustomOption: hasCustomOption(group.values || ''),
@@ -236,6 +239,7 @@ export default function QuantitiesPage() {
   }
 
   const parseValuesList = (values: string) => {
+    if (!values) return []
     return values
       .split(',')
       .map((v) => v.trim())
@@ -243,6 +247,7 @@ export default function QuantitiesPage() {
   }
 
   const hasCustomOption = (values: string) => {
+    if (!values) return false
     return values.toLowerCase().includes('custom')
   }
 
@@ -278,7 +283,7 @@ export default function QuantitiesPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {groups.map((group) => (
+              {(groups || []).map((group) => (
                 <Collapsible
                   key={group.id}
                   open={expandedGroups.has(group.id)}
@@ -315,7 +320,7 @@ export default function QuantitiesPage() {
                           <div className="flex gap-2 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Hash className="h-4 w-4" />
-                              {group.valuesList?.length || 0} values
+                              {(group.valuesList && group.valuesList.length) || 0} values
                             </div>
                             {group._count.products > 0 && (
                               <div className="flex items-center gap-1">
@@ -356,7 +361,7 @@ export default function QuantitiesPage() {
                           <div>
                             <Label className="text-sm font-medium">Values:</Label>
                             <div className="flex flex-wrap gap-2 mt-2">
-                              {group.valuesList?.map((value, index) => (
+                              {(group.valuesList || []).map((value, index) => (
                                 <Badge
                                   key={index}
                                   className="text-sm"
