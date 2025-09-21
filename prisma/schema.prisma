@@ -78,7 +78,7 @@ model VerificationToken {
 model PaperStock {
   id              String  @id @default(cuid())
   name            String  @unique
-  weight          Float   @default(0.0015)
+  weight          Float   @default(0.0015) // Weight in pounds per square inch
   pricePerSqInch  Float   @default(0.001)
   tooltipText     String?
   isActive        Boolean @default(true)
@@ -90,6 +90,7 @@ model PaperStock {
   vendorPaperStocks       VendorPaperStock[]
   paperException          PaperException?
   paperStockSetItems      PaperStockSetItem[]
+  orderItems              OrderItem[]
 }
 
 model PaperStockSet {
@@ -234,39 +235,47 @@ model ProductPaperStockSet {
 }
 
 model Order {
-  id               String          @id @default(cuid())
-  orderNumber      String          @unique @default(cuid())
-  referenceNumber  String?         @unique
-  userId           String?
-  vendorId         String?
-  subtotal         Float
-  tax              Float
-  shipping         Float
-  total            Float
-  shippingMethod   String?
-  trackingNumber   String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  adminNotes       String?
-  carrier          Carrier?
-  deleteAt         DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
-  email            String
-  paidAt           DateTime?
-  phone            String?
-  refundAmount     Float?
-  refundedAt       DateTime?
-  squareCustomerId String?
-  squareOrderId    String?
-  squarePaymentId  String?
-  status           OrderStatus     @default(PENDING_PAYMENT)
-  shippingAddress  Json
-  billingAddress   Json?
-  File             File[]
-  Notification     Notification[]
-  user             User?           @relation(fields: [userId], references: [id])
-  vendor           Vendor?         @relation(fields: [vendorId], references: [id])
-  OrderItem        OrderItem[]
-  StatusHistory    StatusHistory[]
+  id                  String          @id @default(cuid())
+  orderNumber         String          @unique @default(cuid())
+  referenceNumber     String?         @unique
+  userId              String?
+  vendorId            String?
+  subtotal            Float
+  tax                 Float
+  shipping            Float
+  total               Float
+  shippingMethod      String?
+  trackingNumber      String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  adminNotes          String?
+  carrier             Carrier?
+  deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
+  email               String
+  paidAt              DateTime?
+  phone               String?
+  refundAmount        Float?
+  refundedAt          DateTime?
+  squareCustomerId    String?
+  squareOrderId       String?
+  squarePaymentId     String?
+  status              OrderStatus     @default(PENDING_PAYMENT)
+  shippingAddress     Json
+  billingAddress      Json?
+
+  // New shipping fields
+  totalWeight         Float?          // Total weight in pounds
+  packageDimensions   Json?           // Package dimensions
+  shippingServiceCode String?         // Selected shipping service code
+  shippingLabelUrl    String?         // URL to shipping label PDF
+
+  File                File[]
+  Notification        Notification[]
+  user                User?           @relation(fields: [userId], references: [id])
+  vendor              Vendor?         @relation(fields: [vendorId], references: [id])
+  OrderItem           OrderItem[]
+  StatusHistory       StatusHistory[]
+  ShippingRate        ShippingRate[]
 }
 
 model File {
@@ -320,7 +329,14 @@ model OrderItem {
   price           Float
   productName     String
   productSku      String
+
+  // New fields for weight calculation
+  dimensions      Json?            // Width and height in inches
+  paperStockId    String?
+  calculatedWeight Float?          // Weight in pounds for this item
+
   Order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paperStock      PaperStock?      @relation(fields: [paperStockId], references: [id])
   orderItemAddOns OrderItemAddOn[]
 }
 
@@ -674,6 +690,24 @@ model PushNotification {
 enum UserRole {
   CUSTOMER
   ADMIN
+}
+
+model ShippingRate {
+  id            String   @id @default(cuid())
+  orderId       String
+  carrier       Carrier
+  serviceName   String
+  serviceCode   String
+  estimatedDays Int
+  rateAmount    Float
+  isSelected    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime
+
+  Order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([expiresAt])
 }
 
 enum OrderStatus {

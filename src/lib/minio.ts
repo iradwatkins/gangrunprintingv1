@@ -28,7 +28,7 @@ export function getMinioClient(): Minio.Client {
       secretKey: process.env.MINIO_SECRET_KEY || process.env.MINIO_ROOT_PASSWORD || 'minioadmin',
     })
 
-    console.log('MinIO client initialized successfully')
+    console.log('MinIO client initialized successfully with endpoint: localhost:' + (process.env.MINIO_PORT || '9000'))
     return minioClient
   } catch (error) {
     initError = error as Error

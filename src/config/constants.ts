@@ -210,7 +210,7 @@ export const IMAGE_SIZES = {
   THUMBNAIL: 150,
   MEDIUM: 600,
   LARGE: 1200,
-  MIN_DIMENSION: 300,
+  MIN_DIMENSION: 100,  // Reduced from 300 to 100 for more flexibility
   MAX_DIMENSION: 5000,
 } as const
 

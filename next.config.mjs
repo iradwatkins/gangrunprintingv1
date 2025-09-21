@@ -7,6 +7,14 @@ const nextConfig = {
   // Output configuration for standalone deployment - disabled to fix PM2 compatibility
   // output: 'standalone',
 
+  // API and body size configuration
+  api: {
+    bodyParser: {
+      sizeLimit: '20mb',
+    },
+    responseLimit: '20mb',
+  },
+
   // Enable experimental features for App Router
   experimental: {
     optimizeCss: true,

@@ -279,3 +279,4 @@ export const pubsub = {
 }
 
 export default redis
+export { redis }

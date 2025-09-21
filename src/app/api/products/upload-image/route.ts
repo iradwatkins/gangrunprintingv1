@@ -3,19 +3,52 @@ import { uploadProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// Set max body size to 20MB for image uploads
+// Configure route segment for larger body size limit
+export const dynamic = 'force-dynamic'
 export const maxDuration = 30 // 30 seconds timeout
 export const runtime = 'nodejs'
+
+// Route segment config for body size
+export const revalidate = 0
 
 // POST /api/products/upload-image - Upload product image with optimization
 export async function POST(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
-    if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Check content length header first
+    const contentLength = request.headers.get('content-length')
+    if (contentLength && parseInt(contentLength) > 20 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'File size exceeds 20MB limit. Please compress the image or use a smaller file.' },
+        { status: 413 }
+      )
     }
 
-    const formData = await request.formData()
+    // Validate user session
+    let user, session
+    try {
+      const auth = await validateRequest()
+      user = auth.user
+      session = auth.session
+    } catch (authError) {
+      console.error('Authentication error:', authError)
+      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
+    }
+
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
+    }
+
+    // Parse form data with better error handling
+    let formData
+    try {
+      formData = await request.formData()
+    } catch (error) {
+      console.error('Error parsing form data:', error)
+      return NextResponse.json(
+        { error: 'File upload failed. The file may be too large (max 10MB) or corrupted.' },
+        { status: 413 }
+      )
+    }
     const file = formData.get('file') as File
     const productId = formData.get('productId') as string | null
     const isPrimary = formData.get('isPrimary') === 'true'
@@ -64,16 +97,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Upload and process image
-    const uploadedImages = await uploadProductImage(
-      buffer,
-      file.name,
-      file.type,
-      productName,
-      categoryName,
-      imageCount,
-      isPrimary || imageCount === 1
-    )
+    // Upload and process image with better error handling
+    let uploadedImages
+    try {
+      uploadedImages = await uploadProductImage(
+        buffer,
+        file.name,
+        file.type,
+        productName,
+        categoryName,
+        imageCount,
+        isPrimary || imageCount === 1
+      )
+    } catch (uploadError) {
+      console.error('Image processing/upload error:', uploadError)
+
+      // Provide more specific error messages
+      if (uploadError instanceof Error) {
+        if (uploadError.message.includes('MinIO') || uploadError.message.includes('storage')) {
+          return NextResponse.json(
+            { error: 'Storage service error. Please try again in a few moments.' },
+            { status: 503 }
+          )
+        }
+        if (uploadError.message.includes('Sharp') || uploadError.message.includes('processing')) {
+          return NextResponse.json(
+            { error: 'Image processing failed. Please ensure the file is a valid image.' },
+            { status: 422 }
+          )
+        }
+      }
+
+      throw uploadError // Re-throw to be caught by outer try-catch
+    }
 
     // Save to database if productId is provided
     let dbImage = null
