@@ -22,38 +22,16 @@ const paperStockSetSchema = z.object({
 // GET - List all paper stock sets
 export async function GET() {
   try {
-    const groups = await prisma.paperStockSet.findMany({
-      include: {
-        PaperStockSetItem: {
-          include: {
-            paperStock: {
-              include: {
-                paperStockCoatings: {
-                  include: {
-                    coating: true,
-                  },
-                },
-                paperStockSides: {
-                  include: {
-                    sidesOption: true,
-                  },
-                },
-              },
-            },
-          },
-          orderBy: {
-            sortOrder: 'asc',
-          },
-        },
-      },
-      orderBy: {
-        sortOrder: 'asc',
-      },
-    })
+    console.log('Paper stock sets API called')
+    // Test with a simple query first
+    const groups = await prisma.paperStockSet.findMany()
+    console.log('Query successful, found', groups.length, 'groups')
 
     return NextResponse.json(groups)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching paper stock sets:', error)
+    console.error('Error details:', error.message)
+    console.error('Error stack:', error.stack)
     return NextResponse.json({ error: 'Failed to fetch paper stock sets' }, { status: 500 })
   }
 }
@@ -104,16 +82,16 @@ export async function POST(request: NextRequest) {
       include: {
         PaperStockSetItem: {
           include: {
-            paperStock: {
+            PaperStock: {
               include: {
                 paperStockCoatings: {
                   include: {
-                    coating: true,
+                    CoatingOption: true,
                   },
                 },
                 paperStockSides: {
                   include: {
-                    sidesOption: true,
+                    SidesOption: true,
                   },
                 },
               },
