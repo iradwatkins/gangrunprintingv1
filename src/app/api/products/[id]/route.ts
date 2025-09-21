@@ -256,7 +256,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             include: {
               turnaroundTimeSet: {
                 include: {
-                  TurnaroundTimeSetItem: {
+                  turnaroundTimeItems: {
                     include: {
                       turnaroundTime: true,
                     },
