@@ -450,21 +450,30 @@ export default function QuantitiesPage() {
               <Label className="text-right" htmlFor="defaultValue">
                 Default Value
               </Label>
-              <Select
-                value={formData.defaultValue}
-                onValueChange={(value) => setFormData({ ...formData, defaultValue: value })}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select default value" />
-                </SelectTrigger>
-                <SelectContent>
-                  {parseValuesList(formData.values).map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {parseValuesList(formData.values).length > 0 ? (
+                <Select
+                  value={formData.defaultValue}
+                  onValueChange={(value) => setFormData({ ...formData, defaultValue: value })}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select default value" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {parseValuesList(formData.values).map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  className="col-span-3"
+                  disabled
+                  placeholder="Enter values first to select a default"
+                  value=""
+                />
+              )}
             </div>
 
             {hasCustomOption(formData.values) && (
