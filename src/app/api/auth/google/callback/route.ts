@@ -242,14 +242,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     ;(await cookies()).delete('google_oauth_state')
     ;(await cookies()).delete('google_oauth_code_verifier')
 
-    // Redirect based on user role
-    const redirectUrl = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard'
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
-    const fullRedirectUrl = `${baseUrl}${redirectUrl}`
+    // Redirect based on user role with improved logic
+    const redirectPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard'
+
+    // Use consistent base URL resolution
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
+
     console.log('=== GOOGLE OAUTH SUCCESS ===')
-    console.log('Redirecting to:', fullRedirectUrl)
-    return NextResponse.redirect(fullRedirectUrl)
+    console.log('User role:', user.role)
+    console.log('User email:', user.email)
+    console.log('Redirecting to:', `${baseUrl}${redirectPath}`)
+
+    return NextResponse.redirect(`${baseUrl}${redirectPath}`)
   } catch (error) {
     console.error('=== GOOGLE OAUTH ERROR ===')
     console.error('Error details:', error)
