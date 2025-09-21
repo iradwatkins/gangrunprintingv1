@@ -152,7 +152,15 @@ export default function PaperStockGroupsPage() {
       const response = await fetch('/api/paper-stock-sets')
       if (!response.ok) throw new Error('Failed to fetch groups')
       const data = await response.json()
-      setGroups(data)
+
+      // Ensure each group has paperStockItems array
+      const processedGroups = (Array.isArray(data) ? data : []).map((group: any) => ({
+        ...group,
+        paperStockItems: group.paperStockItems || [],
+        productPaperStockGroups: group.productPaperStockGroups || []
+      }))
+
+      setGroups(processedGroups)
     } catch (error) {
       console.error('Error fetching groups:', error)
       toast.error('Failed to load paper stock groups')
@@ -179,14 +187,15 @@ export default function PaperStockGroupsPage() {
       setGroups((groups) => {
         return groups.map((group) => {
           if (group.id === groupId) {
-            const oldIndex = group.paperStockItems.findIndex(
+            const items = group.paperStockItems || []
+            const oldIndex = items.findIndex(
               (item) => item.paperStockId === active.id
             )
-            const newIndex = group.paperStockItems.findIndex(
+            const newIndex = items.findIndex(
               (item) => item.paperStockId === over?.id
             )
 
-            const newItems = arrayMove(group.paperStockItems, oldIndex, newIndex)
+            const newItems = arrayMove(items, oldIndex, newIndex)
 
             // Update sort orders
             const updatedItems = newItems.map((item, index) => ({
@@ -286,10 +295,10 @@ export default function PaperStockGroupsPage() {
   const handleEdit = (group: PaperStockGroup) => {
     setEditingGroup(group)
 
-    const selectedPaperStocks = group.paperStockItems.map((item) => item.paperStockId)
+    const selectedPaperStocks = (group.paperStockItems || []).map((item) => item.paperStockId)
     const defaultPaperStock =
-      group.paperStockItems.find((item) => item.isDefault)?.paperStockId || ''
-    const paperStockOrders = group.paperStockItems.reduce(
+      (group.paperStockItems || []).find((item) => item.isDefault)?.paperStockId || ''
+    const paperStockOrders = (group.paperStockItems || []).reduce(
       (acc, item) => {
         acc[item.paperStockId] = item.sortOrder
         return acc
@@ -334,10 +343,10 @@ export default function PaperStockGroupsPage() {
   const handleDuplicate = (group: PaperStockGroup) => {
     setEditingGroup(null)
 
-    const selectedPaperStocks = group.paperStockItems.map((item) => item.paperStockId)
+    const selectedPaperStocks = (group.paperStockItems || []).map((item) => item.paperStockId)
     const defaultPaperStock =
-      group.paperStockItems.find((item) => item.isDefault)?.paperStockId || ''
-    const paperStockOrders = group.paperStockItems.reduce(
+      (group.paperStockItems || []).find((item) => item.isDefault)?.paperStockId || ''
+    const paperStockOrders = (group.paperStockItems || []).reduce(
       (acc, item) => {
         acc[item.paperStockId] = item.sortOrder
         return acc
@@ -471,17 +480,17 @@ export default function PaperStockGroupsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{group.paperStockItems.length} stocks</Badge>
+                        <Badge variant="secondary">{(group.paperStockItems?.length || 0)} stocks</Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="font-medium">
-                            {group.paperStockItems.find((item) => item.isDefault)?.paperStock
+                            {(group.paperStockItems || []).find((item) => item.isDefault)?.paperStock
                               .name ||
-                              group.paperStockItems[0]?.paperStock.name ||
+                              group.paperStockItems?.[0]?.paperStock.name ||
                               'None'}
                           </span>
-                          {group.paperStockItems.length > 0 && (
+                          {(group.paperStockItems?.length || 0) > 0 && (
                             <Badge className="text-xs" variant="outline">
                               DEFAULT
                             </Badge>
@@ -548,11 +557,11 @@ export default function PaperStockGroupsPage() {
                               onDragEnd={(event) => handleDragEnd(event, group.id)}
                             >
                               <SortableContext
-                                items={group.paperStockItems.map((item) => item.paperStockId)}
+                                items={(group.paperStockItems || []).map((item) => item.paperStockId)}
                                 strategy={verticalListSortingStrategy}
                               >
                                 <div className="space-y-2">
-                                  {group.paperStockItems.map((item) => (
+                                  {(group.paperStockItems || []).map((item) => (
                                     <SortableItem key={item.paperStockId} id={item.paperStockId}>
                                       <div className="flex items-center justify-between flex-1 p-2 bg-white rounded border">
                                         <div className="flex items-center gap-3">
@@ -782,15 +791,15 @@ export default function PaperStockGroupsPage() {
             <Label className="text-base mb-3 block">Paper Type</Label>
             <Select
               value={
-                previewGroup?.paperStockItems.find((item) => item.isDefault)?.paperStockId ||
-                previewGroup?.paperStockItems[0]?.paperStockId
+                (previewGroup?.paperStockItems || []).find((item) => item.isDefault)?.paperStockId ||
+                previewGroup?.paperStockItems?.[0]?.paperStockId
               }
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {previewGroup?.paperStockItems.map((item) => (
+                {(previewGroup?.paperStockItems || []).map((item) => (
                   <SelectItem key={item.paperStockId} value={item.paperStockId}>
                     {item.paperStock.name}
                     {item.isDefault && ' (Default)'}
