@@ -36,11 +36,17 @@ export default function TestUploadPage() {
     }
   }
 
-  const testImageUpload = async (file: File) => {
+  const testImageUpload = async (file: File, productType?: string) => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('isPrimary', 'true')
     formData.append('sortOrder', '0')
+
+    // Add product context for optimization profile testing
+    if (productType) {
+      formData.append('productName', productType)
+      formData.append('categoryName', productType)
+    }
 
     try {
       const response = await fetch('/api/products/upload-image', {
@@ -54,10 +60,30 @@ export default function TestUploadPage() {
         throw new Error(data.error || 'Upload failed')
       }
 
+      // Extract optimization stats
+      const metadata = data.metadata || {}
+      const compressionRatio = metadata.compressionRatio || 1
+      const savedPercentage = ((1 - compressionRatio) * 100).toFixed(1)
+      const originalSizeKB = ((metadata.originalSize || 0) / 1024).toFixed(1)
+      const optimizedSizeKB = ((metadata.size || 0) / 1024).toFixed(1)
+
       return {
         success: true,
-        message: 'Image uploaded successfully',
-        url: data.url
+        message: `Image optimized: ${originalSizeKB}KB → ${optimizedSizeKB}KB (${savedPercentage}% saved)`,
+        url: data.optimized || data.url, // Use optimized version
+        stats: {
+          profile: metadata.profileUsed || 'UNKNOWN',
+          originalSize: metadata.originalSize || 0,
+          optimizedSize: metadata.size || 0,
+          compressionRatio,
+          savedPercentage,
+          formats: {
+            optimized: data.optimized,
+            webp: data.webp,
+            avif: data.avif,
+            thumbnail: data.thumbnail
+          }
+        }
       }
     } catch (error) {
       return {
@@ -73,9 +99,11 @@ export default function TestUploadPage() {
 
     const tests: TestResult[] = [
       { name: 'MinIO Health Check', status: 'pending' },
-      { name: 'Small JPEG (< 1MB)', status: 'pending' },
-      { name: 'Medium PNG (1-5MB)', status: 'pending' },
-      { name: 'Large Image (5-10MB)', status: 'pending' },
+      { name: 'Business Card (BUSINESS_CARD profile)', status: 'pending' },
+      { name: 'Banner (BANNER profile)', status: 'pending' },
+      { name: 'Flyer (FLYER profile)', status: 'pending' },
+      { name: 'Premium Product (PREMIUM profile)', status: 'pending' },
+      { name: 'Large Image Compression Test', status: 'pending' },
     ]
 
     setTestResults([...tests])
@@ -95,41 +123,63 @@ export default function TestUploadPage() {
       return
     }
 
-    // Test 2: Small JPEG
+    // Test 2: Business Card Profile
     tests[1].status = 'testing'
     setTestResults([...tests])
 
-    const smallJpeg = await createTestImage('jpeg', 500, 500)
-    const smallResult = await testImageUpload(smallJpeg)
-    tests[1].status = smallResult.success ? 'success' : 'failed'
-    tests[1].message = smallResult.message
-    tests[1].url = smallResult.url
+    const businessCard = await createTestImage('jpeg', 800, 600, 'Business Card Design')
+    const bcResult = await testImageUpload(businessCard, 'business card')
+    tests[1].status = bcResult.success ? 'success' : 'failed'
+    tests[1].message = bcResult.message
+    tests[1].url = bcResult.url
     setTestResults([...tests])
 
-    if (smallResult.url) {
-      setUploadedImageUrl(smallResult.url)
+    if (bcResult.url) {
+      setUploadedImageUrl(bcResult.url)
     }
 
-    // Test 3: Medium PNG
+    // Test 3: Banner Profile
     tests[2].status = 'testing'
     setTestResults([...tests])
 
-    const mediumPng = await createTestImage('png', 1500, 1500)
-    const mediumResult = await testImageUpload(mediumPng)
-    tests[2].status = mediumResult.success ? 'success' : 'failed'
-    tests[2].message = mediumResult.message
-    tests[2].url = mediumResult.url
+    const banner = await createTestImage('png', 2000, 800, 'Large Format Banner')
+    const bannerResult = await testImageUpload(banner, 'banner')
+    tests[2].status = bannerResult.success ? 'success' : 'failed'
+    tests[2].message = bannerResult.message
+    tests[2].url = bannerResult.url
     setTestResults([...tests])
 
-    // Test 4: Large Image
+    // Test 4: Flyer Profile
     tests[3].status = 'testing'
     setTestResults([...tests])
 
-    const largeImage = await createTestImage('jpeg', 3000, 3000)
+    const flyer = await createTestImage('jpeg', 1200, 1600, 'Marketing Flyer')
+    const flyerResult = await testImageUpload(flyer, 'flyer')
+    tests[3].status = flyerResult.success ? 'success' : 'failed'
+    tests[3].message = flyerResult.message
+    tests[3].url = flyerResult.url
+    setTestResults([...tests])
+
+    // Test 5: Premium Profile
+    tests[4].status = 'testing'
+    setTestResults([...tests])
+
+    const premium = await createTestImage('jpeg', 1500, 1500, 'Premium Product')
+    const premiumResult = await testImageUpload(premium, 'premium')
+    tests[4].status = premiumResult.success ? 'success' : 'failed'
+    tests[4].message = premiumResult.message
+    tests[4].url = premiumResult.url
+    setTestResults([...tests])
+
+    // Test 6: Large Image Compression
+    tests[5].status = 'testing'
+    setTestResults([...tests])
+
+    const largeImage = await createTestImage('jpeg', 4000, 4000, 'Large Test Image')
     const largeResult = await testImageUpload(largeImage)
-    tests[3].status = largeResult.success ? 'success' : 'failed'
-    tests[3].message = largeResult.message
-    tests[3].url = largeResult.url
+    tests[5].status = largeResult.success ? 'success' : 'failed'
+    tests[5].message = largeResult.message
+    tests[5].url = largeResult.url
     setTestResults([...tests])
 
     setTesting(false)
@@ -143,7 +193,7 @@ export default function TestUploadPage() {
     }
   }
 
-  const createTestImage = async (type: 'jpeg' | 'png', width: number, height: number): Promise<File> => {
+  const createTestImage = async (type: 'jpeg' | 'png', width: number, height: number, label?: string): Promise<File> => {
     const canvas = document.createElement('canvas')
     canvas.width = width
     canvas.height = height
@@ -158,17 +208,21 @@ export default function TestUploadPage() {
 
     // Add text
     ctx.fillStyle = 'white'
-    ctx.font = `${Math.min(width, height) / 10}px Arial`
+    ctx.font = `${Math.min(width, height) / 15}px Arial`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(`Test ${type.toUpperCase()}`, width / 2, height / 2)
-    ctx.fillText(`${width}x${height}`, width / 2, height / 2 + 50)
+
+    if (label) {
+      ctx.fillText(label, width / 2, height / 2 - 30)
+    }
+    ctx.fillText(`${type.toUpperCase()} ${width}x${height}`, width / 2, height / 2)
+    ctx.fillText(`${(width * height / 1000000).toFixed(1)}MP`, width / 2, height / 2 + 30)
 
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         const file = new File(
           [blob!],
-          `test-${width}x${height}.${type}`,
+          `test-${label ? label.replace(/\s+/g, '-').toLowerCase() : 'image'}-${width}x${height}.${type}`,
           { type: `image/${type}` }
         )
         resolve(file)
@@ -181,10 +235,19 @@ export default function TestUploadPage() {
     if (!file) return
 
     setTesting(true)
-    const result = await testImageUpload(file)
+
+    // Try to guess product type from filename
+    const fileName = file.name.toLowerCase()
+    let productType = ''
+    if (fileName.includes('card')) productType = 'business card'
+    else if (fileName.includes('banner') || fileName.includes('poster')) productType = 'banner'
+    else if (fileName.includes('flyer')) productType = 'flyer'
+    else if (fileName.includes('premium')) productType = 'premium'
+
+    const result = await testImageUpload(file, productType)
 
     if (result.success) {
-      toast.success('File uploaded successfully!')
+      toast.success(result.message || 'File uploaded successfully!')
       if (result.url) {
         setUploadedImageUrl(result.url)
       }

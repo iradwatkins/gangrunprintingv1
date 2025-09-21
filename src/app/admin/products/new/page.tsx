@@ -348,6 +348,8 @@ export default function NewProductPage() {
       paperStockSetId: formData.selectedPaperStockSet,
       quantityGroupId: formData.selectedQuantityGroup,
       sizeGroupId: formData.selectedSizeGroup,
+      addOnSetId: formData.selectedAddOnSet,
+      turnaroundTimeSetId: formData.selectedTurnaroundTimeSet,
       imageUrl: formData.imageUrl || null,
     }
 
