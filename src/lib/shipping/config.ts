@@ -37,7 +37,6 @@ export const FEDEX_SERVICE_CODES = {
   GROUND_HOME_DELIVERY: 'GROUND_HOME_DELIVERY',
   FEDEX_2_DAY: 'FEDEX_2_DAY',
   STANDARD_OVERNIGHT: 'STANDARD_OVERNIGHT',
-  PRIORITY_OVERNIGHT: 'PRIORITY_OVERNIGHT', // Accept but rename to Standard
 } as const
 
 export const UPS_SERVICE_CODES = {
@@ -55,7 +54,6 @@ export const SERVICE_NAMES = {
   GROUND_HOME_DELIVERY: 'FedEx Home Delivery',
   FEDEX_2_DAY: 'FedEx 2Day',
   STANDARD_OVERNIGHT: 'FedEx Standard Overnight',
-  PRIORITY_OVERNIGHT: 'FedEx Standard Overnight', // Display as Standard
 
   // UPS
   '03': 'UPS Ground',
@@ -92,24 +90,7 @@ export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
 // Real Southwest Cargo pricing based on actual rates
 export const SOUTHWEST_CARGO_RATES = {
   pickup: {
-    // Southwest Cargo Pickup pricing
-    weightTiers: [
-      {
-        maxWeight: 50,
-        baseRate: 80.00,
-        additionalPerPound: 1.75,
-        handlingFee: 0
-      },
-      {
-        maxWeight: Infinity,
-        baseRate: 102.00,
-        additionalPerPound: 1.75,
-        handlingFee: 0
-      },
-    ],
-  },
-  dash: {
-    // Southwest Cargo Dash pricing
+    // Southwest Cargo Pickup pricing (cheaper, slower)
     weightTiers: [
       {
         maxWeight: 50,
@@ -128,6 +109,23 @@ export const SOUTHWEST_CARGO_RATES = {
         baseRate: 133.00,
         additionalPerPound: 1.75,
         handlingFee: 10.00
+      },
+    ],
+  },
+  dash: {
+    // Southwest Cargo Dash pricing (premium, faster)
+    weightTiers: [
+      {
+        maxWeight: 50,
+        baseRate: 80.00,
+        additionalPerPound: 1.75,
+        handlingFee: 0
+      },
+      {
+        maxWeight: Infinity,
+        baseRate: 102.00,
+        additionalPerPound: 1.75,
+        handlingFee: 0
       },
     ],
   },

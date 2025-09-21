@@ -141,6 +141,12 @@ function CheckoutPageContent() {
             orderNumber: result.orderNumber,
             orderId: result.orderId,
             total: checkoutData.total,
+            items: checkoutData.cartItems,
+            customerInfo: checkoutData.customerInfo,
+            shippingAddress: checkoutData.shippingAddress,
+            subtotal: checkoutData.subtotal,
+            tax: checkoutData.tax,
+            shipping: checkoutData.shipping,
           })
         )
 
@@ -195,16 +201,23 @@ function CheckoutPageContent() {
     }
   }
 
-  const handleCardPaymentSuccess = (result: { paymentId?: string; orderId?: string }) => {
+  const handleCardPaymentSuccess = (result: { paymentId?: string; orderId?: string; orderNumber?: string }) => {
     toast.success('Payment processed successfully!')
 
     // Store success info
+    const checkoutData = createCheckoutData()
     sessionStorage.setItem(
       'lastOrder',
       JSON.stringify({
         orderNumber: result.orderNumber || `GRP-${Date.now()}`,
-        orderId: result.orderId || result.payment?.id,
+        orderId: result.orderId || result.paymentId,
         total: orderTotal,
+        items: checkoutData.cartItems,
+        customerInfo: checkoutData.customerInfo,
+        shippingAddress: checkoutData.shippingAddress,
+        subtotal: checkoutData.subtotal,
+        tax: checkoutData.tax,
+        shipping: checkoutData.shipping,
       })
     )
 
@@ -451,9 +464,9 @@ function CheckoutPageContent() {
                 }}
                 items={items.map(item => ({
                   quantity: item.quantity,
-                  width: item.options?.width || 8.5,
-                  height: item.options?.height || 11,
-                  paperStockWeight: item.options?.paperStockWeight || 0.1,
+                  width: 8.5, // Default width
+                  height: 11, // Default height
+                  paperStockWeight: 0.1, // Default weight
                 }))}
                 onRateSelected={setSelectedShippingRate}
                 onAirportSelected={setSelectedAirportId}

@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
 import { validateRequest } from '@/lib/auth'
-import { getOrderConfirmationEmail } from '@/lib/email-templates'
 import { N8NWorkflows } from '@/lib/n8n'
 import { prisma } from '@/lib/prisma'
-import { sendEmail } from '@/lib/resend'
+import { sendOrderConfirmationWithFiles, sendAdminOrderNotification } from '@/lib/resend'
 import { createOrUpdateSquareCustomer, createSquareCheckout, createSquareOrder } from '@/lib/square'
 
 function generateOrderNumber(): string {
@@ -156,12 +155,13 @@ export async function POST(request: NextRequest) {
       // Don't fail the order if N8N fails
     }
 
-    // Send order confirmation email
+    // Send enhanced order confirmation email to customer
     try {
-      const emailData = getOrderConfirmationEmail({
+      await sendOrderConfirmationWithFiles({
+        orderId: order.id,
         orderNumber: order.orderNumber,
         customerName: name,
-        email,
+        customerEmail: email,
         items: order.OrderItem.map((item: any) => ({
           name: item.productName,
           quantity: item.quantity,
@@ -175,17 +175,41 @@ export async function POST(request: NextRequest) {
         shippingAddress,
       })
 
-      await sendEmail({
-        to: email,
-        subject: emailData.subject,
-        html: emailData.html,
-        text: emailData.text,
-      })
-
-      console.log(`Order confirmation email sent to ${email}`)
+      console.log(`Enhanced order confirmation email sent to ${email}`)
     } catch (emailError) {
       console.error('Failed to send order confirmation email:', emailError)
       // Don't fail the order if email fails
+    }
+
+    // Send admin notification email with attachments
+    try {
+      await sendAdminOrderNotification({
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        customerName: name,
+        customerEmail: email,
+        customerPhone: phone,
+        items: order.OrderItem.map((item: any) => ({
+          name: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+          options: item.options,
+        })),
+        subtotal,
+        tax,
+        shipping,
+        total,
+        shippingAddress,
+        billingAddress: billingAddress || shippingAddress,
+        shippingMethod,
+        orderDate: order.createdAt,
+        paymentStatus: 'PENDING_PAYMENT',
+      })
+
+      console.log(`Admin notification email sent for order ${order.orderNumber}`)
+    } catch (adminEmailError) {
+      console.error('Failed to send admin notification email:', adminEmailError)
+      // Don't fail the order if admin email fails
     }
 
     // Create Square payment link

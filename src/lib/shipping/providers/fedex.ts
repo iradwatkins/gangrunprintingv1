@@ -384,7 +384,6 @@ export class FedExProvider implements ShippingProvider {
       GROUND_HOME_DELIVERY: 5,
       FEDEX_2_DAY: 2,
       STANDARD_OVERNIGHT: 1,
-      PRIORITY_OVERNIGHT: 1, // Treat as Standard Overnight
     }
     return estimates[serviceType] || 3
   }
