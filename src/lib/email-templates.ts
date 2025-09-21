@@ -1,4 +1,11 @@
-import { EMAIL_STYLES, SERVICE_ENDPOINTS, ADMIN_EMAIL, APP_NAME, APP_EMAIL, APP_PHONE } from '@/config/constants'
+import {
+  EMAIL_STYLES,
+  SERVICE_ENDPOINTS,
+  ADMIN_EMAIL,
+  APP_NAME,
+  APP_EMAIL,
+  APP_PHONE,
+} from '@/config/constants'
 
 export function getOrderConfirmationEmail(orderData: {
   orderNumber: string
@@ -135,26 +142,33 @@ export function getOrderConfirmationEmail(orderData: {
           : ''
       }
       
-      ${orderData.orderFiles && orderData.orderFiles.length > 0 ? `
+      ${
+        orderData.orderFiles && orderData.orderFiles.length > 0
+          ? `
       <!-- Uploaded Files Preview -->
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin-top: 0; color: #111827;">Your Uploaded Files</h3>
         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-          ${orderData.orderFiles.map(file => {
-            const isImage = file.mimeType.startsWith('image/');
-            return `
+          ${orderData.orderFiles
+            .map((file) => {
+              const isImage = file.mimeType.startsWith('image/')
+              return `
             <div style="border: 1px solid #e5e7eb; border-radius: 4px; padding: 8px; min-width: 120px; text-align: center;">
-              ${isImage ?
-                `<img src="${SERVICE_ENDPOINTS.MINIO_PUBLIC}/${file.fileUrl}" alt="${file.filename}" style="max-width: 100px; max-height: 100px; object-fit: cover; border-radius: 4px;">` :
-                `<div style="width: 100px; height: 100px; background-color: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 12px;">📄</div>`
+              ${
+                isImage
+                  ? `<img src="${SERVICE_ENDPOINTS.MINIO_PUBLIC}/${file.fileUrl}" alt="${file.filename}" style="max-width: 100px; max-height: 100px; object-fit: cover; border-radius: 4px;">`
+                  : `<div style="width: 100px; height: 100px; background-color: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 12px;">📄</div>`
               }
               <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280; word-break: break-all;">${file.filename}</p>
-            </div>`;
-          }).join('')}
+            </div>`
+            })
+            .join('')}
         </div>
         <p style="color: #6b7280; font-size: 14px; margin-top: 15px; margin-bottom: 0;">Our design team will review these files and contact you if any adjustments are needed.</p>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <!-- Order Timeline -->
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
@@ -179,7 +193,7 @@ export function getOrderConfirmationEmail(orderData: {
             <div style="position: relative;">
               <div style="position: absolute; left: -26px; top: 2px; width: 12px; height: 12px; background-color: #e5e7eb; border-radius: 50%;"></div>
               <h4 style="margin: 0 0 5px 0; color: #111827; font-size: 14px;">Delivery</h4>
-              <p style="margin: 0; color: #6b7280; font-size: 13px;">${orderData.estimatedDelivery || 'You\'ll receive tracking information when shipped'}</p>
+              <p style="margin: 0; color: #6b7280; font-size: 13px;">${orderData.estimatedDelivery || "You'll receive tracking information when shipped"}</p>
             </div>
           </div>
         </div>
@@ -415,7 +429,13 @@ export function getAdminOrderNotificationEmail(orderData: {
     <tr>
       <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-size: 14px;">
         <strong>${item.name}</strong>
-        ${item.options ? `<br><small style="color: #6b7280; font-size: 12px;">${Object.entries(item.options).map(([key, value]) => `${key}: ${value}`).join(', ')}</small>` : ''}
+        ${
+          item.options
+            ? `<br><small style="color: #6b7280; font-size: 12px;">${Object.entries(item.options)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(', ')}</small>`
+            : ''
+        }
       </td>
       <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center; font-size: 14px;">${item.quantity}</td>
       <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right; font-size: 14px;">$${(item.price / 100).toFixed(2)}</td>
@@ -425,11 +445,15 @@ export function getAdminOrderNotificationEmail(orderData: {
     )
     .join('')
 
-  const filesHtml = orderData.orderFiles && orderData.orderFiles.length > 0 ? `
+  const filesHtml =
+    orderData.orderFiles && orderData.orderFiles.length > 0
+      ? `
     <div style="background-color: #fef3c7; border: 1px solid #f59e0b; padding: 15px; border-radius: 6px; margin: 15px 0;">
       <h4 style="margin: 0 0 10px 0; color: #92400e; font-size: 16px;">📎 Customer Files Attached (${orderData.orderFiles.length})</h4>
       <ul style="margin: 0; padding-left: 20px; color: #92400e;">
-        ${orderData.orderFiles.map(file => `
+        ${orderData.orderFiles
+          .map(
+            (file) => `
           <li style="margin: 5px 0; font-size: 14px;">
             <strong>${file.filename}</strong>
             <span style="color: #6b7280;">(${
@@ -438,11 +462,14 @@ export function getAdminOrderNotificationEmail(orderData: {
                 : `${(file.fileSize / 1024).toFixed(0)} KB`
             }) - ${file.mimeType}</span>
           </li>
-        `).join('')}
+        `
+          )
+          .join('')}
       </ul>
       <p style="margin: 10px 0 0 0; font-size: 13px; color: #92400e;">⚠️ Customer files are attached to this email for review</p>
     </div>
-  ` : '<p style="color: #ef4444; font-weight: 500; margin: 15px 0;">⚠️ No files uploaded by customer</p>'
+  `
+      : '<p style="color: #ef4444; font-weight: 500; margin: 15px 0;">⚠️ No files uploaded by customer</p>'
 
   return {
     subject: `🚨 NEW ORDER: ${orderData.orderNumber} - $${(orderData.total / 100).toFixed(2)} from ${orderData.customerName}`,
@@ -529,7 +556,9 @@ export function getAdminOrderNotificationEmail(orderData: {
       </div>
 
       <!-- Shipping Address -->
-      ${orderData.shippingAddress ? `
+      ${
+        orderData.shippingAddress
+          ? `
       <div style="background-color: #f0f9ff; border: 1px solid #0ea5e9; padding: 15px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin: 0 0 10px 0; color: #0c4a6e; font-size: 16px;">📍 Shipping Address</h3>
         <p style="margin: 0; color: #0c4a6e; font-size: 14px; line-height: 1.4;">
@@ -537,15 +566,21 @@ export function getAdminOrderNotificationEmail(orderData: {
           ${orderData.shippingAddress.city || ''}, ${orderData.shippingAddress.state || ''} ${orderData.shippingAddress.zip || ''}
         </p>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <!-- Special Instructions -->
-      ${orderData.specialInstructions ? `
+      ${
+        orderData.specialInstructions
+          ? `
       <div style="background-color: #fefce8; border: 1px solid #eab308; padding: 15px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin: 0 0 10px 0; color: #a16207; font-size: 16px;">📝 Special Instructions</h3>
         <p style="margin: 0; color: #a16207; font-size: 14px; font-style: italic;">${orderData.specialInstructions}</p>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <!-- Quick Actions -->
       <div style="text-align: center; margin: 25px 0; padding: 20px; background-color: #f8fafc; border-radius: 6px;">

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedStandardSizes() {
-  console.log('🌱 Seeding standard sizes with pre-calculated values...')
 
   const sizes = [
     // Business Card Sizes
@@ -179,11 +178,9 @@ async function seedStandardSizes() {
     })
   }
 
-  console.log(`✅ Created/updated ${sizes.length} standard sizes`)
 }
 
 async function seedStandardQuantities() {
-  console.log('🌱 Seeding standard quantities with adjustments...')
 
   const quantities = [
     // Small quantities with adjustments (< 5000)
@@ -226,11 +223,9 @@ async function seedStandardQuantities() {
     })
   }
 
-  console.log(`✅ Created/updated ${quantities.length} standard quantities`)
 }
 
 async function seedPaperExceptions() {
-  console.log('🌱 Seeding paper exceptions for text papers...')
 
   // Find all text papers by category
   const textPapers = await prisma.paperStock.findMany({
@@ -263,8 +258,6 @@ async function seedPaperExceptions() {
     })
   }
 
-  console.log(`✅ Created/updated ${textPapers.length} paper exceptions`)
-
   // Also mark cardstock papers as normal (1.0 multiplier) - for clarity
   const cardstockPapers = await prisma.paperStock.findMany({
     where: {
@@ -286,7 +279,6 @@ async function seedPaperExceptions() {
 }
 
 async function seedProductPricingConfig() {
-  console.log('🌱 Seeding product pricing configurations...')
 
   // Get all products
   const products = await prisma.product.findMany()
@@ -324,11 +316,9 @@ async function seedProductPricingConfig() {
     })
   }
 
-  console.log(`✅ Created/updated pricing config for ${products.length} products`)
 }
 
 async function linkProductsToSizesAndQuantities() {
-  console.log('🌱 Linking products to standard sizes and quantities...')
 
   const products = await prisma.product.findMany()
   const sizes = await prisma.standardSize.findMany()
@@ -421,11 +411,9 @@ async function linkProductsToSizesAndQuantities() {
     }
   }
 
-  console.log(`✅ Linked products to sizes and quantities`)
 }
 
 async function main() {
-  console.log('🚀 Starting pricing formula seed...')
 
   try {
     await seedStandardSizes()
@@ -434,7 +422,6 @@ async function main() {
     await seedProductPricingConfig()
     await linkProductsToSizesAndQuantities()
 
-    console.log('✅ Pricing formula seed completed successfully!')
   } catch (error) {
     console.error('❌ Seed failed:', error)
     throw error

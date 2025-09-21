@@ -20,8 +20,6 @@ async function main() {
     },
   })
 
-  console.log('Admin user created:', adminUser)
-
   // Create product categories
   const categories = [
     'Business Cards',
@@ -108,8 +106,6 @@ async function main() {
     },
   ]
 
-  console.log('Seeding products...')
-
   for (const product of products) {
     await prisma.$executeRaw`
       INSERT INTO "Product" (name, description, category, "basePrice", sizes, "paperTypes", finishes, "turnaroundDays", "createdAt", "updatedAt")
@@ -129,7 +125,6 @@ async function main() {
   }
 
   // Seed homepage variants
-  console.log('Seeding homepage variants...')
 
   const homepageVariants = [
     {
@@ -233,10 +228,8 @@ async function main() {
       })
     }
 
-    console.log(`Created homepage variant: ${variant.name}`)
   }
 
-  console.log('Seeding completed!')
 }
 
 function getDefaultHeadline(type: string): string {

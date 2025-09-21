@@ -75,7 +75,7 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
     // If we're redirected to signin, we need to authenticate
     if (page.url().includes('/auth/signin')) {
-      console.log('Need to authenticate - please sign in manually or set up test authentication')
+
       // For now, we'll assume authentication is handled externally
       // In a real test environment, you'd handle auth here
     }
@@ -99,7 +99,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       await page.waitForSelector('text=success', { timeout: 5000 })
       await page.keyboard.press('Escape')
 
-      console.log(`✅ Created category: ${category.name}`)
     }
   })
 
@@ -121,7 +120,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       await page.waitForSelector('text=success', { timeout: 5000 })
       await page.keyboard.press('Escape')
 
-      console.log(`✅ Created paper stock set: ${paperStockSet.name}`)
     }
   })
 
@@ -141,7 +139,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Save quantity group
       await page.click('button:has-text("Save")')
 
-      console.log(`✅ Created quantity group: ${quantityGroup.name}`)
     }
   })
 
@@ -161,7 +158,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Save size group
       await page.click('button:has-text("Save")')
 
-      console.log(`✅ Created size group: ${sizeGroup.name}`)
     }
   })
 
@@ -180,7 +176,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Save add-on set
       await page.click('button:has-text("Save")')
 
-      console.log(`✅ Created add-on set: ${addOnSet.name}`)
     }
   })
 
@@ -199,7 +194,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Save turnaround time set
       await page.click('button:has-text("Save")')
 
-      console.log(`✅ Created turnaround time set: ${turnaroundTimeSet.name}`)
     }
   })
 
@@ -252,8 +246,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
     // Wait for success message or redirect
     await page.waitForSelector('text=success', { timeout: 10000 })
 
-    console.log(`✅ Created test product: ${testProduct.name}`)
-
     // Verify product was created by checking if we're redirected to product list or edit page
     await page.waitForTimeout(2000)
     expect(page.url()).not.toContain('/new')
@@ -278,7 +270,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       expect(Array.isArray(data)).toBe(true)
       expect(data.length).toBeGreaterThan(0)
 
-      console.log(`✅ ${apiTest.name} API returning ${data.length} items`)
     }
   })
 })

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { shippingCalculator, type ShippingAddress, type ShippingPackage } from '@/lib/shipping'
 import { prisma } from '@/lib/prisma'
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     packages.push({
       weight: Math.max(totalWeight, 1), // Minimum 1 lb
       dimensions: {
-        width: 12,  // Standard box dimensions
+        width: 12, // Standard box dimensions
         height: 9,
         length: 16,
       },
@@ -124,9 +124,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Shipping calculation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate shipping rates' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
   }
 }

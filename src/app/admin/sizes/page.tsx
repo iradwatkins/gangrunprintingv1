@@ -411,14 +411,20 @@ export default function SizesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl">{editingGroup ? 'Edit Sizes' : 'Create New Sizes'}</DialogTitle>
+            <DialogTitle className="text-xl">
+              {editingGroup ? 'Edit Sizes' : 'Create New Sizes'}
+            </DialogTitle>
             <DialogDescription className="space-y-2">
-              <p>Configure size options for your products. Enter sizes in a comma-separated format.</p>
-              <p className="text-sm">
-                <span className="font-medium">Examples:</span> "2x3.5" for 2" × 3.5", "8.5x11" for 8.5" × 11"
+              <p>
+                Configure size options for your products. Enter sizes in a comma-separated format.
               </p>
               <p className="text-sm">
-                <span className="font-medium">Tip:</span> Add "custom" to allow users to enter custom dimensions
+                <span className="font-medium">Examples:</span> "2x3.5" for 2" × 3.5", "8.5x11" for
+                8.5" × 11"
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">Tip:</span> Add "custom" to allow users to enter
+                custom dimensions
               </p>
             </DialogDescription>
           </DialogHeader>
@@ -426,31 +432,31 @@ export default function SizesPage() {
           <div className="space-y-6 py-6">
             {/* Basic Information Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Basic Information</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Basic Information
+              </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">
                     Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
+                    className="w-full"
                     id="name"
                     placeholder="e.g., Business Cards, Posters, Flyers"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">
-                    Description
-                  </Label>
+                  <Label htmlFor="description">Description</Label>
                   <Textarea
+                    className="w-full min-h-[80px]"
                     id="description"
                     placeholder="Optional description for this size group"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full min-h-[80px]"
                   />
                 </div>
               </div>
@@ -458,22 +464,25 @@ export default function SizesPage() {
 
             {/* Size Configuration Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Size Configuration</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Size Configuration
+              </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="values">
                     Sizes <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
+                    className="w-full font-mono text-sm"
                     id="values"
                     placeholder="Enter sizes separated by commas\nExample: 2x3.5, 4x6, 5x7, 8x10, 8.5x11, 11x17, custom"
                     rows={5}
                     value={formData.values}
                     onChange={(e) => setFormData({ ...formData, values: e.target.value })}
-                    className="w-full font-mono text-sm"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Enter each size separated by a comma. Use "x" between width and height (e.g., "4x6" for 4 inches by 6 inches).
+                    Enter each size separated by a comma. Use "x" between width and height (e.g.,
+                    "4x6" for 4 inches by 6 inches).
                   </p>
                 </div>
 
@@ -502,7 +511,9 @@ export default function SizesPage() {
 
             {hasCustomOption(formData.values) && (
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Custom Size Limits</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Custom Size Limits
+                </h3>
                 <div className="rounded-lg border p-4 space-y-4 bg-muted/30">
                   <p className="text-sm text-muted-foreground">
                     Set the minimum and maximum dimensions allowed when users select "custom" size.
@@ -514,35 +525,41 @@ export default function SizesPage() {
                       <h4 className="text-sm font-medium">Width Limits (inches)</h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="customMinWidth" className="text-sm">
+                          <Label className="text-sm" htmlFor="customMinWidth">
                             Minimum
                           </Label>
                           <Input
+                            className="w-full"
                             id="customMinWidth"
                             placeholder="1"
                             step="0.25"
                             type="number"
                             value={formData.customMinWidth}
                             onChange={(e) =>
-                              setFormData({ ...formData, customMinWidth: parseFloat(e.target.value) || 1 })
+                              setFormData({
+                                ...formData,
+                                customMinWidth: parseFloat(e.target.value) || 1,
+                              })
                             }
-                            className="w-full"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="customMaxWidth" className="text-sm">
+                          <Label className="text-sm" htmlFor="customMaxWidth">
                             Maximum
                           </Label>
                           <Input
+                            className="w-full"
                             id="customMaxWidth"
                             placeholder="96"
                             step="0.25"
                             type="number"
                             value={formData.customMaxWidth}
                             onChange={(e) =>
-                              setFormData({ ...formData, customMaxWidth: parseFloat(e.target.value) || 96 })
+                              setFormData({
+                                ...formData,
+                                customMaxWidth: parseFloat(e.target.value) || 96,
+                              })
                             }
-                            className="w-full"
                           />
                         </div>
                       </div>
@@ -553,26 +570,30 @@ export default function SizesPage() {
                       <h4 className="text-sm font-medium">Height Limits (inches)</h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="customMinHeight" className="text-sm">
+                          <Label className="text-sm" htmlFor="customMinHeight">
                             Minimum
                           </Label>
                           <Input
+                            className="w-full"
                             id="customMinHeight"
                             placeholder="1"
                             step="0.25"
                             type="number"
                             value={formData.customMinHeight}
                             onChange={(e) =>
-                              setFormData({ ...formData, customMinHeight: parseFloat(e.target.value) || 1 })
+                              setFormData({
+                                ...formData,
+                                customMinHeight: parseFloat(e.target.value) || 1,
+                              })
                             }
-                            className="w-full"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="customMaxHeight" className="text-sm">
+                          <Label className="text-sm" htmlFor="customMaxHeight">
                             Maximum
                           </Label>
                           <Input
+                            className="w-full"
                             id="customMaxHeight"
                             placeholder="96"
                             step="0.25"
@@ -584,7 +605,6 @@ export default function SizesPage() {
                                 customMaxHeight: parseFloat(e.target.value) || 96,
                               })
                             }
-                            className="w-full"
                           />
                         </div>
                       </div>
@@ -600,13 +620,14 @@ export default function SizesPage() {
 
             {/* Additional Settings */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Additional Settings</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Additional Settings
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="sortOrder">
-                    Sort Order
-                  </Label>
+                  <Label htmlFor="sortOrder">Sort Order</Label>
                   <Input
+                    className="w-full"
                     id="sortOrder"
                     placeholder="0"
                     type="number"
@@ -614,7 +635,6 @@ export default function SizesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
                     }
-                    className="w-full"
                   />
                   <p className="text-xs text-muted-foreground">
                     Lower numbers appear first in lists
@@ -622,16 +642,14 @@ export default function SizesPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="isActive">
-                    Status
-                  </Label>
+                  <Label htmlFor="isActive">Status</Label>
                   <div className="flex items-center space-x-2 pt-2">
                     <Switch
                       checked={formData.isActive}
                       id="isActive"
                       onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                     />
-                    <Label htmlFor="isActive" className="text-sm font-normal cursor-pointer">
+                    <Label className="text-sm font-normal cursor-pointer" htmlFor="isActive">
                       {formData.isActive ? 'Active' : 'Inactive'}
                     </Label>
                   </div>

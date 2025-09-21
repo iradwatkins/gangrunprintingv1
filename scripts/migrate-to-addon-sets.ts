@@ -1,7 +1,6 @@
 import { prisma } from '../src/lib/prisma'
 
 async function migrateToAddOnSets() {
-  console.log('🚀 Starting migration to AddOn Sets...')
 
   try {
     // Get all products with their current addon associations
@@ -18,16 +17,12 @@ async function migrateToAddOnSets() {
       },
     })
 
-    console.log(`📦 Found ${products.length} active products`)
-
     // Create a default addon set for each product
     for (const product of products) {
       if (product.productAddOns.length === 0) {
-        console.log(`⏭️  Skipping ${product.name} - no addons`)
+
         continue
       }
-
-      console.log(`🔧 Processing ${product.name} with ${product.productAddOns.length} addons`)
 
       const addonSetName = `${product.name} - Default Set`
 
@@ -44,7 +39,7 @@ async function migrateToAddOnSets() {
       let addOnSetId: string
 
       if (existingProductSet) {
-        console.log(`✅ Using existing addon set: ${existingProductSet.addOnSet.name}`)
+
         addOnSetId = existingProductSet.addOnSetId
       } else {
         // Create new addon set
@@ -57,7 +52,6 @@ async function migrateToAddOnSets() {
           },
         })
 
-        console.log(`✨ Created addon set: ${addOnSet.name}`)
         addOnSetId = addOnSet.id
 
         // Associate the addon set with the product
@@ -70,7 +64,6 @@ async function migrateToAddOnSets() {
           },
         })
 
-        console.log(`🔗 Associated addon set with product: ${product.name}`)
       }
 
       // Create addon set items from existing product addons
@@ -84,7 +77,7 @@ async function migrateToAddOnSets() {
         })
 
         if (existingItem) {
-          console.log(`⏭️  Addon item already exists: ${productAddOn.addOn.name}`)
+
           continue
         }
 
@@ -111,7 +104,6 @@ async function migrateToAddOnSets() {
           },
         })
 
-        console.log(`  ➕ Added ${productAddOn.addOn.name} to addon set (${displayPosition})`)
       }
     }
 
@@ -151,8 +143,6 @@ async function migrateToAddOnSets() {
           },
         })
 
-        console.log(`✨ Created "Default Addon Set"`)
-
         // Add common addons
         for (const [index, addon] of commonAddons.entries()) {
           let displayPosition: 'ABOVE_DROPDOWN' | 'IN_DROPDOWN' | 'BELOW_DROPDOWN' = 'IN_DROPDOWN'
@@ -174,24 +164,16 @@ async function migrateToAddOnSets() {
             },
           })
 
-          console.log(`  ➕ Added ${addon.name} to Default Addon Set (${displayPosition})`)
         }
       } else {
-        console.log(`✅ Default Addon Set already exists`)
+
       }
     }
-
-    console.log('✅ Migration to AddOn Sets completed successfully!')
 
     // Summary
     const totalSets = await prisma.addOnSet.count()
     const totalItems = await prisma.addOnSetItem.count()
     const totalProductAssociations = await prisma.productAddOnSet.count()
-
-    console.log(`📊 Migration Summary:`)
-    console.log(`   - Addon Sets: ${totalSets}`)
-    console.log(`   - Addon Items: ${totalItems}`)
-    console.log(`   - Product Associations: ${totalProductAssociations}`)
 
   } catch (error) {
     console.error('❌ Error during migration:', error)
@@ -202,7 +184,7 @@ async function migrateToAddOnSets() {
 // Run the migration
 migrateToAddOnSets()
   .then(() => {
-    console.log('🎉 Migration completed!')
+
     process.exit(0)
   })
   .catch((error) => {

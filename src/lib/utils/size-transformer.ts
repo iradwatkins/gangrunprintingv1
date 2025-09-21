@@ -48,7 +48,7 @@ function parseSizeDimensions(sizeStr: string): { width: number; height: number }
   if (match) {
     return {
       width: parseFloat(match[1]),
-      height: parseFloat(match[2])
+      height: parseFloat(match[2]),
     }
   }
   return null
@@ -59,7 +59,7 @@ function parseSizeDimensions(sizeStr: string): { width: number; height: number }
  */
 function formatSizeDisplay(width: number, height: number): string {
   // Format with proper inches symbol
-  const formatNum = (n: number) => n % 1 === 0 ? n.toString() : n.toFixed(1).replace(/\.0$/, '')
+  const formatNum = (n: number) => (n % 1 === 0 ? n.toString() : n.toFixed(1).replace(/\.0$/, ''))
   return `${formatNum(width)}″ × ${formatNum(height)}″`
 }
 
@@ -70,9 +70,9 @@ function formatSizeDisplay(width: number, height: number): string {
 function calculatePriceMultiplier(squareInches: number): number {
   // Base multiplier calculation
   // You may want to adjust this based on your pricing strategy
-  if (squareInches <= 10) return 1.0  // Small sizes
-  if (squareInches <= 25) return 1.2  // Medium sizes
-  if (squareInches <= 50) return 1.5  // Large sizes
+  if (squareInches <= 10) return 1.0 // Small sizes
+  if (squareInches <= 25) return 1.2 // Medium sizes
+  if (squareInches <= 50) return 1.5 // Large sizes
   if (squareInches <= 100) return 2.0 // Extra large sizes
   return 2.5 + (squareInches - 100) * 0.01 // Progressive pricing for very large sizes
 }
@@ -157,7 +157,7 @@ export function transformSizeGroups(groups: SizeGroup[]): Size[] {
  * Find the default size from a transformed array
  */
 export function findDefaultSize(sizes: Size[]): Size | null {
-  return sizes.find(s => s.isDefault) || sizes[0] || null
+  return sizes.find((s) => s.isDefault) || sizes[0] || null
 }
 
 /**
@@ -180,14 +180,14 @@ export function validateCustomSize(
   if (customSize.customMinWidth && width < customSize.customMinWidth) {
     return {
       isValid: false,
-      error: `Minimum width is ${customSize.customMinWidth} inches`
+      error: `Minimum width is ${customSize.customMinWidth} inches`,
     }
   }
 
   if (customSize.customMaxWidth && width > customSize.customMaxWidth) {
     return {
       isValid: false,
-      error: `Maximum width is ${customSize.customMaxWidth} inches`
+      error: `Maximum width is ${customSize.customMaxWidth} inches`,
     }
   }
 
@@ -195,14 +195,14 @@ export function validateCustomSize(
   if (customSize.customMinHeight && height < customSize.customMinHeight) {
     return {
       isValid: false,
-      error: `Minimum height is ${customSize.customMinHeight} inches`
+      error: `Minimum height is ${customSize.customMinHeight} inches`,
     }
   }
 
   if (customSize.customMaxHeight && height > customSize.customMaxHeight) {
     return {
       isValid: false,
-      error: `Maximum height is ${customSize.customMaxHeight} inches`
+      error: `Maximum height is ${customSize.customMaxHeight} inches`,
     }
   }
 

@@ -21,13 +21,9 @@ const createAddOnSchema = z.object({
 // GET /api/add-ons - List all add-ons
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching add-ons from database...')
-
     const addOns = await prisma.addOn.findMany({
       orderBy: { sortOrder: 'asc' },
     })
-
-    console.log(`Found ${addOns.length} add-ons`)
 
     // Return data wrapped in { data: [...] } format for consistency
     return new Response(JSON.stringify({ data: addOns }), {

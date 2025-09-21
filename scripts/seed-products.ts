@@ -3,13 +3,12 @@
 import { prisma } from '../src/lib/prisma'
 
 async function seedProducts() {
-  console.log('🌱 Starting product seeding...')
 
   try {
     // Verify no products exist yet
     const existingCount = await prisma.product.count()
     if (existingCount > 0) {
-      console.log(`⚠️ Database already contains ${existingCount} products. Skipping seeding.`)
+
       return
     }
 
@@ -19,13 +18,6 @@ async function seedProducts() {
     const quantityGroups = await prisma.quantityGroup.findMany({ where: { isActive: true } })
     const sizeGroups = await prisma.sizeGroup.findMany({ where: { isActive: true } })
     const addOns = await prisma.addOn.findMany({ where: { isActive: true } })
-
-    console.log('📊 Available data:')
-    console.log(`  Categories: ${categories.length}`)
-    console.log(`  Paper Stocks: ${paperStocks.length}`)
-    console.log(`  Quantity Groups: ${quantityGroups.length}`)
-    console.log(`  Size Groups: ${sizeGroups.length}`)
-    console.log(`  Add-ons: ${addOns.length}`)
 
     // Define the 5 products to create
     const productsToCreate = [
@@ -171,10 +163,7 @@ async function seedProducts() {
       },
     ]
 
-    console.log('🚀 Creating products...')
-
     for (const productData of productsToCreate) {
-      console.log(`  Creating: ${productData.name}`)
 
       // Create the product with all relationships
       const product = await prisma.product.create({
@@ -255,13 +244,7 @@ async function seedProducts() {
         },
       })
 
-      console.log(`    ✅ Created product: ${product.name} (${product.sku})`)
-      console.log(`       Category: ${product.ProductCategory?.name}`)
-      console.log(`       Paper Stocks: ${product.productPaperStocks.length}`)
-      console.log(`       Add-ons: ${product.productAddOns.length}`)
     }
-
-    console.log('🎉 Product seeding completed successfully!')
 
     // Display summary
     const totalProducts = await prisma.product.count()
@@ -269,11 +252,6 @@ async function seedProducts() {
     const featuredProducts = await prisma.product.count({ where: { isFeatured: true } })
     const gangRunProducts = await prisma.product.count({ where: { gangRunEligible: true } })
 
-    console.log('📊 Database Summary:')
-    console.log(`  Total Products: ${totalProducts}`)
-    console.log(`  Active Products: ${activeProducts}`)
-    console.log(`  Featured Products: ${featuredProducts}`)
-    console.log(`  Gang Run Eligible: ${gangRunProducts}`)
   } catch (error) {
     console.error('❌ Error seeding products:', error)
     throw error
@@ -286,7 +264,7 @@ async function seedProducts() {
 if (require.main === module) {
   seedProducts()
     .then(() => {
-      console.log('✅ Seeding completed')
+
       process.exit(0)
     })
     .catch((error) => {

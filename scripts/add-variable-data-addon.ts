@@ -47,7 +47,7 @@ async function addVariableDataAddOn() {
           adminNotes: 'Variable data printing with conditional fields and dynamic pricing'
         }
       })
-      console.log('Variable Data add-on updated:', updated.id)
+
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
@@ -87,7 +87,7 @@ async function addVariableDataAddOn() {
           adminNotes: 'Variable data printing with conditional fields and dynamic pricing'
         }
       })
-      console.log('Variable Data add-on created:', newAddOn.id)
+
     }
 
     process.exit(0)

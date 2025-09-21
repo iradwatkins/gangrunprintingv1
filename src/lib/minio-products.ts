@@ -6,16 +6,16 @@ import {
   generateAltText,
   determineProductProfile,
   ProcessedImage,
-  ImageProcessingOptions,
+  type ImageProcessingOptions,
 } from './image-processor'
 
 export interface UploadedProductImages {
-  optimized: string    // Replaced "original" with "optimized"
+  optimized: string // Replaced "original" with "optimized"
   large: string
   medium: string
   thumbnail: string
   webp: string
-  avif: string         // Added AVIF support
+  avif: string // Added AVIF support
   blurDataUrl: string
   metadata: {
     width: number
@@ -61,8 +61,6 @@ export const uploadProductImage = async (
       generateWebP: true,
       generateBlurPlaceholder: true,
     }
-
-    console.log(`Processing product image with profile: ${productProfile}`)
 
     // Process image with advanced optimization
     const processed = await processProductImage(buffer, fileName, processingOptions)
@@ -144,12 +142,6 @@ export const uploadProductImage = async (
     const savedBytes = processed.metadata.originalSize - processed.metadata.size
     const savedPercentage = ((1 - compressionRatio) * 100).toFixed(1)
 
-    console.log(`Image optimization complete:`)
-    console.log(`- Profile: ${productProfile}`)
-    console.log(`- Size: ${(processed.metadata.originalSize / 1024).toFixed(1)}KB → ${(processed.metadata.size / 1024).toFixed(1)}KB`)
-    console.log(`- Saved: ${(savedBytes / 1024).toFixed(1)}KB (${savedPercentage}%)`)
-    console.log(`- Formats: JPEG, WebP${processed.avif.length > 0 ? ', AVIF' : ''}`)
-
     return {
       optimized: uploads[0].url,
       large: uploads[1].url,
@@ -224,7 +216,7 @@ export const deleteProductImage = async (objectName: string) => {
   try {
     // Note: Implementation would require MinIO client delete operation
     // For now, return success - actual deletion can be implemented later
-    console.log('Image deletion requested for:', objectName)
+
     return true
   } catch (error) {
     console.error('Error deleting product image:', error)

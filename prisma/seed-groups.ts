@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Starting quantity and size groups seed...')
 
   // Create Quantity Groups
   const quantityGroups = [
@@ -65,7 +64,7 @@ async function main() {
       update: group,
       create: group,
     })
-    console.log(`✓ Upserted quantity group: ${created.name}`)
+
   }
 
   // Create Size Groups
@@ -162,10 +161,9 @@ async function main() {
       update: group,
       create: group,
     })
-    console.log(`✓ Upserted size group: ${created.name}`)
+
   }
 
-  console.log('✅ Quantity and size groups seed completed successfully!')
 }
 
 main()

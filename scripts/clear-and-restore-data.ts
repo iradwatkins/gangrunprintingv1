@@ -4,99 +4,67 @@ import { createId } from '@paralleldrive/cuid2'
 const prisma = new PrismaClient()
 
 async function clearAndRestoreData() {
-  console.log('🗑️  Starting data cleanup and restoration process...')
 
   try {
     // Phase 1: Clear existing data in correct order (respecting foreign key constraints)
-    console.log('\n📝 Phase 1: Clearing existing data...')
 
     // Clear product-related associations first
     await prisma.productAddOnSet.deleteMany()
-    console.log('✅ Cleared ProductAddOnSet')
 
     await prisma.addOnSetItem.deleteMany()
-    console.log('✅ Cleared AddOnSetItem')
 
     await prisma.addOnSet.deleteMany()
-    console.log('✅ Cleared AddOnSet')
 
     await prisma.productAddOn.deleteMany()
-    console.log('✅ Cleared ProductAddOn')
 
     await prisma.addOn.deleteMany()
-    console.log('✅ Cleared AddOn')
 
     await prisma.productTurnaroundTimeSet.deleteMany()
-    console.log('✅ Cleared ProductTurnaroundTimeSet')
 
     await prisma.turnaroundTimeSetItem.deleteMany()
-    console.log('✅ Cleared TurnaroundTimeSetItem')
 
     await prisma.turnaroundTimeSet.deleteMany()
-    console.log('✅ Cleared TurnaroundTimeSet')
 
     await prisma.turnaroundTime.deleteMany()
-    console.log('✅ Cleared TurnaroundTime')
 
     await prisma.productPaperStockSet.deleteMany()
-    console.log('✅ Cleared ProductPaperStockSet')
 
     await prisma.paperStockSetItem.deleteMany()
-    console.log('✅ Cleared PaperStockSetItem')
 
     await prisma.paperStockSet.deleteMany()
-    console.log('✅ Cleared PaperStockSet')
 
     await prisma.paperStock.deleteMany()
-    console.log('✅ Cleared PaperStock')
 
     await prisma.productQuantityGroup.deleteMany()
-    console.log('✅ Cleared ProductQuantityGroup')
 
     await prisma.standardQuantity.deleteMany()
-    console.log('✅ Cleared StandardQuantity')
 
     await prisma.quantityGroup.deleteMany()
-    console.log('✅ Cleared QuantityGroup')
 
     await prisma.productSizeGroup.deleteMany()
-    console.log('✅ Cleared ProductSizeGroup')
 
     await prisma.standardSize.deleteMany()
-    console.log('✅ Cleared StandardSize')
 
     await prisma.sizeGroup.deleteMany()
-    console.log('✅ Cleared SizeGroup')
 
     // Clear product related tables before products
     await prisma.productImage.deleteMany()
-    console.log('✅ Cleared ProductImage')
 
     await prisma.productOption.deleteMany()
-    console.log('✅ Cleared ProductOption')
 
     await prisma.productPricingConfig.deleteMany()
-    console.log('✅ Cleared ProductPricingConfig')
 
     await prisma.productSize.deleteMany()
-    console.log('✅ Cleared ProductSize')
 
     await prisma.productQuantity.deleteMany()
-    console.log('✅ Cleared ProductQuantity')
 
     await prisma.productPaperStock.deleteMany()
-    console.log('✅ Cleared ProductPaperStock')
 
     await prisma.product.deleteMany()
-    console.log('✅ Cleared Product')
 
     await prisma.productCategory.deleteMany()
-    console.log('✅ Cleared ProductCategory')
-
-    console.log('\n✅ All specified tables have been cleared!')
 
     // Phase 2: Create foundation data
-    console.log('\n📝 Phase 2: Creating foundation data...')
 
     // Create Product Categories
     const now = new Date()
@@ -146,7 +114,6 @@ async function clearAndRestoreData() {
         }
       })
     ])
-    console.log(`✅ Created ${categories.length} product categories`)
 
     // Create Paper Stocks
     const paperStocks = await Promise.all([
@@ -187,7 +154,6 @@ async function clearAndRestoreData() {
         }
       })
     ])
-    console.log(`✅ Created ${paperStocks.length} paper stocks (including UltraThick)`)
 
     // Create Paper Stock Sets
     const paperStockSet = await prisma.paperStockSet.create({
@@ -205,7 +171,6 @@ async function clearAndRestoreData() {
         }
       }
     })
-    console.log('✅ Created Paper Stock Set with UltraThick option')
 
     // Create Standard Quantities first
     const quantities = await Promise.all([
@@ -262,7 +227,6 @@ async function clearAndRestoreData() {
         isActive: true
       }
     })
-    console.log('✅ Created Quantity Group with standard quantities')
 
     // Create Standard Sizes first
     const sizes = await Promise.all([
@@ -315,7 +279,6 @@ async function clearAndRestoreData() {
         isActive: true
       }
     })
-    console.log('✅ Created Size Group with standard sizes')
 
     // Create Turnaround Times
     const turnaroundTimeSet = await prisma.turnaroundTimeSet.create({
@@ -372,10 +335,6 @@ async function clearAndRestoreData() {
         }
       }
     })
-    console.log('✅ Created Turnaround Time Set')
-
-    console.log('\n✨ Data restoration complete!')
-    console.log('📝 Next step: Running addon creation scripts...')
 
   } catch (error) {
     console.error('❌ Error during data restoration:', error)
@@ -387,7 +346,7 @@ async function clearAndRestoreData() {
 
 clearAndRestoreData()
   .then(() => {
-    console.log('\n✅ Script completed successfully!')
+
     process.exit(0)
   })
   .catch((error) => {

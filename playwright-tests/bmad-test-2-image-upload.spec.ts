@@ -17,7 +17,7 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // If we're redirected to signin, we need to authenticate
     if (page.url().includes('/auth/signin')) {
-      console.log('Need to authenticate - please sign in manually or set up test authentication')
+
     }
   })
 
@@ -75,7 +75,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
       URL.revokeObjectURL(url)
     }, imageDataUrl)
 
-    console.log('✅ Created test business card design image')
   })
 
   test('Step 2: Upload Image and Create Product', async ({ page }) => {
@@ -120,7 +119,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     }
 
     // Test image upload
-    console.log('🔄 Testing image upload functionality...')
 
     // Create a test image blob in the browser
     const testImageBlob = await page.evaluate(() => {
@@ -214,7 +212,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // Wait for upload to complete
     await page.waitForSelector('text=Image uploaded successfully', { timeout: 15000 })
-    console.log('✅ Image uploaded successfully')
 
     // Verify image preview is showing
     const imagePreview = page.locator('img[alt="Product preview"]')
@@ -225,7 +222,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // Wait for success message
     await page.waitForSelector('text=success', { timeout: 10000 })
-    console.log(`✅ Created product with image: ${testProduct.name}`)
 
     // Verify we're redirected away from new page
     await page.waitForTimeout(2000)
@@ -237,18 +233,16 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     const response = await page.request.get('https://gangrunprinting.com/api/health')
     expect(response.status()).toBe(200)
 
-    console.log('✅ Upload API is accessible')
-
     // Test MinIO connectivity (if available)
     try {
       const minioHealth = await page.request.get('https://gangrunprinting.com/api/test/minio-health')
       if (minioHealth.status() === 200) {
-        console.log('✅ MinIO service is healthy')
+
       } else {
         console.log('⚠️  MinIO health check returned:', minioHealth.status())
       }
     } catch (error) {
-      console.log('⚠️  MinIO health check not available:', error)
+
     }
   })
 
@@ -292,7 +286,7 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
           await page.click(`text=${product.category}`)
         }
       } catch (error) {
-        console.log(`Category ${product.category} not found, skipping...`)
+
       }
 
       // Upload a different test image for each product
@@ -334,7 +328,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
       await page.click('button:has-text("Create Product")')
       await page.waitForSelector('text=success', { timeout: 10000 })
 
-      console.log(`✅ Created product with image: ${product.name}`)
     }
   })
 
@@ -353,7 +346,7 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     for (const productName of testProducts) {
       const productRow = page.locator(`text=${productName}`)
       await expect(productRow).toBeVisible()
-      console.log(`✅ Found product in admin list: ${productName}`)
+
     }
 
     // Test API to ensure products are stored correctly
@@ -366,8 +359,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // Check if our test products have images
     const productsWithImages = products.filter(p => p.imageUrl || (p.ProductImage && p.ProductImage.length > 0))
-    console.log(`✅ Found ${productsWithImages.length} products with images in database`)
 
-    console.log('🎉 Image upload and product creation workflow verified successfully!')
   })
 })

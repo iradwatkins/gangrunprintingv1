@@ -2,9 +2,7 @@
 import { type User } from '@prisma/client'
 
 // No-op functions for temporary build fix
-export function initSentry() {
-  console.log('Sentry temporarily disabled')
-}
+export function initSentry() {}
 
 export function reportError(error: Error, context?: any) {
   console.error('Error (Sentry disabled):', error, context)

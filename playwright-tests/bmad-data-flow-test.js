@@ -15,7 +15,6 @@ test.describe('BMAD Data Flow Validation', () => {
     browser,
   }) => {
     // Phase 1: Authentication Flow
-    console.log('Testing authentication flow...')
 
     // Click sign in
     await page.click('text=Sign In')
@@ -29,7 +28,6 @@ test.describe('BMAD Data Flow Validation', () => {
     await expect(page.locator('text=Check your email')).toBeVisible()
 
     // Phase 2: Admin Product Creation (simulate admin user)
-    console.log('Testing admin product creation...')
 
     // Open new tab for admin access
     const adminContext = await browser.newContext()
@@ -75,10 +73,7 @@ test.describe('BMAD Data Flow Validation', () => {
     })
     await expect(adminPage).toHaveURL(/.*admin\/products/, { timeout: 10000 })
 
-    console.log('Product creation successful')
-
     // Phase 3: Customer Product Interaction
-    console.log('Testing customer product interaction...')
 
     // Go back to main customer page
     await page.goto(`http://localhost:3002/products/${testProductSku}`)
@@ -117,10 +112,7 @@ test.describe('BMAD Data Flow Validation', () => {
     await page.click('button:has-text("Add to Cart")')
     await expect(page.locator('text=added to cart')).toBeVisible()
 
-    console.log('Customer interaction successful')
-
     // Phase 4: Dashboard Data Display Validation
-    console.log('Testing dashboard data display...')
 
     // Navigate to dashboard (testing new routes)
     await page.goto('http://localhost:3002/dashboard')
@@ -151,10 +143,7 @@ test.describe('BMAD Data Flow Validation', () => {
       await expect(page).toHaveURL(/.*dashboard$/)
     }
 
-    console.log('Dashboard navigation successful')
-
     // Phase 5: Data Persistence Validation
-    console.log('Testing data persistence...')
 
     // Check if our product appears in recent activity (may take time to propagate)
     await page.goto('http://localhost:3002/dashboard')
@@ -171,13 +160,10 @@ test.describe('BMAD Data Flow Validation', () => {
       const imageSrc = await uploadedImage.getAttribute('src')
       const imageResponse = await page.request.get(`http://localhost:3002${imageSrc}`)
       expect(imageResponse.status()).toBe(200)
-      console.log('File serving working correctly')
+
     }
 
-    console.log('Data persistence validation complete')
-
     // Phase 6: Performance Validation
-    console.log('Testing performance improvements...')
 
     // Test API caching by making multiple requests
     const performanceResults = []
@@ -188,7 +174,7 @@ test.describe('BMAD Data Flow Validation', () => {
       await page.waitForSelector('h1')
       const duration = Date.now() - start
       performanceResults.push(duration)
-      console.log(`Load attempt ${i + 1}: ${duration}ms`)
+
     }
 
     // Subsequent loads should be faster due to caching
@@ -196,16 +182,12 @@ test.describe('BMAD Data Flow Validation', () => {
     const cachedLoads = performanceResults.slice(1)
     const averageCachedLoad = cachedLoads.reduce((a, b) => a + b, 0) / cachedLoads.length
 
-    console.log(`First load: ${firstLoad}ms, Average cached load: ${averageCachedLoad}ms`)
-
     // Cleanup
     await adminContext.close()
 
-    console.log('BMAD Data Flow Validation Complete ✅')
   })
 
   test('API Error Handling and Recovery', async ({ page }) => {
-    console.log('Testing API error handling...')
 
     // Test admin page error handling with network issues
     await page.goto('http://localhost:3002/admin/products/new')
@@ -229,11 +211,9 @@ test.describe('BMAD Data Flow Validation', () => {
     // Should recover
     await expect(page.locator('text=Create Product')).toBeVisible({ timeout: 10000 })
 
-    console.log('Error handling validation complete ✅')
   })
 
   test('Rate Limiting Prevention', async ({ page }) => {
-    console.log('Testing rate limiting prevention...')
 
     // Make multiple rapid requests to test deduplication
     const promises = []
@@ -246,9 +226,8 @@ test.describe('BMAD Data Flow Validation', () => {
     // All requests should succeed (no 429 errors)
     responses.forEach((response, index) => {
       expect(response.status()).not.toBe(429)
-      console.log(`Request ${index + 1}: ${response.status()}`)
+
     })
 
-    console.log('Rate limiting prevention successful ✅')
   })
 })

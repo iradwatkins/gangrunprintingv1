@@ -123,6 +123,5 @@ test.describe('Admin Dashboard Theme Verification', () => {
     expect(primaryHue).toBeGreaterThan(15)
     expect(primaryHue).toBeLessThan(35)
 
-    console.log('Theme colors applied:', rootStyles)
   })
 })

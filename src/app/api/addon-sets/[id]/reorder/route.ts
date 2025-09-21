@@ -1,28 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // POST /api/addon-sets/[id]/reorder - Reorder items within an addon set
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
     const { itemIds } = body
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Addon set ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
 
     if (!itemIds || !Array.isArray(itemIds)) {
-      return NextResponse.json(
-        { error: 'itemIds array is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'itemIds array is required' }, { status: 400 })
     }
 
     // Verify all items belong to this addon set
@@ -68,9 +59,6 @@ export async function POST(
     return NextResponse.json(updatedAddOnSet)
   } catch (error) {
     console.error('Error reordering addon set items:', error)
-    return NextResponse.json(
-      { error: 'Failed to reorder addon set items' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to reorder addon set items' }, { status: 500 })
   }
 }

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding comprehensive quantity groups...')
 
   const quantityGroups = [
     {
@@ -197,13 +196,12 @@ async function main() {
         create: quantityGroup,
       })
       createdCount++
-      console.log(`✓ Created/Updated quantity group: ${quantityGroup.name}`)
+
     } catch (error) {
       console.error(`✗ Error creating quantity group ${quantityGroup.name}:`, error)
     }
   }
 
-  console.log(`\n✅ Successfully seeded ${createdCount} quantity groups!`)
 }
 
 main()

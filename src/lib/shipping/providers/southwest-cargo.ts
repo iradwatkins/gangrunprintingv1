@@ -7,11 +7,7 @@ import {
   type ShippingProvider,
   type TrackingInfo,
 } from '../interfaces'
-import {
-  SOUTHWEST_CARGO_RATES,
-  CARRIER_AVAILABILITY,
-  southwestCargoConfig,
-} from '../config'
+import { SOUTHWEST_CARGO_RATES, CARRIER_AVAILABILITY, southwestCargoConfig } from '../config'
 import { roundWeight, ensureMinimumWeight } from '../weight-calculator'
 
 export class SouthwestCargoProvider implements ShippingProvider {

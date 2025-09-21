@@ -32,7 +32,6 @@ test.describe('Admin Dashboard Visual Tests', () => {
     const bgColor = await logoElement.evaluate((el) => {
       return window.getComputedStyle(el).backgroundColor
     })
-    console.log('Primary background color:', bgColor)
 
     // Verify no purple/pink classes exist
     const purpleElements = await page.locator('[class*="purple"]').count()
@@ -70,7 +69,6 @@ test.describe('Admin Dashboard Visual Tests', () => {
     // Check if page has proper theme classes
     const htmlElement = page.locator('html')
     const initialClass = await htmlElement.getAttribute('class')
-    console.log('Initial HTML class:', initialClass)
 
     // Take light mode screenshot
     await page.screenshot({ path: 'tests/screenshots/dashboard-light.png' })
@@ -95,7 +93,6 @@ test.describe('Admin Dashboard Visual Tests', () => {
     const cards = page.locator('[class*="rounded-lg"][class*="border"]')
     const cardCount = await cards.count()
     expect(cardCount).toBeGreaterThan(0)
-    console.log(`Found ${cardCount} card components`)
 
     // Check Table component
     const table = page.locator('table')
@@ -105,19 +102,17 @@ test.describe('Admin Dashboard Visual Tests', () => {
     const badges = page.locator('[class*="inline-flex"][class*="rounded"]')
     const badgeCount = await badges.count()
     expect(badgeCount).toBeGreaterThan(0)
-    console.log(`Found ${badgeCount} badge components`)
 
     // Check Button components
     const buttons = page.locator('button')
     const buttonCount = await buttons.count()
     expect(buttonCount).toBeGreaterThan(0)
-    console.log(`Found ${buttonCount} button components`)
 
     // Check Progress components
     const progressBars = page.locator('[role="progressbar"]')
     const progressCount = await progressBars.count()
     expect(progressCount).toBeGreaterThan(0)
-    console.log(`Found ${progressCount} progress components`)
+
   })
 
   test('printing industry terminology is used', async ({ page }) => {
@@ -144,7 +139,6 @@ test.describe('Admin Dashboard Visual Tests', () => {
     await page.waitForLoadState('networkidle')
     const loadTime = Date.now() - startTime
 
-    console.log(`Page load time: ${loadTime}ms`)
     expect(loadTime).toBeLessThan(5000) // Should load in less than 5 seconds
 
     // Check for console errors

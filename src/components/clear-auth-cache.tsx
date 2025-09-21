@@ -12,15 +12,12 @@ export default function ClearAuthCache() {
       window.location.pathname.includes('/auth/error') || window.location.search.includes('error=')
 
     if (hasAuthError && 'serviceWorker' in navigator) {
-      console.log('[Auth] Clearing service worker cache due to auth error')
-
       // Clear all caches if auth error occurs
       caches.keys().then((names) => {
         names.forEach((name) => {
           // Only clear auth-related caches
           if (name.includes('auth') || name.includes('gangrun')) {
             caches.delete(name)
-            console.log(`[Auth] Cleared cache: ${name}`)
           }
         })
       })
@@ -35,7 +32,6 @@ export default function ClearAuthCache() {
               authUrls.forEach((url) => {
                 cache.delete(url).then((success) => {
                   if (success) {
-                    console.log(`[Auth] Removed ${url} from cache ${cacheName}`)
                   }
                 })
               })

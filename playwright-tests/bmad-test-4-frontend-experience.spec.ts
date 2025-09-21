@@ -30,7 +30,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
   })
 
   test('Step 1: Verify Homepage Product Display', async ({ page }) => {
-    console.log('🔄 Testing homepage product visibility...')
 
     // Check if products are displayed on homepage
     const productCards = page.locator('[data-testid="product-card"], .product-card, [class*="product"]')
@@ -39,7 +38,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     await page.waitForTimeout(3000)
 
     if (await productCards.count() > 0) {
-      console.log(`✅ Found ${await productCards.count()} products displayed on homepage`)
 
       // Check for basic product information
       const firstProduct = productCards.first()
@@ -55,11 +53,10 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       for (const selector of productElements) {
         const element = firstProduct.locator(selector)
         if (await element.count() > 0) {
-          console.log(`✅ Product has ${selector} element`)
+
         }
       }
     } else {
-      console.log('⚠️  No products found on homepage - checking products page')
 
       // Try navigating to products page
       const productsLink = page.locator('a[href*="products"], a:has-text("Products"), nav a:has-text("Shop")')
@@ -71,14 +68,13 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
         await page.waitForTimeout(2000)
 
         if (await productsPageCards.count() > 0) {
-          console.log(`✅ Found ${await productsPageCards.count()} products on products page`)
+
         }
       }
     }
   })
 
   test('Step 2: Test Product Detail Pages', async ({ page }) => {
-    console.log('🔄 Testing individual product detail pages...')
 
     for (const slug of testProductSlugs) {
       const productUrl = `https://gangrunprinting.com/products/${slug}`
@@ -95,7 +91,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
                       await page.locator('text=404, text="Not Found"').count() > 0
 
         if (!is404) {
-          console.log(`✅ Product page loaded successfully: ${slug}`)
 
           // Check for essential product elements
           const productElements = {
@@ -109,37 +104,35 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
           for (const [elementName, selector] of Object.entries(productElements)) {
             const element = page.locator(selector)
             if (await element.count() > 0) {
-              console.log(`  ✅ ${elementName} found`)
+
             } else {
-              console.log(`  ⚠️  ${elementName} not found`)
+
             }
           }
 
           // Check for product images
           const productImages = page.locator('img[alt*="product"], img[src*="product"], .product-image img')
           if (await productImages.count() > 0) {
-            console.log(`  ✅ Found ${await productImages.count()} product images`)
 
             // Verify first image loads
             const firstImage = productImages.first()
             const imageSrc = await firstImage.getAttribute('src')
             if (imageSrc && !imageSrc.includes('placeholder')) {
-              console.log(`  ✅ Product image loaded: ${imageSrc.substring(0, 50)}...`)
+
             }
           }
 
         } else {
-          console.log(`⚠️  Product page not found: ${slug}`)
+
         }
 
       } catch (error) {
-        console.log(`⚠️  Error loading product page ${slug}:`, error)
+
       }
     }
   })
 
   test('Step 3: Test Product Configuration Interface', async ({ page }) => {
-    console.log('🔄 Testing product configuration from customer perspective...')
 
     // Try to find a working product page to test configuration
     let workingProductPage = null
@@ -162,7 +155,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     }
 
     if (workingProductPage) {
-      console.log(`✅ Testing configuration on: ${workingProductPage}`)
 
       // Test quantity selection
       const quantitySelectors = [
@@ -174,7 +166,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       for (const selector of quantitySelectors) {
         const quantityElement = page.locator(selector)
         if (await quantityElement.count() > 0) {
-          console.log('  ✅ Quantity selector found')
 
           if (await quantityElement.getAttribute('type') !== 'number') {
             // It's a dropdown, select a different option
@@ -182,7 +173,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
             const options = page.locator(`${selector} option`)
             if (await options.count() > 1) {
               await options.nth(1).click()
-              console.log('  ✅ Quantity option selected')
+
             }
           }
           break
@@ -199,12 +190,12 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       for (const selector of paperStockSelectors) {
         const paperElement = page.locator(selector)
         if (await paperElement.count() > 0) {
-          console.log('  ✅ Paper stock selector found')
+
           await paperElement.click()
           const options = page.locator(`${selector} option`)
           if (await options.count() > 1) {
             await options.nth(1).click()
-            console.log('  ✅ Paper stock option selected')
+
           }
           break
         }
@@ -220,20 +211,19 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       for (const selector of sizeSelectors) {
         const sizeElement = page.locator(selector)
         if (await sizeElement.count() > 0) {
-          console.log('  ✅ Size selector found')
 
           if (selector.includes('radio')) {
             const radioOptions = page.locator(selector)
             if (await radioOptions.count() > 0) {
               await radioOptions.first().click()
-              console.log('  ✅ Size option selected')
+
             }
           } else {
             await sizeElement.click()
             const options = page.locator(`${selector} option`)
             if (await options.count() > 1) {
               await options.nth(1).click()
-              console.log('  ✅ Size option selected')
+
             }
           }
           break
@@ -244,16 +234,15 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       const priceElements = page.locator('.price, [class*="price"], [data-testid="price"]')
       if (await priceElements.count() > 0) {
         const initialPrice = await priceElements.first().textContent()
-        console.log(`  ✅ Current price: ${initialPrice}`)
+
       }
 
     } else {
-      console.log('⚠️  No product pages with configuration options found')
+
     }
   })
 
   test('Step 4: Test Add to Cart Functionality', async ({ page }) => {
-    console.log('🔄 Testing add to cart functionality...')
 
     // Find a product page to test cart functionality
     let productToTest = null
@@ -275,7 +264,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     }
 
     if (productToTest) {
-      console.log(`✅ Testing cart functionality on: ${productToTest}`)
 
       // Configure product if options are available
       const quantityInput = page.locator('input[name="quantity"], select[name="quantity"]')
@@ -286,7 +274,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
           await quantityInput.click()
           await page.locator('option[value="250"], option:has-text("250")').first().click()
         }
-        console.log('  ✅ Quantity set')
+
       }
 
       // Click add to cart
@@ -307,7 +295,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       let cartSuccess = false
       for (const indicator of successIndicators) {
         if (await page.locator(indicator).count() > 0) {
-          console.log('  ✅ Add to cart success message shown')
+
           cartSuccess = true
           break
         }
@@ -318,7 +306,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       if (await cartCounters.count() > 0) {
         const cartCount = await cartCounters.first().textContent()
         if (cartCount && cartCount !== '0') {
-          console.log(`  ✅ Cart counter updated: ${cartCount}`)
+
           cartSuccess = true
         }
       }
@@ -332,22 +320,21 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
 
         const cartItems = page.locator('.cart-item, [data-testid="cart-item"], .product-in-cart')
         if (await cartItems.count() > 0) {
-          console.log(`  ✅ Found ${await cartItems.count()} items in cart page`)
+
           cartSuccess = true
         }
       }
 
       if (!cartSuccess) {
-        console.log('  ⚠️  Cart functionality could not be verified - may need implementation')
+
       }
 
     } else {
-      console.log('⚠️  No product pages with add to cart functionality found')
+
     }
   })
 
   test('Step 5: Test Checkout Process', async ({ page }) => {
-    console.log('🔄 Testing checkout process...')
 
     // Navigate to checkout page directly or through cart
     const checkoutUrls = [
@@ -372,7 +359,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
 
         if (!is404) {
           checkoutPageFound = true
-          console.log(`✅ Checkout page found: ${checkoutUrl}`)
 
           // Test checkout form elements
           const checkoutElements = {
@@ -390,7 +376,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
           for (const [elementName, selector] of Object.entries(checkoutElements)) {
             const element = page.locator(selector)
             if (await element.count() > 0) {
-              console.log(`  ✅ ${elementName} found`)
 
               // Fill out form fields for testing
               if (elementName === 'Customer Name' && await element.first().isVisible()) {
@@ -401,14 +386,13 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
                 await element.first().fill(customerTestData.phone)
               }
             } else {
-              console.log(`  ⚠️  ${elementName} not found`)
+
             }
           }
 
           // Test file upload for custom designs
           const fileUploadInputs = page.locator('input[type="file"]')
           if (await fileUploadInputs.count() > 0) {
-            console.log(`  ✅ Found ${await fileUploadInputs.count()} file upload fields`)
 
             // Test image upload
             await page.evaluate(() => {
@@ -439,7 +423,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
             })
 
             await page.waitForTimeout(2000)
-            console.log('  ✅ Test file upload completed')
+
           }
 
           break
@@ -450,12 +434,11 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     }
 
     if (!checkoutPageFound) {
-      console.log('⚠️  Checkout page not found - may need to be implemented')
+
     }
   })
 
   test('Step 6: Test API Endpoints from Frontend', async ({ page }) => {
-    console.log('🔄 Testing API endpoints from frontend perspective...')
 
     const apiEndpoints = [
       { endpoint: '/api/products', name: 'Products API' },
@@ -470,38 +453,35 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
 
         if (response.status() === 200) {
           const data = await response.json()
-          console.log(`✅ ${apiTest.name} - Status: ${response.status()}`)
 
           if (Array.isArray(data)) {
-            console.log(`  📊 Returned ${data.length} items`)
+
           } else if (data && typeof data === 'object') {
-            console.log(`  📊 Returned object with ${Object.keys(data).length} properties`)
+
           }
         } else {
-          console.log(`⚠️  ${apiTest.name} - Status: ${response.status()}`)
+
         }
       } catch (error) {
-        console.log(`❌ ${apiTest.name} - Error: ${error}`)
+
       }
     }
   })
 
   test('Step 7: Complete Customer Journey Simulation', async ({ page }) => {
-    console.log('🔄 Simulating complete customer journey...')
 
     // 1. Start at homepage
     await page.goto('https://gangrunprinting.com')
     await page.waitForLoadState('networkidle')
-    console.log('✅ 1. Visited homepage')
 
     // 2. Browse products
     const productLinks = page.locator('a[href*="/products/"], .product-card a, [data-testid="product-link"]')
     if (await productLinks.count() > 0) {
       await productLinks.first().click()
       await page.waitForLoadState('networkidle')
-      console.log('✅ 2. Browsed to product page')
+
     } else {
-      console.log('⚠️  2. No product links found on homepage')
+
     }
 
     // 3. Configure product options
@@ -530,7 +510,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
         }
       }
       if (configured) {
-        console.log(`✅ 3. Configured ${step.name}`)
+
       }
     }
 
@@ -539,7 +519,7 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     if (await addToCartButton.count() > 0) {
       await addToCartButton.first().click()
       await page.waitForTimeout(2000)
-      console.log('✅ 4. Added product to cart')
+
     }
 
     // 5. Go to checkout
@@ -547,12 +527,12 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
     if (await checkoutButtons.count() > 0) {
       await checkoutButtons.first().click()
       await page.waitForLoadState('networkidle')
-      console.log('✅ 5. Proceeded to checkout')
+
     } else {
       // Try direct navigation
       await page.goto('https://gangrunprinting.com/checkout')
       await page.waitForLoadState('networkidle')
-      console.log('✅ 5. Navigated directly to checkout')
+
     }
 
     // 6. Fill checkout form
@@ -567,15 +547,13 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
       const field = page.locator(selector)
       if (await field.count() > 0 && await field.first().isVisible()) {
         await field.first().fill(value)
-        console.log(`✅ 6. Filled ${selector.split(',')[0]} field`)
+
       }
     }
 
-    console.log('🎉 Customer journey simulation completed successfully!')
   })
 
   test('Step 8: Performance and Accessibility Check', async ({ page }) => {
-    console.log('🔄 Running performance and accessibility checks...')
 
     // Test key pages for basic performance
     const pagesToTest = [
@@ -591,8 +569,6 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
         await page.waitForLoadState('networkidle')
         const loadTime = Date.now() - startTime
 
-        console.log(`✅ ${pageUrl} - Load time: ${loadTime}ms`)
-
         // Check for basic accessibility elements
         const accessibilityChecks = [
           { name: 'Page Title', selector: 'title', required: true },
@@ -607,11 +583,11 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
           const count = await elements.count()
 
           if (count > 0) {
-            console.log(`  ✅ ${check.name}: ${count} found`)
+
           } else if (check.required) {
-            console.log(`  ❌ ${check.name}: Required but not found`)
+
           } else {
-            console.log(`  ⚠️  ${check.name}: None found`)
+
           }
         }
 
@@ -626,16 +602,15 @@ test.describe('BMAD Test 4: Frontend Customer Experience Verification', () => {
         await page.waitForTimeout(2000)
 
         if (consoleErrors.length === 0) {
-          console.log(`  ✅ No console errors`)
+
         } else {
-          console.log(`  ⚠️  ${consoleErrors.length} console errors found`)
+
         }
 
       } catch (error) {
-        console.log(`❌ Error testing ${pageUrl}: ${error}`)
+
       }
     }
 
-    console.log('🎯 Performance and accessibility check completed')
   })
 })

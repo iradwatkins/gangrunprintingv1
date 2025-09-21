@@ -154,7 +154,6 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
   })
 
   test('should successfully create product with all dependencies', async ({ page }) => {
-    console.log('🔍 Testing successful product creation...')
 
     // Mock successful product creation
     await page.route('**/api/products', (route) => {
@@ -212,11 +211,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     // Wait for success message
     await expect(page.locator('text=Product created successfully')).toBeVisible({ timeout: 10000 })
 
-    console.log('✅ Product created successfully')
   })
 
   test('should handle authentication errors gracefully', async ({ page }) => {
-    console.log('🔒 Testing authentication error handling...')
 
     // Override auth to return unauthorized
     await page.route('**/api/auth/validate', (route) => {
@@ -254,11 +251,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     expect(url.includes('/auth/signin') || hasAuthError).toBeTruthy()
 
-    console.log('✅ Authentication errors handled correctly')
   })
 
   test('should handle validation errors with detailed feedback', async ({ page }) => {
-    console.log('⚠️ Testing validation error handling...')
 
     // Mock validation error response
     await page.route('**/api/products', (route) => {
@@ -296,11 +291,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     // Should show validation errors
     await expect(page.locator('text=/validation failed|required/i')).toBeVisible({ timeout: 5000 })
 
-    console.log('✅ Validation errors displayed correctly')
   })
 
   test('should handle database constraint violations', async ({ page }) => {
-    console.log('🚫 Testing database constraint handling...')
 
     // Mock constraint violation (duplicate SKU)
     await page.route('**/api/products', (route) => {
@@ -332,11 +325,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     // Should show constraint violation error
     await expect(page.locator('text=/already exists|duplicate/i')).toBeVisible({ timeout: 5000 })
 
-    console.log('✅ Database constraints handled correctly')
   })
 
   test('should handle foreign key validation errors', async ({ page }) => {
-    console.log('🔗 Testing foreign key validation...')
 
     // Mock foreign key error
     await page.route('**/api/products', (route) => {
@@ -363,11 +354,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     await expect(page.locator('text=/not found|invalid/i')).toBeVisible({ timeout: 5000 })
 
-    console.log('✅ Foreign key validation working correctly')
   })
 
   test('should handle transaction timeout errors', async ({ page }) => {
-    console.log('⏱️ Testing transaction timeout handling...')
 
     // Mock transaction timeout
     await page.route('**/api/products', (route) => {
@@ -399,11 +388,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     await expect(page.locator('text=/timed out|timeout/i')).toBeVisible({ timeout: 10000 })
 
-    console.log('✅ Transaction timeout handled correctly')
   })
 
   test('should handle dependency API failures gracefully', async ({ page }) => {
-    console.log('📡 Testing dependency API failure handling...')
 
     // Mock API failures for dependencies
     await page.route('**/api/product-categories', (route) => {
@@ -432,11 +419,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     // Should show retry button
     await expect(page.locator('button:has-text("Retry Loading")')).toBeVisible()
 
-    console.log('✅ Dependency API failures handled gracefully')
   })
 
   test('should test complete product creation workflow', async ({ page }) => {
-    console.log('🔄 Testing complete workflow...')
 
     let productCreationCalled = false
 
@@ -445,7 +430,6 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
       if (route.request().method() === 'POST') {
         productCreationCalled = true
         const requestData = route.request().postData()
-        console.log('Product creation API called with data:', requestData)
 
         route.fulfill({
           contentType: 'application/json',
@@ -507,11 +491,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     // Should redirect to products list
     await expect(page).toHaveURL(/\/admin\/products$/, { timeout: 10000 })
 
-    console.log('✅ Complete workflow test passed')
   })
 
   test('should monitor console errors during product creation', async ({ page }) => {
-    console.log('🚨 Monitoring console errors...')
 
     const consoleErrors: string[] = []
     const networkErrors: string[] = []
@@ -554,25 +536,23 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     )
 
     if (criticalErrors.length > 0) {
-      console.log('Console errors found:')
+
       criticalErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     if (networkErrors.length > 0) {
-      console.log('Network errors found:')
+
       networkErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     // We should have minimal critical errors
     expect(criticalErrors.length).toBeLessThan(3)
 
-    console.log('✅ Console error monitoring complete')
   })
 })
 
 test.describe('Product Creation Performance Tests', () => {
   test('should load product creation page within performance budget', async ({ page }) => {
-    console.log('⚡ Testing page load performance...')
 
     const startTime = Date.now()
 
@@ -581,17 +561,14 @@ test.describe('Product Creation Performance Tests', () => {
     })
 
     const domLoadTime = Date.now() - startTime
-    console.log(`DOM loaded in: ${domLoadTime}ms`)
 
     await page.waitForSelector('[data-testid="product-name"]', { timeout: 10000 })
 
     const totalLoadTime = Date.now() - startTime
-    console.log(`Form ready in: ${totalLoadTime}ms`)
 
     // Performance expectations
     expect(domLoadTime).toBeLessThan(3000) // DOM should load within 3 seconds
     expect(totalLoadTime).toBeLessThan(8000) // Form should be ready within 8 seconds
 
-    console.log('✅ Performance test passed')
   })
 })

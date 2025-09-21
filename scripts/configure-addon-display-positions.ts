@@ -4,7 +4,6 @@ const prisma = new PrismaClient()
 
 async function configureAddonDisplayPositions() {
   try {
-    console.log('🔧 Configuring AddOn display positions...')
 
     // Get the Corner Rounding and Variable Data addons
     const cornerRounding = await prisma.addOn.findFirst({
@@ -49,7 +48,6 @@ async function configureAddonDisplayPositions() {
         sortOrder: 1
       }
     })
-    console.log('✅ Added Corner Rounding with ABOVE_DROPDOWN position')
 
     // Add Variable Data with BELOW_DROPDOWN position
     await prisma.addOnSetItem.upsert({
@@ -70,7 +68,6 @@ async function configureAddonDisplayPositions() {
         sortOrder: 10
       }
     })
-    console.log('✅ Added Variable Data Printing with BELOW_DROPDOWN position')
 
     // Also add them to other relevant sets
     const marketingSet = await prisma.addOnSet.findFirst({
@@ -97,10 +94,8 @@ async function configureAddonDisplayPositions() {
           sortOrder: 10
         }
       })
-      console.log('✅ Added Variable Data to Marketing Materials set')
-    }
 
-    console.log('\n✅ Display positions configured successfully!')
+    }
 
   } catch (error) {
     console.error('Error configuring display positions:', error)

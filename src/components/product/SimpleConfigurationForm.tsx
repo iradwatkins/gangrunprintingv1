@@ -244,7 +244,11 @@ export default function SimpleConfigurationForm({
   const getQuantityValue = (config: SimpleProductConfiguration): number => {
     // If Custom is selected and a custom value is provided, use it
     const selectedQuantity = configData?.quantities.find((q) => q.id === config.quantity)
-    if (selectedQuantity?.isCustom && config.customQuantity !== undefined && config.customQuantity > 0) {
+    if (
+      selectedQuantity?.isCustom &&
+      config.customQuantity !== undefined &&
+      config.customQuantity > 0
+    ) {
       return config.customQuantity
     }
 
@@ -253,7 +257,9 @@ export default function SimpleConfigurationForm({
   }
 
   // Helper function to get the actual size dimensions (handles both regular and custom sizes)
-  const getSizeDimensions = (config: SimpleProductConfiguration): { width: number; height: number; squareInches: number } => {
+  const getSizeDimensions = (
+    config: SimpleProductConfiguration
+  ): { width: number; height: number; squareInches: number } => {
     const selectedSize = configData?.sizes.find((s) => s.id === config.size)
 
     if (selectedSize?.isCustom && config.customWidth && config.customHeight) {
@@ -261,7 +267,7 @@ export default function SimpleConfigurationForm({
       return {
         width: config.customWidth,
         height: config.customHeight,
-        squareInches: config.customWidth * config.customHeight
+        squareInches: config.customWidth * config.customHeight,
       }
     }
 
@@ -269,7 +275,7 @@ export default function SimpleConfigurationForm({
     return {
       width: selectedSize?.width || 0,
       height: selectedSize?.height || 0,
-      squareInches: selectedSize?.squareInches || 0
+      squareInches: selectedSize?.squareInches || 0,
     }
   }
 
@@ -318,7 +324,11 @@ export default function SimpleConfigurationForm({
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
           // Skip Variable Data, Perforation, and Banding addons as they're handled separately
-          if (addon.configuration?.type === 'variable_data' || addon.configuration?.type === 'perforation' || addon.configuration?.type === 'banding') {
+          if (
+            addon.configuration?.type === 'variable_data' ||
+            addon.configuration?.type === 'perforation' ||
+            addon.configuration?.type === 'banding'
+          ) {
             return
           }
 
@@ -340,13 +350,13 @@ export default function SimpleConfigurationForm({
 
     // Add Variable Data cost if enabled
     if (config.variableDataConfig?.enabled) {
-      const variableDataCost = 60 + (0.02 * quantity)
+      const variableDataCost = 60 + 0.02 * quantity
       addonCosts += variableDataCost
     }
 
     // Add Perforation cost if enabled
     if (config.perforationConfig?.enabled) {
-      const perforationCost = 20 + (0.01 * quantity)
+      const perforationCost = 20 + 0.01 * quantity
       addonCosts += perforationCost
     }
 
@@ -359,7 +369,7 @@ export default function SimpleConfigurationForm({
 
     // Add Corner Rounding cost if enabled
     if (config.cornerRoundingConfig?.enabled) {
-      const cornerRoundingCost = 20 + (0.01 * quantity)
+      const cornerRoundingCost = 20 + 0.01 * quantity
       addonCosts += cornerRoundingCost
     }
 
@@ -433,7 +443,11 @@ export default function SimpleConfigurationForm({
         const addon = configData.addons?.find((a) => a.id === addonId)
         if (addon) {
           // Skip Variable Data, Perforation, and Banding addons as they're handled separately
-          if (addon.configuration?.type === 'variable_data' || addon.configuration?.type === 'perforation' || addon.configuration?.type === 'banding') {
+          if (
+            addon.configuration?.type === 'variable_data' ||
+            addon.configuration?.type === 'perforation' ||
+            addon.configuration?.type === 'banding'
+          ) {
             return
           }
 
@@ -455,13 +469,13 @@ export default function SimpleConfigurationForm({
 
     // Add Variable Data cost if enabled
     if (config.variableDataConfig?.enabled) {
-      const variableDataCost = 60 + (0.02 * quantity)
+      const variableDataCost = 60 + 0.02 * quantity
       addonCosts += variableDataCost
     }
 
     // Add Perforation cost if enabled
     if (config.perforationConfig?.enabled) {
-      const perforationCost = 20 + (0.01 * quantity)
+      const perforationCost = 20 + 0.01 * quantity
       addonCosts += perforationCost
     }
 
@@ -474,7 +488,7 @@ export default function SimpleConfigurationForm({
 
     // Add Corner Rounding cost if enabled
     if (config.cornerRoundingConfig?.enabled) {
-      const cornerRoundingCost = 20 + (0.01 * quantity)
+      const cornerRoundingCost = 20 + 0.01 * quantity
       addonCosts += cornerRoundingCost
     }
 
@@ -482,7 +496,10 @@ export default function SimpleConfigurationForm({
   }
 
   // Handle configuration changes
-  const handleConfigurationChange = (field: keyof SimpleProductConfiguration, value: string | number) => {
+  const handleConfigurationChange = (
+    field: keyof SimpleProductConfiguration,
+    value: string | number
+  ) => {
     let newConfig = { ...configuration }
 
     if (field === 'customQuantity') {
@@ -570,7 +587,7 @@ export default function SimpleConfigurationForm({
   // Handle quantity selection (including custom quantities)
   const handleQuantityChange = (selectedQuantityId: string) => {
     // Find the selected quantity in the API response
-    const selectedQuantity = configData?.quantities.find(q => q.id === selectedQuantityId)
+    const selectedQuantity = configData?.quantities.find((q) => q.id === selectedQuantityId)
 
     if (selectedQuantity?.isCustom) {
       // Show custom input field for Custom option
@@ -603,7 +620,7 @@ export default function SimpleConfigurationForm({
     }
 
     // Find current selected quantity option for validation
-    const selectedQuantity = configData?.quantities.find(q => q.id === configuration.quantity)
+    const selectedQuantity = configData?.quantities.find((q) => q.id === configuration.quantity)
 
     if (selectedQuantity?.isCustom) {
       // Validate against customMin and customMax
@@ -626,7 +643,7 @@ export default function SimpleConfigurationForm({
   // Handle size selection (including custom sizes)
   const handleSizeChange = (selectedSizeId: string) => {
     // Find the selected size in the API response
-    const selectedSize = configData?.sizes.find(s => s.id === selectedSizeId)
+    const selectedSize = configData?.sizes.find((s) => s.id === selectedSizeId)
 
     if (selectedSize?.isCustom) {
       // Show custom input fields for Custom option
@@ -663,7 +680,7 @@ export default function SimpleConfigurationForm({
     }
 
     // Find current selected size option for validation
-    const selectedSize = configData?.sizes.find(s => s.id === configuration.size)
+    const selectedSize = configData?.sizes.find((s) => s.id === configuration.size)
 
     if (selectedSize?.isCustom) {
       // Validate against customMinWidth and customMaxWidth
@@ -696,7 +713,7 @@ export default function SimpleConfigurationForm({
     }
 
     // Find current selected size option for validation
-    const selectedSize = configData?.sizes.find(s => s.id === configuration.size)
+    const selectedSize = configData?.sizes.find((s) => s.id === configuration.size)
 
     if (selectedSize?.isCustom) {
       // Validate against customMinHeight and customMaxHeight
@@ -746,8 +763,8 @@ export default function SimpleConfigurationForm({
   if (error) {
     return (
       <ErrorState
-        title="Configuration Error"
         message={error}
+        title="Configuration Error"
         onRetry={() => window.location.reload()}
       />
     )
@@ -769,10 +786,7 @@ export default function SimpleConfigurationForm({
         <Label className="text-base font-medium" htmlFor="quantity">
           Quantity
         </Label>
-        <Select
-          value={configuration.quantity}
-          onValueChange={handleQuantityChange}
-        >
+        <Select value={configuration.quantity} onValueChange={handleQuantityChange}>
           <SelectTrigger id="quantity">
             <SelectValue placeholder="Select quantity" />
           </SelectTrigger>
@@ -792,29 +806,31 @@ export default function SimpleConfigurationForm({
               Enter Custom Quantity
             </Label>
             <Input
+              className={quantityError ? 'border-red-500' : ''}
               id="custom-quantity"
-              type="number"
               placeholder="Enter quantity between 55,000 and 100,000..."
+              type="number"
               value={customQuantityInput}
               onChange={(e) => handleCustomQuantityInput(e.target.value)}
-              className={quantityError ? 'border-red-500' : ''}
             />
-            {quantityError && (
-              <p className="text-sm text-red-600">{quantityError}</p>
-            )}
+            {quantityError && <p className="text-sm text-red-600">{quantityError}</p>}
             {(() => {
-              const selectedQuantity = configData?.quantities.find(q => q.id === configuration.quantity)
-              return selectedQuantity?.isCustom && (selectedQuantity.customMin || selectedQuantity.customMax) && (
-                <p className="text-xs text-gray-500">
-                  {selectedQuantity.customMin && selectedQuantity.customMax
-                    ? `Range: ${selectedQuantity.customMin.toLocaleString()} - ${selectedQuantity.customMax.toLocaleString()} units`
-                    : selectedQuantity.customMin
-                    ? `Minimum: ${selectedQuantity.customMin.toLocaleString()} units`
-                    : selectedQuantity.customMax
-                    ? `Maximum: ${selectedQuantity.customMax.toLocaleString()} units`
-                    : null
-                  }
-                </p>
+              const selectedQuantity = configData?.quantities.find(
+                (q) => q.id === configuration.quantity
+              )
+              return (
+                selectedQuantity?.isCustom &&
+                (selectedQuantity.customMin || selectedQuantity.customMax) && (
+                  <p className="text-xs text-gray-500">
+                    {selectedQuantity.customMin && selectedQuantity.customMax
+                      ? `Range: ${selectedQuantity.customMin.toLocaleString()} - ${selectedQuantity.customMax.toLocaleString()} units`
+                      : selectedQuantity.customMin
+                        ? `Minimum: ${selectedQuantity.customMin.toLocaleString()} units`
+                        : selectedQuantity.customMax
+                          ? `Maximum: ${selectedQuantity.customMax.toLocaleString()} units`
+                          : null}
+                  </p>
+                )
               )
             })()}
           </div>
@@ -826,10 +842,7 @@ export default function SimpleConfigurationForm({
         <Label className="text-base font-medium" htmlFor="size">
           Size
         </Label>
-        <Select
-          value={configuration.size}
-          onValueChange={handleSizeChange}
-        >
+        <Select value={configuration.size} onValueChange={handleSizeChange}>
           <SelectTrigger id="size">
             <SelectValue placeholder="Select size" />
           </SelectTrigger>
@@ -852,20 +865,22 @@ export default function SimpleConfigurationForm({
         {/* Custom Size Input Fields */}
         {showCustomSizeInput && (
           <div className="space-y-3 mt-3 p-3 border rounded-lg bg-gray-50">
-            <div className="text-sm font-medium text-gray-600">Enter Custom Dimensions (inches)</div>
+            <div className="text-sm font-medium text-gray-600">
+              Enter Custom Dimensions (inches)
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-600" htmlFor="custom-width">
                   Width
                 </Label>
                 <Input
+                  className={sizeError && sizeError.includes('width') ? 'border-red-500' : ''}
                   id="custom-width"
-                  type="number"
-                  step="0.25"
                   placeholder="Width in inches"
+                  step="0.25"
+                  type="number"
                   value={customWidthInput}
                   onChange={(e) => handleCustomWidthInput(e.target.value)}
-                  className={sizeError && sizeError.includes('width') ? 'border-red-500' : ''}
                 />
               </div>
               <div className="space-y-2">
@@ -873,35 +888,38 @@ export default function SimpleConfigurationForm({
                   Height
                 </Label>
                 <Input
+                  className={sizeError && sizeError.includes('height') ? 'border-red-500' : ''}
                   id="custom-height"
-                  type="number"
-                  step="0.25"
                   placeholder="Height in inches"
+                  step="0.25"
+                  type="number"
                   value={customHeightInput}
                   onChange={(e) => handleCustomHeightInput(e.target.value)}
-                  className={sizeError && sizeError.includes('height') ? 'border-red-500' : ''}
                 />
               </div>
             </div>
-            {sizeError && (
-              <p className="text-sm text-red-600">{sizeError}</p>
-            )}
+            {sizeError && <p className="text-sm text-red-600">{sizeError}</p>}
             {configuration.customWidth && configuration.customHeight && (
               <div className="text-sm text-gray-600 bg-white p-2 rounded border">
-                <span className="font-medium">Custom Size:</span> {configuration.customWidth}" × {configuration.customHeight}"
-                <span className="ml-2">({(configuration.customWidth * configuration.customHeight).toFixed(1)} sq in)</span>
+                <span className="font-medium">Custom Size:</span> {configuration.customWidth}" ×{' '}
+                {configuration.customHeight}"
+                <span className="ml-2">
+                  ({(configuration.customWidth * configuration.customHeight).toFixed(1)} sq in)
+                </span>
               </div>
             )}
             {(() => {
-              const selectedSize = configData?.sizes.find(s => s.id === configuration.size)
-              return selectedSize?.isCustom && (selectedSize.customMinWidth || selectedSize.customMaxWidth) && (
-                <p className="text-xs text-gray-500">
-                  Dimensions range:
-                  {selectedSize.customMinWidth && selectedSize.customMaxWidth
-                    ? ` Width ${selectedSize.customMinWidth}"-${selectedSize.customMaxWidth}", Height ${selectedSize.customMinHeight}"-${selectedSize.customMaxHeight}"`
-                    : ' Contact for custom size limits'
-                  }
-                </p>
+              const selectedSize = configData?.sizes.find((s) => s.id === configuration.size)
+              return (
+                selectedSize?.isCustom &&
+                (selectedSize.customMinWidth || selectedSize.customMaxWidth) && (
+                  <p className="text-xs text-gray-500">
+                    Dimensions range:
+                    {selectedSize.customMinWidth && selectedSize.customMaxWidth
+                      ? ` Width ${selectedSize.customMinWidth}"-${selectedSize.customMaxWidth}", Height ${selectedSize.customMinHeight}"-${selectedSize.customMaxHeight}"`
+                      : ' Contact for custom size limits'}
+                  </p>
+                )
               )
             })()}
           </div>
@@ -1005,18 +1023,18 @@ export default function SimpleConfigurationForm({
       <AddonAccordionWithVariable
         addons={configData.addons || []}
         addonsGrouped={configData.addonsGrouped}
-        disabled={loading}
-        selectedAddons={configuration.selectedAddons}
-        onAddonChange={handleAddonChange}
-        variableDataConfig={configuration.variableDataConfig}
-        onVariableDataChange={handleVariableDataChange}
-        perforationConfig={configuration.perforationConfig}
-        onPerforationChange={handlePerforationChange}
         bandingConfig={configuration.bandingConfig}
-        onBandingChange={handleBandingChange}
         cornerRoundingConfig={configuration.cornerRoundingConfig}
-        onCornerRoundingChange={handleCornerRoundingChange}
+        disabled={loading}
+        perforationConfig={configuration.perforationConfig}
         quantity={getQuantityValue(configuration)}
+        selectedAddons={configuration.selectedAddons}
+        variableDataConfig={configuration.variableDataConfig}
+        onAddonChange={handleAddonChange}
+        onBandingChange={handleBandingChange}
+        onCornerRoundingChange={handleCornerRoundingChange}
+        onPerforationChange={handlePerforationChange}
+        onVariableDataChange={handleVariableDataChange}
       />
 
       {/* Turnaround Time Selection */}

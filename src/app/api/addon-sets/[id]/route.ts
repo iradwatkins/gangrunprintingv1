@@ -1,19 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Addon set ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
 
     const addOnSet = await prisma.addOnSet.findUnique({
@@ -48,37 +42,25 @@ export async function GET(
     })
 
     if (!addOnSet) {
-      return NextResponse.json(
-        { error: 'Addon set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Addon set not found' }, { status: 404 })
     }
 
     return NextResponse.json(addOnSet)
   } catch (error) {
     console.error('Error fetching addon set:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch addon set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch addon set' }, { status: 500 })
   }
 }
 
 // PUT /api/addon-sets/[id] - Update a specific addon set
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
     const { name, description, isActive, addOnItems } = body
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Addon set ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
 
     // Start a transaction to update addon set and items
@@ -134,10 +116,7 @@ export async function PUT(
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating addon set:', error)
-    return NextResponse.json(
-      { error: 'Failed to update addon set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update addon set' }, { status: 500 })
   }
 }
 
@@ -150,10 +129,7 @@ export async function DELETE(
     const { id } = await params
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Addon set ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
 
     // Check if addon set is in use by products
@@ -176,9 +152,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting addon set:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete addon set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete addon set' }, { status: 500 })
   }
 }

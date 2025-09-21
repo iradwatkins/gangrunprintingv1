@@ -52,7 +52,7 @@ async function addBandingAddOn() {
           adminNotes: 'Banding service with paper or rubber bands, priced per bundle'
         }
       })
-      console.log('Banding add-on updated:', updated.id)
+
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
@@ -97,7 +97,7 @@ async function addBandingAddOn() {
           adminNotes: 'Banding service with paper or rubber bands, priced per bundle'
         }
       })
-      console.log('Banding add-on created:', newAddOn.id)
+
     }
 
     process.exit(0)

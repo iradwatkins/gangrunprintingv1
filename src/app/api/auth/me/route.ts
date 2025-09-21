@@ -6,17 +6,13 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    console.log(`[${requestId}] GET /api/auth/me - Authentication check started`)
-
     const requestSource = request.headers.get('X-Request-Source') || 'unknown'
-    console.log(`[${requestId}] Request source: ${requestSource}`)
 
     const { user, session } = await validateRequest()
 
     const responseTime = Date.now() - startTime
 
     if (!user || !session) {
-      console.log(`[${requestId}] No user/session found in ${responseTime}ms`)
       return NextResponse.json(
         { user: null, session: null },
         {
@@ -28,8 +24,6 @@ export async function GET(request: NextRequest) {
         }
       )
     }
-
-    console.log(`[${requestId}] User authenticated: ${user.email} (${user.role}) in ${responseTime}ms`)
 
     return NextResponse.json(
       {

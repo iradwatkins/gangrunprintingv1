@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding comprehensive paper stocks...')
 
   const paperStocks = [
     // Business Card Stocks
@@ -385,13 +384,12 @@ async function main() {
         create: stock,
       })
       createdCount++
-      console.log(`✓ Created/Updated paper stock: ${stock.name}`)
+
     } catch (error) {
       console.error(`✗ Error creating paper stock ${stock.name}:`, error)
     }
   }
 
-  console.log(`\n✅ Successfully seeded ${createdCount} paper stocks!`)
 }
 
 main()

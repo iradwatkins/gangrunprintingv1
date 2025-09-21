@@ -61,7 +61,6 @@ export function NotificationSettingsForm() {
     try {
       // TODO: Implement notification settings update API
       await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
-      console.log('Notification settings updated:', formData)
     } catch (error) {
       console.error('Failed to update notification settings:', error)
     } finally {
@@ -72,7 +71,6 @@ export function NotificationSettingsForm() {
   const handleTestNotification = async (type: string) => {
     try {
       // TODO: Implement test notification API
-      console.log('Testing notification:', type)
     } catch (error) {
       console.error('Failed to send test notification:', error)
     }

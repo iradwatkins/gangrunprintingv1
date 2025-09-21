@@ -12,12 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface StandardizedAddon {
   id: string
@@ -88,16 +83,22 @@ export default function SimpleAddonSelector({
   disabled = false,
 }: SimpleAddonSelectorProps) {
   // Variable Data state
-  const [variableDataChecked, setVariableDataChecked] = useState(variableDataConfig?.enabled || false)
+  const [variableDataChecked, setVariableDataChecked] = useState(
+    variableDataConfig?.enabled || false
+  )
   const [locationsCount, setLocationsCount] = useState(variableDataConfig?.locationsCount || '')
   const [locations, setLocations] = useState(variableDataConfig?.locations || '')
 
   // Perforation state
   const [perforationChecked, setPerforationChecked] = useState(perforationConfig?.enabled || false)
   const [verticalCount, setVerticalCount] = useState(perforationConfig?.verticalCount || '0')
-  const [verticalPosition, setVerticalPosition] = useState(perforationConfig?.verticalPosition || '')
+  const [verticalPosition, setVerticalPosition] = useState(
+    perforationConfig?.verticalPosition || ''
+  )
   const [horizontalCount, setHorizontalCount] = useState(perforationConfig?.horizontalCount || '0')
-  const [horizontalPosition, setHorizontalPosition] = useState(perforationConfig?.horizontalPosition || '')
+  const [horizontalPosition, setHorizontalPosition] = useState(
+    perforationConfig?.horizontalPosition || ''
+  )
 
   // Banding state
   const [bandingChecked, setBandingChecked] = useState(bandingConfig?.enabled || false)
@@ -105,7 +106,9 @@ export default function SimpleAddonSelector({
   const [itemsPerBundle, setItemsPerBundle] = useState(bandingConfig?.itemsPerBundle || 100)
 
   // Corner Rounding state
-  const [cornerRoundingChecked, setCornerRoundingChecked] = useState(cornerRoundingConfig?.enabled || false)
+  const [cornerRoundingChecked, setCornerRoundingChecked] = useState(
+    cornerRoundingConfig?.enabled || false
+  )
   const [cornerType, setCornerType] = useState(cornerRoundingConfig?.cornerType || 'All Four')
 
   const handleAddonToggle = (addonId: string, checked: boolean) => {
@@ -130,9 +133,7 @@ export default function SimpleAddonSelector({
       <div
         key={addon.id}
         className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors ${
-          isSelected
-            ? 'bg-blue-50 border-blue-200'
-            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+          isSelected ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={() => !disabled && handleAddonToggle(addon.id, !isSelected)}
       >
@@ -141,16 +142,12 @@ export default function SimpleAddonSelector({
           className="mt-0.5"
           disabled={disabled}
           id={addon.id}
-          onCheckedChange={(checked) =>
-            handleAddonToggle(addon.id, checked as boolean)
-          }
+          onCheckedChange={(checked) => handleAddonToggle(addon.id, checked as boolean)}
         />
 
         <div className="flex-1 min-w-0">
           <Label
-            className={`block font-medium cursor-pointer ${
-              disabled ? 'cursor-not-allowed' : ''
-            }`}
+            className={`block font-medium cursor-pointer ${disabled ? 'cursor-not-allowed' : ''}`}
             htmlFor={addon.id}
           >
             <div className="flex justify-between items-start">
@@ -224,30 +221,31 @@ export default function SimpleAddonSelector({
         <div>
           <div className="flex items-start space-x-3">
             <Checkbox
-              id="variable-data"
               checked={variableDataChecked}
-              onCheckedChange={handleVariableDataToggle}
-              disabled={disabled}
               className="mt-0.5"
+              disabled={disabled}
+              id="variable-data"
+              onCheckedChange={handleVariableDataToggle}
             />
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <Label
-                  htmlFor="variable-data"
                   className="text-sm font-semibold cursor-pointer uppercase"
+                  htmlFor="variable-data"
                 >
                   VARIABLE DATA
                 </Label>
-                <span className="text-sm font-medium">
-                  $60.00 + $.02/piece
-                </span>
+                <span className="text-sm font-medium">$60.00 + $.02/piece</span>
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                      <p>Select this option if you need your order to have a unique name, number, or word on each card.</p>
+                      <p>
+                        Select this option if you need your order to have a unique name, number, or
+                        word on each card.
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -260,7 +258,7 @@ export default function SimpleAddonSelector({
           <div className="ml-6 space-y-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="locations-count" className="text-sm font-semibold uppercase">
+                <Label className="text-sm font-semibold uppercase" htmlFor="locations-count">
                   How many locations for the variables?
                 </Label>
                 <TooltipProvider delayDuration={0}>
@@ -269,27 +267,30 @@ export default function SimpleAddonSelector({
                       <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                      <p>Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.</p>
+                      <p>
+                        Enter the number of variables you are going to have on each piece. If only a
+                        first name for example, this number should be 1.
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
               <Input
+                className="max-w-full"
+                disabled={disabled}
                 id="locations-count"
-                type="number"
-                min="1"
                 max="10"
+                min="1"
+                placeholder=""
+                type="number"
                 value={locationsCount}
                 onChange={(e) => handleLocationsCountChange(e.target.value)}
-                className="max-w-full"
-                placeholder=""
-                disabled={disabled}
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="locations-text" className="text-sm font-semibold uppercase">
+                <Label className="text-sm font-semibold uppercase" htmlFor="locations-text">
                   Where are the locations for the variables?
                 </Label>
                 <TooltipProvider delayDuration={0}>
@@ -298,19 +299,21 @@ export default function SimpleAddonSelector({
                       <HelpCircle className="h-4 w-4 text-blue-500 cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs bg-blue-500 text-white border-0">
-                      <p>Enter the location(s) or word(s) that will be replaced with variable words.</p>
+                      <p>
+                        Enter the location(s) or word(s) that will be replaced with variable words.
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
               <Input
+                className="max-w-full"
+                disabled={disabled}
                 id="locations-text"
+                placeholder=""
                 type="text"
                 value={locations}
                 onChange={(e) => handleLocationsChange(e.target.value)}
-                className="max-w-full"
-                placeholder=""
-                disabled={disabled}
               />
             </div>
           </div>
@@ -325,15 +328,21 @@ export default function SimpleAddonSelector({
   }
 
   // Separate standard and special addons
-  const standardAddons = addons.filter(addon =>
-    !['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(addon.configuration?.type)
+  const standardAddons = addons.filter(
+    (addon) =>
+      !['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
+        addon.configuration?.type
+      )
   )
-  const specialAddons = addons.filter(addon =>
-    ['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(addon.configuration?.type)
+  const specialAddons = addons.filter((addon) =>
+    ['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
+      addon.configuration?.type
+    )
   )
 
   // Calculate total selected addons for display
-  const totalSelectedAddons = selectedAddons.length +
+  const totalSelectedAddons =
+    selectedAddons.length +
     (variableDataChecked ? 1 : 0) +
     (perforationChecked ? 1 : 0) +
     (bandingChecked ? 1 : 0) +
@@ -356,7 +365,7 @@ export default function SimpleAddonSelector({
 
       <div className="space-y-4">
         {/* Special addons first */}
-        {specialAddons.map(addon => {
+        {specialAddons.map((addon) => {
           if (addon.configuration?.type === 'variable_data') {
             return renderVariableDataAddon(addon)
           }
@@ -371,7 +380,8 @@ export default function SimpleAddonSelector({
       {totalSelectedAddons > 0 && (
         <div className="pt-3 border-t">
           <p className="text-sm text-gray-600">
-            <strong>{totalSelectedAddons}</strong> add-on{totalSelectedAddons > 1 ? 's' : ''} selected
+            <strong>{totalSelectedAddons}</strong> add-on{totalSelectedAddons > 1 ? 's' : ''}{' '}
+            selected
           </p>
         </div>
       )}

@@ -763,9 +763,7 @@ export class WorkflowEngine {
           workflowData.trigger,
           workflowData.steps
         )
-      } catch (error) {
-        console.log(`Workflow ${workflowData.name} may already exist`)
-      }
+      } catch (error) {}
     }
   }
 }

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { Carrier } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
@@ -130,9 +130,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Label creation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create shipping label' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create shipping label' }, { status: 500 })
   }
 }

@@ -228,7 +228,7 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
                     <p className="font-medium">{item.productName}</p>
                     {item.options && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        {Object.entries(item.options as any)
+                        {Object.entries(item.options as Record<string, string | number>)
                           .map(([key, value]) => `${key}: ${value}`)
                           .join(' • ')}
                       </p>

@@ -121,7 +121,7 @@ describe('quantity-transformer', () => {
 
       const result = transformQuantityGroup(malformedGroup)
       expect(result).toHaveLength(3)
-      expect(result.map(q => q.name)).toEqual(['100', '250', '500'])
+      expect(result.map((q) => q.name)).toEqual(['100', '250', '500'])
     })
 
     test('handles case-insensitive custom detection', () => {
@@ -145,11 +145,11 @@ describe('quantity-transformer', () => {
       expect(result).toHaveLength(9) // 5 + 4
 
       // Check that IDs are unique across groups
-      const ids = result.map(q => q.id)
+      const ids = result.map((q) => q.id)
       expect(new Set(ids).size).toBe(ids.length)
 
       // Check custom quantity exists
-      const customQuantities = result.filter(q => q.isCustom)
+      const customQuantities = result.filter((q) => q.isCustom)
       expect(customQuantities).toHaveLength(1)
       expect(customQuantities[0].minValue).toBe(10)
       expect(customQuantities[0].maxValue).toBe(50000)

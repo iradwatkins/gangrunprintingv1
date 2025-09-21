@@ -173,37 +173,32 @@ async function sendWebhook(event: TestEvent): Promise<boolean> {
 
     if (response.ok) {
       const result = await response.text()
-      console.log(`${GREEN}✓${RESET} ${event.name}`)
-      console.log(`  └─ Response: ${response.status} ${response.statusText}`)
+
       if (result) {
         try {
           const json = JSON.parse(result)
-          console.log(`  └─ Data: ${JSON.stringify(json).substring(0, 100)}...`)
+
         } catch {
-          console.log(`  └─ Data: ${result.substring(0, 100)}...`)
+
         }
       }
       return true
     } else {
-      console.log(`${RED}✗${RESET} ${event.name}`)
-      console.log(`  └─ Error: ${response.status} ${response.statusText}`)
+
       const error = await response.text()
       if (error) {
-        console.log(`  └─ Details: ${error.substring(0, 200)}`)
+
       }
       return false
     }
   } catch (error: any) {
-    console.log(`${RED}✗${RESET} ${event.name}`)
-    console.log(`  └─ Error: ${error.message}`)
+
     return false
   }
 }
 
 // Test connection
 async function testConnection(): Promise<boolean> {
-  console.log(`\n${BLUE}Testing N8N Connection...${RESET}`)
-  console.log(`URL: ${N8N_WEBHOOK_URL}`)
 
   try {
     const response = await fetch(N8N_WEBHOOK_URL, {
@@ -211,44 +206,34 @@ async function testConnection(): Promise<boolean> {
     })
 
     if (response.status === 404) {
-      console.log(`${YELLOW}⚠${RESET} Webhook endpoint not found (404)`)
-      console.log('  └─ This is expected if the webhook only accepts POST requests')
+
       return true
     } else if (response.status === 405) {
-      console.log(`${GREEN}✓${RESET} Webhook endpoint exists (Method not allowed for GET)`)
+
       return true
     } else if (response.ok) {
-      console.log(`${GREEN}✓${RESET} Webhook endpoint is accessible`)
+
       return true
     } else {
-      console.log(`${RED}✗${RESET} Unexpected response: ${response.status}`)
+
       return false
     }
   } catch (error: any) {
-    console.log(`${RED}✗${RESET} Connection failed: ${error.message}`)
+
     return false
   }
 }
 
 // Main execution
 async function main() {
-  console.log('\n================================================')
-  console.log('  N8N Webhook Testing - GangRun Printing')
-  console.log('================================================')
 
   // Test connection first
   const connected = await testConnection()
 
   if (!connected) {
-    console.log(`\n${RED}Cannot connect to N8N webhook. Please check:${RESET}`)
-    console.log('1. N8N workflow is active')
-    console.log('2. Webhook URL is correct')
-    console.log('3. N8N is accessible')
+
     process.exit(1)
   }
-
-  console.log(`\n${BLUE}Sending Test Events...${RESET}`)
-  console.log('================================================\n')
 
   const results: { name: string; success: boolean }[] = []
 
@@ -261,41 +246,26 @@ async function main() {
   }
 
   // Summary
-  console.log('\n================================================')
-  console.log('  Test Summary')
-  console.log('================================================')
 
   const successful = results.filter((r) => r.success).length
   const failed = results.filter((r) => !r.success).length
 
-  console.log(`\n  Total: ${results.length}`)
-  console.log(`  ${GREEN}Successful: ${successful}${RESET}`)
-  console.log(`  ${RED}Failed: ${failed}${RESET}`)
-
   if (failed > 0) {
-    console.log('\n  Failed Events:')
+
     results
       .filter((r) => !r.success)
       .forEach((r) => {
-        console.log(`  ${RED}✗ ${r.name}${RESET}`)
+
       })
 
-    console.log(
-      `\n${YELLOW}Note:${RESET} If all events failed with 404, the webhook may not be configured in N8N yet.`
-    )
-    console.log('Follow the setup instructions in n8n/README.md')
   } else {
-    console.log(`\n${GREEN}✓ All webhook events sent successfully!${RESET}`)
+
   }
 
   // Test payload example
-  console.log('\n================================================')
-  console.log('  Example CURL Command')
-  console.log('================================================\n')
-  console.log(`curl -X POST ${N8N_WEBHOOK_URL} \\`)
-  console.log(`  -H "Content-Type: application/json" \\`)
+
   if (N8N_API_KEY) {
-    console.log(`  -H "X-N8N-API-Key: ${N8N_API_KEY}" \\`)
+
   }
   console.log(
     `  -d '${JSON.stringify(

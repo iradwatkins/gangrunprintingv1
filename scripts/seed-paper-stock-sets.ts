@@ -3,12 +3,10 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStockSets() {
-  console.log('🌱 Seeding Paper Stock Sets...')
 
   try {
     // First, ensure we have paper stocks
     const paperStocks = await prisma.paperStock.findMany()
-    console.log(`Found ${paperStocks.length} paper stocks`)
 
     // Create Paper Stock Sets
     const paperStockSets = [
@@ -57,7 +55,6 @@ async function seedPaperStockSets() {
         update: setData,
         create: setData,
       })
-      console.log(`✅ Created/Updated Paper Stock Set: ${set.name}`)
 
       // Add some paper stocks to each set if available
       if (paperStocks.length > 0) {
@@ -81,11 +78,10 @@ async function seedPaperStockSets() {
             },
           })
         }
-        console.log(`  Added ${stocksToAdd.length} paper stocks to set`)
+
       }
     }
 
-    console.log('✅ Paper Stock Sets seeded successfully!')
   } catch (error) {
     console.error('❌ Error seeding Paper Stock Sets:', error)
     throw error
@@ -96,7 +92,7 @@ async function seedPaperStockSets() {
 if (require.main === module) {
   seedPaperStockSets()
     .then(() => {
-      console.log('✨ Seed completed')
+
       process.exit(0)
     })
     .catch((error) => {

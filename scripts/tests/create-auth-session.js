@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 
 async function createAuthSession() {
   try {
-    console.log('🔧 Creating authenticated session for iradwatkins@gmail.com...')
 
     // Find the admin user (iradwatkins)
     const adminUser = await prisma.user.findUnique({
@@ -13,7 +12,6 @@ async function createAuthSession() {
     })
 
     if (!adminUser) {
-      console.log('❌ Admin user not found. Creating one...')
 
       // Create admin user
       const newAdmin = await prisma.user.create({
@@ -26,9 +24,8 @@ async function createAuthSession() {
       })
 
       adminUser = newAdmin
-      console.log('✅ Admin user created')
+
     } else {
-      console.log('✅ Admin user found:', adminUser.name)
 
       // Ensure user is admin
       if (adminUser.role !== 'ADMIN') {
@@ -36,7 +33,7 @@ async function createAuthSession() {
           where: { id: adminUser.id },
           data: { role: 'ADMIN' },
         })
-        console.log('✅ User upgraded to admin role')
+
       }
     }
 
@@ -57,17 +54,6 @@ async function createAuthSession() {
         expiresAt: sessionExpiresAt,
       },
     })
-
-    console.log('\n✅ Authentication session created successfully!')
-    console.log('================================')
-    console.log('📧 Email:', adminUser.email)
-    console.log('👤 Name:', adminUser.name)
-    console.log('🛡️  Role:', adminUser.role)
-    console.log('🔑 Session ID:', session.id)
-    console.log('🍪 Session Cookie:')
-    console.log(`   lucia_session=${session.id}`)
-    console.log('\n📝 Update test-product-creation.js with this session ID')
-    console.log('================================\n')
 
     return { user: adminUser, session }
   } catch (error) {

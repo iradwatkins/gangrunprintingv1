@@ -141,13 +141,16 @@ export const emailTemplates = {
 }
 
 // File attachment utilities
-export async function downloadFileFromMinIO(bucketName: string, objectPath: string): Promise<Buffer> {
+export async function downloadFileFromMinIO(
+  bucketName: string,
+  objectPath: string
+): Promise<Buffer> {
   try {
     const client = getMinioClient()
 
     return new Promise(async (resolve, reject) => {
       try {
-        let chunks: Buffer[] = []
+        const chunks: Buffer[] = []
         const stream = await client.getObject(bucketName, objectPath)
 
         stream.on('data', (chunk: Buffer) => {
@@ -263,7 +266,6 @@ export async function sendOrderConfirmationWithFiles(orderData: {
       attachments: emailContent.attachments,
     })
 
-    console.log(`Order confirmation email sent to ${orderData.customerEmail} with ${attachments.length} attachments`)
     return result
   } catch (error) {
     console.error('Error sending order confirmation with files:', error)
@@ -316,7 +318,6 @@ export async function sendAdminOrderNotification(orderData: {
       attachments: emailContent.attachments,
     })
 
-    console.log(`Admin order notification sent to ${adminEmail} with ${attachments.length} files attached`)
     return result
   } catch (error) {
     console.error('Error sending admin order notification:', error)

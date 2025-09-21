@@ -375,7 +375,13 @@ export default function LocationsPage() {
     type?: string
   }
 
-  const LocationCard = ({ location, type }: { location: LocationData; type: 'retail' | 'cargo' }) => (
+  const LocationCard = ({
+    location,
+    type,
+  }: {
+    location: LocationData
+    type: 'retail' | 'cargo'
+  }) => (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between">

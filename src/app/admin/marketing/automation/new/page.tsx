@@ -26,7 +26,6 @@ export default function NewWorkflowPage() {
   }
 
   const handlePreview = (workflow: any) => {
-    console.log('Preview workflow:', workflow)
     // Implement preview functionality
   }
 

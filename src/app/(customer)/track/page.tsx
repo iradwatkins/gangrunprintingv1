@@ -78,7 +78,7 @@ export default function TrackOrderPage() {
   const handleSubmitNewFile = () => {
     if (uploadedFile) {
       // Simulate file submission
-      console.log('Submitting new file:', uploadedFile.name)
+
       alert("New file submitted successfully! We'll review it and update your order.")
       setUploadedFile(null)
     }

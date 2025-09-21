@@ -26,12 +26,12 @@ export default function TestUploadPage() {
       return {
         success: response.ok,
         message: data.message || (response.ok ? 'MinIO is healthy' : 'MinIO health check failed'),
-        data
+        data,
       }
     } catch (error) {
       return {
         success: false,
-        message: 'Failed to check MinIO health'
+        message: 'Failed to check MinIO health',
       }
     }
   }
@@ -81,14 +81,14 @@ export default function TestUploadPage() {
             optimized: data.optimized,
             webp: data.webp,
             avif: data.avif,
-            thumbnail: data.thumbnail
-          }
-        }
+            thumbnail: data.thumbnail,
+          },
+        },
       }
     } catch (error) {
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Upload failed'
+        message: error instanceof Error ? error.message : 'Upload failed',
       }
     }
   }
@@ -185,7 +185,7 @@ export default function TestUploadPage() {
     setTesting(false)
 
     // Show summary
-    const successCount = tests.filter(t => t.status === 'success').length
+    const successCount = tests.filter((t) => t.status === 'success').length
     if (successCount === tests.length) {
       toast.success('All tests passed!')
     } else {
@@ -193,7 +193,12 @@ export default function TestUploadPage() {
     }
   }
 
-  const createTestImage = async (type: 'jpeg' | 'png', width: number, height: number, label?: string): Promise<File> => {
+  const createTestImage = async (
+    type: 'jpeg' | 'png',
+    width: number,
+    height: number,
+    label?: string
+  ): Promise<File> => {
     const canvas = document.createElement('canvas')
     canvas.width = width
     canvas.height = height
@@ -201,8 +206,8 @@ export default function TestUploadPage() {
 
     // Create gradient background
     const gradient = ctx.createLinearGradient(0, 0, width, height)
-    gradient.addColorStop(0, '#' + Math.floor(Math.random()*16777215).toString(16))
-    gradient.addColorStop(1, '#' + Math.floor(Math.random()*16777215).toString(16))
+    gradient.addColorStop(0, '#' + Math.floor(Math.random() * 16777215).toString(16))
+    gradient.addColorStop(1, '#' + Math.floor(Math.random() * 16777215).toString(16))
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, width, height)
 
@@ -216,17 +221,21 @@ export default function TestUploadPage() {
       ctx.fillText(label, width / 2, height / 2 - 30)
     }
     ctx.fillText(`${type.toUpperCase()} ${width}x${height}`, width / 2, height / 2)
-    ctx.fillText(`${(width * height / 1000000).toFixed(1)}MP`, width / 2, height / 2 + 30)
+    ctx.fillText(`${((width * height) / 1000000).toFixed(1)}MP`, width / 2, height / 2 + 30)
 
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        const file = new File(
-          [blob!],
-          `test-${label ? label.replace(/\s+/g, '-').toLowerCase() : 'image'}-${width}x${height}.${type}`,
-          { type: `image/${type}` }
-        )
-        resolve(file)
-      }, `image/${type}`, 0.9)
+      canvas.toBlob(
+        (blob) => {
+          const file = new File(
+            [blob!],
+            `test-${label ? label.replace(/\s+/g, '-').toLowerCase() : 'image'}-${width}x${height}.${type}`,
+            { type: `image/${type}` }
+          )
+          resolve(file)
+        },
+        `image/${type}`,
+        0.9
+      )
     })
   }
 
@@ -264,11 +273,7 @@ export default function TestUploadPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Image Upload Test</h1>
-        <Button
-          onClick={runTests}
-          disabled={testing}
-          size="lg"
-        >
+        <Button disabled={testing} size="lg" onClick={runTests}>
           {testing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -299,12 +304,8 @@ export default function TestUploadPage() {
                   {test.status === 'testing' && (
                     <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                   )}
-                  {test.status === 'success' && (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  )}
-                  {test.status === 'failed' && (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
+                  {test.status === 'success' && <CheckCircle className="w-5 h-5 text-green-500" />}
+                  {test.status === 'failed' && <XCircle className="w-5 h-5 text-red-500" />}
                   <div>
                     <p className="font-medium">{test.name}</p>
                     {test.message && (
@@ -314,10 +315,10 @@ export default function TestUploadPage() {
                 </div>
                 {test.url && (
                   <a
-                    href={test.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="text-sm text-blue-500 hover:underline"
+                    href={test.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     View Image
                   </a>
@@ -337,16 +338,16 @@ export default function TestUploadPage() {
           <div className="space-y-4">
             <div className="border-2 border-dashed rounded-lg p-8 text-center">
               <input
-                type="file"
-                id="manual-upload"
                 accept="image/*"
                 className="hidden"
-                onChange={handleFileUpload}
                 disabled={testing}
+                id="manual-upload"
+                type="file"
+                onChange={handleFileUpload}
               />
               <label
-                htmlFor="manual-upload"
                 className={`cursor-pointer ${testing ? 'opacity-50' : ''}`}
+                htmlFor="manual-upload"
               >
                 <Upload className="mx-auto h-12 w-12 mb-4 text-muted-foreground" />
                 <p className="text-lg font-medium">Click to upload an image</p>
@@ -408,7 +409,8 @@ export default function TestUploadPage() {
             <li>Error handling and validation</li>
           </ul>
           <p className="mt-2">
-            Click "Run All Tests" to automatically test all scenarios, or use the manual upload to test specific files.
+            Click "Run All Tests" to automatically test all scenarios, or use the manual upload to
+            test specific files.
           </p>
         </AlertDescription>
       </Alert>

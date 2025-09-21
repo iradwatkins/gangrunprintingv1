@@ -367,17 +367,21 @@ export default function Home() {
             <CardContent className="p-8 sm:p-12 lg:p-16 text-center">
               <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Get Started?</h2>
               <p className="text-lg sm:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-                Upload your design and receive your custom printed products in as little as 24
-                hours
+                Upload your design and receive your custom printed products in as little as 24 hours
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" variant="secondary" className="group">
+                <Button asChild className="group" size="lg" variant="secondary">
                   <Link href="/products">
                     Browse Products
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/20">
+                <Button
+                  asChild
+                  className="border-white text-white hover:bg-white/20"
+                  size="lg"
+                  variant="outline"
+                >
                   <Link href="/quote">Get a Quote</Link>
                 </Button>
               </div>

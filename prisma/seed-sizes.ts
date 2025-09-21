@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedSizes() {
-  console.log('🌱 Seeding print sizes...')
 
   const sizesData = [
     // Business Cards
@@ -327,13 +326,11 @@ async function seedSizes() {
         },
       })
 
-      console.log(`✓ Seeded size: ${size.name} (${size.displayName})`)
     } catch (error) {
       console.error(`Error seeding size ${sizeData.name}:`, error)
     }
   }
 
-  console.log('✨ Print sizes seeded successfully!')
 }
 
 seedSizes()

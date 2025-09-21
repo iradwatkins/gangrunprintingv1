@@ -199,7 +199,14 @@ function EditProductClient({ id }: { id: string }) {
     setLoading(true)
     try {
       // Transform form data to match API expectations
-      const { selectedPaperStockSet, selectedQuantityGroup, selectedSizeGroup, selectedAddOnSet, selectedTurnaroundTimeSet, ...otherFormData } = formData
+      const {
+        selectedPaperStockSet,
+        selectedQuantityGroup,
+        selectedSizeGroup,
+        selectedAddOnSet,
+        selectedTurnaroundTimeSet,
+        ...otherFormData
+      } = formData
 
       const apiData = {
         ...otherFormData,
@@ -653,8 +660,6 @@ function EditProductClient({ id }: { id: string }) {
           </div>
         </CardContent>
       </Card>
-
-
     </div>
   )
 }

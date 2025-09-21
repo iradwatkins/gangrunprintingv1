@@ -12,7 +12,6 @@ const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 const prisma = new PrismaClient()
 
 async function debugNetwork() {
-  console.log('🔍 Debugging network requests and JavaScript...')
 
   let browser
   try {
@@ -79,19 +78,18 @@ async function debugNetwork() {
 
     // Track JavaScript errors
     page.on('pageerror', (error) => {
-      console.log('❌ [JS ERROR]:', error.message)
-      console.log('📍 [STACK]:', error.stack)
+
     })
 
     // Navigate and wait for completion
-    console.log('🔍 Navigating to admin products page...')
+
     await page.goto('https://gangrunprinting.com/admin/products/new', {
       waitUntil: 'networkidle',
       timeout: 30000,
     })
 
     // Wait and check what happens
-    console.log('⏳ Waiting 15 seconds for all activity...')
+
     await page.waitForTimeout(15000)
 
     // Check final state
@@ -99,10 +97,6 @@ async function debugNetwork() {
     const loadingText = await page.locator('text=Verifying admin access...').count()
     const title = await page.title()
 
-    console.log('📋 Final Results:')
-    console.log('- Page title:', title)
-    console.log('- Name input found:', nameInput > 0)
-    console.log('- Still loading:', loadingText > 0)
     console.log('- Current URL:', page.url())
 
     // Check if there are any React hydration errors

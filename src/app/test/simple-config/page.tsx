@@ -8,7 +8,6 @@ export default function SimpleConfigTestPage() {
   const [price, setPrice] = useState(0)
 
   const handleConfigurationChange = (newConfig: any, newPrice: number) => {
-    console.log('Configuration changed:', newConfig, 'Price:', newPrice)
     setConfig(newConfig)
     setPrice(newPrice)
   }

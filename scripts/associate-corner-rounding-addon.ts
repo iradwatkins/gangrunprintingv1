@@ -14,8 +14,6 @@ async function associateCornerRoundingWithProducts() {
       process.exit(1)
     }
 
-    console.log('Found Corner Rounding addon:', cornerRoundingAddon.id)
-
     // Get all active products
     const products = await prisma.product.findMany({
       where: {
@@ -26,8 +24,6 @@ async function associateCornerRoundingWithProducts() {
       }
     })
 
-    console.log(`Found ${products.length} active products`)
-
     // Associate Corner Rounding with each product if not already associated
     for (const product of products) {
       // Check if Corner Rounding is already associated with this product
@@ -36,7 +32,7 @@ async function associateCornerRoundingWithProducts() {
       )
 
       if (existingAssociation) {
-        console.log(`✓ Corner Rounding already associated with ${product.name}`)
+
       } else {
         // Create the association
         await prisma.productAddOn.create({
@@ -46,7 +42,7 @@ async function associateCornerRoundingWithProducts() {
             isMandatory: false
           }
         })
-        console.log(`✅ Associated Corner Rounding with ${product.name}`)
+
       }
     }
 
@@ -59,7 +55,6 @@ async function associateCornerRoundingWithProducts() {
       })
 
       if (addon) {
-        console.log(`\nChecking ${addonName} addon associations...`)
 
         for (const product of products) {
           const existingAssociation = product.productAddOns.find(
@@ -74,15 +69,14 @@ async function associateCornerRoundingWithProducts() {
                 isMandatory: false
               }
             })
-            console.log(`✅ Associated ${addonName} with ${product.name}`)
+
           } else {
-            console.log(`✓ ${addonName} already associated with ${product.name}`)
+
           }
         }
       }
     }
 
-    console.log('\n✅ All associations completed successfully!')
     process.exit(0)
   } catch (error) {
     console.error('Error associating Corner Rounding addon:', error)

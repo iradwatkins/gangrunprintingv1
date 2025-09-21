@@ -99,7 +99,8 @@ export function AirportSelector({ onAirportSelected, selectedAirportId }: Airpor
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          No airport pickup locations are currently available. Please contact support for assistance.
+          No airport pickup locations are currently available. Please contact support for
+          assistance.
         </AlertDescription>
       </Alert>
     )
@@ -127,7 +128,7 @@ export function AirportSelector({ onAirportSelected, selectedAirportId }: Airpor
               <SelectItem key={airport.id} value={airport.id}>
                 <div className="flex items-center justify-between w-full">
                   <span>{formatAirportOption(airport)}</span>
-                  <Badge variant="outline" className="ml-2 text-xs">
+                  <Badge className="ml-2 text-xs" variant="outline">
                     {airport.state}
                   </Badge>
                 </div>
@@ -145,7 +146,8 @@ export function AirportSelector({ onAirportSelected, selectedAirportId }: Airpor
                   Pickup location details will be provided in your order confirmation
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  You'll receive complete address, hours, and contact information for your selected airport
+                  You'll receive complete address, hours, and contact information for your selected
+                  airport
                 </p>
               </div>
             </div>
@@ -155,8 +157,9 @@ export function AirportSelector({ onAirportSelected, selectedAirportId }: Airpor
         <Alert>
           <Clock className="h-4 w-4" />
           <AlertDescription className="text-sm">
-            <strong>Important:</strong> Airport pickup locations have specific operating hours and requirements.
-            Please review the pickup details in your order confirmation and bring valid ID for pickup.
+            <strong>Important:</strong> Airport pickup locations have specific operating hours and
+            requirements. Please review the pickup details in your order confirmation and bring
+            valid ID for pickup.
           </AlertDescription>
         </Alert>
       </CardContent>

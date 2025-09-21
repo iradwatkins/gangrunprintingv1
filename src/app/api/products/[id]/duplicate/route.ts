@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // POST /api/products/[id]/duplicate
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -122,21 +119,24 @@ export async function POST(
           })),
         },
         // Copy addon sets
-        ProductAddOnSet: originalProduct.ProductAddOnSet.length > 0
-          ? {
-              create: {
-                addOnSetId: originalProduct.ProductAddOnSet[0].addOnSetId,
-              },
-            }
-          : undefined,
+        ProductAddOnSet:
+          originalProduct.ProductAddOnSet.length > 0
+            ? {
+                create: {
+                  addOnSetId: originalProduct.ProductAddOnSet[0].addOnSetId,
+                },
+              }
+            : undefined,
         // Copy turnaround time sets
-        ProductTurnaroundTimeSet: originalProduct.ProductTurnaroundTimeSet.length > 0
-          ? {
-              create: {
-                turnaroundTimeSetId: originalProduct.ProductTurnaroundTimeSet[0].turnaroundTimeSetId,
-              },
-            }
-          : undefined,
+        ProductTurnaroundTimeSet:
+          originalProduct.ProductTurnaroundTimeSet.length > 0
+            ? {
+                create: {
+                  turnaroundTimeSetId:
+                    originalProduct.ProductTurnaroundTimeSet[0].turnaroundTimeSetId,
+                },
+              }
+            : undefined,
         // Copy product options
         ProductOption: {
           create: originalProduct.ProductOption.map((option) => ({

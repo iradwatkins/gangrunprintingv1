@@ -37,7 +37,6 @@ export async function notifyOrderStatusChange(
   const notificationType = getNotificationTypeForStatus(status)
 
   if (!notificationType) {
-    console.log(`No notification configured for status: ${status}`)
     return
   }
 
@@ -47,8 +46,6 @@ export async function notifyOrderStatusChange(
       status,
       ...additionalData,
     })
-
-    console.log(`Notification sent for order ${orderId} status change to ${status}`)
   } catch (error) {
     console.error(`Failed to send notification for order ${orderId}:`, error)
     // Don't throw - we don't want notification failures to break order processing

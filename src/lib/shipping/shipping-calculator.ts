@@ -132,10 +132,7 @@ export class ShippingCalculator {
   /**
    * Validate an address
    */
-  async validateAddress(
-    address: ShippingAddress,
-    carrier?: Carrier
-  ): Promise<boolean> {
+  async validateAddress(address: ShippingAddress, carrier?: Carrier): Promise<boolean> {
     // If carrier specified, use that provider
     if (carrier) {
       const provider = this.providers.get(carrier)

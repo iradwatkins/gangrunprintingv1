@@ -3,12 +3,10 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedTurnaroundTimeSets() {
-  console.log('🌱 Seeding Turnaround Time Sets...')
 
   try {
     // First, get existing turnaround times
     const turnaroundTimes = await prisma.turnaroundTime.findMany()
-    console.log(`Found ${turnaroundTimes.length} turnaround times`)
 
     // Create Turnaround Time Sets
     const turnaroundTimeSets = [
@@ -57,7 +55,6 @@ async function seedTurnaroundTimeSets() {
         update: setData,
         create: setData,
       })
-      console.log(`✅ Created/Updated Turnaround Time Set: ${set.name}`)
 
       // Add turnaround times to each set if available
       if (turnaroundTimes.length > 0) {
@@ -105,11 +102,10 @@ async function seedTurnaroundTimeSets() {
             },
           })
         }
-        console.log(`  Added ${timesToAdd.length} turnaround times to set`)
+
       }
     }
 
-    console.log('✅ Turnaround Time Sets seeded successfully!')
   } catch (error) {
     console.error('❌ Error seeding Turnaround Time Sets:', error)
     throw error
@@ -120,7 +116,7 @@ async function seedTurnaroundTimeSets() {
 if (require.main === module) {
   seedTurnaroundTimeSets()
     .then(() => {
-      console.log('✨ Seed completed')
+
       process.exit(0)
     })
     .catch((error) => {

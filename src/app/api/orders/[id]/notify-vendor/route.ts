@@ -82,8 +82,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (order.vendor.orderEmail) {
       // Here you would integrate with your email service (SendGrid/Resend)
       // For now, we'll just log that an email would be sent
-      console.log('Email notification would be sent to:', order.vendor.orderEmail, orderDetails)
-
       // In production, you would uncomment and configure:
       /*
       const resend = new Resend(process.env.RESEND_API_KEY)

@@ -33,10 +33,10 @@ async function runTest(name: string, testFn: () => Promise<void>): Promise<void>
   try {
     await testFn()
     tests.push({ name, success: true, message: 'Passed' })
-    console.log(`${GREEN}✓${RESET} ${name}`)
+
   } catch (error: any) {
     tests.push({ name, success: false, message: error.message, details: error })
-    console.log(`${RED}✗${RESET} ${name}: ${error.message}`)
+
   }
 }
 
@@ -44,7 +44,7 @@ async function runTest(name: string, testFn: () => Promise<void>): Promise<void>
 async function testDatabase() {
   await prisma.$connect()
   const count = await prisma.user.count()
-  console.log(`  └─ Found ${count} users in database`)
+
   await prisma.$disconnect()
 }
 
@@ -69,11 +69,9 @@ async function testSquare() {
 
     if (locations && locations.length > 0) {
       const location = locations[0]
-      console.log(`  └─ Location: ${location.name || 'Unknown'}`)
-      console.log(`  └─ Status: ${location.status || 'Unknown'}`)
-      console.log(`  └─ Location ID: ${location.id}`)
+
     } else {
-      console.log(`  └─ No locations found`)
+
     }
   } catch (error: any) {
     if (error.errors) {
@@ -109,8 +107,7 @@ async function testSendGrid() {
   }
 
   await sgMail.send(msg as any)
-  console.log(`  └─ From: ${msg.from.email}`)
-  console.log(`  └─ Sandbox mode: Email validated but not sent`)
+
 }
 
 // 4. Test MinIO
@@ -131,10 +128,10 @@ async function testMinIO() {
   const exists = await minioClient.bucketExists(bucketName)
 
   if (!exists) {
-    console.log(`  └─ Creating bucket: ${bucketName}`)
+
     await minioClient.makeBucket(bucketName, 'us-east-1')
   } else {
-    console.log(`  └─ Bucket exists: ${bucketName}`)
+
   }
 }
 
@@ -165,8 +162,6 @@ async function testN8N() {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
 
-  console.log(`  └─ Webhook URL: ${process.env.N8N_WEBHOOK_URL}`)
-  console.log(`  └─ Response: ${response.status} ${response.statusText}`)
 }
 
 // 6. Test Auth Configuration
@@ -179,15 +174,10 @@ async function testAuth() {
     throw new Error('AUTH_SECRET should be at least 32 characters')
   }
 
-  console.log(`  └─ AUTH_SECRET length: ${process.env.AUTH_SECRET.length} characters`)
-  console.log(`  └─ Google OAuth: ${process.env.AUTH_GOOGLE_ID ? 'Configured' : 'Not configured'}`)
 }
 
 // Main execution
 async function main() {
-  console.log('\n================================================')
-  console.log('  GangRun Printing - Integration Tests')
-  console.log('================================================\n')
 
   // Run all tests
   await runTest('Database Connection', testDatabase)
@@ -198,28 +188,20 @@ async function main() {
   await runTest('Authentication', testAuth)
 
   // Summary
-  console.log('\n================================================')
-  console.log('  Test Summary')
-  console.log('================================================')
 
   const passed = tests.filter((t) => t.success).length
   const failed = tests.filter((t) => !t.success).length
 
-  console.log(`\n  Total: ${tests.length}`)
-  console.log(`  ${GREEN}Passed: ${passed}${RESET}`)
-  console.log(`  ${RED}Failed: ${failed}${RESET}`)
-
   if (failed > 0) {
-    console.log('\n  Failed Tests:')
+
     tests
       .filter((t) => !t.success)
       .forEach((t) => {
-        console.log(`  ${RED}✗ ${t.name}${RESET}`)
-        console.log(`    └─ ${t.message}`)
+
       })
     process.exit(1)
   } else {
-    console.log(`\n  ${GREEN}✓ All tests passed! Ready for deployment.${RESET}\n`)
+
   }
 }
 

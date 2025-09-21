@@ -19,7 +19,7 @@ export async function checkMinioHealth(): Promise<{
 
     return {
       available: true,
-      buckets: bucketList.map(b => b.name),
+      buckets: bucketList.map((b) => b.name),
     }
   } catch (error) {
     console.error('MinIO health check failed:', error)

@@ -10,7 +10,6 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function debugPageContent() {
-  console.log('🔍 Debugging product creation page content...')
 
   let browser
   try {
@@ -27,11 +26,9 @@ async function debugPageContent() {
     })
 
     if (!session) {
-      console.log('❌ No valid admin session found')
+
       return
     }
-
-    console.log(`✅ Using session: ${session.id.substring(0, 10)}...`)
 
     browser = await chromium.launch({
       headless: true,
@@ -59,7 +56,7 @@ async function debugPageContent() {
     const page = await context.newPage()
 
     // Navigate to product creation page
-    console.log('📄 Loading product creation page...')
+
     await page.goto('https://gangrunprinting.com/admin/products/new', {
       waitUntil: 'networkidle',
       timeout: 30000,
@@ -69,11 +66,9 @@ async function debugPageContent() {
     await page.waitForTimeout(5000)
 
     // Check current URL
-    console.log(`📍 Current URL: ${page.url()}`)
 
     // Check page title
     const title = await page.title()
-    console.log(`📋 Page title: ${title}`)
 
     // Look for various input selectors
     const selectors = [
@@ -88,13 +83,12 @@ async function debugPageContent() {
       '[data-testid="product-name"]',
     ]
 
-    console.log('\n🔍 Checking for input selectors:')
     for (const selector of selectors) {
       const count = await page.locator(selector).count()
       if (count > 0) {
-        console.log(`   ✅ Found ${count} elements for: ${selector}`)
+
       } else {
-        console.log(`   ❌ Not found: ${selector}`)
+
       }
     }
 
@@ -103,23 +97,21 @@ async function debugPageContent() {
       .locator('text=Verifying admin access..., text=Loading..., text=Please wait...')
       .count()
     if (verifyingText > 0) {
-      console.log('\n⚠️  Page shows loading/verification state')
+
     }
 
     // Check for error messages
     const errorMessages = await page.locator('.error, .toast-error, [role="alert"]').count()
     if (errorMessages > 0) {
-      console.log(`\n❌ Found ${errorMessages} error message(s)`)
+
     }
 
     // Get page content snippet
     const bodyText = await page.locator('body').textContent()
     const snippet = bodyText.substring(0, 500)
-    console.log(`\n📄 Page content snippet:\n${snippet}...`)
 
     // Check for forms
     const forms = await page.locator('form').count()
-    console.log(`\n📝 Found ${forms} form(s) on page`)
 
     // Check for specific admin UI elements
     const adminElements = [
@@ -131,19 +123,18 @@ async function debugPageContent() {
       'button:has-text("Create")',
     ]
 
-    console.log('\n🎯 Checking for admin UI elements:')
     for (const selector of adminElements) {
       const count = await page.locator(selector).count()
       if (count > 0) {
-        console.log(`   ✅ Found: ${selector}`)
+
       } else {
-        console.log(`   ❌ Not found: ${selector}`)
+
       }
     }
 
     // Take a screenshot for manual inspection
     await page.screenshot({ path: '/root/websites/gangrunprinting/debug-page.png', fullPage: true })
-    console.log('\n📸 Screenshot saved: /root/websites/gangrunprinting/debug-page.png')
+
   } catch (error) {
     console.error(`❌ Debug failed: ${error.message}`)
   } finally {

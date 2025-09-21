@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 import axiosRetry from 'axios-retry'
 import { Carrier } from '@prisma/client'
 import {
@@ -44,10 +44,7 @@ export class FedExProvider implements ShippingProvider {
       retries: 3,
       retryDelay: axiosRetry.exponentialDelay,
       retryCondition: (error) => {
-        return (
-          axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-          error.response?.status === 429
-        )
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response?.status === 429
       },
     })
   }
@@ -77,13 +74,10 @@ export class FedExProvider implements ShippingProvider {
 
       this.authToken = response.data
       // Set token expiry with 5-minute buffer
-      this.tokenExpiry = new Date(
-        Date.now() + (this.authToken.expires_in - 300) * 1000
-      )
+      this.tokenExpiry = new Date(Date.now() + (this.authToken.expires_in - 300) * 1000)
 
       // Update default headers with auth token
-      this.client.defaults.headers.common['Authorization'] =
-        `Bearer ${this.authToken.access_token}`
+      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
     } catch (error) {
       console.error('FedEx authentication failed:', error)
       throw new Error('Failed to authenticate with FedEx API')
@@ -148,11 +142,10 @@ export class FedExProvider implements ShippingProvider {
         .map((detail: any) => {
           const ratedShipmentDetail = detail.ratedShipmentDetails?.[0]
           const totalCharge =
-            ratedShipmentDetail?.totalNetCharge ||
-            ratedShipmentDetail?.totalNetFedExCharge
+            ratedShipmentDetail?.totalNetCharge || ratedShipmentDetail?.totalNetFedExCharge
 
           // Use Ground Home Delivery name for residential ground shipments
-          let serviceCode = detail.serviceType
+          const serviceCode = detail.serviceType
           let serviceName = SERVICE_NAMES[detail.serviceType as keyof typeof SERVICE_NAMES]
 
           if (detail.serviceType === 'FEDEX_GROUND' && toAddress.isResidential) {
@@ -169,9 +162,7 @@ export class FedExProvider implements ShippingProvider {
             rateAmount: roundWeight(totalCharge * markup, 2),
             currency: 'USD',
             estimatedDays,
-            deliveryDate: detail.deliveryTimestamp
-              ? new Date(detail.deliveryTimestamp)
-              : undefined,
+            deliveryDate: detail.deliveryTimestamp ? new Date(detail.deliveryTimestamp) : undefined,
             isGuaranteed: detail.commit?.dateDetail?.dayOfWeek !== undefined,
           }
         })
@@ -246,8 +237,8 @@ export class FedExProvider implements ShippingProvider {
       const response = await this.client.post('/ship/v1/shipments', requestBody)
 
       const output = response.data.output
-      const completedPackage = output.transactionShipments[0].completedShipmentDetail
-        .completedPackageDetails[0]
+      const completedPackage =
+        output.transactionShipments[0].completedShipmentDetail.completedPackageDetails[0]
 
       return {
         trackingNumber: completedPackage.trackingIds[0].trackingNumber,
@@ -326,10 +317,7 @@ export class FedExProvider implements ShippingProvider {
         ],
       }
 
-      const response = await this.client.post(
-        '/address/v1/addresses/resolve',
-        requestBody
-      )
+      const response = await this.client.post('/address/v1/addresses/resolve', requestBody)
 
       const result = response.data.output.resolvedAddresses[0]
       return result.classification === 'BUSINESS' || result.classification === 'RESIDENTIAL'

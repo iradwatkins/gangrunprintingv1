@@ -12,7 +12,6 @@ const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 const prisma = new PrismaClient()
 
 async function testAdminPage() {
-  console.log('🔍 Testing admin page with full debugging...')
 
   let browser
   try {
@@ -39,7 +38,7 @@ async function testAdminPage() {
     })
 
     if (!adminUser) {
-      console.log('❌ No admin user found')
+
       return
     }
 
@@ -84,27 +83,24 @@ async function testAdminPage() {
     })
 
     page.on('pageerror', (error) => {
-      console.log('❌ [BROWSER ERROR]:', error.message)
+
     })
 
     // Navigate to admin page
-    console.log('🔍 Navigating to admin products page...')
+
     await page.goto('https://gangrunprinting.com/admin/products/new', {
       waitUntil: 'networkidle',
       timeout: 30000,
     })
 
     // Wait for processing
-    console.log('⏳ Waiting for authentication to complete...')
+
     await page.waitForTimeout(10000)
 
     // Check if we're still loading or if form is available
     const nameInput = await page.locator('#name').count()
     const loadingText = await page.locator('text=Verifying admin access...').count()
 
-    console.log('📋 Results:')
-    console.log('- Name input found:', nameInput > 0)
-    console.log('- Still loading:', loadingText > 0)
     console.log('- Current URL:', page.url())
 
     // Take screenshot
@@ -112,10 +108,9 @@ async function testAdminPage() {
       path: '/root/websites/gangrunprinting/test-admin-debug.png',
       fullPage: true,
     })
-    console.log('📸 Screenshot saved: test-admin-debug.png')
 
     // Complete the test
-    console.log('✅ Test completed')
+
   } catch (error) {
     console.error(`❌ Test failed: ${error.message}`)
   } finally {

@@ -1,7 +1,6 @@
 const { chromium } = require('playwright')
 
 async function debugTimeout() {
-  console.log('Testing AdminAuthWrapper timeout behavior...')
 
   const browser = await chromium.launch({
     headless: true,
@@ -17,13 +16,13 @@ async function debugTimeout() {
 
   // Block the auth API call to simulate network issues
   await page.route('**/api/auth/me', (route) => {
-    console.log('Auth API call intercepted - simulating hang/timeout')
+
     // Don't fulfill or abort - let it hang to test timeout behavior
   })
 
   const logs = []
   const log = (message) => {
-    console.log(message)
+
     logs.push(`[${new Date().toISOString()}] ${message}`)
   }
 

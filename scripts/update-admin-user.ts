@@ -18,7 +18,7 @@ async function updateAdminUser() {
           name: existingUser.name || 'Ira Watkins',
         },
       })
-      console.log('✅ Updated user to ADMIN role:', updatedUser.email)
+
     } else {
       // Create new admin user
       const newUser = await prisma.user.create({
@@ -29,7 +29,7 @@ async function updateAdminUser() {
           emailVerified: new Date(),
         },
       })
-      console.log('✅ Created new ADMIN user:', newUser.email)
+
     }
 
     // Verify the update
@@ -38,7 +38,6 @@ async function updateAdminUser() {
       select: { email: true, role: true, name: true },
     })
 
-    console.log('Admin user status:', adminUser)
   } catch (error) {
     console.error('❌ Error updating admin user:', error)
   } finally {

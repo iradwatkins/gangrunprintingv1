@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function createPosterProduct() {
-  console.log('🎨 Creating Large Format Poster product...')
 
   try {
     // Get existing data IDs
@@ -47,7 +46,7 @@ async function createPosterProduct() {
     })
 
     if (existing) {
-      console.log(`⚠️  Product already exists: ${posterProduct.name}`)
+
       return
     }
 
@@ -55,8 +54,6 @@ async function createPosterProduct() {
     const product = await prisma.product.create({
       data: posterProduct,
     })
-
-    console.log(`✅ Created product: ${product.name}`)
 
     // Add paper stock set association
     if (paperStockSetMap['Standard Cardstock Set']) {
@@ -67,7 +64,7 @@ async function createPosterProduct() {
           isDefault: true,
         },
       })
-      console.log(`   📎 Linked paper stock set: Standard Cardstock Set`)
+
     }
 
     // Add size group association
@@ -78,7 +75,7 @@ async function createPosterProduct() {
           sizeGroupId: sizeGroupMap['Poster Sizes'],
         },
       })
-      console.log(`   📐 Linked size group: Poster Sizes`)
+
     }
 
     // Add quantity group association
@@ -89,10 +86,8 @@ async function createPosterProduct() {
           quantityGroupId: quantityGroupMap['Basic Gangrun Price'],
         },
       })
-      console.log(`   🔢 Linked quantity group: Basic Gangrun Price`)
-    }
 
-    console.log(`   ✨ Product setup complete!`)
+    }
 
     // Verify the product was created with all associations
     const createdProduct = await prisma.product.findUnique({
@@ -117,19 +112,6 @@ async function createPosterProduct() {
       },
     })
 
-    console.log('\n📊 Product Details:')
-    console.log(`  Name: ${createdProduct?.name}`)
-    console.log(`  SKU: ${createdProduct?.sku}`)
-    console.log(`  Category: ${createdProduct?.ProductCategory?.name}`)
-    console.log(`  Base Price: $${createdProduct?.basePrice}`)
-    console.log(
-      `  Paper Stock Set: ${createdProduct?.productPaperStockSets[0]?.paperStockSet?.name || 'None'}`
-    )
-    console.log(`  Size Group: ${createdProduct?.productSizeGroups[0]?.sizeGroup?.name || 'None'}`)
-    console.log(
-      `  Quantity Group: ${createdProduct?.productQuantityGroups[0]?.quantityGroup?.name || 'None'}`
-    )
-    console.log(`  URL: http://localhost:3002/products/${createdProduct?.slug}`)
   } catch (error) {
     console.error('❌ Error creating poster product:', error)
   } finally {

@@ -12,12 +12,10 @@ const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 const prisma = new PrismaClient()
 
 async function createProducts() {
-  console.log('🚀 DIRECT API PRODUCT CREATION TEST')
-  console.log('=====================================\n')
 
   try {
     // Create authentication session
-    console.log('🔑 Creating admin authentication...')
+
     const adapter = new PrismaAdapter(prisma.session, prisma.user)
     const lucia = new Lucia(adapter, {
       sessionCookie: { attributes: { secure: process.env.NODE_ENV === 'production' } },
@@ -36,7 +34,6 @@ async function createProducts() {
 
     const session = await lucia.createSession(adminUser.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
-    console.log('   ✅ Admin session created\n')
 
     // Verified valid IDs from database
     const validData = {
@@ -109,7 +106,6 @@ async function createProducts() {
     // Create products using direct API calls
     for (let i = 0; i < products.length; i++) {
       const product = products[i]
-      console.log(`📦 Creating Product ${i + 1}: ${product.name}`)
 
       try {
         const response = await fetch('https://gangrunprinting.com/api/products', {
@@ -124,7 +120,7 @@ async function createProducts() {
 
         if (response.ok) {
           const data = await response.json()
-          console.log(`   ✅ Product created successfully! ID: ${data.id}`)
+
         } else {
           const errorData = await response.json().catch(() => ({}))
           console.log(
@@ -132,11 +128,11 @@ async function createProducts() {
           )
 
           if (errorData.details) {
-            console.log(`   📋 Details: ${errorData.details}`)
+
           }
         }
       } catch (error) {
-        console.log(`   ❌ Request failed: ${error.message}`)
+
       }
 
       console.log('') // Empty line

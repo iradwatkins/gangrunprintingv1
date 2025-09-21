@@ -196,18 +196,11 @@ export async function GET(request: NextRequest) {
     // Trigger N8N daily report workflow
     try {
       await N8NWorkflows.generateDailyReport()
-      console.log('Daily report workflow triggered')
     } catch (n8nError) {
       console.error('Failed to trigger N8N daily report:', n8nError)
     }
 
     // Log report
-    console.log('Daily Report Generated:', {
-      date: reportData.date,
-      orders: ordersCreated,
-      revenue: todaysRevenue,
-      pending: ordersPending,
-    })
 
     return NextResponse.json({
       success: true,

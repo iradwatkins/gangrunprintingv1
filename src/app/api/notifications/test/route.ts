@@ -37,8 +37,6 @@ export async function POST(request: NextRequest) {
       ],
     })
 
-    console.log('Mock push notification prepared:', payload)
-
     return NextResponse.json({
       success: true,
       message: 'Test notification prepared (mock)',

@@ -157,12 +157,10 @@ export function StaffTable({ staff }: StaffTableProps) {
 
   const handleDeleteStaff = (staffId: string) => {
     // TODO: Implement staff deletion
-    console.log('Delete staff:', staffId)
   }
 
   const handleToggleStatus = (staffId: string) => {
     // TODO: Implement status toggle
-    console.log('Toggle status:', staffId)
   }
 
   return (

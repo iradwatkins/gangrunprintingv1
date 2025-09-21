@@ -83,7 +83,7 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     await page.waitForLoadState('networkidle')
 
     if (page.url().includes('/auth/signin')) {
-      console.log('Need to authenticate - please sign in manually or set up test authentication')
+
     }
   })
 
@@ -91,8 +91,6 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     await page.goto('https://gangrunprinting.com/admin/products/new')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000) // Allow all dropdowns to populate
-
-    console.log('🔄 Creating complex product with full configuration...')
 
     // Fill in comprehensive basic information
     await page.fill('input[name="name"]', complexProduct.name)
@@ -107,7 +105,7 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
       await page.fill('input[name="productionTime"]', complexProduct.productionTime.toString())
       await page.fill('input[name="rushFee"]', complexProduct.rushFee.toString())
     } catch (error) {
-      console.log('⚠️  Some advanced fields not available, continuing...')
+
     }
 
     // Set product flags
@@ -117,7 +115,7 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
       await page.check('input[name="rushAvailable"]')
       await page.check('input[name="gangRunEligible"]')
     } catch (error) {
-      console.log('⚠️  Some checkbox fields not available, continuing...')
+
     }
 
     // Upload a premium business card design
@@ -171,7 +169,6 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     })
 
     await page.waitForSelector('text=Image uploaded successfully', { timeout: 15000 })
-    console.log('✅ Premium design uploaded')
 
     // Select all available dropdown options
     const dropdownTests = [
@@ -189,12 +186,12 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
         if (await element.count() > 0) {
           await element.click()
           await page.click(`text=${dropdown.option}`)
-          console.log(`✅ Selected ${dropdown.name}: ${dropdown.option}`)
+
         } else {
-          console.log(`⚠️  ${dropdown.name} dropdown not found`)
+
         }
       } catch (error) {
-        console.log(`⚠️  Could not select ${dropdown.name}: ${error}`)
+
       }
       await page.waitForTimeout(500) // Small delay between selections
     }
@@ -203,7 +200,6 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     await page.click('button:has-text("Create Product")')
     await page.waitForSelector('text=success', { timeout: 15000 })
 
-    console.log(`✅ Created complex product: ${complexProduct.name}`)
     await page.waitForTimeout(2000)
     expect(page.url()).not.toContain('/new')
   })
@@ -229,8 +225,6 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
-    console.log('🔄 Adding pricing tiers to complex product...')
-
     // Look for pricing tiers section
     try {
       // Add pricing tiers if the UI supports it
@@ -250,18 +244,17 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
 
           // Save tier
           await page.click('button:has-text("Save Tier")')
-          console.log(`✅ Added pricing tier: ${tier.minQuantity}-${tier.maxQuantity || '∞'} @ $${tier.pricePerUnit}`)
+
         }
       }
     } catch (error) {
-      console.log('⚠️  Pricing tiers UI not available, skipping...')
+
     }
 
     // Save the product with pricing tiers
     await page.click('button:has-text("Save"), button:has-text("Update")')
     await page.waitForSelector('text=success', { timeout: 10000 })
 
-    console.log('✅ Updated product with pricing tiers')
   })
 
   test('Step 3: Add Product Options to Complex Product', async ({ page }) => {
@@ -282,8 +275,6 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
 
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
-
-    console.log('🔄 Adding product options to complex product...')
 
     // Add product options if the UI supports it
     try {
@@ -326,22 +317,20 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
 
           // Save option
           await page.click('button:has-text("Save Option")')
-          console.log(`✅ Added product option: ${option.name} (${option.type})`)
+
         }
       }
     } catch (error) {
-      console.log('⚠️  Product options UI not available, skipping...')
+
     }
 
     // Final save
     await page.click('button:has-text("Save"), button:has-text("Update")')
     await page.waitForSelector('text=success', { timeout: 10000 })
 
-    console.log('✅ Updated product with options')
   })
 
   test('Step 4: Verify Complex Product Configuration', async ({ page }) => {
-    console.log('🔄 Verifying complex product configuration...')
 
     // Test API to verify product was saved correctly
     const response = await page.request.get('https://gangrunprinting.com/api/products')
@@ -351,32 +340,25 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     const complexProductFromAPI = products.find(p => p.sku === complexProduct.sku)
 
     if (complexProductFromAPI) {
-      console.log('✅ Complex product found in API')
-      console.log(`   - Name: ${complexProductFromAPI.name}`)
-      console.log(`   - SKU: ${complexProductFromAPI.sku}`)
-      console.log(`   - Base Price: $${complexProductFromAPI.basePrice}`)
-      console.log(`   - Has Image: ${complexProductFromAPI.imageUrl ? 'Yes' : 'No'}`)
-      console.log(`   - Is Active: ${complexProductFromAPI.isActive}`)
-      console.log(`   - Is Featured: ${complexProductFromAPI.isFeatured}`)
 
       // Verify relationships
       if (complexProductFromAPI.ProductCategory) {
-        console.log(`   - Category: ${complexProductFromAPI.ProductCategory.name}`)
+
       }
 
       if (complexProductFromAPI.ProductImage && complexProductFromAPI.ProductImage.length > 0) {
-        console.log(`   - Images: ${complexProductFromAPI.ProductImage.length}`)
+
       }
 
       if (complexProductFromAPI.PricingTier && complexProductFromAPI.PricingTier.length > 0) {
-        console.log(`   - Pricing Tiers: ${complexProductFromAPI.PricingTier.length}`)
+
       }
 
       if (complexProductFromAPI.ProductOption && complexProductFromAPI.ProductOption.length > 0) {
-        console.log(`   - Product Options: ${complexProductFromAPI.ProductOption.length}`)
+
       }
     } else {
-      console.log('⚠️  Complex product not found in API response')
+
     }
 
     // Verify in admin UI
@@ -386,13 +368,9 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
     const productInList = page.locator(`text=${complexProduct.name}`)
     await expect(productInList).toBeVisible()
 
-    console.log('✅ Complex product visible in admin products list')
-
-    console.log('🎉 Complex product configuration verified successfully!')
   })
 
   test('Step 5: Test All Configuration Combinations', async ({ page }) => {
-    console.log('🔄 Testing configuration combinations...')
 
     // Test that all our foundation data is working together
     const testCombinations = [
@@ -452,10 +430,8 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
           await page.click(`text=${combo.size}`)
         }
 
-        console.log(`✅ Successfully configured: ${combo.name}`)
-
       } catch (error) {
-        console.log(`⚠️  Configuration issue with ${combo.name}: ${error}`)
+
       }
 
       // Save to test the combination
@@ -463,12 +439,11 @@ test.describe('BMAD Test 3: Complex Product Configuration with All Options', () 
 
       try {
         await page.waitForSelector('text=success', { timeout: 5000 })
-        console.log(`✅ Created test product: ${combo.name}`)
+
       } catch (error) {
-        console.log(`⚠️  Failed to create: ${combo.name}`)
+
       }
     }
 
-    console.log('🎉 Configuration combinations testing completed!')
   })
 })

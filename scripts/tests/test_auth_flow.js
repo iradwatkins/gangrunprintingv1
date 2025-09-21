@@ -1,7 +1,6 @@
 const { chromium } = require('playwright')
 
 async function testAuthFlow() {
-  console.log('Starting comprehensive auth flow test...')
 
   const browser = await chromium.launch({
     headless: true,
@@ -18,7 +17,7 @@ async function testAuthFlow() {
   // Capture all logs
   const logs = []
   const log = (message) => {
-    console.log(message)
+
     logs.push(`[${new Date().toISOString()}] ${message}`)
   }
 

@@ -4,23 +4,23 @@ import {
   IMAGE_SIZES,
   PRODUCT_IMAGE_PROFILES,
   IMAGE_FORMAT_PRIORITY,
-  IMAGE_ANALYSIS
+  IMAGE_ANALYSIS,
 } from '@/config/constants'
 
 export interface ProcessedImage {
-  optimized: Buffer  // Replaced "original" with "optimized" capped version
+  optimized: Buffer // Replaced "original" with "optimized" capped version
   large: Buffer
   medium: Buffer
   thumbnail: Buffer
   webp: Buffer
-  avif: Buffer       // Added AVIF support
+  avif: Buffer // Added AVIF support
   blurDataUrl: string
   metadata: {
     width: number
     height: number
     format: string
     size: number
-    originalSize: number  // Track original size for compression stats
+    originalSize: number // Track original size for compression stats
     compressionRatio: number
     profileUsed: string
   }
@@ -49,16 +49,16 @@ export interface ImageProcessingOptions {
 }
 
 const DEFAULT_OPTIONS: ImageProcessingOptions = {
-  quality: 75,  // Reduced default quality for better compression
+  quality: 75, // Reduced default quality for better compression
   thumbnailSize: IMAGE_SIZES.THUMBNAIL,
   mediumSize: IMAGE_SIZES.MEDIUM,
   largeSize: IMAGE_SIZES.LARGE,
   generateWebP: true,
-  generateAVIF: true,  // Enable AVIF by default
+  generateAVIF: true, // Enable AVIF by default
   generateBlurPlaceholder: true,
   productProfile: 'DEFAULT',
   enableContentAnalysis: true,
-  maxDimension: 1200,  // Cap dimensions aggressively
+  maxDimension: 1200, // Cap dimensions aggressively
 }
 
 /**
@@ -68,12 +68,11 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
   try {
     const image = sharp(buffer)
     const metadata = await image.metadata()
-    const { data, info } = await image
-      .raw()
-      .toBuffer({ resolveWithObject: true })
+    const { data, info } = await image.raw().toBuffer({ resolveWithObject: true })
 
     // Check for transparency
-    const hasTransparency = metadata.channels === 4 || metadata.format === 'png' && metadata.channels === 2
+    const hasTransparency =
+      metadata.channels === 4 || (metadata.format === 'png' && metadata.channels === 2)
 
     // Calculate average contrast (simplified method)
     let contrastSum = 0
@@ -112,7 +111,7 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
       isHighContrast,
       textLikelihood,
       recommendedQuality,
-      dominantColors
+      dominantColors,
     }
   } catch (error) {
     console.error('Error analyzing image content:', error)
@@ -123,7 +122,7 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
       isHighContrast: false,
       textLikelihood: 0.5,
       recommendedQuality: 75,
-      dominantColors: 100
+      dominantColors: 100,
     }
   }
 }
@@ -185,7 +184,7 @@ export async function processProductImage(
       .jpeg({
         quality: finalQuality,
         progressive: true,
-        mozjpeg: true // Use mozjpeg for better compression
+        mozjpeg: true, // Use mozjpeg for better compression
       })
       .toBuffer()
 
@@ -226,7 +225,7 @@ export async function processProductImage(
         .clone()
         .webp({
           quality: Math.max(finalQuality - 5, 65),
-          effort: 6 // Higher effort for better compression
+          effort: 6, // Higher effort for better compression
         })
         .toBuffer()
     }
@@ -239,7 +238,7 @@ export async function processProductImage(
           .clone()
           .avif({
             quality: Math.max(finalQuality - 15, 50),
-            effort: 9 // Maximum effort for best compression
+            effort: 9, // Maximum effort for best compression
           })
           .toBuffer()
       } catch (avifError) {

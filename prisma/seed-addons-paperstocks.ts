@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Starting add-ons and paper stocks seed...')
 
   // Create Paper Stocks
   const paperStocks = [
@@ -113,7 +112,7 @@ async function main() {
       update: stock,
       create: stock,
     })
-    console.log(`✓ Upserted paper stock: ${created.name}`)
+
   }
 
   // Create Coating Options
@@ -146,7 +145,7 @@ async function main() {
       update: coating,
       create: coating,
     })
-    console.log(`✓ Upserted coating option: ${created.name}`)
+
   }
 
   // Create Sides Options
@@ -183,7 +182,7 @@ async function main() {
       update: side,
       create: side,
     })
-    console.log(`✓ Upserted sides option: ${created.name}`)
+
   }
 
   // Create Add-ons
@@ -301,10 +300,9 @@ async function main() {
       update: addOn,
       create: addOn,
     })
-    console.log(`✓ Upserted add-on: ${created.name}`)
+
   }
 
-  console.log('✅ Add-ons and paper stocks seed completed successfully!')
 }
 
 main()

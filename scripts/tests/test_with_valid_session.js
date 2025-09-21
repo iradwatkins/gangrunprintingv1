@@ -1,7 +1,6 @@
 const { chromium } = require('playwright')
 
 async function testWithValidSession() {
-  console.log('Testing admin flow with simulated valid session...')
 
   const browser = await chromium.launch({
     headless: true,
@@ -18,7 +17,7 @@ async function testWithValidSession() {
   // Capture logs
   const logs = []
   const log = (message) => {
-    console.log(message)
+
     logs.push(`[${new Date().toISOString()}] ${message}`)
   }
 

@@ -3,14 +3,14 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function restoreAllFoundationData() {
-  console.log('🔄 Starting Complete Foundation Data Restoration')
+
   console.log('=' .repeat(60))
-  console.log('Restoring to the perfect moment in time with all data')
+
   console.log('=' .repeat(60))
 
   try {
     // 1. Restore Paper Stocks
-    console.log('\n📄 Restoring Paper Stocks...')
+
     const paperStocks = [
       {
         name: '14pt Cardstock',
@@ -112,10 +112,9 @@ async function restoreAllFoundationData() {
         create: paperStock,
       })
     }
-    console.log(`✅ Restored ${paperStocks.length} paper stocks`)
 
     // 2. Create Paper Stock Sets
-    console.log('\n📦 Creating Paper Stock Sets...')
+
     const paperStockSets = [
       {
         name: 'Standard Cardstock Set',
@@ -192,10 +191,8 @@ async function restoreAllFoundationData() {
         }
       }
     }
-    console.log(`✅ Created ${paperStockSets.length} paper stock sets`)
 
     // 3. Restore ALL Add-ons (19 total including special ones)
-    console.log('\n➕ Restoring ALL Add-ons...')
 
     // First restore the special add-ons with conditional fields
     const cornerRounding = await prisma.addOn.upsert({
@@ -262,7 +259,6 @@ async function restoreAllFoundationData() {
         isActive: true,
       },
     })
-    console.log('✅ Restored Corner Rounding addon')
 
     const variableData = await prisma.addOn.upsert({
       where: { name: 'Variable Data Printing' },
@@ -322,7 +318,6 @@ async function restoreAllFoundationData() {
         isActive: true,
       },
     })
-    console.log('✅ Restored Variable Data Printing addon')
 
     // Restore Perforation addon
     const perforation = await prisma.addOn.upsert({
@@ -391,7 +386,6 @@ async function restoreAllFoundationData() {
         isActive: true,
       },
     })
-    console.log('✅ Restored Perforation addon')
 
     // Restore Banding addon
     const banding = await prisma.addOn.upsert({
@@ -452,7 +446,6 @@ async function restoreAllFoundationData() {
         isActive: true,
       },
     })
-    console.log('✅ Restored Banding addon')
 
     // Now restore the standard add-ons
     const standardAddOns = [
@@ -570,11 +563,9 @@ async function restoreAllFoundationData() {
         create: addon,
       })
     }
-    console.log(`✅ Restored ${standardAddOns.length} standard add-ons`)
-    console.log(`✅ Total Add-ons restored: ${standardAddOns.length + 4} (including special add-ons)`)
 
     // 4. Create Add-on Sets
-    console.log('\n📦 Creating Add-on Sets...')
+
     const addOnSets = [
       {
         name: 'Premium Business Card Add-ons',
@@ -745,10 +736,9 @@ async function restoreAllFoundationData() {
         })
       }
     }
-    console.log(`✅ Created ${addOnSets.length} add-on sets with display positions`)
 
     // 5. Restore Quantity Groups
-    console.log('\n📊 Restoring Quantity Groups...')
+
     const quantityGroups = [
       {
         name: 'Standard Quantities',
@@ -793,10 +783,9 @@ async function restoreAllFoundationData() {
         create: group,
       })
     }
-    console.log(`✅ Restored ${quantityGroups.length} quantity groups`)
 
     // 6. Restore Size Groups
-    console.log('\n📐 Restoring Size Groups...')
+
     const sizeGroups = [
       {
         name: 'Business Card Sizes',
@@ -859,10 +848,9 @@ async function restoreAllFoundationData() {
         create: group,
       })
     }
-    console.log(`✅ Restored ${sizeGroups.length} size groups`)
 
     // 7. Restore Turnaround Times
-    console.log('\n⏰ Restoring Turnaround Times...')
+
     const turnaroundTimes = [
       { name: 'Economy', businessDays: 10, sortOrder: 1, isActive: true, priceMultiplier: 0.9 },
       { name: 'Standard', businessDays: 7, sortOrder: 2, isActive: true, priceMultiplier: 1 },
@@ -878,10 +866,9 @@ async function restoreAllFoundationData() {
         create: turnaround,
       })
     }
-    console.log(`✅ Restored ${turnaroundTimes.length} turnaround times`)
 
     // 8. Create Turnaround Time Sets
-    console.log('\n📦 Creating Turnaround Time Sets...')
+
     const turnaroundTimeSets = [
       {
         name: 'Standard Turnaround',
@@ -969,14 +956,12 @@ async function restoreAllFoundationData() {
         })
       }
     }
-    console.log(`✅ Created ${turnaroundTimeSets.length} turnaround time sets`)
 
     // 9. Link Products to Sets
-    console.log('\n🔗 Linking Products to Sets...')
+
     const products = await prisma.product.findMany()
 
     for (const product of products) {
-      console.log(`  Linking ${product.name}...`)
 
       // Link Paper Stock Sets
       if (product.name.includes('Business Card')) {
@@ -1154,11 +1139,10 @@ async function restoreAllFoundationData() {
         }
       }
     }
-    console.log(`✅ Linked ${products.length} products to their sets`)
 
     // Final verification
     console.log('\n' + '=' .repeat(60))
-    console.log('✨ RESTORATION COMPLETE - Final Counts:')
+
     console.log('=' .repeat(60))
 
     const finalCounts = {
@@ -1175,11 +1159,11 @@ async function restoreAllFoundationData() {
     }
 
     for (const [key, count] of Object.entries(finalCounts)) {
-      console.log(`✅ ${key}: ${count}`)
+
     }
 
     console.log('\n' + '=' .repeat(60))
-    console.log('🎉 All foundation data restored to the perfect moment!')
+
     console.log('=' .repeat(60))
 
   } catch (error) {
@@ -1193,7 +1177,7 @@ async function restoreAllFoundationData() {
 // Run the restoration
 restoreAllFoundationData()
   .then(() => {
-    console.log('\n✨ Restoration script completed successfully')
+
     process.exit(0)
   })
   .catch((error) => {

@@ -50,8 +50,6 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now()
 
   try {
-    console.log(`[${requestId}] GET /api/products - Request started`)
-
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get('categoryId')
     const isActive = searchParams.get('isActive')
@@ -74,8 +72,6 @@ export async function GET(request: NextRequest) {
     if (gangRunEligible !== null && gangRunEligible !== undefined) {
       where.gangRunEligible = gangRunEligible === 'true'
     }
-
-    console.log(`[${requestId}] Database query where clause:`, where)
 
     const products = await prisma.product.findMany({
       where,
@@ -138,7 +134,6 @@ export async function GET(request: NextRequest) {
     })
 
     const responseTime = Date.now() - startTime
-    console.log(`[${requestId}] Query successful - Found ${products.length} products in ${responseTime}ms`)
 
     return NextResponse.json(products, {
       headers: {
@@ -201,10 +196,8 @@ export async function GET(request: NextRequest) {
 // POST /api/products - Create new product
 export async function POST(request: NextRequest) {
   const requestId = Math.random().toString(36).substring(7)
-  console.log(`[${requestId}] === PRODUCT CREATION START ===`)
 
   try {
-    console.log(`[${requestId}] Step 1: Validating authentication...`)
     const { user, session } = await validateRequest()
 
     if (!session || !user || user.role !== 'ADMIN') {
@@ -215,9 +208,7 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
-    console.log(`[${requestId}] Authentication successful`)
 
-    console.log(`[${requestId}] Step 2: Parsing and validating data...`)
     let rawData
     try {
       rawData = await request.json()
@@ -266,9 +257,7 @@ export async function POST(request: NextRequest) {
       basePrice,
       setupFee,
     } = data
-    console.log(`[${requestId}] Data validated successfully`)
 
-    console.log(`[${requestId}] Step 3: Validating foreign keys...`)
     try {
       const [category, paperStockSet, quantityGroup, sizeGroup, addOns] = await Promise.all([
         prisma.productCategory.findUnique({ where: { id: categoryId } }),
@@ -296,10 +285,7 @@ export async function POST(request: NextRequest) {
         )
       }
       if (!sizeGroup) {
-        return NextResponse.json(
-          { error: `Size group not found: ${sizeGroupId}` },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: `Size group not found: ${sizeGroupId}` }, { status: 400 })
       }
       if (selectedAddOns.length > 0 && addOns.length !== selectedAddOns.length) {
         const missing = selectedAddOns.filter((id) => !addOns.find((ao) => ao.id === id))
@@ -312,15 +298,12 @@ export async function POST(request: NextRequest) {
       console.error(`[${requestId}] Foreign key validation error:`, validationError)
       return NextResponse.json({ error: 'Database validation error' }, { status: 500 })
     }
-    console.log(`[${requestId}] Foreign keys validated`)
 
-    console.log(`[${requestId}] Step 4: Generating slug...`)
     const slug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
 
-    console.log(`[${requestId}] Step 5: Creating product in transaction...`)
     const product = await prisma.$transaction(
       async (tx) => {
         return await tx.product.create({
@@ -435,8 +418,6 @@ export async function POST(request: NextRequest) {
       }
     )
 
-    console.log(`[${requestId}] Product created: ${product.id}`)
-    console.log(`[${requestId}] === PRODUCT CREATION COMPLETE ===`)
     return NextResponse.json(product, { status: 201 })
   } catch (error: any) {
     console.error(`[${requestId}] === PRODUCT CREATION ERROR ===`)

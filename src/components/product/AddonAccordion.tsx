@@ -150,7 +150,8 @@ export default function AddonAccordion({
                                 isSelected ? 'text-blue-600' : 'text-gray-700'
                               }`}
                             >
-                              {addon.priceDisplay || (addon.price ? `$${addon.price.toFixed(2)}` : 'Variable')}
+                              {addon.priceDisplay ||
+                                (addon.price ? `$${addon.price.toFixed(2)}` : 'Variable')}
                             </span>
                           </div>
                         </Label>

@@ -32,16 +32,12 @@ const simpleProductSchema = z.object({
 
 // POST /api/products/simple - Create product with minimal validation
 export async function POST(request: NextRequest) {
-  console.log('=== SIMPLE PRODUCT CREATE START ===')
-
   try {
     // Check authentication
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
-      console.log('Auth check failed:', { session: !!session, user: !!user, role: user?.role })
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
-    console.log('Auth check passed')
 
     // Parse request body
     let rawData
@@ -57,7 +53,6 @@ export async function POST(request: NextRequest) {
     let validatedData
     try {
       validatedData = simpleProductSchema.parse(rawData)
-      console.log('Validation passed')
     } catch (error) {
       console.error('Validation error:', error)
       if (error instanceof z.ZodError) {
@@ -80,8 +75,6 @@ export async function POST(request: NextRequest) {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-
-    console.log('Creating product with slug:', slug)
 
     // Create product with minimal relations
     const product = await prisma.product.create({
@@ -120,31 +113,37 @@ export async function POST(request: NextRequest) {
         },
 
         // Create addon set relation if provided
-        productAddOnSets: validatedData.addOnSetId ? {
-          create: {
-            addOnSetId: validatedData.addOnSetId,
-            isDefault: true,
-          },
-        } : undefined,
+        productAddOnSets: validatedData.addOnSetId
+          ? {
+              create: {
+                addOnSetId: validatedData.addOnSetId,
+                isDefault: true,
+              },
+            }
+          : undefined,
 
         // Create turnaround time set relation if provided
-        productTurnaroundTimeSets: validatedData.turnaroundTimeSetId ? {
-          create: {
-            turnaroundTimeSetId: validatedData.turnaroundTimeSetId,
-            isDefault: true,
-          },
-        } : undefined,
+        productTurnaroundTimeSets: validatedData.turnaroundTimeSetId
+          ? {
+              create: {
+                turnaroundTimeSetId: validatedData.turnaroundTimeSetId,
+                isDefault: true,
+              },
+            }
+          : undefined,
 
         // Create product image if provided
-        ProductImage: validatedData.imageUrl ? {
-          create: {
-            url: validatedData.imageUrl,
-            thumbnailUrl: validatedData.imageUrl, // Use same URL for simplicity
-            alt: `${validatedData.name} product image`,
-            isPrimary: true,
-            sortOrder: 0,
-          },
-        } : undefined,
+        ProductImage: validatedData.imageUrl
+          ? {
+              create: {
+                url: validatedData.imageUrl,
+                thumbnailUrl: validatedData.imageUrl, // Use same URL for simplicity
+                alt: `${validatedData.name} product image`,
+                isPrimary: true,
+                sortOrder: 0,
+              },
+            }
+          : undefined,
       },
       include: {
         ProductCategory: true,
@@ -204,9 +203,6 @@ export async function POST(request: NextRequest) {
         },
       },
     })
-
-    console.log('Product created successfully:', product.id)
-    console.log('=== SIMPLE PRODUCT CREATE SUCCESS ===')
 
     return NextResponse.json(product, { status: 201 })
   } catch (error: any) {

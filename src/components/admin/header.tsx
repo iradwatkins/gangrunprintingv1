@@ -54,7 +54,7 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
     try {
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       })
 
       if (response.ok) {

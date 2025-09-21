@@ -24,8 +24,6 @@ const createPrismaClient = () => {
     pooledUrl = `${databaseUrl}${separator}connection_limit=${connectionLimit}&pool_timeout=${DATABASE_CONFIG.POOL_TIMEOUT}&connect_timeout=${DATABASE_CONFIG.CONNECT_TIMEOUT}&statement_timeout=${DATABASE_CONFIG.STATEMENT_TIMEOUT}&idle_in_transaction_session_timeout=${DATABASE_CONFIG.IDLE_IN_TRANSACTION_TIMEOUT}`
   }
 
-  console.log(`[Prisma] Initializing with connection limit: ${connectionLimit}`)
-
   return new PrismaClient({
     datasources: {
       db: {
@@ -49,12 +47,16 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Add connection health check utility for on-demand monitoring
-export const checkDatabaseHealth = async (): Promise<{ status: 'healthy' | 'unhealthy'; latency?: number; error?: string }> => {
+export const checkDatabaseHealth = async (): Promise<{
+  status: 'healthy' | 'unhealthy'
+  latency?: number
+  error?: string
+}> => {
   const startTime = Date.now()
   try {
     await prisma.$executeRawUnsafe('SELECT 1')
     const latency = Date.now() - startTime
-    console.log(`[Prisma] Database health check: healthy (${latency}ms)`)
+
     return { status: 'healthy', latency }
   } catch (error) {
     const latency = Date.now() - startTime
@@ -62,7 +64,7 @@ export const checkDatabaseHealth = async (): Promise<{ status: 'healthy' | 'unhe
     return {
       status: 'unhealthy',
       latency,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 }
@@ -72,7 +74,7 @@ export const ensureDatabaseConnection = async (retries = 3): Promise<void> => {
   for (let i = 0; i < retries; i++) {
     try {
       await prisma.$connect()
-      console.log('[Prisma] Database connection established')
+
       return
     } catch (error) {
       console.error(`[Prisma] Connection attempt ${i + 1} failed:`, error)
@@ -80,7 +82,7 @@ export const ensureDatabaseConnection = async (retries = 3): Promise<void> => {
         throw new Error(`Failed to connect to database after ${retries} attempts`)
       }
       // Exponential backoff
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000))
+      await new Promise((resolve) => setTimeout(resolve, Math.pow(2, i) * 1000))
     }
   }
 }

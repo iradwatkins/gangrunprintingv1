@@ -51,7 +51,7 @@ export function transformQuantityGroup(group: QuantityGroup): Quantity[] {
     return {
       id: `${group.id}-${index}`,
       name: isCustomValue ? 'Custom...' : value,
-      value: isCustomValue ? null : (parseInt(value) || null),
+      value: isCustomValue ? null : parseInt(value) || null,
       isCustom: isCustomValue,
       minValue: isCustomValue ? group.customMin : null,
       maxValue: isCustomValue ? group.customMax : null,
@@ -71,20 +71,16 @@ export function transformQuantityGroups(groups: QuantityGroup[]): Quantity[] {
  * Find the default quantity from a transformed array
  * Returns the quantity that matches the group's defaultValue
  */
-export function findDefaultQuantity(
-  quantities: Quantity[],
-  defaultValue: string
-): Quantity | null {
+export function findDefaultQuantity(quantities: Quantity[], defaultValue: string): Quantity | null {
   // For custom default, return the custom quantity object
   if (defaultValue.toLowerCase() === 'custom') {
-    return quantities.find(q => q.isCustom) || null
+    return quantities.find((q) => q.isCustom) || null
   }
 
   // For standard defaults, find by name or value
-  return quantities.find(q =>
-    q.name === defaultValue ||
-    q.value?.toString() === defaultValue
-  ) || null
+  return (
+    quantities.find((q) => q.name === defaultValue || q.value?.toString() === defaultValue) || null
+  )
 }
 
 /**
@@ -105,14 +101,14 @@ export function validateCustomQuantity(
   if (customQuantity.minValue && value < customQuantity.minValue) {
     return {
       isValid: false,
-      error: `Minimum quantity is ${customQuantity.minValue.toLocaleString()}`
+      error: `Minimum quantity is ${customQuantity.minValue.toLocaleString()}`,
     }
   }
 
   if (customQuantity.maxValue && value > customQuantity.maxValue) {
     return {
       isValid: false,
-      error: `Maximum quantity is ${customQuantity.maxValue.toLocaleString()}`
+      error: `Maximum quantity is ${customQuantity.maxValue.toLocaleString()}`,
     }
   }
 
