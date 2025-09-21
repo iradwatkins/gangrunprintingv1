@@ -229,49 +229,82 @@ export default function NewProductPage() {
 
     // Basic validation
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file')
+      toast.error('Please select a valid image file (JPEG, PNG, WebP, or GIF)')
       return
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Image size must be less than 10MB')
+    // Check file size (max 10MB for better compatibility)
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    if (file.size > maxSize) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1)
+      toast.error(`Image is ${sizeMB}MB but must be less than 10MB. Please compress or resize the image.`)
       return
     }
 
-    setUploadingImage(true)
-    try {
-      const uploadFormData = new FormData()
-      uploadFormData.append('file', file)
-      uploadFormData.append('isPrimary', 'true')
-      uploadFormData.append('sortOrder', '0')
+    // Check image dimensions
+    const img = new Image()
+    const imageUrl = URL.createObjectURL(file)
 
-      const response = await fetch('/api/products/upload-image', {
-        method: 'POST',
-        body: uploadFormData,
-      })
+    img.onload = async () => {
+      URL.revokeObjectURL(imageUrl) // Clean up
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
-        throw new Error(errorData.error || 'Failed to upload image')
+      // Check minimum dimensions (100x100)
+      if (img.width < 100 || img.height < 100) {
+        toast.error(`Image is ${img.width}x${img.height}px but must be at least 100x100 pixels`)
+        return
       }
 
-      const data = await response.json()
+      // Check maximum dimensions (5000x5000)
+      if (img.width > 5000 || img.height > 5000) {
+        toast.error(`Image is ${img.width}x${img.height}px but cannot exceed 5000x5000 pixels`)
+        return
+      }
 
-      // Update form data with the uploaded image URL
-      setFormData(prev => ({
-        ...prev,
-        imageUrl: data.url
-      }))
+      // Proceed with upload
+      setUploadingImage(true)
+      try {
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', file)
+        uploadFormData.append('isPrimary', 'true')
+        uploadFormData.append('sortOrder', '0')
 
-      toast.success('Image uploaded successfully')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to upload image')
-      console.error('Image upload error:', error)
-    } finally {
-      setUploadingImage(false)
-      // Reset file input
-      e.target.value = ''
+        const response = await fetch('/api/products/upload-image', {
+          method: 'POST',
+          body: uploadFormData,
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
+          throw new Error(errorData.error || 'Failed to upload image')
+        }
+
+        const data = await response.json()
+
+        // Update form data with the uploaded image URL
+        setFormData(prev => ({
+          ...prev,
+          imageUrl: data.url
+        }))
+
+        toast.success('Image uploaded successfully')
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to upload image')
+        console.error('Image upload error:', error)
+      } finally {
+        setUploadingImage(false)
+        // Reset file input
+        if (e.target) e.target.value = ''
+      }
     }
+
+    img.onerror = () => {
+      URL.revokeObjectURL(imageUrl) // Clean up
+      toast.error('Failed to load image. Please ensure the file is a valid image.')
+      // Reset file input
+      if (e.target) e.target.value = ''
+    }
+
+    img.src = imageUrl
   }
 
   const handleRemoveImage = () => {
@@ -366,7 +399,7 @@ export default function NewProductPage() {
       console.error('Product creation error:', error)
     } finally {
       setLoading(false)
-      setUploadingImages(false)
+      setUploadingImage(false)
     }
   }
 
@@ -621,7 +654,7 @@ export default function NewProductPage() {
           <div>
             <Label>Product Image</Label>
             {!formData.imageUrl ? (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center">
+              <div className="border-2 border-dashed rounded-lg p-8 text-center relative">
                 <input
                   type="file"
                   id="product-image"
@@ -632,19 +665,20 @@ export default function NewProductPage() {
                 />
                 <label
                   htmlFor="product-image"
-                  className={`cursor-pointer ${uploadingImage ? 'opacity-50' : ''}`}
+                  className={`cursor-pointer block ${uploadingImage ? 'opacity-50' : ''}`}
                 >
                   {uploadingImage ? (
                     <>
-                      <Loader2 className="mx-auto h-8 w-8 animate-spin mb-4" />
-                      <p className="text-sm font-medium">Uploading image...</p>
+                      <Loader2 className="mx-auto h-8 w-8 animate-spin mb-4 text-primary" />
+                      <p className="text-sm font-medium">Processing image...</p>
+                      <p className="text-xs text-muted-foreground mt-2">Please wait while we optimize your image</p>
                     </>
                   ) : (
                     <>
-                      <Upload className="mx-auto h-8 w-8 mb-4 text-muted-foreground" />
+                      <Upload className="mx-auto h-8 w-8 mb-4 text-muted-foreground hover:text-primary transition-colors" />
                       <p className="text-sm font-medium">Click to upload product image</p>
                       <p className="text-xs text-muted-foreground mt-2">
-                        Supports JPEG, PNG (max 10MB)
+                        JPEG, PNG, WebP, GIF • Max 10MB • Min 100×100px • Max 5000×5000px
                       </p>
                     </>
                   )}

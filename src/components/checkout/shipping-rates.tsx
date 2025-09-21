@@ -1,0 +1,266 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Carrier } from '@prisma/client'
+import { Package, Truck, Plane, Clock, Check } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import toast from '@/lib/toast'
+
+interface ShippingRate {
+  carrier: Carrier
+  serviceCode: string
+  serviceName: string
+  rateAmount: number
+  currency: string
+  estimatedDays: number
+  deliveryDate?: string
+  isGuaranteed?: boolean
+}
+
+interface ShippingRatesProps {
+  toAddress: {
+    street: string
+    street2?: string
+    city: string
+    state: string
+    zipCode: string
+    country?: string
+    isResidential?: boolean
+  }
+  items: Array<{
+    productId?: string
+    quantity: number
+    width: number
+    height: number
+    paperStockId?: string
+    paperStockWeight?: number
+  }>
+  onRateSelected: (rate: ShippingRate) => void
+}
+
+export function ShippingRates({ toAddress, items, onRateSelected }: ShippingRatesProps) {
+  const [rates, setRates] = useState<ShippingRate[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedRate, setSelectedRate] = useState<string>('')
+  const [totalWeight, setTotalWeight] = useState<string>('0')
+
+  useEffect(() => {
+    fetchShippingRates()
+  }, [toAddress, items])
+
+  const fetchShippingRates = async () => {
+    if (!toAddress.street || !toAddress.city || !toAddress.state || !toAddress.zipCode) {
+      setError('Please enter a complete shipping address')
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          toAddress,
+          items,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to calculate shipping')
+      }
+
+      setRates(data.rates || [])
+      setTotalWeight(data.totalWeight || '0')
+
+      // Auto-select the first rate
+      if (data.rates && data.rates.length > 0) {
+        const firstRate = data.rates[0]
+        const rateId = `${firstRate.carrier}-${firstRate.serviceCode}`
+        setSelectedRate(rateId)
+        onRateSelected(firstRate)
+      }
+    } catch (err) {
+      console.error('Shipping calculation error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to calculate shipping rates')
+      toast.error('Unable to calculate shipping rates')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRateSelection = (value: string) => {
+    setSelectedRate(value)
+    const [carrier, serviceCode] = value.split('-')
+    const rate = rates.find((r) => r.carrier === carrier && r.serviceCode === serviceCode)
+    if (rate) {
+      onRateSelected(rate)
+    }
+  }
+
+  const getCarrierIcon = (carrier: Carrier) => {
+    switch (carrier) {
+      case Carrier.FEDEX:
+      case Carrier.UPS:
+        return <Truck className="h-4 w-4" />
+      case Carrier.SOUTHWEST_CARGO:
+        return <Plane className="h-4 w-4" />
+      default:
+        return <Package className="h-4 w-4" />
+    }
+  }
+
+  const getCarrierColor = (carrier: Carrier) => {
+    switch (carrier) {
+      case Carrier.FEDEX:
+        return 'bg-purple-100 text-purple-700'
+      case Carrier.UPS:
+        return 'bg-amber-100 text-amber-700'
+      case Carrier.SOUTHWEST_CARGO:
+        return 'bg-blue-100 text-blue-700'
+      default:
+        return 'bg-gray-100 text-gray-700'
+    }
+  }
+
+  const formatDeliveryDate = (date: string | undefined, estimatedDays: number) => {
+    if (date) {
+      return new Date(date).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      })
+    }
+
+    const deliveryDate = new Date()
+    deliveryDate.setDate(deliveryDate.getDate() + estimatedDays)
+    return deliveryDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Calculating Shipping Rates...
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-20 w-full" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    )
+  }
+
+  if (rates.length === 0) {
+    return (
+      <Alert>
+        <AlertDescription>
+          No shipping options available for this address. Please check your address or contact
+          support.
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Select Shipping Method
+          </span>
+          <span className="text-sm font-normal text-muted-foreground">
+            Total Weight: {totalWeight} lbs
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <RadioGroup value={selectedRate} onValueChange={handleRateSelection}>
+          <div className="space-y-3">
+            {rates.map((rate) => {
+              const rateId = `${rate.carrier}-${rate.serviceCode}`
+              const isSelected = selectedRate === rateId
+
+              return (
+                <label
+                  key={rateId}
+                  htmlFor={rateId}
+                  className={`
+                    flex cursor-pointer rounded-lg border p-4 transition-all
+                    ${isSelected ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}
+                  `}
+                >
+                  <RadioGroupItem value={rateId} id={rateId} className="mt-1" />
+                  <div className="ml-3 flex flex-1 items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{rate.serviceName}</span>
+                        <Badge variant="secondary" className={getCarrierColor(rate.carrier)}>
+                          {getCarrierIcon(rate.carrier)}
+                          <span className="ml-1">{rate.carrier}</span>
+                        </Badge>
+                        {rate.isGuaranteed && (
+                          <Badge variant="outline" className="text-xs">
+                            <Check className="mr-1 h-3 w-3" />
+                            Guaranteed
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {rate.estimatedDays === 1
+                            ? 'Next Day'
+                            : `${rate.estimatedDays} Business Days`}
+                        </span>
+                        <span>
+                          Delivery by {formatDeliveryDate(rate.deliveryDate, rate.estimatedDays)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="ml-4 text-right">
+                      <div className="text-lg font-semibold">
+                        ${rate.rateAmount.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              )
+            })}
+          </div>
+        </RadioGroup>
+      </CardContent>
+    </Card>
+  )
+}

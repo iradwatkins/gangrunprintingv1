@@ -1,0 +1,102 @@
+import { type Carrier } from '@prisma/client'
+import { type ShippingConfiguration } from './interfaces'
+
+// FedEx configuration
+export const fedexConfig: ShippingConfiguration = {
+  enabled: !!process.env.FEDEX_API_KEY,
+  testMode: process.env.FEDEX_TEST_MODE === 'true',
+  defaultPackaging: {
+    weight: 0.5, // 0.5 lbs for box/packaging
+  },
+  markupPercentage: 10, // 10% markup on FedEx rates
+}
+
+// UPS configuration
+export const upsConfig: ShippingConfiguration = {
+  enabled: !!process.env.UPS_ACCESS_LICENSE_NUMBER,
+  testMode: process.env.UPS_TEST_MODE === 'true',
+  defaultPackaging: {
+    weight: 0.5,
+  },
+  markupPercentage: 10,
+}
+
+// Southwest Cargo configuration
+export const southwestCargoConfig: ShippingConfiguration = {
+  enabled: true, // Always enabled as it's simple weight-based
+  testMode: false,
+  defaultPackaging: {
+    weight: 1.0, // Heavier packaging for freight
+  },
+  markupPercentage: 5, // Lower markup for freight
+}
+
+// Service codes mapping - Only services used by GangRun Printing
+export const FEDEX_SERVICE_CODES = {
+  FEDEX_GROUND: 'FEDEX_GROUND',
+  GROUND_HOME_DELIVERY: 'GROUND_HOME_DELIVERY',
+  FEDEX_2_DAY: 'FEDEX_2_DAY',
+  PRIORITY_OVERNIGHT: 'PRIORITY_OVERNIGHT',
+} as const
+
+export const UPS_SERVICE_CODES = {
+  GROUND: '03',
+  THREE_DAY_SELECT: '12',
+  SECOND_DAY_AIR: '02',
+  NEXT_DAY_AIR: '01',
+  NEXT_DAY_AIR_SAVER: '13',
+} as const
+
+// Service names for display
+export const SERVICE_NAMES = {
+  // FedEx - Only services used by GangRun Printing
+  FEDEX_GROUND: 'FedEx Ground',
+  GROUND_HOME_DELIVERY: 'FedEx Home Delivery',
+  FEDEX_2_DAY: 'FedEx 2Day',
+  PRIORITY_OVERNIGHT: 'FedEx Priority Overnight',
+
+  // UPS
+  '03': 'UPS Ground',
+  '12': 'UPS 3 Day Select',
+  '02': 'UPS 2nd Day Air',
+  '01': 'UPS Next Day Air',
+  '13': 'UPS Next Day Air Saver',
+
+  // Southwest Cargo
+  SOUTHWEST_CARGO_STANDARD: 'Southwest Cargo Standard',
+  SOUTHWEST_CARGO_EXPRESS: 'Southwest Cargo Express',
+} as const
+
+// Default sender address (your warehouse)
+export const DEFAULT_SENDER_ADDRESS = {
+  street: '1234 Print Shop Way',
+  city: 'Houston',
+  state: 'TX',
+  zipCode: '77001',
+  country: 'US',
+  isResidential: false,
+}
+
+// Carrier availability by state
+export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
+  FEDEX: [], // Available in all states
+  UPS: [],   // Available in all states
+  SOUTHWEST_CARGO: [
+    'TX', 'OK', 'NM', 'AR', 'LA', 'AZ', 'CA', 'NV', 'CO', 'UT',
+    'FL', 'GA', 'AL', 'TN', 'MS', 'SC', 'NC', 'KY', 'MO', 'KS',
+  ], // Limited to Southwest's service area
+}
+
+// Weight-based pricing for Southwest Cargo
+export const SOUTHWEST_CARGO_RATES = {
+  baseRate: parseFloat(process.env.SOUTHWEST_CARGO_RATE_PER_POUND || '2.50'),
+  minimumCharge: parseFloat(process.env.SOUTHWEST_CARGO_MINIMUM_CHARGE || '25.00'),
+  weightBreaks: [
+    { upTo: 50, ratePerPound: 2.50 },
+    { upTo: 100, ratePerPound: 2.25 },
+    { upTo: 500, ratePerPound: 2.00 },
+    { upTo: 1000, ratePerPound: 1.75 },
+    { upTo: Infinity, ratePerPound: 1.50 },
+  ],
+  expressMultiplier: 1.5, // Express shipping is 1.5x standard rate
+}

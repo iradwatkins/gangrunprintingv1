@@ -1012,7 +1012,35 @@ export default function SimpleConfigurationForm({
 
       {/* Add-ons & Upgrades Section (includes Variable Data) */}
       <AddonAccordionWithVariable
-        addons={configData.addons || []}
+        addonsGrouped={(() => {
+          // Group addons based on their configuration type
+          const allAddons = configData.addons || []
+
+          const grouped = {
+            aboveDropdown: [] as typeof allAddons,
+            inDropdown: [] as typeof allAddons,
+            belowDropdown: [] as typeof allAddons,
+          }
+
+          allAddons.forEach(addon => {
+            const configurationType = addon.configuration?.type
+
+            // Variable Data Printing goes above the dropdown
+            if (configurationType === 'variable_data') {
+              grouped.aboveDropdown.push(addon)
+            }
+            // Corner Rounding goes below the dropdown
+            else if (configurationType === 'corner_rounding') {
+              grouped.belowDropdown.push(addon)
+            }
+            // Perforation, Banding, and all other addons go inside the dropdown
+            else {
+              grouped.inDropdown.push(addon)
+            }
+          })
+
+          return grouped
+        })()}
         disabled={loading}
         selectedAddons={configuration.selectedAddons}
         onAddonChange={handleAddonChange}
