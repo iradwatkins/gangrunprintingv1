@@ -62,7 +62,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const data = await request.json()
+    console.log('📝 API Request Data:', JSON.stringify(data, null, 2))
+
     const { images, paperStockSetId, quantityGroupId, sizeGroupId, turnaroundTimeSetId, addOnSetId, options, pricingTiers, ...productData } = data
+
+    console.log('📊 Extracted fields:', {
+      images: images?.length || 0,
+      paperStockSetId,
+      quantityGroupId,
+      sizeGroupId,
+      turnaroundTimeSetId,
+      addOnSetId,
+      options: options?.length || 0,
+      pricingTiers: pricingTiers?.length || 0,
+      productDataKeys: Object.keys(productData)
+    })
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({
@@ -277,6 +291,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json(product)
   } catch (error: any) {
     console.error('Error updating product:', error)
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack
+    })
 
     // Check for unique constraint violations
     if (error.code === 'P2002') {
@@ -287,7 +307,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       )
     }
 
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
+    // Log the full error for debugging
+    console.error('Full error object:', JSON.stringify(error, null, 2))
+
+    return NextResponse.json({
+      error: 'Failed to update product',
+      debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 })
   }
 }
 
