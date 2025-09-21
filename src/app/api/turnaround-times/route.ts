@@ -5,9 +5,9 @@ import { z } from 'zod'
 const createTurnaroundTimeSchema = z.object({
   name: z.string().min(1).max(50),
   displayName: z.string().min(1).max(100),
-  description: z.string().optional(),
+  description: z.string().optional().or(z.literal('')),
   daysMin: z.number().min(0).max(30),
-  daysMax: z.number().min(0).max(30).optional(),
+  daysMax: z.number().min(0).max(30).optional().nullable(),
   pricingModel: z.enum(['FLAT', 'PERCENTAGE', 'PER_UNIT', 'CUSTOM']),
   basePrice: z.number().min(0),
   priceMultiplier: z.number().min(0.1).max(10),
@@ -43,8 +43,12 @@ export async function GET() {
 // POST /api/turnaround-times
 export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 Turnaround time POST request received')
     const body = await request.json()
+    console.log('📝 Request body:', JSON.stringify(body, null, 2))
+
     const data = createTurnaroundTimeSchema.parse(body)
+    console.log('✅ Validation passed, parsed data:', JSON.stringify(data, null, 2))
 
     const turnaroundTime = await prisma.turnaroundTime.create({
       data,
@@ -52,9 +56,15 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(turnaroundTime, { status: 201 })
   } catch (error) {
+    console.error('Turnaround time creation error:', error)
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        {
+          error: 'Validation failed',
+          details: error.errors,
+          message: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        },
         { status: 400 }
       )
     }
