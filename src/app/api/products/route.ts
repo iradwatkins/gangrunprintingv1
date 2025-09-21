@@ -80,8 +80,8 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       where,
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
@@ -97,15 +97,15 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        ProductOption: {
+        productOptions: {
           include: {
-            OptionValue: {
+            optionValues: {
               orderBy: { sortOrder: 'asc' },
             },
           },
           orderBy: { sortOrder: 'asc' },
         },
-        PricingTier: {
+        pricingTiers: {
           orderBy: { minQuantity: 'asc' },
         },
         productQuantityGroups: {
@@ -125,9 +125,9 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            ProductImage: true,
+            productImages: true,
             productPaperStockSets: true,
-            ProductOption: true,
+            productOptions: true,
             productQuantityGroups: true,
             productSizeGroups: true,
             productAddOns: true,
