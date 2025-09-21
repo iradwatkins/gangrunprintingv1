@@ -343,7 +343,7 @@ export async function GET(request: NextRequest) {
           productId,
         },
         include: {
-          quantityGroup: true,
+          QuantityGroup: true,
         },
         orderBy: {
           quantityGroup: {

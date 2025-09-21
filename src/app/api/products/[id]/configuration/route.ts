@@ -364,11 +364,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           productId,
         },
         include: {
-          addOnSet: {
+          AddOnSet: {
             include: {
-              addOnSetItems: {
+              AddOnSetItem: {
                 include: {
-                  addOn: true,
+                  AddOn: true,
                 },
                 orderBy: {
                   sortOrder: 'asc',
@@ -416,11 +416,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           productId,
         },
         include: {
-          addOnSet: {
+          AddOnSet: {
             include: {
-              addOnSetItems: {
+              AddOnSetItem: {
                 include: {
-                  addOn: true,
+                  AddOn: true,
                 },
                 orderBy: {
                   sortOrder: 'asc',
@@ -502,11 +502,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           isDefault: true,
         },
         include: {
-          turnaroundTimeSet: {
+          TurnaroundTimeSet: {
             include: {
-              turnaroundTimeItems: {
+              TurnaroundTimeSetItem: {
                 include: {
-                  turnaroundTime: true,
+                  TurnaroundTime: true,
                 },
                 orderBy: {
                   sortOrder: 'asc',
@@ -523,11 +523,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         (await prisma.productTurnaroundTimeSet.findFirst({
           where: { productId },
           include: {
-            turnaroundTimeSet: {
+            TurnaroundTimeSet: {
               include: {
-                turnaroundTimeItems: {
+                TurnaroundTimeSetItem: {
                   include: {
-                    turnaroundTime: true,
+                    TurnaroundTime: true,
                   },
                   orderBy: {
                     sortOrder: 'asc',

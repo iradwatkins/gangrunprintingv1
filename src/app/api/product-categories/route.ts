@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where.isActive = true
     }
     if (withProducts) {
-      where.Product = {
+      where.products = {
         some: {
           isActive: true,
         },
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            Product: true,
+            products: true,
           },
         },
       },

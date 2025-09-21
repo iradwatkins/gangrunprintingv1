@@ -28,7 +28,7 @@ export async function GET() {
       include: {
         turnaroundTimeSetItems: {
           include: {
-            turnaroundTimeSet: true,
+            TurnaroundTimeSet: true,
           },
         },
       },

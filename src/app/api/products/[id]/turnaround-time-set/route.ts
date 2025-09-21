@@ -65,11 +65,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         isDefault,
       },
       include: {
-        turnaroundTimeSet: {
+        TurnaroundTimeSet: {
           include: {
-            turnaroundTimeItems: {
+            TurnaroundTimeSetItem: {
               include: {
-                turnaroundTime: true,
+                TurnaroundTime: true,
               },
               orderBy: {
                 sortOrder: 'asc',
@@ -122,11 +122,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const productTurnaroundTimeSets = await prisma.productTurnaroundTimeSet.findMany({
       where: { productId },
       include: {
-        turnaroundTimeSet: {
+        TurnaroundTimeSet: {
           include: {
-            turnaroundTimeItems: {
+            TurnaroundTimeSetItem: {
               include: {
-                turnaroundTime: true,
+                TurnaroundTime: true,
               },
               orderBy: {
                 sortOrder: 'asc',

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       include: {
         OrderItem: {
           include: {
-            paperStock: true,
+            PaperStock: true,
           },
         },
       },

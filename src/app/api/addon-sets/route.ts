@@ -12,9 +12,9 @@ export async function GET(request: NextRequest) {
         isActive: true,
       },
       include: {
-        addOnSetItems: include ? {
+        AddOnSetItem: include ? {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         } : false,
         _count: {
           select: {
-            addOnSetItems: true,
+            AddOnSetItem: true,
             productAddOnSets: true,
           },
         },
@@ -80,9 +80,9 @@ export async function POST(request: NextRequest) {
     const completeAddOnSet = await prisma.addOnSet.findUnique({
       where: { id: addOnSet.id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',

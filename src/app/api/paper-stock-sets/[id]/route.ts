@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        paperStockItems: {
+        PaperStockSetItem: {
           include: {
             paperStock: {
               include: {
@@ -141,7 +141,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return await tx.paperStockSet.findUnique({
         where: { id: params.id },
         include: {
-          paperStockItems: {
+          PaperStockSetItem: {
             include: {
               paperStock: {
                 include: {

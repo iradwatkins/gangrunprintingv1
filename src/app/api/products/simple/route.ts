@@ -155,11 +155,11 @@ export async function POST(request: NextRequest) {
         },
         productPaperStockSets: {
           include: {
-            paperStockSet: {
+            PaperStockSet: {
               include: {
-                paperStockItems: {
+                PaperStockSetItem: {
                   include: {
-                    paperStock: true,
+                    PaperStock: true,
                   },
                 },
               },
@@ -168,21 +168,21 @@ export async function POST(request: NextRequest) {
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true,
+            QuantityGroup: true,
           },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true,
+            SizeGroup: true,
           },
         },
         productAddOnSets: {
           include: {
-            addOnSet: {
+            AddOnSet: {
               include: {
-                addOnSetItems: {
+                AddOnSetItem: {
                   include: {
-                    addOn: true,
+                    AddOn: true,
                   },
                 },
               },
@@ -191,11 +191,11 @@ export async function POST(request: NextRequest) {
         },
         productTurnaroundTimeSets: {
           include: {
-            turnaroundTimeSet: {
+            TurnaroundTimeSet: {
               include: {
-                turnaroundTimeItems: {
+                TurnaroundTimeSetItem: {
                   include: {
-                    turnaroundTime: true,
+                    TurnaroundTime: true,
                   },
                 },
               },

@@ -125,9 +125,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           prisma.productPaperStockSet.findMany({
             where: { productId },
             select: {
-              paperStockSet: {
+              PaperStockSet: {
                 select: {
-                  paperStockItems: {
+                  PaperStockSetItem: {
                     select: {
                       isDefault: true,
                       sortOrder: true,
@@ -230,8 +230,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const product = {
       ...productData,
       productPaperStockSets: paperStockData.map((psd) => ({
-        paperStockSet: {
-          paperStockItems:
+        PaperStockSet: {
+          PaperStockSetItem:
             psd.paperStockSet?.paperStockItems.map((item) => ({
               ...item,
               paperStock: {

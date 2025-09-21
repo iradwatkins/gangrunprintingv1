@@ -86,11 +86,11 @@ export async function GET(request: NextRequest) {
         },
         productPaperStockSets: {
           include: {
-            paperStockSet: {
+            PaperStockSet: {
               include: {
-                paperStockItems: {
+                PaperStockSetItem: {
                   include: {
-                    paperStock: true,
+                    PaperStock: true,
                   },
                 },
               },
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
         },
         productOptions: {
           include: {
-            optionValues: {
+            OptionValue: {
               orderBy: { sortOrder: 'asc' },
             },
           },
@@ -110,17 +110,17 @@ export async function GET(request: NextRequest) {
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true,
+            QuantityGroup: true,
           },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true,
+            SizeGroup: true,
           },
         },
         productAddOns: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
         },
         _count: {
@@ -341,7 +341,7 @@ export async function POST(request: NextRequest) {
             rushFee,
 
             // Create images if provided
-            ProductImage:
+            productImages:
               images.length > 0
                 ? {
                     create: images.map((img: any, index: number) => ({
@@ -396,15 +396,15 @@ export async function POST(request: NextRequest) {
                 : undefined,
           },
           include: {
-            ProductCategory: true,
-            ProductImage: true,
+            productCategory: true,
+            productImages: true,
             productPaperStockSets: {
               include: {
-                paperStockSet: {
+                PaperStockSet: {
                   include: {
-                    paperStockItems: {
+                    PaperStockSetItem: {
                       include: {
-                        paperStock: true,
+                        PaperStock: true,
                       },
                     },
                   },
@@ -413,17 +413,17 @@ export async function POST(request: NextRequest) {
             },
             productQuantityGroups: {
               include: {
-                quantityGroup: true,
+                QuantityGroup: true,
               },
             },
             productSizeGroups: {
               include: {
-                sizeGroup: true,
+                SizeGroup: true,
               },
             },
             productAddOns: {
               include: {
-                addOn: true,
+                AddOn: true,
               },
             },
           },

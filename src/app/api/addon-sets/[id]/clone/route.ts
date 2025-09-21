@@ -29,7 +29,7 @@ export async function POST(
     const originalAddOnSet = await prisma.addOnSet.findUnique({
       where: { id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           orderBy: {
             sortOrder: 'asc',
           },
@@ -73,9 +73,9 @@ export async function POST(
       return await tx.addOnSet.findUnique({
         where: { id: newAddOnSet.id },
         include: {
-          addOnSetItems: {
+          AddOnSetItem: {
             include: {
-              addOn: true,
+              AddOn: true,
             },
             orderBy: {
               sortOrder: 'asc',
