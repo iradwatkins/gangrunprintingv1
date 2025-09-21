@@ -1,15 +1,16 @@
 import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { Lucia } from 'lucia'
-import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 
 import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION } from '@/config/constants'
 import { authLogger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
+import { CustomPrismaAdapter } from '@/lib/lucia-prisma-adapter'
 
-const adapter = new PrismaAdapter(prisma.session, prisma.user)
+// Use custom adapter to handle Prisma case sensitivity
+const adapter = new CustomPrismaAdapter(prisma)
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
