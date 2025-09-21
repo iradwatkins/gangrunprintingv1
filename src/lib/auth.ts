@@ -14,14 +14,14 @@ export const lucia = new Lucia(adapter, {
   sessionExpiresIn: new TimeSpan(90, 'd'), // 90 days session lifetime
   getSessionAttributes: () => ({}),
   sessionCookie: {
+    name: 'auth_session', // Explicitly set consistent cookie name
     attributes: {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      // Fix domain configuration to work with port-based development and production
-      domain:
-        process.env.NODE_ENV === 'production'
-          ? process.env.COOKIE_DOMAIN || 'gangrunprinting.com'
-          : undefined,
+      httpOnly: true, // Ensure cookie is not accessible via JavaScript
+      // Remove overly restrictive domain setting - let browser handle it
+      // This allows cookies to work on both www and non-www versions
+      domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
       path: '/',
     },
   },
@@ -64,17 +64,56 @@ interface DatabaseUserAttributes {
 export const validateRequest = async (): Promise<
   { user: User; session: Session } | { user: null; session: null }
 > => {
+  const requestId = Math.random().toString(36).substring(7)
+  const startTime = Date.now()
+
   try {
-    const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
+    // Enhanced cookie debugging
+    const cookieJar = await cookies()
+    const allCookies = cookieJar.getAll()
+    const sessionCookieName = lucia.sessionCookieName
+    const sessionId = cookieJar.get(sessionCookieName)?.value ?? null
+
+    authLogger.debug(`[${requestId}] Session validation started`, {
+      requestId,
+      sessionCookieName,
+      hasSessionId: !!sessionId,
+      sessionIdLength: sessionId?.length,
+      totalCookies: allCookies.length,
+      cookieNames: allCookies.map(c => c.name),
+      timestamp: new Date().toISOString(),
+    })
+
     if (!sessionId) {
-      authLogger.debug('No session ID found in cookies')
+      authLogger.warn(`[${requestId}] No session ID found in cookies`, {
+        requestId,
+        expectedCookieName: sessionCookieName,
+        availableCookies: allCookies.map(c => ({ name: c.name, hasValue: !!c.value })),
+        userAgent: process.env.NODE_ENV === 'development' ? 'dev-mode' : 'production',
+      })
       return {
         user: null,
         session: null,
       }
     }
 
+    authLogger.debug(`[${requestId}] Validating session ID`, {
+      requestId,
+      sessionId: sessionId.substring(0, 8) + '...',
+      sessionIdFull: sessionId,
+    })
+
     const result = await lucia.validateSession(sessionId)
+    const validationTime = Date.now() - startTime
+
+    authLogger.debug(`[${requestId}] Session validation result`, {
+      requestId,
+      hasSession: !!result.session,
+      hasUser: !!result.user,
+      sessionFresh: result.session?.fresh,
+      sessionExpiry: result.session?.expiresAt?.toISOString(),
+      validationTimeMs: validationTime,
+    })
 
     try {
       if (result.session) {
@@ -82,34 +121,71 @@ export const validateRequest = async (): Promise<
         // This ensures active users stay logged in
         const timeUntilExpiry = result.session.expiresAt.getTime() - Date.now()
         const shouldExtend = timeUntilExpiry < SESSION_CONFIG.EXTENSION_WINDOW_MS
+        const hoursUntilExpiry = Math.round(timeUntilExpiry / (1000 * 60 * 60))
 
         if (result.session.fresh || shouldExtend) {
-          authLogger.debug(`Extending session ${result.session.id}`, {
-            timeUntilExpiry: Math.round(timeUntilExpiry / (1000 * 60 * 60)), // hours
+          authLogger.info(`[${requestId}] Extending session ${result.session.id}`, {
+            requestId,
+            sessionId: result.session.id,
+            timeUntilExpiry: hoursUntilExpiry,
             wasFresh: result.session.fresh,
             forcedExtension: !result.session.fresh && shouldExtend,
+            userId: result.user?.id,
+            userEmail: result.user?.email,
           })
 
           const sessionCookie = lucia.createSessionCookie(result.session.id)
-          ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+          cookieJar.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+
+          authLogger.debug(`[${requestId}] Session cookie set`, {
+            requestId,
+            cookieName: sessionCookie.name,
+            cookieAttributes: sessionCookie.attributes,
+            hasValue: !!sessionCookie.value,
+          })
         } else {
-          authLogger.debug(`Session ${result.session.id} is valid but not being extended`, {
-            timeUntilExpiry: Math.round(timeUntilExpiry / (1000 * 60 * 60)), // hours
+          authLogger.debug(`[${requestId}] Session ${result.session.id} is valid but not being extended`, {
+            requestId,
+            sessionId: result.session.id,
+            timeUntilExpiry: hoursUntilExpiry,
             fresh: result.session.fresh,
+            extensionWindow: Math.round(SESSION_CONFIG.EXTENSION_WINDOW_MS / (1000 * 60 * 60)),
           })
         }
       } else {
-        authLogger.debug('Invalid session, clearing cookie')
+        authLogger.warn(`[${requestId}] Invalid session, clearing cookie`, {
+          requestId,
+          originalSessionId: sessionId.substring(0, 8) + '...',
+        })
         const sessionCookie = lucia.createBlankSessionCookie()
-        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+        cookieJar.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
       }
-    } catch (error) {
-      authLogger.error('Failed to set session cookie:', error)
+    } catch (cookieError) {
+      authLogger.error(`[${requestId}] Failed to set session cookie:`, {
+        requestId,
+        error: cookieError,
+        errorMessage: cookieError instanceof Error ? cookieError.message : String(cookieError),
+      })
     }
+
+    const totalTime = Date.now() - startTime
+    authLogger.debug(`[${requestId}] Session validation completed`, {
+      requestId,
+      totalTimeMs: totalTime,
+      success: !!(result.session && result.user),
+      finalResult: { hasUser: !!result.user, hasSession: !!result.session },
+    })
 
     return result
   } catch (error) {
-    authLogger.error('Session validation error:', error)
+    const totalTime = Date.now() - startTime
+    authLogger.error(`[${requestId}] Session validation error:`, {
+      requestId,
+      error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      errorStack: error instanceof Error ? error.stack : undefined,
+      totalTimeMs: totalTime,
+    })
     return {
       user: null,
       session: null,

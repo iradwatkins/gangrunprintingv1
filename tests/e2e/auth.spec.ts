@@ -80,7 +80,7 @@ test.describe('Authentication Flow', () => {
     // Set up authentication cookies
     await context.addCookies([
       {
-        name: 'auth-session',
+        name: 'auth_session',
         value: 'valid-session-id',
         domain: 'localhost',
         path: '/',

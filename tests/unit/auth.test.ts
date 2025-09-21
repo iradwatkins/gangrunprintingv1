@@ -30,7 +30,7 @@ describe('Authentication Utilities', () => {
   describe('lucia configuration', () => {
     it('should be properly configured', () => {
       expect(lucia).toBeDefined()
-      expect(lucia.sessionCookieName).toBe('auth-session')
+      expect(lucia.sessionCookieName).toBe('auth_session')
     })
 
     it('should have correct session cookie attributes', () => {

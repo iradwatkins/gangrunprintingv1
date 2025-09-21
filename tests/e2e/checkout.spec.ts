@@ -5,7 +5,7 @@ test.describe('Checkout Flow', () => {
     // Set up authenticated user session
     await context.addCookies([
       {
-        name: 'auth-session',
+        name: 'auth_session',
         value: 'valid-session-id',
         domain: 'localhost',
         path: '/',
@@ -268,7 +268,7 @@ test.describe('Checkout Flow', () => {
     await context.clearCookies()
     await context.addCookies([
       {
-        name: 'auth-session',
+        name: 'auth_session',
         value: 'different-session-id',
         domain: 'localhost',
         path: '/',
