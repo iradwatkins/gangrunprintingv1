@@ -65,11 +65,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         isDefault,
       },
       include: {
-        addOnSet: {
+        AddOnSet: {
           include: {
-            addOnSetItems: {
+            AddOnSetItem: {
               include: {
-                addOn: true,
+                AddOn: true,
               },
               orderBy: {
                 sortOrder: 'asc',
@@ -122,9 +122,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const productAddOnSets = await prisma.productAddOnSet.findMany({
       where: { productId },
       include: {
-        addOnSet: {
+        AddOnSet: {
           include: {
-            addOnSetItems: {
+            AddOnSetItem: {
               include: {
                 addOn: {
                   include: {

@@ -26,9 +26,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const set = await prisma.turnaroundTimeSet.findUnique({
       where: { id },
       include: {
-        turnaroundTimeItems: {
+        TurnaroundTimeSetItem: {
           include: {
-            turnaroundTime: true,
+            TurnaroundTime: true,
           },
           orderBy: {
             sortOrder: 'asc',

@@ -38,22 +38,22 @@ model AddOn {
   adminNotes               String?
   createdAt                DateTime         @default(now())
   updatedAt                DateTime
-  AddOnSetItem             AddOnSetItem[]
-  AddOnSubOption           AddOnSubOption[]
-  OrderItemAddOn           OrderItemAddOn[]
-  ProductAddOn             ProductAddOn[]
+  addOnSetItems            AddOnSetItem[]
+  addOnSubOptions          AddOnSubOption[]
+  orderItemAddOns          OrderItemAddOn[]
+  productAddOns            ProductAddOn[]
 }
 
 model AddOnSet {
-  id              String            @id
-  name            String            @unique
-  description     String?
-  sortOrder       Int               @default(0)
-  isActive        Boolean           @default(true)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime
-  AddOnSetItem    AddOnSetItem[]
-  ProductAddOnSet ProductAddOnSet[]
+  id               String            @id
+  name             String            @unique
+  description      String?
+  sortOrder        Int               @default(0)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  addOnSetItems    AddOnSetItem[]
+  productAddOnSets ProductAddOnSet[]
 }
 
 model AddOnSetItem {
@@ -182,11 +182,11 @@ model CampaignSend {
 }
 
 model CoatingOption {
-  id                String              @id
-  name              String              @unique
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  PaperStockCoating PaperStockCoating[]
+  id                 String              @id
+  name               String              @unique
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  paperStockCoatings PaperStockCoating[]
 }
 
 model Currency {
@@ -577,9 +577,9 @@ model PaperStock {
   weight            Float               @default(0.0015)
   OrderItem         OrderItem[]
   PaperException    PaperException?
-  PaperStockCoating PaperStockCoating[]
-  PaperStockSetItem PaperStockSetItem[]
-  PaperStockSides   PaperStockSides[]
+  paperStockCoatings PaperStockCoating[]
+  paperStockSetItems PaperStockSetItem[]
+  paperStockSides   PaperStockSides[]
   ProductPaperStock ProductPaperStock[]
   VendorPaperStock  VendorPaperStock[]
 }
@@ -674,21 +674,21 @@ model Product {
   setupFee                 Float                      @default(0)
   shortDescription         String?
   sku                      String                     @unique
-  PricingTier              PricingTier[]
-  ProductCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
-  ProductAddOn             ProductAddOn[]
-  ProductAddOnSet          ProductAddOnSet[]
-  ProductImage             ProductImage[]
-  ProductOption            ProductOption[]
-  ProductPaperStock        ProductPaperStock[]
-  ProductPaperStockSet     ProductPaperStockSet[]
-  ProductPricingConfig     ProductPricingConfig?
-  ProductQuantity          ProductQuantity[]
-  ProductQuantityGroup     ProductQuantityGroup[]
-  ProductSize              ProductSize[]
-  ProductSizeGroup         ProductSizeGroup[]
-  ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
-  VendorProduct            VendorProduct[]
+  pricingTiers              PricingTier[]
+  productCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
+  productAddOns             ProductAddOn[]
+  productAddOnSets          ProductAddOnSet[]
+  productImages             ProductImage[]
+  productOptions            ProductOption[]
+  productPaperStocks        ProductPaperStock[]
+  productPaperStockSets     ProductPaperStockSet[]
+  productPricingConfig     ProductPricingConfig?
+  productQuantities          ProductQuantity[]
+  productQuantityGroups     ProductQuantityGroup[]
+  productSizes              ProductSize[]
+  productSizeGroups         ProductSizeGroup[]
+  productTurnaroundTimeSets ProductTurnaroundTimeSet[]
+  vendorProducts            VendorProduct[]
 
   @@index([categoryId])
   @@index([slug])
@@ -733,7 +733,7 @@ model ProductCategory {
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime
-  Product     Product[]
+  products    Product[]
 }
 
 model ProductImage {
@@ -934,7 +934,7 @@ model QuantityGroup {
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime
-  ProductQuantityGroup ProductQuantityGroup[]
+  products ProductQuantityGroup[]
 }
 
 model Quote {
@@ -1018,11 +1018,11 @@ model ShippingRate {
 }
 
 model SidesOption {
-  id              String            @id
-  name            String            @unique
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime
-  PaperStockSides PaperStockSides[]
+  id               String            @id
+  name             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  paperStockSides  PaperStockSides[]
 }
 
 model SizeGroup {
@@ -1339,17 +1339,17 @@ model User {
   marketingOptIn    Boolean             @default(true)
   phoneNumber       String?
   smsOptIn          Boolean             @default(false)
-  Account           Account[]
-  CampaignSend      CampaignSend[]
-  CustomerJourney   CustomerJourney?
-  Order             Order[]
-  PushNotification  PushNotification[]
-  PushSubscription  PushSubscription[]
-  Quote             Quote[]
-  SMSSend           SMSSend[]
+  accounts          Account[]
+  campaignSends     CampaignSend[]
+  customerJourney   CustomerJourney?
+  orders            Order[]
+  pushNotifications PushNotification[]
+  pushSubscriptions PushSubscription[]
+  quotes            Quote[]
+  smsSends          SMSSend[]
   session           Session[]
-  TenantUser        TenantUser[]
-  WorkflowExecution WorkflowExecution[]
+  tenantUsers       TenantUser[]
+  workflowExecutions WorkflowExecution[]
 }
 
 model Vendor {

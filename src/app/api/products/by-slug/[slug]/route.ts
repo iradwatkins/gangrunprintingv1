@@ -10,17 +10,17 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         isActive: true,
       },
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
           include: {
-            paperStockSet: {
+            PaperStockSet: {
               include: {
-                paperStockItems: {
+                PaperStockSetItem: {
                   include: {
-                    paperStock: true,
+                    PaperStock: true,
                   },
                   orderBy: { sortOrder: 'asc' },
                 },
@@ -30,17 +30,17 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true,
+            QuantityGroup: true,
           },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true,
+            SizeGroup: true,
           },
         },
         productAddOns: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
         },
       },

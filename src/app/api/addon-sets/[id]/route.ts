@@ -19,9 +19,9 @@ export async function GET(
     const addOnSet = await prisma.addOnSet.findUnique({
       where: { id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',
@@ -40,7 +40,7 @@ export async function GET(
         },
         _count: {
           select: {
-            addOnSetItems: true,
+            AddOnSetItem: true,
             productAddOnSets: true,
           },
         },
@@ -119,9 +119,9 @@ export async function PUT(
       return await tx.addOnSet.findUnique({
         where: { id },
         include: {
-          addOnSetItems: {
+          AddOnSetItem: {
             include: {
-              addOn: true,
+              AddOn: true,
             },
             orderBy: {
               sortOrder: 'asc',

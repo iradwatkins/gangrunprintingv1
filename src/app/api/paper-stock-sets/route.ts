@@ -24,7 +24,7 @@ export async function GET() {
   try {
     const groups = await prisma.paperStockSet.findMany({
       include: {
-        paperStockItems: {
+        PaperStockSetItem: {
           include: {
             paperStock: {
               include: {
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         description: validatedData.description,
         sortOrder: validatedData.sortOrder,
         isActive: validatedData.isActive,
-        paperStockItems: {
+        PaperStockSetItem: {
           create: paperStocksWithDefault.map((stock, index) => ({
             paperStockId: stock.id,
             isDefault: stock.isDefault,
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        paperStockItems: {
+        PaperStockSetItem: {
           include: {
             paperStock: {
               include: {

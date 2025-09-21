@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
           include: {
             orderItemAddOns: {
               include: {
-                addOn: true,
+                AddOn: true,
               },
             },
           },

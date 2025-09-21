@@ -223,7 +223,7 @@ async function getAttributes(where: any) {
       sizes: { select: { name: true } },
       paperStocks: { select: { name: true } },
       coatingOptions: { select: { name: true } },
-      turnaroundTime: true,
+      TurnaroundTime: true,
     },
   })
 

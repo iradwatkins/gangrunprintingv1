@@ -15,7 +15,7 @@ export async function POST(
       include: {
         productPaperStocks: {
           include: {
-            paperStock: true,
+            PaperStock: true,
           },
         },
         productQuantities: {
@@ -30,11 +30,11 @@ export async function POST(
         },
         ProductAddOnSet: {
           include: {
-            addOnSet: {
+            AddOnSet: {
               include: {
                 AddOnSetItem: {
                   include: {
-                    addOn: true,
+                    AddOn: true,
                   },
                 },
               },
@@ -43,11 +43,11 @@ export async function POST(
         },
         ProductTurnaroundTimeSet: {
           include: {
-            turnaroundTimeSet: {
+            TurnaroundTimeSet: {
               include: {
-                turnaroundTimeItems: {
+                TurnaroundTimeSetItem: {
                   include: {
-                    turnaroundTime: true,
+                    TurnaroundTime: true,
                   },
                 },
               },
@@ -164,7 +164,7 @@ export async function POST(
         ProductCategory: true,
         productPaperStocks: {
           include: {
-            paperStock: true,
+            PaperStock: true,
           },
         },
         ProductImage: true,

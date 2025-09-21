@@ -7,20 +7,20 @@ import { validateRequest } from '@/lib/auth'
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    const product = await prisma.Product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
           include: {
-            paperStockSet: {
+            PaperStockSet: {
               include: {
-                paperStockItems: {
+                PaperStockSetItem: {
                   include: {
-                    paperStock: true,
+                    PaperStock: true,
                   },
                 },
               },
@@ -29,25 +29,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true,
+            QuantityGroup: true,
           },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true,
+            SizeGroup: true,
           },
         },
         productAddOnSets: {
           include: {
-            addOnSet: true,
+            AddOnSet: true,
           },
         },
         productTurnaroundTimeSets: {
           include: {
-            turnaroundTimeSet: true,
+            TurnaroundTimeSet: true,
           },
         },
-        ProductOption: {
+        productOptions: {
           include: {
             OptionValue: {
               orderBy: { sortOrder: 'asc' },
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           },
           orderBy: { sortOrder: 'asc' },
         },
-        PricingTier: {
+        pricingTiers: {
           orderBy: { minQuantity: 'asc' },
         },
       },
@@ -99,21 +99,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     // Get existing product to compare images
-    const existingProduct = await prisma.Product.findUnique({
+    const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        ProductImage: true,
+        productImages: true,
         productPaperStockSets: true,
         productQuantityGroups: true,
         productSizeGroups: true,
         productTurnaroundTimeSets: true,
         productAddOnSets: true,
-        ProductOption: {
+        productOptions: {
           include: {
             OptionValue: true,
           },
         },
-        PricingTier: true,
+        pricingTiers: true,
       },
     })
 
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Delete removed images from MinIO
-    const existingImageUrls = existingProduct.ProductImage.map((img) => img.url)
+    const existingImageUrls = existingProduct.productImages.map((img) => img.url)
     const newImageUrls = images?.map((img: any) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
 
@@ -137,22 +137,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Update product using transaction
     const product = await prisma.$transaction(async (tx) => {
       // Delete existing relations
-      await tx.ProductImage.deleteMany({ where: { productId: id } })
-      await tx.ProductPaperStockSet.deleteMany({ where: { productId: id } })
-      await tx.ProductQuantityGroup.deleteMany({ where: { productId: id } })
-      await tx.ProductSizeGroup.deleteMany({ where: { productId: id } })
-      await tx.ProductTurnaroundTimeSet.deleteMany({ where: { productId: id } })
-      await tx.ProductAddOnSet.deleteMany({ where: { productId: id } })
-      await tx.ProductOption.deleteMany({ where: { productId: id } })
-      await tx.PricingTier.deleteMany({ where: { productId: id } })
+      await tx.productImage.deleteMany({ where: { productId: id } })
+      await tx.productPaperStockSet.deleteMany({ where: { productId: id } })
+      await tx.productQuantityGroup.deleteMany({ where: { productId: id } })
+      await tx.productSizeGroup.deleteMany({ where: { productId: id } })
+      await tx.productTurnaroundTimeSet.deleteMany({ where: { productId: id } })
+      await tx.productAddOnSet.deleteMany({ where: { productId: id } })
+      await tx.productOption.deleteMany({ where: { productId: id } })
+      await tx.pricingTier.deleteMany({ where: { productId: id } })
 
       // Update product with new data
-      return await tx.Product.update({
+      return await tx.product.update({
         where: { id },
         data: {
           ...productData,
           // Recreate images
-          ProductImage:
+          productImages:
             images?.length > 0
               ? {
                   create: images.map((img: any, index: number) => ({
@@ -213,7 +213,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate options with values
-          ProductOption:
+          productOptions:
             options?.length > 0
               ? {
                   create: options.map((opt: any, index: number) => ({
@@ -234,7 +234,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 }
               : undefined,
           // Recreate pricing tiers
-          PricingTier:
+          pricingTiers:
             pricingTiers?.length > 0
               ? {
                   create: pricingTiers.map((tier: any) => ({
@@ -247,15 +247,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               : undefined,
         },
         include: {
-          ProductCategory: true,
-          ProductImage: true,
+          productCategory: true,
+          productImages: true,
           productPaperStockSets: {
             include: {
-              paperStockSet: {
+              PaperStockSet: {
                 include: {
-                  paperStockItems: {
+                  PaperStockSetItem: {
                     include: {
-                      paperStock: true,
+                      PaperStock: true,
                     },
                   },
                 },
@@ -264,21 +264,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           },
           productQuantityGroups: {
             include: {
-              quantityGroup: true,
+              QuantityGroup: true,
             },
           },
           productSizeGroups: {
             include: {
-              sizeGroup: true,
+              SizeGroup: true,
             },
           },
           productTurnaroundTimeSets: {
             include: {
-              turnaroundTimeSet: {
+              TurnaroundTimeSet: {
                 include: {
-                  turnaroundTimeItems: {
+                  TurnaroundTimeSetItem: {
                     include: {
-                      turnaroundTime: true,
+                      TurnaroundTime: true,
                     },
                   },
                 },
@@ -287,23 +287,23 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           },
           productAddOnSets: {
             include: {
-              addOnSet: {
+              AddOnSet: {
                 include: {
-                  addOnSetItems: {
+                  AddOnSetItem: {
                     include: {
-                      addOn: true,
+                      AddOn: true,
                     },
                   },
                 },
               },
             },
           },
-          ProductOption: {
+          productOptions: {
             include: {
               OptionValue: true,
             },
           },
-          PricingTier: true,
+          pricingTiers: true,
         },
       })
     })
@@ -349,11 +349,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const data = await request.json()
 
     // Update product with simple fields
-    const product = await prisma.Product.update({
+    const product = await prisma.product.update({
       where: { id },
       data,
       include: {
-        ProductCategory: true,
+        productCategory: true,
       },
     })
 
@@ -377,10 +377,10 @@ export async function DELETE(
     }
 
     // Get product with images to delete from MinIO
-    const product = await prisma.Product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        ProductImage: true,
+        productImages: true,
       },
     })
 
@@ -389,7 +389,7 @@ export async function DELETE(
     }
 
     // Delete images from MinIO
-    for (const image of product.ProductImage) {
+    for (const image of product.productImages) {
       try {
         await deleteProductImage(image.url)
       } catch (error) {
@@ -398,7 +398,7 @@ export async function DELETE(
     }
 
     // Delete product (cascade will handle relations)
-    await prisma.Product.delete({
+    await prisma.product.delete({
       where: { id },
     })
 

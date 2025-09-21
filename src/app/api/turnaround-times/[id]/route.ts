@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         turnaroundTimeSetItems: {
           include: {
-            turnaroundTimeSet: true,
+            TurnaroundTimeSet: true,
           },
         },
       },

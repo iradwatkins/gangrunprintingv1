@@ -48,9 +48,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const updatedGroup = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        paperStockItems: {
+        PaperStockSetItem: {
           include: {
-            paperStock: true,
+            PaperStock: true,
           },
           orderBy: {
             sortOrder: 'asc',

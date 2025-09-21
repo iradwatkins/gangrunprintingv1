@@ -6,9 +6,9 @@ export async function GET(request: NextRequest) {
   try {
     const sets = await prisma.turnaroundTimeSet.findMany({
       include: {
-        turnaroundTimeItems: {
+        TurnaroundTimeSetItem: {
           include: {
-            turnaroundTime: true,
+            TurnaroundTime: true,
           },
           orderBy: {
             sortOrder: 'asc',
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         name,
         description,
         isActive: isActive ?? true,
-        turnaroundTimeItems: {
+        TurnaroundTimeSetItem: {
           create:
             turnaroundTimeIds?.map((turnaroundTimeId: string, index: number) => ({
               turnaroundTimeId,
@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        turnaroundTimeItems: {
+        TurnaroundTimeSetItem: {
           include: {
-            turnaroundTime: true,
+            TurnaroundTime: true,
           },
           orderBy: {
             sortOrder: 'asc',
