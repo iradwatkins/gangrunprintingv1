@@ -20,7 +20,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const originalAddOnSet = await prisma.addOnSet.findUnique({
       where: { id },
       include: {
-        AddOnSetItem: {
+        addOnSetItems: {
           orderBy: {
             sortOrder: 'asc',
           },
@@ -63,9 +63,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return await tx.addOnSet.findUnique({
         where: { id: newAddOnSet.id },
         include: {
-          AddOnSetItem: {
+          addOnSetItems: {
             include: {
-              AddOn: true,
+              addOn: true,
             },
             orderBy: {
               sortOrder: 'asc',
