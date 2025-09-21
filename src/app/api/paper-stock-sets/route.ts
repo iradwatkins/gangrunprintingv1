@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { randomUUID } from 'crypto'
 
 // Schema for creating/updating a paper stock set
 const paperStockSetSchema = z.object({
@@ -67,12 +68,14 @@ export async function POST(request: NextRequest) {
     // Create the paper stock set with items
     const group = await prisma.paperStockSet.create({
       data: {
+        id: randomUUID(),
         name: validatedData.name,
         description: validatedData.description,
         sortOrder: validatedData.sortOrder,
         isActive: validatedData.isActive,
         PaperStockSetItem: {
           create: paperStocksWithDefault.map((stock, index) => ({
+            id: randomUUID(),
             paperStockId: stock.id,
             isDefault: stock.isDefault,
             sortOrder: stock.sortOrder || index,

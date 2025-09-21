@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 
 // GET /api/addon-sets - List all addon sets
 export async function GET(request: NextRequest) {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
     // Create the addon set
     const addOnSet = await prisma.addOnSet.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         sortOrder: 0, // Will be updated if needed
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
     if (addOnIds.length > 0) {
       await prisma.addOnSetItem.createMany({
         data: addOnIds.map((addOnId: string, index: number) => ({
+          id: randomUUID(),
           addOnSetId: addOnSet.id,
           addOnId,
           displayPosition: 'IN_DROPDOWN' as const,
