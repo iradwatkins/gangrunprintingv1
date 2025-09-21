@@ -202,6 +202,7 @@ function EditProductClient({ id }: { id: string }) {
         quantityGroupId: selectedQuantityGroup,
         sizeGroupId: selectedSizeGroup,
         turnaroundTimeSetId: selectedTurnaroundTimeSet,
+        addOnSetId: null, // Set to null since we're not using AddOn Sets
       }
 
       const response = await fetch(`/api/products/${id}`, {
