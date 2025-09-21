@@ -1,42 +1,27 @@
 import { cookies } from 'next/headers'
 import { Lucia } from 'lucia'
+import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 
 import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION } from '@/config/constants'
 import { authLogger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
-import { CustomPrismaAdapter } from '@/lib/lucia-prisma-adapter'
 
-// Use custom adapter to handle Prisma case sensitivity
-const adapter = new CustomPrismaAdapter(prisma)
+const adapter = new PrismaAdapter(prisma.session, prisma.user)
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
-    name: 'gangrun_session',
     attributes: {
-      secure: true, // Always true since we're on HTTPS
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
+      secure: process.env.NODE_ENV === 'production',
     },
   },
   getUserAttributes: (attributes) => {
-    // Handle undefined attributes gracefully
-    if (!attributes) {
-      return {
-        email: '',
-        name: '',
-        role: 'CUSTOMER',
-        emailVerified: false,
-      }
-    }
-
     return {
-      email: attributes.email || '',
-      name: attributes.name || '',
-      role: attributes.role || 'CUSTOMER',
-      emailVerified: attributes.emailVerified || false,
+      email: attributes.email,
+      name: attributes.name,
+      role: attributes.role,
+      emailVerified: attributes.emailVerified,
     }
   },
 })
@@ -68,10 +53,7 @@ interface DatabaseUserAttributes {
 }
 
 export const validateRequest = async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
-  const cookieStore = await cookies()
-  const sessionCookie = cookieStore.get('gangrun_session')
-  const sessionId = sessionCookie?.value ?? null
-
+  const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
   if (!sessionId) {
     return {
       user: null,
@@ -84,11 +66,11 @@ export const validateRequest = async (): Promise<{ user: User; session: Session 
   try {
     if (result.session && result.session.fresh) {
       const sessionCookie = lucia.createSessionCookie(result.session.id)
-      cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+      ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
     }
     if (!result.session) {
       const sessionCookie = lucia.createBlankSessionCookie()
-      cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+      ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
     }
   } catch (error) {
     authLogger.debug('Failed to set session cookie', error)
