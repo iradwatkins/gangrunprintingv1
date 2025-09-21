@@ -98,7 +98,15 @@ export default function QuantitiesPage() {
       const response = await fetch('/api/quantities')
       if (!response.ok) throw new Error('Failed to fetch')
       const data = await response.json()
-      setGroups(data)
+
+      // Process groups to add derived properties
+      const processedGroups = data.map((group: QuantityGroup) => ({
+        ...group,
+        valuesList: parseValuesList(group.values || ''),
+        hasCustomOption: hasCustomOption(group.values || ''),
+      }))
+
+      setGroups(processedGroups)
     } catch (error) {
       console.error('Error fetching quantity groups:', error)
       toast.error('Failed to fetch quantity groups')
