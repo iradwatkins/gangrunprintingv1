@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers'
-import { Lucia } from 'lucia'
+import { Lucia, TimeSpan } from 'lucia'
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 
-import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION } from '@/config/constants'
+import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION, SESSION_CONFIG } from '@/config/constants'
 import { authLogger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
@@ -11,6 +11,8 @@ import resend from '@/lib/resend'
 const adapter = new PrismaAdapter(prisma.session, prisma.user)
 
 export const lucia = new Lucia(adapter, {
+  sessionExpiresIn: new TimeSpan(90, 'd'), // 90 days session lifetime
+  getSessionAttributes: () => ({}),
   sessionCookie: {
     attributes: {
       secure: process.env.NODE_ENV === 'production',
@@ -65,6 +67,7 @@ export const validateRequest = async (): Promise<
   try {
     const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
     if (!sessionId) {
+      authLogger.debug('No session ID found in cookies')
       return {
         user: null,
         session: null,
@@ -74,16 +77,34 @@ export const validateRequest = async (): Promise<
     const result = await lucia.validateSession(sessionId)
 
     try {
-      if (result.session && result.session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(result.session.id)
-        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-      }
-      if (!result.session) {
+      if (result.session) {
+        // Always extend session if it's valid (more aggressive extension)
+        // This ensures active users stay logged in
+        const timeUntilExpiry = result.session.expiresAt.getTime() - Date.now()
+        const shouldExtend = timeUntilExpiry < SESSION_CONFIG.EXTENSION_WINDOW_MS
+
+        if (result.session.fresh || shouldExtend) {
+          authLogger.debug(`Extending session ${result.session.id}`, {
+            timeUntilExpiry: Math.round(timeUntilExpiry / (1000 * 60 * 60)), // hours
+            wasFresh: result.session.fresh,
+            forcedExtension: !result.session.fresh && shouldExtend,
+          })
+
+          const sessionCookie = lucia.createSessionCookie(result.session.id)
+          ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+        } else {
+          authLogger.debug(`Session ${result.session.id} is valid but not being extended`, {
+            timeUntilExpiry: Math.round(timeUntilExpiry / (1000 * 60 * 60)), // hours
+            fresh: result.session.fresh,
+          })
+        }
+      } else {
+        authLogger.debug('Invalid session, clearing cookie')
         const sessionCookie = lucia.createBlankSessionCookie()
         ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
       }
     } catch (error) {
-      authLogger.debug('Failed to set session cookie', error)
+      authLogger.error('Failed to set session cookie:', error)
     }
 
     return result
@@ -290,7 +311,20 @@ export async function verifyMagicLink(token: string, email: string) {
 
     cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
-    // console.log('Session created successfully:', session.id);
+    // Log session creation for monitoring
+    sessionUtils.logSessionActivity(session.id, 'session_created', {
+      userId: user.id,
+      userEmail: user.email,
+      method: 'magic_link',
+      expiresAt: session.expiresAt.toISOString(),
+    })
+
+    authLogger.info('Session created successfully', {
+      sessionId: session.id,
+      userId: user.id,
+      userEmail: user.email,
+      expiresAt: session.expiresAt.toISOString(),
+    })
   } catch (sessionError) {
     authLogger.error('Failed to create session:', sessionError)
     throw new MagicLinkError(
@@ -304,13 +338,26 @@ export async function verifyMagicLink(token: string, email: string) {
 }
 
 export async function signOut() {
-  const { session } = await validateRequest()
+  const { user, session } = await validateRequest()
 
   if (!session) {
     return {
       error: 'Unauthorized',
     }
   }
+
+  // Log session invalidation for monitoring
+  sessionUtils.logSessionActivity(session.id, 'session_signed_out', {
+    userId: user?.id,
+    userEmail: user?.email,
+    sessionId: session.id,
+  })
+
+  authLogger.info('User signed out', {
+    sessionId: session.id,
+    userId: user?.id,
+    userEmail: user?.email,
+  })
 
   await lucia.invalidateSession(session.id)
 
@@ -330,4 +377,124 @@ export type Session = {
   id: string
   userId: string
   expiresAt: Date
+}
+
+// Session debugging and monitoring utilities
+export const sessionUtils = {
+  /**
+   * Get detailed session information for debugging
+   */
+  async getSessionInfo(sessionId: string) {
+    try {
+      const session = await prisma.session.findUnique({
+        where: { id: sessionId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              emailVerified: true,
+            },
+          },
+        },
+      })
+
+      if (!session) {
+        return null
+      }
+
+      const now = new Date()
+      const timeUntilExpiry = session.expiresAt.getTime() - now.getTime()
+
+      return {
+        ...session,
+        isExpired: session.expiresAt <= now,
+        timeUntilExpiry: Math.max(0, timeUntilExpiry),
+        hoursUntilExpiry: Math.max(0, Math.round(timeUntilExpiry / (1000 * 60 * 60))),
+        daysUntilExpiry: Math.max(0, Math.round(timeUntilExpiry / (1000 * 60 * 60 * 24))),
+      }
+    } catch (error) {
+      authLogger.error('Error getting session info:', error)
+      return null
+    }
+  },
+
+  /**
+   * Log session activity for debugging
+   */
+  logSessionActivity(sessionId: string, activity: string, details?: Record<string, any>) {
+    authLogger.debug(`Session activity: ${activity}`, {
+      sessionId,
+      activity,
+      timestamp: new Date().toISOString(),
+      ...details,
+    })
+  },
+
+  /**
+   * Clean up expired sessions from database
+   */
+  async cleanupExpiredSessions() {
+    try {
+      const result = await prisma.session.deleteMany({
+        where: {
+          expiresAt: {
+            lt: new Date(),
+          },
+        },
+      })
+
+      authLogger.info('Cleaned up expired sessions', {
+        deletedCount: result.count,
+        timestamp: new Date().toISOString(),
+      })
+
+      return result.count
+    } catch (error) {
+      authLogger.error('Error cleaning up expired sessions:', error)
+      return 0
+    }
+  },
+
+  /**
+   * Get session statistics
+   */
+  async getSessionStats() {
+    try {
+      const now = new Date()
+      const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+      const [total, active, expiringSoon] = await Promise.all([
+        prisma.session.count(),
+        prisma.session.count({
+          where: {
+            expiresAt: {
+              gt: now,
+            },
+          },
+        }),
+        prisma.session.count({
+          where: {
+            expiresAt: {
+              gt: now,
+              lt: sevenDaysFromNow,
+            },
+          },
+        }),
+      ])
+
+      return {
+        total,
+        active,
+        expired: total - active,
+        expiringSoon,
+        timestamp: now.toISOString(),
+      }
+    } catch (error) {
+      authLogger.error('Error getting session stats:', error)
+      return null
+    }
+  },
 }

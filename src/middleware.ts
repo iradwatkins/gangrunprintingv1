@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
 import { addBreadcrumb } from '@/lib/sentry'
+import { SESSION_CONFIG } from '@/config/constants'
 
 // All i18n functionality temporarily disabled
 // import createMiddleware from 'next-intl/middleware';
@@ -26,6 +27,13 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-correlation-id', correlationId)
   requestHeaders.set('x-request-timestamp', Date.now().toString())
+
+  // Add session activity tracking for authenticated requests
+  const sessionCookie = request.cookies.get('auth_session')?.value // Lucia's default session cookie name
+  if (sessionCookie) {
+    requestHeaders.set('x-has-session', 'true')
+    requestHeaders.set('x-session-activity-time', Date.now().toString())
+  }
 
   // Temporarily disable tenant resolution in middleware to fix Edge Runtime Prisma issue
   // TODO: Move tenant resolution to API routes or use edge-compatible database client
@@ -115,6 +123,13 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-tenant-id', tenantContext.tenant.id)
     response.headers.set('x-tenant-slug', tenantContext.tenant.slug)
   }
+
+  // Add session activity headers for client-side monitoring
+  if (sessionCookie) {
+    response.headers.set('x-session-present', 'true')
+    response.headers.set('x-last-activity', Date.now().toString())
+  }
+
   addResponseHeaders(response, correlationId)
 
   return response

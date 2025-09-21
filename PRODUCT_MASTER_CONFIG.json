@@ -1,0 +1,536 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-09-21T19:36:09.922Z",
+  "protected": true,
+  "configurations": {
+    "all_products": {
+      "status": "active",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/products/route.ts",
+        "component_name": "ProductsAPI",
+        "dependencies": ["Prisma", "Zod validation", "NextAuth"]
+      },
+      "notes": "No products currently exist in database - empty array extracted"
+    },
+    "categories": {
+      "status": "active",
+      "data": [
+        {
+          "id": "zjg5ia39fjfjsva8f0oq64gl",
+          "name": "Business Cards",
+          "slug": "business-cards",
+          "description": "Professional business cards with multiple finish options",
+          "sortOrder": 1,
+          "isActive": true,
+          "createdAt": "2025-09-21T18:40:32.102Z",
+          "updatedAt": "2025-09-21T18:40:32.094Z",
+          "_count": {"products": 0}
+        },
+        {
+          "id": "bktx0lw5i7an5tlc4m5poj8c",
+          "name": "Flyers",
+          "slug": "flyers",
+          "description": "High-quality flyers for marketing and promotions",
+          "sortOrder": 2,
+          "isActive": true,
+          "createdAt": "2025-09-21T18:40:32.102Z",
+          "updatedAt": "2025-09-21T18:40:32.094Z",
+          "_count": {"products": 0}
+        },
+        {
+          "id": "wxidak74ydl2o2tzelgjg2ws",
+          "name": "Posters",
+          "slug": "posters",
+          "description": "Large format posters for maximum impact",
+          "sortOrder": 3,
+          "isActive": true,
+          "createdAt": "2025-09-21T18:40:32.102Z",
+          "updatedAt": "2025-09-21T18:40:32.094Z",
+          "_count": {"products": 0}
+        },
+        {
+          "id": "hc1jc8hxplz7895o4ea8gle8",
+          "name": "Brochures",
+          "slug": "brochures",
+          "description": "Professional brochures for business presentations",
+          "sortOrder": 4,
+          "isActive": true,
+          "createdAt": "2025-09-21T18:40:32.102Z",
+          "updatedAt": "2025-09-21T18:40:32.094Z",
+          "_count": {"products": 0}
+        }
+      ],
+      "implementation_details": {
+        "file_location": "src/app/api/product-categories/route.ts",
+        "component_name": "ProductCategoriesAPI",
+        "dependencies": ["Prisma"]
+      }
+    },
+    "paper_stocks": {
+      "status": "active",
+      "data": [
+        {
+          "id": "paper_recycled_14pt",
+          "name": "100% Recycled 14pt",
+          "weight": 0.014,
+          "pricePerSqInch": 0.0013,
+          "tooltipText": "100% post-consumer recycled content with eco-friendly coating",
+          "isActive": true,
+          "coatings": ["coating_aqueous"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_100lb_gloss_text",
+          "name": "100lb Gloss Text",
+          "weight": 0.007,
+          "pricePerSqInch": 0.0008,
+          "tooltipText": "Standard flyer stock - good quality at an affordable price",
+          "isActive": true,
+          "coatings": ["coating_gloss_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_100lb_matte_text",
+          "name": "100lb Matte Text",
+          "weight": 0.007,
+          "pricePerSqInch": 0.0008,
+          "tooltipText": "Matte finish for reduced glare - ideal for text-heavy designs",
+          "isActive": true,
+          "coatings": ["coating_matte_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_12pt_c2s_poster",
+          "name": "12pt C2S Poster",
+          "weight": 0.012,
+          "pricePerSqInch": 0.001,
+          "tooltipText": "Standard poster stock with satin finish - good for indoor use",
+          "isActive": true,
+          "coatings": ["coating_satin_coating"],
+          "sides": ["sides_1s"],
+          "productsCount": 0
+        },
+        {
+          "id": "paper_14pt_gloss_cover",
+          "name": "14pt Gloss Cover",
+          "weight": 0.014,
+          "pricePerSqInch": 0.0012,
+          "tooltipText": "Our most popular business card stock - thick and durable with a glossy finish",
+          "isActive": true,
+          "coatings": ["coating_gloss_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_14pt_matte_cover",
+          "name": "14pt Matte Cover",
+          "weight": 0.014,
+          "pricePerSqInch": 0.0012,
+          "tooltipText": "Professional matte finish - no glare, easy to write on",
+          "isActive": true,
+          "coatings": ["coating_matte_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_16pt_premium_cover",
+          "name": "16pt Premium Cover",
+          "weight": 0.016,
+          "pricePerSqInch": 0.0015,
+          "tooltipText": "Extra thick premium stock with UV coating for maximum impact",
+          "isActive": true,
+          "coatings": ["coating_uv_coating", "coating_gloss_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 2
+        },
+        {
+          "id": "paper_32pt_suede",
+          "name": "32pt Suede",
+          "weight": 0.032,
+          "pricePerSqInch": 0.003,
+          "tooltipText": "Luxury suede finish - ultra-thick with velvet-like texture",
+          "isActive": true,
+          "coatings": ["coating_soft_touch"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_32pt_ultrathick",
+          "name": "32pt UltraThick",
+          "weight": 0.032,
+          "pricePerSqInch": 0.0028,
+          "tooltipText": "Ultra-thick premium cardstock for luxury business cards",
+          "isActive": true,
+          "coatings": ["coating_matte_coating", "coating_gloss_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_80lb_gloss_cover",
+          "name": "80lb Gloss Cover",
+          "weight": 0.009,
+          "pricePerSqInch": 0.0011,
+          "tooltipText": "Thick cover stock for premium flyers and handouts",
+          "isActive": true,
+          "coatings": ["coating_gloss_coating"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        },
+        {
+          "id": "paper_metallic_pearl",
+          "name": "Metallic Pearl",
+          "weight": 0.014,
+          "pricePerSqInch": 0.0024,
+          "tooltipText": "Shimmering pearl finish for elegant designs",
+          "isActive": true,
+          "coatings": ["coating_pearlescent"],
+          "sides": ["sides_1s", "sides_2s"],
+          "productsCount": 1
+        }
+      ],
+      "implementation_details": {
+        "file_location": "src/app/api/paper-stocks/route.ts",
+        "component_name": "PaperStocksAPI",
+        "dependencies": ["Prisma", "Coating Options", "Sides Options"]
+      }
+    },
+    "paper_stock_sets": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/paper-stock-sets/route.ts",
+        "component_name": "PaperStockSetsAPI",
+        "dependencies": ["Prisma"]
+      },
+      "notes": "API error: 'Failed to fetch paper stock sets' - needs investigation"
+    },
+    "quantities": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/quantities/route.ts",
+        "component_name": "QuantitiesAPI",
+        "dependencies": ["Prisma"]
+      },
+      "notes": "Empty array returned - no quantity configurations exist"
+    },
+    "sizes": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/sizes/route.ts",
+        "component_name": "SizesAPI",
+        "dependencies": ["Prisma"]
+      },
+      "notes": "API error: 'Failed to fetch size groups' - needs investigation"
+    },
+    "addons": {
+      "status": "active",
+      "data": [
+        {
+          "id": "dr1t0c4sa3byv6ym9bkie98t",
+          "name": "Corner Rounding",
+          "description": null,
+          "tooltipText": "Add rounded corners for a professional, modern look",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "corner_rounding",
+            "basePrice": 20,
+            "displayPrice": "$20.00 + $0.01/piece",
+            "pricePerPiece": 0.01
+          },
+          "isActive": true
+        },
+        {
+          "id": "a123fdpkt4k00ibtc4f5uqjy",
+          "name": "Variable Data Printing",
+          "tooltipText": "Print unique information on each piece",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "variable_data",
+            "basePrice": 60,
+            "displayPrice": "$60.00 + $0.02/piece",
+            "pricePerPiece": 0.02
+          },
+          "isActive": true
+        },
+        {
+          "id": "up7l7yudg7l40p1cxj8oljbw",
+          "name": "Perforation",
+          "tooltipText": "Add tear-away perforations for coupons or tickets",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "perforation",
+            "basePrice": 25,
+            "displayPrice": "$25.00 + $0.005/piece",
+            "pricePerPiece": 0.005
+          },
+          "isActive": true
+        },
+        {
+          "id": "yiwhxcav52enjnlyuctg2h4f",
+          "name": "Banding",
+          "tooltipText": "Bundle your products with paper or rubber bands",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "banding",
+            "basePrice": 15,
+            "displayPrice": "$15.00 + $2.00/bundle",
+            "pricePerBundle": 2
+          },
+          "isActive": true
+        },
+        {
+          "id": "dsjiaxxy9cti56jrp2ebr0ah",
+          "name": "Foil Stamping",
+          "tooltipText": "Add metallic foil accents for premium appeal",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "foil_stamping",
+            "percentage": 35,
+            "displayPrice": "+35% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "lcj3kmxm4692zwf87ww5pd8z",
+          "name": "Embossing",
+          "tooltipText": "Create raised impressions for elegant texture",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "embossing",
+            "percentage": 30,
+            "displayPrice": "+30% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "nnf3v2rvzwm48qz76iozz0pn",
+          "name": "Die Cutting",
+          "tooltipText": "Custom shapes and cuts for unique designs",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "die_cutting",
+            "basePrice": 50,
+            "displayPrice": "$50.00 + $0.02/piece",
+            "pricePerPiece": 0.02
+          },
+          "isActive": true
+        },
+        {
+          "id": "rr4ciebn1c25le0o83rp1ky2",
+          "name": "Spot UV",
+          "tooltipText": "Glossy UV coating on specific areas",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "spot_uv",
+            "percentage": 25,
+            "displayPrice": "+25% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "n550rms27sbqm47qal4db9r8",
+          "name": "Raised Spot UV",
+          "tooltipText": "Raised glossy coating for premium texture",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "raised_spot_uv",
+            "percentage": 40,
+            "displayPrice": "+40% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "u541d7ljyl6yoyn2lfk3v1ng",
+          "name": "Letterpress",
+          "tooltipText": "Traditional pressed printing for vintage appeal",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "letterpress",
+            "percentage": 45,
+            "displayPrice": "+45% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "qo3ins4xb9pcuhzz4u51dld7",
+          "name": "Edge Painting",
+          "tooltipText": "Color the edges of thick cards",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "edge_painting",
+            "basePrice": 30,
+            "displayPrice": "$30.00 + $0.03/piece",
+            "pricePerPiece": 0.03
+          },
+          "isActive": true
+        },
+        {
+          "id": "dox5p2289ur7431saha6fr67",
+          "name": "Plastic Card",
+          "tooltipText": "Durable plastic cards instead of paper",
+          "pricingModel": "PERCENTAGE",
+          "configuration": {
+            "type": "plastic_card",
+            "percentage": 60,
+            "displayPrice": "+60% of base price"
+          },
+          "isActive": true
+        },
+        {
+          "id": "muc7s78s99lxk322f3asohwr",
+          "name": "Magnetic Strip",
+          "tooltipText": "Add magnetic strip for card functionality",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "magnetic_strip",
+            "basePrice": 40,
+            "displayPrice": "$40.00 + $0.05/piece",
+            "pricePerPiece": 0.05
+          },
+          "isActive": true
+        },
+        {
+          "id": "fv31clkmvo6ctfbh6vhvwu4c",
+          "name": "Signature Strip",
+          "tooltipText": "White strip for signatures on cards",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "signature_strip",
+            "basePrice": 10,
+            "displayPrice": "$10.00 + $0.01/piece",
+            "pricePerPiece": 0.01
+          },
+          "isActive": true
+        },
+        {
+          "id": "knagwf0qj7zkfkwqu0pedf3g",
+          "name": "Scratch-off Panel",
+          "tooltipText": "Add scratch-off areas for promotions",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "scratch_off",
+            "basePrice": 35,
+            "displayPrice": "$35.00 + $0.04/piece",
+            "pricePerPiece": 0.04
+          },
+          "isActive": true
+        },
+        {
+          "id": "g6cm29o0nog7wskygx2ag2fe",
+          "name": "Folding",
+          "tooltipText": "Professional folding for brochures",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "folding",
+            "basePrice": 20,
+            "displayPrice": "$20.00 + $0.01/piece",
+            "pricePerPiece": 0.01
+          },
+          "isActive": true
+        },
+        {
+          "id": "o47vmpvqj86871ilozai97v4",
+          "name": "Scoring",
+          "tooltipText": "Pre-score for clean folds",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "scoring",
+            "basePrice": 15,
+            "displayPrice": "$15.00 + $0.005/piece",
+            "pricePerPiece": 0.005
+          },
+          "isActive": true
+        },
+        {
+          "id": "zok059oj0abkuroq6fgew01w",
+          "name": "Hole Drilling",
+          "tooltipText": "Add holes for hanging or binding",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "hole_drilling",
+            "basePrice": 10,
+            "displayPrice": "$10.00 + $5.00/hole",
+            "pricePerHole": 5
+          },
+          "isActive": true
+        },
+        {
+          "id": "zfafgp7zobu06lm77c0no8h5",
+          "name": "Shrink Wrapping",
+          "tooltipText": "Protective shrink wrap packaging",
+          "pricingModel": "CUSTOM",
+          "configuration": {
+            "type": "shrink_wrapping",
+            "basePrice": 25,
+            "displayPrice": "$25.00 + $3.00/bundle",
+            "pricePerBundle": 3
+          },
+          "isActive": true
+        }
+      ],
+      "implementation_details": {
+        "file_location": "src/app/api/add-ons/route.ts",
+        "component_name": "AddOnsAPI",
+        "dependencies": ["Prisma", "PricingModel enum"]
+      }
+    },
+    "addon_sets": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "N/A",
+        "component_name": "N/A",
+        "dependencies": []
+      },
+      "notes": "No API endpoint found for addon sets - needs implementation"
+    },
+    "turnaround_times": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/turnaround-times/route.ts",
+        "component_name": "TurnaroundTimesAPI",
+        "dependencies": ["Prisma"]
+      },
+      "notes": "Empty array returned - no turnaround time configurations exist"
+    },
+    "turnaround_time_sets": {
+      "status": "inactive",
+      "data": [],
+      "implementation_details": {
+        "file_location": "src/app/api/turnaround-time-sets/route.ts",
+        "component_name": "TurnaroundTimeSetsAPI",
+        "dependencies": ["Prisma"]
+      },
+      "notes": "Empty array returned - no turnaround time set configurations exist"
+    }
+  },
+  "changelog": [
+    {
+      "timestamp": "2025-09-21T19:36:09.922Z",
+      "action": "created",
+      "section": "initial_creation",
+      "details": "Created PRODUCT_MASTER_CONFIG.json from existing API data extraction",
+      "previous_value": null,
+      "new_value": {
+        "categories_count": 4,
+        "paper_stocks_count": 11,
+        "addons_count": 19,
+        "total_active_configurations": 3,
+        "issues_found": [
+          "Paper stock sets API error",
+          "Sizes API error",
+          "Empty quantities",
+          "Empty turnaround times",
+          "No products exist yet"
+        ]
+      }
+    }
+  ]
+}
