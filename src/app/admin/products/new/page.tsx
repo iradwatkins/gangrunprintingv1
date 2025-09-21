@@ -57,11 +57,6 @@ export default function NewProductPage() {
     selectedAddOnSet: '', // Single addon set ID
     selectedTurnaroundTimeSet: '', // Single turnaround time set ID
 
-    // Turnaround
-    rushAvailable: false,
-    rushDays: 1,
-    rushFee: 0,
-
   })
 
   // Fetch data on component mount - simple pattern like paper-stocks page

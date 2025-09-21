@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AirportSelector } from './airport-selector'
 import toast from '@/lib/toast'
 
 interface ShippingRate {
@@ -41,14 +42,16 @@ interface ShippingRatesProps {
     paperStockWeight?: number
   }>
   onRateSelected: (rate: ShippingRate) => void
+  onAirportSelected?: (airportId: string | null) => void
 }
 
-export function ShippingRates({ toAddress, items, onRateSelected }: ShippingRatesProps) {
+export function ShippingRates({ toAddress, items, onRateSelected, onAirportSelected }: ShippingRatesProps) {
   const [rates, setRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedRate, setSelectedRate] = useState<string>('')
   const [totalWeight, setTotalWeight] = useState<string>('0')
+  const [selectedAirportId, setSelectedAirportId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchShippingRates()
@@ -105,8 +108,30 @@ export function ShippingRates({ toAddress, items, onRateSelected }: ShippingRate
     setSelectedRate(value)
     const [carrier, serviceCode] = value.split('-')
     const rate = rates.find((r) => r.carrier === carrier && r.serviceCode === serviceCode)
+
     if (rate) {
+      // If Southwest Cargo is selected but no airport is chosen, don't select the rate yet
+      if (rate.carrier === Carrier.SOUTHWEST_CARGO && !selectedAirportId) {
+        toast.error('Please select an airport pickup location for Southwest Cargo shipping')
+        return
+      }
       onRateSelected(rate)
+    }
+  }
+
+  const handleAirportSelection = (airportId: string | null) => {
+    setSelectedAirportId(airportId)
+    if (onAirportSelected) {
+      onAirportSelected(airportId)
+    }
+
+    // If an airport is selected and Southwest Cargo rate is already selected, trigger rate selection
+    if (airportId && selectedRate.startsWith('SOUTHWEST_CARGO-')) {
+      const [carrier, serviceCode] = selectedRate.split('-')
+      const rate = rates.find((r) => r.carrier === carrier && r.serviceCode === serviceCode)
+      if (rate) {
+        onRateSelected(rate)
+      }
     }
   }
 
@@ -260,6 +285,16 @@ export function ShippingRates({ toAddress, items, onRateSelected }: ShippingRate
             })}
           </div>
         </RadioGroup>
+
+        {/* Show airport selector if Southwest Cargo is selected */}
+        {selectedRate.startsWith('SOUTHWEST_CARGO-') && (
+          <div className="mt-6">
+            <AirportSelector
+              onAirportSelected={handleAirportSelection}
+              selectedAirportId={selectedAirportId}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   )

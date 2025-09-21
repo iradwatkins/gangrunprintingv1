@@ -14,6 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       },
       include: {
         OrderItem: true,
+        selectedAirport: true,
       },
     })
 

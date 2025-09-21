@@ -2,6 +2,39 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
 import { transformSizeGroup } from '@/lib/utils/size-transformer'
+import { transformAddonSets, transformLegacyAddons, findDefaultAddons } from '@/lib/utils/addon-transformer'
+
+// Helper function to calculate price display (from addon-transformer)
+function calculatePriceDisplay(addon: any): { price: number; priceDisplay: string } {
+  const config = addon.configuration as any
+
+  if (config) {
+    if (config.displayPrice) {
+      return { price: 0, priceDisplay: config.displayPrice }
+    } else if (config.price !== undefined) {
+      return { price: config.price, priceDisplay: `$${config.price}` }
+    } else if (config.basePrice !== undefined) {
+      return { price: config.basePrice, priceDisplay: `$${config.basePrice}` }
+    } else if (config.percentage !== undefined) {
+      return { price: config.percentage, priceDisplay: `${config.percentage}%` }
+    } else if (config.pricePerUnit !== undefined) {
+      return { price: config.pricePerUnit, priceDisplay: `$${config.pricePerUnit}/pc` }
+    }
+  }
+
+  // Fallback based on pricing model
+  switch (addon.pricingModel) {
+    case 'FIXED_FEE':
+    case 'FLAT':
+      return { price: 0, priceDisplay: 'Variable' }
+    case 'PERCENTAGE':
+      return { price: 0, priceDisplay: 'Variable %' }
+    case 'PER_UNIT':
+      return { price: 0, priceDisplay: 'Per Unit' }
+    default:
+      return { price: 0, priceDisplay: 'Variable' }
+  }
+}
 
 // Helper function to transform quantity values
 function transformQuantityValues(quantityGroup: any) {
@@ -319,18 +352,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Continue with hardcoded fallback
     }
 
-    // Try to fetch add-ons from addon sets for this product
+    // Try to fetch add-ons from addon sets for this product (simplified like sizes)
     let addons = SIMPLE_CONFIG.addons // Default fallback
-    let addonsGrouped = {
-      aboveDropdown: [],
-      inDropdown: [],
-      belowDropdown: []
-    }
 
     try {
       console.log('[Config API] Fetching add-ons from addon sets...')
 
-      // Get addon sets for this product
+      // Get addon sets for this product - simplified like sizes
       const productAddOnSets = await prisma.productAddOnSet.findMany({
         where: {
           productId,
@@ -357,55 +385,81 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       if (productAddOnSets.length > 0) {
         console.log('[Config API] Found', productAddOnSets.length, 'addon sets for product')
 
-        const allAddons: any[] = []
+        // Transform using the new standardized approach like sizes
+        addons = transformAddonSets(productAddOnSets)
+        console.log('[Config API] Transformed addons count:', addons.length)
+
+      } else {
+        console.log('[Config API] No addon sets found for product, using fallback')
+        // Transform legacy fallback to standardized format
+        addons = transformLegacyAddons(SIMPLE_CONFIG.addons)
+      }
+    } catch (dbError) {
+      console.error('[Config API] Database error fetching addon sets:', dbError)
+      // Transform legacy fallback to standardized format
+      addons = transformLegacyAddons(SIMPLE_CONFIG.addons)
+    }
+
+    // Build addonsGrouped for positioning (restore the unique AddOn Set feature)
+    let addonsGrouped = {
+      aboveDropdown: [],
+      inDropdown: [],
+      belowDropdown: []
+    }
+
+    try {
+      console.log('[Config API] Building addonsGrouped for positioning...')
+
+      // Get addon sets for this product for positioning
+      const productAddOnSetsForGrouping = await prisma.productAddOnSet.findMany({
+        where: {
+          productId,
+        },
+        include: {
+          addOnSet: {
+            include: {
+              addOnSetItems: {
+                include: {
+                  addOn: true,
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          sortOrder: 'asc',
+        },
+      })
+
+      if (productAddOnSetsForGrouping.length > 0) {
         const aboveDropdown: any[] = []
         const inDropdown: any[] = []
         const belowDropdown: any[] = []
 
         // Process each addon set
-        for (const productAddOnSet of productAddOnSets) {
+        for (const productAddOnSet of productAddOnSetsForGrouping) {
           for (const setItem of productAddOnSet.addOnSet.addOnSetItems) {
             const addon = setItem.addOn
+            const { price, priceDisplay } = calculatePriceDisplay(addon)
 
-            // Format addon data
+            // Format addon data for positioning (keeping legacy format for UI compatibility)
             const formattedAddon = {
               id: addon.id,
               name: addon.name,
               description: addon.description || '',
               pricingModel: addon.pricingModel,
+              price,
+              priceDisplay,
               configuration: addon.configuration || {},
               isDefault: setItem.isDefault,
               additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
               displayPosition: setItem.displayPosition,
             }
 
-            // Handle pricing display
-            let priceDisplay = ''
-            let price = 0
-
-            const config = addon.configuration as any
-            if (config) {
-              if (config.displayPrice) {
-                priceDisplay = config.displayPrice
-              } else if (config.price !== undefined) {
-                price = config.price
-                priceDisplay = `$${config.price}`
-              } else if (config.basePrice !== undefined) {
-                price = config.basePrice
-                priceDisplay = `$${config.basePrice}`
-              } else if (config.percentage !== undefined) {
-                price = config.percentage
-                priceDisplay = `${config.percentage}%`
-              } else if (config.pricePerUnit !== undefined) {
-                price = config.pricePerUnit
-                priceDisplay = `$${config.pricePerUnit}/pc`
-              }
-            }
-
-            formattedAddon.price = price
-            formattedAddon.priceDisplay = priceDisplay
-
-            // Add to appropriate groups
+            // Add to appropriate groups based on displayPosition
             switch (setItem.displayPosition) {
               case 'ABOVE_DROPDOWN':
                 aboveDropdown.push(formattedAddon)
@@ -418,30 +472,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 inDropdown.push(formattedAddon)
                 break
             }
-
-            allAddons.push(formattedAddon)
           }
         }
 
-        addons = allAddons
         addonsGrouped = {
           aboveDropdown,
           inDropdown,
           belowDropdown
         }
 
-        console.log('[Config API] Grouped addons:', {
+        console.log('[Config API] Grouped addons for positioning:', {
           above: aboveDropdown.length,
           in: inDropdown.length,
           below: belowDropdown.length
         })
-
-      } else {
-        console.log('[Config API] No addon sets found for product, using fallback')
       }
-    } catch (dbError) {
-      console.error('[Config API] Database error fetching addon sets:', dbError)
-      // Continue with hardcoded fallback
+    } catch (groupingError) {
+      console.error('[Config API] Error building addonsGrouped:', groupingError)
     }
 
     // Try to fetch turnaround times from database
@@ -534,7 +581,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       turnaroundTimes,
     }
 
-    // Update the defaults for quantities, sizes and turnaround times
+    // Update the defaults for quantities, sizes, addons and turnaround times
     const updatedDefaults = { ...SIMPLE_CONFIG.defaults }
 
     if (quantities.length > 0) {
@@ -549,6 +596,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       updatedDefaults.size = defaultSize.id
     }
 
+    if (addons.length > 0) {
+      // Find default addons (multiple selection unlike sizes)
+      updatedDefaults.addons = findDefaultAddons(addons)
+    }
+
     if (turnaroundTimes.length > 0) {
       const defaultTurnaround = turnaroundTimes.find((t) => t.isDefault) || turnaroundTimes[0]
       updatedDefaults.turnaround = defaultTurnaround.id
@@ -556,102 +608,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     config.defaults = updatedDefaults
 
-    // Fetch AddOn Sets for this product
-    let addonSetsGrouped = null
-    try {
-      console.log('[Config API] Fetching AddOn Sets for product:', productId)
-
-      const productAddOnSets = await prisma.productAddOnSet.findMany({
-        where: {
-          productId: productId,
-        },
-        include: {
-          addOnSet: {
-            include: {
-              addOnSetItems: {
-                include: {
-                  addOn: true,
-                },
-                orderBy: {
-                  sortOrder: 'asc',
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          sortOrder: 'asc',
-        },
-      })
-
-      if (productAddOnSets.length > 0) {
-        // Use the first (default) addon set
-        const defaultAddOnSet = productAddOnSets[0].addOnSet
-
-        // Group addons by display position
-        const aboveDropdown: any[] = []
-        const inDropdown: any[] = []
-        const belowDropdown: any[] = []
-
-        defaultAddOnSet.addOnSetItems.forEach((item) => {
-          const addon = {
-            id: item.addOn.id,
-            name: item.addOn.name,
-            description: item.addOn.description,
-            pricingModel: item.addOn.pricingModel,
-            price: item.addOn.price ? parseFloat(item.addOn.price.toString()) : undefined,
-            priceDisplay: item.addOn.priceDisplay,
-            configuration: item.addOn.configuration,
-            isDefault: item.isDefault,
-            additionalTurnaroundDays: item.addOn.additionalTurnaroundDays,
-          }
-
-          switch (item.displayPosition) {
-            case 'ABOVE_DROPDOWN':
-              aboveDropdown.push(addon)
-              break
-            case 'BELOW_DROPDOWN':
-              belowDropdown.push(addon)
-              break
-            case 'IN_DROPDOWN':
-            default:
-              inDropdown.push(addon)
-              break
-          }
-        })
-
-        addonSetsGrouped = {
-          aboveDropdown,
-          inDropdown,
-          belowDropdown,
-        }
-
-        console.log('[Config API] AddOn Sets found:', {
-          setName: defaultAddOnSet.name,
-          totalItems: defaultAddOnSet.addOnSetItems.length,
-          aboveDropdown: aboveDropdown.length,
-          inDropdown: inDropdown.length,
-          belowDropdown: belowDropdown.length,
-        })
-      } else {
-        console.log('[Config API] No AddOn Sets found for product:', productId)
-      }
-    } catch (addOnError) {
-      console.error('[Config API] Error fetching AddOn Sets:', addOnError)
-    }
-
-    // Add addonsGrouped to the response (use the new addonSetsGrouped if available, otherwise use the existing one)
-    const responseData = {
-      ...config,
-      addonsGrouped: addonSetsGrouped || addonsGrouped,
-    }
-
-    return NextResponse.json(responseData, {
+    // Return simplified configuration like sizes and paper stocks
+    return NextResponse.json(config, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60',
-        'X-API-Version': 'v2-dynamic',
+        'X-API-Version': 'v3-simplified',
         'X-Product-Id': productId,
       },
     })

@@ -1,0 +1,55 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const state = searchParams.get('state')
+    const search = searchParams.get('search')
+
+    // Build where clause for filtering
+    const whereClause: any = {
+      isActive: true,
+    }
+
+    if (state) {
+      whereClause.state = state.toUpperCase()
+    }
+
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { code: { contains: search, mode: 'insensitive' } },
+        { city: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    // Get airports with minimal data for dropdown
+    const airports = await prisma.airport.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        city: true,
+        state: true,
+      },
+      orderBy: [{ state: 'asc' }, { name: 'asc' }],
+    })
+
+    return NextResponse.json({
+      success: true,
+      airports,
+      count: airports.length,
+    })
+  } catch (error) {
+    console.error('Error fetching airports:', error)
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch airports',
+      },
+      { status: 500 }
+    )
+  }
+}

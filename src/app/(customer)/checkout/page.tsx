@@ -7,13 +7,13 @@ import { ArrowLeft, CreditCard, Loader2, Lock } from 'lucide-react'
 
 import { CheckoutItemImages } from '@/components/checkout/checkout-item-images'
 import { PaymentMethods } from '@/components/checkout/payment-methods'
+import { ShippingRates } from '@/components/checkout/shipping-rates'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
 import { PageErrorBoundary } from '@/components/error-boundary'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 
@@ -24,6 +24,8 @@ function CheckoutPageContent() {
   const [sameAsShipping, setSameAsShipping] = useState(true)
   const [paymentStep, setPaymentStep] = useState<'info' | 'payment' | 'card'>('info')
   const [_selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [selectedShippingRate, setSelectedShippingRate] = useState<any>(null)
+  const [selectedAirportId, setSelectedAirportId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -38,7 +40,6 @@ function CheckoutPageContent() {
     billingCity: '',
     billingState: '',
     billingZipCode: '',
-    shippingMethod: 'standard',
   })
 
   // Square configuration (these should come from environment variables)
@@ -74,6 +75,12 @@ function CheckoutPageContent() {
       !formData.zipCode
     ) {
       toast.error('Please fill in all required fields')
+      return
+    }
+
+    // Validate shipping rate selection
+    if (!selectedShippingRate) {
+      toast.error('Please select a shipping method')
       return
     }
 
@@ -151,7 +158,7 @@ function CheckoutPageContent() {
   }
 
   const createCheckoutData = () => {
-    const shippingCost = formData.shippingMethod === 'express' ? 25.0 : 10.0
+    const shippingCost = selectedShippingRate?.rateAmount || 0
     const total = subtotal + tax + shippingCost
 
     return {
@@ -179,7 +186,8 @@ function CheckoutPageContent() {
             zipCode: formData.billingZipCode,
             country: 'US',
           },
-      shippingMethod: formData.shippingMethod,
+      shippingRate: selectedShippingRate,
+      selectedAirportId,
       subtotal,
       tax,
       shipping: shippingCost,
@@ -219,7 +227,7 @@ function CheckoutPageContent() {
     setSelectedPaymentMethod('')
   }
 
-  const shippingCost = formData.shippingMethod === 'express' ? 25.0 : 10.0
+  const shippingCost = selectedShippingRate?.rateAmount || 0
   const orderTotal = subtotal + tax + shippingCost
 
   if (items.length === 0) {
@@ -432,40 +440,25 @@ function CheckoutPageContent() {
             </div>
 
             {/* Shipping Method */}
-            <div className="border rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Shipping Method</h2>
-              <RadioGroup
-                value={formData.shippingMethod}
-                onValueChange={(value) => setFormData({ ...formData, shippingMethod: value })}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem id="standard" value="standard" />
-                      <Label className="cursor-pointer" htmlFor="standard">
-                        <div>
-                          <p className="font-medium">Standard Shipping</p>
-                          <p className="text-sm text-muted-foreground">5-7 business days</p>
-                        </div>
-                      </Label>
-                    </div>
-                    <span className="font-medium">$10.00</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem id="express" value="express" />
-                      <Label className="cursor-pointer" htmlFor="express">
-                        <div>
-                          <p className="font-medium">Express Shipping</p>
-                          <p className="text-sm text-muted-foreground">2-3 business days</p>
-                        </div>
-                      </Label>
-                    </div>
-                    <span className="font-medium">$25.00</span>
-                  </div>
-                </div>
-              </RadioGroup>
-            </div>
+            {formData.address && formData.city && formData.state && formData.zipCode && (
+              <ShippingRates
+                toAddress={{
+                  street: formData.address,
+                  city: formData.city,
+                  state: formData.state,
+                  zipCode: formData.zipCode,
+                  country: 'US',
+                }}
+                items={items.map(item => ({
+                  quantity: item.quantity,
+                  width: item.options?.width || 8.5,
+                  height: item.options?.height || 11,
+                  paperStockWeight: item.options?.paperStockWeight || 0.1,
+                }))}
+                onRateSelected={setSelectedShippingRate}
+                onAirportSelected={setSelectedAirportId}
+              />
+            )}
           </div>
 
           {/* Order Summary / Payment */}
@@ -508,7 +501,14 @@ function CheckoutPageContent() {
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Shipping</span>
+                      <span>
+                        Shipping
+                        {selectedShippingRate && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            ({selectedShippingRate.carrier} - {selectedShippingRate.serviceName})
+                          </span>
+                        )}
+                      </span>
                       <span>${shippingCost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
