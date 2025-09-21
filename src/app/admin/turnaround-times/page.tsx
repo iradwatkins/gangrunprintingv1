@@ -32,7 +32,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 
-import { Plus, Edit, Trash2, Clock } from 'lucide-react'
+import { Plus, Edit, Trash2, Clock, Copy } from 'lucide-react'
 import toast from '@/lib/toast'
 
 interface TurnaroundTime {
@@ -173,6 +173,25 @@ export default function TurnaroundTimesPage() {
     } catch (error) {
       console.error('Error deleting turnaround time:', error)
       toast.error('Failed to delete turnaround time')
+    }
+  }
+
+  const handleDuplicate = async (item: TurnaroundTime) => {
+    try {
+      const response = await fetch(`/api/turnaround-times/${item.id}/duplicate`, {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to duplicate turnaround time')
+      }
+
+      toast.success('Turnaround time duplicated')
+      fetchTurnaroundTimes()
+    } catch (error) {
+      console.error('Error duplicating turnaround time:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to duplicate turnaround time')
     }
   }
 
@@ -442,6 +461,9 @@ export default function TurnaroundTimesPage() {
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="ghost" onClick={() => handleEdit(item)}>
                         <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => handleDuplicate(item)}>
+                        <Copy className="h-4 w-4" />
                       </Button>
                       <Button size="sm" variant="ghost" onClick={() => handleDelete(item.id)}>
                         <Trash2 className="h-4 w-4" />

@@ -42,6 +42,7 @@ function EditProductClient({ id }: { id: string }) {
   const [paperStockSets, setPaperStockSets] = useState<any[]>([])
   const [quantityGroups, setQuantityGroups] = useState<any[]>([])
   const [sizeGroups, setSizeGroups] = useState<any[]>([])
+  const [addOnSets, setAddOnSets] = useState<any[]>([])
   const [turnaroundTimeSets, setTurnaroundTimeSets] = useState<any[]>([])
 
   const [formData, setFormData] = useState({
@@ -61,6 +62,7 @@ function EditProductClient({ id }: { id: string }) {
     // Single selections
     selectedQuantityGroup: '', // Single quantity group ID
     selectedSizeGroup: '', // Single size group ID
+    selectedAddOnSet: '', // Single addon set ID
     selectedTurnaroundTimeSet: '', // Single turnaround time set ID
 
     // Turnaround
@@ -102,6 +104,7 @@ function EditProductClient({ id }: { id: string }) {
         // Map quantity and size groups
         selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
         selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || '',
+        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || '',
         selectedTurnaroundTimeSet: data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId || '',
 
         // Turnaround times
@@ -124,11 +127,12 @@ function EditProductClient({ id }: { id: string }) {
 
   const fetchData = async () => {
     try {
-      const [catRes, paperRes, qtyRes, sizeRes, turnaroundRes] = await Promise.all([
+      const [catRes, paperRes, qtyRes, sizeRes, addOnRes, turnaroundRes] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
         fetch('/api/quantities'),
         fetch('/api/sizes'),
+        fetch('/api/addon-sets'),
         fetch('/api/turnaround-time-sets'),
       ])
 
@@ -136,6 +140,7 @@ function EditProductClient({ id }: { id: string }) {
       if (paperRes.ok) setPaperStockSets(await paperRes.json())
       if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
       if (sizeRes.ok) setSizeGroups(await sizeRes.json())
+      if (addOnRes.ok) setAddOnSets(await addOnRes.json())
       if (turnaroundRes.ok) setTurnaroundTimeSets(await turnaroundRes.json())
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -194,15 +199,15 @@ function EditProductClient({ id }: { id: string }) {
     setLoading(true)
     try {
       // Transform form data to match API expectations
-      const { selectedPaperStockSet, selectedQuantityGroup, selectedSizeGroup, selectedTurnaroundTimeSet, ...otherFormData } = formData
+      const { selectedPaperStockSet, selectedQuantityGroup, selectedSizeGroup, selectedAddOnSet, selectedTurnaroundTimeSet, ...otherFormData } = formData
 
       const apiData = {
         ...otherFormData,
         paperStockSetId: selectedPaperStockSet,
         quantityGroupId: selectedQuantityGroup,
         sizeGroupId: selectedSizeGroup,
+        addOnSetId: selectedAddOnSet || null,
         turnaroundTimeSetId: selectedTurnaroundTimeSet,
-        addOnSetId: null, // Set to null since we're not using AddOn Sets
       }
 
       const response = await fetch(`/api/products/${id}`, {

@@ -923,10 +923,7 @@ export default function SimpleConfigurationForm({
           <SelectContent>
             {configData.paperStocks.map((paper) => (
               <SelectItem key={paper.id} value={paper.id}>
-                <div>
-                  <div className="font-medium">{paper.name}</div>
-                  <div className="text-sm text-gray-500">{paper.description}</div>
-                </div>
+                {paper.name}
               </SelectItem>
             ))}
           </SelectContent>
