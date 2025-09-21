@@ -1,4 +1,3 @@
-import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { Lucia } from 'lucia'
 import { generateRandomString } from 'oslo/crypto'
@@ -68,41 +67,35 @@ interface DatabaseUserAttributes {
   emailVerified: boolean
 }
 
-export const validateRequest = cache(
-  async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get('gangrun_session')
-    const sessionId = sessionCookie?.value ?? null
+export const validateRequest = async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+  const cookieStore = await cookies()
+  const sessionCookie = cookieStore.get('gangrun_session')
+  const sessionId = sessionCookie?.value ?? null
 
-    console.log('[validateRequest] Cookie name:', 'gangrun_session')
-    console.log('[validateRequest] Session ID found:', !!sessionId)
-
-    if (!sessionId) {
-      console.log('[validateRequest] No session cookie found')
-      return {
-        user: null,
-        session: null,
-      }
+  if (!sessionId) {
+    return {
+      user: null,
+      session: null,
     }
-
-    const result = await lucia.validateSession(sessionId)
-
-    try {
-      if (result.session && result.session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(result.session.id)
-        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-      }
-      if (!result.session) {
-        const sessionCookie = lucia.createBlankSessionCookie()
-        ;(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-      }
-    } catch (error) {
-      authLogger.debug('Failed to set session cookie', error)
-    }
-
-    return result
   }
-)
+
+  const result = await lucia.validateSession(sessionId)
+
+  try {
+    if (result.session && result.session.fresh) {
+      const sessionCookie = lucia.createSessionCookie(result.session.id)
+      cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+    }
+    if (!result.session) {
+      const sessionCookie = lucia.createBlankSessionCookie()
+      cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+    }
+  } catch (error) {
+    authLogger.debug('Failed to set session cookie', error)
+  }
+
+  return result
+}
 
 // Magic Link Authentication Functions
 export async function generateMagicLink(email: string): Promise<string> {
