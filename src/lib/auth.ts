@@ -14,16 +14,30 @@ const adapter = new CustomPrismaAdapter(prisma)
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
+    name: 'gangrun_session',
     attributes: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // Always true since we're on HTTPS
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
     },
   },
   getUserAttributes: (attributes) => {
+    // Handle undefined attributes gracefully
+    if (!attributes) {
+      return {
+        email: '',
+        name: '',
+        role: 'CUSTOMER',
+        emailVerified: false,
+      }
+    }
+
     return {
-      email: attributes.email,
-      name: attributes.name,
-      role: attributes.role,
-      emailVerified: attributes.emailVerified,
+      email: attributes.email || '',
+      name: attributes.name || '',
+      role: attributes.role || 'CUSTOMER',
+      emailVerified: attributes.emailVerified || false,
     }
   },
 })
@@ -56,8 +70,15 @@ interface DatabaseUserAttributes {
 
 export const validateRequest = cache(
   async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
-    const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get('gangrun_session')
+    const sessionId = sessionCookie?.value ?? null
+
+    console.log('[validateRequest] Cookie name:', 'gangrun_session')
+    console.log('[validateRequest] Session ID found:', !!sessionId)
+
     if (!sessionId) {
+      console.log('[validateRequest] No session cookie found')
       return {
         user: null,
         session: null,

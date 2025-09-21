@@ -23,31 +23,43 @@ export class CustomPrismaAdapter implements Adapter {
   async getSessionAndUser(
     sessionId: string
   ): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
-    const result = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: { User: true }, // Use uppercase User
-    })
+    try {
+      const result = await this.prisma.session.findUnique({
+        where: { id: sessionId },
+        include: { User: true }, // Use uppercase User
+      })
 
-    if (!result) return [null, null]
+      if (!result) return [null, null]
 
-    const { User, ...session } = result
+      const { User, ...session } = result
 
-    return [
-      {
-        id: session.id,
-        userId: session.userId,
-        expiresAt: session.expiresAt,
-        ...session,
-      },
-      User ? {
+      // Ensure User exists and has required properties
+      if (!User) return [null, null]
+
+      const userAttributes = {
         id: User.id,
-        email: User.email,
-        name: User.name,
-        role: User.role,
-        emailVerified: User.emailVerified,
-        ...User,
-      } : null,
-    ]
+        email: User.email || '',
+        name: User.name || '',
+        role: User.role || 'CUSTOMER',
+        emailVerified: User.emailVerified || false,
+      }
+
+      return [
+        {
+          id: session.id,
+          userId: session.userId,
+          expiresAt: session.expiresAt,
+          ...session,
+        },
+        {
+          ...userAttributes,
+          ...User,
+        },
+      ]
+    } catch (error) {
+      console.error('Error in getSessionAndUser:', error)
+      return [null, null]
+    }
   }
 
   async getUserSessions(userId: string): Promise<DatabaseSession[]> {
