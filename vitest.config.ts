@@ -11,6 +11,16 @@ export default defineConfig({
     globals: true,
     css: true,
     reporters: ['verbose'],
+    // Include only test files, exclude Playwright spec files
+    include: ['**/*.test.{ts,tsx,js,jsx}'],
+    exclude: [
+      'node_modules/**',
+      'playwright-tests/**',
+      '**/*.spec.{ts,tsx,js,jsx}',
+      '.next/**',
+      'dist/**',
+      'build/**'
+    ],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
