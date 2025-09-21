@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const data = await request.json()
-    const { images, paperStockSetId, options, pricingTiers, ...productData } = data
+    const { images, paperStockSetId, quantityGroupId, sizeGroupId, turnaroundTimeSetId, addOnSetId, options, pricingTiers, ...productData } = data
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({
@@ -70,6 +70,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         ProductImage: true,
         productPaperStockSets: true,
+        productQuantityGroups: true,
+        productSizeGroups: true,
+        productTurnaroundTimeSets: true,
+        productAddOnSets: true,
         ProductOption: {
           include: {
             OptionValue: true,
@@ -101,6 +105,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       // Delete existing relations
       await tx.productImage.deleteMany({ where: { productId: id } })
       await tx.productPaperStockSet.deleteMany({ where: { productId: id } })
+      await tx.productQuantityGroup.deleteMany({ where: { productId: id } })
+      await tx.productSizeGroup.deleteMany({ where: { productId: id } })
+      await tx.productTurnaroundTimeSet.deleteMany({ where: { productId: id } })
+      await tx.productAddOnSet.deleteMany({ where: { productId: id } })
       await tx.productOption.deleteMany({ where: { productId: id } })
       await tx.pricingTier.deleteMany({ where: { productId: id } })
 
@@ -132,6 +140,40 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             ? {
                 create: {
                   paperStockSetId: paperStockSetId,
+                  isDefault: true,
+                },
+              }
+            : undefined,
+          // Recreate quantity group association
+          productQuantityGroups: quantityGroupId
+            ? {
+                create: {
+                  quantityGroupId: quantityGroupId,
+                },
+              }
+            : undefined,
+          // Recreate size group association
+          productSizeGroups: sizeGroupId
+            ? {
+                create: {
+                  sizeGroupId: sizeGroupId,
+                },
+              }
+            : undefined,
+          // Recreate turnaround time set association
+          productTurnaroundTimeSets: turnaroundTimeSetId
+            ? {
+                create: {
+                  turnaroundTimeSetId: turnaroundTimeSetId,
+                  isDefault: true,
+                },
+              }
+            : undefined,
+          // Recreate addon set association
+          productAddOnSets: addOnSetId
+            ? {
+                create: {
+                  addOnSetId: addOnSetId,
                   isDefault: true,
                 },
               }
@@ -180,6 +222,42 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                   paperStockItems: {
                     include: {
                       paperStock: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          productQuantityGroups: {
+            include: {
+              quantityGroup: true,
+            },
+          },
+          productSizeGroups: {
+            include: {
+              sizeGroup: true,
+            },
+          },
+          productTurnaroundTimeSets: {
+            include: {
+              turnaroundTimeSet: {
+                include: {
+                  TurnaroundTimeSetItem: {
+                    include: {
+                      turnaroundTime: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          productAddOnSets: {
+            include: {
+              addOnSet: {
+                include: {
+                  addOnSetItems: {
+                    include: {
+                      addOn: true,
                     },
                   },
                 },

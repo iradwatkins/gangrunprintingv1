@@ -214,6 +214,79 @@ export const IMAGE_SIZES = {
   MAX_DIMENSION: 5000,
 } as const
 
+// Product Image Optimization Profiles
+export const PRODUCT_IMAGE_PROFILES = {
+  // Business cards need high quality but smaller dimensions
+  BUSINESS_CARD: {
+    maxDimension: 800,
+    quality: 80,
+    thumbnailQuality: 75,
+    description: 'High quality for detailed business card designs'
+  },
+  // Banners and posters can use lower quality, larger dimensions acceptable
+  BANNER: {
+    maxDimension: 1200,
+    quality: 65,
+    thumbnailQuality: 60,
+    description: 'Optimized for large format prints with aggressive compression'
+  },
+  // Flyers balanced approach
+  FLYER: {
+    maxDimension: 1000,
+    quality: 75,
+    thumbnailQuality: 70,
+    description: 'Balanced quality and size for flyer designs'
+  },
+  // Default profile for other products
+  DEFAULT: {
+    maxDimension: 1200,
+    quality: 75,
+    thumbnailQuality: 70,
+    description: 'Standard optimization for general products'
+  },
+  // High detail products that need better quality
+  PREMIUM: {
+    maxDimension: 1200,
+    quality: 85,
+    thumbnailQuality: 80,
+    description: 'Higher quality for detailed premium products'
+  }
+} as const
+
+// Image Format Priorities (best to worst compression)
+export const IMAGE_FORMAT_PRIORITY = {
+  AVIF: {
+    extension: 'avif',
+    mimeType: 'image/avif',
+    quality: 60, // AVIF can use lower quality settings for same visual quality
+    compressionRatio: 0.4, // ~60% smaller than JPEG
+  },
+  WEBP: {
+    extension: 'webp',
+    mimeType: 'image/webp',
+    quality: 75,
+    compressionRatio: 0.7, // ~30% smaller than JPEG
+  },
+  JPEG: {
+    extension: 'jpg',
+    mimeType: 'image/jpeg',
+    quality: 80,
+    compressionRatio: 1.0, // Baseline
+  }
+} as const
+
+// Content Analysis Thresholds
+export const IMAGE_ANALYSIS = {
+  // Threshold for detecting high contrast images (can use lower quality)
+  HIGH_CONTRAST_THRESHOLD: 0.7,
+  // Threshold for detecting images with lots of text/graphics
+  TEXT_DETECTION_THRESHOLD: 0.6,
+  // Minimum file size reduction to consider optimization successful
+  MIN_COMPRESSION_RATIO: 0.8,
+  // Maximum processing time before fallback (milliseconds)
+  MAX_PROCESSING_TIME: 30000,
+} as const
+
 // Redis Configuration
 export const REDIS_CONFIG = {
   DEFAULT_PORT: DEFAULT_PORTS.REDIS,
