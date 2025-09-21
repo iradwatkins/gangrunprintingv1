@@ -30,18 +30,18 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   useEffect(() => {
-    // Set a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      if (isLoading && !isRedirecting) {
-        console.error('AdminAuthWrapper: Authentication check timed out after 10 seconds')
-        setIsRedirecting(true)
-        router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
-      }
-    }, 10000) // 10 second timeout
+    let retryCount = 0
+    const maxRetries = 3
+    let timeoutId: NodeJS.Timeout
 
-    const checkAdminAuth = async () => {
-      console.log('AdminAuthWrapper: Starting authentication check')
+    const checkAdminAuth = async (attempt = 1) => {
+      console.log(`AdminAuthWrapper: Starting authentication check (attempt ${attempt}/${maxRetries})`)
       try {
+        // Add small delay for first attempt to allow session to settle
+        if (attempt === 1) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           headers: {
@@ -51,7 +51,12 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         })
 
         if (!response.ok) {
-          console.log('AdminAuthWrapper: Auth check failed - response not ok')
+          console.log(`AdminAuthWrapper: Auth check failed - response not ok (attempt ${attempt})`)
+          if (attempt < maxRetries) {
+            console.log('AdminAuthWrapper: Retrying authentication check...')
+            timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1000)
+            return
+          }
           setIsRedirecting(true)
           setIsLoading(false)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
@@ -61,7 +66,12 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         const userData = await response.json()
 
         if (!userData.user) {
-          console.log('AdminAuthWrapper: No user data found')
+          console.log(`AdminAuthWrapper: No user data found (attempt ${attempt})`)
+          if (attempt < maxRetries) {
+            console.log('AdminAuthWrapper: Retrying authentication check...')
+            timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1000)
+            return
+          }
           setIsRedirecting(true)
           setIsLoading(false)
           router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
@@ -69,7 +79,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         }
 
         if (userData.user.role !== 'ADMIN') {
-          console.log('AdminAuthWrapper: User is not an admin')
+          console.log('AdminAuthWrapper: User is not an admin:', userData.user.email, 'Role:', userData.user.role)
           setIsRedirecting(true)
           setIsLoading(false)
           router.push('/?error=unauthorized')
@@ -80,20 +90,36 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
         console.log('AdminAuthWrapper: User authenticated as admin:', userData.user.email)
         setUser(userData.user)
         setIsAuthorized(true)
-        clearTimeout(timeout)
         setIsLoading(false)
       } catch (error) {
-        console.error('AdminAuthWrapper: Auth check failed:', error)
+        console.error(`AdminAuthWrapper: Auth check failed (attempt ${attempt}):`, error)
+        if (attempt < maxRetries) {
+          console.log('AdminAuthWrapper: Retrying authentication check...')
+          timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 1000)
+          return
+        }
         setIsRedirecting(true)
         setIsLoading(false)
         router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
       }
     }
 
+    // Set overall timeout to prevent infinite loading
+    const overallTimeout = setTimeout(() => {
+      if (isLoading && !isRedirecting) {
+        console.error('AdminAuthWrapper: Authentication check timed out after 15 seconds')
+        setIsRedirecting(true)
+        router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
+      }
+    }, 15000) // 15 second overall timeout
+
     checkAdminAuth()
 
-    // Cleanup timeout on unmount
-    return () => clearTimeout(timeout)
+    // Cleanup timeouts on unmount
+    return () => {
+      clearTimeout(timeoutId)
+      clearTimeout(overallTimeout)
+    }
   }, [])
 
   // Show loading state while checking auth
