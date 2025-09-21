@@ -42,7 +42,7 @@ function EditProductClient({ id }: { id: string }) {
   const [paperStockSets, setPaperStockSets] = useState<any[]>([])
   const [quantityGroups, setQuantityGroups] = useState<any[]>([])
   const [sizeGroups, setSizeGroups] = useState<any[]>([])
-  const [addOnSets, setAddOnSets] = useState<any[]>([])
+  const [turnaroundTimeSets, setTurnaroundTimeSets] = useState<any[]>([])
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -61,9 +61,7 @@ function EditProductClient({ id }: { id: string }) {
     // Single selections
     selectedQuantityGroup: '', // Single quantity group ID
     selectedSizeGroup: '', // Single size group ID
-
-    // Single selection
-    selectedAddOnSet: '', // Single AddOn Set ID
+    selectedTurnaroundTimeSet: '', // Single turnaround time set ID
 
     // Turnaround
     productionTime: 3,
@@ -104,9 +102,7 @@ function EditProductClient({ id }: { id: string }) {
         // Map quantity and size groups
         selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
         selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || '',
-
-        // Map AddOn Set
-        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || '',
+        selectedTurnaroundTimeSet: data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId || '',
 
         // Turnaround times
         productionTime: data.productionTime || 3,
@@ -128,23 +124,19 @@ function EditProductClient({ id }: { id: string }) {
 
   const fetchData = async () => {
     try {
-      const [catRes, paperRes, qtyRes, sizeRes, addOnSetRes] = await Promise.all([
+      const [catRes, paperRes, qtyRes, sizeRes, turnaroundRes] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
         fetch('/api/quantities'),
         fetch('/api/sizes'),
-        fetch('/api/addon-sets'),
+        fetch('/api/turnaround-time-sets'),
       ])
 
       if (catRes.ok) setCategories(await catRes.json())
       if (paperRes.ok) setPaperStockSets(await paperRes.json())
       if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
       if (sizeRes.ok) setSizeGroups(await sizeRes.json())
-      if (addOnSetRes.ok) {
-        const addOnSetData = await addOnSetRes.json()
-        // Handle both array and object with data property
-        setAddOnSets(Array.isArray(addOnSetData) ? addOnSetData : (addOnSetData.data || []))
-      }
+      if (turnaroundRes.ok) setTurnaroundTimeSets(await turnaroundRes.json())
     } catch (error) {
       console.error('Failed to fetch data:', error)
     }
@@ -160,9 +152,8 @@ function EditProductClient({ id }: { id: string }) {
           basePrice: formData.basePrice,
           setupFee: formData.setupFee,
           paperStockSetId: formData.selectedPaperStockSet,
-          quantityGroup: formData.selectedQuantityGroup,
-          sizeGroup: formData.selectedSizeGroup,
-          addOnSet: formData.selectedAddOnSet,
+          quantityGroupId: formData.selectedQuantityGroup,
+          sizeGroupId: formData.selectedSizeGroup,
         }),
       })
 
@@ -202,10 +193,21 @@ function EditProductClient({ id }: { id: string }) {
 
     setLoading(true)
     try {
+      // Transform form data to match API expectations
+      const { selectedPaperStockSet, selectedQuantityGroup, selectedSizeGroup, selectedTurnaroundTimeSet, ...otherFormData } = formData
+
+      const apiData = {
+        ...otherFormData,
+        paperStockSetId: selectedPaperStockSet,
+        quantityGroupId: selectedQuantityGroup,
+        sizeGroupId: selectedSizeGroup,
+        turnaroundTimeSetId: selectedTurnaroundTimeSet,
+      }
+
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(apiData),
       })
 
       if (response.ok) {
@@ -569,28 +571,30 @@ function EditProductClient({ id }: { id: string }) {
         </CardContent>
       </Card>
 
-      {/* AddOn Set - Single selection */}
+      {/* Turnaround Time Set - Single selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Add-on Set (Choose One) *</CardTitle>
+          <CardTitle>Turnaround Time Set (Choose One) *</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select an addon set for this product. Customers will see the addons from this set,
-              allowing them to add extra features to their order.
+              Select a turnaround time set for this product. Customers will see the turnaround
+              options from this set, with pricing adjustments for faster delivery.
             </p>
             <div>
-              <Label htmlFor="addon-set">AddOn Set</Label>
+              <Label htmlFor="turnaround-time-set">Turnaround Time Set</Label>
               <Select
-                value={formData.selectedAddOnSet}
-                onValueChange={(value) => setFormData({ ...formData, selectedAddOnSet: value })}
+                value={formData.selectedTurnaroundTimeSet}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedTurnaroundTimeSet: value })
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select addon set" />
+                  <SelectValue placeholder="Select turnaround time set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {addOnSets.map((set) => (
+                  {turnaroundTimeSets.map((set) => (
                     <SelectItem key={set.id} value={set.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{set.name}</span>
@@ -604,18 +608,36 @@ function EditProductClient({ id }: { id: string }) {
               </Select>
             </div>
 
-            {/* Preview selected addon set */}
-            {formData.selectedAddOnSet && (
+            {/* Preview selected turnaround time set */}
+            {formData.selectedTurnaroundTimeSet && (
               <div className="border rounded-lg p-3 bg-muted/50">
                 {(() => {
-                  const selectedSet = addOnSets.find((s) => s.id === formData.selectedAddOnSet)
+                  const selectedSet = turnaroundTimeSets.find(
+                    (s) => s.id === formData.selectedTurnaroundTimeSet
+                  )
                   if (!selectedSet) return null
 
                   return (
                     <div>
                       <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
-                      <div className="text-xs text-muted-foreground">
-                        Contains {selectedSet._count?.addOnSetItems || 0} add-ons
+                      <div className="space-y-1">
+                        {selectedSet.TurnaroundTimeSetItem?.map((item: any) => (
+                          <div
+                            key={item.id}
+                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
+                              item.isDefault
+                                ? 'bg-primary text-primary-foreground font-medium'
+                                : 'bg-background text-foreground border'
+                            }`}
+                          >
+                            <span>{item.turnaroundTime.displayName}</span>
+                            <span className="text-xs opacity-70">
+                              {item.turnaroundTime.basePrice > 0 &&
+                                `+$${item.turnaroundTime.basePrice}`}
+                              {item.isDefault && ' (default)'}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )
@@ -626,76 +648,7 @@ function EditProductClient({ id }: { id: string }) {
         </CardContent>
       </Card>
 
-      {/* Turnaround Times */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Turnaround Times & Pricing</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="production">Production Time (days)</Label>
-              <Input
-                id="production"
-                type="number"
-                value={formData.productionTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, productionTime: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="base-price">Base Price ($)</Label>
-              <Input
-                id="base-price"
-                step="0.01"
-                type="number"
-                value={formData.basePrice}
-                onChange={(e) =>
-                  setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={formData.rushAvailable}
-                onCheckedChange={(checked) => setFormData({ ...formData, rushAvailable: checked })}
-              />
-              <Label>Rush Available</Label>
-            </div>
-            {formData.rushAvailable && (
-              <>
-                <div className="flex items-center gap-2">
-                  <Label>Rush Days:</Label>
-                  <Input
-                    className="w-20"
-                    type="number"
-                    value={formData.rushDays}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rushDays: parseInt(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label>Rush Fee ($):</Label>
-                  <Input
-                    className="w-24"
-                    step="0.01"
-                    type="number"
-                    value={formData.rushFee}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rushFee: parseFloat(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
