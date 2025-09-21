@@ -22,6 +22,27 @@ export const MAGIC_LINK_EXPIRY = 15 * 60 * 1000 // 15 minutes
 export const ADMIN_EMAIL = 'iradwatkins@gmail.com' as const
 export const TOKEN_LENGTH = 32
 
+// Session Management
+export const SESSION_CONFIG = {
+  // Session lifetime: 90 days (keep users logged in for extended periods)
+  SESSION_LIFETIME_MS: 90 * 24 * 60 * 60 * 1000, // 90 days in milliseconds
+
+  // Fresh period: 7 days (sessions are considered "fresh" and extended within this period)
+  SESSION_FRESH_PERIOD_MS: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+
+  // Activity timeout: extend session if user is active within this period
+  ACTIVITY_EXTENSION_THRESHOLD_MS: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+
+  // Idle timeout: log out user after this period of complete inactivity
+  IDLE_TIMEOUT_MS: 90 * 24 * 60 * 60 * 1000, // 90 days (same as session lifetime for now)
+
+  // Session cleanup: how often to clean expired sessions from database
+  CLEANUP_INTERVAL_MS: 60 * 60 * 1000, // 1 hour
+
+  // Extension window: extend session if it will expire within this window
+  EXTENSION_WINDOW_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
+} as const
+
 // Pagination
 export const DEFAULT_PAGE_SIZE = 20
 export const MAX_PAGE_SIZE = 100
