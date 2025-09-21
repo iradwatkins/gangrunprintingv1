@@ -103,15 +103,13 @@ export async function POST(request: NextRequest) {
       </html>
     `
 
-    const msg = {
+    // Send email using Resend
+    await sendEmail({
       to: order.email,
-      from: process.env.SENDGRID_FROM_EMAIL || 'orders@gangrunprinting.com',
       subject: `Order Confirmation - ${orderNumber}`,
-      text: `Thank you for your order! Your order number is ${orderNumber}. You can track your order at ${process.env.NEXTAUTH_URL}/account/orders`,
       html: emailHtml,
-    }
-
-    await sgMail.send(msg)
+      text: `Thank you for your order! Your order number is ${orderNumber}. You can track your order at ${process.env.NEXTAUTH_URL}/account/orders`,
+    })
 
     // Update order to mark notification as sent
     await prisma.notification.create({
