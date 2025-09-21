@@ -1,0 +1,2 @@
+en=scroll&epn.percent_scrolled=90&_et=6
+en=page_view&_et=2118&dl=http%3A%2F%2Flocalhost%3A3002%2Fadmin%2Fproducts%2Fsimple&dr=http%3A%2F%2Flocalhost%3A3002%2Fadmin%2Fproducts&seg=1

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createId } from '@paralleldrive/cuid2'
 
 const createTurnaroundTimeSchema = z.object({
   name: z.string().min(1).max(50),
@@ -51,7 +52,11 @@ export async function POST(request: NextRequest) {
     console.log('✅ Validation passed, parsed data:', JSON.stringify(data, null, 2))
 
     const turnaroundTime = await prisma.turnaroundTime.create({
-      data,
+      data: {
+        id: createId(),
+        ...data,
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json(turnaroundTime, { status: 201 })
@@ -62,8 +67,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors,
-          message: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+          details: error.issues,
+          message: error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ')
         },
         { status: 400 }
       )

@@ -1,0 +1,188 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e4]:
+    - generic [ref=e8]:
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "GangRun Printing Enterprise" [ref=e12] [cursor=pointer]:
+            - img [ref=e14] [cursor=pointer]
+            - generic [ref=e18] [cursor=pointer]:
+              - generic [ref=e19] [cursor=pointer]: GangRun Printing
+              - generic [ref=e20] [cursor=pointer]: Enterprise
+            - img [ref=e21] [cursor=pointer]
+      - generic [ref=e25]:
+        - generic [ref=e26]: Platform
+        - list [ref=e27]:
+          - listitem [ref=e28]:
+            - link "Dashboard" [ref=e29] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e30] [cursor=pointer]
+              - generic [ref=e33] [cursor=pointer]: Dashboard
+          - listitem [ref=e34]:
+            - link "Orders" [ref=e35] [cursor=pointer]:
+              - /url: /admin/orders
+              - img [ref=e36] [cursor=pointer]
+              - generic [ref=e40] [cursor=pointer]: Orders
+          - listitem [ref=e41]:
+            - link "Customers" [ref=e42] [cursor=pointer]:
+              - /url: /admin/customers
+              - img [ref=e43] [cursor=pointer]
+              - generic [ref=e48] [cursor=pointer]: Customers
+          - listitem [ref=e49]:
+            - button "Products" [expanded] [ref=e50] [cursor=pointer]:
+              - img [ref=e51] [cursor=pointer]
+              - generic [ref=e55] [cursor=pointer]: Products
+              - img [ref=e56] [cursor=pointer]
+            - list [ref=e59]:
+              - listitem [ref=e60]:
+                - link "All Products" [ref=e61] [cursor=pointer]:
+                  - /url: /admin/products
+                  - generic [ref=e62] [cursor=pointer]: All Products
+              - listitem [ref=e63]:
+                - link "Categories" [ref=e64] [cursor=pointer]:
+                  - /url: /admin/categories
+                  - generic [ref=e65] [cursor=pointer]: Categories
+              - listitem [ref=e66]:
+                - link "Paper Stocks" [ref=e67] [cursor=pointer]:
+                  - /url: /admin/paper-stocks
+                  - generic [ref=e68] [cursor=pointer]: Paper Stocks
+              - listitem [ref=e69]:
+                - link "Paper Stock Sets" [ref=e70] [cursor=pointer]:
+                  - /url: /admin/paper-stock-sets
+                  - generic [ref=e71] [cursor=pointer]: Paper Stock Sets
+              - listitem [ref=e72]:
+                - link "Quantities" [ref=e73] [cursor=pointer]:
+                  - /url: /admin/quantities
+                  - generic [ref=e74] [cursor=pointer]: Quantities
+              - listitem [ref=e75]:
+                - link "Sizes" [ref=e76] [cursor=pointer]:
+                  - /url: /admin/sizes
+                  - generic [ref=e77] [cursor=pointer]: Sizes
+              - listitem [ref=e78]:
+                - link "Add-ons" [ref=e79] [cursor=pointer]:
+                  - /url: /admin/add-ons
+                  - generic [ref=e80] [cursor=pointer]: Add-ons
+              - listitem [ref=e81]:
+                - link "Add-on Sets" [ref=e82] [cursor=pointer]:
+                  - /url: /admin/addon-sets
+                  - generic [ref=e83] [cursor=pointer]: Add-on Sets
+              - listitem [ref=e84]:
+                - link "Turnaround Times" [ref=e85] [cursor=pointer]:
+                  - /url: /admin/turnaround-times
+                  - generic [ref=e86] [cursor=pointer]: Turnaround Times
+              - listitem [ref=e87]:
+                - link "Turnaround Time Sets" [ref=e88] [cursor=pointer]:
+                  - /url: /admin/turnaround-time-sets
+                  - generic [ref=e89] [cursor=pointer]: Turnaround Time Sets
+          - listitem [ref=e90]:
+            - link "Analytics" [ref=e91] [cursor=pointer]:
+              - /url: /admin/analytics
+              - img [ref=e92] [cursor=pointer]
+              - generic [ref=e94] [cursor=pointer]: Analytics
+          - listitem [ref=e95]:
+            - button "Marketing & Automation" [ref=e96] [cursor=pointer]:
+              - img [ref=e97] [cursor=pointer]
+              - generic [ref=e100] [cursor=pointer]: Marketing & Automation
+              - img [ref=e101] [cursor=pointer]
+          - listitem [ref=e103]:
+            - button "Design" [ref=e104] [cursor=pointer]:
+              - img [ref=e105] [cursor=pointer]
+              - generic [ref=e111] [cursor=pointer]: Design
+              - img [ref=e112] [cursor=pointer]
+          - listitem [ref=e114]:
+            - button "Settings" [ref=e115] [cursor=pointer]:
+              - img [ref=e116] [cursor=pointer]
+              - generic [ref=e119] [cursor=pointer]: Settings
+              - img [ref=e120] [cursor=pointer]
+      - generic [ref=e122]:
+        - generic [ref=e125]:
+          - generic [ref=e126]: Theme
+          - button "Toggle theme" [ref=e127] [cursor=pointer]:
+            - img
+            - generic [ref=e128] [cursor=pointer]: Toggle theme
+        - list [ref=e129]:
+          - listitem [ref=e130]:
+            - button "Ira Watkins Ira Watkins iradwatkins@gmail.com" [ref=e131] [cursor=pointer]:
+              - img "Ira Watkins" [ref=e133] [cursor=pointer]
+              - generic [ref=e134] [cursor=pointer]:
+                - generic [ref=e135] [cursor=pointer]: Ira Watkins
+                - generic [ref=e136] [cursor=pointer]: iradwatkins@gmail.com
+              - img [ref=e137] [cursor=pointer]
+      - button "Toggle Sidebar" [ref=e140]
+    - main [ref=e141]:
+      - generic [ref=e142]:
+        - generic [ref=e144]:
+          - img [ref=e145]
+          - searchbox "Search orders, customers, products..." [ref=e148]
+        - generic [ref=e149]:
+          - button "3" [ref=e150] [cursor=pointer]:
+            - img
+            - generic [ref=e151] [cursor=pointer]: "3"
+          - button "TA" [ref=e152] [cursor=pointer]:
+            - generic [ref=e154] [cursor=pointer]: TA
+      - main [ref=e155]:
+        - generic [ref=e157]:
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - heading "Product Management" [level=1] [ref=e160]
+              - paragraph [ref=e161]: Manage your print products and configurations
+            - generic [ref=e162]:
+              - link "Simple Create" [ref=e163] [cursor=pointer]:
+                - /url: /admin/products/simple
+                - button "Simple Create" [ref=e164] [cursor=pointer]:
+                  - img
+                  - text: Simple Create
+              - link "Full Create" [ref=e165] [cursor=pointer]:
+                - /url: /admin/products/new
+                - button "Full Create" [ref=e166] [cursor=pointer]:
+                  - img
+                  - text: Full Create
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic [ref=e170]: Total Products
+                - img [ref=e171]
+              - generic [ref=e175]:
+                - generic [ref=e176]: "0"
+                - paragraph [ref=e177]: 0 active
+            - generic [ref=e178]:
+              - generic [ref=e179]:
+                - generic [ref=e180]: Featured
+                - img [ref=e181]
+              - generic [ref=e185]:
+                - generic [ref=e186]: "0"
+                - paragraph [ref=e187]: Featured products
+            - generic [ref=e188]:
+              - generic [ref=e189]:
+                - generic [ref=e190]: Gang Run Eligible
+                - img [ref=e191]
+              - generic [ref=e195]:
+                - generic [ref=e196]: "0"
+                - paragraph [ref=e197]: Can be gang run
+            - generic [ref=e198]:
+              - generic [ref=e199]:
+                - generic [ref=e200]: With Images
+                - img [ref=e201]
+              - generic [ref=e205]:
+                - generic [ref=e206]: "0"
+                - paragraph [ref=e207]: Have product images
+          - generic [ref=e208]:
+            - generic [ref=e210]: Products
+            - table [ref=e213]:
+              - rowgroup [ref=e214]:
+                - row "Product SKU Category Paper Stocks Base Price Production Status Actions" [ref=e215]:
+                  - cell "Product" [ref=e216]
+                  - cell "SKU" [ref=e217]
+                  - cell "Category" [ref=e218]
+                  - cell "Paper Stocks" [ref=e219]
+                  - cell "Base Price" [ref=e220]
+                  - cell "Production" [ref=e221]
+                  - cell "Status" [ref=e222]
+                  - cell "Actions" [ref=e223]
+              - rowgroup [ref=e224]:
+                - row "No products found. Create your first product to get started." [ref=e225]:
+                  - cell "No products found. Create your first product to get started." [ref=e226]
+```

@@ -2,22 +2,22 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createId } from '@paralleldrive/cuid2'
 
-// POST /api/turnaround-times/[id]/duplicate
+// POST /api/sizes/[id]/duplicate
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
-    // Fetch the original turnaround time
-    const original = await prisma.turnaroundTime.findUnique({
+    // Fetch the original size
+    const original = await prisma.standardSize.findUnique({
       where: { id },
     })
 
     if (!original) {
-      return NextResponse.json({ error: 'Turnaround time not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Standard size not found' }, { status: 404 })
     }
 
     // Get count of existing copies to generate a unique name
-    const existingCopies = await prisma.turnaroundTime.count({
+    const existingCopies = await prisma.standardSize.count({
       where: {
         name: {
           startsWith: `${original.name} (Copy`,
@@ -30,20 +30,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const newDisplayName = `${original.displayName} (Copy ${copyNumber})`
 
     // Create a duplicate with modified name
-    const duplicate = await prisma.turnaroundTime.create({
+    const duplicate = await prisma.standardSize.create({
       data: {
         id: createId(),
         name: newName,
         displayName: newDisplayName,
-        description: original.description,
-        daysMin: original.daysMin,
-        daysMax: original.daysMax,
-        pricingModel: original.pricingModel,
-        basePrice: original.basePrice,
-        priceMultiplier: original.priceMultiplier,
-        requiresNoCoating: original.requiresNoCoating,
-        restrictedCoatings: original.restrictedCoatings,
-        restrictedOptions: original.restrictedOptions,
+        width: original.width,
+        height: original.height,
+        preCalculatedValue: original.preCalculatedValue,
         sortOrder: original.sortOrder + 1, // Place after original
         isActive: false, // Start as inactive to prevent conflicts
         updatedAt: new Date(),
@@ -52,7 +46,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(duplicate)
   } catch (error) {
-    console.error('Failed to duplicate turnaround time:', error)
-    return NextResponse.json({ error: 'Failed to duplicate turnaround time' }, { status: 500 })
+    console.error('Failed to duplicate standard size:', error)
+    return NextResponse.json({ error: 'Failed to duplicate standard size' }, { status: 500 })
   }
 }
