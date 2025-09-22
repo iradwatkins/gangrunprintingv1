@@ -359,7 +359,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           AddOnSet: {
             include: {
-              AddOnSetItem: {
+              addOnSetItems: {
                 include: {
                   AddOn: true,
                 },
@@ -404,7 +404,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           AddOnSet: {
             include: {
-              AddOnSetItem: {
+              addOnSetItems: {
                 include: {
                   AddOn: true,
                 },
@@ -427,8 +427,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         // Process each addon set
         for (const productAddOnSet of productAddOnSetsForGrouping) {
-          for (const setItem of productAddOnSet.addOnSet.addOnSetItems) {
-            const addon = setItem.addOn
+          for (const setItem of productAddOnSet.AddOnSet.addOnSetItems) {
+            const addon = setItem.AddOn
             const { price, priceDisplay } = calculatePriceDisplay(addon)
 
             // Format addon data for positioning (keeping legacy format for UI compatibility)
