@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 
 // GET /api/turnaround-time-sets - List all turnaround time sets
 export async function GET(request: NextRequest) {
@@ -41,13 +42,16 @@ export async function POST(request: NextRequest) {
     // Create the set with items
     const set = await prisma.turnaroundTimeSet.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         isActive: isActive ?? true,
+        sortOrder: 0,
         updatedAt: new Date(),
         TurnaroundTimeSetItem: {
           create:
             turnaroundTimeIds?.map((turnaroundTimeId: string, index: number) => ({
+              id: randomUUID(),
               turnaroundTimeId,
               sortOrder: index,
               isDefault: index === 0,

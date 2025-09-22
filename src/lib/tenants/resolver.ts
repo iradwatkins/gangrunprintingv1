@@ -48,7 +48,7 @@ export const getTenantInfo = cache(async (identifier: string): Promise<TenantInf
         isActive: true,
       },
       include: {
-        brands: {
+        TenantBrand: {
           where: { isDefault: true },
           take: 1,
         },
@@ -65,7 +65,7 @@ export const getTenantInfo = cache(async (identifier: string): Promise<TenantInf
         isActive: tenant.isActive,
         plan: tenant.plan,
         settings: tenant.settings,
-        branding: tenant.brands[0] || null,
+        branding: tenant.TenantBrand[0] || null,
         locales: tenant.locales,
         defaultLocale: tenant.defaultLocale,
         timezone: tenant.timezone,
@@ -182,7 +182,7 @@ export async function getTenantById(id: string): Promise<TenantInfo | null> {
     const tenant = await prisma.tenant.findUnique({
       where: { id },
       include: {
-        brands: {
+        TenantBrand: {
           where: { isDefault: true },
           take: 1,
         },
@@ -200,7 +200,7 @@ export async function getTenantById(id: string): Promise<TenantInfo | null> {
       isActive: tenant.isActive,
       plan: tenant.plan,
       settings: tenant.settings,
-      branding: tenant.brands[0] || null,
+      branding: tenant.TenantBrand[0] || null,
       locales: tenant.locales,
       defaultLocale: tenant.defaultLocale,
       timezone: tenant.timezone,

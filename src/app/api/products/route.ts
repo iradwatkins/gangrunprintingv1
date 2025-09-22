@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { randomUUID } from 'crypto'
 
 // Comprehensive Zod schema for product creation
 const createProductSchema = z.object({
@@ -308,6 +309,7 @@ export async function POST(request: NextRequest) {
       async (tx) => {
         return await tx.product.create({
           data: {
+            id: randomUUID(),
             name,
             sku,
             slug,

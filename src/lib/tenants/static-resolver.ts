@@ -59,7 +59,7 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         isActive: true,
       },
       include: {
-        brands: {
+        TenantBrand: {
           where: { isDefault: true },
           take: 1,
         },
@@ -76,7 +76,7 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         isActive: tenant.isActive,
         plan: tenant.plan,
         settings: tenant.settings,
-        branding: tenant.brands[0] || null,
+        branding: tenant.TenantBrand[0] || null,
         locales: tenant.locales,
         defaultLocale: tenant.defaultLocale,
         timezone: tenant.timezone,
