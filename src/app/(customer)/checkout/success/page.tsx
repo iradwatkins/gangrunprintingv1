@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import Image from 'next/image'
 import {
   CheckCircle,
   Download,
@@ -11,18 +12,42 @@ import {
   MapPin,
   User,
   CreditCard,
+  ImageIcon,
+  Printer,
+  FileText,
+  Calendar,
+  ArrowRight,
+  Copy,
+  Share2,
+  MessageSquare,
+  AlertCircle,
+  CheckCircle2,
+  Check,
+  Phone
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import toast from '@/lib/toast'
 
 interface OrderItem {
   productName: string
   quantity: number
   price: number
   options?: any
+  fileUrl?: string
+  fileName?: string
+}
+
+interface UploadedImage {
+  id: string
+  url: string
+  thumbnailUrl?: string
+  fileName: string
+  fileSize?: number
+  uploadedAt?: string
 }
 
 interface OrderInfo {
@@ -33,6 +58,7 @@ interface OrderInfo {
   tax: number
   shipping: number
   items: OrderItem[]
+  uploadedImages?: UploadedImage[]
   customerInfo?: {
     email: string
     firstName: string
@@ -111,58 +137,134 @@ function SuccessContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      {/* Header Section */}
-      <div className="text-center mb-8">
-        <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-        <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
-        <p className="text-lg text-muted-foreground mb-6">
-          Thank you for your order. We&apos;ve received your payment and will begin processing your
-          items shortly.
-        </p>
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+      {/* Success Header */}
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+              <CheckCircle className="h-12 w-12 text-green-600" />
+            </div>
+            <h1 className="text-4xl font-bold mb-3">Thank You for Your Order!</h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Your order has been successfully placed and will be processed shortly.
+            </p>
 
-        <Card className="max-w-md mx-auto mb-8">
-          <CardContent className="p-6 text-center">
-            <p className="text-sm text-muted-foreground mb-2">Order Number</p>
-            <p className="text-2xl font-bold font-mono">{orderNumber}</p>
-            {orderInfo?.createdAt && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Placed on {new Date(orderInfo.createdAt).toLocaleDateString()}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+            {/* Order Number Card */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-6 max-w-md mx-auto shadow-lg">
+              <p className="text-sm opacity-90 mb-2">Order Confirmation Number</p>
+              <div className="flex items-center justify-center gap-3">
+                <p className="text-3xl font-bold font-mono">{orderNumber}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/20"
+                  onClick={() => {
+                    navigator.clipboard.writeText(orderNumber)
+                    toast.success('Order number copied!')
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              {orderInfo?.createdAt && (
+                <p className="text-sm opacity-75 mt-3">
+                  {new Date(orderInfo.createdAt).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8 mb-8">
-        {/* Order Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              Order Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Column */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Order Items Card */}
+              <Card className="overflow-hidden">
+                <CardHeader className="bg-gray-50 border-b">
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Order Items
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-4">
             {orderInfo?.items && orderInfo.items.length > 0 ? (
               <>
                 {orderInfo.items.map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-start border-b border-border/50 pb-3 last:border-b-0"
+                    className="border-b border-border/50 pb-4 last:border-b-0"
                   >
-                    <div className="flex-1">
-                      <p className="font-medium">{item.productName}</p>
-                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                      {item.options && (
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {item.options.size && <span>Size: {item.options.size}</span>}
-                          {item.options.size && item.options.paperStock && <span> • </span>}
-                          {item.options.paperStock && <span>Paper: {item.options.paperStock}</span>}
-                        </div>
-                      )}
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="font-medium">{item.productName}</p>
+                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                        {item.options && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {item.options.size && <span>Size: {item.options.size}</span>}
+                            {item.options.size && item.options.paperStock && <span> • </span>}
+                            {item.options.paperStock && <span>Paper: {item.options.paperStock}</span>}
+                            {item.options.coating && <span> • Coating: {item.options.coating}</span>}
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
-                    <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+
+                    {/* Display uploaded images as thumbnails */}
+                    {(orderInfo.uploadedImages && orderInfo.uploadedImages.length > 0) && (
+                      <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+                        <p className="text-sm font-medium mb-2 flex items-center gap-1">
+                          <ImageIcon className="h-4 w-4" />
+                          Uploaded Design Files
+                        </p>
+                        <div className="grid grid-cols-4 gap-2">
+                          {orderInfo.uploadedImages.slice(0, 4).map((img) => (
+                            <div key={img.id} className="relative aspect-square rounded border bg-white overflow-hidden">
+                              <Image
+                                fill
+                                alt={img.fileName}
+                                className="object-contain p-1"
+                                src={img.thumbnailUrl || img.url}
+                              />
+                            </div>
+                          ))}
+                          {orderInfo.uploadedImages.length > 4 && (
+                            <div className="flex items-center justify-center bg-muted rounded border">
+                              <span className="text-xs text-muted-foreground">+{orderInfo.uploadedImages.length - 4}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          {orderInfo.uploadedImages.map((img) => (
+                            <p key={img.id} className="text-xs text-muted-foreground truncate">
+                              • {img.fileName}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fallback for file name if no uploaded images */}
+                    {(!orderInfo.uploadedImages || orderInfo.uploadedImages.length === 0) && item.fileName && (
+                      <div className="mt-2 p-2 bg-muted/50 rounded">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <ImageIcon className="h-3 w-3" />
+                          Design File: {item.fileName}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
                 <Separator />
@@ -189,11 +291,77 @@ function SuccessContent() {
             ) : (
               <p className="text-muted-foreground">Order details not available</p>
             )}
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
 
-        {/* Customer & Shipping Info */}
-        <div className="space-y-6">
+              {/* Timeline / Progress */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Order Timeline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
+                          <Check className="h-5 w-5" />
+                        </div>
+                        <div className="w-0.5 h-16 bg-gray-300 mt-2"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">Order Placed</p>
+                        <p className="text-sm text-gray-600">Your order has been received</p>
+                        <p className="text-xs text-gray-500 mt-1">Just now</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <FileText className="h-5 w-5 text-gray-500" />
+                        </div>
+                        <div className="w-0.5 h-16 bg-gray-300 mt-2"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-500">Design Review</p>
+                        <p className="text-sm text-gray-500">Our team will review your files</p>
+                        <p className="text-xs text-gray-500 mt-1">Within 24 hours</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <Printer className="h-5 w-5 text-gray-500" />
+                        </div>
+                        <div className="w-0.5 h-16 bg-gray-300 mt-2"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-500">Production</p>
+                        <p className="text-sm text-gray-500">Your order will be printed</p>
+                        <p className="text-xs text-gray-500 mt-1">2-3 business days</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-gray-500" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-500">Shipped</p>
+                        <p className="text-sm text-gray-500">On the way to you</p>
+                        <p className="text-xs text-gray-500 mt-1">Estimated delivery in 3-5 days</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Sidebar */}
+            <div className="lg:col-span-1 space-y-6">
           {orderInfo?.customerInfo && (
             <Card>
               <CardHeader>
@@ -236,133 +404,131 @@ function SuccessContent() {
               </CardContent>
             </Card>
           )}
-        </div>
-      </div>
+              {/* Next Steps Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email Notifications
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Order Confirmation</p>
+                        <p className="text-xs text-gray-500">Sent to {orderInfo?.customerInfo?.email || 'your email'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-600">Design Review Update</p>
+                        <p className="text-xs text-gray-500">Within 24 hours</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-600">Production Started</p>
+                        <p className="text-xs text-gray-500">When printing begins</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-600">Tracking Information</p>
+                        <p className="text-xs text-gray-500">When order ships</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-      {/* Status & Notifications */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              Notifications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm">Confirmation email sent</span>
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      if (orderInfo?.orderNumber) {
+                        window.open(`/api/orders/${orderInfo.orderNumber}/receipt`, '_blank')
+                      }
+                    }}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Receipt
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print Order Details
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share Order
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Contact Support
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Bottom Action Bar */}
+          <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div>
+                <h3 className="font-semibold mb-2">What would you like to do next?</h3>
+                <p className="text-sm text-gray-600">
+                  Track your order status or continue browsing our products
+                </p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-muted rounded-full"></div>
-                <span className="text-sm text-muted-foreground">
-                  Design review notification (within 24 hours)
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-muted rounded-full"></div>
-                <span className="text-sm text-muted-foreground">Production start notification</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-muted rounded-full"></div>
-                <span className="text-sm text-muted-foreground">Shipping notification</span>
+              <div className="flex gap-3">
+                <Link href="/track">
+                  <Button size="lg" className="min-w-[160px]">
+                    <Truck className="mr-2 h-5 w-5" />
+                    Track Order
+                  </Button>
+                </Link>
+                <Link href="/products">
+                  <Button size="lg" variant="outline" className="min-w-[160px]">
+                    <Package className="mr-2 h-5 w-5" />
+                    Continue Shopping
+                  </Button>
+                </Link>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              What&apos;s Next?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
-                  1
-                </div>
-                <div>
-                  <p className="font-medium">Design Review</p>
-                  <p className="text-sm text-muted-foreground">
-                    Our team will review your files within 24 hours
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold">
-                  2
-                </div>
-                <div>
-                  <p className="font-medium">Production</p>
-                  <p className="text-sm text-muted-foreground">
-                    Your order will enter production once approved
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold">
-                  3
-                </div>
-                <div>
-                  <p className="font-medium">Shipping</p>
-                  <p className="text-sm text-muted-foreground">
-                    We&apos;ll notify you when your order ships
-                  </p>
-                </div>
-              </div>
+          {/* Support Section */}
+          <div className="mt-8 text-center py-8 border-t">
+            <h3 className="text-lg font-semibold mb-2">Need Help?</h3>
+            <p className="text-gray-600 mb-4">
+              Our support team is here to assist you with any questions about your order
+            </p>
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <a href="mailto:support@gangrunprinting.com" className="flex items-center gap-2 text-primary hover:underline">
+                <Mail className="h-4 w-4" />
+                support@gangrunprinting.com
+              </a>
+              <a href="tel:1-800-PRINTING" className="flex items-center gap-2 text-primary hover:underline">
+                <Phone className="h-4 w-4" />
+                1-800-PRINTING
+              </a>
+              <button className="flex items-center gap-2 text-primary hover:underline">
+                <MessageSquare className="h-4 w-4" />
+                Live Chat
+              </button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="text-center space-y-4">
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link href="/track">
-            <Button className="min-w-40" size="lg">
-              <Truck className="mr-2 h-4 w-4" />
-              Track Your Order
-            </Button>
-          </Link>
-          <Link href="/products">
-            <Button className="min-w-40" size="lg" variant="outline">
-              <Package className="mr-2 h-4 w-4" />
-              Continue Shopping
-            </Button>
-          </Link>
-        </div>
-
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              if (orderInfo?.orderNumber) {
-                window.open(`/api/orders/${orderInfo.orderNumber}/receipt`, '_blank')
-              }
-            }}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download Receipt
-          </Button>
-          <Button size="sm" variant="ghost">
-            <CreditCard className="mr-2 h-4 w-4" />
-            View Payment Details
-          </Button>
-        </div>
-
-        <div className="text-sm text-muted-foreground mt-6">
-          <p>
-            Need help? Contact us at{' '}
-            <a className="text-primary hover:underline" href="mailto:support@gangrunprinting.com">
-              support@gangrunprinting.com
-            </a>{' '}
-            or call 1-800-PRINTING
-          </p>
+          </div>
         </div>
       </div>
     </div>

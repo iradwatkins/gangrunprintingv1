@@ -15,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-// import { ProductImageUpload } from '@/components/admin/product-image-upload' // Temporarily disabled
-import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import toast from '@/lib/toast'
@@ -29,6 +27,10 @@ import {
   RefreshCw,
   Upload,
   X,
+  Image as ImageIcon,
+  Settings,
+  Clock,
+  FileText
 } from 'lucide-react'
 import { responseToJsonSafely } from '@/lib/safe-json'
 
@@ -39,14 +41,14 @@ export default function NewProductPage() {
   const [testing, setTesting] = useState(false)
 
   // Data state - simple fetch pattern like paper-stocks page
-  const [categories, setCategories] = useState([])
-  const [paperStockSets, setPaperStockSets] = useState([])
-  const [quantityGroups, setQuantityGroups] = useState([])
-  const [sizeGroups, setSizeGroups] = useState([])
-  const [addOnSets, setAddOnSets] = useState([])
-  const [turnaroundTimeSets, setTurnaroundTimeSets] = useState([])
+  const [categories, setCategories] = useState<any[]>([])
+  const [paperStockSets, setPaperStockSets] = useState<any[]>([])
+  const [quantityGroups, setQuantityGroups] = useState<any[]>([])
+  const [sizeGroups, setSizeGroups] = useState<any[]>([])
+  const [addOnSets, setAddOnSets] = useState<any[]>([])
+  const [turnaroundTimeSets, setTurnaroundTimeSets] = useState<any[]>([])
   const [apiLoading, setApiLoading] = useState(true)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<any>({})
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -193,17 +195,7 @@ export default function NewProductPage() {
     }
   }, [sizeGroups, formData.selectedSizeGroup])
 
-  useEffect(() => {
-    if (addOnSets.length > 0 && !formData.selectedAddOnSet) {
-      setFormData((prev) => ({ ...prev, selectedAddOnSet: addOnSets[0].id }))
-    }
-  }, [addOnSets, formData.selectedAddOnSet])
-
-  useEffect(() => {
-    if (turnaroundTimeSets.length > 0 && !formData.selectedTurnaroundTimeSet) {
-      setFormData((prev) => ({ ...prev, selectedTurnaroundTimeSet: turnaroundTimeSets[0].id }))
-    }
-  }, [turnaroundTimeSets, formData.selectedTurnaroundTimeSet])
+  // Don't auto-set add-on sets and turnaround time sets as they are optional
 
   const testPrice = async () => {
     setTesting(true)
@@ -215,7 +207,7 @@ export default function NewProductPage() {
           paperStockSet: formData.selectedPaperStockSet,
           quantityGroup: formData.selectedQuantityGroup,
           sizeGroup: formData.selectedSizeGroup,
-          addOns: formData.selectedAddOns,
+          addOns: formData.selectedAddOnSet,
         }),
       })
 
@@ -274,36 +266,110 @@ export default function NewProductPage() {
         return
       }
 
-      // Proceed with upload
+      // Proceed with upload with retry logic
       setUploadingImage(true)
-      try {
-        const uploadFormData = new FormData()
-        uploadFormData.append('file', file)
-        uploadFormData.append('isPrimary', 'true')
-        uploadFormData.append('sortOrder', '0')
+      let attempt = 0
+      const maxAttempts = 3
+      const baseDelay = 1000 // 1 second
 
-        const response = await fetch('/api/products/upload-image', {
-          method: 'POST',
-          body: uploadFormData,
-        })
+      const uploadWithRetry = async (): Promise<void> => {
+        attempt++
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
-          throw new Error(errorData.error || 'Failed to upload image')
+        try {
+          const uploadFormData = new FormData()
+          uploadFormData.append('file', file)
+          uploadFormData.append('isPrimary', 'true')
+          uploadFormData.append('sortOrder', '0')
+
+          // Aggressive timeout for faster feedback
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+          const response = await fetch('/api/products/upload-image', {
+            method: 'POST',
+            body: uploadFormData,
+            signal: controller.signal,
+            // Remove keepalive as it can cause issues
+          })
+
+          clearTimeout(timeoutId)
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+              error: 'Upload failed',
+              data: null
+            }))
+
+            // Handle specific API error responses
+            if (response.status === 413) {
+              throw new Error('File too large. Please compress the image to under 10MB.')
+            } else if (response.status === 408) {
+              throw new Error('Upload timeout. The file may be too large or connection is slow.')
+            } else if (response.status === 503) {
+              throw new Error('Storage service temporarily unavailable. Please try again.')
+            } else {
+              throw new Error(errorData.data?.error || errorData.error || 'Failed to upload image')
+            }
+          }
+
+          const data = await response.json()
+
+          // Handle standardized API response format
+          const imageUrl = data.data?.url || data.url
+          if (!imageUrl) {
+            throw new Error('Invalid response: missing image URL')
+          }
+
+          // Update form data with the uploaded image URL
+          setFormData((prev) => ({
+            ...prev,
+            imageUrl: imageUrl,
+          }))
+
+          toast.success('Image uploaded successfully')
+
+        } catch (error: any) {
+          console.error(`Upload attempt ${attempt} failed:`, error)
+
+          // Don't retry certain errors
+          const nonRetryableErrors = [
+            'File too large',
+            'Invalid file type',
+            'Authentication',
+            'Unauthorized'
+          ]
+
+          const isNonRetryable = nonRetryableErrors.some(errorText =>
+            error.message?.includes(errorText)
+          )
+
+          if (attempt >= maxAttempts || isNonRetryable) {
+            // Handle specific error types for final attempt
+            if (error.name === 'AbortError') {
+              toast.error('Upload timeout. Please try with a smaller file or check your connection.')
+            } else if (error.message?.includes('ERR_CONNECTION_CLOSED')) {
+              toast.error('Connection interrupted. Please check your internet connection and try again.')
+            } else if (error.message?.includes('fetch')) {
+              toast.error('Network error. Please check your internet connection.')
+            } else {
+              toast.error(error.message || 'Failed to upload image')
+            }
+            throw error
+          }
+
+          // Wait before retry with exponential backoff
+          const delay = baseDelay * Math.pow(2, attempt - 1)
+          toast.error(`Upload failed. Retrying in ${delay / 1000} seconds... (${attempt}/${maxAttempts})`)
+
+          await new Promise(resolve => setTimeout(resolve, delay))
+          return uploadWithRetry()
         }
+      }
 
-        const data = await response.json()
-
-        // Update form data with the uploaded image URL
-        setFormData((prev) => ({
-          ...prev,
-          imageUrl: data.url,
-        }))
-
-        toast.success('Image uploaded successfully')
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to upload image')
-        console.error('Image upload error:', error)
+      try {
+        await uploadWithRetry()
+      } catch (error) {
+        // Final error already handled in uploadWithRetry
       } finally {
         setUploadingImage(false)
         // Reset file input
@@ -329,84 +395,130 @@ export default function NewProductPage() {
   }
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.sku || !formData.categoryId) {
-      toast.error('Please fill in all required fields')
+    // Comprehensive validation
+    if (!formData.name?.trim()) {
+      toast.error('Product name is required')
       return
     }
 
-    if (!formData.selectedPaperStockSet) {
+    if (!formData.sku?.trim()) {
+      toast.error('SKU is required')
+      return
+    }
+
+    if (!formData.categoryId?.trim()) {
+      toast.error('Please select a product category')
+      return
+    }
+
+    if (!formData.selectedPaperStockSet?.trim()) {
       toast.error('Please select a paper stock set')
       return
     }
 
-    if (!formData.selectedQuantityGroup) {
+    if (!formData.selectedQuantityGroup?.trim()) {
       toast.error('Please select a quantity group')
       return
     }
 
-    if (!formData.selectedSizeGroup) {
+    if (!formData.selectedSizeGroup?.trim()) {
       toast.error('Please select a size group')
+      return
+    }
+
+    // Check if data is still loading
+    if (apiLoading) {
+      toast.error('Please wait for data to load before submitting')
       return
     }
 
     setLoading(true)
 
-    // Transform complex data to match simple API format
-    const simplifiedData = {
+    // Transform data to match full API format
+    const fullProductData = {
       name: formData.name,
       sku: formData.sku,
       categoryId: formData.categoryId,
-      description: formData.description || '',
+      description: formData.description || null,
+      shortDescription: null,
       isActive: formData.isActive,
       isFeatured: formData.isFeatured,
       paperStockSetId: formData.selectedPaperStockSet,
       quantityGroupId: formData.selectedQuantityGroup,
       sizeGroupId: formData.selectedSizeGroup,
-      addOnSetId: formData.selectedAddOnSet,
-      turnaroundTimeSetId: formData.selectedTurnaroundTimeSet,
-      imageUrl: formData.imageUrl || null,
+      selectedAddOns: [], // Full endpoint expects array, not individual addOnSetId
+      productionTime: 3,
+      rushAvailable: false,
+      rushDays: null,
+      rushFee: null,
+      basePrice: 0,
+      setupFee: 0,
+      images: formData.imageUrl ? [{
+        url: formData.imageUrl,
+        isPrimary: true,
+        alt: `${formData.name} product image`,
+      }] : [],
     }
 
     try {
-      // Use the working simple API endpoint
-      const response = await fetch('/api/products/simple', {
+      // Use the full API endpoint with timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+      const response = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(simplifiedData),
+        body: JSON.stringify(fullProductData),
+        signal: controller.signal,
       })
 
-      const responseText = await response.text()
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         let errorMessage = 'Failed to create product'
         try {
-          const errorData = JSON.parse(responseText)
-          errorMessage = errorData.error || errorMessage
-        } catch {
-          // If response is not JSON, use the text
-          errorMessage = responseText || errorMessage
+          const errorData = await response.json()
+          // Handle standardized API error response
+          errorMessage = errorData.error || errorData.data?.error || errorMessage
+
+          // Handle validation errors with details
+          if (errorData.details?.validationErrors) {
+            const validationMessages = errorData.details.validationErrors
+              .map((err: any) => `${err.field}: ${err.message}`)
+              .join(', ')
+            errorMessage = `Validation failed: ${validationMessages}`
+          }
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError)
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`
         }
         throw new Error(errorMessage)
       }
 
-      let product
+      let responseData
       try {
-        product = JSON.parse(responseText)
-      } catch (e) {
-        console.error('Failed to parse product response:', e)
+        responseData = await response.json()
+      } catch (parseError) {
+        console.error('Failed to parse success response:', parseError)
         throw new Error('Invalid response from server')
       }
 
-      // Step 2: Handle images if needed (simplified for now)
-      // TODO: Re-enable image upload after basic product creation works
-      if (formData.images && formData.images.length > 0) {
-        // Will re-enable after confirming basic product creation works
+      // Handle standardized API success response
+      const product = responseData.data || responseData
+      if (!product || !product.id) {
+        throw new Error('Invalid product response: missing product data')
       }
 
       toast.success('Product created successfully')
       router.push('/admin/products')
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create product')
+      if (error.name === 'AbortError') {
+        toast.error('Request timeout. Please try again.')
+      } else if (error.message?.includes('fetch')) {
+        toast.error('Network error. Please check your internet connection.')
+      } else {
+        toast.error(error.message || 'Failed to create product')
+      }
       console.error('Product creation error:', error)
     } finally {
       setLoading(false)
@@ -581,8 +693,9 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6 max-w-6xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Button size="sm" variant="ghost" onClick={() => router.push('/admin/products')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -591,7 +704,11 @@ export default function NewProductPage() {
           <h1 className="text-3xl font-bold">Create Product</h1>
         </div>
         <div className="flex gap-2">
-          <Button disabled={testing} variant="outline" onClick={testPrice}>
+          <Button
+            disabled={testing}
+            variant="outline"
+            onClick={testPrice}
+          >
             {testing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -599,79 +716,121 @@ export default function NewProductPage() {
             )}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button disabled={loading || uploadingImage} onClick={handleSubmit}>
+          <Button
+            disabled={loading || uploadingImage}
+            onClick={handleSubmit}
+          >
             {loading || uploadingImage ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
             )}
             <span className="ml-2">
-              {uploadingImage ? 'Uploading...' : loading ? 'Saving...' : 'Save Product'}
+              {uploadingImage ? 'Uploading...' : loading ? 'Creating...' : 'Create Product'}
             </span>
           </Button>
         </div>
       </div>
 
-      {/* Basic Info & Images */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Basic Info & Images</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div data-testid="product-name">
-              <Label htmlFor="name">Product Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      {/* Main Form - Single Page */}
+      <div className="grid gap-6">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Basic Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Product Name *</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Premium Business Cards"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="sku">SKU (Auto-generated)</Label>
+                <Input
+                  id="sku"
+                  value={formData.sku}
+                  readOnly
+                  className="bg-gray-50"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="category">Product Category *</Label>
+              <Select
+                value={formData.categoryId}
+                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a category..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Product Description</Label>
+              <Textarea
+                id="description"
+                rows={4}
+                placeholder="Describe your product..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
-            <div>
-              <Label htmlFor="sku">SKU</Label>
-              <Input readOnly className="bg-muted" id="sku" value={formData.sku} />
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="isActive">Active Status</Label>
+                <Switch
+                  id="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="isFeatured">Featured Product</Label>
+                <Switch
+                  id="isFeatured"
+                  checked={formData.isFeatured}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
+                />
+              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <Label htmlFor="category">Category *</Label>
-            <Select
-              value={formData.categoryId}
-              onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              rows={3}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <Label>Product Image</Label>
+        {/* Product Image */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ImageIcon className="h-5 w-5" />
+              Product Image
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             {!formData.imageUrl ? (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center relative">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                 <input
                   accept="image/*"
                   className="hidden"
                   disabled={uploadingImage}
                   id="product-image"
-                  name="productImage"
                   type="file"
                   onChange={handleImageUpload}
                 />
@@ -680,101 +839,57 @@ export default function NewProductPage() {
                   htmlFor="product-image"
                 >
                   {uploadingImage ? (
-                    <>
-                      <Loader2 className="mx-auto h-8 w-8 animate-spin mb-4 text-primary" />
+                    <div className="space-y-2">
+                      <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
                       <p className="text-sm font-medium">Processing image...</p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Please wait while we optimize your image
-                      </p>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <Upload className="mx-auto h-8 w-8 mb-4 text-muted-foreground hover:text-primary transition-colors" />
-                      <p className="text-sm font-medium">Click to upload product image</p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        JPEG, PNG, WebP, GIF • Max 10MB • Min 100×100px • Max 6000×6000px
+                    <div className="space-y-2">
+                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                      <p className="text-sm font-medium">Click to upload image</p>
+                      <p className="text-xs text-gray-500">
+                        JPEG, PNG, WebP, GIF - Max 10MB
                       </p>
-                    </>
+                    </div>
                   )}
                 </label>
               </div>
             ) : (
-              <div className="border rounded-lg p-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 bg-muted rounded flex items-center justify-center">
-                    <img
-                      alt="Product preview"
-                      className="w-20 h-20 object-cover rounded"
-                      src={formData.imageUrl}
-                      onError={(e) => {
-                        // Hide broken image and show placeholder
-                        e.currentTarget.style.display = 'none'
-                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement
-                        if (placeholder) placeholder.style.display = 'flex'
-                      }}
-                      onLoad={(e) => {
-                        // Hide placeholder when image loads successfully
-                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement
-                        if (placeholder) placeholder.style.display = 'none'
-                      }}
-                    />
-                    <div
-                      className="flex flex-col items-center text-muted-foreground"
-                      style={{ display: 'none' }}
-                    >
-                      <Upload className="h-6 w-6 mb-1" />
-                      <span className="text-xs">Preview</span>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Image uploaded successfully</p>
-                    <p className="text-xs text-muted-foreground">
-                      This image will be visible to customers
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1 font-mono truncate">
-                      {formData.imageUrl}
-                    </p>
-                  </div>
-                  <Button size="sm" type="button" variant="outline" onClick={handleRemoveImage}>
-                    <X className="h-4 w-4" />
+              <div className="flex items-center gap-4">
+                <img
+                  alt="Product preview"
+                  className="w-24 h-24 object-cover rounded-lg border"
+                  src={formData.imageUrl}
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-green-600">Image uploaded successfully</p>
+                  <p className="text-xs text-gray-500 mt-1">{formData.imageUrl}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleRemoveImage}
+                    className="mt-2"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Remove
                   </Button>
                 </div>
               </div>
             )}
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="flex gap-6">
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-              />
-              <Label>Active</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={formData.isFeatured}
-                onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
-              />
-              <Label>Featured</Label>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quantity Group - Single selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quantity Set (Choose One) *</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Select a quantity set for this product. Customers will see the quantities from this
-              set, with the default quantity pre-selected.
-            </p>
+        {/* Product Specifications */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Product Specifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="quantity-group">Quantity Set</Label>
+              <Label>Quantity Options *</Label>
               <Select
                 value={formData.selectedQuantityGroup}
                 onValueChange={(value) =>
@@ -782,72 +897,39 @@ export default function NewProductPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select quantity set" />
+                  <SelectValue placeholder="Choose quantity set..." />
                 </SelectTrigger>
                 <SelectContent>
                   {quantityGroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{group.name}</span>
-                        {group.description && (
-                          <span className="text-xs text-muted-foreground">{group.description}</span>
-                        )}
-                      </div>
+                      {group.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Preview selected quantity group */}
-            {formData.selectedQuantityGroup && (
-              <div className="border rounded-lg p-3 bg-muted/50">
-                {(() => {
-                  const selectedGroup = quantityGroups.find(
-                    (g) => g.id === formData.selectedQuantityGroup
-                  )
-                  if (!selectedGroup) return null
-
-                  return (
-                    <div>
-                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedGroup.valuesList?.map((value: string, index: number) => (
-                          <span
-                            key={index}
-                            className={`px-2 py-1 text-xs rounded ${
-                              value === selectedGroup.defaultValue
-                                ? 'bg-primary text-primary-foreground font-medium'
-                                : 'bg-background text-foreground border'
-                            }`}
-                          >
-                            {value}
-                            {value === selectedGroup.defaultValue && ' (default)'}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Paper Stock Group - Single selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Paper Stock Set (Choose One) *</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Select a paper stock set for this product. Customers will see the paper stocks from
-              this set, with the default paper stock pre-selected.
-            </p>
             <div>
-              <Label htmlFor="paper-stock-set">Paper Stock Set</Label>
+              <Label>Size Options *</Label>
+              <Select
+                value={formData.selectedSizeGroup}
+                onValueChange={(value) => setFormData({ ...formData, selectedSizeGroup: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose size set..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {sizeGroups.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Paper Stock *</Label>
               <Select
                 value={formData.selectedPaperStockSet}
                 onValueChange={(value) =>
@@ -855,273 +937,114 @@ export default function NewProductPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select paper stock set" />
+                  <SelectValue placeholder="Choose paper stock set..." />
                 </SelectTrigger>
                 <SelectContent>
                   {paperStockSets.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{group.name}</span>
-                        {group.description && (
-                          <span className="text-xs text-muted-foreground">{group.description}</span>
-                        )}
-                      </div>
+                      {group.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Preview selected paper stock set */}
-            {formData.selectedPaperStockSet && (
-              <div className="border rounded-lg p-3 bg-muted/50">
-                {(() => {
-                  const selectedGroup = paperStockSets.find(
-                    (g) => g.id === formData.selectedPaperStockSet
-                  )
-                  if (!selectedGroup) return null
-
-                  return (
-                    <div>
-                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
-                      <div className="space-y-1">
-                        {selectedGroup.paperStockItems?.map((item: any) => (
-                          <div
-                            key={item.id}
-                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
-                              item.isDefault
-                                ? 'bg-primary text-primary-foreground font-medium'
-                                : 'bg-background text-foreground border'
-                            }`}
-                          >
-                            <span>
-                              {item.paperStock.name} - {item.paperStock.weight}pt
-                            </span>
-                            <span className="text-xs opacity-70">
-                              ${item.paperStock.pricePerSqInch}/sq in
-                              {item.isDefault && ' (default)'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Size Group - Single selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Size Set (Choose One) *</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Select a size set for this product. Customers will see the sizes from this set, with
-              the default size pre-selected.
-            </p>
+        {/* Additional Options */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Additional Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="size-group">Size Set</Label>
+              <Label>Add-on Options (Optional)</Label>
               <Select
-                value={formData.selectedSizeGroup}
-                onValueChange={(value) => setFormData({ ...formData, selectedSizeGroup: value })}
+                value={formData.selectedAddOnSet || "none"}
+                onValueChange={(value) => setFormData({ ...formData, selectedAddOnSet: value === "none" ? "" : value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select size set" />
+                  <SelectValue placeholder="Choose add-on set..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {sizeGroups.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{group.name}</span>
-                        {group.description && (
-                          <span className="text-xs text-muted-foreground">{group.description}</span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Preview selected size group */}
-            {formData.selectedSizeGroup && (
-              <div className="border rounded-lg p-3 bg-muted/50">
-                {(() => {
-                  const selectedGroup = sizeGroups.find((g) => g.id === formData.selectedSizeGroup)
-                  if (!selectedGroup) return null
-
-                  return (
-                    <div>
-                      <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedGroup.valuesList?.map((value: string, index: number) => (
-                          <span
-                            key={index}
-                            className={`px-2 py-1 text-xs rounded ${
-                              value === selectedGroup.defaultValue
-                                ? 'bg-primary text-primary-foreground font-medium'
-                                : 'bg-background text-foreground border'
-                            }`}
-                          >
-                            {value}
-                            {value === selectedGroup.defaultValue && ' (default)'}
-                          </span>
-                        ))}
-                      </div>
-                      {selectedGroup.hasCustomOption && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Custom dimensions: {selectedGroup.customMinWidth}"×
-                          {selectedGroup.customMinHeight}" to {selectedGroup.customMaxWidth}"×
-                          {selectedGroup.customMaxHeight}"
-                        </p>
-                      )}
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* AddOn Set - Single selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>AddOn Set (Choose One) *</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Select an addon set for this product. Customers will see the addons from this set,
-              allowing them to add extra features to their order.
-            </p>
-            <div>
-              <Label htmlFor="addon-set">AddOn Set</Label>
-              <Select
-                value={formData.selectedAddOnSet}
-                onValueChange={(value) => setFormData({ ...formData, selectedAddOnSet: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select addon set" />
-                </SelectTrigger>
-                <SelectContent>
+                  <SelectItem value="none">No add-ons</SelectItem>
                   {addOnSets.map((set) => (
                     <SelectItem key={set.id} value={set.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{set.name}</span>
-                        {set.description && (
-                          <span className="text-xs text-muted-foreground">{set.description}</span>
-                        )}
-                      </div>
+                      {set.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Preview selected addon set */}
-            {formData.selectedAddOnSet && (
-              <div className="border rounded-lg p-3 bg-muted/50">
-                {(() => {
-                  const selectedSet = addOnSets.find((s) => s.id === formData.selectedAddOnSet)
-                  if (!selectedSet) return null
-
-                  return (
-                    <div>
-                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
-                      <div className="text-xs text-muted-foreground">
-                        Contains {selectedSet._count?.addOnSetItems || 0} add-ons
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Turnaround Time Set - Single selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Turnaround Time Set (Choose One) *</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Select a turnaround time set for this product. Customers will see the turnaround
-              options from this set, with pricing adjustments for faster delivery.
-            </p>
             <div>
-              <Label htmlFor="turnaround-time-set">Turnaround Time Set</Label>
+              <Label>Turnaround Times (Optional)</Label>
               <Select
-                value={formData.selectedTurnaroundTimeSet}
+                value={formData.selectedTurnaroundTimeSet || "none"}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, selectedTurnaroundTimeSet: value })
+                  setFormData({ ...formData, selectedTurnaroundTimeSet: value === "none" ? "" : value })
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select turnaround time set" />
+                  <SelectValue placeholder="Choose turnaround time set..." />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">No turnaround options</SelectItem>
                   {turnaroundTimeSets.map((set) => (
                     <SelectItem key={set.id} value={set.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{set.name}</span>
-                        {set.description && (
-                          <span className="text-xs text-muted-foreground">{set.description}</span>
-                        )}
-                      </div>
+                      {set.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Preview selected turnaround time set */}
-            {formData.selectedTurnaroundTimeSet && (
-              <div className="border rounded-lg p-3 bg-muted/50">
-                {(() => {
-                  const selectedSet = turnaroundTimeSets.find(
-                    (s) => s.id === formData.selectedTurnaroundTimeSet
-                  )
-                  if (!selectedSet) return null
-
-                  return (
-                    <div>
-                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
-                      <div className="space-y-1">
-                        {selectedSet.turnaroundTimeItems?.map((item: any) => (
-                          <div
-                            key={item.id}
-                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
-                              item.isDefault
-                                ? 'bg-primary text-primary-foreground font-medium'
-                                : 'bg-background text-foreground border'
-                            }`}
-                          >
-                            <span>{item.turnaroundTime.displayName}</span>
-                            <span className="text-xs opacity-70">
-                              {item.turnaroundTime.basePrice > 0 &&
-                                `+$${item.turnaroundTime.basePrice}`}
-                              {item.isDefault && ' (default)'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
+        {/* Bottom Action Buttons */}
+        <div className="flex justify-between items-center py-6 border-t">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => router.push('/admin/products')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Cancel
+          </Button>
+          <div className="flex gap-2">
+            <Button
+              disabled={testing}
+              variant="outline"
+              onClick={testPrice}
+            >
+              {testing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Calculator className="h-4 w-4" />
+              )}
+              <span className="ml-2">Test Price</span>
+            </Button>
+            <Button
+              disabled={loading || uploadingImage}
+              onClick={handleSubmit}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {loading || uploadingImage ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              <span className="ml-2">
+                {uploadingImage ? 'Uploading...' : loading ? 'Creating...' : 'Create Product'}
+              </span>
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

@@ -2,12 +2,23 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import {
+  createSuccessResponse,
+  createErrorResponse,
+  createAuthErrorResponse,
+  createUploadErrorResponse,
+  createTimeoutErrorResponse,
+  generateRequestId,
+} from '@/lib/api-response'
 
-// Configure route segment for larger body size limit
+// Configure route segment for optimized uploads
 export const dynamic = 'force-dynamic'
-export const maxDuration = 30 // 30 seconds timeout
+export const maxDuration = 60 // Reduced to 60 seconds for faster failure
 export const runtime = 'nodejs'
 export const revalidate = 0
+
+// Set the body size limit for this route
+export const preferredRegion = 'auto'
 
 // IMPORTANT: In Next.js App Router, body size limit must be set in the route configuration
 // The default is 1MB which causes ERR_CONNECTION_CLOSED for larger uploads
@@ -15,13 +26,17 @@ export const revalidate = 0
 
 // POST /api/products/upload-image - Upload product image with optimization
 export async function POST(request: NextRequest) {
+  const requestId = generateRequestId()
+
   try {
-    // Check content length header first
+    // Check content length header first - use 10MB limit for images
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
     const contentLength = request.headers.get('content-length')
-    if (contentLength && parseInt(contentLength) > 20 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'File size exceeds 20MB limit. Please compress the image or use a smaller file.' },
-        { status: 413 }
+    if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE) {
+      return createUploadErrorResponse(
+        'File size exceeds 10MB limit. Please compress the image or use a smaller file.',
+        MAX_FILE_SIZE,
+        requestId
       )
     }
 
@@ -32,23 +47,35 @@ export async function POST(request: NextRequest) {
       user = auth.user
       session = auth.session
     } catch (authError) {
-      console.error('Authentication error:', authError)
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
+      console.error(`[${requestId}] Authentication error:`, authError)
+      return createAuthErrorResponse('Authentication failed', requestId)
     }
 
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
+      return createAuthErrorResponse('Admin access required', requestId)
     }
 
-    // Parse form data with better error handling
+    // Parse form data with aggressive timeout for faster failure
     let formData
     try {
-      formData = await request.formData()
+      // Reduced timeout for faster feedback
+      const formDataPromise = request.formData()
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Form data parsing timeout')), 15000)
+      )
+
+      formData = await Promise.race([formDataPromise, timeoutPromise]) as FormData
     } catch (error) {
-      console.error('Error parsing form data:', error)
-      return NextResponse.json(
-        { error: 'File upload failed. The file may be too large (max 10MB) or corrupted.' },
-        { status: 413 }
+      console.error(`[${requestId}] Error parsing form data:`, error)
+
+      if (error instanceof Error && error.message.includes('timeout')) {
+        return createTimeoutErrorResponse('Form data parsing', 15000, requestId)
+      }
+
+      return createUploadErrorResponse(
+        'File upload failed. The file may be too large (max 10MB) or corrupted.',
+        MAX_FILE_SIZE,
+        requestId
       )
     }
     const file = formData.get('file') as File
@@ -57,7 +84,27 @@ export async function POST(request: NextRequest) {
     const sortOrder = parseInt(formData.get('sortOrder') as string) || 0
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return createErrorResponse('No file provided', 400, null, requestId)
+    }
+
+    // Additional file validation
+    if (file.size > MAX_FILE_SIZE) {
+      return createUploadErrorResponse(
+        `File size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the 10MB limit. Please compress the image.`,
+        MAX_FILE_SIZE,
+        requestId
+      )
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      return createErrorResponse(
+        'Invalid file type. Please upload a JPEG, PNG, WebP, or GIF image.',
+        400,
+        { allowedTypes },
+        requestId
+      )
     }
 
     // Convert file to buffer
@@ -171,61 +218,54 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(
-      {
-        id: dbImage?.id,
-        productId: dbImage?.productId,
-        url: uploadedImages.original,
-        thumbnailUrl: uploadedImages.thumbnail,
-        largeUrl: uploadedImages.large,
-        mediumUrl: uploadedImages.medium,
-        webpUrl: uploadedImages.webp,
-        blurDataUrl: uploadedImages.blurDataUrl,
-        sortOrder: dbImage?.sortOrder,
-        isPrimary: dbImage?.isPrimary,
-        alt: uploadedImages.metadata.altText,
-        width: uploadedImages.metadata.width,
-        height: uploadedImages.metadata.height,
-        success: true,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    )
-  } catch (error) {
-    console.error('Error uploading image:', error)
-
-    // Provide more specific error messages
-    let errorMessage = 'Failed to upload image'
-    let statusCode = 500
-
-    if (error instanceof Error) {
-      if (error.message.includes('MinIO') || error.message.includes('storage')) {
-        errorMessage = 'Storage service unavailable. Please try again later.'
-        statusCode = 503
-      } else if (error.message.includes('exceeds 10MB')) {
-        errorMessage = 'File size exceeds maximum limit of 10MB'
-        statusCode = 413
-      } else if (error.message.includes('must be at least')) {
-        errorMessage = error.message
-        statusCode = 400
-      } else if (error.message.includes('Invalid')) {
-        errorMessage = error.message
-        statusCode = 400
-      } else if (error.message.includes('Maximum 4 images')) {
-        errorMessage = error.message
-        statusCode = 400
-      } else {
-        errorMessage = error.message || 'Failed to upload image'
+    const responseData = {
+      id: dbImage?.id,
+      productId: dbImage?.productId,
+      url: uploadedImages.optimized || uploadedImages.large, // Use optimized instead of original
+      thumbnailUrl: uploadedImages.thumbnail,
+      largeUrl: uploadedImages.large,
+      mediumUrl: uploadedImages.medium,
+      webpUrl: uploadedImages.webp,
+      blurDataUrl: uploadedImages.blurDataUrl,
+      sortOrder: dbImage?.sortOrder,
+      isPrimary: dbImage?.isPrimary,
+      alt: uploadedImages.metadata.altText,
+      width: uploadedImages.metadata.width,
+      height: uploadedImages.metadata.height,
+      metadata: {
+        originalSize: uploadedImages.metadata.originalSize,
+        compressedSize: uploadedImages.metadata.size,
+        compressionRatio: uploadedImages.metadata.compressionRatio,
+        profileUsed: uploadedImages.metadata.profileUsed,
       }
     }
 
-    return NextResponse.json(
-      {
-        error: errorMessage,
-        timestamp: new Date().toISOString(),
-        success: false,
-      },
-      { status: statusCode }
+    return createSuccessResponse(responseData, 200, null, requestId)
+  } catch (error) {
+    console.error(`[${requestId}] Image upload error:`, error)
+
+    if (error instanceof Error) {
+      if (error.message.includes('MinIO') || error.message.includes('storage')) {
+        return createErrorResponse(
+          'Storage service unavailable. Please try again later.',
+          503,
+          { storageError: true },
+          requestId
+        )
+      } else if (error.message.includes('timeout')) {
+        return createTimeoutErrorResponse('Image processing', null, requestId)
+      } else if (error.message.includes('exceeds 10MB')) {
+        return createUploadErrorResponse(error.message, MAX_FILE_SIZE, requestId)
+      } else if (error.message.includes('Maximum 4 images')) {
+        return createErrorResponse(error.message, 400, { imageLimit: true }, requestId)
+      }
+    }
+
+    return createErrorResponse(
+      'Failed to upload image',
+      500,
+      { uploadError: true },
+      requestId
     )
   }
 }

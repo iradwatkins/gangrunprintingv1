@@ -7,8 +7,6 @@ const nextConfig = {
   // Output configuration for standalone deployment - disabled to fix PM2 compatibility
   // output: 'standalone',
 
-  // API configuration moved to experimental serverActions
-
   // Enable experimental features for App Router
   experimental: {
     optimizeCss: true,

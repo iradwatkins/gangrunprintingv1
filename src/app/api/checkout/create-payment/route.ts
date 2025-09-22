@@ -4,6 +4,15 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { type CartItem } from '@/lib/cart-types'
 
+interface UploadedImage {
+  id: string
+  url: string
+  thumbnailUrl?: string
+  fileName: string
+  fileSize?: number
+  uploadedAt?: string
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
@@ -11,6 +20,7 @@ export async function POST(request: NextRequest) {
 
     const {
       cartItems,
+      uploadedImages,
       customerInfo,
       shippingAddress,
       billingAddress,
@@ -53,6 +63,8 @@ export async function POST(request: NextRequest) {
         billingAddress: billingAddress || shippingAddress,
         status: 'PENDING_PAYMENT',
         squareCustomerId: squareCustomer.id,
+        // Store uploaded images in metadata
+        metadata: uploadedImages ? { uploadedImages } : undefined,
         OrderItem: {
           create: cartItems.map((item: CartItem) => ({
             id: `${orderNumber}-${item.id}`,
@@ -64,6 +76,7 @@ export async function POST(request: NextRequest) {
               ...item.options,
               fileName: item.fileName,
               fileSize: item.fileSize,
+              uploadedImages: uploadedImages, // Store images with each item
             },
           })),
         },
