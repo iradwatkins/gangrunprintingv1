@@ -14,17 +14,17 @@ async function getProduct(slug: string) {
         isActive: true,
       },
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
           include: {
-            paperStockSet: {
+            PaperStockSet: {
               include: {
-                paperStockItems: {
+                PaperStockSetItem: {
                   include: {
-                    paperStock: true,
+                    PaperStock: true,
                   },
                   orderBy: { sortOrder: 'asc' },
                 },
@@ -34,17 +34,38 @@ async function getProduct(slug: string) {
         },
         productQuantityGroups: {
           include: {
-            quantityGroup: true,
+            QuantityGroup: true,
           },
         },
         productSizeGroups: {
           include: {
-            sizeGroup: true,
+            SizeGroup: true,
           },
         },
-        productAddOns: {
+        productAddOnSets: {
           include: {
-            addOn: true,
+            AddOnSet: {
+              include: {
+                addOnSetItems: {
+                  include: {
+                    AddOn: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        productTurnaroundTimeSets: {
+          include: {
+            TurnaroundTimeSet: {
+              include: {
+                TurnaroundTimeSetItem: {
+                  include: {
+                    TurnaroundTime: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -68,10 +89,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
+  // Transform the product data to match client component expectations
+  const transformedProduct = product ? {
+    ...product,
+    ProductCategory: product.productCategory,
+    ProductImage: product.productImages || [],
+  } : null
+
   // Pass the server-fetched data to the client component
   return (
     <ComponentErrorBoundary componentName="ProductDetailClient">
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={transformedProduct} />
     </ComponentErrorBoundary>
   )
 }

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { v4 as uuidv4 } from 'uuid'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         addOnSetItems: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         },
         productAddOnSets: {
           include: {
-            product: {
+            Product: {
               select: {
                 id: true,
                 name: true,
@@ -87,11 +88,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         if (addOnItems.length > 0) {
           await tx.addOnSetItem.createMany({
             data: addOnItems.map((item: any, index: number) => ({
+              id: uuidv4(),
               addOnSetId: id,
               addOnId: item.addOnId,
               displayPosition: item.displayPosition || 'IN_DROPDOWN',
               isDefault: item.isDefault || false,
               sortOrder: item.sortOrder ?? index,
+              createdAt: new Date(),
+              updatedAt: new Date(),
             })),
           })
         }
@@ -103,7 +107,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           addOnSetItems: {
             include: {
-              addOn: true,
+              AddOn: true,
             },
             orderBy: {
               sortOrder: 'asc',
