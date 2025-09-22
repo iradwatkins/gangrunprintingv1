@@ -44,12 +44,14 @@ export async function POST(request: NextRequest) {
         name,
         description,
         isActive: isActive ?? true,
+        updatedAt: new Date(),
         TurnaroundTimeSetItem: {
           create:
             turnaroundTimeIds?.map((turnaroundTimeId: string, index: number) => ({
               turnaroundTimeId,
               sortOrder: index,
               isDefault: index === 0,
+              updatedAt: new Date(),
             })) || [],
         },
       },

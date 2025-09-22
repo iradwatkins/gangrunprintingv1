@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
         pricePerSqInch: pricePerSqInch || 0.0015,
         tooltipText: tooltipText || null,
         isActive: isActive !== undefined ? isActive : true,
+        updatedAt: new Date(),
         // Add coating relationships
         paperStockCoatings: {
           create:

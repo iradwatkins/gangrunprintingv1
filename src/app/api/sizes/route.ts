@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            products: true,
+            ProductSizeGroup: true,
           },
         },
       },
@@ -99,11 +99,12 @@ export async function POST(request: NextRequest) {
         customMaxHeight,
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true,
+        updatedAt: new Date(),
       },
       include: {
         _count: {
           select: {
-            products: true,
+            ProductSizeGroup: true,
           },
         },
       },

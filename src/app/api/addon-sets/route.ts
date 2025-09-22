@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         addOnSetItems: include
           ? {
               include: {
-                addOn: true,
+                AddOn: true,
               },
               orderBy: {
                 sortOrder: 'asc',
@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
         name,
         description,
         sortOrder: 0, // Will be updated if needed
+        isActive: true,
+        updatedAt: new Date(),
       },
     })
 
@@ -71,6 +73,8 @@ export async function POST(request: NextRequest) {
           addOnId,
           displayPosition: 'IN_DROPDOWN' as const,
           sortOrder: index,
+          isDefault: false,
+          updatedAt: new Date(),
         })),
       })
     }
@@ -81,7 +85,7 @@ export async function POST(request: NextRequest) {
       include: {
         addOnSetItems: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',

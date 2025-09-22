@@ -185,14 +185,25 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // Create session
+    // Create session with enhanced cookie settings
 
     const session = await lucia.createSession(user.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
 
+    // Enhanced cookie attributes for better persistence
+    const enhancedAttributes = {
+      ...sessionCookie.attributes,
+      maxAge: 60 * 60 * 24 * 90, // 90 days
+      domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
+      sameSite: 'lax' as const,
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      path: '/',
+    }
+
     // Set the session cookie - CRITICAL: must be done before redirect
     const cookieStore = await cookies()
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+    cookieStore.set(sessionCookie.name, sessionCookie.value, enhancedAttributes)
 
     // Clear OAuth cookies
     ;(await cookies()).delete('google_oauth_state')

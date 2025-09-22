@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const sizeGroup = await prisma.sizeGroup.findUnique({
       where: { id },
       include: {
-        products: {
+        ProductSizeGroup: {
           include: {
             product: {
               select: {
@@ -98,6 +98,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         customMaxHeight: values?.toLowerCase().includes('custom') ? customMaxHeight || null : null,
         sortOrder,
         isActive,
+        updatedAt: new Date(),
       },
     })
 
