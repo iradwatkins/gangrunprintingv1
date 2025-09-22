@@ -19,10 +19,11 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       httpOnly: true, // Ensure cookie is not accessible via JavaScript
-      // Remove overly restrictive domain setting - let browser handle it
-      // This allows cookies to work on both www and non-www versions
-      domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+      // Set proper domain for production to work across subdomains
+      domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
       path: '/',
+      // Add max age for better browser compatibility
+      maxAge: 60 * 60 * 24 * 90, // 90 days in seconds
     },
   },
   getUserAttributes: (attributes) => {
@@ -117,41 +118,42 @@ export const validateRequest = async (): Promise<
 
     try {
       if (result.session) {
-        // Always extend session if it's valid (more aggressive extension)
-        // This ensures active users stay logged in
+        // ALWAYS extend session for active users to prevent unexpected logouts
+        // This aggressive extension ensures users stay logged in during active use
         const timeUntilExpiry = result.session.expiresAt.getTime() - Date.now()
-        const shouldExtend = timeUntilExpiry < SESSION_CONFIG.EXTENSION_WINDOW_MS
         const hoursUntilExpiry = Math.round(timeUntilExpiry / (1000 * 60 * 60))
+        const daysUntilExpiry = Math.round(timeUntilExpiry / (1000 * 60 * 60 * 24))
 
-        if (result.session.fresh || shouldExtend) {
-          authLogger.info(`[${requestId}] Extending session ${result.session.id}`, {
-            requestId,
-            sessionId: result.session.id,
-            timeUntilExpiry: hoursUntilExpiry,
-            wasFresh: result.session.fresh,
-            forcedExtension: !result.session.fresh && shouldExtend,
-            userId: result.user?.id,
-            userEmail: result.user?.email,
-          })
+        // Always extend session if user is active (visiting any page)
+        // This prevents the "logged out" issue
+        authLogger.info(`[${requestId}] Extending session ${result.session.id}`, {
+          requestId,
+          sessionId: result.session.id,
+          daysUntilExpiry,
+          hoursUntilExpiry,
+          wasFresh: result.session.fresh,
+          userId: result.user?.id,
+          userEmail: (result.user as any)?.email,
+        })
 
-          const sessionCookie = lucia.createSessionCookie(result.session.id)
-          cookieJar.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+        const sessionCookie = lucia.createSessionCookie(result.session.id)
 
-          authLogger.debug(`[${requestId}] Session cookie set`, {
-            requestId,
-            cookieName: sessionCookie.name,
-            cookieAttributes: sessionCookie.attributes,
-            hasValue: !!sessionCookie.value,
-          })
-        } else {
-          authLogger.debug(`[${requestId}] Session ${result.session.id} is valid but not being extended`, {
-            requestId,
-            sessionId: result.session.id,
-            timeUntilExpiry: hoursUntilExpiry,
-            fresh: result.session.fresh,
-            extensionWindow: Math.round(SESSION_CONFIG.EXTENSION_WINDOW_MS / (1000 * 60 * 60)),
-          })
+        // Ensure cookie attributes match the main configuration
+        const enhancedAttributes = {
+          ...sessionCookie.attributes,
+          maxAge: 60 * 60 * 24 * 90, // 90 days
+          domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
         }
+
+        cookieJar.set(sessionCookie.name, sessionCookie.value, enhancedAttributes)
+
+        authLogger.debug(`[${requestId}] Session cookie set with extended lifetime`, {
+          requestId,
+          cookieName: sessionCookie.name,
+          cookieAttributes: enhancedAttributes,
+          hasValue: !!sessionCookie.value,
+          maxAge: enhancedAttributes.maxAge,
+        })
       } else {
         authLogger.warn(`[${requestId}] Invalid session, clearing cookie`, {
           requestId,
@@ -176,7 +178,7 @@ export const validateRequest = async (): Promise<
       finalResult: { hasUser: !!result.user, hasSession: !!result.session },
     })
 
-    return result
+    return result as any
   } catch (error) {
     const totalTime = Date.now() - startTime
     authLogger.error(`[${requestId}] Session validation error:`, {
@@ -351,10 +353,12 @@ export async function verifyMagicLink(token: string, email: string) {
 
       user = await prisma.user.create({
         data: {
+          id: generateRandomString(STRING_GENERATION.TOKEN_LENGTH, STRING_GENERATION.TOKEN_CHARS),
           email,
           name: email.split('@')[0], // Default name from email
           role,
           emailVerified: true,
+          updatedAt: new Date(),
         },
       })
 
@@ -385,7 +389,8 @@ export async function verifyMagicLink(token: string, email: string) {
     session = await lucia.createSession(user.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
 
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+    const cookieStore = await cookies()
+    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
     // Log session creation for monitoring
     sessionUtils.logSessionActivity(session.id, 'session_created', {
@@ -438,7 +443,8 @@ export async function signOut() {
   await lucia.invalidateSession(session.id)
 
   const sessionCookie = lucia.createBlankSessionCookie()
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+  const cookieStore = await cookies()
+  cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 }
 
 export type User = {

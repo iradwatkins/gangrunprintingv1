@@ -73,12 +73,14 @@ export async function POST(request: NextRequest) {
         description: validatedData.description,
         sortOrder: validatedData.sortOrder,
         isActive: validatedData.isActive,
+        updatedAt: new Date(),
         PaperStockSetItem: {
           create: paperStocksWithDefault.map((stock, index) => ({
             id: randomUUID(),
             paperStockId: stock.id,
             isDefault: stock.isDefault,
             sortOrder: stock.sortOrder || index,
+            updatedAt: new Date(),
           })),
         },
       },

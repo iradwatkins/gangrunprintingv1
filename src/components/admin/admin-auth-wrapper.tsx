@@ -170,15 +170,16 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
       }
     }
 
-    // Set overall timeout to prevent infinite loading - increased from 20s to 60s
-    const overallTimeout = setTimeout(() => {
-      if (isLoading && !isRedirecting && isMounted) {
-        console.error('AdminAuthWrapper: Authentication check timed out after 60 seconds')
-        setIsRedirecting(true)
-        setIsLoading(false)
-        router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
-      }
-    }, 60000) // 60 second overall timeout
+    // Disabled the overall timeout - let the auth check retry as needed
+    // This prevents premature logouts when the server is slow
+    // const overallTimeout = setTimeout(() => {
+    //   if (isLoading && !isRedirecting && isMounted) {
+    //     console.error('AdminAuthWrapper: Authentication check timed out after 60 seconds')
+    //     setIsRedirecting(true)
+    //     setIsLoading(false)
+    //     router.push('/auth/signin?redirectUrl=' + encodeURIComponent(window.location.pathname))
+    //   }
+    // }, 60000) // 60 second overall timeout
 
     checkAdminAuth()
 
@@ -186,7 +187,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
     return () => {
       isMounted = false
       clearTimeout(timeoutId)
-      clearTimeout(overallTimeout)
+      // clearTimeout(overallTimeout) // Disabled overall timeout
     }
   }, [])
 

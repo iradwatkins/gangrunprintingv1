@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
         customMax,
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true,
+        updatedAt: new Date(),
       },
     })
 

@@ -60,6 +60,7 @@ export const POST = withAuth(
         data: {
           id: randomUUID(),
           ...validation.data,
+          updatedAt: new Date(),
         },
       })
 

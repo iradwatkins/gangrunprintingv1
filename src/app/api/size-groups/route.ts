@@ -50,9 +50,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create the size group
+    // Create the size group with proper ID and timestamps
     const group = await prisma.sizeGroup.create({
-      data: validatedData,
+      data: {
+        ...validatedData,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json(group)
