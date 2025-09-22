@@ -75,7 +75,7 @@ interface TurnaroundTime {
 interface TurnaroundTimeSetItem {
   id: string
   turnaroundTimeId: string
-  turnaroundTime: TurnaroundTime
+  TurnaroundTime: TurnaroundTime
   isDefault: boolean
   sortOrder: number
   priceOverride?: number
@@ -87,7 +87,7 @@ interface TurnaroundTimeSet {
   description: string | null
   isActive: boolean
   sortOrder: number
-  turnaroundTimeItems: TurnaroundTimeSetItem[]
+  TurnaroundTimeSetItem: TurnaroundTimeSetItem[]
 }
 
 function SortableSetItem({
@@ -126,7 +126,7 @@ function SortableSetItem({
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{item.turnaroundTime.displayName}</span>
+          <span className="font-medium">{item.TurnaroundTime.displayName}</span>
           {item.isDefault && (
             <Badge className="text-xs" variant="default">
               Default
@@ -134,10 +134,10 @@ function SortableSetItem({
           )}
         </div>
         <div className="text-sm text-gray-500">
-          {item.turnaroundTime.daysMin}-{item.turnaroundTime.daysMax || 'same'} days •
-          {item.turnaroundTime.priceMultiplier > 1
-            ? ` ${((item.turnaroundTime.priceMultiplier - 1) * 100).toFixed(0)}% surcharge`
-            : ` +$${item.turnaroundTime.basePrice.toFixed(2)}`}
+          {item.TurnaroundTime.daysMin}-{item.TurnaroundTime.daysMax || 'same'} days •
+          {item.TurnaroundTime.priceMultiplier > 1
+            ? ` ${((item.TurnaroundTime.priceMultiplier - 1) * 100).toFixed(0)}% surcharge`
+            : ` +$${item.TurnaroundTime.basePrice.toFixed(2)}`}
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function TurnaroundTimeSetsPage() {
       const response = await fetch('/api/turnaround-time-sets')
       if (!response.ok) throw new Error('Failed to fetch sets')
       const data = await response.json()
-      setSets(data)
+      setSets(Array.isArray(data) ? data : [])
     } catch (error) {
       toast.error('Failed to load turnaround time sets')
     } finally {
@@ -206,7 +206,7 @@ export default function TurnaroundTimeSetsPage() {
       const response = await fetch('/api/turnaround-times')
       if (!response.ok) throw new Error('Failed to fetch turnaround times')
       const data = await response.json()
-      setTurnaroundTimes(data)
+      setTurnaroundTimes(Array.isArray(data) ? data : [])
     } catch (error) {
       toast.error('Failed to load turnaround times')
     }
@@ -267,13 +267,14 @@ export default function TurnaroundTimeSetsPage() {
     const set = sets.find((s) => s.id === setId)
     if (!set) return
 
-    const oldIndex = set.turnaroundTimeItems.findIndex((item) => item.id === active.id)
-    const newIndex = set.turnaroundTimeItems.findIndex((item) => item.id === over.id)
+    const items = set.TurnaroundTimeSetItem || []
+    const oldIndex = items.findIndex((item) => item.id === active.id)
+    const newIndex = items.findIndex((item) => item.id === over.id)
 
-    const newItems = arrayMove(set.turnaroundTimeItems, oldIndex, newIndex)
+    const newItems = arrayMove(items, oldIndex, newIndex)
 
     // Update local state immediately
-    setSets(sets.map((s) => (s.id === setId ? { ...s, turnaroundTimeItems: newItems } : s)))
+    setSets(sets.map((s) => (s.id === setId ? { ...s, TurnaroundTimeSetItem: newItems } : s)))
 
     // Save to backend
     try {
@@ -301,7 +302,7 @@ export default function TurnaroundTimeSetsPage() {
           name: `${set.name} (Copy)`,
           description: set.description,
           isActive: set.isActive,
-          turnaroundTimeIds: set.turnaroundTimeItems.map((item) => item.turnaroundTimeId),
+          turnaroundTimeIds: (set.TurnaroundTimeSetItem || []).map((item) => item.turnaroundTimeId),
         }),
       })
 
@@ -342,7 +343,7 @@ export default function TurnaroundTimeSetsPage() {
       name: set.name,
       description: set.description || '',
       isActive: set.isActive,
-      selectedTurnaroundTimes: set.turnaroundTimeItems.map((item) => item.turnaroundTimeId),
+      selectedTurnaroundTimes: (set.TurnaroundTimeSetItem || []).map((item) => item.turnaroundTimeId),
     })
     setShowDialog(true)
   }
@@ -400,7 +401,7 @@ export default function TurnaroundTimeSetsPage() {
                     <Badge variant={set.isActive ? 'default' : 'secondary'}>
                       {set.isActive ? 'Active' : 'Inactive'}
                     </Badge>
-                    <Badge variant="outline">{set.turnaroundTimeItems.length} options</Badge>
+                    <Badge variant="outline">{set.TurnaroundTimeSetItem?.length || 0} options</Badge>
                     <Button size="icon" variant="ghost" onClick={() => handleDuplicate(set)}>
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -422,11 +423,11 @@ export default function TurnaroundTimeSetsPage() {
                     onDragEnd={(event) => handleDragEnd(event, set.id)}
                   >
                     <SortableContext
-                      items={set.turnaroundTimeItems.map((item) => item.id)}
+                      items={set.TurnaroundTimeSetItem?.map((item) => item.id) || []}
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="space-y-2">
-                        {set.turnaroundTimeItems.map((item) => (
+                        {(set.TurnaroundTimeSetItem || []).map((item) => (
                           <SortableSetItem
                             key={item.id}
                             item={item}
