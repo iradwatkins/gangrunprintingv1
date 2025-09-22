@@ -94,8 +94,7 @@ export default function NotificationPreferences() {
         isSubscribed: !!subscription,
       }))
     } catch (error) {
-      console.error('Error checking subscription:', error)
-    }
+      }
   }
 
   const loadPreferences = async () => {
@@ -106,8 +105,7 @@ export default function NotificationPreferences() {
         setPreferences(data.preferences || preferences)
       }
     } catch (error) {
-      console.error('Error loading preferences:', error)
-    }
+      }
   }
 
   const savePreferences = async (newPreferences: typeof preferences) => {

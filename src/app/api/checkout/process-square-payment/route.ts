@@ -56,8 +56,6 @@ export async function POST(request: NextRequest) {
       message: 'Payment processed successfully',
     })
   } catch (error) {
-    console.error('Square payment processing error:', error)
-
     // Handle specific Square API errors
     if (error instanceof Error) {
       if (error.message.includes('CARD_DECLINED')) {

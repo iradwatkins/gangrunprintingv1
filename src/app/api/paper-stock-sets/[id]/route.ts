@@ -55,7 +55,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(group)
   } catch (error) {
-    console.error('Error fetching paper stock set:', error)
     return NextResponse.json({ error: 'Failed to fetch paper stock set' }, { status: 500 })
   }
 }
@@ -175,7 +174,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       )
     }
 
-    console.error('Error updating paper stock set:', error)
     return NextResponse.json({ error: 'Failed to update paper stock set' }, { status: 500 })
   }
 }
@@ -210,7 +208,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     return NextResponse.json({ message: 'Paper stock set deleted successfully' })
   } catch (error) {
-    console.error('Error deleting paper stock set:', error)
     return NextResponse.json({ error: 'Failed to delete paper stock set' }, { status: 500 })
   }
 }

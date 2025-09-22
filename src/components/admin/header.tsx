@@ -39,7 +39,6 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
           router.push('/auth/signin')
         }
       } catch (error) {
-        console.error('Auth check failed:', error)
         setUser(null)
         router.push('/auth/signin')
       } finally {
@@ -61,13 +60,11 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
         setUser(null)
         router.push('/auth/signin?message=signed_out')
       } else {
-        console.error('Failed to sign out - server error')
         // Still redirect to signin even if logout failed
         setUser(null)
         router.push('/auth/signin')
       }
     } catch (error) {
-      console.error('Sign out error:', error)
       // Still redirect to signin even if logout failed
       setUser(null)
       router.push('/auth/signin')

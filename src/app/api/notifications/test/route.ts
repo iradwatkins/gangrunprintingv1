@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
       payload: JSON.parse(payload),
     })
   } catch (error) {
-    console.error('Error sending test notification:', error)
     return NextResponse.json({ error: 'Failed to send test notification' }, { status: 500 })
   }
 }

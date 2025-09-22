@@ -86,8 +86,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           }),
         })
       } catch (webhookError) {
-        console.error('Failed to trigger vendor webhook:', webhookError)
-      }
+        }
     }
 
     return NextResponse.json({
@@ -95,7 +94,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       order: updatedOrder,
     })
   } catch (error) {
-    console.error('Error assigning vendor:', error)
     return NextResponse.json({ error: 'Failed to assign vendor' }, { status: 500 })
   }
 }

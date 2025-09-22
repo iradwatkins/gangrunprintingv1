@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
     }
   } catch (error) {
-    console.error('N8N webhook error:', error)
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }
@@ -90,7 +89,6 @@ async function handleOrderCreated(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error handling order created:', error)
     return NextResponse.json({ error: 'Failed to process' }, { status: 500 })
   }
 }
@@ -161,7 +159,6 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error updating order status:', error)
     return NextResponse.json({ error: 'Failed to update status' }, { status: 500 })
   }
 }
@@ -216,8 +213,7 @@ async function handleVendorAssignment(identifier: string, payload: any) {
           }),
         })
       } catch (error) {
-        console.error('Failed to notify vendor via N8N:', error)
-      }
+        }
     }
 
     return NextResponse.json({
@@ -229,7 +225,6 @@ async function handleVendorAssignment(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error assigning vendor:', error)
     return NextResponse.json({ error: 'Failed to assign vendor' }, { status: 500 })
   }
 }
@@ -274,7 +269,6 @@ async function handleFulfillmentUpdate(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error updating fulfillment:', error)
     return NextResponse.json({ error: 'Failed to update fulfillment' }, { status: 500 })
   }
 }
@@ -334,7 +328,6 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error updating tracking:', error)
     return NextResponse.json({ error: 'Failed to update tracking' }, { status: 500 })
   }
 }
@@ -383,7 +376,6 @@ async function handleNotificationSend(identifier: string, payload: any) {
       },
     })
   } catch (error) {
-    console.error('Error handling notification:', error)
     return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 })
   }
 }

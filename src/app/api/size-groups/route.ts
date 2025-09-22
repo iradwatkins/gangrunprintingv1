@@ -27,7 +27,6 @@ export async function GET() {
 
     return NextResponse.json(groups)
   } catch (error) {
-    console.error('Error fetching size groups:', error)
     return NextResponse.json({ error: 'Failed to fetch size groups' }, { status: 500 })
   }
 }
@@ -68,7 +67,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error creating size group:', error)
     return NextResponse.json({ error: 'Failed to create size group' }, { status: 500 })
   }
 }

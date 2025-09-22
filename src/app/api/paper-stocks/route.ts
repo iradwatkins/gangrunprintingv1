@@ -81,7 +81,6 @@ export async function GET() {
 
     return NextResponse.json(transformed)
   } catch (error) {
-    console.error('Error fetching paper stocks:', error)
     return NextResponse.json({ error: 'Failed to fetch paper stocks' }, { status: 500 })
   }
 }
@@ -140,8 +139,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(paperStock, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating paper stock:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A paper stock with this name already exists' },

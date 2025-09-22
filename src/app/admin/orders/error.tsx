@@ -14,8 +14,7 @@ export default function OrdersError({
 }) {
   useEffect(() => {
     // Log the error to console for debugging
-    console.error('Orders page error:', error)
-  }, [error])
+    }, [error])
 
   return (
     <div className="space-y-8">

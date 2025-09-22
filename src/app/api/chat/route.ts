@@ -63,8 +63,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!response.ok) {
-      console.error('Ollama API error:', response.status, response.statusText)
-
       // Fallback response if Ollama is not available
       return NextResponse.json({
         response:
@@ -91,8 +89,6 @@ export async function POST(request: NextRequest) {
       model: OLLAMA_MODEL,
     })
   } catch (error) {
-    console.error('Chat API error:', error)
-
     // Return a helpful fallback message
     return NextResponse.json({
       response:

@@ -27,7 +27,6 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
 
     return NextResponse.json(theme)
   } catch (error) {
-    console.error('Error updating theme:', error)
     return NextResponse.json({ error: 'Failed to update theme' }, { status: 500 })
   }
 }
@@ -45,7 +44,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
     return NextResponse.json({ success: true, message: 'Theme deleted' })
   } catch (error) {
-    console.error('Error deleting theme:', error)
     return NextResponse.json({ error: 'Failed to delete theme' }, { status: 500 })
   }
 }

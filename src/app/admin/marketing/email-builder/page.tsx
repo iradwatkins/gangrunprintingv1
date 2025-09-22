@@ -72,8 +72,7 @@ function EmailBuilderPageContent() {
         })
       }
     } catch (error) {
-      console.error('Error fetching campaign:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }
@@ -101,8 +100,7 @@ function EmailBuilderPageContent() {
         })
       }
     } catch (error) {
-      console.error('Error fetching template:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }
@@ -173,8 +171,7 @@ function EmailBuilderPageContent() {
         }
       }
     } catch (error) {
-      console.error('Error saving:', error)
-    } finally {
+      } finally {
       setSaving(false)
     }
   }
@@ -269,8 +266,7 @@ function EmailBuilderPageContent() {
         router.push('/admin/marketing/campaigns')
       }
     } catch (error) {
-      console.error('Error sending campaign:', error)
-    }
+      }
   }
 
   if (loading) {

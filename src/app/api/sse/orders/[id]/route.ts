@@ -90,8 +90,7 @@ export async function GET(
               )
             }
           } catch (error) {
-            console.error('Error fetching order update:', error)
-          }
+            }
         }, 5000) // Poll every 5 seconds
 
         // Clean up on close
@@ -112,7 +111,6 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error('SSE error:', error)
     return NextResponse.json({ error: 'Failed to establish SSE connection' }, { status: 500 })
   }
 }

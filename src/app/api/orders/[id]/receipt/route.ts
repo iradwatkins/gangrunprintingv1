@@ -35,7 +35,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       },
     })
   } catch (error) {
-    console.error('Error generating receipt:', error)
     return NextResponse.json({ error: 'Failed to generate receipt' }, { status: 500 })
   }
 }

@@ -72,7 +72,6 @@ export default function CategoriesPage() {
       const data = await response.json()
       setCategories(data)
     } catch (error) {
-      console.error('Error fetching categories:', error)
       toast.error('Failed to fetch categories')
     } finally {
       setLoading(false)
@@ -114,7 +113,6 @@ export default function CategoriesPage() {
         throw new Error(error.error || 'Failed to save category')
       }
     } catch (error: any) {
-      console.error('Error saving category:', error)
       toast.error(error.message || 'Failed to save category')
     } finally {
       setSaving(false)
@@ -139,7 +137,6 @@ export default function CategoriesPage() {
         throw new Error('Failed to delete category')
       }
     } catch (error) {
-      console.error('Error deleting category:', error)
       toast.error('Failed to delete category')
     }
   }

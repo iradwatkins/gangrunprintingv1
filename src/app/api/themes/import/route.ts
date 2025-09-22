@@ -56,8 +56,6 @@ export async function POST(request: NextRequest) {
         : 'Theme imported successfully',
     })
   } catch (error) {
-    console.error('Error importing theme:', error)
-
     // Handle specific error types
     if (error instanceof Error) {
       if (error.message.includes('fetch')) {
@@ -94,7 +92,6 @@ export async function GET() {
       totalCount: themes.length,
     })
   } catch (error) {
-    console.error('Error fetching import history:', error)
     return NextResponse.json({ error: 'Failed to fetch import history' }, { status: 500 })
   }
 }

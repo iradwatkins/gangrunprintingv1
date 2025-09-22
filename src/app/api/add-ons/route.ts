@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching add-ons:', error)
     return new Response(JSON.stringify({ error: 'Failed to fetch add-ons' }), {
       status: 500,
       headers: {
@@ -66,7 +65,6 @@ export const POST = withAuth(
 
       return successResponse(addOn, 201)
     } catch (error) {
-      console.error('Error creating add-on:', error)
       return handleApiError(error, 'Failed to create add-on')
     }
   },

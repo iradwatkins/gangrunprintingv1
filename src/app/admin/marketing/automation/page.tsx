@@ -76,8 +76,7 @@ export default function AutomationPage() {
         setWorkflows(data)
       }
     } catch (error) {
-      console.error('Error fetching workflows:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }
@@ -94,8 +93,7 @@ export default function AutomationPage() {
         fetchWorkflows() // Refresh the list
       }
     } catch (error) {
-      console.error('Error toggling workflow:', error)
-    }
+      }
   }
 
   const handleDeleteWorkflow = async (workflowId: string) => {
@@ -110,8 +108,7 @@ export default function AutomationPage() {
         setWorkflows((prev) => prev.filter((w) => w.id !== workflowId))
       }
     } catch (error) {
-      console.error('Error deleting workflow:', error)
-    }
+      }
   }
 
   const getTriggerLabel = (trigger: any) => {

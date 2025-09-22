@@ -71,7 +71,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook error:', error)
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }
@@ -127,8 +126,7 @@ async function handlePaymentCreated(data: any) {
       })
       await N8NWorkflows.onOrderStatusChanged(order.id, order.status)
     } catch (n8nError) {
-      console.error('Failed to trigger N8N workflow:', n8nError)
-    }
+      }
   }
 }
 

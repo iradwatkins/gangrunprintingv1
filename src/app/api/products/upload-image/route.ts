@@ -47,7 +47,6 @@ export async function POST(request: NextRequest) {
       user = auth.user
       session = auth.session
     } catch (authError) {
-      console.error(`[${requestId}] Authentication error:`, authError)
       return createAuthErrorResponse('Authentication failed', requestId)
     }
 
@@ -66,8 +65,6 @@ export async function POST(request: NextRequest) {
 
       formData = await Promise.race([formDataPromise, timeoutPromise]) as FormData
     } catch (error) {
-      console.error(`[${requestId}] Error parsing form data:`, error)
-
       if (error instanceof Error && error.message.includes('timeout')) {
         return createTimeoutErrorResponse('Form data parsing', 15000, requestId)
       }
@@ -142,8 +139,7 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch (error) {
-        console.error('Error fetching product details:', error)
-      }
+        }
     }
 
     // Upload and process image with better error handling
@@ -159,8 +155,6 @@ export async function POST(request: NextRequest) {
         isPrimary || imageCount === 1
       )
     } catch (uploadError) {
-      console.error('Image processing/upload error:', uploadError)
-
       // Provide more specific error messages
       if (uploadError instanceof Error) {
         if (uploadError.message.includes('MinIO') || uploadError.message.includes('storage')) {
@@ -213,7 +207,6 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (dbError) {
-        console.error('Database save error:', dbError)
         // Continue anyway - image is uploaded to storage
       }
     }
@@ -242,8 +235,6 @@ export async function POST(request: NextRequest) {
 
     return createSuccessResponse(responseData, 200, null, requestId)
   } catch (error) {
-    console.error(`[${requestId}] Image upload error:`, error)
-
     if (error instanceof Error) {
       if (error.message.includes('MinIO') || error.message.includes('storage')) {
         return createErrorResponse(

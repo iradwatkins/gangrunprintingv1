@@ -40,7 +40,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       airport,
     })
   } catch (error) {
-    console.error('Error fetching airport details:', error)
     return NextResponse.json(
       {
         success: false,

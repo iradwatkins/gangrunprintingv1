@@ -30,8 +30,6 @@ async function retryWithBackoff<T>(
       return await operation()
     } catch (error) {
       lastError = error as Error
-      console.error(`${operationName} attempt ${attempt} failed:`, error)
-
       if (attempt === maxAttempts) {
         throw new Error(`${operationName} failed after ${maxAttempts} attempts: ${lastError.message}`)
       }
@@ -41,7 +39,7 @@ async function retryWithBackoff<T>(
       const jitter = Math.random() * 0.1 * delay // Add up to 10% jitter
       const finalDelay = delay + jitter
 
-      console.log(`Retrying ${operationName} in ${finalDelay.toFixed(0)}ms...`)
+      }ms...`)
       await new Promise(resolve => setTimeout(resolve, finalDelay))
     }
   }
@@ -62,7 +60,6 @@ async function checkMinioHealth(): Promise<boolean> {
     lastHealthCheck = Date.now()
     return true
   } catch (error) {
-    console.error('MinIO health check failed:', error)
     isHealthy = false
     return false
   }
@@ -107,15 +104,10 @@ export async function getMinioClient(): Promise<Minio.Client> {
       initAttempted = true
       initError = null
 
-      console.log(
-        `MinIO client initialized successfully on attempt ${attempt} with endpoint: localhost:` +
-          (process.env.MINIO_PORT || '9000')
       )
       return minioClient
 
     } catch (error) {
-      console.error(`MinIO connection attempt ${attempt} failed:`, error)
-
       if (attempt === CONNECTION_RETRY_ATTEMPTS) {
         initError = error as Error
         initAttempted = true
@@ -150,10 +142,8 @@ export async function ensureBucket() {
       await client.makeBucket(BUCKET_NAME, 'us-east-1')
     }
   } catch (error) {
-    console.error('Error ensuring bucket:', error)
     // Don't throw during build time
     if (process.env.NODE_ENV === 'production' && !process.env.MINIO_ENDPOINT) {
-      console.warn('MinIO not configured, skipping bucket creation')
       return
     }
     throw error
@@ -226,7 +216,6 @@ export async function getFileUrl(objectName: string) {
     const url = `${publicEndpoint}/${BUCKET_NAME}/${objectName}`
     return url
   } catch (error) {
-    console.error('Error getting file URL:', error)
     throw error
   }
 }
@@ -237,7 +226,6 @@ export async function deleteFile(objectName: string) {
     await client.removeObject(BUCKET_NAME, objectName)
     return true
   } catch (error) {
-    console.error('Error deleting file:', error)
     throw error
   }
 }
@@ -254,7 +242,6 @@ export async function listFiles(prefix?: string) {
       stream.on('end', () => resolve(files))
     })
   } catch (error) {
-    console.error('Error listing files:', error)
     throw error
   }
 }
@@ -265,7 +252,6 @@ export async function getFileMetadata(objectName: string) {
     const stat = await client.statObject(BUCKET_NAME, objectName)
     return stat
   } catch (error) {
-    console.error('Error getting file metadata:', error)
     throw error
   }
 }
@@ -286,11 +272,9 @@ export async function initializeBuckets() {
         await client.makeBucket(bucket, 'us-east-1')
       }
     } catch (error) {
-      console.error(`Error creating bucket ${bucket}:`, error)
       // Don't throw - allow app to continue without MinIO
       if (process.env.NODE_ENV === 'production') {
-        console.warn(`MinIO initialization failed for ${bucket}, file uploads may not work`)
-      }
+        }
     }
   }
 }
@@ -305,7 +289,6 @@ export async function getPresignedUploadUrl(
     const url = await client.presignedPutObject(bucket, objectName, expiry)
     return url
   } catch (error) {
-    console.error('Error generating presigned upload URL:', error)
     throw error
   }
 }
@@ -320,7 +303,6 @@ export async function getPresignedDownloadUrl(
     const url = await client.presignedGetObject(bucket, objectName, expiry)
     return url
   } catch (error) {
-    console.error('Error generating presigned download URL:', error)
     throw error
   }
 }

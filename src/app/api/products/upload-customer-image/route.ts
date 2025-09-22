@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (dbError) {
-        console.error('Database save error:', dbError)
         // Continue anyway - image is uploaded to storage
       }
     }
@@ -74,8 +73,6 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error uploading customer image:', error)
-
     // Provide more specific error messages
     let errorMessage = 'Failed to upload image'
     let statusCode = 500

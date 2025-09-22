@@ -21,8 +21,7 @@ export default function NewWorkflowPage() {
         router.push('/admin/marketing/automation')
       }
     } catch (error) {
-      console.error('Error saving workflow:', error)
-    }
+      }
   }
 
   const handlePreview = (workflow: any) => {

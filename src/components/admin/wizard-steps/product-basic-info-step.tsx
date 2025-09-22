@@ -64,8 +64,7 @@ export function ProductBasicInfoStep({
         setCategories(data)
       }
     } catch (error) {
-      console.error('Failed to fetch categories:', error)
-    }
+      }
   }
 
   const generateSlug = (name: string) => {
@@ -142,7 +141,6 @@ export function ProductBasicInfoStep({
       onUpdate({ sku: newSKU })
       toast.success('SKU generated successfully')
     } catch (error) {
-      console.error('Error generating SKU:', error)
       toast.error('Failed to generate SKU')
     } finally {
       setGeneratingSKU(false)

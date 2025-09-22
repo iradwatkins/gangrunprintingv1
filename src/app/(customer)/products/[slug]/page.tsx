@@ -73,7 +73,6 @@ async function getProduct(slug: string) {
 
     return product
   } catch (error) {
-    console.error('Error fetching product:', error)
     return null
   }
 }

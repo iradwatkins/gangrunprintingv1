@@ -7,7 +7,6 @@ export async function GET() {
     const themes = await themeManager.getThemes()
     return NextResponse.json(themes)
   } catch (error) {
-    console.error('Error fetching themes:', error)
     return NextResponse.json({ error: 'Failed to fetch themes' }, { status: 500 })
   }
 }
@@ -37,7 +36,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(theme)
   } catch (error) {
-    console.error('Error uploading theme:', error)
     return NextResponse.json({ error: 'Failed to upload theme' }, { status: 500 })
   }
 }

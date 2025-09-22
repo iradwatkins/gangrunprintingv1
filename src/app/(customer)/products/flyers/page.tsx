@@ -63,8 +63,7 @@ export default function FlyerProductPage() {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch paper stocks:', error)
-      }
+        }
     }
     fetchPaperStocks()
   }, [])

@@ -68,7 +68,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       )
     }
 
-    console.error('Error reordering paper stock set items:', error)
     return NextResponse.json({ error: 'Failed to reorder paper stock set items' }, { status: 500 })
   }
 }

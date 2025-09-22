@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching translations:', error)
     return NextResponse.json({ error: 'Failed to fetch translations' }, { status: 500 })
   }
 }
@@ -124,7 +123,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(translation, { status: 201 })
   } catch (error) {
-    console.error('Error creating translation:', error)
     return NextResponse.json({ error: 'Failed to create translation' }, { status: 500 })
   }
 }

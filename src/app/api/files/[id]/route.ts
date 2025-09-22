@@ -51,7 +51,6 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
       },
     })
   } catch (error) {
-    console.error('Error fetching file:', error)
     return NextResponse.json({ error: 'Failed to fetch file' }, { status: 500 })
   }
 }
@@ -88,7 +87,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
       message: 'File deleted successfully',
     })
   } catch (error) {
-    console.error('Error deleting file:', error)
     return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 })
   }
 }

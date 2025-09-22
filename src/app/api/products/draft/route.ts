@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(draftProduct)
   } catch (error) {
-    console.error('Error creating draft product:', error)
     return NextResponse.json({ error: 'Failed to create draft product' }, { status: 500 })
   }
 }
@@ -56,7 +55,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(draftProducts)
   } catch (error) {
-    console.error('Error fetching draft products:', error)
     return NextResponse.json({ error: 'Failed to fetch draft products' }, { status: 500 })
   }
 }

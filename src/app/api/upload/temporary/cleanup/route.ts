@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
       cutoffTime: cutoffTime.toISOString(),
     })
   } catch (error) {
-    console.error('Cleanup error:', error)
     return NextResponse.json({ error: 'Cleanup failed' }, { status: 500 })
   }
 }
@@ -80,7 +79,6 @@ export async function DELETE(request: NextRequest) {
       message: `Cleaned up ${deletedFiles} expired temporary files`,
     })
   } catch (error) {
-    console.error('Global cleanup error:', error)
     return NextResponse.json({ error: 'Global cleanup failed' }, { status: 500 })
   }
 }

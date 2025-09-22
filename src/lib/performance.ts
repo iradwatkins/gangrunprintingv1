@@ -293,7 +293,7 @@ export async function measurePerformance<T>(name: string, fn: () => T | Promise<
     return result
   } catch (error) {
     const duration = performance.now() - start
-    console.error(`[Performance] ${name} failed after ${duration.toFixed(2)}ms`, error)
+    }ms`, error)
     throw error
   }
 }

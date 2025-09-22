@@ -11,47 +11,7 @@ import {
   createAuthErrorResponse,
   generateRequestId,
 } from '@/lib/api-response'
-
-// Comprehensive Zod schema for product creation
-const createProductSchema = z.object({
-  name: z.string().min(1, 'Product name is required').max(255).trim(),
-  sku: z
-    .string()
-    .min(1, 'SKU is required')
-    .max(100)
-    .regex(/^[a-z0-9-]+$/)
-    .trim(),
-  categoryId: z.string().cuid('Category ID must be valid'),
-  description: z.string().max(5000).optional().nullable(),
-  shortDescription: z.string().max(500).optional().nullable(),
-  isActive: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
-  images: z
-    .array(
-      z.object({
-        url: z.string().url(),
-        thumbnailUrl: z.string().url().optional(),
-        alt: z.string().max(255).optional(),
-        caption: z.string().max(500).optional(),
-        isPrimary: z.boolean().optional(),
-        width: z.number().int().positive().optional(),
-        height: z.number().int().positive().optional(),
-        fileSize: z.number().int().positive().optional(),
-        mimeType: z.string().optional(),
-      })
-    )
-    .default([]),
-  paperStockSetId: z.string().min(1, 'Paper stock set ID is required'),
-  quantityGroupId: z.string().cuid('Quantity group ID must be valid'),
-  sizeGroupId: z.string().cuid('Size group ID must be valid'),
-  selectedAddOns: z.array(z.string().cuid()).default([]),
-  productionTime: z.number().int().min(1).max(365).default(3),
-  rushAvailable: z.boolean().default(false),
-  rushDays: z.number().int().min(1).max(30).optional().nullable(),
-  rushFee: z.number().min(0).max(10000).optional().nullable(),
-  basePrice: z.number().min(0).max(100000).default(0),
-  setupFee: z.number().min(0).max(10000).default(0),
-})
+import { createProductSchema } from '@/lib/validation'
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {
@@ -64,11 +24,7 @@ export async function GET(request: NextRequest) {
     const isActive = searchParams.get('isActive')
     const gangRunEligible = searchParams.get('gangRunEligible')
 
-    console.log(`[${requestId}] Query params:`, {
-      categoryId,
-      isActive,
-      gangRunEligible,
-      userAgent: request.headers.get('user-agent')?.substring(0, 100),
+    ?.substring(0, 100),
       referer: request.headers.get('referer'),
     })
 
@@ -162,7 +118,7 @@ export async function GET(request: NextRequest) {
     )
   } catch (error: any) {
     const responseTime = Date.now() - startTime
-    console.error(`[${requestId}] Products fetch error (${responseTime}ms):`, error)
+    :`, error)
 
     return createDatabaseErrorResponse(error, requestId)
   }
@@ -176,11 +132,6 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
 
     if (!session || !user || user.role !== 'ADMIN') {
-      console.error(`[${requestId}] Auth failed:`, {
-        hasSession: !!session,
-        hasUser: !!user,
-        userRole: user?.role,
-      })
       return createAuthErrorResponse('Admin access required', requestId)
     }
 
@@ -188,7 +139,6 @@ export async function POST(request: NextRequest) {
     try {
       rawData = await request.json()
     } catch (parseError) {
-      console.error(`[${requestId}] JSON parse failed:`, parseError)
       return createErrorResponse('Invalid JSON request body', 400, null, requestId)
     }
 
@@ -196,7 +146,6 @@ export async function POST(request: NextRequest) {
     try {
       data = createProductSchema.parse(rawData)
     } catch (validationError) {
-      console.error(`[${requestId}] Validation failed:`, validationError)
       if (validationError instanceof z.ZodError) {
         return createValidationErrorResponse(validationError.errors, requestId)
       }
@@ -252,7 +201,6 @@ export async function POST(request: NextRequest) {
         return createErrorResponse(`Add-ons not found: ${missing.join(', ')}`, 400, null, requestId)
       }
     } catch (validationError) {
-      console.error(`[${requestId}] Foreign key validation error:`, validationError)
       return createDatabaseErrorResponse(validationError, requestId)
     }
 
@@ -404,8 +352,6 @@ export async function POST(request: NextRequest) {
 
     return createSuccessResponse(product, 201, null, requestId)
   } catch (error: any) {
-    console.error(`[${requestId}] Product creation error:`, error)
-
     // Handle transaction timeouts
     if (error.name === 'TransactionTimeout') {
       return createErrorResponse(

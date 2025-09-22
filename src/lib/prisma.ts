@@ -60,7 +60,6 @@ export const checkDatabaseHealth = async (): Promise<{
     return { status: 'healthy', latency }
   } catch (error) {
     const latency = Date.now() - startTime
-    console.error('[Prisma] Database health check failed:', error)
     return {
       status: 'unhealthy',
       latency,
@@ -77,7 +76,6 @@ export const ensureDatabaseConnection = async (retries = 3): Promise<void> => {
 
       return
     } catch (error) {
-      console.error(`[Prisma] Connection attempt ${i + 1} failed:`, error)
       if (i === retries - 1) {
         throw new Error(`Failed to connect to database after ${retries} attempts`)
       }

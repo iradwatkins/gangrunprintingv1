@@ -79,7 +79,6 @@ export async function POST(request: NextRequest) {
       order: updatedOrder,
     })
   } catch (error) {
-    console.error('Shipping selection error:', error)
     return NextResponse.json({ error: 'Failed to select shipping method' }, { status: 500 })
   }
 }

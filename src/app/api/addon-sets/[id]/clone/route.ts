@@ -84,7 +84,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(clonedAddOnSet, { status: 201 })
   } catch (error) {
-    console.error('Error cloning addon set:', error)
     return NextResponse.json({ error: 'Failed to clone addon set' }, { status: 500 })
   }
 }

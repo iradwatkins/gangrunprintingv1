@@ -26,7 +26,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(set)
   } catch (error) {
-    console.error('[TurnaroundTimeSet] GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch turnaround time set' }, { status: 500 })
   }
 }
@@ -86,7 +85,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(set)
   } catch (error) {
-    console.error('[TurnaroundTimeSet] PUT error:', error)
     return NextResponse.json({ error: 'Failed to update turnaround time set' }, { status: 500 })
   }
 }
@@ -120,7 +118,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[TurnaroundTimeSet] DELETE error:', error)
     return NextResponse.json({ error: 'Failed to delete turnaround time set' }, { status: 500 })
   }
 }

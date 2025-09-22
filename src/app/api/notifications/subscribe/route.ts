@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
       message: 'Subscription stored successfully',
     })
   } catch (error) {
-    console.error('Error storing subscription:', error)
     return NextResponse.json({ error: 'Failed to store subscription' }, { status: 500 })
   }
 }

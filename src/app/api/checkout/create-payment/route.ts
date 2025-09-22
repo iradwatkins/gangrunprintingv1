@@ -117,8 +117,7 @@ export async function POST(request: NextRequest) {
         orderNumber: order.orderNumber,
       }),
     }).catch((error) => {
-      console.error('Failed to send confirmation email:', error)
-    })
+      })
 
     return NextResponse.json({
       success: true,
@@ -127,7 +126,6 @@ export async function POST(request: NextRequest) {
       orderNumber: order.orderNumber,
     })
   } catch (error) {
-    console.error('Checkout creation error:', error)
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
   }
 }

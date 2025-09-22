@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(workflows)
   } catch (error) {
-    console.error('Error fetching workflows:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(workflow, { status: 201 })
   } catch (error) {
-    console.error('Error creating workflow:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

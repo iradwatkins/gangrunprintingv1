@@ -90,8 +90,7 @@ export function ThemeInjector() {
       // This will cause the default theme from globals.css to be used
     } catch (error) {
       // Silently fail and use default theme
-      // console.error('Failed to fetch active theme:', error);
-    }
+      // }
   }
 
   return null

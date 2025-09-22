@@ -81,8 +81,7 @@ export function ProductSearch({ className }: { className?: string }) {
         setSuggestions([...data.products, ...data.categories])
       }
     } catch (error) {
-      console.error('Error fetching suggestions:', error)
-    }
+      }
   }, [])
 
   // Debounced search for suggestions

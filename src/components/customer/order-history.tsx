@@ -97,7 +97,6 @@ export default function OrderHistory() {
         }
       }
     } catch (error) {
-      console.error('Error fetching data:', error)
       const errorMessage =
         error instanceof Error ? error.message : 'Unable to retrieve order information'
       toast({
@@ -136,7 +135,6 @@ export default function OrderHistory() {
         })
       }
     } catch (error) {
-      console.error('Error reordering:', error)
       toast({
         title: 'Error',
         description: 'Failed to process reorder',
@@ -169,7 +167,6 @@ export default function OrderHistory() {
         })
       }
     } catch (error) {
-      console.error('Error converting quote:', error)
       toast({
         title: 'Error',
         description: 'Failed to convert quote',

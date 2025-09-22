@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ rates })
   } catch (error) {
-    console.error('Shipping rates API error:', error)
     return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
   }
 }

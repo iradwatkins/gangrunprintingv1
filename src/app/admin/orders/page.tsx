@@ -426,7 +426,6 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
     </div>
   )
   } catch (error) {
-    console.error('Error fetching orders:', error)
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-between">

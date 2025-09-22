@@ -101,8 +101,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       { status: 200 }
     )
   } catch (error) {
-    console.error('[AddOn Set Assignment] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to assign addon set', details: error },
       { status: 500 }
@@ -150,8 +148,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       { status: 200 }
     )
   } catch (error) {
-    console.error('[Get AddOn Sets] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to fetch addon sets', details: error },
       { status: 500 }
@@ -193,8 +189,6 @@ export async function DELETE(
       { status: 200 }
     )
   } catch (error) {
-    console.error('[Delete AddOn Set Assignment] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to remove addon set', details: error },
       { status: 500 }

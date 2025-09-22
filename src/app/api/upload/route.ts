@@ -92,7 +92,6 @@ export async function POST(request: NextRequest) {
       size: file.size,
     })
   } catch (error) {
-    console.error('Upload error:', error)
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
   }
 }
@@ -117,7 +116,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   } catch (error) {
-    console.error('Presigned URL error:', error)
     return NextResponse.json({ error: 'Failed to generate upload URL' }, { status: 500 })
   }
 }

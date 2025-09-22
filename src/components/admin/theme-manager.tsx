@@ -77,7 +77,6 @@ export function ThemeManager() {
         setThemes(data)
       }
     } catch (error) {
-      console.error('Error fetching themes:', error)
       toast({
         title: 'Error',
         description: 'Failed to fetch themes',
@@ -143,7 +142,6 @@ export function ThemeManager() {
         throw new Error('Failed to upload theme')
       }
     } catch (error) {
-      console.error('Error uploading theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to upload theme',
@@ -181,7 +179,6 @@ export function ThemeManager() {
         }, 1000)
       }
     } catch (error) {
-      console.error('Error activating theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to activate theme',
@@ -208,7 +205,6 @@ export function ThemeManager() {
         })
       }
     } catch (error) {
-      console.error('Error deleting theme:', error)
       toast({
         title: 'Error',
         description: 'Failed to delete theme',

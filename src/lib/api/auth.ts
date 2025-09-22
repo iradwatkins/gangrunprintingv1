@@ -47,7 +47,6 @@ export function withAuth(
 
       return await handler(request, context, { user, session })
     } catch (error) {
-      console.error('Auth middleware error:', error)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
   }

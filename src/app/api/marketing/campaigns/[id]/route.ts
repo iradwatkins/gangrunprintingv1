@@ -16,7 +16,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(campaign)
   } catch (error) {
-    console.error('Error fetching campaign:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -33,7 +32,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(campaign)
   } catch (error) {
-    console.error('Error updating campaign:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -49,7 +47,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting campaign:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

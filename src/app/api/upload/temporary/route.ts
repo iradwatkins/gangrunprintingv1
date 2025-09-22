@@ -81,7 +81,6 @@ async function generateThumbnail(buffer: Buffer, mimeType: string): Promise<Buff
       .jpeg({ quality: 80 })
       .toBuffer()
   } catch (error) {
-    console.error('Thumbnail generation failed:', error)
     return null
   }
 }
@@ -221,7 +220,6 @@ export async function POST(request: NextRequest) {
       uploadedAt: uploadTimestamp,
     })
   } catch (error) {
-    console.error('Temporary upload error:', error)
     return NextResponse.json(
       {
         error: 'Failed to upload files. Please try again.',

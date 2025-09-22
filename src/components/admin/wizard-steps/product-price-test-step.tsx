@@ -111,8 +111,7 @@ export function ProductPriceTestStep({
         }
       }
     } catch (error) {
-      console.error('Failed to fetch quantities and sizes:', error)
-    }
+      }
   }
 
   const calculateTestPrice = async () => {
@@ -159,8 +158,7 @@ export function ProductPriceTestStep({
 
       setCalculatedPrice(total)
     } catch (error) {
-      console.error('Price calculation failed:', error)
-    } finally {
+      } finally {
       setIsCalculating(false)
     }
   }

@@ -92,7 +92,6 @@ export class AutoTranslationService {
           : undefined,
       }
     } catch (error) {
-      console.error('OpenAI translation error:', error)
       throw new Error(
         `Translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
@@ -217,7 +216,6 @@ export class AutoTranslationService {
           )
           results.translated++
         } catch (error) {
-          console.error(`Error translating ${source.namespace}.${source.key}:`, error)
           results.errors.push(
             `${source.namespace}.${source.key}: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
@@ -229,7 +227,6 @@ export class AutoTranslationService {
 
       results.skipped = sourceTranslations.length - missingTranslations.length
     } catch (error) {
-      console.error('Batch translation error:', error)
       results.errors.push(
         `Batch operation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )

@@ -13,7 +13,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     return NextResponse.json({ success: true, message: 'Campaign sent successfully' })
   } catch (error) {
-    console.error('Error sending campaign:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

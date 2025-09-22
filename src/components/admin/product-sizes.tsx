@@ -83,7 +83,6 @@ export function ProductSizes({
         setAvailableSizes(sizesData)
       }
     } catch (error) {
-      console.error('Error fetching data:', error)
       toast.error('Failed to load sizes')
     } finally {
       setLoading(false)

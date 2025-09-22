@@ -82,7 +82,6 @@ export const getTenantInfo = cache(async (identifier: string): Promise<TenantInf
 
     return null
   } catch (error) {
-    console.error('Error resolving tenant:', error)
     return null
   } finally {
     await prisma.$disconnect()
@@ -164,7 +163,6 @@ export async function getCurrentTenant(): Promise<TenantContext | null> {
 
     return await resolveTenantContext(host)
   } catch (error) {
-    console.error('Error getting current tenant:', error)
     return null
   }
 }

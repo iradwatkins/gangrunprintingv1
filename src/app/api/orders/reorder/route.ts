@@ -79,7 +79,6 @@ export async function POST(request: NextRequest) {
         'Order data loaded. Please review and update any necessary information before placing the new order.',
     })
   } catch (error) {
-    console.error('Error preparing re-order:', error)
     return NextResponse.json({ error: 'Failed to prepare re-order' }, { status: 500 })
   }
 }
@@ -126,7 +125,6 @@ export async function GET(request: NextRequest) {
       reorderableOrders: orders,
     })
   } catch (error) {
-    console.error('Error fetching re-orderable orders:', error)
     return NextResponse.json({ error: 'Failed to fetch re-orderable orders' }, { status: 500 })
   }
 }

@@ -69,7 +69,6 @@ export default function ProductsPage() {
         toast.error('Failed to load products')
       }
     } catch (error) {
-      console.error('Error fetching products:', error)
       toast.error('Failed to load products')
     } finally {
       setLoading(false)
@@ -91,7 +90,6 @@ export default function ProductsPage() {
         throw new Error('Failed to delete product')
       }
     } catch (error) {
-      console.error('Error deleting product:', error)
       toast.error('Failed to delete product')
     }
   }
@@ -111,7 +109,6 @@ export default function ProductsPage() {
         throw new Error('Failed to update product')
       }
     } catch (error) {
-      console.error('Error updating product:', error)
       toast.error('Failed to update product')
     }
   }
@@ -131,7 +128,6 @@ export default function ProductsPage() {
         throw new Error('Failed to update product')
       }
     } catch (error) {
-      console.error('Error updating product:', error)
       toast.error('Failed to update product')
     }
   }
@@ -151,7 +147,6 @@ export default function ProductsPage() {
         throw new Error(error.error || 'Failed to duplicate product')
       }
     } catch (error) {
-      console.error('Error duplicating product:', error)
       toast.error('Failed to duplicate product')
     }
   }

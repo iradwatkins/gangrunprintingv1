@@ -155,7 +155,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
         toast.success(`${file.name} uploaded successfully`)
       } catch (error) {
-        console.error('Upload error:', error)
         toast.error(`Failed to upload ${file.name}`)
       }
     }
@@ -178,7 +177,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       setCustomerImages((prev) => prev.filter((img) => img.id !== imageId))
       toast.success('Image deleted successfully')
     } catch (error) {
-      console.error('Delete error:', error)
       toast.error('Failed to delete image')
     }
   }

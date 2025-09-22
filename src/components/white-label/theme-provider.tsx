@@ -28,7 +28,6 @@ export function ThemeProvider({ children, tenant }: ThemeProviderProps) {
         const compiledTheme = themeEngine.generateTheme(tenant)
         setTheme(compiledTheme)
       } catch (error) {
-        console.error('Error generating theme:', error)
         // Fallback to default theme
         const themeEngine = ThemeEngine.getInstance()
         const defaultTheme = themeEngine.generateTheme(null)
@@ -129,8 +128,7 @@ function loadCustomFonts(fonts: string[]) {
           loadedFonts.add(fontFamily)
         })
         .catch((error) => {
-          console.warn(`Failed to load font ${fontFamily}:`, error)
-        })
+          })
     }
   })
 }

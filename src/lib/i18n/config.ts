@@ -83,14 +83,11 @@ async function getMessages(locale: string, tenantId?: string) {
       await prisma.$disconnect()
     }
   } catch (error) {
-    console.error(`Error loading messages for locale ${locale}:`, error)
-
     // Fallback to English if available
     if (locale !== 'en') {
       try {
         return (await import(`../../../messages/en.json`)).default
       } catch (fallbackError) {
-        console.error('Error loading fallback messages:', fallbackError)
         return {}
       }
     }

@@ -63,7 +63,6 @@ export function ImageUpload({
         throw new Error('Upload failed')
       }
     } catch (error) {
-      console.error('Upload error:', error)
       alert('Failed to upload image')
     } finally {
       setIsUploading(false)

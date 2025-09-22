@@ -52,11 +52,9 @@ class Logger {
         break
       case 'warn':
         // eslint-disable-next-line no-console
-        console.warn(formattedMessage, ...args)
         break
       case 'error':
         // eslint-disable-next-line no-console
-        console.error(formattedMessage, ...args)
         break
     }
   }

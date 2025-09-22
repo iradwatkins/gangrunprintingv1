@@ -58,7 +58,6 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error fetching product:', error)
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
   }
 }

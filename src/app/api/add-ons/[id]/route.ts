@@ -31,7 +31,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(addOn)
   } catch (error) {
-    console.error('Error fetching add-on:', error)
     return NextResponse.json({ error: 'Failed to fetch add-on' }, { status: 500 })
   }
 }
@@ -108,7 +107,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(updatedAddOn)
   } catch (error) {
-    console.error('Error updating add-on:', error)
     return NextResponse.json({ error: 'Failed to update add-on' }, { status: 500 })
   }
 }
@@ -127,7 +125,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     return NextResponse.json(addOn)
   } catch (error) {
-    console.error('Error updating add-on:', error)
     return NextResponse.json({ error: 'Failed to update add-on' }, { status: 500 })
   }
 }
@@ -164,7 +161,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Add-on deleted successfully' })
   } catch (error) {
-    console.error('Error deleting add-on:', error)
     return NextResponse.json({ error: 'Failed to delete add-on' }, { status: 500 })
   }
 }

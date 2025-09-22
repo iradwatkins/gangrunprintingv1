@@ -210,7 +210,6 @@ export class ThemeManager {
       const filePath = path.join(this.themesDir, 'custom-theme.css')
       await fs.writeFile(filePath, css, 'utf-8')
     } catch (error) {
-      console.error('Error saving theme CSS:', error)
       throw error
     }
   }
@@ -314,9 +313,7 @@ export class ThemeManager {
       // Write updated globals.css
       await fs.writeFile(globalsPath, cssContent, 'utf-8')
 
-      console.warn('Updated globals.css with new theme:', theme.name)
-    } catch (error) {
-      console.error('Error updating globals.css:', error)
+      } catch (error) {
       throw error
     }
   }

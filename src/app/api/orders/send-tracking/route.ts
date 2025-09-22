@@ -155,7 +155,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Tracking email sent' })
   } catch (error) {
-    console.error('Error sending tracking email:', error)
     return NextResponse.json({ error: 'Failed to send tracking email' }, { status: 500 })
   }
 }

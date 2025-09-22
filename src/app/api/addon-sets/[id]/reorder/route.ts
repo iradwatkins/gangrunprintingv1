@@ -58,7 +58,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(updatedAddOnSet)
   } catch (error) {
-    console.error('Error reordering addon set items:', error)
     return NextResponse.json({ error: 'Failed to reorder addon set items' }, { status: 500 })
   }
 }

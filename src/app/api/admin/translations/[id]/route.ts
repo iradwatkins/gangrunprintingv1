@@ -29,7 +29,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(translation)
   } catch (error) {
-    console.error('Error updating translation:', error)
     return NextResponse.json({ error: 'Failed to update translation' }, { status: 500 })
   }
 }
@@ -47,7 +46,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting translation:', error)
     return NextResponse.json({ error: 'Failed to delete translation' }, { status: 500 })
   }
 }

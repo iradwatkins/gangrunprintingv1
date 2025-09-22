@@ -184,14 +184,12 @@ async function seedCategories() {
         },
       })
     } catch (error) {
-      console.error(`✗ Error with category ${category.name}:`, error)
-    }
+      }
   }
 }
 
 seedCategories()
   .catch((e) => {
-    console.error('Error seeding categories:', e)
     process.exit(1)
   })
   .finally(async () => {

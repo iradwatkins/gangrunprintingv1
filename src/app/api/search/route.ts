@@ -168,7 +168,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Search error:', error)
     return NextResponse.json({ error: 'Failed to search products' }, { status: 500 })
   }
 }
@@ -312,7 +311,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(suggestions)
   } catch (error) {
-    console.error('Autocomplete error:', error)
     return NextResponse.json({ error: 'Failed to get suggestions' }, { status: 500 })
   }
 }

@@ -242,8 +242,7 @@ export function AddStaffDialog() {
       })
       setOpen(false)
     } catch (error) {
-      console.error('Failed to create staff member:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }
