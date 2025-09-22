@@ -3,6 +3,14 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+import {
+  createSuccessResponse,
+  createErrorResponse,
+  createValidationErrorResponse,
+  createDatabaseErrorResponse,
+  createAuthErrorResponse,
+  generateRequestId,
+} from '@/lib/api-response'
 
 // Comprehensive Zod schema for product creation
 const createProductSchema = z.object({
@@ -33,7 +41,7 @@ const createProductSchema = z.object({
       })
     )
     .default([]),
-  paperStockSetId: z.string().cuid('Paper stock set ID must be valid'),
+  paperStockSetId: z.string().min(1, 'Paper stock set ID is required'),
   quantityGroupId: z.string().cuid('Quantity group ID must be valid'),
   sizeGroupId: z.string().cuid('Size group ID must be valid'),
   selectedAddOns: z.array(z.string().cuid()).default([]),
@@ -47,7 +55,7 @@ const createProductSchema = z.object({
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {
-  const requestId = Math.random().toString(36).substring(7)
+  const requestId = generateRequestId()
   const startTime = Date.now()
 
   try {
@@ -136,67 +144,33 @@ export async function GET(request: NextRequest) {
 
     const responseTime = Date.now() - startTime
 
-    return NextResponse.json(products, {
-      headers: {
-        'X-Request-ID': requestId,
-        'X-Response-Time': responseTime.toString(),
-      },
-    })
+    // Transform to match frontend expectations (PascalCase property names)
+    const transformedProducts = products.map((product) => ({
+      ...product,
+      ProductCategory: product.productCategory,
+      ProductImage: product.productImages, // Note: ProductImage without 's' for frontend compatibility
+      // Keep the originals for backward compatibility
+      productCategory: product.productCategory,
+      productImages: product.productImages,
+    }))
+
+    return createSuccessResponse(
+      transformedProducts,
+      200,
+      { count: transformedProducts.length },
+      requestId
+    )
   } catch (error: any) {
     const responseTime = Date.now() - startTime
-    const errorDetails = {
-      requestId,
-      message: error.message,
-      code: error.code,
-      name: error.name,
-      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
-      responseTime,
-      timestamp: new Date().toISOString(),
-    }
+    console.error(`[${requestId}] Products fetch error (${responseTime}ms):`, error)
 
-    console.error(`[${requestId}] === PRODUCTS API ERROR ===`)
-    console.error(`[${requestId}] Error details:`, errorDetails)
-
-    // Check for specific database errors
-    if (error.code === 'P1001' || error.code === 'P1008' || error.code === 'P1009') {
-      console.error(`[${requestId}] Database connection error detected`)
-      return NextResponse.json(
-        {
-          error: 'Database connection error',
-          requestId,
-          timestamp: new Date().toISOString(),
-        },
-        { status: 503 }
-      )
-    }
-
-    // Check for timeout errors
-    if (error.name === 'PrismaClientUnknownRequestError' || error.message.includes('timeout')) {
-      console.error(`[${requestId}] Database timeout error detected`)
-      return NextResponse.json(
-        {
-          error: 'Database timeout error',
-          requestId,
-          timestamp: new Date().toISOString(),
-        },
-        { status: 504 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch products',
-        requestId,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    )
+    return createDatabaseErrorResponse(error, requestId)
   }
 }
 
 // POST /api/products - Create new product
 export async function POST(request: NextRequest) {
-  const requestId = Math.random().toString(36).substring(7)
+  const requestId = generateRequestId()
 
   try {
     const { user, session } = await validateRequest()
@@ -207,7 +181,7 @@ export async function POST(request: NextRequest) {
         hasUser: !!user,
         userRole: user?.role,
       })
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
+      return createAuthErrorResponse('Admin access required', requestId)
     }
 
     let rawData
@@ -215,7 +189,7 @@ export async function POST(request: NextRequest) {
       rawData = await request.json()
     } catch (parseError) {
       console.error(`[${requestId}] JSON parse failed:`, parseError)
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+      return createErrorResponse('Invalid JSON request body', 400, null, requestId)
     }
 
     let data
@@ -224,18 +198,9 @@ export async function POST(request: NextRequest) {
     } catch (validationError) {
       console.error(`[${requestId}] Validation failed:`, validationError)
       if (validationError instanceof z.ZodError) {
-        return NextResponse.json(
-          {
-            error: 'Validation failed',
-            details: validationError.errors.map((err) => ({
-              field: err.path.join('.'),
-              message: err.message,
-            })),
-          },
-          { status: 400 }
-        )
+        return createValidationErrorResponse(validationError.errors, requestId)
       }
-      return NextResponse.json({ error: 'Data validation failed' }, { status: 400 })
+      return createErrorResponse('Data validation failed', 400, null, requestId)
     }
 
     const {
@@ -271,33 +236,24 @@ export async function POST(request: NextRequest) {
       ])
 
       if (!category) {
-        return NextResponse.json({ error: `Category not found: ${categoryId}` }, { status: 400 })
+        return createErrorResponse(`Category not found: ${categoryId}`, 400, null, requestId)
       }
       if (!paperStockSet) {
-        return NextResponse.json(
-          { error: `Paper stock set not found: ${paperStockSetId}` },
-          { status: 400 }
-        )
+        return createErrorResponse(`Paper stock set not found: ${paperStockSetId}`, 400, null, requestId)
       }
       if (!quantityGroup) {
-        return NextResponse.json(
-          { error: `Quantity group not found: ${quantityGroupId}` },
-          { status: 400 }
-        )
+        return createErrorResponse(`Quantity group not found: ${quantityGroupId}`, 400, null, requestId)
       }
       if (!sizeGroup) {
-        return NextResponse.json({ error: `Size group not found: ${sizeGroupId}` }, { status: 400 })
+        return createErrorResponse(`Size group not found: ${sizeGroupId}`, 400, null, requestId)
       }
       if (selectedAddOns.length > 0 && addOns.length !== selectedAddOns.length) {
         const missing = selectedAddOns.filter((id) => !addOns.find((ao) => ao.id === id))
-        return NextResponse.json(
-          { error: `Add-ons not found: ${missing.join(', ')}` },
-          { status: 400 }
-        )
+        return createErrorResponse(`Add-ons not found: ${missing.join(', ')}`, 400, null, requestId)
       }
     } catch (validationError) {
       console.error(`[${requestId}] Foreign key validation error:`, validationError)
-      return NextResponse.json({ error: 'Database validation error' }, { status: 500 })
+      return createDatabaseErrorResponse(validationError, requestId)
     }
 
     const slug = name
@@ -305,9 +261,11 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
 
+    // Create product with optimized transaction
     const product = await prisma.$transaction(
       async (tx) => {
-        return await tx.product.create({
+        // Step 1: Create the base product first
+        const newProduct = await tx.product.create({
           data: {
             id: randomUUID(),
             name,
@@ -324,62 +282,86 @@ export async function POST(request: NextRequest) {
             rushAvailable,
             rushDays,
             rushFee,
-
-            // Create images if provided
-            productImages:
-              images.length > 0
-                ? {
-                    create: images.map((img: any, index: number) => ({
-                      url: img.url,
-                      thumbnailUrl: img.thumbnailUrl || img.url,
-                      alt: img.alt || name,
-                      caption: img.caption,
-                      isPrimary: img.isPrimary || index === 0,
-                      sortOrder: index,
-                      width: img.width,
-                      height: img.height,
-                      fileSize: img.fileSize,
-                      mimeType: img.mimeType,
-                    })),
-                  }
-                : undefined,
-
-            // Create paper stock set association
-            productPaperStockSets: {
-              create: {
-                paperStockSetId: paperStockSetId,
-                isDefault: true,
-              },
-            },
-
-            // Create quantity group association
-            productQuantityGroups: quantityGroupId
-              ? {
-                  create: {
-                    quantityGroupId: quantityGroupId,
-                  },
-                }
-              : undefined,
-
-            // Create size group association
-            productSizeGroups: sizeGroupId
-              ? {
-                  create: {
-                    sizeGroupId: sizeGroupId,
-                  },
-                }
-              : undefined,
-
-            // Create add-on associations
-            productAddOns:
-              selectedAddOns.length > 0
-                ? {
-                    create: selectedAddOns.map((addOnId: string) => ({
-                      addOnId,
-                    })),
-                  }
-                : undefined,
           },
+        })
+
+        // Step 2: Create relationships in parallel for better performance
+        const relationshipPromises = []
+
+        // Paper stock set (required)
+        relationshipPromises.push(
+          tx.productPaperStockSet.create({
+            data: {
+              productId: newProduct.id,
+              paperStockSetId: paperStockSetId,
+              isDefault: true,
+            },
+          })
+        )
+
+        // Quantity group (required)
+        if (quantityGroupId) {
+          relationshipPromises.push(
+            tx.productQuantityGroup.create({
+              data: {
+                productId: newProduct.id,
+                quantityGroupId: quantityGroupId,
+              },
+            })
+          )
+        }
+
+        // Size group (required)
+        if (sizeGroupId) {
+          relationshipPromises.push(
+            tx.productSizeGroup.create({
+              data: {
+                productId: newProduct.id,
+                sizeGroupId: sizeGroupId,
+              },
+            })
+          )
+        }
+
+        // Add-ons (optional)
+        if (selectedAddOns.length > 0) {
+          relationshipPromises.push(
+            tx.productAddOn.createMany({
+              data: selectedAddOns.map((addOnId: string) => ({
+                productId: newProduct.id,
+                addOnId,
+              })),
+            })
+          )
+        }
+
+        // Images (optional)
+        if (images.length > 0) {
+          relationshipPromises.push(
+            tx.productImage.createMany({
+              data: images.map((img: any, index: number) => ({
+                productId: newProduct.id,
+                url: img.url,
+                thumbnailUrl: img.thumbnailUrl || img.url,
+                alt: img.alt || name,
+                caption: img.caption,
+                isPrimary: img.isPrimary || index === 0,
+                sortOrder: index,
+                width: img.width,
+                height: img.height,
+                fileSize: img.fileSize,
+                mimeType: img.mimeType,
+              })),
+            })
+          )
+        }
+
+        // Wait for all relationships to be created
+        await Promise.all(relationshipPromises)
+
+        // Return the complete product with all relationships
+        return await tx.product.findUnique({
+          where: { id: newProduct.id },
           include: {
             productCategory: true,
             productImages: true,
@@ -415,73 +397,25 @@ export async function POST(request: NextRequest) {
         })
       },
       {
-        timeout: 30000,
-        maxWait: 5000,
+        timeout: 15000, // Reduced timeout for faster failure
+        maxWait: 3000,
       }
     )
 
-    return NextResponse.json(product, { status: 201 })
+    return createSuccessResponse(product, 201, null, requestId)
   } catch (error: any) {
-    console.error(`[${requestId}] === PRODUCT CREATION ERROR ===`)
-    console.error(`[${requestId}] Error details:`, {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
-    })
+    console.error(`[${requestId}] Product creation error:`, error)
 
     // Handle transaction timeouts
     if (error.name === 'TransactionTimeout') {
-      return NextResponse.json(
-        { error: 'Product creation timed out. Please try again.', requestId },
-        { status: 408 }
+      return createErrorResponse(
+        'Product creation timed out. Please try again.',
+        408,
+        { timeout: true },
+        requestId
       )
     }
 
-    // Check for unique constraint violations
-    if (error.code === 'P2002') {
-      const field = error.meta?.target?.[0]
-      return NextResponse.json(
-        { error: `A product with this ${field} already exists`, field },
-        { status: 400 }
-      )
-    }
-
-    // Check for foreign key constraint violations
-    if (error.code === 'P2003') {
-      return NextResponse.json(
-        {
-          error: 'Invalid reference: One or more selected items do not exist',
-          details: error.meta,
-        },
-        { status: 400 }
-      )
-    }
-
-    // Check for required field violations
-    if (error.code === 'P2012') {
-      return NextResponse.json(
-        { error: 'Missing required fields', details: error.meta },
-        { status: 400 }
-      )
-    }
-
-    // Check for connection errors
-    if (error.code === 'P1001' || error.code === 'P1008' || error.code === 'P1009') {
-      return NextResponse.json(
-        { error: 'Database connection error. Please try again later.' },
-        { status: 503 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Failed to create product',
-        details: error.message,
-        requestId,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    )
+    return createDatabaseErrorResponse(error, requestId)
   }
 }

@@ -1,28 +1,61 @@
 module.exports = {
   apps: [{
     name: 'gangrunprinting',
-    script: 'server.js',
+    script: 'npm',
+    args: 'start',
     cwd: '/root/websites/gangrunprinting',
     instances: 1,
     exec_mode: 'fork',
     autorestart: true,
     watch: false,
-    max_memory_restart: '500M',
+    max_memory_restart: '1G',
     min_uptime: '10s',
-    max_restarts: 5,
+    max_restarts: 10,
     restart_delay: 4000,
     exp_backoff_restart_delay: 100,
     env: {
       NODE_ENV: 'production',
-      PORT: 3002
+      PORT: 3002,
+
+      // Domain Configuration
+      DOMAIN: 'gangrunprinting.com',
+      NEXTAUTH_URL: 'https://gangrunprinting.com',
+      NEXT_PUBLIC_APP_URL: 'https://gangrunprinting.com',
+
+      // Database Configuration
+      DATABASE_URL: 'postgresql://gangrun_user:GangRun2024Secure@172.22.0.1:5432/gangrun_db?schema=public',
+
+      // Authentication
+      AUTH_SECRET: 'gangrun_super_secret_auth_key_2024_production_ready',
+      AUTH_GOOGLE_ID: '180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com',
+      AUTH_GOOGLE_SECRET: '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',
+      AUTH_TRUST_HOST: 'true',
+
+      // Email Configuration
+      RESEND_API_KEY: 're_NAboMkAf_EB32drAqr5xG6YqrtKNkspee',
+      RESEND_FROM_EMAIL: 'noreply@gangrunprinting.com',
+      RESEND_FROM_NAME: 'GangRun Printing',
+
+      // Redis Configuration
+      REDIS_URL: 'redis://localhost:6379',
+      REDIS_PASSWORD: '',
+
+      // MinIO/S3 Configuration for File Storage
+      MINIO_ENDPOINT: 'localhost',
+      MINIO_PUBLIC_ENDPOINT: 'https://gangrunprinting.com/minio',
+      MINIO_PORT: '9000',
+      MINIO_ACCESS_KEY: 'gangrun_minio_access',
+      MINIO_SECRET_KEY: 'gangrun_minio_secret_2024',
+      MINIO_USE_SSL: 'false',
+      MINIO_BUCKET_NAME: 'gangrun-uploads'
     },
     error_file: '/root/.pm2/logs/gangrunprinting-error.log',
     out_file: '/root/.pm2/logs/gangrunprinting-out.log',
     log_file: '/root/.pm2/logs/gangrunprinting-combined.log',
     time: true,
     merge_logs: true,
-    kill_timeout: 10000,
-    listen_timeout: 10000,
+    kill_timeout: 15000,
+    listen_timeout: 15000,
     shutdown_with_message: true
   }]
 }

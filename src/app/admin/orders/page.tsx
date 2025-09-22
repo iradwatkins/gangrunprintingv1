@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -100,15 +101,15 @@ interface OrdersPageProps {
   }>
 }
 
-export default async function OrdersPage({ searchParams }: OrdersPageProps) {
-  const params = await searchParams
-  const page = Number(params?.page) || 1
+async function OrdersContent({ searchParams }: { searchParams: any }) {
+  const page = Number(searchParams?.page) || 1
   const pageSize = 20
-  const statusFilter = params?.status || 'all'
-  const searchQuery = params?.search || ''
+  const statusFilter = searchParams?.status || 'all'
+  const searchQuery = searchParams?.search || ''
 
-  // Build where clause for filtering
-  const where: any = {}
+  try {
+    // Build where clause for filtering
+    const where: any = {}
 
   if (statusFilter !== 'all') {
     where.status = statusFilter
@@ -117,8 +118,8 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   if (searchQuery) {
     where.OR = [
       { orderNumber: { contains: searchQuery, mode: 'insensitive' } },
-      { user: { email: { contains: searchQuery, mode: 'insensitive' } } },
-      { user: { name: { contains: searchQuery, mode: 'insensitive' } } },
+      { email: { contains: searchQuery, mode: 'insensitive' } },
+      { phone: { contains: searchQuery, mode: 'insensitive' } },
     ]
   }
 
@@ -127,13 +128,6 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     prisma.order.findMany({
       where,
       include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
         OrderItem: true,
         _count: {
           select: {
@@ -235,7 +229,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           <CardContent>
             <div className="text-2xl font-bold">
               $
-              {((revenue._sum.total || 0) / 100).toLocaleString('en-US', {
+              {(revenue._sum.total || 0).toLocaleString('en-US', {
                 minimumFractionDigits: 2,
               })}
             </div>
@@ -326,8 +320,10 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{order.user?.name || 'Guest'}</p>
-                            <p className="text-sm text-muted-foreground">{order.user?.email}</p>
+                            <p className="font-medium">{order.email || 'Guest'}</p>
+                            {order.phone && (
+                              <p className="text-sm text-muted-foreground">{order.phone}</p>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -335,7 +331,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                             <p className="font-medium">{order._count.OrderItem} items</p>
                             {order.OrderItem[0] && (
                               <p className="text-sm text-muted-foreground">
-                                {order.OrderItem[0].product?.name}
+                                {order.OrderItem[0].productName}
                                 {order.OrderItem.length > 1 &&
                                   ` +${order.OrderItem.length - 1} more`}
                               </p>
@@ -343,7 +339,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          ${(order.total / 100).toFixed(2)}
+                          ${order.total.toFixed(2)}
                         </TableCell>
                         <TableCell>
                           <Badge className={`${status.color} gap-1`}>
@@ -428,5 +424,60 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         </CardContent>
       </Card>
     </div>
+  )
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+            <p className="text-muted-foreground mt-2">Manage and track all printing orders</p>
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-12">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <AlertCircle className="h-12 w-12 text-destructive" />
+              <h2 className="text-xl font-semibold">Failed to Load Orders</h2>
+              <p className="text-muted-foreground text-center max-w-md">
+                There was an error loading the orders. Please check your database connection and try again.
+              </p>
+              <Button onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+}
+
+export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+  const params = await searchParams
+
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+              <p className="text-muted-foreground mt-2">Loading orders...</p>
+            </div>
+          </div>
+          <Card>
+            <CardContent className="p-12">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <OrdersContent searchParams={params} />
+    </Suspense>
   )
 }

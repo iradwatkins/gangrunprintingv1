@@ -50,7 +50,7 @@ type ProductCategory = {
   sortOrder: number
   isActive: boolean
   _count: {
-    Product: number
+    products: number
   }
 }
 
@@ -63,13 +63,20 @@ type Product = {
   basePrice: number
   isActive: boolean
   isFeatured: boolean
-  ProductCategory: ProductCategory
-  ProductImage: Array<{
+  productCategory?: ProductCategory
+  ProductCategory?: ProductCategory // For backward compatibility
+  productImages?: Array<{
     url: string
     thumbnailUrl?: string
     alt?: string
     isPrimary: boolean
   }>
+  ProductImage?: Array<{
+    url: string
+    thumbnailUrl?: string
+    alt?: string
+    isPrimary: boolean
+  }> // For backward compatibility
 }
 const sortOptions = [
   { label: 'Featured', value: 'featured' },
@@ -156,9 +163,10 @@ function ProductsPageContent() {
           product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
 
       // Filter by selected categories OR selected individual products
+      const category = product.productCategory || product.ProductCategory
       const matchesSelection =
         (selectedCategories.length === 0 && selectedProducts.length === 0) ||
-        selectedCategories.includes(product.ProductCategory.name) ||
+        (category && selectedCategories.includes(category.name)) ||
         selectedProducts.includes(product.id)
 
       return matchesSearch && matchesSelection
@@ -186,7 +194,10 @@ function ProductsPageContent() {
     // Clear any individually selected products from this category when toggling category
     if (!selectedCategories.includes(category)) {
       const categoryProducts = products
-        .filter((p) => p.ProductCategory.name === category)
+        .filter((p) => {
+          const cat = p.productCategory || p.ProductCategory
+          return cat && cat.name === category
+        })
         .map((p) => p.id)
       setSelectedProducts((prev) => prev.filter((id) => !categoryProducts.includes(id)))
     }
@@ -216,7 +227,11 @@ function ProductsPageContent() {
   const productsByCategory = useMemo(() => {
     const grouped: Record<string, Product[]> = {}
     products.forEach((product) => {
-      const categoryName = product.ProductCategory.name
+      // Skip products without a category
+      const category = product.productCategory || product.ProductCategory
+      if (!category || !category.name) return
+
+      const categoryName = category.name
       if (!grouped[categoryName]) {
         grouped[categoryName] = []
       }
@@ -230,9 +245,10 @@ function ProductsPageContent() {
       {/* Categories with Product Dropdowns */}
       <div className="space-y-2">
         {categories
-          .filter((category) => category.isActive)
-          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .filter((category) => category && category.isActive)
+          .sort((a, b) => (a?.sortOrder || 0) - (b?.sortOrder || 0))
           .map((category) => {
+            if (!category || !category.name) return null
             const categoryProducts = productsByCategory[category.name] || []
             const isExpanded = expandedCategories.includes(category.id)
 
@@ -252,7 +268,7 @@ function ProductsPageContent() {
                   >
                     {category.name}
                     <span className="text-xs text-muted-foreground ml-1">
-                      ({category._count.Product})
+                      ({category._count?.products || 0})
                     </span>
                   </Label>
                   <Button
@@ -273,22 +289,25 @@ function ProductsPageContent() {
                 <Collapsible open={isExpanded}>
                   <CollapsibleContent className="px-6 pb-3">
                     <div className="space-y-2 border-t pt-2">
-                      {categoryProducts.map((product) => (
-                        <div key={product.id} className="flex items-center space-x-2 pl-4">
-                          <Checkbox
-                            checked={selectedProducts.includes(product.id)}
-                            className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                            id={`product-${product.id}`}
-                            onCheckedChange={() => toggleProduct(product.id)}
-                          />
-                          <Label
-                            className="text-xs font-normal cursor-pointer text-muted-foreground"
-                            htmlFor={`product-${product.id}`}
-                          >
-                            {product.name}
-                          </Label>
-                        </div>
-                      ))}
+                      {categoryProducts.map((product) => {
+                        if (!product || !product.id || !product.name) return null
+                        return (
+                          <div key={product.id} className="flex items-center space-x-2 pl-4">
+                            <Checkbox
+                              checked={selectedProducts.includes(product.id)}
+                              className="border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                              id={`product-${product.id}`}
+                              onCheckedChange={() => toggleProduct(product.id)}
+                            />
+                            <Label
+                              className="text-xs font-normal cursor-pointer text-muted-foreground"
+                              htmlFor={`product-${product.id}`}
+                            >
+                              {product.name}
+                            </Label>
+                          </div>
+                        )
+                      })}
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
@@ -484,8 +503,8 @@ function ProductsPageContent() {
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {sortedProducts.map((product) => {
-                const primaryImage =
-                  product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
+                const images = product.productImages || product.ProductImage || []
+                const primaryImage = images.find((img) => img.isPrimary) || images[0]
                 return (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
@@ -514,7 +533,7 @@ function ProductsPageContent() {
                           {product.name}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {product.ProductCategory.name}
+                          {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
                         </p>
                         <p className="text-sm mb-3 line-clamp-2">
                           {product.shortDescription || product.description}
@@ -536,8 +555,8 @@ function ProductsPageContent() {
           ) : (
             <div className="space-y-4">
               {sortedProducts.map((product) => {
-                const primaryImage =
-                  product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
+                const images = product.productImages || product.ProductImage || []
+                const primaryImage = images.find((img) => img.isPrimary) || images[0]
                 return (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
@@ -569,7 +588,7 @@ function ProductsPageContent() {
                                 {product.name}
                               </h3>
                               <p className="text-sm text-muted-foreground mb-2">
-                                {product.ProductCategory.name}
+                                {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
                               </p>
                               <p className="text-sm mb-3">
                                 {product.shortDescription || product.description}

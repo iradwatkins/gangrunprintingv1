@@ -49,16 +49,16 @@ export interface ImageProcessingOptions {
 }
 
 const DEFAULT_OPTIONS: ImageProcessingOptions = {
-  quality: 75, // Reduced default quality for better compression
+  quality: 70, // Further reduced for faster processing
   thumbnailSize: IMAGE_SIZES.THUMBNAIL,
   mediumSize: IMAGE_SIZES.MEDIUM,
   largeSize: IMAGE_SIZES.LARGE,
   generateWebP: true,
-  generateAVIF: true, // Enable AVIF by default
+  generateAVIF: false, // Disable AVIF for faster uploads
   generateBlurPlaceholder: true,
   productProfile: 'DEFAULT',
-  enableContentAnalysis: true,
-  maxDimension: 1200, // Cap dimensions aggressively
+  enableContentAnalysis: false, // Disable for faster processing
+  maxDimension: 1000, // More aggressive dimension cap
 }
 
 /**
@@ -143,6 +143,21 @@ export async function processProductImage(
   const opts = { ...DEFAULT_OPTIONS, ...options }
   const originalSize = buffer.length
 
+  // Add timeout to prevent hangs - 15 seconds max for faster failure
+  return Promise.race([
+    processImageInternal(buffer, fileName, opts, originalSize),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Image processing timeout after 15 seconds')), 15000)
+    )
+  ])
+}
+
+async function processImageInternal(
+  buffer: Buffer,
+  fileName: string,
+  opts: ImageProcessingOptions & { maxDimension?: number; productProfile?: string },
+  originalSize: number
+): Promise<ProcessedImage> {
   try {
     // Get original image metadata
     const metadata = await sharp(buffer).metadata()
@@ -218,42 +233,29 @@ export async function processProductImage(
       .jpeg({ quality: profile.thumbnailQuality, progressive: true })
       .toBuffer()
 
-    // Generate WebP version
+    // Generate WebP version (optimized for speed)
     let webp: Buffer = Buffer.from([])
     if (opts.generateWebP) {
       webp = await baseImage
         .clone()
         .webp({
-          quality: Math.max(finalQuality - 5, 65),
-          effort: 6, // Higher effort for better compression
+          quality: Math.max(finalQuality - 10, 60), // More aggressive compression
+          effort: 2, // Fastest processing
         })
         .toBuffer()
     }
 
-    // Generate AVIF version (best compression)
+    // Skip AVIF generation entirely for faster uploads
     let avif: Buffer = Buffer.from([])
-    if (opts.generateAVIF) {
-      try {
-        avif = await baseImage
-          .clone()
-          .avif({
-            quality: Math.max(finalQuality - 15, 50),
-            effort: 9, // Maximum effort for best compression
-          })
-          .toBuffer()
-      } catch (avifError) {
-        console.warn('AVIF generation failed, skipping:', avifError)
-        // AVIF might not be available in all Sharp builds
-      }
-    }
 
-    // Generate enhanced blur placeholder
+    // Generate fast blur placeholder
     let blurDataUrl = ''
     if (opts.generateBlurPlaceholder) {
-      const blurBuffer = await sharp(buffer)
-        .resize(20, 20, { fit: 'inside' })
-        .blur(8)
-        .jpeg({ quality: 40 })
+      const blurBuffer = await baseImage
+        .clone()
+        .resize(8, 8, { fit: 'inside' }) // Even smaller for speed
+        .blur(2) // Minimal blur for speed
+        .jpeg({ quality: 20 }) // Very low quality for tiny placeholder
         .toBuffer()
 
       blurDataUrl = `data:image/jpeg;base64,${blurBuffer.toString('base64')}`
