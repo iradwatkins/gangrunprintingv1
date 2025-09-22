@@ -144,6 +144,7 @@ export default function BillingPage() {
               <input
                 className="mt-2 w-full px-3 py-2 border rounded-md"
                 defaultValue="INV-"
+                name="invoicePrefix"
                 placeholder="INV-"
                 type="text"
               />
@@ -153,6 +154,7 @@ export default function BillingPage() {
               <input
                 className="mt-2 w-full px-3 py-2 border rounded-md"
                 defaultValue="8.25"
+                name="taxRate"
                 placeholder="0"
                 type="number"
               />

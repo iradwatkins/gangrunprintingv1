@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { v4 as uuidv4 } from 'uuid'
 
 // POST /api/addon-sets/[id]/clone - Clone an addon set
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -37,12 +38,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       // Create the new addon set
       const newAddOnSet = await tx.addOnSet.create({
         data: {
+          id: uuidv4(),
           name,
           description: originalAddOnSet.description
             ? `${originalAddOnSet.description} (Copy)`
             : null,
           sortOrder: originalAddOnSet.sortOrder,
           isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       })
 
@@ -50,11 +54,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if (originalAddOnSet.addOnSetItems.length > 0) {
         await tx.addOnSetItem.createMany({
           data: originalAddOnSet.addOnSetItems.map((item) => ({
+            id: uuidv4(),
             addOnSetId: newAddOnSet.id,
             addOnId: item.addOnId,
             displayPosition: item.displayPosition,
             isDefault: item.isDefault,
             sortOrder: item.sortOrder,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           })),
         })
       }
@@ -65,7 +72,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         include: {
           addOnSetItems: {
             include: {
-              addOn: true,
+              AddOn: true,
             },
             orderBy: {
               sortOrder: 'asc',

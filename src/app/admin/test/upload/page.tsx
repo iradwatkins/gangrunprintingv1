@@ -342,6 +342,7 @@ export default function TestUploadPage() {
                 className="hidden"
                 disabled={testing}
                 id="manual-upload"
+                name="manualUpload"
                 type="file"
                 onChange={handleFileUpload}
               />

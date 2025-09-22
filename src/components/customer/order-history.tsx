@@ -87,13 +87,13 @@ export default function OrderHistory() {
         const response = await fetch('/api/orders')
         if (response.ok) {
           const data = await response.json()
-          setOrders(data)
+          setOrders(Array.isArray(data) ? data : [])
         }
       } else if (activeTab === 'quotes') {
         const response = await fetch('/api/quotes')
         if (response.ok) {
           const data = await response.json()
-          setQuotes(data)
+          setQuotes(Array.isArray(data) ? data : [])
         }
       }
     } catch (error) {
@@ -183,7 +183,7 @@ export default function OrderHistory() {
     const matchesSearch =
       order.referenceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.OrderItem.some((item) =>
+(order.OrderItem || []).some((item) =>
         item.productName.toLowerCase().includes(searchTerm.toLowerCase())
       )
 
@@ -338,7 +338,7 @@ export default function OrderHistory() {
                         <TableCell>{format(new Date(order.createdAt), 'MMM dd, yyyy')}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            {order.OrderItem.slice(0, 2).map((item, idx) => (
+                            {(order.OrderItem || []).slice(0, 2).map((item, idx) => (
                               <div key={idx} className="text-sm">
                                 {item.quantity}x {item.productName}
                               </div>

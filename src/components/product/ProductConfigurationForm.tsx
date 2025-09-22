@@ -254,8 +254,8 @@ export default function ProductConfigurationForm({
     if (!selectedPaper) return
 
     // Get new available options for this paper
-    const newAvailableCoatings = selectedPaper.paperStockCoatings.map((psc) => psc.coatingId)
-    const newAvailableSides = selectedPaper.paperStockSides
+    const newAvailableCoatings = (selectedPaper.paperStockCoatings || []).map((psc) => psc.coatingId)
+    const newAvailableSides = (selectedPaper.paperStockSides || [])
       .filter((pss) => pss.isEnabled)
       .map((pss) => pss.sidesOptionId)
 
@@ -489,7 +489,7 @@ export default function ProductConfigurationForm({
               <SelectValue placeholder="Select quantity" />
             </SelectTrigger>
             <SelectContent>
-              {configData.quantities.map((qty) => (
+              {(configData.quantities || []).map((qty) => (
                 <SelectItem key={qty.id} value={qty.id}>
                   {qty.displayValue.toLocaleString()}
                 </SelectItem>
@@ -521,7 +521,7 @@ export default function ProductConfigurationForm({
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
-              {configData.sizes.map((size) => (
+              {(configData.sizes || []).map((size) => (
                 <SelectItem key={size.id} value={size.id}>
                   {size.displayName}
                 </SelectItem>
@@ -613,7 +613,7 @@ export default function ProductConfigurationForm({
               <SelectValue placeholder="Select paper" />
             </SelectTrigger>
             <SelectContent>
-              {configData.paperStocks.map((paper) => (
+              {(configData.paperStocks || []).map((paper) => (
                 <SelectItem key={paper.id} value={paper.id}>
                   {paper.name}
                 </SelectItem>
@@ -674,7 +674,7 @@ export default function ProductConfigurationForm({
             currentCoating={configuration.coating}
             disabled={loading}
             quantity={
-              configData.quantities.find((q) => q.id === configuration.quantity)?.value || 1
+              (configData.quantities || []).find((q) => q.id === configuration.quantity)?.value || 1
             }
             selectedTurnaroundId={configuration.turnaround}
             turnaroundTimes={configData.turnaroundTimes}

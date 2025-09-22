@@ -10,6 +10,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
 import { SessionKeeper } from '@/components/auth/session-keeper'
+import { ErrorHandler } from '@/components/error-handler'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GoogleAnalytics />
         <ThemeInjector />
         <SessionKeeper />
+        <ErrorHandler />
         <OfflineIndicator />
         {/* Performance monitor disabled to fix signin issues */}
         <ErrorBoundary name="RootLayout">

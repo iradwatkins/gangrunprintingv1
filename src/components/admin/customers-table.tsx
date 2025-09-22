@@ -158,6 +158,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                     sortedCustomers.length > 0
                   }
                   className="rounded border-gray-300"
+                  name="selectAllCustomers"
                   type="checkbox"
                   onChange={selectAllCustomers}
                 />
@@ -205,6 +206,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                     <input
                       checked={selectedCustomers.includes(customer.id)}
                       className="rounded border-gray-300"
+                      name={`selectCustomer-${customer.id}`}
                       type="checkbox"
                       onChange={() => toggleCustomerSelection(customer.id)}
                     />

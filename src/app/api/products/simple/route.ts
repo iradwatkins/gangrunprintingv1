@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { v4 as uuidv4 } from 'uuid'
 
 // Simplified schema - focus on core data only
 const simpleProductSchema = z.object({
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
     // Create product with minimal relations
     const product = await prisma.product.create({
       data: {
+        id: uuidv4(),
         name: validatedData.name,
         sku: validatedData.sku,
         slug,
@@ -89,26 +91,37 @@ export async function POST(request: NextRequest) {
         basePrice: validatedData.basePrice,
         setupFee: validatedData.setupFee,
         productionTime: validatedData.productionTime,
+        createdAt: new Date(),
+        updatedAt: new Date(),
 
         // Create single paper stock set relation
         productPaperStockSets: {
           create: {
+            id: uuidv4(),
             paperStockSetId: validatedData.paperStockSetId,
             isDefault: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
         },
 
         // Create single quantity group relation
         productQuantityGroups: {
           create: {
+            id: uuidv4(),
             quantityGroupId: validatedData.quantityGroupId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
         },
 
         // Create single size group relation
         productSizeGroups: {
           create: {
+            id: uuidv4(),
             sizeGroupId: validatedData.sizeGroupId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
         },
 
@@ -116,8 +129,11 @@ export async function POST(request: NextRequest) {
         productAddOnSets: validatedData.addOnSetId
           ? {
               create: {
+                id: uuidv4(),
                 addOnSetId: validatedData.addOnSetId,
                 isDefault: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             }
           : undefined,
@@ -126,28 +142,34 @@ export async function POST(request: NextRequest) {
         productTurnaroundTimeSets: validatedData.turnaroundTimeSetId
           ? {
               create: {
+                id: uuidv4(),
                 turnaroundTimeSetId: validatedData.turnaroundTimeSetId,
                 isDefault: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             }
           : undefined,
 
         // Create product image if provided
-        ProductImage: validatedData.imageUrl
+        productImages: validatedData.imageUrl
           ? {
               create: {
+                id: uuidv4(),
                 url: validatedData.imageUrl,
                 thumbnailUrl: validatedData.imageUrl, // Use same URL for simplicity
                 alt: `${validatedData.name} product image`,
                 isPrimary: true,
                 sortOrder: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             }
           : undefined,
       },
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: {
             sortOrder: 'asc',
           },
@@ -156,7 +178,7 @@ export async function POST(request: NextRequest) {
           include: {
             PaperStockSet: {
               include: {
-                PaperStockSetItem: {
+                paperStockSetItems: {
                   include: {
                     PaperStock: true,
                   },
@@ -179,7 +201,7 @@ export async function POST(request: NextRequest) {
           include: {
             AddOnSet: {
               include: {
-                AddOnSetItem: {
+                addOnSetItems: {
                   include: {
                     AddOn: true,
                   },
@@ -192,7 +214,7 @@ export async function POST(request: NextRequest) {
           include: {
             TurnaroundTimeSet: {
               include: {
-                TurnaroundTimeSetItem: {
+                turnaroundTimeSetItems: {
                   include: {
                     TurnaroundTime: true,
                   },

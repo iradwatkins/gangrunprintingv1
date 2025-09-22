@@ -281,6 +281,7 @@ export default function FileUploadZone({
           accept={acceptedTypes.join(',')}
           className="hidden"
           disabled={disabled || uploading}
+          name="fileUpload"
           type="file"
           onChange={handleFileInput}
         />

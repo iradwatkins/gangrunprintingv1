@@ -133,6 +133,7 @@ export function ImageUpload({
           ref={fileInputRef}
           accept={accept}
           className="hidden"
+          name="imageUpload"
           type="file"
           onChange={(e) => handleFileSelect(e.target.files)}
         />
