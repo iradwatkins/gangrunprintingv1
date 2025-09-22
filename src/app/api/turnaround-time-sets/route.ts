@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(sets)
   } catch (error) {
-    console.error('[TurnaroundTimeSet] GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch turnaround time sets' }, { status: 500 })
   }
 }
@@ -73,7 +72,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(set, { status: 201 })
   } catch (error) {
-    console.error('[TurnaroundTimeSet] POST error:', error)
     return NextResponse.json({ error: 'Failed to create turnaround time set' }, { status: 500 })
   }
 }

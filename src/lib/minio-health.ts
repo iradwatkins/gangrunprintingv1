@@ -22,7 +22,6 @@ export async function checkMinioHealth(): Promise<{
       buckets: bucketList.map((b) => b.name),
     }
   } catch (error) {
-    console.error('MinIO health check failed:', error)
     return {
       available: false,
       error: error instanceof Error ? error.message : 'Unknown error',

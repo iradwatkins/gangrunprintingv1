@@ -61,7 +61,6 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
         toast.error(error.error || 'Failed to assign vendor')
       }
     } catch (error) {
-      console.error('Error assigning vendor:', error)
       toast.error('Failed to assign vendor')
     } finally {
       setIsAssigning(false)
@@ -89,7 +88,6 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
         toast.error(error.error || 'Failed to notify vendor')
       }
     } catch (error) {
-      console.error('Error notifying vendor:', error)
       toast.error('Failed to notify vendor')
     } finally {
       setIsNotifying(false)

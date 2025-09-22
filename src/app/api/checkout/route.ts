@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
       const customerResult = await createOrUpdateSquareCustomer(email, name, phone)
       squareCustomerId = customerResult.id
     } catch (error) {
-      console.error('Failed to create Square customer:', error)
       // Continue without customer ID
     }
 
@@ -101,7 +100,6 @@ export async function POST(request: NextRequest) {
 
       squareOrderId = squareOrderResult.id
     } catch (error) {
-      console.error('Failed to create Square order:', error)
       // Continue without Square order ID
     }
 
@@ -150,7 +148,6 @@ export async function POST(request: NextRequest) {
     try {
       await N8NWorkflows.onOrderCreated(order.id)
     } catch (n8nError) {
-      console.error('Failed to trigger N8N workflow:', n8nError)
       // Don't fail the order if N8N fails
     }
 
@@ -174,7 +171,6 @@ export async function POST(request: NextRequest) {
         shippingAddress,
       })
     } catch (emailError) {
-      console.error('Failed to send order confirmation email:', emailError)
       // Don't fail the order if email fails
     }
 
@@ -203,7 +199,6 @@ export async function POST(request: NextRequest) {
         paymentStatus: 'PENDING_PAYMENT',
       })
     } catch (adminEmailError) {
-      console.error('Failed to send admin notification email:', adminEmailError)
       // Don't fail the order if admin email fails
     }
 
@@ -236,7 +231,6 @@ export async function POST(request: NextRequest) {
         })
       }
     } catch (error) {
-      console.error('Failed to create Square checkout:', error)
       // Return order without payment link
     }
 
@@ -253,7 +247,6 @@ export async function POST(request: NextRequest) {
         'Order created. Payment processing temporarily unavailable. We will contact you shortly.',
     })
   } catch (error) {
-    console.error('Checkout error:', error)
     return NextResponse.json({ error: 'Failed to process checkout' }, { status: 500 })
   }
 }

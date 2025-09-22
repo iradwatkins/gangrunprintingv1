@@ -79,7 +79,6 @@ export class CurrencyService {
 
       return null
     } catch (error) {
-      console.error('Error fetching currency:', error)
       return null
     }
   }
@@ -107,7 +106,6 @@ export class CurrencyService {
         isActive: currency.isActive,
       }))
     } catch (error) {
-      console.error('Error fetching currencies:', error)
       return []
     }
   }
@@ -261,7 +259,6 @@ export class CurrencyService {
       // Fallback to 1:1 rate
       return 1
     } catch (error) {
-      console.error('Error getting exchange rate:', error)
       return 1
     }
   }
@@ -294,8 +291,7 @@ export class CurrencyService {
       // Clear cache to force refresh
       this.exchangeRateCache.clear()
     } catch (error) {
-      console.error('Error updating exchange rates:', error)
-    }
+      }
   }
 
   /**
@@ -364,8 +360,7 @@ export class CurrencyService {
         const data = await response.json()
         return data.conversion_rates
       } catch (error) {
-        console.error('Error fetching from exchange rate API:', error)
-      }
+        }
     }
 
     // Fallback static rates (for development)

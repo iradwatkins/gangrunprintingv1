@@ -15,7 +15,6 @@ export async function GET() {
 
     return NextResponse.json(coatingOptions)
   } catch (error) {
-    console.error('Error fetching coating options:', error)
     return NextResponse.json({ error: 'Failed to fetch coating options' }, { status: 500 })
   }
 }
@@ -42,8 +41,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(coatingOption, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating coating option:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },

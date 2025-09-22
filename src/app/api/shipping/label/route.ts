@@ -129,7 +129,6 @@ export async function POST(request: NextRequest) {
       label,
     })
   } catch (error) {
-    console.error('Label creation error:', error)
     return NextResponse.json({ error: 'Failed to create shipping label' }, { status: 500 })
   }
 }

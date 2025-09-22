@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 
 export function ErrorHandler() {
   useEffect(() => {
-    console.log('ErrorHandler component loaded') // Debug log
+    // Debug log
 
     // Global error handler for client-side errors
     const handleError = (event: ErrorEvent) => {
@@ -15,14 +15,12 @@ export function ErrorHandler() {
       if (message.includes('Could not establish connection') ||
           message.includes('Receiving end does not exist') ||
           message.includes('Extension context invalidated')) {
-        console.log('Suppressing Chrome extension error:', message)
         event.preventDefault()
         return
       }
 
       // Handle form validation errors
       if (message.includes('Name, values, and default value are required')) {
-        console.warn('Form validation issue detected:', error)
         event.preventDefault()
 
         // Check all forms on page for missing attributes
@@ -31,7 +29,6 @@ export function ErrorHandler() {
           inputs.forEach(input => {
             const inputElement = input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
             if (!inputElement.name) {
-              console.warn('Input missing name attribute:', inputElement)
               // Add a default name if missing
               inputElement.name = `auto-name-${Math.random().toString(36).substr(2, 9)}`
             }
@@ -52,7 +49,6 @@ export function ErrorHandler() {
           message.includes('net::ERR_CONNECTION_CLOSED') ||
           message.includes('Failed to fetch') ||
           message.includes('Network request failed')) {
-        console.warn('API error suppressed:', message)
         event.preventDefault()
         return
       }
@@ -66,7 +62,6 @@ export function ErrorHandler() {
       if (message.includes('Could not establish connection') ||
           message.includes('Receiving end does not exist') ||
           message.includes('Extension context invalidated')) {
-        console.log('Suppressing Chrome extension promise rejection:', message)
         event.preventDefault()
         return
       }
@@ -80,7 +75,6 @@ export function ErrorHandler() {
           message.includes('net::ERR_CONNECTION_CLOSED') ||
           message.includes('Failed to fetch') ||
           message.includes('Network request failed')) {
-        console.warn('API promise rejection suppressed:', message)
         event.preventDefault()
         return
       }

@@ -101,11 +101,9 @@ export default function AccountSidebar({
       if (response.ok) {
         window.location.href = '/auth/signin'
       } else {
-        console.error('Failed to sign out')
-      }
+        }
     } catch (error) {
-      console.error('Sign out error:', error)
-    }
+      }
   }
 
   const handleInstallApp = async () => {

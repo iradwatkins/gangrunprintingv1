@@ -50,7 +50,6 @@ export function AirportSelector({ onAirportSelected, selectedAirportId }: Airpor
 
       setAirports(data.airports || [])
     } catch (err) {
-      console.error('Error fetching airports:', err)
       setError(err instanceof Error ? err.message : 'Failed to load airports')
     } finally {
       setLoading(false)

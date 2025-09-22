@@ -27,7 +27,6 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('MinIO health check error:', error)
     return NextResponse.json(
       {
         success: false,

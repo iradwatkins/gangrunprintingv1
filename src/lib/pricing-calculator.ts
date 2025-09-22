@@ -286,5 +286,5 @@ const pricing = PricingCalculator.calculate({
   ]
 })
 
-console.log(PricingCalculator.formatBreakdown(pricing).join('\n'))
+.join('\n'))
 */

@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
       preferences: defaultPreferences,
     })
   } catch (error) {
-    console.error('Error getting notification preferences:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -49,7 +48,6 @@ export async function POST(request: NextRequest) {
       preferences,
     })
   } catch (error) {
-    console.error('Error saving notification preferences:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

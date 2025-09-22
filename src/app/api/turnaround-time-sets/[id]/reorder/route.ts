@@ -39,7 +39,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(set)
   } catch (error) {
-    console.error('[TurnaroundTimeSet] Reorder error:', error)
     return NextResponse.json(
       { error: 'Failed to reorder turnaround time set items' },
       { status: 500 }

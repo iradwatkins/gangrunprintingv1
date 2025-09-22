@@ -49,8 +49,7 @@ export default function NotificationToggle() {
         isSubscribed: !!subscription,
       }))
     } catch (error) {
-      console.error('Error checking subscription:', error)
-    }
+      }
   }
 
   const toggleNotifications = async () => {
@@ -108,8 +107,7 @@ export default function NotificationToggle() {
         }))
       }
     } catch (error) {
-      console.error('Error toggling notifications:', error)
-    } finally {
+      } finally {
       setIsLoading(false)
     }
   }

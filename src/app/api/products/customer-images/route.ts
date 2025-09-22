@@ -36,7 +36,6 @@ export async function DELETE(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error deleting customer image:', error)
     return NextResponse.json({ error: 'Failed to delete image' }, { status: 500 })
   }
 }
@@ -75,7 +74,6 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error fetching customer images:', error)
     return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 })
   }
 }

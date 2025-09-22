@@ -25,7 +25,6 @@ export async function GET() {
 
     return NextResponse.json(groups)
   } catch (error) {
-    console.error('Error fetching quantity groups:', error)
     return NextResponse.json({ error: 'Failed to fetch quantity groups' }, { status: 500 })
   }
 }
@@ -62,7 +61,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error creating quantity group:', error)
     return NextResponse.json({ error: 'Failed to create quantity group' }, { status: 500 })
   }
 }

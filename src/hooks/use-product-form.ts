@@ -1,0 +1,247 @@
+import { useState, useEffect } from 'react'
+import toast from '@/lib/toast'
+
+export interface ProductFormData {
+  name: string
+  sku: string
+  categoryId: string
+  description: string
+  isActive: boolean
+  isFeatured: boolean
+  imageUrl: string
+  selectedPaperStockSet: string
+  selectedQuantityGroup: string
+  selectedSizeGroup: string
+  selectedAddOnSet: string
+  selectedTurnaroundTimeSet: string
+}
+
+export interface ProductFormOptions {
+  categories: Array<{ id: string; name: string }>
+  paperStockSets: Array<{ id: string; name: string }>
+  quantityGroups: Array<{ id: string; name: string }>
+  sizeGroups: Array<{ id: string; name: string }>
+  addOnSets: Array<{ id: string; name: string }>
+  turnaroundTimeSets: Array<{ id: string; name: string }>
+}
+
+const initialFormData: ProductFormData = {
+  name: '',
+  sku: '',
+  categoryId: '',
+  description: '',
+  isActive: true,
+  isFeatured: false,
+  imageUrl: '',
+  selectedPaperStockSet: '',
+  selectedQuantityGroup: '',
+  selectedSizeGroup: '',
+  selectedAddOnSet: '',
+  selectedTurnaroundTimeSet: '',
+}
+
+export function useProductForm() {
+  const [formData, setFormData] = useState<ProductFormData>(initialFormData)
+  const [options, setOptions] = useState<ProductFormOptions>({
+    categories: [],
+    paperStockSets: [],
+    quantityGroups: [],
+    sizeGroups: [],
+    addOnSets: [],
+    turnaroundTimeSets: [],
+  })
+  const [loading, setLoading] = useState(true)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Auto-generate SKU when name changes
+  useEffect(() => {
+    if (formData.name) {
+      const sku = formData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+      setFormData(prev => ({ ...prev, sku }))
+    }
+  }, [formData.name])
+
+  // Set default selections when data loads
+  useEffect(() => {
+    if (options.paperStockSets.length > 0 && !formData.selectedPaperStockSet) {
+      setFormData(prev => ({ ...prev, selectedPaperStockSet: options.paperStockSets[0].id }))
+    }
+  }, [options.paperStockSets, formData.selectedPaperStockSet])
+
+  useEffect(() => {
+    if (options.quantityGroups.length > 0 && !formData.selectedQuantityGroup) {
+      setFormData(prev => ({ ...prev, selectedQuantityGroup: options.quantityGroups[0].id }))
+    }
+  }, [options.quantityGroups, formData.selectedQuantityGroup])
+
+  useEffect(() => {
+    if (options.sizeGroups.length > 0 && !formData.selectedSizeGroup) {
+      setFormData(prev => ({ ...prev, selectedSizeGroup: options.sizeGroups[0].id }))
+    }
+  }, [options.sizeGroups, formData.selectedSizeGroup])
+
+  const fetchOptions = async () => {
+    try {
+      setLoading(true)
+      const [
+        categoriesRes,
+        paperStockGroupsRes,
+        quantitiesRes,
+        sizesRes,
+        addOnSetsRes,
+        turnaroundTimeSetsRes,
+      ] = await Promise.all([
+        fetch('/api/product-categories'),
+        fetch('/api/paper-stock-sets'),
+        fetch('/api/quantities'),
+        fetch('/api/sizes'),
+        fetch('/api/addon-sets'),
+        fetch('/api/turnaround-time-sets'),
+      ])
+
+      const newErrors: Record<string, string> = {}
+      const newOptions: ProductFormOptions = {
+        categories: [],
+        paperStockSets: [],
+        quantityGroups: [],
+        sizeGroups: [],
+        addOnSets: [],
+        turnaroundTimeSets: [],
+      }
+
+      if (categoriesRes.ok) {
+        newOptions.categories = await categoriesRes.json()
+      } else {
+        newErrors.categories = 'Failed to load categories'
+      }
+
+      if (paperStockGroupsRes.ok) {
+        newOptions.paperStockSets = await paperStockGroupsRes.json()
+      } else {
+        newErrors.paperStockSets = 'Failed to load paper stock sets'
+      }
+
+      if (quantitiesRes.ok) {
+        newOptions.quantityGroups = await quantitiesRes.json()
+      } else {
+        newErrors.quantityGroups = 'Failed to load quantity groups'
+      }
+
+      if (sizesRes.ok) {
+        newOptions.sizeGroups = await sizesRes.json()
+      } else {
+        newErrors.sizeGroups = 'Failed to load size groups'
+      }
+
+      if (addOnSetsRes.ok) {
+        newOptions.addOnSets = await addOnSetsRes.json()
+      } else {
+        newErrors.addOnSets = 'Failed to load addon sets'
+      }
+
+      if (turnaroundTimeSetsRes.ok) {
+        newOptions.turnaroundTimeSets = await turnaroundTimeSetsRes.json()
+      } else {
+        newErrors.turnaroundTimeSets = 'Failed to load turnaround time sets'
+      }
+
+      setOptions(newOptions)
+      setErrors(newErrors)
+    } catch (error) {
+      setErrors({
+        categories: 'Network error',
+        paperStockSets: 'Network error',
+        quantityGroups: 'Network error',
+        sizeGroups: 'Network error',
+        addOnSets: 'Network error',
+        turnaroundTimeSets: 'Network error',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateFormData = (updates: Partial<ProductFormData>) => {
+    setFormData(prev => ({ ...prev, ...updates }))
+  }
+
+  const validateForm = (): boolean => {
+    if (!formData.name?.trim()) {
+      toast.error('Product name is required')
+      return false
+    }
+
+    if (!formData.sku?.trim()) {
+      toast.error('SKU is required')
+      return false
+    }
+
+    if (!formData.categoryId?.trim()) {
+      toast.error('Please select a product category')
+      return false
+    }
+
+    if (!formData.selectedPaperStockSet?.trim()) {
+      toast.error('Please select a paper stock set')
+      return false
+    }
+
+    if (!formData.selectedQuantityGroup?.trim()) {
+      toast.error('Please select a quantity group')
+      return false
+    }
+
+    if (!formData.selectedSizeGroup?.trim()) {
+      toast.error('Please select a size group')
+      return false
+    }
+
+    if (loading) {
+      toast.error('Please wait for data to load before submitting')
+      return false
+    }
+
+    return true
+  }
+
+  const transformForSubmission = () => {
+    return {
+      name: formData.name,
+      sku: formData.sku,
+      categoryId: formData.categoryId,
+      description: formData.description || null,
+      shortDescription: null,
+      isActive: formData.isActive,
+      isFeatured: formData.isFeatured,
+      paperStockSetId: formData.selectedPaperStockSet,
+      quantityGroupId: formData.selectedQuantityGroup,
+      sizeGroupId: formData.selectedSizeGroup,
+      selectedAddOns: [],
+      productionTime: 3,
+      rushAvailable: false,
+      rushDays: null,
+      rushFee: null,
+      basePrice: 0,
+      setupFee: 0,
+      images: formData.imageUrl ? [{
+        url: formData.imageUrl,
+        isPrimary: true,
+        alt: `${formData.name} product image`,
+      }] : [],
+    }
+  }
+
+  return {
+    formData,
+    options,
+    loading,
+    errors,
+    updateFormData,
+    fetchOptions,
+    validateForm,
+    transformForSubmission,
+  }
+}

@@ -197,8 +197,7 @@ export async function GET(request: NextRequest) {
     try {
       await N8NWorkflows.generateDailyReport()
     } catch (n8nError) {
-      console.error('Failed to trigger N8N daily report:', n8nError)
-    }
+      }
 
     // Log report
 
@@ -207,7 +206,6 @@ export async function GET(request: NextRequest) {
       report: reportData,
     })
   } catch (error) {
-    console.error('Daily report error:', error)
     return NextResponse.json({ error: 'Failed to generate daily report' }, { status: 500 })
   }
 }

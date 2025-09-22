@@ -44,12 +44,11 @@ export async function GET() {
 // POST /api/turnaround-times
 export async function POST(request: NextRequest) {
   try {
-    console.log('🚀 Turnaround time POST request received')
     const body = await request.json()
-    console.log('📝 Request body:', JSON.stringify(body, null, 2))
+    )
 
     const data = createTurnaroundTimeSchema.parse(body)
-    console.log('✅ Validation passed, parsed data:', JSON.stringify(data, null, 2))
+    )
 
     const turnaroundTime = await prisma.turnaroundTime.create({
       data: {
@@ -61,8 +60,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(turnaroundTime, { status: 201 })
   } catch (error) {
-    console.error('Turnaround time creation error:', error)
-
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {

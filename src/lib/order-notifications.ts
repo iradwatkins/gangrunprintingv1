@@ -47,7 +47,6 @@ export async function notifyOrderStatusChange(
       ...additionalData,
     })
   } catch (error) {
-    console.error(`Failed to send notification for order ${orderId}:`, error)
     // Don't throw - we don't want notification failures to break order processing
   }
 }
@@ -60,8 +59,7 @@ export async function notifyPaymentReceived(userId: string, orderId: string, amo
       amount: amount.toFixed(2),
     })
   } catch (error) {
-    console.error(`Failed to send payment notification for order ${orderId}:`, error)
-  }
+    }
 }
 
 // Send notification for design revision needed
@@ -72,8 +70,7 @@ export async function notifyDesignRevision(userId: string, orderId: string, comm
       comments,
     })
   } catch (error) {
-    console.error(`Failed to send design revision notification for order ${orderId}:`, error)
-  }
+    }
 }
 
 // Send promotional notification
@@ -84,6 +81,5 @@ export async function notifySpecialOffer(userId: string, message: string, offerU
       url: offerUrl || '/products',
     })
   } catch (error) {
-    console.error(`Failed to send special offer notification to user ${userId}:`, error)
-  }
+    }
 }

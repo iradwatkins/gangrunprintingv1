@@ -101,8 +101,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       { status: 200 }
     )
   } catch (error) {
-    console.error('[Turnaround Time Set Assignment] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to assign turnaround time set', details: error },
       { status: 500 }
@@ -146,8 +144,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       { status: 200 }
     )
   } catch (error) {
-    console.error('[Get Turnaround Time Sets] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to fetch turnaround time sets', details: error },
       { status: 500 }
@@ -189,8 +185,6 @@ export async function DELETE(
       { status: 200 }
     )
   } catch (error) {
-    console.error('[Delete Turnaround Time Set Assignment] Error:', error)
-
     return NextResponse.json(
       { error: 'Failed to remove turnaround time set', details: error },
       { status: 500 }

@@ -15,7 +15,6 @@ export async function GET() {
 
     return NextResponse.json(sidesOptions)
   } catch (error) {
-    console.error('Error fetching sides options:', error)
     return NextResponse.json({ error: 'Failed to fetch sides options' }, { status: 500 })
   }
 }
@@ -42,8 +41,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(sidesOption, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating sides option:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A sides option with this name already exists' },

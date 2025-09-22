@@ -57,7 +57,6 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error('Thumbnail serving error:', error)
     return NextResponse.json({ error: 'Failed to serve thumbnail' }, { status: 500 })
   }
 }

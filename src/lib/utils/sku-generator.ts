@@ -233,7 +233,6 @@ export async function skuExists(sku: string): Promise<boolean> {
     }
     return false
   } catch (error) {
-    console.error('Error checking SKU:', error)
     return false
   }
 }

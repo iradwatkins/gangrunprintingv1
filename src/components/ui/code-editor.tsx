@@ -33,8 +33,7 @@ export function CodeEditor({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Failed to copy:', error)
-    }
+      }
   }
 
   const getLanguageColor = (lang: string) => {

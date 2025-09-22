@@ -91,7 +91,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       addOn: duplicate,
     })
   } catch (error) {
-    console.error('Failed to duplicate add-on:', error)
     return NextResponse.json({ error: 'Failed to duplicate add-on' }, { status: 500 })
   }
 }

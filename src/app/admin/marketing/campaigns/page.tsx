@@ -120,8 +120,7 @@ export default function CampaignsPage() {
         setCampaigns(data.campaigns || [])
       }
     } catch (error) {
-      console.error('Error fetching campaigns:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }
@@ -134,8 +133,7 @@ export default function CampaignsPage() {
         setSegments(data)
       }
     } catch (error) {
-      console.error('Error fetching segments:', error)
-    }
+      }
   }
 
   const handleCreateCampaign = async () => {
@@ -165,8 +163,7 @@ export default function CampaignsPage() {
         }
       }
     } catch (error) {
-      console.error('Error creating campaign:', error)
-    }
+      }
   }
 
   const handleSendCampaign = async (campaignId: string) => {
@@ -179,8 +176,7 @@ export default function CampaignsPage() {
         fetchCampaigns() // Refresh the list
       }
     } catch (error) {
-      console.error('Error sending campaign:', error)
-    }
+      }
   }
 
   const handleDeleteCampaign = async (campaignId: string) => {
@@ -195,8 +191,7 @@ export default function CampaignsPage() {
         setCampaigns((prev) => prev.filter((c) => c.id !== campaignId))
       }
     } catch (error) {
-      console.error('Error deleting campaign:', error)
-    }
+      }
   }
 
   const filteredCampaigns = campaigns.filter((campaign) => {

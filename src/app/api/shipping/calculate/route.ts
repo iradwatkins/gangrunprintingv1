@@ -123,7 +123,6 @@ export async function POST(request: NextRequest) {
       totalWeight: totalWeight.toFixed(2),
     })
   } catch (error) {
-    console.error('Shipping calculation error:', error)
     return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
   }
 }

@@ -15,8 +15,7 @@ const configureWebPush = () => {
     try {
       webpush.setVapidDetails(vapidKeys.subject, vapidKeys.publicKey, vapidKeys.privateKey)
     } catch (error) {
-      console.error('Failed to configure VAPID:', error)
-    }
+      }
   }
 }
 
@@ -196,7 +195,6 @@ export async function sendNotificationToUser(userId: string, type: NotificationT
 
     return { successful, failed }
   } catch (error) {
-    console.error('Error sending notification:', error)
     throw error
   }
 }

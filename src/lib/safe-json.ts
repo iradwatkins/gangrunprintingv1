@@ -29,13 +29,6 @@ export function parseJsonSafely<T = any>(text: string, context?: string): T {
       .map((c) => c.charCodeAt(0))
       .join(', ')
 
-    console.error('JSON parsing failed:', {
-      error: errorMessage,
-      preview,
-      charCodes,
-      context,
-    })
-
     throw new Error(`JSON parse error${context ? ` for ${context}` : ''}: ${errorMessage}`)
   }
 }

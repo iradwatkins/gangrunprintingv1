@@ -18,7 +18,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(translation)
   } catch (error) {
-    console.error('Error approving translation:', error)
     return NextResponse.json({ error: 'Failed to approve translation' }, { status: 500 })
   }
 }

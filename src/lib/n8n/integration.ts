@@ -303,7 +303,6 @@ export class N8NIntegration {
       const data = await response.json()
       return data.data || []
     } catch (error) {
-      console.error('Error fetching N8N workflows:', error)
       return []
     }
   }
@@ -324,7 +323,6 @@ export class N8NIntegration {
 
       return response.ok
     } catch (error) {
-      console.error('Error activating N8N workflow:', error)
       return false
     }
   }
@@ -348,7 +346,6 @@ export class N8NIntegration {
 
       return response.ok
     } catch (error) {
-      console.error('Error deactivating N8N workflow:', error)
       return false
     }
   }
@@ -378,7 +375,6 @@ export class N8NIntegration {
       const data = await response.json()
       return data.data || []
     } catch (error) {
-      console.error('Error fetching N8N executions:', error)
       return []
     }
   }

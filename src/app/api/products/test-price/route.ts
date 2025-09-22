@@ -46,7 +46,6 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error calculating test price:', error)
     return NextResponse.json({ error: 'Failed to calculate test price' }, { status: 500 })
   }
 }

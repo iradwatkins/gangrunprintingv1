@@ -57,8 +57,7 @@ export function CustomerEditDialog({ customer }: CustomerEditDialogProps) {
       await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
       setOpen(false)
     } catch (error) {
-      console.error('Failed to update customer:', error)
-    } finally {
+      } finally {
       setLoading(false)
     }
   }

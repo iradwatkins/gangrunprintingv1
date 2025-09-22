@@ -93,7 +93,6 @@ export default function SimpleProductPage() {
         setSizeGroups(data)
       }
     } catch (error) {
-      console.error('Error fetching dropdown data:', error)
       toast.error('Failed to load form data')
     } finally {
       setApiLoading(false)
@@ -133,7 +132,6 @@ export default function SimpleProductPage() {
       toast.success('Product created successfully!')
       router.push('/admin/products')
     } catch (error: any) {
-      console.error('Error creating product:', error)
       toast.error(error.message || 'Failed to create product')
     } finally {
       setLoading(false)

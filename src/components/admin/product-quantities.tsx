@@ -79,7 +79,6 @@ export function ProductQuantities({
         setAvailableQuantities(quantitiesData)
       }
     } catch (error) {
-      console.error('Error fetching data:', error)
       toast.error('Failed to load quantities')
     } finally {
       setLoading(false)

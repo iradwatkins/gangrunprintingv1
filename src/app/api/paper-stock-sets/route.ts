@@ -23,16 +23,10 @@ const paperStockSetSchema = z.object({
 // GET - List all paper stock sets
 export async function GET() {
   try {
-    console.log('Paper stock sets API called')
     // Test with a simple query first
     const groups = await prisma.paperStockSet.findMany()
-    console.log('Query successful, found', groups.length, 'groups')
-
     return NextResponse.json(groups)
   } catch (error: any) {
-    console.error('Error fetching paper stock sets:', error)
-    console.error('Error details:', error.message)
-    console.error('Error stack:', error.stack)
     return NextResponse.json({ error: 'Failed to fetch paper stock sets' }, { status: 500 })
   }
 }
@@ -115,7 +109,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error creating paper stock set:', error)
     return NextResponse.json({ error: 'Failed to create paper stock set' }, { status: 500 })
   }
 }

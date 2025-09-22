@@ -169,7 +169,6 @@ export async function downloadFileFromMinIO(
       }
     })
   } catch (error) {
-    console.error('Error downloading file from MinIO:', error)
     throw new Error(`Failed to download file: ${error.message}`)
   }
 }
@@ -214,7 +213,6 @@ export async function getOrderFilesAsAttachments(orderId: string): Promise<{
           contentType: file.mimeType,
         })
       } catch (error) {
-        console.error(`Failed to download file ${file.filename}:`, error)
         // Continue with other files even if one fails
       }
     }
@@ -224,7 +222,6 @@ export async function getOrderFilesAsAttachments(orderId: string): Promise<{
       orderFiles: files,
     }
   } catch (error) {
-    console.error('Error getting order files as attachments:', error)
     return { attachments: [], orderFiles: [] }
   }
 }
@@ -268,7 +265,6 @@ export async function sendOrderConfirmationWithFiles(orderData: {
 
     return result
   } catch (error) {
-    console.error('Error sending order confirmation with files:', error)
     throw error
   }
 }
@@ -320,7 +316,6 @@ export async function sendAdminOrderNotification(orderData: {
 
     return result
   } catch (error) {
-    console.error('Error sending admin order notification:', error)
     throw error
   }
 }

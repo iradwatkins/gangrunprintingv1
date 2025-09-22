@@ -46,7 +46,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(duplicate)
   } catch (error) {
-    console.error('Failed to duplicate standard size:', error)
     return NextResponse.json({ error: 'Failed to duplicate standard size' }, { status: 500 })
   }
 }

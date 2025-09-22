@@ -75,7 +75,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(quotes)
   } catch (error) {
-    console.error('Error fetching quotes:', error)
     return NextResponse.json({ error: 'Failed to fetch quotes' }, { status: 500 })
   }
 }
@@ -134,7 +133,6 @@ export async function POST(request: NextRequest) {
       quote,
     })
   } catch (error) {
-    console.error('Error creating quote:', error)
     return NextResponse.json({ error: 'Failed to create quote' }, { status: 500 })
   }
 }
@@ -229,7 +227,6 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ error: 'No update action specified' }, { status: 400 })
   } catch (error) {
-    console.error('Error updating quote:', error)
     return NextResponse.json({ error: 'Failed to update quote' }, { status: 500 })
   }
 }

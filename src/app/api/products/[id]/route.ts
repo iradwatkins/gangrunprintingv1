@@ -67,7 +67,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(product)
   } catch (error) {
-    console.error('Error fetching product:', error)
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
   }
 }
@@ -117,8 +116,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       try {
         await deleteProductImage(url)
       } catch (error) {
-        console.error('Error deleting image from MinIO:', error)
-      }
+        }
     }
 
     // Update product using transaction
@@ -297,14 +295,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(product)
   } catch (error: any) {
-    console.error('Error updating product:', error)
-    console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack
-    })
-
     // Check for unique constraint violations
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
@@ -315,7 +305,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Log the full error for debugging
-    console.error('Full error object:', JSON.stringify(error, null, 2))
+    )
 
     return NextResponse.json({
       error: 'Failed to update product',
@@ -346,7 +336,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     return NextResponse.json(product)
   } catch (error) {
-    console.error('Error updating product:', error)
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
   }
 }
@@ -380,8 +369,7 @@ export async function DELETE(
       try {
         await deleteProductImage(image.url)
       } catch (error) {
-        console.error('Error deleting image from MinIO:', error)
-      }
+        }
     }
 
     // Delete product (cascade will handle relations)
@@ -391,7 +379,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 })
   } catch (error) {
-    console.error('Error deleting product:', error)
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 })
   }
 }

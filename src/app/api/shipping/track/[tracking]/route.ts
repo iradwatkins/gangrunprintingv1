@@ -49,7 +49,6 @@ export async function GET(request: NextRequest, { params }: { params: { tracking
       tracking: trackingInfo,
     })
   } catch (error) {
-    console.error('Tracking error:', error)
     return NextResponse.json({ error: 'Failed to track shipment' }, { status: 500 })
   }
 }

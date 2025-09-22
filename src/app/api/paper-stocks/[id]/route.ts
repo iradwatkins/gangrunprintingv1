@@ -63,8 +63,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(paperStock)
   } catch (error: any) {
-    console.error('Error updating paper stock:', error)
-
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }
@@ -110,8 +108,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting paper stock:', error)
-
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }

@@ -10,19 +10,13 @@ export async function GET(request: NextRequest) {
     const userAgent = request.headers.get('User-Agent') || 'unknown'
     const referer = request.headers.get('Referer') || 'unknown'
 
-    console.log(`[${requestId}] === AUTH/ME REQUEST START ===`)
-    console.log(`[${requestId}] Source: ${requestSource}`)
-    console.log(`[${requestId}] User-Agent: ${userAgent}`)
-    console.log(`[${requestId}] Referer: ${referer}`)
-    console.log(`[${requestId}] Timestamp: ${new Date().toISOString()}`)
+    .toISOString()}`)
 
     // Get all cookies for debugging
     const cookieHeader = request.headers.get('Cookie') || ''
     const cookies = cookieHeader.split(';').map(c => c.trim()).filter(c => c.length > 0)
 
-    console.log(`[${requestId}] Request cookies:`, {
-      total: cookies.length,
-      names: cookies.map(c => c.split('=')[0]),
+    [0]),
       hasAuthSession: cookies.some(c => c.startsWith('auth_session=')),
       cookieHeader: cookieHeader.substring(0, 200) + (cookieHeader.length > 200 ? '...' : ''),
     })
@@ -31,21 +25,10 @@ export async function GET(request: NextRequest) {
 
     const responseTime = Date.now() - startTime
 
-    console.log(`[${requestId}] Validation result:`, {
-      hasUser: !!user,
-      hasSession: !!session,
-      userId: user?.id,
-      userEmail: user?.email,
-      userRole: user?.role,
-      sessionId: session?.id,
-      sessionExpiry: session?.expiresAt?.toISOString(),
-      responseTimeMs: responseTime,
+    responseTimeMs: responseTime,
     })
 
     if (!user || !session) {
-      console.log(`[${requestId}] === AUTH/ME RETURNING UNAUTHENTICATED ===`)
-      console.log(`[${requestId}] Reason: ${!user ? 'No user' : 'No session'}`)
-
       return NextResponse.json(
         {
           user: null,
@@ -68,9 +51,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log(`[${requestId}] === AUTH/ME RETURNING AUTHENTICATED USER ===`)
-    console.log(`[${requestId}] User: ${user.email} (${user.role})`)
-    console.log(`[${requestId}] Session expires: ${session.expiresAt.toISOString()}`)
+    `)
+    }`)
 
     return NextResponse.json(
       {
@@ -110,9 +92,6 @@ export async function GET(request: NextRequest) {
       responseTime,
       timestamp: new Date().toISOString(),
     }
-
-    console.error(`[${requestId}] === AUTH/ME API ERROR ===`)
-    console.error(`[${requestId}] Error details:`, errorDetails)
 
     return NextResponse.json(
       {

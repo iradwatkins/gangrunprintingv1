@@ -101,7 +101,6 @@ export function ShippingRates({
         onRateSelected(firstRate)
       }
     } catch (err) {
-      console.error('Shipping calculation error:', err)
       setError(err instanceof Error ? err.message : 'Failed to calculate shipping rates')
       toast.error('Unable to calculate shipping rates')
     } finally {

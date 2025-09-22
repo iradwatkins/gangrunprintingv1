@@ -14,13 +14,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const storedCodeVerifier = (await cookies()).get('google_oauth_code_verifier')?.value ?? null
 
   if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
-    console.error('OAuth validation failed:', {
-      hasCode: !!code,
-      hasState: !!state,
-      hasStoredState: !!storedState,
-      hasStoredCodeVerifier: !!storedCodeVerifier,
-      stateMatches: state === storedState,
-    })
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
     return NextResponse.redirect(`${baseUrl}/auth/signin?error=invalid_request`)
@@ -38,14 +31,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
       accessToken = tokens.accessToken()
     } catch (e) {
-      console.error('Failed to extract access token:', e)
       throw new Error('Failed to extract access token from OAuth response')
     }
 
     try {
       idToken = tokens.idToken()
     } catch (e) {
-      console.log('No ID token available (this is normal for non-OIDC flows)')
+      ')
     }
 
     try {
@@ -87,13 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
 
       if (!response.ok) {
-        console.error(
-          'Failed to fetch user info from Google:',
-          response.status,
-          response.statusText
-        )
         const errorText = await response.text()
-        console.error('Error response:', errorText)
         throw new Error(`Failed to fetch user info: ${response.status}`)
       }
 
@@ -101,7 +87,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     if (!googleUser.email) {
-      console.error('No email received from Google')
       throw new Error('No email received from Google OAuth')
     }
 
@@ -218,10 +203,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.redirect(`${baseUrl}${redirectPath}`)
   } catch (error) {
-    console.error('=== GOOGLE OAUTH ERROR ===')
-    console.error('Error details:', error)
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
 

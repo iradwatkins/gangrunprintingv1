@@ -54,7 +54,6 @@ export async function GET(
 
     return NextResponse.json(publicOrderData)
   } catch (error) {
-    console.error('Error fetching public order data:', error)
     return NextResponse.json(
       { error: 'Failed to fetch order data' },
       { status: 500 }

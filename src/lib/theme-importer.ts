@@ -40,7 +40,6 @@ export class ThemeImporter {
         return await this.importFromGenericURL(url)
       }
     } catch (error) {
-      console.error('Theme import error:', error)
       throw new Error(
         `Failed to import theme from URL: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
@@ -97,7 +96,6 @@ export class ThemeImporter {
       }
     } catch (error) {
       // Fallback to scraping if API fails
-      console.warn('TweakCN API failed, attempting to scrape:', error)
       return await this.scrapeTweakCNTheme(url)
     }
   }

@@ -57,7 +57,6 @@ export async function GET() {
 
     return NextResponse.json(mockData)
   } catch (error) {
-    console.error('Error:', error)
     return NextResponse.json({ error: 'Failed to fetch paper stocks' }, { status: 500 })
   }
 }

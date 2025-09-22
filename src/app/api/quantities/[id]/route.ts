@@ -35,7 +35,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(parsedGroup)
   } catch (error) {
-    console.error('Error fetching quantity group:', error)
     return NextResponse.json({ error: 'Failed to fetch quantity group' }, { status: 500 })
   }
 }
@@ -83,8 +82,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(quantityGroup)
   } catch (error: any) {
-    console.error('Error updating quantity group:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A quantity group with this name already exists' },
@@ -128,8 +125,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting quantity group:', error)
-
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }

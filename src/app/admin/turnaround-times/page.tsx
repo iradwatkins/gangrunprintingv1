@@ -103,7 +103,6 @@ export default function TurnaroundTimesPage() {
       const data = await response.json()
       setTurnaroundTimes(data)
     } catch (error) {
-      console.error('Error fetching turnaround times:', error)
       toast.error('Failed to load turnaround times')
     } finally {
       setLoading(false)
@@ -134,7 +133,6 @@ export default function TurnaroundTimesPage() {
       setFormData(defaultFormData)
       fetchTurnaroundTimes()
     } catch (error) {
-      console.error('Error saving turnaround time:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to save turnaround time')
     }
   }
@@ -171,7 +169,6 @@ export default function TurnaroundTimesPage() {
       toast.success('Turnaround time deleted')
       fetchTurnaroundTimes()
     } catch (error) {
-      console.error('Error deleting turnaround time:', error)
       toast.error('Failed to delete turnaround time')
     }
   }
@@ -190,7 +187,6 @@ export default function TurnaroundTimesPage() {
       toast.success('Turnaround time duplicated')
       fetchTurnaroundTimes()
     } catch (error) {
-      console.error('Error duplicating turnaround time:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to duplicate turnaround time')
     }
   }

@@ -90,7 +90,6 @@ export function SquareCardPayment({
         setCard(cardInstance)
         setIsLoading(false)
       } catch (err) {
-        console.error('Square initialization error:', err)
         setError('Failed to initialize payment form. Please refresh and try again.')
         setIsLoading(false)
       }
@@ -143,7 +142,6 @@ export function SquareCardPayment({
         throw new Error(errorMessages || 'Card validation failed')
       }
     } catch (err) {
-      console.error('Payment error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Payment processing failed'
       setError(errorMessage)
       onPaymentError(errorMessage)

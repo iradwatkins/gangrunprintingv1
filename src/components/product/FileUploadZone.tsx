@@ -177,7 +177,6 @@ export default function FileUploadZone({
       setUploadedFiles(updatedFiles)
       onFilesUploaded?.(updatedFiles)
     } catch (error) {
-      console.error('Upload error:', error)
       setErrors([error instanceof Error ? error.message : 'Upload failed'])
     } finally {
       setUploading(false)

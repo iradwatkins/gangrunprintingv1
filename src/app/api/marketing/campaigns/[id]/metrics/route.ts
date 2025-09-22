@@ -13,7 +13,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json(metrics)
   } catch (error) {
-    console.error('Error fetching campaign metrics:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -101,7 +101,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       paperStock: duplicate,
     })
   } catch (error) {
-    console.error('Failed to duplicate paper stock:', error)
     return NextResponse.json({ error: 'Failed to duplicate paper stock' }, { status: 500 })
   }
 }

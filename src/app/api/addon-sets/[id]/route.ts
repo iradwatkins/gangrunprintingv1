@@ -48,7 +48,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(addOnSet)
   } catch (error) {
-    console.error('Error fetching addon set:', error)
     return NextResponse.json({ error: 'Failed to fetch addon set' }, { status: 500 })
   }
 }
@@ -119,7 +118,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating addon set:', error)
     return NextResponse.json({ error: 'Failed to update addon set' }, { status: 500 })
   }
 }
@@ -155,7 +153,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting addon set:', error)
     return NextResponse.json({ error: 'Failed to delete addon set' }, { status: 500 })
   }
 }

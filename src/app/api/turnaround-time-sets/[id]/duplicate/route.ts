@@ -88,7 +88,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       turnaroundTimeSet: duplicate,
     })
   } catch (error) {
-    console.error('Failed to duplicate turnaround time set:', error)
     return NextResponse.json({ error: 'Failed to duplicate turnaround time set' }, { status: 500 })
   }
 }

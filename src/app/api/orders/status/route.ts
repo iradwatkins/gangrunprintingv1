@@ -118,15 +118,13 @@ export async function PUT(request: NextRequest) {
         }
       }
     } catch (n8nError) {
-      console.error('Failed to trigger N8N workflow:', n8nError)
-    }
+      }
 
     return NextResponse.json({
       success: true,
       order: updatedOrder,
     })
   } catch (error) {
-    console.error('Error updating order status:', error)
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
   }
 }
@@ -177,7 +175,6 @@ export async function GET(request: NextRequest) {
       history: statusHistory,
     })
   } catch (error) {
-    console.error('Error fetching order status history:', error)
     return NextResponse.json({ error: 'Failed to fetch order status history' }, { status: 500 })
   }
 }

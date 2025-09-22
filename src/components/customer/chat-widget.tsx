@@ -93,7 +93,6 @@ export function ChatWidget() {
         }, 1000)
       }
     } catch (error) {
-      console.error('Chat error:', error)
       setMessages((prev) => [
         ...prev,
         {

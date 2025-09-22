@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(processedGroups)
   } catch (error) {
-    console.error('Error fetching size groups:', error)
     return NextResponse.json({ error: 'Failed to fetch size groups' }, { status: 500 })
   }
 }
@@ -122,8 +121,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(processedGroup, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating size group:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A size group with this name already exists' },

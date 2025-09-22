@@ -35,7 +35,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(parsedGroup)
   } catch (error) {
-    console.error('Error fetching size group:', error)
     return NextResponse.json({ error: 'Failed to fetch size group' }, { status: 500 })
   }
 }
@@ -104,8 +103,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(sizeGroup)
   } catch (error: any) {
-    console.error('Error updating size group:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A size group with this name already exists' },
@@ -149,8 +146,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting size group:', error)
-
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Size group not found' }, { status: 404 })
     }

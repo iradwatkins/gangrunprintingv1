@@ -40,7 +40,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(turnaroundTime)
   } catch (error) {
-    console.error('Failed to fetch turnaround time:', error)
     return NextResponse.json({ error: 'Failed to fetch turnaround time' }, { status: 500 })
   }
 }
@@ -66,7 +65,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       )
     }
 
-    console.error('Failed to update turnaround time:', error)
     return NextResponse.json({ error: 'Failed to update turnaround time' }, { status: 500 })
   }
 }
@@ -85,7 +83,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Turnaround time deleted successfully' })
   } catch (error) {
-    console.error('Failed to delete turnaround time:', error)
     return NextResponse.json({ error: 'Failed to delete turnaround time' }, { status: 500 })
   }
 }

@@ -43,7 +43,6 @@ export async function GET(request: NextRequest) {
       count: airports.length,
     })
   } catch (error) {
-    console.error('Error fetching airports:', error)
     return NextResponse.json(
       {
         success: false,

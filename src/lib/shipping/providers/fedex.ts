@@ -79,7 +79,6 @@ export class FedExProvider implements ShippingProvider {
       // Update default headers with auth token
       this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
     } catch (error) {
-      console.error('FedEx authentication failed:', error)
       throw new Error('Failed to authenticate with FedEx API')
     }
   }
@@ -169,7 +168,6 @@ export class FedExProvider implements ShippingProvider {
 
       return rates
     } catch (error) {
-      console.error('FedEx rate request failed:', error)
       return []
     }
   }
@@ -247,7 +245,6 @@ export class FedExProvider implements ShippingProvider {
         carrier: this.carrier,
       }
     } catch (error) {
-      console.error('FedEx label creation failed:', error)
       throw new Error('Failed to create FedEx shipping label')
     }
   }
@@ -297,7 +294,6 @@ export class FedExProvider implements ShippingProvider {
         events,
       }
     } catch (error) {
-      console.error('FedEx tracking failed:', error)
       throw new Error('Failed to track FedEx shipment')
     }
   }
@@ -322,7 +318,6 @@ export class FedExProvider implements ShippingProvider {
       const result = response.data.output.resolvedAddresses[0]
       return result.classification === 'BUSINESS' || result.classification === 'RESIDENTIAL'
     } catch (error) {
-      console.error('FedEx address validation failed:', error)
       return false
     }
   }
@@ -344,7 +339,6 @@ export class FedExProvider implements ShippingProvider {
       await this.client.put('/ship/v1/shipments/cancel', requestBody)
       return true
     } catch (error) {
-      console.error('FedEx shipment cancellation failed:', error)
       return false
     }
   }

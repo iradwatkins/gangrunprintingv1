@@ -30,7 +30,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(category)
   } catch (error) {
-    console.error('Error fetching category:', error)
     return NextResponse.json({ error: 'Failed to fetch category' }, { status: 500 })
   }
 }
@@ -60,8 +59,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(category)
   } catch (error: any) {
-    console.error('Error updating category:', error)
-
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
       return NextResponse.json(
@@ -129,7 +126,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Category deleted successfully' })
   } catch (error) {
-    console.error('Error deleting category:', error)
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 })
   }
 }

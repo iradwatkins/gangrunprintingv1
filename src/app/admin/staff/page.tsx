@@ -136,8 +136,7 @@ function StaffPageContent() {
           })
         }
       } catch (error) {
-        console.error('Error fetching staff data:', error)
-      } finally {
+        } finally {
         setLoading(false)
       }
     }

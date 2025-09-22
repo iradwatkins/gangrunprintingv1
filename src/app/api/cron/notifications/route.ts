@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Cron job error:', error)
     return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 })
   }
 }

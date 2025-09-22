@@ -50,7 +50,6 @@ export async function GET(request: NextRequest) {
     // Default: return quantity groups for admin interface
     return NextResponse.json(processedGroups)
   } catch (error) {
-    console.error('Error fetching quantity groups:', error)
     return NextResponse.json({ error: 'Failed to fetch quantity groups' }, { status: 500 })
   }
 }
@@ -93,8 +92,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(quantityGroup, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating quantity group:', error)
-
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A quantity group with this name already exists' },

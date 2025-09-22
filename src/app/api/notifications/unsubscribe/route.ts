@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       message: 'Unsubscribed successfully',
     })
   } catch (error) {
-    console.error('Error unsubscribing:', error)
     return NextResponse.json({ error: 'Failed to unsubscribe' }, { status: 500 })
   }
 }

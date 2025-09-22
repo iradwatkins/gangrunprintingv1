@@ -65,7 +65,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(vendors)
   } catch (error) {
-    console.error('Error fetching vendors:', error)
     return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 })
   }
 }
@@ -132,7 +131,6 @@ export async function POST(request: NextRequest) {
       vendor,
     })
   } catch (error) {
-    console.error('Error creating vendor:', error)
     return NextResponse.json({ error: 'Failed to create vendor' }, { status: 500 })
   }
 }
@@ -163,7 +161,6 @@ export async function PUT(request: NextRequest) {
       vendor,
     })
   } catch (error) {
-    console.error('Error updating vendor:', error)
     return NextResponse.json({ error: 'Failed to update vendor' }, { status: 500 })
   }
 }
@@ -212,7 +209,6 @@ export async function DELETE(request: NextRequest) {
       message: 'Vendor deactivated successfully',
     })
   } catch (error) {
-    console.error('Error deleting vendor:', error)
     return NextResponse.json({ error: 'Failed to delete vendor' }, { status: 500 })
   }
 }

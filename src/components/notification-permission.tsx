@@ -39,8 +39,7 @@ export function NotificationPermission() {
         const subscription = await registration.pushManager.getSubscription()
         setIsSubscribed(!!subscription)
       } catch (error) {
-        console.error('Error checking subscription:', error)
-      }
+        }
     }
   }
 
@@ -58,7 +57,6 @@ export function NotificationPermission() {
         toast.error('Notifications blocked. You can enable them in your browser settings.')
       }
     } catch (error) {
-      console.error('Error requesting permission:', error)
       toast.error('Failed to enable notifications')
     } finally {
       setLoading(false)
@@ -68,7 +66,6 @@ export function NotificationPermission() {
 
   const subscribeUser = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.error('Push notifications not supported')
       return
     }
 
@@ -99,7 +96,6 @@ export function NotificationPermission() {
 
       setIsSubscribed(true)
     } catch (error) {
-      console.error('Failed to subscribe:', error)
       throw error
     }
   }
@@ -127,7 +123,6 @@ export function NotificationPermission() {
         toast.success('Notifications disabled')
       }
     } catch (error) {
-      console.error('Error unsubscribing:', error)
       toast.error('Failed to disable notifications')
     } finally {
       setLoading(false)
@@ -277,7 +272,6 @@ export function TestNotificationButton() {
         toast.error('Failed to send test notification')
       }
     } catch (error) {
-      console.error('Error sending test notification:', error)
       toast.error('Failed to send test notification')
     }
   }

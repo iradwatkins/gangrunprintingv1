@@ -272,7 +272,6 @@ export async function POST(request: NextRequest) {
         : null,
     })
   } catch (error) {
-    console.error('Error calculating base price:', error)
     return NextResponse.json({ error: 'Failed to calculate base price' }, { status: 500 })
   }
 }
@@ -384,7 +383,6 @@ export async function GET(request: NextRequest) {
       allQuantities: quantities,
     })
   } catch (error) {
-    console.error('Error fetching pricing configuration:', error)
     return NextResponse.json({ error: 'Failed to fetch pricing configuration' }, { status: 500 })
   }
 }

@@ -97,7 +97,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   } catch (error) {
-    console.error('Error fetching orders:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -179,7 +178,6 @@ export async function POST(request: NextRequest) {
         }),
       })
     } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError)
       // Don't fail the order creation if email fails
     }
 
@@ -195,13 +193,11 @@ export async function POST(request: NextRequest) {
         }),
       })
     } catch (paymentError) {
-      console.error('Failed to initiate payment process:', paymentError)
       // Payment can be retried later
     }
 
     return NextResponse.json(order, { status: 201 })
   } catch (error) {
-    console.error('Error creating order:', error)
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }

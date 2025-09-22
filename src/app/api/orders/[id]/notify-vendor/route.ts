@@ -73,7 +73,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           throw new Error(`Webhook returned ${webhookResponse.status}`)
         }
       } catch (webhookError) {
-        console.error('Failed to send webhook notification:', webhookError)
         return NextResponse.json({ error: 'Failed to send webhook notification' }, { status: 500 })
       }
     }
@@ -117,7 +116,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       message: 'Vendor notification sent successfully',
     })
   } catch (error) {
-    console.error('Error notifying vendor:', error)
     return NextResponse.json({ error: 'Failed to notify vendor' }, { status: 500 })
   }
 }

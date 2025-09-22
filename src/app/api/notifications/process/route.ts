@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
       message: 'Notifications processed successfully',
     })
   } catch (error) {
-    console.error('Error processing notifications:', error)
     return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 })
   }
 }
@@ -49,7 +48,6 @@ export async function GET(request: NextRequest) {
         : `Failed to send email: ${result.error}`,
     })
   } catch (error) {
-    console.error('Error sending test email:', error)
     return NextResponse.json({ error: 'Failed to send test email' }, { status: 500 })
   }
 }

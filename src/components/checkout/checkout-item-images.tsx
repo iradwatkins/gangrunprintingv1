@@ -36,8 +36,7 @@ export function CheckoutItemImages({ item }: CheckoutItemImagesProps) {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch customer images:', error)
-      } finally {
+        } finally {
         setIsLoading(false)
       }
     }

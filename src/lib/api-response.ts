@@ -60,14 +60,6 @@ export function createErrorResponse(
   }
 
   // Log error for debugging
-  console.error(`[${id}] API Error:`, {
-    error: errorMessage,
-    code: errorCode,
-    statusCode,
-    details,
-    timestamp,
-  })
-
   return NextResponse.json(response, {
     status: statusCode,
     headers: {

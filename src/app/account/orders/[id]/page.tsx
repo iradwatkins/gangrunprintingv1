@@ -83,7 +83,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         router.push('/account/orders')
       }
     } catch (error) {
-      console.error('Error fetching order:', error)
       toast.error('Failed to load order details')
     } finally {
       setLoading(false)

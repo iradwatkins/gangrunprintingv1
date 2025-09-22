@@ -39,7 +39,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json(duplicate)
   } catch (error) {
-    console.error('Failed to duplicate standard quantity:', error)
     return NextResponse.json({ error: 'Failed to duplicate standard quantity' }, { status: 500 })
   }
 }

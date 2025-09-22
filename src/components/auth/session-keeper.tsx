@@ -42,7 +42,6 @@ export function SessionKeeper() {
         // Check if user has been active recently
         const timeSinceLastActivity = Date.now() - lastActivityRef.current
         if (timeSinceLastActivity > USER_ACTIVITY_TIMEOUT) {
-          console.log('User inactive, skipping session refresh')
           return
         }
 
@@ -53,14 +52,12 @@ export function SessionKeeper() {
         })
 
         if (!statusResponse.ok) {
-          console.error('Failed to check session status')
           return
         }
 
         const statusData = await statusResponse.json()
 
         if (!statusData.authenticated) {
-          console.log('User not authenticated')
           return
         }
 
@@ -72,7 +69,7 @@ export function SessionKeeper() {
         const shouldRefresh = timeUntilExpiry < (30 * 24 * 60 * 60 * 1000)
 
         if (shouldRefresh) {
-          console.log(`Refreshing session (${Math.round(timeUntilExpiry / (1000 * 60 * 60 * 24))} days left)`)
+          )} days left)`)
 
           const refreshResponse = await fetch('/api/auth/session/refresh', {
             method: 'POST',
@@ -81,16 +78,13 @@ export function SessionKeeper() {
 
           if (refreshResponse.ok) {
             const refreshData = await refreshResponse.json()
-            console.log('Session refreshed successfully', refreshData)
-          } else {
-            console.error('Failed to refresh session')
-          }
+            } else {
+            }
         } else {
-          console.log(`Session still fresh (${Math.round(timeUntilExpiry / (1000 * 60 * 60 * 24))} days left)`)
+          )} days left)`)
         }
       } catch (error) {
-        console.error('Error during session check/refresh:', error)
-      }
+        }
     }
 
     // Initial check after a short delay

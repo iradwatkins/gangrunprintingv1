@@ -114,7 +114,6 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
       dominantColors,
     }
   } catch (error) {
-    console.error('Error analyzing image content:', error)
     // Return safe defaults on error
     return {
       hasTransparency: false,
@@ -283,7 +282,6 @@ async function processImageInternal(
       },
     }
   } catch (error) {
-    console.error('Error processing image:', error)
     throw new Error(
       `Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`
     )

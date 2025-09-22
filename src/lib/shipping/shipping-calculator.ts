@@ -52,14 +52,12 @@ export class ShippingCalculator {
           return JSON.parse(cached)
         }
       } catch (error) {
-        console.error('Redis cache error:', error)
-      }
+        }
     }
 
     // Get rates from all providers in parallel
     const ratePromises = Array.from(this.providers.values()).map((provider) =>
       provider.getRates(fromAddress, toAddress, packages).catch((error) => {
-        console.error(`Error getting rates from ${provider.carrier}:`, error)
         return []
       })
     )
@@ -75,8 +73,7 @@ export class ShippingCalculator {
       try {
         await redis.setex(cacheKey, 1800, JSON.stringify(allRates))
       } catch (error) {
-        console.error('Redis cache error:', error)
-      }
+        }
     }
 
     return allRates
@@ -148,8 +145,7 @@ export class ShippingCalculator {
         const isValid = await provider.validateAddress(address)
         if (isValid) return true
       } catch (error) {
-        console.error('Address validation error:', error)
-      }
+        }
     }
 
     return false

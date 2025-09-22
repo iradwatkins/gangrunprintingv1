@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
 import { addBreadcrumb } from '@/lib/sentry'
-import { SESSION_CONFIG } from '@/config/constants'
 
 // All i18n functionality temporarily disabled
 // import createMiddleware from 'next-intl/middleware';

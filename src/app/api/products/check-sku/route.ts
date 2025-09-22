@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
       product: existingProduct || null,
     })
   } catch (error) {
-    console.error('Error checking SKU:', error)
     return NextResponse.json({ error: 'Failed to check SKU' }, { status: 500 })
   }
 }

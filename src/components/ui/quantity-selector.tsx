@@ -53,7 +53,7 @@ export function QuantitySelector({
           // Data is already transformed by the API
           setDefaultQuantities(data)
         })
-        .catch((err) => console.error('Failed to load quantities:', err))
+        .catch((err) => )
     }
   }, [quantities])
 

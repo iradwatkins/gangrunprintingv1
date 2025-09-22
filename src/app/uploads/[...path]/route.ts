@@ -30,7 +30,6 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       },
     })
   } catch (error) {
-    console.error('Error serving file:', error)
     return new NextResponse('File not found', { status: 404 })
   }
 }

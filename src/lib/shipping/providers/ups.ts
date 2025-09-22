@@ -83,7 +83,6 @@ export class UPSProvider implements ShippingProvider {
       // Update default headers
       this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
     } catch (error) {
-      console.error('UPS authentication failed:', error)
       throw new Error('Failed to authenticate with UPS API')
     }
   }
@@ -184,7 +183,6 @@ export class UPSProvider implements ShippingProvider {
 
       return rates
     } catch (error) {
-      console.error('UPS rate request failed:', error)
       return []
     }
   }
@@ -292,7 +290,6 @@ export class UPSProvider implements ShippingProvider {
         carrier: this.carrier,
       }
     } catch (error) {
-      console.error('UPS label creation failed:', error)
       throw new Error('Failed to create UPS shipping label')
     }
   }
@@ -340,7 +337,6 @@ export class UPSProvider implements ShippingProvider {
         events,
       }
     } catch (error) {
-      console.error('UPS tracking failed:', error)
       throw new Error('Failed to track UPS shipment')
     }
   }
@@ -373,7 +369,6 @@ export class UPSProvider implements ShippingProvider {
       const result = response.data.XAVResponse
       return result.Response.ResponseStatus.Code === '1'
     } catch (error) {
-      console.error('UPS address validation failed:', error)
       return false
     }
   }
@@ -388,7 +383,6 @@ export class UPSProvider implements ShippingProvider {
       await this.client.delete(`/shipping/v2403/shipments/cancel/${trackingNumber}`)
       return true
     } catch (error) {
-      console.error('UPS shipment cancellation failed:', error)
       return false
     }
   }

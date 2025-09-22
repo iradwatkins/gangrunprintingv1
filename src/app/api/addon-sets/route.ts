@@ -37,7 +37,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(addOnSets)
   } catch (error) {
-    console.error('Error fetching addon sets:', error)
     return NextResponse.json({ error: 'Failed to fetch addon sets' }, { status: 500 })
   }
 }
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(completeAddOnSet, { status: 201 })
   } catch (error) {
-    console.error('Error creating addon set:', error)
     return NextResponse.json({ error: 'Failed to create addon set' }, { status: 500 })
   }
 }

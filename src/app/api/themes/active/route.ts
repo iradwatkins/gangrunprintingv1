@@ -12,7 +12,6 @@ export async function GET() {
 
     return NextResponse.json(activeTheme)
   } catch (error) {
-    console.error('Error fetching active theme:', error)
     // Return default theme on error
     return NextResponse.json(themeManager.getDefaultTheme())
   }

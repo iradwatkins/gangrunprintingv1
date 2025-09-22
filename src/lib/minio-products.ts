@@ -156,7 +156,6 @@ export const uploadProductImage = async (
       },
     }
   } catch (error) {
-    console.error('Error uploading product image:', error)
     throw new Error(
       `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`
     )
@@ -219,7 +218,6 @@ export const deleteProductImage = async (objectName: string) => {
 
     return true
   } catch (error) {
-    console.error('Error deleting product image:', error)
     throw new Error('Failed to delete image from storage')
   }
 }

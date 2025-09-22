@@ -41,7 +41,6 @@ export async function PUT(request: NextRequest, context: Context) {
 
     return NextResponse.json(updatedProduct)
   } catch (error) {
-    console.error('Error updating draft product:', error)
     return NextResponse.json({ error: 'Failed to update draft product' }, { status: 500 })
   }
 }

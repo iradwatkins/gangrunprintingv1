@@ -24,7 +24,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(order)
   } catch (error) {
-    console.error('Error fetching order:', error)
     return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 })
   }
 }
@@ -59,8 +58,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: id }),
       }).catch((error) => {
-        console.error('Failed to send tracking email:', error)
-      })
+        })
     }
 
     return NextResponse.json({
@@ -68,7 +66,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       order: updatedOrder,
     })
   } catch (error) {
-    console.error('Error updating order:', error)
     return NextResponse.json({ error: 'Failed to update order' }, { status: 500 })
   }
 }

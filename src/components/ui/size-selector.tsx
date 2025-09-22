@@ -67,7 +67,7 @@ export function SizeSelector({
           return res.json()
         })
         .then((data) => setDefaultSizes(data))
-        .catch((err) => console.error('Failed to load sizes:', err))
+        .catch((err) => )
     }
   }, [sizes])
 

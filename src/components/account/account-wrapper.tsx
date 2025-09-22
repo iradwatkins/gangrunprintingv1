@@ -28,7 +28,6 @@ export default function AccountWrapper({ children }: { children: React.ReactNode
           setIsSignedIn(false)
         }
       } catch (error) {
-        console.error('Auth check failed:', error)
         setUser(null)
         setIsSignedIn(false)
       } finally {
