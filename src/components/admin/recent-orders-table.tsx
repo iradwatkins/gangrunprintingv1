@@ -182,6 +182,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                 <input
                   checked={selectedOrders.length === orders.length && orders.length > 0}
                   className="rounded border-gray-300"
+                  name="selectAllOrders"
                   type="checkbox"
                   onChange={selectAllOrders}
                 />
@@ -202,6 +203,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                   <input
                     checked={selectedOrders.includes(order.id)}
                     className="rounded border-gray-300"
+                    name={`selectOrder-${order.id}`}
                     type="checkbox"
                     onChange={() => toggleOrderSelection(order.id)}
                   />

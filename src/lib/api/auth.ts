@@ -15,7 +15,7 @@ export interface AuthOptions {
 /**
  * Utility to handle authentication and authorization in API routes
  */
-export async function withAuth(
+export function withAuth(
   handler: (
     request: NextRequest,
     context: { params: any },

@@ -428,6 +428,7 @@ export function ProductImageUpload({
           accept="image/*"
           className="hidden"
           disabled={!canAddMore}
+          name="productImages"
           type="file"
           onChange={handleFileInput}
         />

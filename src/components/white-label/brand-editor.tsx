@@ -277,6 +277,7 @@ export function BrandEditor({ section }: BrandEditorProps) {
                 <input
                   accept=".json"
                   className="absolute inset-0 opacity-0 cursor-pointer"
+                  name="importConfig"
                   type="file"
                   onChange={importConfig}
                 />

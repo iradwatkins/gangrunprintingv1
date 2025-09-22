@@ -132,6 +132,7 @@ export default function UploadPage() {
               multiple
               accept=".pdf,.jpg,.jpeg,.png,.svg,.ai,.psd"
               className="hidden"
+              name="customerUpload"
               type="file"
               onChange={handleFileInput}
             />

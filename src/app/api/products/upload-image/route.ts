@@ -7,9 +7,11 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 30 // 30 seconds timeout
 export const runtime = 'nodejs'
-
-// Route segment config for body size
 export const revalidate = 0
+
+// IMPORTANT: In Next.js App Router, body size limit must be set in the route configuration
+// The default is 1MB which causes ERR_CONNECTION_CLOSED for larger uploads
+// This is handled by the middleware.ts file which sets the x-body-size-limit header
 
 // POST /api/products/upload-image - Upload product image with optimization
 export async function POST(request: NextRequest) {

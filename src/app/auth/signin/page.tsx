@@ -95,6 +95,7 @@ export default function SignInPage() {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               id="email"
+              name="email"
               placeholder="you@example.com"
               type="email"
               value={email}
@@ -109,6 +110,7 @@ export default function SignInPage() {
             <input
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               id="name"
+              name="name"
               placeholder="Your name"
               type="text"
               value={name}

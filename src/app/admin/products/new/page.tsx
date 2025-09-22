@@ -671,6 +671,7 @@ export default function NewProductPage() {
                   className="hidden"
                   disabled={uploadingImage}
                   id="product-image"
+                  name="productImage"
                   type="file"
                   onChange={handleImageUpload}
                 />
