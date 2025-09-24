@@ -3,19 +3,19 @@
  * Auto-refactored by BMAD
  */
 
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-
-'use client'
-
+import ReactFlow, {
   Node,
   Edge,
   addEdge,
   Background,
   Controls,
-  type Connection,
+  Connection,
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
