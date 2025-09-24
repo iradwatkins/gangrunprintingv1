@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { ColorPicker } from '@/components/ui/color-picker'
-import {
+import { EmailBuilderProps, EmailTemplate } from './types'
 
 export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps) {
   const [currentTemplate, setCurrentTemplate] = useState<EmailTemplate>(

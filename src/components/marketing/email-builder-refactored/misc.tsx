@@ -3,9 +3,9 @@
  * Auto-refactored by BMAD
  */
 
-import {
-
 'use client'
+
+import React from 'react'
 
   DndContext,
   DragOverlay,

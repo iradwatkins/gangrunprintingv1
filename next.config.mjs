@@ -4,8 +4,8 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Output configuration for standalone deployment - disabled to fix PM2 compatibility
-  // output: 'standalone',
+  // Output configuration for Docker deployment
+  output: 'standalone',
 
   // Enable experimental features for App Router
   experimental: {
@@ -179,7 +179,7 @@ const nextConfig = {
     ]
   },
 
-  // Minimal webpack configuration - let Next.js handle defaults
+  // Webpack configuration to fix chunk loading issues
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Only add essential fallbacks for browser compatibility
     if (!isServer) {
@@ -188,6 +188,58 @@ const nextConfig = {
         fs: false,
         path: false,
         crypto: false,
+      }
+
+      // Fix chunk loading issues by configuring split chunks
+      config.optimization = {
+        ...config.optimization,
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            framework: {
+              name: 'framework',
+              chunks: 'all',
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
+              priority: 40,
+              enforce: true,
+            },
+            lib: {
+              test(module) {
+                return module.size() > 160000 &&
+                  /node_modules[\\/]/.test(module.identifier())
+              },
+              name(module) {
+                const hash = require('crypto').createHash('sha1')
+                hash.update(module.identifier())
+                return hash.digest('hex').substring(0, 8)
+              },
+              priority: 30,
+              minChunks: 1,
+              reuseExistingChunk: true,
+            },
+            commons: {
+              name: 'commons',
+              chunks: 'all',
+              minChunks: 2,
+              priority: 20,
+            },
+            shared: {
+              name(module, chunks) {
+                return `shared-${require('crypto')
+                  .createHash('sha1')
+                  .update(chunks.map(c => c.name).join('_'))
+                  .digest('hex')
+                  .substring(0, 8)}`
+              },
+              priority: 10,
+              minChunks: 2,
+              reuseExistingChunk: true,
+            },
+          },
+        },
       }
     }
 
@@ -204,12 +256,12 @@ const nextConfig = {
         : false,
   },
 
-  // Output configuration - disabled to maintain PM2 compatibility
-  // output: 'standalone',
-
-  // Exclude problematic routes from build temporarily
+  // Generate stable build IDs
+  // This prevents chunk loading errors in production
   async generateBuildId() {
-    return 'production-build-' + Date.now()
+    // Use stable ID to prevent chunk mismatch
+    // Update this when making breaking changes
+    return 'prod-2025-01-24-v1'
   },
 
   // TypeScript configuration
