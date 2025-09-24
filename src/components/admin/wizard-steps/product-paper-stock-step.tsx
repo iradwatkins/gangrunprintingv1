@@ -7,7 +7,7 @@ import { ProductPaperStocks } from '../product-paper-stocks'
 import { FileText, Info } from 'lucide-react'
 
 interface ProductData {
-  paperStocks: any[]
+  paperStocks: unknown[]
 }
 
 interface ProductPaperStockStepProps {
@@ -46,7 +46,7 @@ export function ProductPaperStockStep({
     onValidationChange(isValid)
   }
 
-  const handleStocksChange = (stocks: any[]) => {
+  const handleStocksChange = (stocks: unknown[]) => {
     onUpdate({ paperStocks: stocks })
   }
 

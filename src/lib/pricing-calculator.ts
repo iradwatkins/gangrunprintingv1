@@ -28,7 +28,7 @@ export interface PricingInputs {
     id: string
     name: string
     pricingModel: 'FLAT' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM'
-    configuration: any
+    configuration: Record<string, unknown>
     quantity?: number // For per-unit pricing
   }>
 }

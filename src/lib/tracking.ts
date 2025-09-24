@@ -1,4 +1,3 @@
-import { type Carrier } from '@prisma/client'
 import { TRACKING_URLS } from '@/config/constants'
 
 export interface TrackingInfo {

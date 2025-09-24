@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 /**
  * product-image-upload - component definitions
  * Auto-refactored by BMAD
@@ -5,18 +6,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import toast from '@/lib/toast'
 import {
-import {
-import {
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import {
-
 
 export function ProductImageUpload({
   images = [],
@@ -171,14 +165,14 @@ export function ProductImageUpload({
     e.preventDefault()
     setIsDragActive(false)
     const files = Array.from(e.dataTransfer.files).filter(
-      (file) => file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+      (file) => file.type.startsWith('image/') && file.size <= MAX_FILE_SIZE
     )
     handleFiles(files)
   }
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter(
-      (file) => file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024
+      (file) => file.type.startsWith('image/') && file.size <= MAX_FILE_SIZE
     )
     handleFiles(files)
   }

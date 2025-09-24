@@ -10,14 +10,14 @@ interface SquareCardPaymentProps {
   applicationId: string
   locationId: string
   total: number
-  onPaymentSuccess: (result: any) => void
+  onPaymentSuccess: (result: Record<string, unknown>) => void
   onPaymentError: (error: string) => void
   onBack: () => void
 }
 
 declare global {
   interface Window {
-    Square?: any
+    Square?: Record<string, unknown>
   }
 }
 
@@ -138,7 +138,7 @@ export function SquareCardPayment({
         }
       } else {
         // Handle tokenization errors
-        const errorMessages = result.errors?.map((error: any) => error.message).join(', ')
+        const errorMessages = result.errors?.map((error: Record<string, unknown>) => error.message).join(', ')
         throw new Error(errorMessages || 'Card validation failed')
       }
     } catch (err) {

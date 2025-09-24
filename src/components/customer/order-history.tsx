@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { format } from '@/lib/date'
 import { RefreshCw, Eye, Search, Calendar, Download, ChevronRight } from 'lucide-react'
 import { TrackingButton } from '@/components/tracking/tracking-button'
-import { type Carrier } from '@prisma/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -28,7 +27,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
-import { type DateRange } from 'react-day-picker'
 import { useToast } from '@/hooks/use-toast'
 import { getStatusInfo } from '@/lib/order-management'
 import { OrderStatus } from '@prisma/client'
@@ -60,9 +58,9 @@ interface Quote {
   quoteNumber: string
   status: string
   validUntil: string
-  pricing: any
+  pricing: Record<string, unknown>
   createdAt: string
-  productDetails: any
+  productDetails: Record<string, unknown>
 }
 
 export default function OrderHistory() {

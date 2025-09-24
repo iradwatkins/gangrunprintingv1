@@ -11,14 +11,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs'
 import { ColorPicker } from '@/components/ui/color-picker'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { CodeEditor } from '@/components/ui/code-editor'
 import { useToast } from '@/hooks/use-toast'
 import { Save, RefreshCw, Eye, Download, Upload } from 'lucide-react'
-
 
 export function BrandEditor({ section }: BrandEditorProps) {
   const { theme } = useTheme()
@@ -182,7 +179,7 @@ export function BrandEditor({ section }: BrandEditorProps) {
     reader.readAsText(file)
   }
 
-  const updateConfig = (key: keyof BrandConfig, value: any) => {
+  const updateConfig = (key: keyof BrandConfig, value: Record<string, unknown>) => {
     setConfig((prev) => ({ ...prev, [key]: value }))
   }
 
@@ -265,7 +262,7 @@ function ColorsSection({
   updateConfig,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
 }) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -331,7 +328,7 @@ function TypographySection({
   updateConfig,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
 }) {
   const fontOptions = [
     'Inter',
@@ -447,7 +444,7 @@ function LogosSection({
   updateConfig,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
 }) {
   return (
     <div className="space-y-6">
@@ -502,7 +499,7 @@ function LayoutSection({
   updateConfig,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
 }) {
   return (
     <div className="space-y-6">
@@ -556,7 +553,7 @@ function CustomSection({
   updateConfig,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
 }) {
   return (
     <div className="space-y-6">
@@ -600,7 +597,7 @@ function EmailSection({
   updateEmailColor,
 }: {
   config: BrandConfig
-  updateConfig: (key: keyof BrandConfig, value: any) => void
+  updateConfig: (key: keyof BrandConfig, value: Record<string, unknown>) => void
   updateEmailColor: (key: keyof BrandConfig['emailColors'], value: string) => void
 }) {
   return (

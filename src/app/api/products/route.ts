@@ -1,8 +1,8 @@
-import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+import { NextRequest } from 'next/server'
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -12,6 +12,8 @@ import {
   generateRequestId,
 } from '@/lib/api-response'
 import { createProductSchema } from '@/lib/validation'
+import { transformProductsForFrontend } from '@/lib/data-transformers'
+import type { Product } from '@/types/product'
 
 // GET /api/products - List all products
 export async function GET(request: NextRequest) {
@@ -28,7 +30,7 @@ export async function GET(request: NextRequest) {
       referer: request.headers.get('referer'),
     })
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (categoryId) where.categoryId = categoryId
     // Only add isActive filter if explicitly provided in query params
     if (isActive !== null && isActive !== undefined) {
@@ -101,24 +103,17 @@ export async function GET(request: NextRequest) {
     const responseTime = Date.now() - startTime
 
     // Transform to match frontend expectations (PascalCase property names)
-    const transformedProducts = products.map((product) => ({
-      ...product,
-      ProductCategory: product.productCategory,
-      ProductImage: product.productImages, // Note: ProductImage without 's' for frontend compatibility
-      // Keep the originals for backward compatibility
-      productCategory: product.productCategory,
-      productImages: product.productImages,
-    }))
+    const transformedProducts = transformProductsForFrontend(products)
 
     return createSuccessResponse(
       transformedProducts,
       200,
-      { count: transformedProducts.length },
+      { count: transformedProducts.length, responseTime },
       requestId
     )
-  } catch (error: any) {
+  } catch (error) {
     const responseTime = Date.now() - startTime
-    :`, error)
+    console.error(`[${requestId}] Database error:`, error)
 
     return createDatabaseErrorResponse(error, requestId)
   }
@@ -287,7 +282,17 @@ export async function POST(request: NextRequest) {
         if (images.length > 0) {
           relationshipPromises.push(
             tx.productImage.createMany({
-              data: images.map((img: any, index: number) => ({
+              data: images.map((img: {
+                url: string
+                thumbnailUrl?: string
+                alt?: string
+                caption?: string
+                isPrimary?: boolean
+                width?: number
+                height?: number
+                fileSize?: number
+                mimeType?: string
+              }, index: number) => ({
                 productId: newProduct.id,
                 url: img.url,
                 thumbnailUrl: img.thumbnailUrl || img.url,
@@ -351,7 +356,7 @@ export async function POST(request: NextRequest) {
     )
 
     return createSuccessResponse(product, 201, null, requestId)
-  } catch (error: any) {
+  } catch (error) {
     // Handle transaction timeouts
     if (error.name === 'TransactionTimeout') {
       return createErrorResponse(

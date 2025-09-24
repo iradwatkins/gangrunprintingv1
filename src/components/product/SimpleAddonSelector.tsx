@@ -23,7 +23,7 @@ interface StandardizedAddon {
   priceDisplay: string
   isDefault: boolean
   additionalTurnaroundDays: number
-  configuration?: any
+  configuration?: Record<string, unknown>
 }
 
 interface VariableDataConfig {

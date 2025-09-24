@@ -57,7 +57,7 @@ const PRIORITY_COLORS = {
   urgent: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
 }
 
-export function NotificationsDropdown() {
+export function NotificationsDropdown() : unknown {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)

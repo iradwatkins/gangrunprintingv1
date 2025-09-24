@@ -1,4 +1,3 @@
-import { type NextRequest } from 'next/server'
 import { reportError, addBreadcrumb } from '@/lib/sentry'
 
 // Generate correlation ID for request tracking
@@ -303,7 +302,7 @@ export function withLogging<T extends any[]>(
     const startTime = Date.now()
 
     // Log request
-    const requestData: any = {
+    const requestData: Record<string, unknown> = {
       correlationId,
       method: request.method,
       path: request.nextUrl.pathname,
@@ -334,7 +333,7 @@ export function withLogging<T extends any[]>(
       const duration = Date.now() - startTime
 
       // Log response
-      const responseData: any = {
+      const responseData: Record<string, unknown> = {
         correlationId,
         status: response.status,
         duration,
@@ -369,7 +368,7 @@ export function withLogging<T extends any[]>(
 // Combine multiple middleware functions
 export function withMiddleware<T extends any[]>(
   handler: (...args: T) => Promise<Response> | Response,
-  ...middlewares: Array<(handler: any) => any>
+  ...middlewares: Array<(handler: Record<string, unknown>) => any>
 ) {
   return middlewares.reduce((wrapped, middleware) => middleware(wrapped), handler)
 }
@@ -384,7 +383,7 @@ export const withStandardMiddleware = <T extends any[]>(
     validationOptions?: Parameters<typeof withRequestValidation>[1]
   } = {}
 ) => {
-  const middlewares: Array<(handler: any) => any> = [withErrorHandling]
+  const middlewares: Array<(handler: Record<string, unknown>) => any> = [withErrorHandling]
 
   if (options.logRequests) {
     middlewares.push(withLogging)

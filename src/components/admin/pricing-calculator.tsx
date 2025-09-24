@@ -15,7 +15,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Calculator, DollarSign, TrendingUp, Plus, X, Info } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 interface PricingTier {
   id?: string
@@ -28,8 +27,8 @@ interface PricingTier {
 interface PricingCalculatorProps {
   basePrice: number
   setupFee: number
-  paperStocks: any[]
-  options: any[]
+  paperStocks: Record<string, unknown>[]
+  options: Record<string, unknown>[]
   pricingTiers: PricingTier[]
   onTiersChange: (tiers: PricingTier[]) => void
 }
@@ -149,7 +148,7 @@ export function PricingCalculator({
     onTiersChange(newTiers)
   }
 
-  const handleTierChange = (index: number, field: keyof PricingTier, value: any) => {
+  const handleTierChange = (index: number, field: keyof PricingTier, value: Record<string, unknown>) => {
     const newTiers = [...pricingTiers]
     newTiers[index] = {
       ...newTiers[index],

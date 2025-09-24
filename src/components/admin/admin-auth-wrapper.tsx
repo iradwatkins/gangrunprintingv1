@@ -9,7 +9,7 @@ interface AdminAuthWrapperProps {
 }
 
 interface AuthContextType {
-  user: any | null
+  user: Record<string, unknown> | null
   isLoading: boolean
   isAuthorized: boolean
 }

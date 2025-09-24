@@ -4,6 +4,4 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { type CustomerSegment, type User } from '@prisma/client'
-
 

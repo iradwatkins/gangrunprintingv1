@@ -5,13 +5,11 @@
 
 import { cookies } from 'next/headers'
 import { Lucia, TimeSpan } from 'lucia'
-import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION, SESSION_CONFIG } from '@/config/constants'
 import { authLogger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
-
 
 export const lucia = new Lucia(adapter, {
   sessionExpiresIn: new TimeSpan(90, 'd'), // 90 days session lifetime
@@ -64,7 +62,6 @@ interface DatabaseUserAttributes {
   role: string
   emailVerified: boolean
 }
-
 
 export const validateRequest = async (): Promise<
   { user: User; session: Session } | { user: null; session: null }
@@ -385,7 +382,7 @@ export async function verifyMagicLink(token: string, email: string) {
   return { user, session }
 }
 
-export async function signOut() {
+export async function signOut() : Promise<unknown> {
   const { user, session } = await validateRequest()
 
   if (!session) {
@@ -413,7 +410,6 @@ export async function signOut() {
   const cookieStore = await cookies()
   cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 }
-
 
 export const sessionUtils = {
   /**

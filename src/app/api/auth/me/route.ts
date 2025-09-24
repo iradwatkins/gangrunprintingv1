@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         },
       }
     )
-  } catch (error: any) {
+  } catch (error) {
     const responseTime = Date.now() - startTime
     const errorDetails = {
       requestId,

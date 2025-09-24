@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input'
 import { Sun, Moon, Copy, Check, Download, Loader2, ExternalLink } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
-
 export default function ThemeColors() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)

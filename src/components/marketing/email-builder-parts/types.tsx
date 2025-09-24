@@ -42,8 +42,8 @@
 export interface EmailComponent {
   id: string
   type: 'text' | 'image' | 'button' | 'divider' | 'columns' | 'header' | 'footer'
-  content: any
-  styles: any
+  content: Record<string, unknown>
+  styles: Record<string, unknown>
 }
 
 export interface EmailTemplate {

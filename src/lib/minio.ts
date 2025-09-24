@@ -134,7 +134,7 @@ export function getMinioClientSync(): Minio.Client {
 
 const BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'printshop-files'
 
-export async function ensureBucket() {
+export async function ensureBucket() : Promise<unknown> {
   try {
     const client = await getMinioClient()
     const exists = await client.bucketExists(BUCKET_NAME)
@@ -234,7 +234,7 @@ export async function listFiles(prefix?: string) {
   try {
     const client = await getMinioClient()
     const stream = client.listObjects(BUCKET_NAME, prefix, true)
-    const files: any[] = []
+    const files: unknown[] = []
 
     return new Promise<any[]>((resolve, reject) => {
       stream.on('data', (obj) => files.push(obj))
@@ -256,7 +256,7 @@ export async function getFileMetadata(objectName: string) {
   }
 }
 
-export async function initializeBuckets() {
+export async function initializeBuckets() : Promise<unknown> {
   // Skip initialization during build
   if (process.env.NODE_ENV === 'production' && !process.env.MINIO_ENDPOINT) {
     return
@@ -318,7 +318,7 @@ export function isMinioAvailable(): boolean {
 }
 
 // Reset function for testing
-export function resetMinioClient() {
+export function resetMinioClient() : unknown {
   minioClient = null
   initAttempted = false
   initError = null

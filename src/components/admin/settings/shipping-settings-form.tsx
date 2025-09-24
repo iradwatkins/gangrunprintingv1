@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Truck, Save } from 'lucide-react'
 
-export function ShippingSettingsForm() {
+export function ShippingSettingsForm() : unknown {
   return (
     <Card>
       <CardHeader>

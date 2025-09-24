@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import { type NextRequest, NextResponse } from 'next/server'
 
 import { validateRequest } from '@/lib/auth'
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate totals
     let subtotal = 0
-    const orderItems = items.map((item: any) => ({
+    const orderItems = items.map((item: Record<string, unknown>) => ({
       productName: item.productName || item.name,
       productSku: item.sku || 'CUSTOM',
       quantity: item.quantity,
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate tax (8.25% for Texas)
-    const taxRate = 0.0825
+    const taxRate = TAX_RATE
     const tax = Math.round(subtotal * taxRate)
 
     // Calculate shipping
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Create Square order
     let squareOrderId: string | undefined
     try {
-      const squareLineItems = orderItems.map((item: any) => ({
+      const squareLineItems = orderItems.map((item: Record<string, unknown>) => ({
         name: item.productName,
         quantity: item.quantity.toString(),
         basePriceMoney: {
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
         squareOrderId,
         status: 'PENDING_PAYMENT',
         OrderItem: {
-          create: orderItems.map((item: any) => ({
+          create: orderItems.map((item: Record<string, unknown>) => ({
             id: `${orderNumber}-${Math.random().toString(36).substring(7)}`,
             productName: item.productName,
             productSku: item.productSku,
@@ -158,7 +159,7 @@ export async function POST(request: NextRequest) {
         orderNumber: order.orderNumber,
         customerName: name,
         customerEmail: email,
-        items: order.OrderItem.map((item: any) => ({
+        items: order.OrderItem.map((item: Record<string, unknown>) => ({
           name: item.productName,
           quantity: item.quantity,
           price: item.price,
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
         customerName: name,
         customerEmail: email,
         customerPhone: phone,
-        items: order.OrderItem.map((item: any) => ({
+        items: order.OrderItem.map((item: Record<string, unknown>) => ({
           name: item.productName,
           quantity: item.quantity,
           price: item.price,

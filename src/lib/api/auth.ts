@@ -2,8 +2,8 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 
 export interface AuthContext {
-  user: any
-  session: any
+  user: Record<string, unknown>
+  session: Record<string, unknown>
 }
 
 export interface AuthOptions {
@@ -18,12 +18,12 @@ export interface AuthOptions {
 export function withAuth(
   handler: (
     request: NextRequest,
-    context: { params: any },
+    context: { params: Record<string, unknown> },
     auth: AuthContext
   ) => Promise<NextResponse>,
   options: AuthOptions = {}
 ) {
-  return async function (request: NextRequest, context: { params: any }) {
+  return async function (request: NextRequest, context: { params: Record<string, unknown> }) {
     try {
       const { user, session } = await validateRequest()
 
@@ -56,8 +56,8 @@ export function withAuth(
  * Check if user owns resource or is admin
  */
 export function checkOwnershipOrAdmin(
-  user: any,
-  session: any,
+  user: Record<string, unknown>,
+  session: Record<string, unknown>,
   resourceUserId?: string,
   resourceEmail?: string
 ): boolean {

@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import { type NextRequest, NextResponse } from 'next/server'
 import { uploadFile, BUCKETS, initializeBuckets, isMinioAvailable } from '@/lib/minio-client'
 import { randomUUID } from 'crypto'
@@ -5,7 +6,7 @@ import sharp from 'sharp'
 import path from 'path'
 
 // Configuration
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB per file
+const MAX_FILE_SIZE = MAX_FILE_SIZE // 10MB per file
 const MAX_TOTAL_SIZE = 50 * 1024 * 1024 // 50MB total per session
 const MAX_FILES = 10 // Maximum 10 files per upload
 
@@ -230,7 +231,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle OPTIONS for CORS
-export async function OPTIONS() {
+export async function OPTIONS() : Promise<unknown> {
   return new NextResponse(null, {
     status: 200,
     headers: {

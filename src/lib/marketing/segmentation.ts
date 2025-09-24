@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { type CustomerSegment, type User } from '@prisma/client'
 
 // Re-export refactored modules
 export * from './segmentation-refactored/misc';

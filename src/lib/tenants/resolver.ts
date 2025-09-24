@@ -14,8 +14,8 @@ export interface TenantInfo {
   subdomain: string
   isActive: boolean
   plan: string
-  settings: any
-  branding: any
+  settings: Record<string, unknown>
+  branding: Record<string, unknown>
   locales: string[]
   defaultLocale: string
   timezone: string
@@ -168,7 +168,7 @@ export async function getCurrentTenant(): Promise<TenantContext | null> {
 }
 
 // Clear tenant cache (useful for development)
-export function clearTenantCache() {
+export function clearTenantCache() : unknown {
   tenantCache.clear()
 }
 

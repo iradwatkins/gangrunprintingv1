@@ -202,7 +202,7 @@ export function formatValidationErrors(errors: z.ZodError): Record<string, strin
  */
 export function validateField<T>(
   schema: z.ZodSchema<T>,
-  value: any
+  value: Record<string, unknown>
 ): { isValid: boolean; error?: string } {
   const result = schema.safeParse(value)
 

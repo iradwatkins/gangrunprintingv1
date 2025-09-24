@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { WorkflowDesigner } from '@/components/marketing/workflow-designer'
 import { Button } from '@/components/ui/button'
@@ -9,7 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 export default function NewWorkflowPage() {
   const router = useRouter()
 
-  const handleSave = async (workflow: any) => {
+  const handleSave = async (workflow: Record<string, unknown>) => {
     try {
       const response = await fetch('/api/marketing/workflows', {
         method: 'POST',
@@ -24,7 +23,7 @@ export default function NewWorkflowPage() {
       }
   }
 
-  const handlePreview = (workflow: any) => {
+  const handlePreview = (workflow: Record<string, unknown>) => {
     // Implement preview functionality
   }
 

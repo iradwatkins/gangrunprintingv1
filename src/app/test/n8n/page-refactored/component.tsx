@@ -12,9 +12,6 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-import { Textarea } from '@/components/ui/textarea'
-import {
-
 
 export default function N8NTestPage() {
   const [loading, setLoading] = useState(false)
@@ -417,7 +414,6 @@ export default function N8NTestPage() {
                     <FileText className="mr-2 h-4 w-4" />
                     In Production
                   </Button>
-
 
                   <Button
                     className="w-full"

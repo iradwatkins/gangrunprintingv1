@@ -8,7 +8,7 @@ interface ThemeConfig {
   customCSS?: string
 }
 
-export function ThemeInjector() {
+export function ThemeInjector() : unknown {
   const [theme, setTheme] = useState<ThemeConfig | null>(null)
 
   useEffect(() => {

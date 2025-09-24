@@ -18,7 +18,6 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import toast from '@/lib/toast'
 
-
 export default function QuantitiesPage() {
   const [groups, setGroups] = useState<QuantityGroup[]>([])
   const [loading, setLoading] = useState(true)
@@ -99,7 +98,7 @@ export default function QuantitiesPage() {
         const error = await response.json()
         throw new Error(error.error || 'Failed to save group')
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to save group')
     } finally {
       setSaving(false)
@@ -124,7 +123,7 @@ export default function QuantitiesPage() {
       } else {
         throw new Error(data.error || 'Failed to delete group')
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to delete group')
     }
   }

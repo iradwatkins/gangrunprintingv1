@@ -53,7 +53,7 @@ const data = [
   },
 ]
 
-export function Overview() {
+export function Overview() : unknown {
   return (
     <ResponsiveContainer height={350} width="100%">
       <BarChart data={data}>

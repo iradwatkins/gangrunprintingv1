@@ -17,7 +17,6 @@ import {
 import {
 import toast from '@/lib/toast'
 
-
 export default function AddOnsPage() {
   const [addOns, setAddOns] = useState<AddOn[]>([])
   const [loading, setLoading] = useState(true)
@@ -620,7 +619,6 @@ export default function AddOnsPage() {
                 />
               </div>
             )}
-
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right" htmlFor="turnaroundDays">

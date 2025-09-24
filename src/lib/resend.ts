@@ -49,7 +49,7 @@ export async function sendEmail(template: EmailTemplate) {
 
 // Email templates
 export const emailTemplates = {
-  orderConfirmation: (order: any) => ({
+  orderConfirmation: (order: Record<string, unknown>) => ({
     subject: `Order Confirmation #${order.orderNumber}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -66,7 +66,7 @@ export const emailTemplates = {
     `,
   }),
 
-  orderStatusUpdate: (order: any) => ({
+  orderStatusUpdate: (order: Record<string, unknown>) => ({
     subject: `Order #${order.orderNumber} - Status Update`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -83,7 +83,7 @@ export const emailTemplates = {
     `,
   }),
 
-  quoteRequest: (quote: any) => ({
+  quoteRequest: (quote: Record<string, unknown>) => ({
     subject: `Quote Request #${quote.quoteNumber}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -117,7 +117,7 @@ export const emailTemplates = {
     `,
   }),
 
-  welcomeEmail: (user: any) => ({
+  welcomeEmail: (user: Record<string, unknown>) => ({
     subject: 'Welcome to GangRun Printing!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -231,12 +231,12 @@ export async function sendOrderConfirmationWithFiles(orderData: {
   orderNumber: string
   customerName: string
   customerEmail: string
-  items: any[]
+  items: Record<string, unknown>[]
   subtotal: number
   tax: number
   shipping: number
   total: number
-  shippingAddress?: any
+  shippingAddress?: Record<string, unknown>
   estimatedDelivery?: string
 }) {
   try {
@@ -275,13 +275,13 @@ export async function sendAdminOrderNotification(orderData: {
   customerName: string
   customerEmail: string
   customerPhone?: string
-  items: any[]
+  items: Record<string, unknown>[]
   subtotal: number
   tax: number
   shipping: number
   total: number
-  shippingAddress?: any
-  billingAddress?: any
+  shippingAddress?: Record<string, unknown>
+  billingAddress?: Record<string, unknown>
   shippingMethod?: string
   specialInstructions?: string
   orderDate: Date

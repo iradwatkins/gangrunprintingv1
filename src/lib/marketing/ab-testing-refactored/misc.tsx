@@ -4,6 +4,4 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { type CampaignABTest, ABTestType } from '@prisma/client'
-
 

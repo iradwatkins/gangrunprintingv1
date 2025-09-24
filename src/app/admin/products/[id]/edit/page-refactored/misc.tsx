@@ -11,13 +11,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import {
-import { ProductImageUpload } from '@/components/admin/product-image-upload'
-import { Checkbox } from '@/components/ui/checkbox'
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator, Eye } from 'lucide-react'
 import Link from 'next/link'
-
 
 'use client'
 
@@ -27,7 +23,6 @@ import Link from 'next/link'
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 
 interface EditProductPageProps {
   params: Promise<{
@@ -487,7 +482,7 @@ function EditProductClient({ id }: { id: string }) {
                     <div>
                       <p className="font-medium text-sm mb-2">Preview: {selectedGroup.name}</p>
                       <div className="space-y-1">
-                        {selectedGroup.paperStockItems?.map((item: any) => (
+                        {selectedGroup.paperStockItems?.map((item: Record<string, unknown>) => (
                           <div
                             key={item.id}
                             className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
@@ -642,7 +637,7 @@ function EditProductClient({ id }: { id: string }) {
                     <div>
                       <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
                       <div className="space-y-1">
-                        {selectedSet.turnaroundTimeItems?.map((item: any) => (
+                        {selectedSet.turnaroundTimeItems?.map((item: Record<string, unknown>) => (
                           <div
                             key={item.id}
                             className={`px-2 py-1 text-xs rounded flex items-center justify-between ${

@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 export * from './minio'
 import { uploadFile } from './minio'
 import {
@@ -166,7 +167,7 @@ export const uploadProductImage = async (
  * Legacy validation function for backward compatibility
  */
 export const validateImage = (buffer: Buffer, fileName?: string, mimeType?: string) => {
-  const maxSize = 10 * 1024 * 1024 // 10MB
+  const maxSize = MAX_FILE_SIZE // 10MB
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
 
   // If mimeType is provided, validate it

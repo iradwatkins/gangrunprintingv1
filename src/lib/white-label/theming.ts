@@ -1,4 +1,3 @@
-import { type TenantInfo } from '@/lib/tenants/resolver'
 
 export interface ThemeConfig {
   // Colors

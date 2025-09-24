@@ -4,9 +4,6 @@
  * Refactored: Multiple modules < 300 lines each
  */
 
-import { businessMetrics } from '@/lib/monitoring'
-import { recordMetric } from '@/lib/sentry'
-
 // Re-export refactored modules
 export * from './business-intelligence-refactored/misc';
 export * from './business-intelligence-refactored/utils';

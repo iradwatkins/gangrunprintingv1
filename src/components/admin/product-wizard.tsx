@@ -33,7 +33,7 @@ import { ProductTurnaroundStep } from './wizard-steps/product-turnaround-step'
 import { ProductPriceTestStep } from './wizard-steps/product-price-test-step'
 
 interface ProductWizardProps {
-  product?: any
+  product?: Record<string, unknown>
 }
 
 interface WizardStep {
@@ -57,10 +57,10 @@ interface ProductData {
   isFeatured: boolean
 
   // Images
-  images: any[]
+  images: Record<string, unknown>[]
 
   // Paper Stocks
-  paperStocks: any[]
+  paperStocks: Record<string, unknown>[]
 
   // Quantities
   useQuantityGroup: boolean
@@ -73,7 +73,7 @@ interface ProductData {
   sizeIds: string[]
 
   // Options/Add-ons
-  options: any[]
+  options: Record<string, unknown>[]
 
   // Turnaround/Production
   productionTime: number
@@ -87,7 +87,7 @@ interface ProductData {
   // Pricing
   basePrice: number
   setupFee: number
-  pricingTiers: any[]
+  pricingTiers: Record<string, unknown>[]
 }
 
 export function ProductWizard({ product }: ProductWizardProps) {
@@ -245,7 +245,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
       }
 
       toast.success('Draft saved successfully')
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to save draft')
     } finally {
       setSavingDraft(false)
@@ -274,7 +274,7 @@ export function ProductWizard({ product }: ProductWizardProps) {
 
       toast.success(product ? 'Product updated successfully' : 'Product published successfully')
       router.push('/admin/products')
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to publish product')
     } finally {
       setLoading(false)

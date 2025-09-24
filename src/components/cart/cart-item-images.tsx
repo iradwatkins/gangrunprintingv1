@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { type CartItem } from '@/lib/cart-types'
 
 interface CustomerImage {
   id: string

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       OR: [{ isPublic: true }, { createdBy: session.user.email || user?.id }],
     }
 

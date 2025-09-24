@@ -39,9 +39,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-function generateReceiptHtml(order: any): string {
+function generateReceiptHtml(order: Record<string, unknown>): string {
   const itemsList = order.OrderItem.map(
-    (item: any) =>
+    (item: Record<string, unknown>) =>
       `<tr>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.productName}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>

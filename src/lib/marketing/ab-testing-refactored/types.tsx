@@ -3,15 +3,13 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface ABTestVariant {
   id: string
   name: string
   type: ABTestType
-  content: any
+  content: Record<string, unknown>
   trafficPercentage: number
 }
-
 
 export interface ABTestResults {
   variantId: string
@@ -29,7 +27,6 @@ export interface ABTestResults {
   isWinner: boolean
   significanceLevel: number
 }
-
 
 export interface ABTestStatistics {
   testId: string
@@ -115,7 +112,7 @@ export class ABTestingService {
   }
 
   static async endABTest(id: string, winnerId?: string): Promise<CampaignABTest> {
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       isActive: false,
       endedAt: new Date(),
     }
@@ -145,11 +142,11 @@ export class ABTestingService {
 
     for (const variant of variants) {
       // Get sends for this variant
-      const variantSends = sends.filter((send: any) => send.trackingData?.variantId === variant.id)
+      const variantSends = sends.filter((send: Record<string, unknown>) => send.trackingData?.variantId === variant.id)
 
       const sends_count = variantSends.length
-      const opens = variantSends.filter((send: any) => send.openedAt).length
-      const clicks = variantSends.filter((send: any) => send.clickedAt).length
+      const opens = variantSends.filter((send: Record<string, unknown>) => send.openedAt).length
+      const clicks = variantSends.filter((send: Record<string, unknown>) => send.clickedAt).length
 
       // TODO: Calculate conversions and revenue based on tracking data
       const conversions = 0 // This would be calculated from order tracking

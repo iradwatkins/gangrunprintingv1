@@ -30,7 +30,7 @@ interface ProductData {
   shortDescription: string
   isActive: boolean
   isFeatured: boolean
-  images: any[]
+  images: unknown[]
 }
 
 interface ProductBasicInfoStepProps {
@@ -262,7 +262,7 @@ export function ProductBasicInfoStep({
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat: any) => (
+                  {categories.map((cat: Record<string, unknown>) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>

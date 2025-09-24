@@ -12,7 +12,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import AddonAccordion from './AddonAccordion'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 
-
 export default function ProductConfigurationForm({
   productId,
   basePrice = 0,
@@ -74,14 +73,14 @@ export default function ProductConfigurationForm({
 
           // Set default sides and coating based on selected paper
           if (newConfig.paperStock && data.paperStocks) {
-            const selectedPaper = data.paperStocks.find((p: any) => p.id === newConfig.paperStock)
+            const selectedPaper = data.paperStocks.find((p: Record<string, unknown>) => p.id === newConfig.paperStock)
             if (selectedPaper) {
               // Set default coating
-              const defaultCoating = selectedPaper.coatings.find((c: any) => c.isDefault)
+              const defaultCoating = selectedPaper.coatings.find((c: Record<string, unknown>) => c.isDefault)
               newConfig.coating = defaultCoating?.id || selectedPaper.coatings[0]?.id || ''
 
               // Set default sides (first enabled option)
-              const firstEnabledSide = selectedPaper.sides.find((s: any) => s.isDefault)
+              const firstEnabledSide = selectedPaper.sides.find((s: Record<string, unknown>) => s.isDefault)
               newConfig.sides = firstEnabledSide?.id || selectedPaper.sides[0]?.id || ''
             }
           }
@@ -294,10 +293,10 @@ export default function ProductConfigurationForm({
     // If turnaround requires no coating, force coating to "No Coating" if available
     if (selectedTurnaround?.requiresNoCoating) {
       const selectedPaper = configData.paperStocks.find(
-        (p: any) => p.id === configuration.paperStock
+        (p: Record<string, unknown>) => p.id === configuration.paperStock
       )
       const noCoatingOption = selectedPaper?.paperStockCoatings.find(
-        (c: any) => c.coating.name === 'No Coating'
+        (c: Record<string, unknown>) => c.coating.name === 'No Coating'
       )
       if (noCoatingOption) {
         newConfig = { ...newConfig, coating: noCoatingOption.coatingId }

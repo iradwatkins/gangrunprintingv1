@@ -208,5 +208,4 @@ export default function AddOnsPage() {
     }
   }
 
-
 export { pricingModelIcons, pricingModelLabels, AddOnsPage, fetchAddOns, response, rawData, url, method, error, resetForm, openEditDialog, openDeleteDialog, filteredAddOns, formatPriceDisplay, config };

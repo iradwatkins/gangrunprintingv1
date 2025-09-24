@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       // Create new sub-options
       if (subOptions.length > 0) {
         await prisma.addOnSubOption.createMany({
-          data: subOptions.map((option: any) => ({
+          data: subOptions.map((option: Record<string, unknown>) => ({
             addOnId: id,
             name: option.name,
             optionType: option.optionType,

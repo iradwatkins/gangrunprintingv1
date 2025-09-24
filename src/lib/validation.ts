@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import { z } from 'zod'
 
 // Product validation schemas
@@ -49,11 +50,11 @@ export const phoneSchema = z.string().regex(/^\+?[\d\s\-\(\)]+$/, 'Invalid phone
 // File upload validation
 export const imageUploadSchema = z.object({
   file: z.instanceof(File),
-  maxSize: z.number().default(10 * 1024 * 1024), // 10MB
+  maxSize: z.number().default(MAX_FILE_SIZE), // 10MB
   allowedTypes: z.array(z.string()).default(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
 })
 
-export function validateImageFile(file: File, maxSize = 10 * 1024 * 1024): { isValid: boolean; error?: string } {
+export function validateImageFile(file: File, maxSize = MAX_FILE_SIZE): { isValid: boolean; error?: string } {
   if (!file.type.startsWith('image/')) {
     return { isValid: false, error: 'Please select a valid image file (JPEG, PNG, WebP, or GIF)' }
   }

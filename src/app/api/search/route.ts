@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build search conditions
-    const where: any = {
+    const where: Record<string, unknown> = {
       AND: [],
     }
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     // Price range filter
     if (minPrice || maxPrice) {
-      const priceFilter: any = {}
+      const priceFilter: Record<string, unknown> = {}
       if (minPrice) priceFilter.gte = parseFloat(minPrice)
       if (maxPrice) priceFilter.lte = parseFloat(maxPrice)
       where.AND.push({ basePrice: priceFilter })
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Determine order by
-    let orderBy: any = {}
+    let orderBy: Record<string, unknown> = {}
     switch (sortBy) {
       case 'price_asc':
         orderBy = { basePrice: 'asc' }
@@ -199,7 +199,7 @@ async function getCategories() {
 }
 
 // Get price range for filters
-async function getPriceRange(where: any) {
+async function getPriceRange(where: Record<string, unknown>) {
   const result = await prisma.product.aggregate({
     where,
     _min: { basePrice: true },
@@ -215,7 +215,7 @@ async function getPriceRange(where: any) {
 }
 
 // Get available attributes for filtering
-async function getAttributes(where: any) {
+async function getAttributes(where: Record<string, unknown>) {
   const products = await prisma.product.findMany({
     where,
     select: {

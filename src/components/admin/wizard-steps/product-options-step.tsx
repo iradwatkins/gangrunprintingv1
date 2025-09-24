@@ -7,7 +7,7 @@ import { ProductOptions } from '../product-options'
 import { Settings, Info, Plus } from 'lucide-react'
 
 interface ProductData {
-  options: any[]
+  options: unknown[]
 }
 
 interface ProductOptionsStepProps {
@@ -50,7 +50,7 @@ export function ProductOptionsStep({
     onValidationChange(isValid)
   }
 
-  const handleOptionsChange = (options: any[]) => {
+  const handleOptionsChange = (options: unknown[]) => {
     onUpdate({ options })
   }
 

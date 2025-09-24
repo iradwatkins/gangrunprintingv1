@@ -34,7 +34,7 @@ export interface Addon {
   pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM' | 'FLAT'
   price?: number
   priceDisplay?: string
-  configuration?: any
+  configuration?: Record<string, unknown>
   isDefault?: boolean
   additionalTurnaroundDays?: number
 }

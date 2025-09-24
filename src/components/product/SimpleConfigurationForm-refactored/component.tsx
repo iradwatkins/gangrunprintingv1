@@ -11,8 +11,6 @@ import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
 import AddonAccordionWithVariable from './AddonAccordionWithVariable'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
-import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
-
 
 export default function SimpleConfigurationForm({
   productId,
@@ -213,7 +211,6 @@ export default function SimpleConfigurationForm({
       const variableDataCost = 60 + 0.02 * quantity
       addonCosts += variableDataCost
     }
-
 
     // Add Perforation cost if enabled
     if (config.perforationConfig?.enabled) {
@@ -615,7 +612,6 @@ export default function SimpleConfigurationForm({
     const price = calculatePrice(newConfig)
     onConfigurationChange?.(newConfig, price)
   }
-
 
   // Loading state
   if (loading) {

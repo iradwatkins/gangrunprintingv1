@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Printer, Save } from 'lucide-react'
 
-export function PrintingSettingsForm() {
+export function PrintingSettingsForm() : unknown {
   return (
     <Card>
       <CardHeader>

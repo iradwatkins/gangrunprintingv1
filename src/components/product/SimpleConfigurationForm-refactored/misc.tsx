@@ -3,17 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-import { useState, useEffect } from 'react'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import {
-import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
-import FileUploadZone from './FileUploadZone'
-import AddonAccordionWithVariable from './AddonAccordionWithVariable'
-import TurnaroundTimeSelector from './TurnaroundTimeSelector'
-import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
-
-
 'use client'
 
   Select,
@@ -75,7 +64,7 @@ interface SimpleConfigData {
     priceDisplay: string
     isDefault: boolean
     additionalTurnaroundDays: number
-    configuration?: any
+    configuration?: Record<string, unknown>
   }>
   turnaroundTimes: Array<{
     id: string

@@ -4,9 +4,6 @@
  * Refactored: Multiple modules < 300 lines each
  */
 
-import { type NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { transformSizeGroup } from '@/lib/utils/size-transformer'
 import {
 
 // Re-export refactored modules

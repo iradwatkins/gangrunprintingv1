@@ -95,7 +95,7 @@ export default function NewProductPage() {
 
           if (errorData.details?.validationErrors) {
             const validationMessages = errorData.details.validationErrors
-              .map((err: any) => `${err.field}: ${err.message}`)
+              .map((err: Record<string, unknown>) => `${err.field}: ${err.message}`)
               .join(', ')
             errorMessage = `Validation failed: ${validationMessages}`
           }
@@ -113,7 +113,7 @@ export default function NewProductPage() {
 
       toast.success('Product created successfully')
       router.push('/admin/products')
-    } catch (error: any) {
+    } catch (error) {
       if (error.name === 'AbortError') {
         toast.error('Request timeout. Please try again.')
       } else if (error.message?.includes('fetch')) {

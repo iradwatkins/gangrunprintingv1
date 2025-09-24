@@ -131,7 +131,7 @@ export default function SimpleProductPage() {
 
       toast.success('Product created successfully!')
       router.push('/admin/products')
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to create product')
     } finally {
       setLoading(false)
@@ -225,7 +225,7 @@ export default function SimpleProductPage() {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat: any) => (
+                  {categories.map((cat: Record<string, unknown>) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
@@ -246,7 +246,7 @@ export default function SimpleProductPage() {
                   <SelectValue placeholder="Select paper stock" />
                 </SelectTrigger>
                 <SelectContent>
-                  {paperStocks.map((stock: any) => (
+                  {paperStocks.map((stock: Record<string, unknown>) => (
                     <SelectItem key={stock.id} value={stock.id}>
                       {stock.name} - {stock.weight}pt
                     </SelectItem>
@@ -267,7 +267,7 @@ export default function SimpleProductPage() {
                   <SelectValue placeholder="Select quantity group" />
                 </SelectTrigger>
                 <SelectContent>
-                  {quantityGroups.map((group: any) => (
+                  {quantityGroups.map((group: Record<string, unknown>) => (
                     <SelectItem key={group.id} value={group.id}>
                       {group.name}
                     </SelectItem>
@@ -288,7 +288,7 @@ export default function SimpleProductPage() {
                   <SelectValue placeholder="Select size group" />
                 </SelectTrigger>
                 <SelectContent>
-                  {sizeGroups.map((group: any) => (
+                  {sizeGroups.map((group: Record<string, unknown>) => (
                     <SelectItem key={group.id} value={group.id}>
                       {group.name}
                     </SelectItem>

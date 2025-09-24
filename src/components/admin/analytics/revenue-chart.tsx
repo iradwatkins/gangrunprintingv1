@@ -27,7 +27,7 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
     })
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: Record<string, unknown>) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">

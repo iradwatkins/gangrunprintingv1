@@ -8,15 +8,13 @@ import { prisma } from '@/lib/prisma'
 import { transformSizeGroup } from '@/lib/utils/size-transformer'
 import {
 
-
-
   transformAddonSets,
   transformLegacyAddons,
   findDefaultAddons,
 } from '@/lib/utils/addon-transformer'
 
 // Helper function to calculate price display (from addon-transformer)
-function calculatePriceDisplay(addon: any): { price: number; priceDisplay: string } {
+function calculatePriceDisplay(addon: Record<string, unknown>): { price: number; priceDisplay: string } {
   const config = addon.configuration as any
 
   if (config) {
@@ -48,7 +46,7 @@ function calculatePriceDisplay(addon: any): { price: number; priceDisplay: strin
 }
 
 // Helper function to transform quantity values
-function transformQuantityValues(quantityGroup: any) {
+function transformQuantityValues(quantityGroup: Record<string, unknown>) {
   if (!quantityGroup?.values) return []
 
   const values = quantityGroup.values.split(',').map((v: string) => v.trim())
@@ -427,9 +425,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })
 
       if (productAddOnSetsForGrouping.length > 0) {
-        const aboveDropdown: any[] = []
-        const inDropdown: any[] = []
-        const belowDropdown: any[] = []
+        const aboveDropdown: Record<string, unknown>[] = []
+        const inDropdown: Record<string, unknown>[] = []
+        const belowDropdown: Record<string, unknown>[] = []
 
         // Process each addon set
         for (const productAddOnSet of productAddOnSetsForGrouping) {

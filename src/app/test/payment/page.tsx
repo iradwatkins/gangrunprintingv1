@@ -24,7 +24,7 @@ import {
 interface TestResult {
   success: boolean
   message: string
-  data?: any
+  data?: Record<string, unknown>
   timestamp: Date
 }
 

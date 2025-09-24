@@ -4,9 +4,9 @@ import toast from '@/lib/toast'
 
 export interface UseApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  body?: any
+  body?: Record<string, unknown>
   headers?: Record<string, string>
-  onSuccess?: (data: any) => void
+  onSuccess?: (data: Record<string, unknown>) => void
   onError?: (error: Error) => void
   showSuccessToast?: boolean
   showErrorToast?: boolean
@@ -167,7 +167,7 @@ export function useFormSubmission<T = any>(
   url: string,
   options: {
     method?: 'POST' | 'PUT'
-    onSuccess?: (data: any) => void
+    onSuccess?: (data: Record<string, unknown>) => void
     successMessage?: string
     redirectTo?: string
   } = {}

@@ -292,7 +292,7 @@ export class PermissionService {
   /**
    * Filter menu items based on user permissions
    */
-  static filterMenuItems(userRole: Role, menuItems: any[]): any[] {
+  static filterMenuItems(userRole: Role, menuItems: unknown[]): unknown[] {
     return menuItems.filter((item) => {
       if (item.permission) {
         return this.hasPermission(userRole, item.permission)

@@ -40,7 +40,7 @@ const initialFormData: ProductFormData = {
   selectedTurnaroundTimeSet: '',
 }
 
-export function useProductForm() {
+export function useProductForm() : unknown {
   const [formData, setFormData] = useState<ProductFormData>(initialFormData)
   const [options, setOptions] = useState<ProductFormOptions>({
     categories: [],

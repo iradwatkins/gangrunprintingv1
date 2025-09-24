@@ -1,4 +1,3 @@
-import { type Carrier } from '@prisma/client'
 
 export interface ShippingAddress {
   street: string

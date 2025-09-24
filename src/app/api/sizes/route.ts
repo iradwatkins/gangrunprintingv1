@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const activeOnly = searchParams.get('active') === 'true'
 
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (activeOnly) {
       where.isActive = true
     }
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(processedGroup, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A size group with this name already exists' },

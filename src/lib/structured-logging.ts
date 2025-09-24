@@ -69,7 +69,7 @@ class StructuredLogger {
   }
 
   // Set additional context
-  setContext(key: string, value: any): void {
+  setContext(key: string, value: Record<string, unknown>): void {
     this.context[key] = value
   }
 

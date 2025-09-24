@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const activeOnly = searchParams.get('active') === 'true'
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     if (activeOnly) {
       where.isActive = true
     }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(category, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
       return NextResponse.json(

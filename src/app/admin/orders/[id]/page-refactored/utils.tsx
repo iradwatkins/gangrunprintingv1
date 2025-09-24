@@ -11,10 +11,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import {
-import {
-import { VendorAssignment } from '@/components/admin/vendor-assignment'
-
 
 export const dynamic = 'force-dynamic'
 
@@ -46,7 +42,7 @@ async function getVendors() {
   return vendors
 }
 
-const statusConfig: Record<string, { label: string; color: string; icon: any; next?: string[] }> = {
+const statusConfig: Record<string, { label: string; color: string; icon: Record<string, unknown>; next?: string[] }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
@@ -110,7 +106,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; ne
 }
 
 // Generate order timeline based on order status
-function getOrderTimeline(order: any) {
+function getOrderTimeline(order: Record<string, unknown>) {
   const timeline = []
   const currentStatus = order.status
 
@@ -419,7 +415,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </Card>
           )}
         </div>
-
 
         {/* Right Column - Status and Timeline */}
         <div className="space-y-6">

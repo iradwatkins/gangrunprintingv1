@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaymentCreated(data: any) {
+async function handlePaymentCreated(data: Record<string, unknown>) {
   const { object: payment } = data
 
   // Find order by Square order ID
@@ -130,7 +130,7 @@ async function handlePaymentCreated(data: any) {
   }
 }
 
-async function handlePaymentUpdated(data: any) {
+async function handlePaymentUpdated(data: Record<string, unknown>) {
   const { object: payment } = data
 
   // Find order and update payment status
@@ -157,7 +157,7 @@ async function handlePaymentUpdated(data: any) {
   }
 }
 
-async function handleOrderCreated(data: any) {
+async function handleOrderCreated(data: Record<string, unknown>) {
   const { object: squareOrder } = data
 
   // Check if order already exists
@@ -183,7 +183,7 @@ async function handleOrderCreated(data: any) {
   }
 }
 
-async function handleOrderUpdated(data: any) {
+async function handleOrderUpdated(data: Record<string, unknown>) {
   const { object: squareOrder } = data
 
   const order = await prisma.order.findFirst({
@@ -201,7 +201,7 @@ async function handleOrderUpdated(data: any) {
   }
 }
 
-async function handleFulfillmentUpdated(data: any) {
+async function handleFulfillmentUpdated(data: Record<string, unknown>) {
   const { object: fulfillment } = data
 
   const order = await prisma.order.findFirst({
@@ -246,7 +246,7 @@ async function handleFulfillmentUpdated(data: any) {
   }
 }
 
-async function handleRefundCreated(data: any) {
+async function handleRefundCreated(data: Record<string, unknown>) {
   const { object: refund } = data
 
   const order = await prisma.order.findFirst({

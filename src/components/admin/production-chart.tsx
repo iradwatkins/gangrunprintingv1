@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-export function ProductionChart() {
+export function ProductionChart() : unknown {
   // Sample data for production metrics
   const productionData = [
     { time: '9AM', jobs: 12, completed: 8 },

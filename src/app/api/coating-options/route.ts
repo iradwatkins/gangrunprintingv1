@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const coatingOptions = await prisma.coatingOption.findMany({
       orderBy: { name: 'asc' },
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(coatingOption, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },

@@ -3,7 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface WorkflowTrigger {
   type: 'event' | 'schedule' | 'condition'
   event?: string // 'order_placed', 'user_registered', 'email_opened', etc.
@@ -15,16 +14,15 @@ export interface WorkflowTrigger {
   condition?: {
     field: string
     operator: string
-    value: any
+    value: Record<string, unknown>
   }
 }
-
 
 export interface WorkflowStep {
   id: string
   type: 'email' | 'sms' | 'wait' | 'condition' | 'webhook' | 'tag' | 'update_user'
   name: string
-  settings: any
+  settings: Record<string, unknown>
   nextStep?: string
   conditionSteps?: {
     true: string
@@ -32,49 +30,42 @@ export interface WorkflowStep {
   }
 }
 
-
 export interface WorkflowEmailStep {
   templateId?: string
   subject: string
-  content: any
+  content: Record<string, unknown>
   senderName?: string
   senderEmail?: string
 }
 
-
 export interface WorkflowSMSStep {
   message: string
 }
-
 
 export interface WorkflowWaitStep {
   duration: number // minutes
   waitUntil?: Date
 }
 
-
 export interface WorkflowConditionStep {
   condition: {
     field: string
     operator: string
-    value: any
+    value: Record<string, unknown>
   }
 }
-
 
 export interface WorkflowWebhookStep {
   url: string
   method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   headers?: Record<string, string>
-  payload?: any
+  payload?: Record<string, unknown>
 }
-
 
 export interface WorkflowTagStep {
   action: 'add' | 'remove'
   tags: string[]
 }
-
 
 export interface WorkflowUpdateUserStep {
   updates: Record<string, any>
@@ -87,7 +78,7 @@ export class WorkflowEngine {
     trigger: WorkflowTrigger,
     steps: WorkflowStep[],
     segmentId?: string,
-    settings?: any
+    settings?: Record<string, unknown>
   ): Promise<MarketingWorkflow> {
     return await prisma.marketingWorkflow.create({
       data: {
@@ -110,7 +101,7 @@ export class WorkflowEngine {
       trigger?: WorkflowTrigger
       steps?: WorkflowStep[]
       segmentId?: string
-      settings?: any
+      settings?: Record<string, unknown>
       isActive?: boolean
     }
   ): Promise<MarketingWorkflow> {
@@ -170,7 +161,7 @@ export class WorkflowEngine {
   static async triggerWorkflow(
     workflowId: string,
     userId: string,
-    triggerData: any
+    triggerData: Record<string, unknown>
   ): Promise<WorkflowExecution> {
     const workflow = await prisma.marketingWorkflow.findUnique({
       where: { id: workflowId },
@@ -278,7 +269,7 @@ export class WorkflowEngine {
     step: WorkflowStep,
 
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     switch (step.type) {
       case 'email':
@@ -303,7 +294,7 @@ export class WorkflowEngine {
   private static async executeEmailStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowEmailStep
 
@@ -340,7 +331,7 @@ export class WorkflowEngine {
   private static async executeSMSStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowSMSStep
 
@@ -391,12 +382,12 @@ export class WorkflowEngine {
   private static async executeConditionStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowConditionStep
     const { condition } = settings
 
-    let value: any
+    let value: Record<string, unknown>
 
     // Get the value to check based on the field
     switch (condition.field) {
@@ -438,7 +429,7 @@ export class WorkflowEngine {
   private static async executeWebhookStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowWebhookStep
 
@@ -485,7 +476,7 @@ export class WorkflowEngine {
   private static async executeTagStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowTagStep
 
@@ -520,7 +511,7 @@ export class WorkflowEngine {
   private static async executeUpdateUserStep(
     step: WorkflowStep,
     execution: WorkflowExecution,
-    user: any
+    user: Record<string, unknown>
   ): Promise<any> {
     const settings = step.settings as WorkflowUpdateUserStep
 
@@ -535,7 +526,7 @@ export class WorkflowEngine {
     }
   }
 
-  private static evaluateCondition(value: any, operator: string, expected: any): boolean {
+  private static evaluateCondition(value: Record<string, unknown>, operator: string, expected: Record<string, unknown>): boolean {
     switch (operator) {
       case 'equals':
         return value === expected
@@ -597,7 +588,7 @@ export class WorkflowEngine {
   }
 
   // Event handlers for triggering workflows
-  static async handleEvent(event: string, data: any): Promise<void> {
+  static async handleEvent(event: string, data: Record<string, unknown>): Promise<void> {
     const workflows = await prisma.marketingWorkflow.findMany({
       where: {
         isActive: true,

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Webhook, Save } from 'lucide-react'
 
-export function IntegrationSettingsForm() {
+export function IntegrationSettingsForm() : unknown {
   return (
     <Card>
       <CardHeader>

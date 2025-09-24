@@ -39,8 +39,8 @@ export type NotificationType = (typeof NotificationTypes)[keyof typeof Notificat
 // Notification templates
 export const getNotificationContent = (
   type: NotificationType,
-  data: any
-): { title: string; body: string; icon?: string; actions?: any[] } => {
+  data: Record<string, unknown>
+): { title: string; body: string; icon?: string; actions?: Record<string, unknown>[] } => {
   switch (type) {
     case NotificationTypes.ORDER_CONFIRMED:
       return {
@@ -132,7 +132,7 @@ export const getNotificationContent = (
 }
 
 // Send notification to a specific user
-export async function sendNotificationToUser(userId: string, type: NotificationType, data: any) {
+export async function sendNotificationToUser(userId: string, type: NotificationType, data: Record<string, unknown>) {
   try {
     // Get user's push subscriptions
     const subscriptions = await prisma.pushSubscription.findMany({
@@ -164,7 +164,7 @@ export async function sendNotificationToUser(userId: string, type: NotificationT
         try {
           await webpush.sendNotification(JSON.parse(subscription.subscription as string), payload)
           return { success: true, id: subscription.id }
-        } catch (error: any) {
+        } catch (error) {
           // Handle expired subscriptions
           if (error.statusCode === 410) {
             await prisma.pushSubscription.update({
@@ -203,7 +203,7 @@ export async function sendNotificationToUser(userId: string, type: NotificationT
 export async function sendNotificationToUsers(
   userIds: string[],
   type: NotificationType,
-  data: any
+  data: Record<string, unknown>
 ) {
   const results = await Promise.allSettled(
     userIds.map((userId) => sendNotificationToUser(userId, type, data))
@@ -213,7 +213,7 @@ export async function sendNotificationToUsers(
 }
 
 // Send notification to all users (for announcements)
-export async function sendNotificationToAll(type: NotificationType, data: any) {
+export async function sendNotificationToAll(type: NotificationType, data: Record<string, unknown>) {
   const activeSubscriptions = await prisma.pushSubscription.findMany({
     where: { active: true },
     select: { userId: true },
@@ -226,7 +226,7 @@ export async function sendNotificationToAll(type: NotificationType, data: any) {
 }
 
 // Generate VAPID keys (run once during setup)
-export function generateVAPIDKeys() {
+export function generateVAPIDKeys() : unknown {
   const keys = webpush.generateVAPIDKeys()
 
   return keys

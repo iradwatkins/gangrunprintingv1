@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { type TenantContext } from '@/lib/tenants/resolver'
 
 interface TenantProviderProps {
   children: React.ReactNode
@@ -25,17 +24,17 @@ export function TenantProvider({ children, initialTenant }: TenantProviderProps)
   )
 }
 
-export function useTenant() {
+export function useTenant() : unknown {
   const context = useContext(TenantContextProvider)
   return context
 }
 
-export function useTenantInfo() {
+export function useTenantInfo() : unknown {
   const context = useContext(TenantContextProvider)
   return context?.tenant || null
 }
 
-export function useTenantSettings() {
+export function useTenantSettings() : unknown {
   const context = useContext(TenantContextProvider)
   return {
     tenant: context?.tenant || null,

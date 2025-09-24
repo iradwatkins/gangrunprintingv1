@@ -25,8 +25,8 @@ import { Factory, Mail, Phone, Clock, Truck, AlertCircle, Send, Loader2 } from '
 import toast from '@/lib/toast'
 
 interface VendorAssignmentProps {
-  order: any
-  vendors: any[]
+  order: Record<string, unknown>
+  vendors: Record<string, unknown>[]
 }
 
 export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {

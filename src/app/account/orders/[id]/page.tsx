@@ -33,7 +33,7 @@ interface OrderDetail {
   tax: number
   shipping: number
   shippingMethod?: string
-  shippingRate?: any
+  shippingRate?: Record<string, unknown>
   selectedAirportId?: string
   selectedAirport?: {
     id: string
@@ -43,22 +43,22 @@ interface OrderDetail {
     city: string
     state: string
     zip: string
-    hours: any
+    hours: Record<string, unknown>
     operator?: string
   }
   trackingNumber?: string
-  carrier?: any
+  carrier?: Record<string, unknown>
   createdAt: string
   paidAt?: string
-  shippingAddress: any
-  billingAddress?: any
+  shippingAddress: Record<string, unknown>
+  billingAddress?: Record<string, unknown>
   OrderItem: Array<{
     id: string
     productName: string
     productSku: string
     quantity: number
     price: number
-    options?: any
+    options?: Record<string, unknown>
   }>
 }
 

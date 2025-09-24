@@ -43,7 +43,7 @@ export default function ShippingTestPage() {
     }))
   }
 
-  const handleRateSelected = (rate: any) => {
+  const handleRateSelected = (rate: Record<string, unknown>) => {
     setSelectedRate(rate)
     toast.success(`Selected: ${rate.serviceName} - $${rate.rateAmount.toFixed(2)}`)
   }

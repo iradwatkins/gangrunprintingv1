@@ -68,7 +68,7 @@ const statusColors: Record<string, string> = {
   shipped: 'bg-muted text-muted-foreground',
 }
 
-export function PrintQueueTable() {
+export function PrintQueueTable() : unknown {
   return (
     <Card>
       <CardHeader>

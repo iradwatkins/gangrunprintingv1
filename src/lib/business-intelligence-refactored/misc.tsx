@@ -6,8 +6,6 @@
 import { businessMetrics } from '@/lib/monitoring'
 import { recordMetric } from '@/lib/sentry'
 
-
-
 // E-commerce conversion funnel tracking
 export class ConversionFunnelTracker {
   private sessionData: Map<string, any> = new Map()
@@ -207,7 +205,6 @@ export class ConversionFunnelTracker {
       }
     }
   }
-
 
   // Generate funnel report
   generateFunnelReport() {

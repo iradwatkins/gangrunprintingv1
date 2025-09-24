@@ -19,7 +19,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import toast from '@/lib/toast'
 import { Checkbox } from '@/components/ui/checkbox'
 
-
 export default function VendorsPage() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)

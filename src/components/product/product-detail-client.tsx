@@ -182,7 +182,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   }
 
   // Handle configuration changes from ProductConfigurationForm
-  const handleConfigurationChange = (config: any, isComplete: boolean) => {
+  const handleConfigurationChange = (config: Record<string, unknown>, isComplete: boolean) => {
     setProductConfiguration(config)
     setIsConfigurationComplete(isComplete)
   }

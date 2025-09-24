@@ -5,7 +5,6 @@
 
 import {
 
-
   BasePriceEngine,
   type PricingInput,
   type StandardSize,
@@ -206,7 +205,6 @@ describe('Base Price Formula Compliance Tests', () => {
       expect(result.breakdown.quantity).toBe(1100) // Uses adjustmentValue
       expect(result.basePrice).toBeCloseTo(26.4, 2) // ((0.001 × 1.0) × 24 × 1100) = 26.4
     })
-
 
     test('Custom quantity uses exact input value', () => {
       const input: PricingInput = {

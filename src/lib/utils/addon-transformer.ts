@@ -9,7 +9,7 @@ interface RawAddon {
   name: string
   description: string | null
   pricingModel: 'FIXED_FEE' | 'PERCENTAGE' | 'PER_UNIT' | 'CUSTOM' | 'FLAT'
-  configuration: any
+  configuration: Record<string, unknown>
   additionalTurnaroundDays: number | null
 }
 
@@ -38,7 +38,7 @@ interface StandardizedAddon {
   priceDisplay: string
   isDefault: boolean
   additionalTurnaroundDays: number
-  configuration?: any
+  configuration?: Record<string, unknown>
 }
 
 /**
@@ -116,7 +116,7 @@ export function transformAddonSets(productAddonSets: RawProductAddonSet[]): Stan
  * Transform legacy addon array to standardized format
  * For backwards compatibility with existing systems
  */
-export function transformLegacyAddons(legacyAddons: any[]): StandardizedAddon[] {
+export function transformLegacyAddons(legacyAddons: unknown[]): StandardizedAddon[] {
   return legacyAddons.map((addon) => ({
     id: addon.id,
     name: addon.name,

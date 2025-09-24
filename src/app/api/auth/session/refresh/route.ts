@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
  * Get the current session status without refreshing it.
  * Useful for checking if a session is valid and how much time is left.
  */
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const { user, session } = await validateRequest()
 

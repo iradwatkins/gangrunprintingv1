@@ -26,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(coatingOption)
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },
@@ -79,7 +79,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }

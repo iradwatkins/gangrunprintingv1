@@ -133,12 +133,12 @@ export class FedExProvider implements ShippingProvider {
       }
 
       const rates: ShippingRate[] = response.data.output.rateReplyDetails
-        .filter((detail: any) => {
+        .filter((detail: Record<string, unknown>) => {
           // Only include services we actually use
           const allowedServices = Object.values(FEDEX_SERVICE_CODES)
           return allowedServices.includes(detail.serviceType)
         })
-        .map((detail: any) => {
+        .map((detail: Record<string, unknown>) => {
           const ratedShipmentDetail = detail.ratedShipmentDetails?.[0]
           const totalCharge =
             ratedShipmentDetail?.totalNetCharge || ratedShipmentDetail?.totalNetFedExCharge
@@ -271,7 +271,7 @@ export class FedExProvider implements ShippingProvider {
 
       const trackResult = response.data.output.completeTrackResults[0].trackResults[0]
 
-      const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: any) => ({
+      const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: Record<string, unknown>) => ({
         timestamp: new Date(event.date),
         location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
         status: event.derivedStatus || event.eventType,
@@ -346,7 +346,7 @@ export class FedExProvider implements ShippingProvider {
   /**
    * Format address for FedEx API
    */
-  private formatAddress(address: ShippingAddress): any {
+  private formatAddress(address: ShippingAddress): Record<string, unknown> {
     return {
       streetLines: [address.street, address.street2].filter(Boolean),
       city: address.city,

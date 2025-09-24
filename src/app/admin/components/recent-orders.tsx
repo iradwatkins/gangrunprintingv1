@@ -38,7 +38,7 @@ const recentOrders = [
   },
 ]
 
-export function RecentOrders() {
+export function RecentOrders() : unknown {
   return (
     <div className="space-y-8">
       {recentOrders.map((order) => (

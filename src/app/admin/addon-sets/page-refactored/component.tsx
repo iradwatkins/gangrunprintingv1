@@ -4,24 +4,12 @@
  */
 
 import { useState, useEffect } from 'react'
-import {
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-import {
-import {
-import { Textarea } from '@/components/ui/textarea'
 import toast from '@/lib/toast'
-import {
-import {
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-
 
 export default function AddOnSetsPage() {
   const [addOnSets, setAddOnSets] = useState<AddOnSet[]>([])
@@ -207,7 +195,7 @@ export default function AddOnSetsPage() {
   const handleAddOnConfigChange = (
     addOnId: string,
     field: 'displayPosition' | 'isDefault',
-    value: any
+    value: Record<string, unknown>
   ) => {
     setSelectedAddOns((prev) => ({
       ...prev,

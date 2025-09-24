@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           // Add new coating relationships
           paperStockCoatings: {
             create:
-              coatings?.map((c: any) => ({
+              coatings?.map((c: Record<string, unknown>) => ({
                 coatingId: c.id,
                 isDefault: c.isDefault || false,
               })) || [],
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           // Add new sides relationships
           paperStockSides: {
             create:
-              sidesOptions?.map((s: any) => ({
+              sidesOptions?.map((s: Record<string, unknown>) => ({
                 sidesOptionId: s.id,
                 priceMultiplier: s.multiplier || 1.0,
                 isEnabled: true,
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(paperStock)
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }
@@ -107,7 +107,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }

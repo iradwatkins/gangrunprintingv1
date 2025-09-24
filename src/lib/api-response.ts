@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
-import { randomUUID } from 'crypto'
 
 export interface ApiError {
   error: string
   message?: string
   code?: string
-  details?: any
+  details?: Record<string, unknown>
   requestId?: string
   timestamp: string
 }
@@ -35,7 +34,7 @@ export function generateRequestId(): string {
 export function createErrorResponse(
   error: string | Error,
   statusCode: number = 500,
-  details?: any,
+  details?: Record<string, unknown>,
   requestId?: string
 ): NextResponse<ApiError> {
   const timestamp = new Date().toISOString()
@@ -102,7 +101,7 @@ export function createSuccessResponse<T>(
  * Handle validation errors from Zod
  */
 export function createValidationErrorResponse(
-  errors: any[],
+  errors: Record<string, unknown>[],
   requestId?: string
 ): NextResponse<ApiError> {
   const details = errors.map((err) => ({
@@ -123,7 +122,7 @@ export function createValidationErrorResponse(
  * Handle database errors
  */
 export function createDatabaseErrorResponse(
-  error: any,
+  error: Error,
   requestId?: string
 ): NextResponse<ApiError> {
   // Prisma error codes

@@ -32,7 +32,7 @@ export function CustomerInsightsChart({
     },
   ]
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: Record<string, unknown>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

@@ -1,7 +1,6 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { type QuoteStatus } from '@prisma/client'
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {

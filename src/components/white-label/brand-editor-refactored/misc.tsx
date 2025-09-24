@@ -3,23 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-import { useState, useEffect } from 'react'
-import { useTheme } from '@/components/white-label/theme-provider'
-import { useTenantInfo } from '@/components/tenants/tenant-provider'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs'
-import { ColorPicker } from '@/components/ui/color-picker'
-import { ImageUpload } from '@/components/ui/image-upload'
-import { CodeEditor } from '@/components/ui/code-editor'
-import { useToast } from '@/hooks/use-toast'
-import { Save, RefreshCw, Eye, Download, Upload } from 'lucide-react'
-
-
 'use client'
 
   Select,
@@ -28,7 +11,6 @@ import { Save, RefreshCw, Eye, Download, Upload } from 'lucide-react'
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 
 interface BrandEditorProps {
   section: 'colors' | 'typography' | 'logos' | 'layout' | 'custom' | 'email'

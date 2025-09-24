@@ -1,4 +1,3 @@
-import { type WeightCalculationParams } from './interfaces'
 
 /**
  * Calculate the weight of printed materials in pounds
