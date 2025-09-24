@@ -190,52 +190,13 @@ const nextConfig = {
         crypto: false,
       }
 
-      // Fix chunk loading issues by configuring split chunks
+      // Disable split chunks to avoid initialization errors
+      // Use Next.js default chunking strategy
       config.optimization = {
         ...config.optimization,
-        runtimeChunk: 'single',
-        splitChunks: {
-          chunks: 'all',
-          maxAsyncRequests: 30,
-          maxInitialRequests: 30,
-          minSize: 20000,
-          cacheGroups: {
-            default: {
-              minChunks: 2,
-              priority: -20,
-              reuseExistingChunk: true,
-            },
-            defaultVendors: {
-              test: /[\\/]node_modules[\\/]/,
-              priority: -10,
-              reuseExistingChunk: true,
-              name(module) {
-                // Get package name safely
-                const match = module.context?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
-                if (match && match[1]) {
-                  const packageName = match[1]
-                  // Handle scoped packages
-                  return `vendor-${packageName.replace('@', '').replace('/', '-')}`
-                }
-                return 'vendor-libs'
-              },
-            },
-            framework: {
-              name: 'framework',
-              chunks: 'all',
-              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-              priority: 40,
-              enforce: true,
-            },
-            commons: {
-              name: 'commons',
-              chunks: 'all',
-              minChunks: 2,
-              priority: 20,
-              reuseExistingChunk: true,
-            },
-          },
-        },
+        minimize: !dev,
+        runtimeChunk: false,
+        splitChunks: false,
       }
     }
 
