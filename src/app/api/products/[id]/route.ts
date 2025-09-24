@@ -305,7 +305,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Log the full error for debugging
-    )
+    console.log('Product update error:', error)
 
     return NextResponse.json({
       error: 'Failed to update product',

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
 import Image from 'next/image'
 import toast from '@/lib/toast'
-import { PageErrorBoundary } from '@/components/error-boundary'
+// import { PageErrorBoundary } from '@/components/error-boundary'
 
 function CartPageContent() {
   const router = useRouter()
@@ -235,8 +235,7 @@ function CartPageContent() {
 
 export default function CartPage() {
   return (
-    <PageErrorBoundary pageName="Cart">
-      <CartPageContent />
-    </PageErrorBoundary>
+    // Error boundary temporarily disabled for build
+    <CartPageContent />
   )
 }

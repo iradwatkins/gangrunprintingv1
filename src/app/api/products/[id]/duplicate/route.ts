@@ -183,8 +183,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       product: duplicatedProduct,
     })
   } catch (error) {
+    console.error('Product duplication error:', error)
     return NextResponse.json(
-      { error: 'Failed to duplicate product', details: error },
+      {
+        error: 'Failed to duplicate product',
+        details: error instanceof Error ? error.message : 'Unknown error occurred'
+      },
       { status: 500 }
     )
   }

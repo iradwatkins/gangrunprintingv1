@@ -13,7 +13,7 @@ import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { ComprehensivePerformanceMonitor } from '@/components/performance-monitor'
-import { ErrorBoundary } from '@/components/error-boundary'
+// import { ErrorBoundary } from '@/components/error-boundary'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -107,16 +107,15 @@ export default async function LocaleLayout({ children, params }: Props) {
         <GoogleAnalytics />
         <OfflineIndicator />
         <ComprehensivePerformanceMonitor />
-        <ErrorBoundary name="LocaleLayout">
-          <NextIntlClientProvider messages={messages}>
-            <TenantProvider initialTenant={tenantContext}>
-              <ThemeProvider tenant={tenantContext?.tenant || null}>
-                <Providers>{children}</Providers>
-              </ThemeProvider>
-            </TenantProvider>
-          </NextIntlClientProvider>
-          <InstallPrompt />
-        </ErrorBoundary>
+        {/* ErrorBoundary temporarily disabled for build */}
+        <NextIntlClientProvider messages={messages}>
+          <TenantProvider initialTenant={tenantContext}>
+            <ThemeProvider tenant={tenantContext?.tenant || null}>
+              <Providers>{children}</Providers>
+            </ThemeProvider>
+          </TenantProvider>
+        </NextIntlClientProvider>
+        <InstallPrompt />
       </body>
     </html>
   )

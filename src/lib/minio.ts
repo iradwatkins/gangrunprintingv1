@@ -39,7 +39,7 @@ async function retryWithBackoff<T>(
       const jitter = Math.random() * 0.1 * delay // Add up to 10% jitter
       const finalDelay = delay + jitter
 
-      }ms...`)
+      console.log(`Retrying in ${Math.round(finalDelay)}ms...`)
       await new Promise(resolve => setTimeout(resolve, finalDelay))
     }
   }
@@ -104,7 +104,7 @@ export async function getMinioClient(): Promise<Minio.Client> {
       initAttempted = true
       initError = null
 
-      )
+      console.log('MinIO client initialized successfully')
       return minioClient
 
     } catch (error) {

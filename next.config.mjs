@@ -196,9 +196,30 @@ const nextConfig = {
         runtimeChunk: 'single',
         splitChunks: {
           chunks: 'all',
+          maxAsyncRequests: 30,
+          maxInitialRequests: 30,
+          minSize: 20000,
           cacheGroups: {
-            default: false,
-            vendors: false,
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+            defaultVendors: {
+              test: /[\\/]node_modules[\\/]/,
+              priority: -10,
+              reuseExistingChunk: true,
+              name(module) {
+                // Get package name safely
+                const match = module.context?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)
+                if (match && match[1]) {
+                  const packageName = match[1]
+                  // Handle scoped packages
+                  return `vendor-${packageName.replace('@', '').replace('/', '-')}`
+                }
+                return 'vendor-libs'
+              },
+            },
             framework: {
               name: 'framework',
               chunks: 'all',
@@ -206,36 +227,11 @@ const nextConfig = {
               priority: 40,
               enforce: true,
             },
-            lib: {
-              test(module) {
-                return module.size() > 160000 &&
-                  /node_modules[\\/]/.test(module.identifier())
-              },
-              name(module) {
-                const hash = require('crypto').createHash('sha1')
-                hash.update(module.identifier())
-                return hash.digest('hex').substring(0, 8)
-              },
-              priority: 30,
-              minChunks: 1,
-              reuseExistingChunk: true,
-            },
             commons: {
               name: 'commons',
               chunks: 'all',
               minChunks: 2,
               priority: 20,
-            },
-            shared: {
-              name(module, chunks) {
-                return `shared-${require('crypto')
-                  .createHash('sha1')
-                  .update(chunks.map(c => c.name).join('_'))
-                  .digest('hex')
-                  .substring(0, 8)}`
-              },
-              priority: 10,
-              minChunks: 2,
               reuseExistingChunk: true,
             },
           },
@@ -256,12 +252,18 @@ const nextConfig = {
         : false,
   },
 
-  // Generate stable build IDs
-  // This prevents chunk loading errors in production
+  // Generate unique build IDs for each build
+  // This ensures chunk names match between build and runtime
   async generateBuildId() {
-    // Use stable ID to prevent chunk mismatch
-    // Update this when making breaking changes
-    return 'prod-2025-01-24-v1'
+    // Use timestamp-based build ID for uniqueness
+    // This ensures chunks are properly loaded in production
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `build-${year}${month}${day}-${hours}${minutes}`
   },
 
   // TypeScript configuration

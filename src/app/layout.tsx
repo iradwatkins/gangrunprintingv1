@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+
+// Force all routes to be dynamic to fix build issue
+export { dynamic, dynamicParams, revalidate } from './force-dynamic'
 import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
@@ -43,10 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ErrorHandler />
         <OfflineIndicator />
         {/* Performance monitor disabled to fix signin issues */}
-        <ErrorBoundary name="RootLayout">
-          <Providers>{children}</Providers>
-          <InstallPrompt />
-        </ErrorBoundary>
+        {/* ErrorBoundary temporarily disabled for build */}
+        <Providers>{children}</Providers>
+        <InstallPrompt />
       </body>
     </html>
   )
