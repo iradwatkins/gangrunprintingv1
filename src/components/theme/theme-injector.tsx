@@ -90,7 +90,7 @@ export function ThemeInjector() : unknown {
       // This will cause the default theme from globals.css to be used
     } catch (error) {
       // Silently fail and use default theme
-      // }
+    }
   }
 
   return null

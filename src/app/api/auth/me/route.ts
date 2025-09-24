@@ -10,13 +10,15 @@ export async function GET(request: NextRequest) {
     const userAgent = request.headers.get('User-Agent') || 'unknown'
     const referer = request.headers.get('Referer') || 'unknown'
 
-    .toISOString()}`)
+    console.log(`Auth request received: ${requestId} at ${new Date().toISOString()}`)
 
     // Get all cookies for debugging
     const cookieHeader = request.headers.get('Cookie') || ''
     const cookies = cookieHeader.split(';').map(c => c.trim()).filter(c => c.length > 0)
 
-    [0]),
+    console.log('Request details:', {
+      requestId,
+      cookies: cookies.slice(0),
       hasAuthSession: cookies.some(c => c.startsWith('auth_session=')),
       cookieHeader: cookieHeader.substring(0, 200) + (cookieHeader.length > 200 ? '...' : ''),
     })
@@ -25,7 +27,9 @@ export async function GET(request: NextRequest) {
 
     const responseTime = Date.now() - startTime
 
-    responseTimeMs: responseTime,
+    console.log('Auth validation result:', {
+      requestId,
+      responseTimeMs: responseTime,
     })
 
     if (!user || !session) {
@@ -51,8 +55,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    `)
-    }`)
+    console.log(`Auth success for user: ${user.id}`)
 
     return NextResponse.json(
       {

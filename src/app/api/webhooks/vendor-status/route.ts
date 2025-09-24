@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { OrderStateMachine, OrderStatus } from '@/domains/orders/state-machine';
 import { VendorWebhookHandler, VendorWebhookPayload } from '@/domains/vendors/webhook-handler';
-import { sendOrderStatusEmail } from '@/lib/email/order-notifications';
+// import { sendOrderStatusEmail } from '@/lib/order-notifications';
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,17 +77,18 @@ export async function POST(request: NextRequest) {
     });
 
     // Send customer notification if needed
-    if (transition.notifyCustomer && order.customer.email) {
-      await sendOrderStatusEmail({
-        to: order.customer.email,
-        orderNumber: order.orderNumber,
-        status: transition.newStatus!,
-        message: stateMachine.isOnHold()
-          ? stateMachine.getHoldReason() || 'Your order is on hold'
-          : `Your order status has been updated to ${transition.newStatus}`,
-        trackingNumber: payload.details?.trackingNumber
-      });
-    }
+    // TODO: Implement sendOrderStatusEmail function
+    // if (transition.notifyCustomer && order.customer.email) {
+    //   await sendOrderStatusEmail({
+    //     to: order.customer.email,
+    //     orderNumber: order.orderNumber,
+    //     status: transition.newStatus!,
+    //     message: stateMachine.isOnHold()
+    //       ? stateMachine.getHoldReason() || 'Your order is on hold'
+    //       : `Your order status has been updated to ${transition.newStatus}`,
+    //     trackingNumber: payload.details?.trackingNumber
+    //   });
+    // }
 
     // Return success response for N8N
     return NextResponse.json(

@@ -1,18 +1,18 @@
 'use client'
 
 import { useEffect } from 'react'
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 import { reportWebVitals } from '@/lib/monitoring'
 
 // Web Vitals monitoring component
 export function PerformanceMonitor() : unknown {
   useEffect(() => {
     // Monitor Core Web Vitals
-    getCLS(reportWebVitals)
-    getFID(reportWebVitals)
-    getFCP(reportWebVitals)
-    getLCP(reportWebVitals)
-    getTTFB(reportWebVitals)
+    onCLS(reportWebVitals)
+    onINP(reportWebVitals) // INP replaced FID
+    onFCP(reportWebVitals)
+    onLCP(reportWebVitals)
+    onTTFB(reportWebVitals)
 
     // Monitor custom performance metrics
     const observer = new PerformanceObserver((list) => {

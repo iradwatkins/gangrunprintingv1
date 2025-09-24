@@ -26,7 +26,11 @@ export async function GET(request: NextRequest) {
     const isActive = searchParams.get('isActive')
     const gangRunEligible = searchParams.get('gangRunEligible')
 
-    ?.substring(0, 100),
+    console.log('Products API request:', {
+      categoryId,
+      isActive,
+      gangRunEligible,
+      userAgent: request.headers.get('user-agent')?.substring(0, 100),
       referer: request.headers.get('referer'),
     })
 

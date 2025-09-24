@@ -37,7 +37,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
       idToken = tokens.idToken()
     } catch (e) {
-      ')
+      console.log('Failed to get idToken:', e)
     }
 
     try {

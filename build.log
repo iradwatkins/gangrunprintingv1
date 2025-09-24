@@ -1,0 +1,731 @@
+
+> gangrunprinting@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.2
+   - Experiments (use with caution):
+     ✓ optimizeCss
+     · serverActions
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ✓ Compiled successfully in 13.5s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/auth/signin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/auth/verify/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/notifications/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/payments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/profile/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/saved/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/dashboard/upcoming/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/sign-in/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/n8n/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/payment/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/shipping/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/test/simple-config/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/about/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/contact/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/checkout/success/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/help-center/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/locations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/privacy-policy/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/[slug]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/track/[orderNumber]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/cart/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/products/flyers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/terms-of-service/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/admin/translations/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/admin/white-label/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/addresses/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/checkout/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/quote/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/addon-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/payment-methods/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/details/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/categories/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/add-ons/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/dashboard/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/downloads/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/billing/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/customers/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/account/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/automation/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/analytics/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/customers/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/email-builder/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/automation/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/monitoring/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/orders/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stock-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stocks-simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/orders/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/campaigns/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/paper-stocks/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/(customer)/track/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/simple/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/quantities/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/settings/themes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/[locale]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/settings/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/staff/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/test/upload/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/theme-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/[id]/edit/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/[id]/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/test-colors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/vendors/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/turnaround-times/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/[id]/configure/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/sizes/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/marketing/segments/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/products/new/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamic` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `dynamicParams` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+ ⚠ Next.js can't recognize the exported `revalidate` field in "/admin/turnaround-time-sets/page", it may be re-exported from another file. The default config will be used instead.
+   Generating static pages (0/80) ...
+   Generating static pages (20/80) 
+   Generating static pages (40/80) 
+   Generating static pages (60/80) 
+ ✓ Generating static pages (80/80)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                      Size  First Load JS
+┌ ƒ /                                         8.26 kB         305 kB
+├ ƒ /_not-found                                 121 B         297 kB
+├ ● /[locale]                                   120 B         297 kB
+├   ├ /en
+├   └ /es
+├ ● /[locale]/admin/translations              3.64 kB         303 kB
+├   ├ /en/admin/translations
+├   └ /es/admin/translations
+├ ● /[locale]/admin/white-label                4.6 kB         304 kB
+├   ├ /en/admin/white-label
+├   └ /es/admin/white-label
+├ ƒ /about                                      121 B         297 kB
+├ ƒ /account/addresses                          553 B         297 kB
+├ ƒ /account/dashboard                          173 B         297 kB
+├ ƒ /account/details                            934 B         297 kB
+├ ƒ /account/downloads                          502 B         297 kB
+├ ƒ /account/orders                             521 B         297 kB
+├ ƒ /account/orders/[id]                      3.51 kB         300 kB
+├ ƒ /account/payment-methods                    552 B         297 kB
+├ ƒ /admin                                      120 B         297 kB
+├ ƒ /admin/add-ons                            3.71 kB         303 kB
+├ ƒ /admin/addon-sets                         2.77 kB         299 kB
+├ ƒ /admin/analytics                           111 kB         407 kB
+├ ƒ /admin/billing                            1.32 kB         298 kB
+├ ƒ /admin/categories                         2.67 kB         302 kB
+├ ƒ /admin/customers                          1.84 kB         301 kB
+├ ƒ /admin/customers/[id]                       192 B         297 kB
+├ ƒ /admin/dashboard                          2.61 kB         302 kB
+├ ƒ /admin/marketing/analytics                 2.4 kB         302 kB
+├ ƒ /admin/marketing/automation               2.17 kB         302 kB
+├ ƒ /admin/marketing/automation/new             47 kB         346 kB
+├ ƒ /admin/marketing/campaigns                 2.6 kB         299 kB
+├ ƒ /admin/marketing/email-builder            5.57 kB         305 kB
+├ ƒ /admin/marketing/segments                 2.71 kB         299 kB
+├ ƒ /admin/monitoring                         2.03 kB         301 kB
+├ ƒ /admin/orders                               176 B         297 kB
+├ ƒ /admin/orders/[id]                        1.88 kB         301 kB
+├ ƒ /admin/paper-stock-sets                   4.18 kB         301 kB
+├ ƒ /admin/paper-stocks                       4.22 kB         304 kB
+├ ƒ /admin/paper-stocks-simple                2.08 kB         299 kB
+├ ƒ /admin/products                           2.13 kB         299 kB
+├ ƒ /admin/products/[id]/configure            2.54 kB         299 kB
+├ ƒ /admin/products/[id]/edit                 5.83 kB         305 kB
+├ ƒ /admin/products/new                       19.5 kB         316 kB
+├ ƒ /admin/products/simple                    2.19 kB         299 kB
+├ ƒ /admin/quantities                         3.01 kB         302 kB
+├ ƒ /admin/settings                            3.9 kB         303 kB
+├ ƒ /admin/settings/themes                    2.67 kB         299 kB
+├ ƒ /admin/sizes                              3.66 kB         303 kB
+├ ƒ /admin/staff                              5.38 kB         305 kB
+├ ƒ /admin/test-colors                          458 B         297 kB
+├ ƒ /admin/test/upload                        3.21 kB         300 kB
+├ ƒ /admin/theme-colors                       3.21 kB         300 kB
+├ ƒ /admin/turnaround-time-sets               3.02 kB         299 kB
+├ ƒ /admin/turnaround-times                   2.64 kB         299 kB
+├ ƒ /admin/vendors                            3.13 kB         300 kB
+├ ƒ /admin/vendors/[id]                         177 B         297 kB
+├ ƒ /admin/vendors/new                        2.63 kB         299 kB
+├ ƒ /api/add-ons                                121 B         297 kB
+├ ƒ /api/add-ons/[id]                           121 B         297 kB
+├ ƒ /api/add-ons/[id]/duplicate                 121 B         297 kB
+├ ƒ /api/addon-sets                             121 B         297 kB
+├ ƒ /api/addon-sets/[id]                        121 B         297 kB
+├ ƒ /api/addon-sets/[id]/clone                  119 B         297 kB
+├ ƒ /api/addon-sets/[id]/reorder                120 B         297 kB
+├ ƒ /api/admin/sessions                         120 B         297 kB
+├ ƒ /api/admin/translations                     121 B         297 kB
+├ ƒ /api/admin/translations/[id]                121 B         297 kB
+├ ƒ /api/admin/translations/[id]/approve        121 B         297 kB
+├ ƒ /api/airports                               121 B         297 kB
+├ ƒ /api/airports/[id]                          120 B         297 kB
+├ ƒ /api/auth/google                            120 B         297 kB
+├ ƒ /api/auth/google/callback                   121 B         297 kB
+├ ƒ /api/auth/me                                121 B         297 kB
+├ ƒ /api/auth/send-magic-link                   120 B         297 kB
+├ ƒ /api/auth/session/refresh                   120 B         297 kB
+├ ƒ /api/auth/signout                           120 B         297 kB
+├ ƒ /api/auth/verify                            120 B         297 kB
+├ ƒ /api/auth/verify-magic-link                 121 B         297 kB
+├ ƒ /api/chat                                   120 B         297 kB
+├ ƒ /api/checkout                               120 B         297 kB
+├ ƒ /api/checkout/create-payment                120 B         297 kB
+├ ƒ /api/checkout/process-square-payment        121 B         297 kB
+├ ƒ /api/coating-options                        120 B         297 kB
+├ ƒ /api/coating-options/[id]                   121 B         297 kB
+├ ƒ /api/cron/daily-report                      121 B         297 kB
+├ ƒ /api/cron/notifications                     121 B         297 kB
+├ ƒ /api/files/[id]                             121 B         297 kB
+├ ƒ /api/health                                 121 B         297 kB
+├ ƒ /api/health/chunks                          121 B         297 kB
+├ ƒ /api/marketing/ab-tests                     120 B         297 kB
+├ ƒ /api/marketing/campaigns                    121 B         297 kB
+├ ƒ /api/marketing/campaigns/[id]               121 B         297 kB
+├ ƒ /api/marketing/campaigns/[id]/metrics       121 B         297 kB
+├ ƒ /api/marketing/campaigns/[id]/send          121 B         297 kB
+├ ƒ /api/marketing/segments                     120 B         297 kB
+├ ƒ /api/marketing/templates                    121 B         297 kB
+├ ƒ /api/marketing/workflows                    121 B         297 kB
+├ ƒ /api/notifications/preferences              121 B         297 kB
+├ ƒ /api/notifications/process                  121 B         297 kB
+├ ƒ /api/notifications/subscribe                120 B         297 kB
+├ ƒ /api/notifications/test                     121 B         297 kB
+├ ƒ /api/notifications/unsubscribe              121 B         297 kB
+├ ƒ /api/notifications/vapid-public-key         120 B         297 kB
+├ ƒ /api/orders                                 121 B         297 kB
+├ ƒ /api/orders/[id]                            120 B         297 kB
+├ ƒ /api/orders/[id]/assign-vendor              120 B         297 kB
+├ ƒ /api/orders/[id]/notify-vendor              120 B         297 kB
+├ ƒ /api/orders/[id]/public                     121 B         297 kB
+├ ƒ /api/orders/[id]/receipt                    121 B         297 kB
+├ ƒ /api/orders/confirm-email                   121 B         297 kB
+├ ƒ /api/orders/reorder                         121 B         297 kB
+├ ƒ /api/orders/send-tracking                   120 B         297 kB
+├ ƒ /api/orders/status                          120 B         297 kB
+├ ƒ /api/paper-stock-sets                       121 B         297 kB
+├ ƒ /api/paper-stock-sets/[id]                  120 B         297 kB
+├ ƒ /api/paper-stock-sets/[id]/duplicate        121 B         297 kB
+├ ƒ /api/paper-stock-sets/[id]/reorder          121 B         297 kB
+├ ƒ /api/paper-stocks                           119 B         297 kB
+├ ƒ /api/paper-stocks/[id]                      121 B         297 kB
+├ ƒ /api/paper-stocks/[id]/duplicate            120 B         297 kB
+├ ƒ /api/pricing/calculate-base                 121 B         297 kB
+├ ƒ /api/product-categories                     121 B         297 kB
+├ ƒ /api/product-categories/[id]                121 B         297 kB
+├ ƒ /api/product-categories/[id]/duplicate      120 B         297 kB
+├ ƒ /api/products                               121 B         297 kB
+├ ƒ /api/products/[id]                          121 B         297 kB
+├ ƒ /api/products/[id]/addon-set                121 B         297 kB
+├ ƒ /api/products/[id]/configuration            121 B         297 kB
+├ ƒ /api/products/[id]/draft                    120 B         297 kB
+├ ƒ /api/products/[id]/duplicate                121 B         297 kB
+├ ƒ /api/products/[id]/turnaround-time-set      121 B         297 kB
+├ ƒ /api/products/by-slug/[slug]                121 B         297 kB
+├ ƒ /api/products/check-sku                     121 B         297 kB
+├ ƒ /api/products/customer-images               120 B         297 kB
+├ ƒ /api/products/draft                         121 B         297 kB
+├ ƒ /api/products/images                        120 B         297 kB
+├ ƒ /api/products/test-price                    121 B         297 kB
+├ ƒ /api/products/upload-customer-image         121 B         297 kB
+├ ƒ /api/products/upload-image                  120 B         297 kB
+├ ƒ /api/quantities                             121 B         297 kB
+├ ƒ /api/quantities/[id]                        120 B         297 kB
+├ ƒ /api/quantities/[id]/duplicate              121 B         297 kB
+├ ƒ /api/quantity-groups                        121 B         297 kB
+├ ƒ /api/quotes                                 121 B         297 kB
+├ ƒ /api/search                                 161 B         297 kB
+├ ƒ /api/shipping/calculate                     121 B         297 kB
+├ ƒ /api/shipping/label                         121 B         297 kB
+├ ƒ /api/shipping/rates                         121 B         297 kB
+├ ƒ /api/shipping/select                        121 B         297 kB
+├ ƒ /api/shipping/track/[tracking]              121 B         297 kB
+├ ƒ /api/sides-options                          121 B         297 kB
+├ ƒ /api/sides-options/[id]                     121 B         297 kB
+├ ƒ /api/size-groups                            119 B         297 kB
+├ ƒ /api/sizes                                  120 B         297 kB
+├ ƒ /api/sizes/[id]                             120 B         297 kB
+├ ƒ /api/sizes/[id]/duplicate                   120 B         297 kB
+├ ƒ /api/sse/orders/[id]                        121 B         297 kB
+├ ƒ /api/test-paper-stocks                      120 B         297 kB
+├ ƒ /api/test/minio-health                      121 B         297 kB
+├ ƒ /api/themes                                 121 B         297 kB
+├ ƒ /api/themes/[id]                            120 B         297 kB
+├ ƒ /api/themes/active                          121 B         297 kB
+├ ƒ /api/themes/import                          121 B         297 kB
+├ ƒ /api/turnaround-time-sets                   121 B         297 kB
+├ ƒ /api/turnaround-time-sets/[id]              120 B         297 kB
+├ ƒ /api/turnaround-time-sets/[id]/duplicate    120 B         297 kB
+├ ƒ /api/turnaround-time-sets/[id]/reorder      121 B         297 kB
+├ ƒ /api/turnaround-times                       119 B         297 kB
+├ ƒ /api/turnaround-times/[id]                  121 B         297 kB
+├ ƒ /api/turnaround-times/[id]/duplicate        121 B         297 kB
+├ ƒ /api/upload                                 120 B         297 kB
+├ ƒ /api/upload/temporary                       121 B         297 kB
+├ ƒ /api/upload/temporary/cleanup               121 B         297 kB
+├ ƒ /api/upload/temporary/thumbnail/[fileId]    121 B         297 kB
+├ ƒ /api/vendors                                121 B         297 kB
+├ ƒ /api/webhooks/n8n                           121 B         297 kB
+├ ƒ /api/webhooks/square                        120 B         297 kB
+├ ƒ /api/webhooks/vendor-status                 121 B         297 kB
+├ ƒ /auth/signin                              1.82 kB         298 kB
+├ ƒ /auth/verify                                121 B         297 kB
+├ ƒ /cart                                     1.99 kB         298 kB
+├ ƒ /checkout                                 5.64 kB         305 kB
+├ ƒ /checkout/success                         3.49 kB         303 kB
+├ ƒ /contact                                  2.41 kB         299 kB
+├ ƒ /dashboard                                  121 B         297 kB
+├ ƒ /dashboard/notifications                    182 B         297 kB
+├ ƒ /dashboard/payments                         120 B         297 kB
+├ ƒ /dashboard/profile                          182 B         297 kB
+├ ƒ /dashboard/saved                            121 B         297 kB
+├ ƒ /dashboard/settings                         187 B         297 kB
+├ ƒ /dashboard/upcoming                         121 B         297 kB
+├ ƒ /help-center                              2.57 kB         299 kB
+├ ƒ /locations                                4.11 kB         303 kB
+├ ƒ /privacy-policy                             121 B         297 kB
+├ ƒ /products                                 3.72 kB         303 kB
+├ ƒ /products/[slug]                          3.12 kB         302 kB
+├ ƒ /products/flyers                          1.83 kB         298 kB
+├ ƒ /quote                                    3.65 kB         300 kB
+├ ƒ /sign-in                                    441 B         297 kB
+├ ƒ /terms-of-service                           121 B         297 kB
+├ ƒ /test                                       120 B         297 kB
+├ ƒ /test/n8n                                 2.58 kB         302 kB
+├ ƒ /test/payment                             2.59 kB         299 kB
+├ ƒ /test/shipping                            1.31 kB         298 kB
+├ ƒ /test/simple-config                         599 B         297 kB
+├ ƒ /track                                    2.39 kB         299 kB
+├ ƒ /track/[orderNumber]                        161 B         297 kB
+├ ƒ /upload                                    1.7 kB         298 kB
+└ ƒ /uploads/[...path]                          121 B         297 kB
++ First Load JS shared by all                  296 kB
+  ├ chunks/commons-1b220e19ba051081.js         159 kB
+  ├ chunks/vendor-next-f2f6501f54caa9b3.js     134 kB
+  └ other shared chunks (total)               2.95 kB
+
+
+ƒ Middleware                                  34.7 kB
+
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
