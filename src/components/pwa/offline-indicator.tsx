@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { WifiOff, Wifi } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
-export function OfflineIndicator() {
+export function OfflineIndicator() : unknown {
   const [isOnline, setIsOnline] = useState(true)
   const [showReconnected, setShowReconnected] = useState(false)
 

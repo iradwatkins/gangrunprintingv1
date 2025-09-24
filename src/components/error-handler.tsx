@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-export function ErrorHandler() {
+export function ErrorHandler() : unknown {
   useEffect(() => {
     // Debug log
 

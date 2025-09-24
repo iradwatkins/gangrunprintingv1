@@ -102,7 +102,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(sizeGroup)
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A size group with this name already exists' },
@@ -145,7 +145,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Size group not found' }, { status: 404 })
     }

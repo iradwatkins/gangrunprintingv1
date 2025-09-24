@@ -13,7 +13,6 @@ import {
 import {
 import Link from 'next/link'
 
-
 export default function LocationsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedState, setSelectedState] = useState('all')

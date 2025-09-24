@@ -19,9 +19,9 @@ import { Calculator, DollarSign, Info, TestTube, Loader2 } from 'lucide-react'
 interface ProductData {
   basePrice: number
   setupFee: number
-  paperStocks: any[]
-  options: any[]
-  pricingTiers: any[]
+  paperStocks: unknown[]
+  options: unknown[]
+  pricingTiers: unknown[]
   quantityIds: string[]
   sizeIds: string[]
   useQuantityGroup: boolean
@@ -92,7 +92,7 @@ export function ProductPriceTestStep({
         const res = await fetch('/api/quantities')
         if (res.ok) {
           const allQuantities = await res.json()
-          setQuantities(allQuantities.filter((q: any) => formData.quantityIds.includes(q.id)))
+          setQuantities(allQuantities.filter((q: Record<string, unknown>) => formData.quantityIds.includes(q.id)))
         }
       }
 
@@ -107,7 +107,7 @@ export function ProductPriceTestStep({
         const res = await fetch('/api/sizes')
         if (res.ok) {
           const allSizes = await res.json()
-          setSizes(allSizes.filter((s: any) => formData.sizeIds.includes(s.id)))
+          setSizes(allSizes.filter((s: Record<string, unknown>) => formData.sizeIds.includes(s.id)))
         }
       }
     } catch (error) {
@@ -148,7 +148,7 @@ export function ProductPriceTestStep({
           if (option.type === 'checkbox' && value) {
             total += option.pricing.fee || 0
           } else if (option.type === 'select' && option.values) {
-            const selectedValue = option.values.find((v: any) => v.value === value)
+            const selectedValue = option.values.find((v: Record<string, unknown>) => v.value === value)
             if (selectedValue && selectedValue.additionalCost) {
               total += selectedValue.additionalCost
             }
@@ -278,7 +278,7 @@ export function ProductPriceTestStep({
                   <SelectValue placeholder="Select quantity" />
                 </SelectTrigger>
                 <SelectContent>
-                  {quantities.map((qty: any) => (
+                  {quantities.map((qty: Record<string, unknown>) => (
                     <SelectItem key={qty.id} value={qty.value.toString()}>
                       {qty.value}
                     </SelectItem>
@@ -299,7 +299,7 @@ export function ProductPriceTestStep({
                   <SelectValue placeholder="Select size" />
                 </SelectTrigger>
                 <SelectContent>
-                  {sizes.map((size: any) => (
+                  {sizes.map((size: Record<string, unknown>) => (
                     <SelectItem key={size.id} value={size.id}>
                       {size.name}
                     </SelectItem>
@@ -320,7 +320,7 @@ export function ProductPriceTestStep({
                   <SelectValue placeholder="Select paper" />
                 </SelectTrigger>
                 <SelectContent>
-                  {formData.paperStocks.map((paper: any) => (
+                  {formData.paperStocks.map((paper: Record<string, unknown>) => (
                     <SelectItem key={paper.id} value={paper.id}>
                       {paper.name}
                     </SelectItem>

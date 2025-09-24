@@ -109,7 +109,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     // Delete removed images from MinIO
     const existingImageUrls = existingProduct.productImages.map((img) => img.url)
-    const newImageUrls = images?.map((img: any) => img.url) || []
+    const newImageUrls = images?.map((img: Record<string, unknown>) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
 
     for (const url of imagesToDelete) {
@@ -140,7 +140,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           productImages:
             images?.length > 0
               ? {
-                  create: images.map((img: any, index: number) => ({
+                  create: images.map((img: Record<string, unknown>, index: number) => ({
                     url: img.url,
                     thumbnailUrl: img.thumbnailUrl,
                     alt: img.alt,
@@ -201,13 +201,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           productOptions:
             options?.length > 0
               ? {
-                  create: options.map((opt: any, index: number) => ({
+                  create: options.map((opt: Record<string, unknown>, index: number) => ({
                     name: opt.name,
                     type: opt.type,
                     required: opt.required,
                     sortOrder: index,
                     OptionValue: {
-                      create: opt.values.map((val: any, valIndex: number) => ({
+                      create: opt.values.map((val: Record<string, unknown>, valIndex: number) => ({
                         value: val.value,
                         label: val.label,
                         additionalPrice: val.additionalPrice,
@@ -222,7 +222,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           pricingTiers:
             pricingTiers?.length > 0
               ? {
-                  create: pricingTiers.map((tier: any) => ({
+                  create: pricingTiers.map((tier: Record<string, unknown>) => ({
                     minQuantity: tier.minQuantity,
                     maxQuantity: tier.maxQuantity,
                     pricePerUnit: tier.pricePerUnit,
@@ -294,7 +294,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(product)
-  } catch (error: any) {
+  } catch (error) {
     // Check for unique constraint violations
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]

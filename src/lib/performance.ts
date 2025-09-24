@@ -12,7 +12,7 @@ import { DEBOUNCE_DELAY } from '@/config/constants'
  * @param delay - Delay in milliseconds (default: DEBOUNCE_DELAY)
  * @returns Debounced function
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: Record<string, unknown>[]) => any>(
   fn: T,
   delay: number = DEBOUNCE_DELAY
 ): (...args: Parameters<T>) => void {
@@ -35,7 +35,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * @param interval - Interval in milliseconds
  * @returns Throttled function
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: Record<string, unknown>[]) => any>(
   fn: T,
   interval: number
 ): (...args: Parameters<T>) => void {
@@ -92,7 +92,7 @@ export function useDebounce<T>(value: T, delay: number = DEBOUNCE_DELAY): T {
  * @param delay - Delay in milliseconds
  * @returns Debounced callback
  */
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
+export function useDebouncedCallback<T extends (...args: Record<string, unknown>[]) => any>(
   callback: T,
   delay: number = DEBOUNCE_DELAY
 ): T {
@@ -124,7 +124,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
  * @param interval - Interval in milliseconds
  * @returns Throttled callback
  */
-export function useThrottledCallback<T extends (...args: any[]) => any>(
+export function useThrottledCallback<T extends (...args: Record<string, unknown>[]) => any>(
   callback: T,
   interval: number
 ): T {
@@ -237,10 +237,10 @@ export function useLazyImage(src: string, placeholder?: string) {
  */
 export function useDeepMemo<T>(
   fn: () => T,
-  deps: any[],
-  compare?: (prev: any[], next: any[]) => boolean
+  deps: Record<string, unknown>[],
+  compare?: (prev: Record<string, unknown>[], next: Record<string, unknown>[]) => boolean
 ): T {
-  const ref = useRef<{ deps: any[]; result: T } | null>(null)
+  const ref = useRef<{ deps: Record<string, unknown>[]; result: T } | null>(null)
 
   if (!ref.current) {
     ref.current = { deps, result: fn() }
@@ -304,12 +304,12 @@ export async function measurePerformance<T>(name: string, fn: () => T | Promise<
  * @param combiner - Function to combine selector results
  * @returns Memoized selector
  */
-export function createSelector<T extends readonly ((...args: any[]) => any)[], R>(
+export function createSelector<T extends readonly ((...args: Record<string, unknown>[]) => any)[], R>(
   selectors: T,
   combiner: (...results: { [K in keyof T]: ReturnType<T[K]> }) => R
 ): (...args: Parameters<T[0]>) => R {
-  let lastArgs: any[] | null = null
-  let lastResults: any[] | null = null
+  let lastArgs: Record<string, unknown>[] | null = null
+  let lastResults: Record<string, unknown>[] | null = null
   let lastCombined: R | null = null
 
   return (...args: Parameters<T[0]>) => {

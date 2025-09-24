@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { v4 as uuidv4 } from 'uuid'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -86,7 +85,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         // Create new items
         if (addOnItems.length > 0) {
           await tx.addOnSetItem.createMany({
-            data: addOnItems.map((item: any, index: number) => ({
+            data: addOnItems.map((item: Record<string, unknown>, index: number) => ({
               id: uuidv4(),
               addOnSetId: id,
               addOnId: item.addOnId,

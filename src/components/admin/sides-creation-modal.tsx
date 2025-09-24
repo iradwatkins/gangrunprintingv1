@@ -87,7 +87,7 @@ export function SidesCreationModal({
       onSidesCreated(newSides)
       resetForm()
       onOpenChange(false)
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
       if (error.message.includes('already exists')) {
         setErrors({ name: 'A sides option with this name already exists' })

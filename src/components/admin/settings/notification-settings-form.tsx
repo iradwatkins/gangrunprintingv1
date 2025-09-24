@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Bell, Mail, MessageSquare, Zap, Save, Loader2, TestTube } from 'lucide-react'
 
-export function NotificationSettingsForm() {
+export function NotificationSettingsForm() : unknown {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     // Email notifications

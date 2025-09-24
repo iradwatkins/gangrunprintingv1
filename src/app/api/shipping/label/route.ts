@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Carrier } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { shippingCalculator, type ShippingAddress, type ShippingPackage } from '@/lib/shipping'

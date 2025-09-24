@@ -3,13 +3,12 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface CampaignCreateData {
   name: string
   type: CampaignType
   subject?: string
   previewText?: string
-  content: any
+  content: Record<string, unknown>
   senderName?: string
   senderEmail?: string
   replyToEmail?: string
@@ -18,16 +17,15 @@ export interface CampaignCreateData {
   isTemplate?: boolean
   templateName?: string
   tags?: string[]
-  settings?: any
+  settings?: Record<string, unknown>
   createdBy: string
 }
-
 
 export interface CampaignUpdateData {
   name?: string
   subject?: string
   previewText?: string
-  content?: any
+  content?: Record<string, unknown>
   senderName?: string
   senderEmail?: string
   replyToEmail?: string
@@ -35,9 +33,8 @@ export interface CampaignUpdateData {
   scheduledAt?: Date
   status?: CampaignStatus
   tags?: string[]
-  settings?: any
+  settings?: Record<string, unknown>
 }
-
 
 export interface CampaignMetrics {
   sent: number
@@ -109,7 +106,7 @@ export class CampaignService {
     } = {}
   ) {
     const offset = (page - 1) * limit
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     if (filters.status) {
       where.status = filters.status

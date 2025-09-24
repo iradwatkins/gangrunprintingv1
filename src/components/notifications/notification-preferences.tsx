@@ -179,7 +179,7 @@ export default function NotificationPreferences() {
 
       setSuccess('Push notifications enabled successfully!')
       setTimeout(() => setSuccess(null), 3000)
-    } catch (error: any) {
+    } catch (error) {
       setError(error.message || 'Failed to enable notifications')
       setTimeout(() => setError(null), 5000)
     } finally {

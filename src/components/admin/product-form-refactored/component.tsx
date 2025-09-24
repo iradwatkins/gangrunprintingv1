@@ -16,14 +16,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import toast from '@/lib/toast'
 import { generateSlug } from '@/lib/utils'
-import {
-import { ProductImageUpload } from './product-image-upload'
 import { ProductPaperStocks } from './product-paper-stocks'
 import { ProductOptions } from './product-options'
 import { PricingCalculator } from './pricing-calculator'
 import { ProductQuantities } from './product-quantities'
 import { ProductSizes } from './product-sizes'
-
 
 export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter()
@@ -81,7 +78,7 @@ export function ProductForm({ product }: ProductFormProps) {
       const res = await fetch('/api/paper-stocks')
       if (res.ok) {
         const data = await res.json()
-        setPaperStocks(data.filter((ps: any) => ps.isActive))
+        setPaperStocks(data.filter((ps: Record<string, unknown>) => ps.isActive))
       }
     } catch (error) {
       }
@@ -125,7 +122,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
       toast.success(product ? 'Product updated successfully' : 'Product created successfully')
       router.push('/admin/products')
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to save product')
     } finally {
       setLoading(false)
@@ -222,7 +219,7 @@ export function ProductForm({ product }: ProductFormProps) {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((cat: any) => (
+                      {categories.map((cat: Record<string, unknown>) => (
                         <SelectItem key={cat.id} value={cat.id}>
                           {cat.name}
 

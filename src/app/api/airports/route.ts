@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
 
     // Build where clause for filtering
-    const whereClause: any = {
+    const whereClause: Record<string, unknown> = {
       isActive: true,
     }
 

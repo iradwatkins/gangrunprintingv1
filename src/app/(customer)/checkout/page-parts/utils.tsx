@@ -222,5 +222,4 @@ function CheckoutPageContent() {
               const currentStepIndex = STEPS.findIndex(s => s.id === currentStep)
               const isAccessible = stepIndex <= currentStepIndex || isCompleted
 
-
 export { STEPS, CheckoutPageContent, router, SQUARE_APPLICATION_ID, SQUARE_LOCATION_ID, currentItem, fetchUploadedImages, storedImages, stepIndex, validateInformation, validateShipping, processPayment, processSquareCheckout, checkoutData, response, errorText, result, errorMessage, createCheckoutData, shippingCost, total, orderTotal, Icon, isActive, isCompleted, currentStepIndex, isAccessible };

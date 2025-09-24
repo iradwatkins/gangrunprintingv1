@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export function ThemeToggle() {
+export function ThemeToggle() : unknown {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
@@ -55,7 +55,7 @@ export function ThemeToggle() {
   )
 }
 
-export function MobileThemeToggle() {
+export function MobileThemeToggle() : unknown {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 

@@ -2,7 +2,7 @@ import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const sidesOptions = await prisma.sidesOption.findMany({
       orderBy: { name: 'asc' },
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(sidesOption, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A sides option with this name already exists' },

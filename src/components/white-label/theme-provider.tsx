@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { type TenantInfo } from '@/lib/tenants/resolver'
 import { ThemeEngine, type CompiledTheme } from '@/lib/white-label/theming'
 
 interface ThemeContextType {
@@ -89,7 +88,7 @@ export function ThemeProvider({ children, tenant }: ThemeProviderProps) {
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
 }
 
-export function useTheme() {
+export function useTheme() : unknown {
   const context = useContext(ThemeContext)
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')
@@ -134,7 +133,7 @@ function loadCustomFonts(fonts: string[]) {
 }
 
 // Hook to get current brand information
-export function useBrand() {
+export function useBrand() : unknown {
   const { tenant } = useTheme()
   return {
     logoUrl: tenant?.branding?.logoUrl,
@@ -158,7 +157,7 @@ export function useCSSVariable(variableName: string): string {
 }
 
 // Component to inject tenant-specific metadata
-export function TenantMetadata() {
+export function TenantMetadata() : unknown {
   const { tenant } = useTheme()
 
   useEffect(() => {

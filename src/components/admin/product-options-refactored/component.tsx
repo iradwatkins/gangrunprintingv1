@@ -7,17 +7,9 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-import {
-import {
-import {
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-
 
 export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -89,7 +81,7 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
     },
   ]
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: Record<string, unknown>) => {
     const { active, over } = event
 
     if (active.id !== over.id) {
@@ -184,11 +176,11 @@ export function ProductOptions({ options, onOptionsChange }: ProductOptionsProps
     }
   }
 
-  const handleUsePredefined = (predefined: any) => {
+  const handleUsePredefined = (predefined: Record<string, unknown>) => {
     setFormData({
       ...predefined,
       required: false,
-      values: predefined.values.map((v: any, i: number) => ({
+      values: predefined.values.map((v: Record<string, unknown>, i: number) => ({
         ...v,
         isDefault: i === 0,
         sortOrder: i,

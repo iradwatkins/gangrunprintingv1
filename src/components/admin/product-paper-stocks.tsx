@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { RadioGroup } from '@/components/ui/radio-group'
 import {
   Table,
   TableBody,
@@ -18,7 +17,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import toast from '@/lib/toast'
 import { FileText, Plus, X, Star, DollarSign, Package, Droplets } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 interface PaperStock {
   id: string

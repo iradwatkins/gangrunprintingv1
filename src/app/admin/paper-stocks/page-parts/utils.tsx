@@ -30,7 +30,7 @@
       const data = await response.json()
 
       // Transform API response to match our interface
-      const transformedStocks = data.map((stock: any) => ({
+      const transformedStocks = data.map((stock: Record<string, unknown>) => ({
         id: stock.id,
         name: stock.name,
         weight: stock.weight || 0.0015,
@@ -84,7 +84,7 @@
       setDialogOpen(false)
       resetForm()
       fetchPaperStocks()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }
@@ -129,7 +129,7 @@
       setDeleteDialogOpen(false)
       setDeletingStock(null)
       fetchPaperStocks()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }
@@ -180,6 +180,5 @@
     })
     setDialogOpen(true)
   }
-
 
 export { fetchOptions, coatingsData, sidesData, fetchPaperStocks, response, data, transformedStocks, url, method, payload, error, selectedCoatings, defaultCoating, selectedSides, sidesMultipliers, resetForm, openDeleteDialog };

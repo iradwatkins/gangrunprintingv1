@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { CreditCard, Save } from 'lucide-react'
 
-export function PaymentSettingsForm() {
+export function PaymentSettingsForm() : unknown {
   return (
     <Card>
       <CardHeader>

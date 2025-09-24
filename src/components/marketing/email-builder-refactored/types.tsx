@@ -3,14 +3,12 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface EmailComponent {
   id: string
   type: 'text' | 'image' | 'button' | 'divider' | 'columns' | 'header' | 'footer'
-  content: any
-  styles: any
+  content: Record<string, unknown>
+  styles: Record<string, unknown>
 }
-
 
 export interface EmailTemplate {
   id?: string
@@ -243,11 +241,11 @@ function ComponentEditor({
   component: EmailComponent
   onUpdate: (updates: Partial<EmailComponent>) => void
 }) {
-  const updateContent = (updates: any) => {
+  const updateContent = (updates: Record<string, unknown>) => {
     onUpdate({ content: { ...component.content, ...updates } })
   }
 
-  const updateStyles = (updates: any) => {
+  const updateStyles = (updates: Record<string, unknown>) => {
     onUpdate({ styles: { ...component.styles, ...updates } })
   }
 

@@ -46,8 +46,8 @@ interface Workflow {
   name: string
   description: string | null
   isActive: boolean
-  trigger: any
-  steps: any[]
+  trigger: Record<string, unknown>
+  steps: Record<string, unknown>[]
   createdAt: string
   updatedAt: string
   segment?: {
@@ -111,7 +111,7 @@ export default function AutomationPage() {
       }
   }
 
-  const getTriggerLabel = (trigger: any) => {
+  const getTriggerLabel = (trigger: Record<string, unknown>) => {
     switch (trigger.type) {
       case 'event':
         return `Event: ${trigger.event?.replace(/_/g, ' ') || 'Unknown'}`

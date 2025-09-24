@@ -174,7 +174,7 @@ export const cacheKeys = {
 }
 
 // Cache decorators for common patterns
-export function withCache<T extends (...args: any[]) => Promise<any>>(
+export function withCache<T extends (...args: Record<string, unknown>[]) => Promise<any>>(
   fn: T,
   keyGenerator: (...args: Parameters<T>) => string,
   ttl: number = REDIS_CONFIG.DEFAULT_TTL
@@ -222,7 +222,7 @@ export const sessionStore = {
 
   async set(
     sessionId: string,
-    data: any,
+    data: Record<string, unknown>,
     ttl: number = REDIS_CONFIG.SESSION_TTL
   ): Promise<boolean> {
     return cache.set(cacheKeys.userSession(sessionId), data, ttl)
@@ -244,7 +244,7 @@ export const sessionStore = {
 
 // Pub/Sub for real-time features
 export const pubsub = {
-  publish: async (channel: string, message: any) => {
+  publish: async (channel: string, message: Record<string, unknown>) => {
     try {
       const serialized = JSON.stringify(message)
       await redis.publish(channel, serialized)
@@ -254,7 +254,7 @@ export const pubsub = {
     }
   },
 
-  subscribe: (channel: string, callback: (message: any) => void) => {
+  subscribe: (channel: string, callback: (message: Record<string, unknown>) => void) => {
     const subscriber = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || String(REDIS_CONFIG.DEFAULT_PORT)),

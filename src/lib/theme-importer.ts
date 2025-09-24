@@ -196,7 +196,7 @@ export class ThemeImporter {
   /**
    * Parse JSON theme data
    */
-  private parseJSONTheme(data: any, url: string): ThemeData {
+  private parseJSONTheme(data: Record<string, unknown>, url: string): ThemeData {
     return {
       name: data.name || data.title || 'Imported Theme',
       description: data.description,

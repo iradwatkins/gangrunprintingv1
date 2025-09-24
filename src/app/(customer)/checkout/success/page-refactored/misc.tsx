@@ -5,14 +5,11 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import Image from 'next/image'
-import {
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import toast from '@/lib/toast'
-
 
 'use client'
 
@@ -43,7 +40,7 @@ interface OrderItem {
   productName: string
   quantity: number
   price: number
-  options?: any
+  options?: Record<string, unknown>
   fileUrl?: string
   fileName?: string
 }

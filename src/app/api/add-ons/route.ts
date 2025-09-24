@@ -1,9 +1,7 @@
-import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/api/auth'
 import { successResponse, handleApiError, commonErrors } from '@/lib/api/responses'
-import { validateSearchParams, querySchemas } from '@/lib/api/validation'
 import { randomUUID } from 'crypto'
 
 // Add-on creation schema

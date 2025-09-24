@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
@@ -27,10 +28,10 @@ export const preferredRegion = 'auto'
 // POST /api/products/upload-image - Upload product image with optimization
 export async function POST(request: NextRequest) {
   const requestId = generateRequestId()
+  const MAX_FILE_SIZE = MAX_FILE_SIZE // 10MB - Define at function scope
 
   try {
     // Check content length header first - use 10MB limit for images
-    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
     const contentLength = request.headers.get('content-length')
     if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE) {
       return createUploadErrorResponse(

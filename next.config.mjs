@@ -1,6 +1,6 @@
-// Minimal next-intl plugin setup
-import createNextIntlPlugin from 'next-intl/plugin'
-const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
+// Minimal next-intl plugin setup - disabled for now
+// import createNextIntlPlugin from 'next-intl/plugin'
+// const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -229,9 +229,10 @@ const nextConfig = {
 
 // Apply plugins in order
 let config = nextConfig
-config = withNextIntl(config)
+// config = withNextIntl(config)
 
 // Sentry configuration temporarily disabled due to Next.js 15 compatibility issues
 // TODO: Re-enable when @sentry/nextjs supports Next.js 15
 
-export default config
+// export default withNextIntl(nextConfig)
+export default nextConfig

@@ -3,20 +3,10 @@
  * Auto-refactored by BMAD
  */
 
-import { useState, useCallback } from 'react'
-import {
-import 'reactflow/dist/style.css'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs'
-import {
-import {
-import { type WorkflowStep, type WorkflowTrigger } from '@/lib/marketing/workflow-engine'
-
 
 'use client'
 
@@ -63,7 +53,6 @@ import { type WorkflowStep, type WorkflowTrigger } from '@/lib/marketing/workflo
   Eye,
 } from 'lucide-react'
 
-
 interface WorkflowDesignerProps {
   workflow?: {
     id?: string
@@ -73,8 +62,8 @@ interface WorkflowDesignerProps {
     steps: WorkflowStep[]
     isActive: boolean
   }
-  onSave: (workflow: any) => void
-  onPreview: (workflow: any) => void
+  onSave: (workflow: Record<string, unknown>) => void
+  onPreview: (workflow: Record<string, unknown>) => void
 }
 
 const STEP_TYPES = [
@@ -156,7 +145,7 @@ const TRIGGER_TYPES = [
 ]
 
 // Custom Node Components
-function WorkflowStepNode({ data }: { data: any }) {
+function WorkflowStepNode({ data }: { data: Record<string, unknown> }) {
   const stepType = STEP_TYPES.find((t) => t.type === data.type)
   const Icon = stepType?.icon || Mail
 
@@ -223,7 +212,7 @@ function WorkflowStepNode({ data }: { data: any }) {
   )
 }
 
-function TriggerNode({ data }: { data: any }) {
+function TriggerNode({ data }: { data: Record<string, unknown> }) {
   return (
     <div
       className={`px-4 py-3 shadow-md rounded-md bg-green-50 border-2 min-w-[200px] ${
@@ -260,7 +249,7 @@ function StepEditor({
 }) {
   const stepType = STEP_TYPES.find((t) => t.type === step.type)
 
-  const updateSettings = (updates: any) => {
+  const updateSettings = (updates: Record<string, unknown>) => {
     onUpdate({ settings: { ...step.settings, ...updates } })
   }
 
@@ -620,7 +609,6 @@ function TriggerEditor({
               />
             </div>
           )}
-
 
           {trigger.schedule?.type === 'recurring' && (
             <div>

@@ -62,7 +62,7 @@ export const commonErrors = {
 /**
  * Handle Prisma errors
  */
-export function handlePrismaError(error: any): NextResponse {
+export function handlePrismaError(error: Error): NextResponse {
   switch (error.code) {
     case 'P2002':
       return commonErrors.conflict('A record with this unique field already exists')
@@ -81,7 +81,7 @@ export function handlePrismaError(error: any): NextResponse {
  * Catch-all error handler for API routes
  */
 export function handleApiError(
-  error: any,
+  error: Error,
   defaultMessage: string = 'Operation failed'
 ): NextResponse {
   // Handle known error types

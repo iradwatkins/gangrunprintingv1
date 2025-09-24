@@ -10,11 +10,9 @@ import { ArrowLeft, Save, Plus, Trash2, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { box } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
 import toast from '@/lib/toast'
-
 
 export default function ConfigureProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

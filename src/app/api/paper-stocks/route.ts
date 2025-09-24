@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
 
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const paperStocks = await prisma.paperStock.findMany({
       orderBy: { name: 'asc' },
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
         // Add coating relationships
         paperStockCoatings: {
           create:
-            coatings?.map((c: any) => ({
+            coatings?.map((c: Record<string, unknown>) => ({
               coatingId: c.id,
               isDefault: c.isDefault || false,
             })) || [],
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         // Add sides relationships
         paperStockSides: {
           create:
-            sidesOptions?.map((s: any) => ({
+            sidesOptions?.map((s: Record<string, unknown>) => ({
               sidesOptionId: s.id,
               priceMultiplier: s.multiplier || 1.0,
               isEnabled: true,
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(paperStock, { status: 201 })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A paper stock with this name already exists' },

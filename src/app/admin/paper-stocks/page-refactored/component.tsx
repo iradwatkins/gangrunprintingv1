@@ -12,13 +12,9 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-import {
-import { Textarea } from '@/components/ui/textarea'
 import { CoatingCreationModal } from '@/components/admin/coating-creation-modal'
 import { SidesCreationModal } from '@/components/admin/sides-creation-modal'
 import toast from '@/lib/toast'
-
 
 export default function PaperStocksPage() {
   const [paperStocks, setPaperStocks] = useState<PaperStock[]>([])
@@ -78,7 +74,7 @@ export default function PaperStocksPage() {
       const data = await response.json()
 
       // Transform API response to match our interface
-      const transformedStocks = data.map((stock: any) => ({
+      const transformedStocks = data.map((stock: Record<string, unknown>) => ({
         id: stock.id,
         name: stock.name,
         weight: stock.weight || 0.0015,
@@ -136,7 +132,7 @@ export default function PaperStocksPage() {
       setDialogOpen(false)
       resetForm()
       fetchPaperStocks()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }
@@ -189,7 +185,7 @@ export default function PaperStocksPage() {
       setDeleteDialogOpen(false)
       setDeletingStock(null)
       fetchPaperStocks()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }
@@ -219,7 +215,6 @@ export default function PaperStocksPage() {
     // Extract coating data
     const selectedCoatings = stock.paperStockCoatings.map((pc) => pc.coatingId)
     const defaultCoating = stock.paperStockCoatings.find((pc) => pc.isDefault)?.coatingId || ''
-
 
     // Extract sides data and multipliers
     const selectedSides = stock.paperStockSides.map((ps) => ps.sidesOptionId)

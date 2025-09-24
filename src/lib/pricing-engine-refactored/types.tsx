@@ -3,7 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface PaperStock {
   id: string
   name: string
@@ -11,7 +10,6 @@ export interface PaperStock {
   secondSideMarkupPercent: number
   defaultCoatingId?: string
 }
-
 
 export interface PrintSize {
   id: string
@@ -21,14 +19,12 @@ export interface PrintSize {
   isCustom: boolean
 }
 
-
 export interface TurnaroundTime {
   id: string
   name: string
   priceMarkupPercent: number
   businessDays: number
 }
-
 
 export interface AddOnConfiguration {
   // Our Tagline - 5% discount
@@ -136,12 +132,10 @@ export interface AddOnConfiguration {
   }
 }
 
-
 export interface BrokerDiscount {
   categoryId: string
   discountPercentage: number
 }
-
 
 export interface ProductConfiguration {
   paperStock: PaperStock
@@ -154,7 +148,6 @@ export interface ProductConfiguration {
   brokerDiscounts?: BrokerDiscount[]
   categoryId: string
 }
-
 
 export interface PriceCalculation {
   // Step 1: Base calculation

@@ -40,7 +40,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // Status configuration with colors and icons
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
+const statusConfig: Record<string, { label: string; color: string; icon: Record<string, unknown> }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
@@ -101,7 +101,7 @@ interface OrdersPageProps {
   }>
 }
 
-async function OrdersContent({ searchParams }: { searchParams: any }) {
+async function OrdersContent({ searchParams }: { searchParams: Record<string, unknown> }) {
   const page = Number(searchParams?.page) || 1
   const pageSize = 20
   const statusFilter = searchParams?.status || 'all'
@@ -109,7 +109,7 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
 
   try {
     // Build where clause for filtering
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
   if (statusFilter !== 'all') {
     where.status = statusFilter

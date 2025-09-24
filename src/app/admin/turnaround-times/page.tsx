@@ -311,7 +311,7 @@ export default function TurnaroundTimesPage() {
                   <Label htmlFor="pricingModel">Pricing Model</Label>
                   <Select
                     value={formData.pricingModel}
-                    onValueChange={(value: any) =>
+                    onValueChange={(value: Record<string, unknown>) =>
                       setFormData({ ...formData, pricingModel: value })
                     }
                   >

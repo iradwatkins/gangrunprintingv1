@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export function ThemeToggle() {
+export function ThemeToggle() : unknown {
   const [theme, setTheme] = React.useState<'light' | 'dark' | 'system'>('system')
   const [mounted, setMounted] = React.useState(false)
 

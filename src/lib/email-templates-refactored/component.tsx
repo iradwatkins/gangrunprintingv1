@@ -5,7 +5,6 @@
 
 import {
 
-
 export function getOrderConfirmationEmail(orderData: {
   orderNumber: string
   customerName: string
@@ -14,7 +13,7 @@ export function getOrderConfirmationEmail(orderData: {
     name: string
     quantity: number
     price: number
-    options?: any
+    options?: Record<string, unknown>
   }>
   subtotal: number
   tax: number
@@ -72,7 +71,7 @@ export function getOrderConfirmationEmail(orderData: {
       <h1 style="margin: 0; font-size: 28px;">GangRun Printing</h1>
       <p style="margin: 10px 0 0 0; opacity: 0.9;">Professional Printing Services</p>
     </div>
-    
+
     <!-- Main Content -->
     <div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <h2 style="color: #111827; margin-top: 0;">Thank You for Your Order!</h2>
@@ -80,7 +79,7 @@ export function getOrderConfirmationEmail(orderData: {
         Hi ${orderData.customerName || 'Valued Customer'},<br><br>
         We've received your order and it's being processed. You'll receive another email when your order ships.
       </p>
-      
+
       <!-- Order Details -->
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin-top: 0; color: #111827;">Order Details</h3>
@@ -88,7 +87,7 @@ export function getOrderConfirmationEmail(orderData: {
         <p style="margin: 5px 0; color: #4b5563;"><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
         ${orderData.estimatedDelivery ? `<p style="margin: 5px 0; color: #4b5563;"><strong>Estimated Delivery:</strong> ${orderData.estimatedDelivery}</p>` : ''}
       </div>
-      
+
       <!-- Items Table -->
       <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
         <thead>
@@ -103,7 +102,7 @@ export function getOrderConfirmationEmail(orderData: {
           ${itemsHtml}
         </tbody>
       </table>
-      
+
       <!-- Order Summary -->
       <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
         <table style="width: 100%; margin-left: auto;">
@@ -125,7 +124,7 @@ export function getOrderConfirmationEmail(orderData: {
           </tr>
         </table>
       </div>
-      
+
       ${
         orderData.shippingAddress
           ? `
@@ -140,7 +139,7 @@ export function getOrderConfirmationEmail(orderData: {
       `
           : ''
       }
-      
+
       ${
         orderData.orderFiles && orderData.orderFiles.length > 0
           ? `
@@ -203,7 +202,7 @@ export function getOrderConfirmationEmail(orderData: {
         <a href="https://gangrunprinting.com/track?order=${orderData.orderNumber}" style="display: inline-block; background-color: #000000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 0 5px;">Track Order</a>
         <a href="https://gangrunprinting.com/products" style="display: inline-block; background-color: #f3f4f6; color: #111827; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 0 5px;">Continue Shopping</a>
       </div>
-      
+
       <!-- Footer -->
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; text-align: center;">
 
@@ -276,7 +275,6 @@ Need to make changes? Contact us within 2 hours of placing your order.
   }
 }
 
-
 export function getOrderStatusUpdateEmail(orderData: {
   orderNumber: string
   customerName: string
@@ -331,7 +329,7 @@ export function getOrderStatusUpdateEmail(orderData: {
       <h1 style="margin: 0; font-size: 28px;">GangRun Printing</h1>
       <p style="margin: 10px 0 0 0; opacity: 0.9;">Order Status Update</p>
     </div>
-    
+
     <!-- Main Content -->
     <div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <h2 style="color: #111827; margin-top: 0;">${statusInfo.title}</h2>
@@ -339,7 +337,7 @@ export function getOrderStatusUpdateEmail(orderData: {
         Hi ${orderData.customerName || 'Valued Customer'},<br><br>
         ${statusInfo.message}
       </p>
-      
+
       <!-- Order Info -->
       <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
         <p style="margin: 5px 0; color: #4b5563;"><strong>Order Number:</strong> ${orderData.orderNumber}</p>
@@ -347,12 +345,12 @@ export function getOrderStatusUpdateEmail(orderData: {
         ${orderData.trackingNumber ? `<p style="margin: 5px 0; color: #4b5563;"><strong>Tracking Number:</strong> ${orderData.trackingNumber}</p>` : ''}
         ${orderData.estimatedDelivery ? `<p style="margin: 5px 0; color: #4b5563;"><strong>Estimated Delivery:</strong> ${orderData.estimatedDelivery}</p>` : ''}
       </div>
-      
+
       <!-- CTA Button -->
       <div style="text-align: center; margin: 30px 0;">
         <a href="https://gangrunprinting.com/track?order=${orderData.orderNumber}" style="display: inline-block; background-color: #000000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600;">Track Order</a>
       </div>
-      
+
       <!-- Footer -->
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; text-align: center;">
         <p style="color: #6b7280; font-size: 14px;">
@@ -381,7 +379,6 @@ Questions? Contact us at ${APP_EMAIL}
   }
 }
 
-
 export function getAdminOrderNotificationEmail(orderData: {
   orderNumber: string
   customerName: string
@@ -391,7 +388,7 @@ export function getAdminOrderNotificationEmail(orderData: {
     name: string
     quantity: number
     price: number
-    options?: any
+    options?: Record<string, unknown>
   }>
   subtotal: number
   tax: number

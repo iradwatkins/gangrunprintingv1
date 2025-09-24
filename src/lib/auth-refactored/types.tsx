@@ -3,7 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-
 export type User = {
   id: string
   email: string
@@ -11,7 +10,6 @@ export type User = {
   role: string
   emailVerified: boolean
 }
-
 
 export type Session = {
   id: string

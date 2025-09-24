@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { themeManager } from '@/lib/theme-manager'
 import { validateRequest } from '@/lib/auth'
 
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const themes = await themeManager.getThemes()
     return NextResponse.json(themes)

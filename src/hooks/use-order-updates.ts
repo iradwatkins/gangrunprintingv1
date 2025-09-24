@@ -11,7 +11,7 @@ interface OrderUpdate {
     carrier?: string
     updatedAt: string
   }
-  latestStatusChange?: any
+  latestStatusChange?: Record<string, unknown>
   pendingNotifications?: number
   currentStatus?: string
   orderId?: string

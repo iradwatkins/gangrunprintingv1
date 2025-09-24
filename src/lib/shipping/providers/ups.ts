@@ -155,8 +155,8 @@ export class UPSProvider implements ShippingProvider {
       }
 
       const rates: ShippingRate[] = response.data.RateResponse.RatedShipment.filter(
-        (shipment: any) => shipment.Service.Code in SERVICE_NAMES
-      ).map((shipment: any) => {
+        (shipment: Record<string, unknown>) => shipment.Service.Code in SERVICE_NAMES
+      ).map((shipment: Record<string, unknown>) => {
         const serviceCode = shipment.Service.Code
         const totalCharge = parseFloat(shipment.TotalCharges.MonetaryValue)
         const estimatedDays = this.getEstimatedDays(serviceCode)
@@ -310,7 +310,7 @@ export class UPSProvider implements ShippingProvider {
       const shipment = response.data.trackResponse.shipment[0]
       const package_ = shipment.package[0]
 
-      const events: TrackingEvent[] = (package_.activity || []).map((activity: any) => ({
+      const events: TrackingEvent[] = (package_.activity || []).map((activity: Record<string, unknown>) => ({
         timestamp: new Date(`${activity.date} ${activity.time}`),
         location: activity.location?.address
           ? `${activity.location.address.city}, ${activity.location.address.stateProvince}`
@@ -390,7 +390,7 @@ export class UPSProvider implements ShippingProvider {
   /**
    * Format address for UPS API
    */
-  private formatAddress(address: ShippingAddress): any {
+  private formatAddress(address: ShippingAddress): Record<string, unknown> {
     return {
       AddressLine: [address.street, address.street2].filter(Boolean),
       City: address.city,

@@ -5,19 +5,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-import {
-import {
-import {
-import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-
 
 'use client'
 
@@ -82,7 +73,7 @@ interface ProductOptionsProps {
   onOptionsChange: (options: ProductOption[]) => void
 }
 
-function SortableOption({ option, index, onEdit, onDelete }: any) {
+function SortableOption({ option, index, onEdit, onDelete }: Record<string, unknown>) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: option.name,
   })

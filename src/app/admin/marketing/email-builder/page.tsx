@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { EmailBuilder, type EmailTemplate } from '@/components/marketing/email-builder'
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Save, Send } from 'lucide-react'
 import {
@@ -19,7 +18,7 @@ interface Campaign {
   name: string
   subject: string
   previewText: string
-  content: any
+  content: Record<string, unknown>
   status: string
 }
 

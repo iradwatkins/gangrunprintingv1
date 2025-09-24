@@ -6,7 +6,7 @@ const N8N_API_KEY = process.env.N8N_API_KEY || ''
 
 interface N8NWebhookPayload {
   event: string
-  data: any
+  data: Record<string, unknown>
   timestamp: string
   source: string
 }
@@ -14,7 +14,7 @@ interface N8NWebhookPayload {
 interface N8NResponse {
   success: boolean
   message?: string
-  data?: any
+  data?: Record<string, unknown>
   error?: string
 }
 
@@ -28,7 +28,7 @@ export class N8NClient {
   }
 
   // Send webhook to N8N
-  async sendWebhook(event: string, data: any): Promise<N8NResponse> {
+  async sendWebhook(event: string, data: Record<string, unknown>): Promise<N8NResponse> {
     try {
       const payload: N8NWebhookPayload = {
         event,
@@ -64,13 +64,13 @@ export class N8NClient {
   }
 
   // Trigger order created workflow
-  async triggerOrderCreated(order: any) {
+  async triggerOrderCreated(order: Record<string, unknown>) {
     return this.sendWebhook('order.created', {
       orderId: order.id,
       orderNumber: order.orderNumber,
       customerEmail: order.email,
       total: order.total / 100,
-      items: order.OrderItem?.map((item: any) => ({
+      items: order.OrderItem?.map((item: Record<string, unknown>) => ({
         productName: item.productName,
         quantity: item.quantity,
         price: item.price / 100,
@@ -82,7 +82,7 @@ export class N8NClient {
   }
 
   // Trigger order status update workflow
-  async triggerOrderStatusUpdate(order: any, previousStatus: string) {
+  async triggerOrderStatusUpdate(order: Record<string, unknown>, previousStatus: string) {
     return this.sendWebhook('order.status_changed', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -94,7 +94,7 @@ export class N8NClient {
   }
 
   // Trigger payment received workflow
-  async triggerPaymentReceived(order: any, paymentDetails: any) {
+  async triggerPaymentReceived(order: Record<string, unknown>, paymentDetails: Record<string, unknown>) {
     return this.sendWebhook('payment.received', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -107,7 +107,7 @@ export class N8NClient {
   }
 
   // Trigger order shipped workflow
-  async triggerOrderShipped(order: any, trackingInfo: any) {
+  async triggerOrderShipped(order: Record<string, unknown>, trackingInfo: Record<string, unknown>) {
     return this.sendWebhook('order.shipped', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -120,7 +120,7 @@ export class N8NClient {
   }
 
   // Trigger file uploaded workflow
-  async triggerFileUploaded(order: any, fileInfo: any) {
+  async triggerFileUploaded(order: Record<string, unknown>, fileInfo: Record<string, unknown>) {
     return this.sendWebhook('file.uploaded', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -133,7 +133,7 @@ export class N8NClient {
   }
 
   // Trigger order issue detected workflow
-  async triggerOrderIssue(order: any, issue: any) {
+  async triggerOrderIssue(order: Record<string, unknown>, issue: Record<string, unknown>) {
     return this.sendWebhook('order.issue_detected', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -146,7 +146,7 @@ export class N8NClient {
   }
 
   // Trigger vendor assignment workflow
-  async triggerVendorAssignment(order: any, vendor: any) {
+  async triggerVendorAssignment(order: Record<string, unknown>, vendor: Record<string, unknown>) {
     return this.sendWebhook('vendor.assigned', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -158,7 +158,7 @@ export class N8NClient {
   }
 
   // Trigger customer notification workflow
-  async triggerCustomerNotification(order: any, notification: any) {
+  async triggerCustomerNotification(order: Record<string, unknown>, notification: Record<string, unknown>) {
     return this.sendWebhook('notification.send', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -170,7 +170,7 @@ export class N8NClient {
   }
 
   // Trigger daily report workflow
-  async triggerDailyReport(reportData: any) {
+  async triggerDailyReport(reportData: Record<string, unknown>) {
     return this.sendWebhook('report.daily', {
       date: new Date().toISOString().split('T')[0],
       ordersCreated: reportData.ordersCreated,
@@ -183,7 +183,7 @@ export class N8NClient {
   }
 
   // Trigger inventory alert workflow
-  async triggerInventoryAlert(product: any, currentStock: number) {
+  async triggerInventoryAlert(product: Record<string, unknown>, currentStock: number) {
     return this.sendWebhook('inventory.low_stock', {
       productId: product.id,
       productName: product.name,
@@ -220,7 +220,7 @@ export const N8NWorkflows = {
     }
   },
 
-  async onPaymentReceived(orderId: string, paymentDetails: any) {
+  async onPaymentReceived(orderId: string, paymentDetails: Record<string, unknown>) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     })
@@ -229,7 +229,7 @@ export const N8NWorkflows = {
     }
   },
 
-  async onOrderShipped(orderId: string, trackingInfo: any) {
+  async onOrderShipped(orderId: string, trackingInfo: Record<string, unknown>) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     })
@@ -239,7 +239,7 @@ export const N8NWorkflows = {
   },
 
   // File management workflows
-  async onFileUploaded(orderId: string, fileInfo: any) {
+  async onFileUploaded(orderId: string, fileInfo: Record<string, unknown>) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     })
@@ -249,7 +249,7 @@ export const N8NWorkflows = {
   },
 
   // Issue management workflows
-  async onIssueDetected(orderId: string, issue: any) {
+  async onIssueDetected(orderId: string, issue: Record<string, unknown>) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     })
@@ -270,7 +270,7 @@ export const N8NWorkflows = {
   },
 
   // Notification workflows
-  async sendCustomerNotification(orderId: string, notification: any) {
+  async sendCustomerNotification(orderId: string, notification: Record<string, unknown>) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     })

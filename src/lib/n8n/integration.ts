@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { type N8NWebhook } from '@prisma/client'
 import { SERVICE_ENDPOINTS } from '@/config/constants'
 
 export interface N8NWorkflowConfig {
@@ -15,7 +14,7 @@ export interface N8NWorkflowConfig {
 
 export interface N8NWebhookPayload {
   trigger: string
-  data: any
+  data: Record<string, unknown>
   timestamp: string
   source: 'gangrunprinting'
 }
@@ -24,7 +23,7 @@ export interface N8NExecutionResult {
   success: boolean
   executionId?: string
   error?: string
-  data?: any
+  data?: Record<string, unknown>
 }
 
 export class N8NIntegration {
@@ -37,7 +36,7 @@ export class N8NIntegration {
     name: string,
     trigger: string,
     description?: string,
-    payload?: any
+    payload?: Record<string, unknown>
   ): Promise<N8NWebhook> {
     // Generate webhook URL
     const webhookPath = `webhook/gangrun/${trigger.toLowerCase().replace(/[^a-z0-9]/g, '-')}`
@@ -88,7 +87,7 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerWebhook(trigger: string, data: any): Promise<N8NExecutionResult[]> {
+  static async triggerWebhook(trigger: string, data: Record<string, unknown>): Promise<N8NExecutionResult[]> {
     const webhooks = await prisma.n8NWebhook.findMany({
       where: {
         trigger,
@@ -129,7 +128,7 @@ export class N8NIntegration {
     return results
   }
 
-  private static async executeWebhook(webhook: N8NWebhook, data: any): Promise<N8NExecutionResult> {
+  private static async executeWebhook(webhook: N8NWebhook, data: Record<string, unknown>): Promise<N8NExecutionResult> {
     const payload: N8NWebhookPayload = {
       trigger: webhook.trigger,
       data,
@@ -162,7 +161,7 @@ export class N8NIntegration {
 
   private static async logWebhookExecution(
     webhookId: string,
-    payload: any,
+    payload: Record<string, unknown>,
     response: N8NExecutionResult,
     status: number = 200
   ): Promise<void> {
@@ -177,7 +176,7 @@ export class N8NIntegration {
   }
 
   // Marketing-specific webhook triggers
-  static async triggerCampaignSent(campaignId: string, campaignData: any): Promise<void> {
+  static async triggerCampaignSent(campaignId: string, campaignData: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('campaign_sent', {
       campaignId,
       campaign: campaignData,
@@ -188,7 +187,7 @@ export class N8NIntegration {
   static async triggerEmailOpened(
     campaignId: string,
     recipientEmail: string,
-    metadata: any
+    metadata: Record<string, unknown>
   ): Promise<void> {
     await this.triggerWebhook('email_opened', {
       campaignId,
@@ -202,7 +201,7 @@ export class N8NIntegration {
     campaignId: string,
     recipientEmail: string,
     clickedUrl: string,
-    metadata: any
+    metadata: Record<string, unknown>
   ): Promise<void> {
     await this.triggerWebhook('email_clicked', {
       campaignId,
@@ -213,7 +212,7 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerCustomerSegmentUpdated(segmentId: string, segmentData: any): Promise<void> {
+  static async triggerCustomerSegmentUpdated(segmentId: string, segmentData: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('segment_updated', {
       segmentId,
       segment: segmentData,
@@ -225,7 +224,7 @@ export class N8NIntegration {
     workflowId: string,
     executionId: string,
     userId: string,
-    results: any
+    results: Record<string, unknown>
   ): Promise<void> {
     await this.triggerWebhook('workflow_completed', {
       workflowId,
@@ -239,7 +238,7 @@ export class N8NIntegration {
   static async triggerABTestCompleted(
     testId: string,
     winnerId: string,
-    results: any
+    results: Record<string, unknown>
   ): Promise<void> {
     await this.triggerWebhook('ab_test_completed', {
       testId,
@@ -250,7 +249,7 @@ export class N8NIntegration {
   }
 
   // Business event triggers
-  static async triggerOrderPlaced(orderId: string, orderData: any): Promise<void> {
+  static async triggerOrderPlaced(orderId: string, orderData: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('order_placed', {
       orderId,
       order: orderData,
@@ -258,7 +257,7 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerUserRegistered(userId: string, userData: any): Promise<void> {
+  static async triggerUserRegistered(userId: string, userData: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('user_registered', {
       userId,
       user: userData,
@@ -266,7 +265,7 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerCartAbandoned(userId: string, cartData: any): Promise<void> {
+  static async triggerCartAbandoned(userId: string, cartData: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('cart_abandoned', {
       userId,
       cart: cartData,
@@ -274,7 +273,7 @@ export class N8NIntegration {
     })
   }
 
-  static async triggerCustomerReturned(userId: string, metadata: any): Promise<void> {
+  static async triggerCustomerReturned(userId: string, metadata: Record<string, unknown>): Promise<void> {
     await this.triggerWebhook('customer_returned', {
       userId,
       metadata,

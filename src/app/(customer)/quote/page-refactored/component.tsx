@@ -15,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
 import Link from 'next/link'
 
-
 export default function QuotePage() {
   const [formData, setFormData] = useState({
     department: '',

@@ -1,4 +1,3 @@
-import { type OrderStatus } from '@prisma/client'
 import { sendNotificationToUser, NotificationTypes } from './notifications'
 
 // Map order status to notification type
@@ -32,7 +31,7 @@ export async function notifyOrderStatusChange(
   userId: string,
   orderId: string,
   status: OrderStatus,
-  additionalData?: any
+  additionalData?: Record<string, unknown>
 ) {
   const notificationType = getNotificationTypeForStatus(status)
 

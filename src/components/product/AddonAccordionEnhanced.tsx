@@ -47,7 +47,7 @@ interface Addon {
     conditionalFields?: ConditionalFieldConfig
     requiresCheckbox?: boolean
     showConditionalOnCheck?: boolean
-    [key: string]: any
+    [key: string]: Record<string, unknown>
   }
   isDefault?: boolean
   additionalTurnaroundDays?: number

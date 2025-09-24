@@ -1,5 +1,3 @@
-import { type Carrier } from '@prisma/client'
-import { type ShippingConfiguration } from './interfaces'
 
 // FedEx configuration
 export const fedexConfig: ShippingConfiguration = {

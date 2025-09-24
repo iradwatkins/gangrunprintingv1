@@ -3,18 +3,7 @@
  * Auto-refactored by BMAD
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { Info } from 'lucide-react'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import {
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import AddonAccordion from './AddonAccordion'
-import TurnaroundTimeSelector from './TurnaroundTimeSelector'
-
-
 'use client'
-
 
   Select,
   SelectContent,
@@ -22,7 +11,6 @@ import TurnaroundTimeSelector from './TurnaroundTimeSelector'
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 
 // Types for configuration data
 interface PaperStock {

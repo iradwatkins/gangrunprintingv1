@@ -10,7 +10,7 @@ export interface TurnaroundTimeOption {
   priceMultiplier: number
   requiresNoCoating: boolean
   restrictedCoatings: string[]
-  restrictedOptions?: any
+  restrictedOptions?: Record<string, unknown>
   totalPrice: number // Calculated total price for this turnaround option
   pricePerUnit: number // Calculated price per unit
 }
@@ -36,7 +36,7 @@ export interface CartItem {
       id: string
       name: string
       price: number
-      configuration?: any
+      configuration?: Record<string, unknown>
     }>
   }
   fileUrl?: string
@@ -91,6 +91,6 @@ export interface ProductConfiguration {
     id: string
     name: string
     price: number
-    configuration?: any
+    configuration?: Record<string, unknown>
   }>
 }

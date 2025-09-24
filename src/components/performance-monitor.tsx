@@ -5,7 +5,7 @@ import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
 import { reportWebVitals } from '@/lib/monitoring'
 
 // Web Vitals monitoring component
-export function PerformanceMonitor() {
+export function PerformanceMonitor() : unknown {
   useEffect(() => {
     // Monitor Core Web Vitals
     getCLS(reportWebVitals)
@@ -108,7 +108,7 @@ export function PerformanceMonitor() {
 }
 
 // Performance timing hook
-export function usePerformanceTiming() {
+export function usePerformanceTiming() : unknown {
   const startTiming = (name: string) => {
     performance.mark(`${name}-start`)
   }
@@ -154,7 +154,7 @@ export function usePerformanceTiming() {
 }
 
 // Network quality monitoring
-export function NetworkMonitor() {
+export function NetworkMonitor() : unknown {
   useEffect(() => {
     // Monitor network connection
     if ('connection' in navigator) {
@@ -190,7 +190,7 @@ export function NetworkMonitor() {
 }
 
 // Device performance monitoring
-export function DeviceMonitor() {
+export function DeviceMonitor() : unknown {
   useEffect(() => {
     const reportDeviceInfo = () => {
       if (typeof window !== 'undefined' && window.gtag) {
@@ -236,7 +236,7 @@ export function DeviceMonitor() {
 }
 
 // User interaction monitoring
-export function InteractionMonitor() {
+export function InteractionMonitor() : unknown {
   useEffect(() => {
     let interactionCount = 0
     const sessionStart = Date.now()
@@ -294,7 +294,7 @@ export function InteractionMonitor() {
 }
 
 // Error rate monitoring
-export function ErrorRateMonitor() {
+export function ErrorRateMonitor() : unknown {
   useEffect(() => {
     let errorCount = 0
     const sessionStart = Date.now()
@@ -345,7 +345,7 @@ export function ErrorRateMonitor() {
 }
 
 // Combined performance monitoring component
-export function ComprehensivePerformanceMonitor() {
+export function ComprehensivePerformanceMonitor() : unknown {
   return (
     <>
       <PerformanceMonitor />

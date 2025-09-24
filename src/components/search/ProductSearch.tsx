@@ -134,7 +134,7 @@ export function ProductSearch({ className }: { className?: string }) {
   }
 
   // Handle filter changes
-  const updateFilter = (key: keyof SearchFilters, value: any) => {
+  const updateFilter = (key: keyof SearchFilters, value: Record<string, unknown>) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
@@ -303,7 +303,7 @@ function SearchFiltersContent({
   clearFilters,
 }: {
   filters: SearchFilters
-  updateFilter: (key: keyof SearchFilters, value: any) => void
+  updateFilter: (key: keyof SearchFilters, value: Record<string, unknown>) => void
   clearFilters: () => void
 }) {
   return (

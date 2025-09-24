@@ -4,25 +4,14 @@
  */
 
 import { useState, useEffect } from 'react'
-import {
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-import {
-import {
-import { Textarea } from '@/components/ui/textarea'
 import toast from '@/lib/toast'
-import {
-import {
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-
 
 export default function PaperStockGroupsPage() {
   const [groups, setGroups] = useState<PaperStockGroup[]>([])
@@ -66,7 +55,7 @@ export default function PaperStockGroupsPage() {
       const data = await response.json()
 
       // Ensure each group has paperStockItems array
-      const processedGroups = (Array.isArray(data) ? data : []).map((group: any) => ({
+      const processedGroups = (Array.isArray(data) ? data : []).map((group: Record<string, unknown>) => ({
         ...group,
         paperStockItems: group.paperStockItems || [],
         productPaperStockGroups: group.productPaperStockGroups || []
@@ -196,7 +185,7 @@ export default function PaperStockGroupsPage() {
       setDialogOpen(false)
       resetForm()
       fetchGroups()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }
@@ -245,7 +234,7 @@ export default function PaperStockGroupsPage() {
       setDeleteDialogOpen(false)
       setDeletingGroup(null)
       fetchGroups()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
     }
   }

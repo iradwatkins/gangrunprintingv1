@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
 import {
 
-
 export const dynamic = 'force-dynamic'
 
 export const revalidate = 0

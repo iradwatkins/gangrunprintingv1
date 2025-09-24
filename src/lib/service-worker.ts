@@ -144,7 +144,7 @@ export class ServiceWorkerManager {
   }
 
   // Store pending orders in IndexedDB for offline sync
-  async storePendingOrder(order: any): Promise<void> {
+  async storePendingOrder(order: Record<string, unknown>): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('GangRunPrinting', 1)
 

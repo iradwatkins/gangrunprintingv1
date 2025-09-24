@@ -112,7 +112,7 @@ export default function CategoriesPage() {
         const error = await response.json()
         throw new Error(error.error || 'Failed to save category')
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to save category')
     } finally {
       setSaving(false)

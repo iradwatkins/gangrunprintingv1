@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     // Store subscription in database
     // If user is logged in, associate with user
     // Otherwise, store as anonymous subscription
-    const data: any = {
+    const data: Record<string, unknown> = {
       endpoint: subscription.endpoint,
       subscription: JSON.stringify(subscription),
       active: true,

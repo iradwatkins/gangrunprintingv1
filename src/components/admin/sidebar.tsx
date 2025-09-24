@@ -198,7 +198,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
     )
   }
 
-  const isChildActive = (children: any[]) => {
+  const isChildActive = (children: unknown[]) => {
     return children.some((child) => pathname === child.href)
   }
 

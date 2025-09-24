@@ -15,7 +15,7 @@ export interface UseFormReturn<T> {
   touched: Record<string, boolean>
   isSubmitting: boolean
   isValid: boolean
-  setValue: (field: keyof T, value: any) => void
+  setValue: (field: keyof T, value: Record<string, unknown>) => void
   setValues: (values: Partial<T>) => void
   setFieldError: (field: keyof T, error: string) => void
   clearFieldError: (field: keyof T) => void
@@ -41,7 +41,7 @@ export function useForm<T extends Record<string, any>>({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const setValue = useCallback(
-    (field: keyof T, value: any) => {
+    (field: keyof T, value: Record<string, unknown>) => {
       setFormValues((prev) => ({ ...prev, [field]: value }))
 
       // Clear error when field is updated

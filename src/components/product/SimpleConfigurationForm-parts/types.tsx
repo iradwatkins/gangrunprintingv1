@@ -53,7 +53,7 @@ interface SimpleConfigData {
     priceDisplay: string
     isDefault: boolean
     additionalTurnaroundDays: number
-    configuration?: any
+    configuration?: Record<string, unknown>
   }>
   turnaroundTimes: Array<{
     id: string

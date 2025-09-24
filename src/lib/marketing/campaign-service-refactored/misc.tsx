@@ -6,7 +6,6 @@
 import { prisma } from '@/lib/prisma'
 import {
 
-
   type CampaignType,
   CampaignStatus,
   SendStatus,

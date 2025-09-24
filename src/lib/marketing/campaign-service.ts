@@ -4,7 +4,6 @@
  * Refactored: Multiple modules < 300 lines each
  */
 
-import { prisma } from '@/lib/prisma'
 import {
 
 // Re-export refactored modules

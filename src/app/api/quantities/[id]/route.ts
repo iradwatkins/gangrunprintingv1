@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(quantityGroup)
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A quantity group with this name already exists' },
@@ -124,7 +124,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }

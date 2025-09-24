@@ -6,7 +6,7 @@ const OLLAMA_URL = SERVICE_ENDPOINTS.OLLAMA
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3'
 
 // System prompt for the printing assistant
-const SYSTEM_PROMPT = `You are a helpful assistant for GangRun Printing, a professional printing company. 
+const SYSTEM_PROMPT = `You are a helpful assistant for GangRun Printing, a professional printing company.
 You help customers with:
 - Product information and recommendations
 - Pricing and quotes
@@ -15,7 +15,7 @@ You help customers with:
 - Design tips and best practices
 - Shipping and delivery information
 
-Be friendly, professional, and knowledgeable about printing services. 
+Be friendly, professional, and knowledgeable about printing services.
 If you don't know something specific, offer to connect the customer with a human representative.
 
 Available products include:
@@ -100,14 +100,14 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint to check if chat service is available
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     // Check if Ollama is running
     const response = await fetch(`${OLLAMA_URL}/api/tags`)
 
     if (response.ok) {
       const data = await response.json()
-      const hasModel = data.models?.some((m: any) => m.name.includes(OLLAMA_MODEL))
+      const hasModel = data.models?.some((m: Record<string, unknown>) => m.name.includes(OLLAMA_MODEL))
 
       return NextResponse.json({
         status: 'online',

@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
-import { type CartItem } from '@/lib/cart-types'
 
 interface UploadedImage {
   id: string

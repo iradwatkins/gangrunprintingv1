@@ -87,7 +87,7 @@ export function CoatingCreationModal({
       onCoatingCreated(newCoating)
       resetForm()
       onOpenChange(false)
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message)
       if (error.message.includes('already exists')) {
         setErrors({ name: 'A coating option with this name already exists' })

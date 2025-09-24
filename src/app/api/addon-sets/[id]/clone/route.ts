@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { v4 as uuidv4 } from 'uuid'
 
 // POST /api/addon-sets/[id]/clone - Clone an addon set
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

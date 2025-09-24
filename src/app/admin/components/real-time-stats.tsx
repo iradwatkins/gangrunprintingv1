@@ -14,7 +14,7 @@ interface StatData {
   color: string
 }
 
-export function RealTimeStats() {
+export function RealTimeStats() : unknown {
   const [stats, setStats] = useState<StatData[]>([
     {
       label: 'Active Users',

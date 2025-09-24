@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
         shippingAddress,
         status: 'PENDING_PAYMENT',
         items: {
-          create: items.map((item: any) => ({
+          create: items.map((item: Record<string, unknown>) => ({
             productName: item.productName,
             productSku: item.productSku,
             quantity: item.quantity,
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         },
         files: files
           ? {
-              create: files.map((file: any) => ({
+              create: files.map((file: Record<string, unknown>) => ({
                 fileName: file.fileName,
                 fileUrl: file.fileUrl,
                 fileSize: file.fileSize,

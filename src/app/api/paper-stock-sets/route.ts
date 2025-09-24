@@ -21,12 +21,12 @@ const paperStockSetSchema = z.object({
 })
 
 // GET - List all paper stock sets
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     // Test with a simple query first
     const groups = await prisma.paperStockSet.findMany()
     return NextResponse.json(groups)
-  } catch (error: any) {
+  } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch paper stock sets' }, { status: 500 })
   }
 }

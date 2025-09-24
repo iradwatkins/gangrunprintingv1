@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { sendEmail } from '@/lib/resend'
 import { prisma } from '@/lib/prisma'
 import { getTrackingInfo, formatTrackingNumber, getCarrierName } from '@/lib/tracking'
 
@@ -29,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare email content
     const itemsList = order.OrderItem.map(
-      (item: any) => `<li>${item.productName} - Qty: ${item.quantity}</li>`
+      (item: Record<string, unknown>) => `<li>${item.productName} - Qty: ${item.quantity}</li>`
     ).join('')
 
     const emailHtml = `
@@ -49,13 +48,13 @@ export async function POST(request: NextRequest) {
           .items-list { list-style-type: none; padding: 0; }
           .items-list li { padding: 10px; border-bottom: 1px solid #eee; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-          .button { 
-            display: inline-block; 
-            padding: 14px 28px; 
-            background-color: #007bff; 
-            color: white !important; 
-            text-decoration: none; 
-            border-radius: 5px; 
+          .button {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #007bff;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
             font-weight: bold;
             margin: 10px 0;
           }
@@ -68,12 +67,12 @@ export async function POST(request: NextRequest) {
             <h1>🚚 Your Order Has Shipped!</h1>
             <p>Great news! Your order is on its way.</p>
           </div>
-          
+
           <div class="content">
             <p>Hi ${order.user?.name || 'Valued Customer'},</p>
-            
+
             <p>Your order <strong>${order.referenceNumber || order.orderNumber}</strong> has been shipped and is on its way to you!</p>
-            
+
             <div class="tracking-info">
               <p>Carrier: <strong>${getCarrierName(order.carrier)}</strong></p>
               <div class="tracking-number">${formattedTrackingNumber}</div>
@@ -84,12 +83,12 @@ export async function POST(request: NextRequest) {
                 Click the button above to see real-time tracking updates
               </p>
             </div>
-            
+
             <h3>Order Details:</h3>
             <ul class="items-list">
               ${itemsList}
             </ul>
-            
+
             <h3>Shipping Address:</h3>
             <p>
               ${
@@ -101,25 +100,25 @@ export async function POST(request: NextRequest) {
                   : 'Address on file'
               }
             </p>
-            
+
             <h3>What to Expect:</h3>
             <ul>
               <li>You can track your package anytime using the tracking button above</li>
               <li>Estimated delivery time is based on your selected shipping method</li>
               <li>You'll receive another email once your package is delivered</li>
             </ul>
-            
+
             <p style="text-align: center; margin: 30px 0;">
               <a href="${process.env.NEXTAUTH_URL}/account/orders" class="button">
                 View Order Details
               </a>
             </p>
-            
+
             <p>If you have any questions about your shipment, please don't hesitate to contact us at support@gangrunprinting.com or call 1-800-PRINTING.</p>
-            
+
             <p>Thank you for choosing GangRun Printing!</p>
           </div>
-          
+
           <div class="footer">
             <p>© ${new Date().getFullYear()} GangRun Printing. All rights reserved.</p>
             <p>

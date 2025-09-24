@@ -68,13 +68,13 @@ export function createPaginatedResponse<T>(
  */
 export class CrudRepository<T extends { id: string }> {
   constructor(
-    private model: any,
+    private model: Record<string, unknown>,
     private modelName: string
   ) {}
 
   async findMany(
-    where: any = {},
-    include: any = {},
+    where: Record<string, unknown> = {},
+    include: Record<string, unknown> = {},
     pagination: PaginationOptions = {}
   ): Promise<PaginatedResult<T>> {
     const { skip, take, page, limit } = applyPagination(pagination)
@@ -95,21 +95,21 @@ export class CrudRepository<T extends { id: string }> {
     return createPaginatedResponse(data, total, page, limit)
   }
 
-  async findById(id: string, include: any = {}): Promise<T | null> {
+  async findById(id: string, include: Record<string, unknown> = {}): Promise<T | null> {
     return await this.model.findUnique({
       where: { id },
       include,
     })
   }
 
-  async create(data: any, include: any = {}): Promise<T> {
+  async create(data: Record<string, unknown>, include: Record<string, unknown> = {}): Promise<T> {
     return await this.model.create({
       data,
       include,
     })
   }
 
-  async update(id: string, data: any, include: any = {}): Promise<T> {
+  async update(id: string, data: Record<string, unknown>, include: Record<string, unknown> = {}): Promise<T> {
     return await this.model.update({
       where: { id },
       data,
@@ -130,12 +130,12 @@ export class CrudRepository<T extends { id: string }> {
     })
   }
 
-  async exists(where: any): Promise<boolean> {
+  async exists(where: Record<string, unknown>): Promise<boolean> {
     const count = await this.model.count({ where })
     return count > 0
   }
 
-  async count(where: any = {}): Promise<number> {
+  async count(where: Record<string, unknown> = {}): Promise<number> {
     return await this.model.count({ where })
   }
 }
@@ -163,7 +163,7 @@ export const whereBuilders = {
   },
 
   dateRange: (field: string, from?: Date, to?: Date) => {
-    const conditions: any = {}
+    const conditions: Record<string, unknown> = {}
 
     if (from) {
       conditions.gte = from

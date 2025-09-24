@@ -3,7 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-
 export interface SegmentCriteria {
   name: string
   operator:
@@ -15,17 +14,15 @@ export interface SegmentCriteria {
     | 'in'
     | 'not_in'
     | 'between'
-  value: any
+  value: Record<string, unknown>
   field: string
   type: 'user' | 'order' | 'custom'
 }
-
 
 export interface SegmentRule {
   criteria: SegmentCriteria[]
   logic: 'AND' | 'OR'
 }
-
 
 export interface RFMAnalysis {
   userId: string
@@ -38,7 +35,6 @@ export interface RFMAnalysis {
   rfmScore: string // Combined score like "555"
   segment: string // Customer segment based on RFM
 }
-
 
 export interface SegmentInsights {
   totalCustomers: number
@@ -87,11 +83,11 @@ export class SegmentationService {
     data: {
       name?: string
       description?: string | null
-      criteria?: any
+      criteria?: Record<string, unknown>
       isActive?: boolean
     }
   ): Promise<CustomerSegment> {
-    const updateData: any = { ...data }
+    const updateData: Record<string, unknown> = { ...data }
 
     if (data.criteria) {
       const customerIds = await this.calculateSegmentMembers(data.criteria)
@@ -158,7 +154,7 @@ export class SegmentationService {
     })
   }
 
-  static async calculateSegmentMembers(criteria: any): Promise<string[]> {
+  static async calculateSegmentMembers(criteria: Record<string, unknown>): Promise<string[]> {
     const { rules } = criteria as { rules: SegmentRule[] }
 
     if (!rules || rules.length === 0) {
@@ -225,9 +221,9 @@ export class SegmentationService {
   private static async evaluateUserCriterion(
     field: string,
     operator: string,
-    value: any
+    value: Record<string, unknown>
   ): Promise<string[]> {
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     switch (field) {
       case 'email':
@@ -264,9 +260,9 @@ export class SegmentationService {
   private static async evaluateOrderCriterion(
     field: string,
     operator: string,
-    value: any
+    value: Record<string, unknown>
   ): Promise<string[]> {
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     switch (field) {
       case 'total':
@@ -382,7 +378,7 @@ export class SegmentationService {
   private static async evaluateCustomCriterion(
     field: string,
     operator: string,
-    value: any
+    value: Record<string, unknown>
   ): Promise<string[]> {
     // Handle custom criteria like RFM scores, engagement metrics, etc.
     switch (field) {
@@ -428,7 +424,7 @@ export class SegmentationService {
       .filter(Boolean) as string[]
   }
 
-  private static buildWhereCondition(operator: string, value: any): any {
+  private static buildWhereCondition(operator: string, value: Record<string, unknown>): Record<string, unknown> {
     switch (operator) {
       case 'equals':
         return value
@@ -452,7 +448,7 @@ export class SegmentationService {
     }
   }
 
-  private static compareValues(actual: any, operator: string, expected: any): boolean {
+  private static compareValues(actual: Record<string, unknown>, operator: string, expected: Record<string, unknown>): boolean {
     switch (operator) {
       case 'equals':
         return actual === expected

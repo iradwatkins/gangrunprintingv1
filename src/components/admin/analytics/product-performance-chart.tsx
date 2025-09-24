@@ -18,7 +18,7 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
     }).format(value)
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: Record<string, unknown>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

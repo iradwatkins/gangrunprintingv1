@@ -22,7 +22,7 @@ const createTurnaroundTimeSchema = z.object({
 const updateTurnaroundTimeSchema = createTurnaroundTimeSchema.partial()
 
 // GET /api/turnaround-times
-export async function GET() {
+export async function GET() : Promise<unknown> {
   try {
     const turnaroundTimes = await prisma.turnaroundTime.findMany({
       orderBy: [{ sortOrder: 'asc' }, { daysMin: 'asc' }],
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Validation failed',
           details: error.issues,
-          message: error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ')
+          message: error.issues.map((e: Record<string, unknown>) => `${e.path.join('.')}: ${e.message}`).join(', ')
         },
         { status: 400 }
       )

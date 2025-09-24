@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(category)
-  } catch (error: any) {
+  } catch (error) {
     if (error.code === 'P2002') {
       const field = error.meta?.target?.[0]
       return NextResponse.json(

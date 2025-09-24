@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const tenantId = tenantContext?.tenant?.id
 
     // Build where clause
-    const where: any = {
+    const where: Record<string, unknown> = {
       OR: [
         { tenantId: null }, // Global translations
         { tenantId: tenantId }, // Tenant-specific translations

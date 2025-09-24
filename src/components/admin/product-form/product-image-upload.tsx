@@ -89,7 +89,7 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
       }
 
       return imageUrl
-    } catch (error: any) {
+    } catch (error) {
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout. Please try with a smaller file or check your connection.')
       }
@@ -108,7 +108,7 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
       const url = await uploadImage(file)
       onImageUpdate(url)
       toast.success('Image uploaded successfully')
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Failed to upload image')
     } finally {
       setUploading(false)

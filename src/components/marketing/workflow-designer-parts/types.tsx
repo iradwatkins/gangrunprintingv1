@@ -40,7 +40,6 @@
   Eye,
 } from 'lucide-react'
 
-
 interface WorkflowDesignerProps {
   workflow?: {
     id?: string
@@ -50,8 +49,8 @@ interface WorkflowDesignerProps {
     steps: WorkflowStep[]
     isActive: boolean
   }
-  onSave: (workflow: any) => void
-  onPreview: (workflow: any) => void
+  onSave: (workflow: Record<string, unknown>) => void
+  onPreview: (workflow: Record<string, unknown>) => void
 }
 
   const stepType = STEP_TYPES.find((t) => t.type === data.type)

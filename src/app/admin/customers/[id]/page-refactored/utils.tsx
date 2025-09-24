@@ -18,13 +18,12 @@ import {
 import {
 import {
 
-
 export const dynamic = 'force-dynamic'
 
 export const revalidate = 0
 
 // Status configuration (matching orders page)
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
+const statusConfig: Record<string, { label: string; color: string; icon: Record<string, unknown> }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
@@ -147,7 +146,7 @@ async function getCustomerStats(customerId: string) {
 }
 
 // Generate activity timeline
-function getActivityTimeline(customer: any) {
+function getActivityTimeline(customer: Record<string, unknown>) {
   const activities = []
 
   // Account created
@@ -171,7 +170,7 @@ function getActivityTimeline(customer: any) {
   }
 
   // Orders
-  customer.orders.forEach((order: any) => {
+  customer.orders.forEach((order: Record<string, unknown>) => {
     activities.push({
       type: 'order',
       icon: ShoppingCart,

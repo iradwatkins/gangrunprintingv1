@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   })
 }
 
-async function handleOrderCreated(identifier: string, payload: any) {
+async function handleOrderCreated(identifier: string, payload: Record<string, unknown>) {
   try {
     // Find order
     const order = await findOrder(identifier)
@@ -93,7 +93,7 @@ async function handleOrderCreated(identifier: string, payload: any) {
   }
 }
 
-async function handleOrderStatusUpdate(identifier: string, payload: any) {
+async function handleOrderStatusUpdate(identifier: string, payload: Record<string, unknown>) {
   try {
     const { newStatus, notes, changedBy } = payload
 
@@ -163,7 +163,7 @@ async function handleOrderStatusUpdate(identifier: string, payload: any) {
   }
 }
 
-async function handleVendorAssignment(identifier: string, payload: any) {
+async function handleVendorAssignment(identifier: string, payload: Record<string, unknown>) {
   try {
     const { vendorId, vendorName, notes } = payload
 
@@ -229,7 +229,7 @@ async function handleVendorAssignment(identifier: string, payload: any) {
   }
 }
 
-async function handleFulfillmentUpdate(identifier: string, payload: any) {
+async function handleFulfillmentUpdate(identifier: string, payload: Record<string, unknown>) {
   try {
     const { status, notes } = payload
 
@@ -273,7 +273,7 @@ async function handleFulfillmentUpdate(identifier: string, payload: any) {
   }
 }
 
-async function handleTrackingUpdate(identifier: string, payload: any) {
+async function handleTrackingUpdate(identifier: string, payload: Record<string, unknown>) {
   try {
     const { trackingNumber, carrier, trackingUrl } = payload
 
@@ -332,7 +332,7 @@ async function handleTrackingUpdate(identifier: string, payload: any) {
   }
 }
 
-async function handleNotificationSend(identifier: string, payload: any) {
+async function handleNotificationSend(identifier: string, payload: Record<string, unknown>) {
   try {
     const { type, force = false } = payload
 

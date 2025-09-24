@@ -3,23 +3,6 @@
  * Auto-refactored by BMAD
  */
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Eye } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import {
-import {
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import toast from '@/lib/toast'
-import { Checkbox } from '@/components/ui/checkbox'
-
-
 'use client'
 
   Table,
