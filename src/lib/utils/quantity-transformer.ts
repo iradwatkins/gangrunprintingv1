@@ -85,6 +85,7 @@ export function findDefaultQuantity(quantities: Quantity[], defaultValue: string
 
 /**
  * Validate a custom quantity value against min/max constraints
+ * CRITICAL: Enforces 5000 increment rule for quantities above 5000
  */
 export function validateCustomQuantity(
   value: number,
@@ -96,6 +97,16 @@ export function validateCustomQuantity(
 
   if (value <= 0) {
     return { isValid: false, error: 'Quantity must be greater than 0' }
+  }
+
+  // CRITICAL: Enforce 5000 increment rule for quantities above 5000
+  if (value > 5000 && value % 5000 !== 0) {
+    const lower = Math.floor(value / 5000) * 5000
+    const upper = Math.ceil(value / 5000) * 5000
+    return {
+      isValid: false,
+      error: `Quantities above 5000 must be in increments of 5000. Try ${lower.toLocaleString()} or ${upper.toLocaleString()}`,
+    }
   }
 
   if (customQuantity.minValue && value < customQuantity.minValue) {

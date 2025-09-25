@@ -17,25 +17,26 @@ import {
 import toast from '@/lib/toast'
 
 interface Product {
-  id: string
-  name: string
-  slug: string
-  sku: string
+  // API returns PascalCase properties
+  Id: string
+  Name: string
+  Slug: string
+  Sku?: string
   ProductCategory: {
-    id: string
-    name: string
-  }
-  basePrice: number
-  productionTime: number
-  isActive: boolean
-  isFeatured: boolean
-  gangRunEligible: boolean
-  ProductImage: Array<{
-    id: string
-    url: string
-    isPrimary: boolean
+    Id: string
+    Name: string
+  } | null
+  BasePrice: number
+  TurnaroundTime?: number
+  IsActive: boolean
+  IsFeatured: boolean
+  GangRunEligible?: boolean
+  ProductImages?: Array<{
+    Id: string
+    Url: string
+    IsPrimary: boolean
   }>
-  productPaperStocks: Array<{
+  ProductPaperStocks?: Array<{
     paperStock: {
       id: string
       name: string
@@ -44,11 +45,14 @@ interface Product {
     }
     isDefault: boolean
   }>
-  _count: {
-    ProductImage: number
+  _count?: {
+    productImages: number
     productPaperStocks: number
-    ProductOption: number
+    productOptions: number
   }
+  // Backward compatibility fields
+  productCategory?: any
+  productImages?: any
 }
 
 export default function ProductsPage() {
@@ -63,13 +67,18 @@ export default function ProductsPage() {
     try {
       const response = await fetch('/api/products')
       if (response.ok) {
-        const data = await response.json()
-        setProducts(data)
+        const result = await response.json()
+        // Handle both {data: [...]} and direct array responses
+        const productsData = Array.isArray(result) ? result : (result.data || [])
+        // Ensure it's always an array
+        setProducts(Array.isArray(productsData) ? productsData : [])
       } else {
         toast.error('Failed to load products')
+        setProducts([]) // Set empty array on error
       }
     } catch (error) {
       toast.error('Failed to load products')
+      setProducts([]) // Set empty array on error
     } finally {
       setLoading(false)
     }
@@ -184,7 +193,7 @@ export default function ProductsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{products.length}</div>
             <p className="text-xs text-muted-foreground">
-              {products.filter((p) => p.isActive).length} active
+              {products.filter((p) => p.IsActive).length} active
             </p>
           </CardContent>
         </Card>
@@ -194,7 +203,7 @@ export default function ProductsPage() {
             <Package className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.filter((p) => p.isFeatured).length}</div>
+            <div className="text-2xl font-bold">{products.filter((p) => p.IsFeatured).length}</div>
             <p className="text-xs text-muted-foreground">Featured products</p>
           </CardContent>
         </Card>
@@ -205,7 +214,7 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter((p) => p.gangRunEligible).length}
+              {products.filter((p) => p.GangRunEligible).length}
             </div>
             <p className="text-xs text-muted-foreground">Can be gang run</p>
           </CardContent>
@@ -217,7 +226,7 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter((p) => p._count?.ProductImage > 0).length}
+              {products.filter((p) => (p._count?.productImages || 0) > 0 || (p.ProductImages?.length || 0) > 0).length}
             </div>
             <p className="text-xs text-muted-foreground">Have product images</p>
           </CardContent>
@@ -258,10 +267,10 @@ export default function ProductsPage() {
                 </TableRow>
               ) : (
                 products.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product.Id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {product.ProductImage?.length > 0 ? (
+                        {(product.ProductImages?.length || 0) > 0 ? (
                           <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center">
                             <ImageIcon className="h-5 w-5 text-gray-500" />
                           </div>
@@ -271,33 +280,33 @@ export default function ProductsPage() {
                           </div>
                         )}
                         <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-sm text-muted-foreground">{product.slug}</p>
+                          <p className="font-medium">{product.Name}</p>
+                          <p className="text-sm text-muted-foreground">{product.Slug}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                    <TableCell>{product.ProductCategory?.name || 'Uncategorized'}</TableCell>
+                    <TableCell className="font-mono text-sm">{product.Sku || 'N/A'}</TableCell>
+                    <TableCell>{product.ProductCategory?.Name || 'Uncategorized'}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
                         <span className="text-sm">
-                          {product._count?.productPaperStocks || 0} stocks
+                          {product._count?.productPaperStocks || product.ProductPaperStocks?.length || 0} stocks
                         </span>
-                        {product.productPaperStocks?.[0] && (
+                        {product.ProductPaperStocks?.[0] && (
                           <span className="text-xs text-muted-foreground">
-                            Default: {product.productPaperStocks[0].paperStock.name}
-                            {product.productPaperStocks[0].paperStock.coating &&
-                              product.productPaperStocks[0].paperStock.coating !== 'None' &&
-                              ` (${product.productPaperStocks[0].paperStock.coating})`}
+                            Default: {product.ProductPaperStocks[0].paperStock?.name || 'N/A'}
+                            {product.ProductPaperStocks[0].paperStock?.coating &&
+                              product.ProductPaperStocks[0].paperStock.coating !== 'None' &&
+                              ` (${product.ProductPaperStocks[0].paperStock.coating})`}
                           </span>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>${product.basePrice.toFixed(2)}</TableCell>
+                    <TableCell>${(product.BasePrice || 0).toFixed(2)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm">{product.productionTime} days</span>
-                        {product.gangRunEligible && (
+                        <span className="text-sm">{product.TurnaroundTime || 'N/A'} days</span>
+                        {product.GangRunEligible && (
                           <Badge className="text-xs w-fit" variant="outline">
                             Gang Run
                           </Badge>
@@ -308,16 +317,16 @@ export default function ProductsPage() {
                       <div className="flex flex-col gap-1">
                         <Badge
                           className="w-fit cursor-pointer"
-                          variant={product.isActive ? 'default' : 'secondary'}
-                          onClick={() => toggleActive(product.id, product.isActive)}
+                          variant={product.IsActive ? 'default' : 'secondary'}
+                          onClick={() => toggleActive(product.Id, product.IsActive)}
                         >
-                          {product.isActive ? 'Active' : 'Inactive'}
+                          {product.IsActive ? 'Active' : 'Inactive'}
                         </Badge>
-                        {product.isFeatured && (
+                        {product.IsFeatured && (
                           <Badge
                             className="w-fit text-xs cursor-pointer"
                             variant="outline"
-                            onClick={() => toggleFeatured(product.id, product.isFeatured)}
+                            onClick={() => toggleFeatured(product.Id, product.IsFeatured)}
                           >
                             Featured
                           </Badge>
@@ -326,12 +335,12 @@ export default function ProductsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Link href={`/products/${product.slug}`} target="_blank">
+                        <Link href={`/products/${product.Slug}`} target="_blank">
                           <Button size="sm" title="View Product" variant="ghost">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href={`/admin/products/${product.id}/edit`}>
+                        <Link href={`/admin/products/${product.Id}/edit`}>
                           <Button size="sm" title="Edit Product" variant="ghost">
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -340,7 +349,7 @@ export default function ProductsPage() {
                           size="sm"
                           title="Duplicate Product"
                           variant="ghost"
-                          onClick={() => handleDuplicate(product.id, product.name)}
+                          onClick={() => handleDuplicate(product.Id, product.Name)}
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
@@ -348,7 +357,7 @@ export default function ProductsPage() {
                           size="sm"
                           title="Delete Product"
                           variant="ghost"
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => handleDelete(product.Id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

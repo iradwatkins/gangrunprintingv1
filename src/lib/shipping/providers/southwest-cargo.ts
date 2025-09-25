@@ -42,7 +42,7 @@ export class SouthwestCargoProvider implements ShippingProvider {
         carrier: this.carrier,
         serviceCode: 'SOUTHWEST_CARGO_PICKUP',
         serviceName: 'Southwest Cargo Pickup',
-        rateAmount: roundWeight(dashRate * markup, 2), // Use dash rate for pickup (cheaper)
+        rateAmount: roundWeight(pickupRate * markup, 2), // FIXED: Use pickup rate for pickup service
         currency: 'USD',
         estimatedDays: 3, // Standard pickup delivery time
         isGuaranteed: false,
@@ -51,7 +51,7 @@ export class SouthwestCargoProvider implements ShippingProvider {
         carrier: this.carrier,
         serviceCode: 'SOUTHWEST_CARGO_DASH',
         serviceName: 'Southwest Cargo Dash',
-        rateAmount: roundWeight(pickupRate * markup, 2), // Use pickup rate for dash (more expensive)
+        rateAmount: roundWeight(dashRate * markup, 2), // FIXED: Use dash rate for dash service
         currency: 'USD',
         estimatedDays: 1, // Dash delivery (next available flight)
         isGuaranteed: true,

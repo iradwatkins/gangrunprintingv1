@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const paperStock = await prisma.paperStock.findUnique({
       where: { id: data.paperStockId },
       include: {
-        paperException: true,
+        PaperException: true,
       },
     })
 
@@ -170,26 +170,48 @@ export async function POST(request: NextRequest) {
       }
 
       // Validate custom quantity within limits
-      if (data.quantitySelection === 'custom' && productConfig) {
-        if (
-          data.customQuantity &&
-          productConfig.minCustomQuantity &&
-          data.customQuantity < productConfig.minCustomQuantity
-        ) {
-          return NextResponse.json(
-            { error: `Minimum quantity is ${productConfig.minCustomQuantity}` },
-            { status: 400 }
-          )
+      if (data.quantitySelection === 'custom') {
+        // CRITICAL: Enforce 5000 increment rule for quantities above 5000
+        if (data.customQuantity && data.customQuantity > 5000) {
+          if (data.customQuantity % 5000 !== 0) {
+            return NextResponse.json(
+              {
+                error: `Custom quantities above 5000 must be in increments of 5000`,
+                details: {
+                  received: data.customQuantity,
+                  validExamples: [10000, 15000, 20000, 55000, 60000],
+                  nearestValid: {
+                    lower: Math.floor(data.customQuantity / 5000) * 5000,
+                    upper: Math.ceil(data.customQuantity / 5000) * 5000
+                  }
+                }
+              },
+              { status: 400 }
+            )
+          }
         }
-        if (
-          data.customQuantity &&
-          productConfig.maxCustomQuantity &&
-          data.customQuantity > productConfig.maxCustomQuantity
-        ) {
-          return NextResponse.json(
-            { error: `Maximum quantity is ${productConfig.maxCustomQuantity}` },
-            { status: 400 }
-          )
+
+        if (productConfig) {
+          if (
+            data.customQuantity &&
+            productConfig.minCustomQuantity &&
+            data.customQuantity < productConfig.minCustomQuantity
+          ) {
+            return NextResponse.json(
+              { error: `Minimum quantity is ${productConfig.minCustomQuantity}` },
+              { status: 400 }
+            )
+          }
+          if (
+            data.customQuantity &&
+            productConfig.maxCustomQuantity &&
+            data.customQuantity > productConfig.maxCustomQuantity
+          ) {
+            return NextResponse.json(
+              { error: `Maximum quantity is ${productConfig.maxCustomQuantity}` },
+              { status: 400 }
+            )
+          }
         }
       }
     }
@@ -205,8 +227,8 @@ export async function POST(request: NextRequest) {
       customQuantity: data.customQuantity,
       basePaperPrice: paperStock.pricePerSqInch,
       sides: data.sides,
-      isExceptionPaper: !!paperStock.paperException,
-      paperException: paperStock.paperException || undefined,
+      isExceptionPaper: !!paperStock.PaperException,
+      paperException: paperStock.PaperException || undefined,
     }
 
     // Calculate base price using exact formula
@@ -232,8 +254,8 @@ export async function POST(request: NextRequest) {
         id: paperStock.id,
         name: paperStock.name,
         pricePerSqInch: paperStock.pricePerSqInch,
-        isExceptionPaper: !!paperStock.paperException,
-        exceptionType: paperStock.paperException?.exceptionType,
+        isExceptionPaper: !!paperStock.PaperException,
+        exceptionType: paperStock.PaperException?.exceptionType,
       },
       standardSize: standardSize
         ? {

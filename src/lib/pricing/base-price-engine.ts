@@ -160,6 +160,16 @@ export class BasePriceEngine {
       if (!input.customQuantity) {
         throw new Error('Custom quantity selection requires quantity value')
       }
+
+      // CRITICAL: Enforce 5000 increment rule for custom quantities above 5000
+      if (input.customQuantity > 5000 && input.customQuantity % 5000 !== 0) {
+        throw new Error(
+          `Custom quantities above 5000 must be in increments of 5000. ` +
+          `Received: ${input.customQuantity}. ` +
+          `Valid examples: 10000, 15000, 20000, 55000, 60000, etc.`
+        )
+      }
+
       return input.customQuantity
     } else {
       if (!input.standardQuantity) {
@@ -235,6 +245,12 @@ export class BasePriceEngine {
     if (input.quantitySelection === 'custom') {
       if (!input.customQuantity || input.customQuantity <= 0) {
         errors.push('Custom quantity must be greater than 0')
+      }
+      // Validate 5000 increment rule for quantities above 5000
+      if (input.customQuantity > 5000 && input.customQuantity % 5000 !== 0) {
+        errors.push(
+          `Custom quantities above 5000 must be in increments of 5000. Received: ${input.customQuantity}`
+        )
       }
     } else if (input.quantitySelection === 'standard') {
       if (!input.standardQuantity) {
