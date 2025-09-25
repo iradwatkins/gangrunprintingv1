@@ -4,10 +4,9 @@ import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 const SESSION_CHECK_INTERVAL = 30 * 60 * 1000 // Check every 30 minutes
-const SESSION_REFRESH_THRESHOLD = 7 * 24 * 60 * 60 * 1000 // Refresh if less than 7 days left
 const USER_ACTIVITY_TIMEOUT = 5 * 60 * 1000 // Consider user active if any activity in last 5 minutes
 
-export function SessionKeeper() : unknown {
+export function SessionKeeper() {
   const pathname = usePathname()
   const lastActivityRef = useRef<number>(Date.now())
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)

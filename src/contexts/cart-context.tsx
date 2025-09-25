@@ -1,9 +1,9 @@
-import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 'use client'
+
+import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
 
-const TAX_RATE = TAX_RATE
 const SHIPPING_RATE = 10.0
 
 const initialState: CartState = {

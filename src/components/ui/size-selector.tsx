@@ -141,6 +141,15 @@ export function SizeSelector({
       if (isNaN(width)) {
         setWidthError('Please enter a valid number')
         hasError = true
+      } else if (width <= 0) {
+        setWidthError('Width must be greater than 0')
+        hasError = true
+      } else if (width % 0.25 !== 0) {
+        // CRITICAL: Enforce 0.25 inch increment rule
+        const lower = Math.floor(width / 0.25) * 0.25
+        const upper = Math.ceil(width / 0.25) * 0.25
+        setWidthError(`Width must be in 0.25" increments. Try ${lower}" or ${upper}"`)
+        hasError = true
       } else if (customOption.minWidth && width < customOption.minWidth) {
         setWidthError(`Minimum width is ${customOption.minWidth}"`)
         hasError = true
@@ -158,6 +167,15 @@ export function SizeSelector({
       const height = parseFloat(customHeight)
       if (isNaN(height)) {
         setHeightError('Please enter a valid number')
+        hasError = true
+      } else if (height <= 0) {
+        setHeightError('Height must be greater than 0')
+        hasError = true
+      } else if (height % 0.25 !== 0) {
+        // CRITICAL: Enforce 0.25 inch increment rule
+        const lower = Math.floor(height / 0.25) * 0.25
+        const upper = Math.ceil(height / 0.25) * 0.25
+        setHeightError(`Height must be in 0.25" increments. Try ${lower}" or ${upper}"`)
         hasError = true
       } else if (customOption.minHeight && height < customOption.minHeight) {
         setHeightError(`Minimum height is ${customOption.minHeight}"`)
@@ -246,7 +264,19 @@ export function SizeSelector({
 
         {showCustomInput && (
           <div className="space-y-2 p-3 border rounded-md bg-muted/50">
-            <Label className="text-sm font-medium">Custom Dimensions</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">Custom Dimensions</Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Dimensions must be in 0.25" increments for production efficiency (e.g., 4.25", 5.5", 8.75")</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
@@ -256,7 +286,7 @@ export function SizeSelector({
                 <Input
                   className={widthError ? 'border-red-500' : ''}
                   id="width"
-                  placeholder="Enter width..."
+                  placeholder="e.g., 4.25"
                   step="0.25"
                   type="number"
                   value={customWidth}
@@ -273,7 +303,7 @@ export function SizeSelector({
                 <Input
                   className={heightError ? 'border-red-500' : ''}
                   id="height"
-                  placeholder="Enter height..."
+                  placeholder="e.g., 6.5"
                   step="0.25"
                   type="number"
                   value={customHeight}

@@ -5,7 +5,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Output configuration for Docker deployment
-  output: 'standalone',
+  // output: 'standalone',
 
   // Enable experimental features for App Router
   experimental: {
@@ -188,15 +188,6 @@ const nextConfig = {
         fs: false,
         path: false,
         crypto: false,
-      }
-
-      // Disable split chunks to avoid initialization errors
-      // Use Next.js default chunking strategy
-      config.optimization = {
-        ...config.optimization,
-        minimize: !dev,
-        runtimeChunk: false,
-        splitChunks: false,
       }
     }
 
