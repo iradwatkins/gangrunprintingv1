@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 import { z } from 'zod'
 
 // Schema for updating a paper stock set
@@ -62,6 +63,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT - Update a paper stock set
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const body = await request.json()
     const validatedData = updatePaperStockSetSchema.parse(body)
 
@@ -181,6 +186,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE - Delete a paper stock set
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     // Check if group exists
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
