@@ -58,102 +58,100 @@ export function AddonAccordion({
   }
 
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="addons">
-        <AccordionTrigger className="text-lg font-semibold">
-          Additional Options
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-6">
-            {/* Standard Addons Above Dropdown */}
-            {displayAddons.aboveDropdown.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">Popular Options</h4>
-                {displayAddons.aboveDropdown.map((addon) => (
-                  <AddonCheckbox
-                    key={addon.id}
-                    addon={addon}
-                    checked={selectedAddons.includes(addon.id)}
-                    disabled={disabled}
-                    onToggle={handleAddonToggle}
-                  />
-                ))}
+    <div className="w-full space-y-4">
+      {/* Addons positioned ABOVE dropdown - always visible */}
+      {displayAddons.aboveDropdown.length > 0 && (
+        <div className="space-y-2">
+          {displayAddons.aboveDropdown.map((addon) => (
+            <AddonCheckbox
+              key={addon.id}
+              addon={addon}
+              checked={selectedAddons.includes(addon.id)}
+              disabled={disabled}
+              onToggle={handleAddonToggle}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Main Accordion for IN dropdown items and special features */}
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="addons">
+          <AccordionTrigger className="text-lg font-semibold">
+            Additional Options
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-6">
+              {/* Special Feature Sections */}
+              <div className="space-y-4">
+                <VariableDataSection
+                  {...variableData}
+                  quantity={quantity}
+                  disabled={disabled}
+                />
+
+                <PerforationSection
+                  {...perforation}
+                  quantity={quantity}
+                  disabled={disabled}
+                />
+
+                <BandingSection
+                  {...banding}
+                  quantity={quantity}
+                  disabled={disabled}
+                />
+
+                <CornerRoundingSection
+                  {...cornerRounding}
+                  quantity={quantity}
+                  disabled={disabled}
+                />
               </div>
-            )}
 
-            {/* Special Feature Sections */}
-            <div className="space-y-4 border-t pt-4">
-              <h4 className="text-sm font-medium text-muted-foreground">Special Features</h4>
+              {/* Standard Addons IN Dropdown */}
+              {displayAddons.inDropdown.length > 0 && (
+                <div className="space-y-2 border-t pt-4">
+                  {displayAddons.inDropdown.map((addon) => (
+                    <AddonCheckbox
+                      key={addon.id}
+                      addon={addon}
+                      checked={selectedAddons.includes(addon.id)}
+                      disabled={disabled}
+                      onToggle={handleAddonToggle}
+                    />
+                  ))}
+                </div>
+              )}
 
-              <VariableDataSection
-                {...variableData}
-                quantity={quantity}
-                disabled={disabled}
-              />
-
-              <PerforationSection
-                {...perforation}
-                quantity={quantity}
-                disabled={disabled}
-              />
-
-              <BandingSection
-                {...banding}
-                quantity={quantity}
-                disabled={disabled}
-              />
-
-              <CornerRoundingSection
-                {...cornerRounding}
-                quantity={quantity}
-                disabled={disabled}
-              />
+              {/* Turnaround Time Note */}
+              {turnaroundTimes.length > 0 && (
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    Note: Some options may affect production time.
+                    Current turnaround: {turnaroundTimes[0]?.displayName || 'Standard'}
+                  </p>
+                </div>
+              )}
             </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
-            {/* Standard Addons In Dropdown */}
-            {displayAddons.inDropdown.length > 0 && (
-              <div className="space-y-2 border-t pt-4">
-                <h4 className="text-sm font-medium text-muted-foreground">Additional Services</h4>
-                {displayAddons.inDropdown.map((addon) => (
-                  <AddonCheckbox
-                    key={addon.id}
-                    addon={addon}
-                    checked={selectedAddons.includes(addon.id)}
-                    disabled={disabled}
-                    onToggle={handleAddonToggle}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Standard Addons Below Dropdown */}
-            {displayAddons.belowDropdown.length > 0 && (
-              <div className="space-y-2 border-t pt-4">
-                <h4 className="text-sm font-medium text-muted-foreground">Premium Services</h4>
-                {displayAddons.belowDropdown.map((addon) => (
-                  <AddonCheckbox
-                    key={addon.id}
-                    addon={addon}
-                    checked={selectedAddons.includes(addon.id)}
-                    disabled={disabled}
-                    onToggle={handleAddonToggle}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Turnaround Time Note */}
-            {turnaroundTimes.length > 0 && (
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  Note: Some options may affect production time.
-                  Current turnaround: {turnaroundTimes[0]?.displayName || 'Standard'}
-                </p>
-              </div>
-            )}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+      {/* Addons positioned BELOW dropdown - always visible */}
+      {displayAddons.belowDropdown.length > 0 && (
+        <div className="space-y-2">
+          {displayAddons.belowDropdown.map((addon) => (
+            <AddonCheckbox
+              key={addon.id}
+              addon={addon}
+              checked={selectedAddons.includes(addon.id)}
+              disabled={disabled}
+              onToggle={handleAddonToggle}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
