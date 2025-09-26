@@ -225,7 +225,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const { id } = await params
   const customer = await getCustomer(id)
 
-  if (!customer || customer.role === 'ADMIN' || customer.role === 'STAFF') {
+  if (!customer || customer.role !== 'CUSTOMER') {
     notFound()
   }
 
@@ -238,7 +238,6 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   if (stats.totalOrders > 10) tags.push({ label: 'Loyal Customer', color: 'default' })
   if (stats.totalSpent > 1000) tags.push({ label: 'High Value', color: 'default' })
   if (stats.totalSpent > 5000) tags.push({ label: 'VIP', color: 'default' })
-  if (customer.role === 'BROKER') tags.push({ label: 'Broker', color: 'secondary' })
 
   return (
     <div className="space-y-6">
@@ -346,7 +345,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                     <p>{order.OrderItem.length} items</p>
                                     {order.OrderItem[0] && (
                                       <p className="text-xs text-muted-foreground">
-                                        {order.OrderItem[0].product?.name}
+                                        {order.OrderItem[0].productName}
                                         {order.OrderItem.length > 1 &&
                                           ` +${order.OrderItem.length - 1} more`}
                                       </p>
@@ -405,8 +404,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           </div>
                           <div className="flex-1 pt-1">
                             <div className="flex items-center gap-2">
-                              {activity.link ? (
-                                <Link className="font-medium hover:underline" href={activity.link}>
+                              {'link' in activity && activity.link ? (
+                                <Link className="font-medium hover:underline" href={activity.link as string}>
                                   {activity.title}
                                 </Link>
                               ) : (
@@ -454,7 +453,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       </Select>
                     </div>
 
-                    {customer.role === 'BROKER' && (
+                    {/* Broker tier section - disabled for now
+                    {customer.role === 'CUSTOMER' && customer.brokerTier && (
                       <>
                         <div className="grid gap-2">
                           <Label>Broker Tier</Label>
@@ -506,7 +506,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           </div>
                         </div>
                       </>
-                    )}
+                    )} */}
 
                     <div className="pt-4">
                       <Button disabled>Save Broker Settings</Button>
@@ -589,7 +589,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">
-                      {customer.role === 'BROKER' ? 'Broker Account' : 'Customer Account'}
+                      Customer Account
                     </span>
                   </div>
 

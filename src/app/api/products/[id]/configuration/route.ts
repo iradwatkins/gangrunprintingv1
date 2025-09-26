@@ -558,7 +558,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Build the configuration object with dynamic quantities, sizes, addons and turnaround times
-    const config = {
+    const fallbackConfig = {
       ...SIMPLE_CONFIG,
       quantities,
       sizes,
@@ -592,10 +592,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       updatedDefaults.turnaround = defaultTurnaround.id
     }
 
-    config.defaults = updatedDefaults
+    fallbackConfig.defaults = updatedDefaults
 
     // Return simplified configuration like sizes and paper stocks
-    return NextResponse.json(config, {
+    return NextResponse.json(fallbackConfig, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

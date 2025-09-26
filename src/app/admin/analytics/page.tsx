@@ -332,7 +332,13 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<div className="h-[300px] animate-pulse bg-muted rounded" />}>
-                  <ProductPerformanceChart data={metrics.products.categories} />
+                  <ProductPerformanceChart
+                    data={metrics.products.categories.map(cat => ({
+                      category: cat.name,
+                      revenue: cat.revenue,
+                      orders: cat.orders
+                    }))}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
@@ -393,14 +399,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
               <CardContent>
                 <Suspense fallback={<div className="h-[300px] animate-pulse bg-muted rounded" />}>
                   <CustomerInsightsChart
-                    data={[
-                      { name: 'New Customers', value: metrics.customers.new, color: '#8884d8' },
-                      {
-                        name: 'Returning Customers',
-                        value: metrics.customers.returning,
-                        color: '#82ca9d',
-                      },
-                    ]}
+                    newCustomers={metrics.customers.new}
+                    returningCustomers={metrics.customers.returning}
+                    totalCustomers={metrics.customers.total}
                   />
                 </Suspense>
               </CardContent>

@@ -1,0 +1,102 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic [active]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - navigation [ref=e6]:
+            - button "previous" [disabled] [ref=e7]:
+              - img "previous" [ref=e8]
+            - generic [ref=e10]:
+              - generic [ref=e11]: 1/
+              - generic [ref=e12]: "1"
+            - button "next" [disabled] [ref=e13]:
+              - img "next" [ref=e14]
+          - img
+        - generic [ref=e16]:
+          - link "Next.js 15.5.2 (stale) Webpack" [ref=e17] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e18] [cursor=pointer]
+            - generic "There is a newer version (15.5.4) available, upgrade recommended!" [ref=e20] [cursor=pointer]: Next.js 15.5.2 (stale)
+            - generic [ref=e21] [cursor=pointer]: Webpack
+          - img
+      - generic [ref=e22]:
+        - dialog "Runtime TypeError" [ref=e23]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]:
+                - generic [ref=e30]: Runtime TypeError
+                - generic [ref=e31]:
+                  - button "Copy Error Info" [ref=e32] [cursor=pointer]:
+                    - img [ref=e33] [cursor=pointer]
+                  - button "No related documentation found" [disabled] [ref=e35]:
+                    - img [ref=e36]
+                  - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e38] [cursor=pointer]:
+                    - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+                    - img [ref=e39] [cursor=pointer]
+              - paragraph [ref=e48]: locales is not iterable
+            - generic [ref=e49]:
+              - generic [ref=e50]:
+                - paragraph [ref=e52]:
+                  - img [ref=e54]
+                  - generic [ref=e58]: src/lib/i18n/routing.ts (3:37) @ eval
+                  - button "Open in editor" [ref=e59] [cursor=pointer]:
+                    - img [ref=e61] [cursor=pointer]
+                - generic [ref=e64]:
+                  - generic [ref=e66]: "1 | import { defineRouting } from 'next-intl/routing'"
+                  - generic [ref=e68]: 2 |
+                  - generic [ref=e70]: "> 3 | export const routing = defineRouting({"
+                  - generic [ref=e72]: "| ^"
+                  - generic [ref=e74]: 4 | // A list of all locales that are supported
+                  - generic [ref=e76]: "5 | locales: ['en', 'es'],"
+                  - generic [ref=e78]: 6 |
+              - generic [ref=e79]:
+                - generic [ref=e80]:
+                  - paragraph [ref=e81]:
+                    - text: Call Stack
+                    - generic [ref=e82]: "10"
+                  - button "Show 6 ignore-listed frame(s)" [ref=e83] [cursor=pointer]:
+                    - text: Show 6 ignore-listed frame(s)
+                    - img [ref=e84] [cursor=pointer]
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - text: eval
+                    - button "Open eval in editor" [ref=e88] [cursor=pointer]:
+                      - img [ref=e89] [cursor=pointer]
+                  - generic [ref=e91]: src/lib/i18n/routing.ts (3:37)
+                - generic [ref=e92]:
+                  - generic [ref=e93]: <unknown>
+                  - generic [ref=e94]: rsc)/./src/lib/i18n/routing.ts (/root/websites/gangrunprinting/.next/server/app/[locale]/page.js (282:1)
+                - generic [ref=e95]:
+                  - generic [ref=e96]: eval
+                  - generic [ref=e97]: ./src/app/[locale]/layout.tsx
+                - generic [ref=e98]:
+                  - generic [ref=e99]: <unknown>
+                  - generic [ref=e100]: rsc)/./src/app/[locale]/layout.tsx (/root/websites/gangrunprinting/.next/server/app/[locale]/page.js (73:1)
+          - generic [ref=e101]:
+            - generic [ref=e102]: "1"
+            - generic [ref=e103]: "2"
+        - contentinfo [ref=e104]:
+          - region "Error feedback" [ref=e105]:
+            - paragraph [ref=e106]:
+              - link "Was this helpful?" [ref=e107] [cursor=pointer]:
+                - /url: https://nextjs.org/telemetry#error-feedback
+            - button "Mark as helpful" [ref=e108] [cursor=pointer]:
+              - img [ref=e109] [cursor=pointer]
+            - button "Mark as not helpful" [ref=e112] [cursor=pointer]:
+              - img [ref=e113] [cursor=pointer]
+    - generic [ref=e119] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e120] [cursor=pointer]:
+        - img [ref=e121] [cursor=pointer]
+      - generic [ref=e124] [cursor=pointer]:
+        - button "Open issues overlay" [ref=e125] [cursor=pointer]:
+          - generic [ref=e126] [cursor=pointer]:
+            - generic [ref=e127] [cursor=pointer]: "0"
+            - generic [ref=e128] [cursor=pointer]: "1"
+          - generic [ref=e129] [cursor=pointer]: Issue
+        - button "Collapse issues badge" [ref=e130] [cursor=pointer]:
+          - img [ref=e131] [cursor=pointer]
+  - alert [ref=e133]
+```

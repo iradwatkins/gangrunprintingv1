@@ -120,7 +120,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       try {
         await deleteProductImage(url)
       } catch (error) {
-        }
+        console.error('Failed to delete image from MinIO:', error)
+      }
     }
 
     // Update product using transaction
@@ -211,7 +212,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     required: opt.required,
                     sortOrder: index,
                     OptionValue: {
-                      create: opt.values.map((val: Record<string, unknown>, valIndex: number) => ({
+                      create: (opt.values as any[] || []).map((val: Record<string, unknown>, valIndex: number) => ({
                         value: val.value,
                         label: val.label,
                         additionalPrice: val.additionalPrice,
@@ -299,9 +300,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(product)
   } catch (error) {
-    // Check for unique constraint violations
-    if (error.code === 'P2002') {
-      const field = error.meta?.target?.[0]
+    // Check for Prisma unique constraint violations
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      const prismaError = error as any
+      const field = prismaError.meta?.target?.[0]
       return NextResponse.json(
         { error: `A product with this ${field} already exists` },
         { status: 400 }
@@ -309,11 +311,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Log the full error for debugging
-    console.log('Product update error:', error)
+    console.error('Product update error:', error)
 
+    // Return error response
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update product'
     return NextResponse.json({
       error: 'Failed to update product',
-      debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+      debug: process.env.NODE_ENV === 'development' ? errorMessage : undefined
     }, { status: 500 })
   }
 }
@@ -373,7 +377,8 @@ export async function DELETE(
       try {
         await deleteProductImage(image.url)
       } catch (error) {
-        }
+        console.error('Failed to delete image from MinIO:', error)
+      }
     }
 
     // Delete product (cascade will handle relations)

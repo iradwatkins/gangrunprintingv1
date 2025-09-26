@@ -50,14 +50,18 @@ async function getOrder(id: string) {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      user: true,
-      vendor: true,
+      User: true,
+      Vendor: true,
       OrderItem: {
         include: {
-          product: true,
+          PaperStock: true,
+          OrderItemAddOn: {
+            include: {
+              AddOn: true,
+            },
+          },
         },
       },
-      Payment: true,
     },
   })
 
@@ -290,16 +294,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <TableRow key={item.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{item.product?.name || 'Product Deleted'}</p>
+                          <p className="font-medium">{item.productName || 'Product Deleted'}</p>
                           <p className="text-sm text-muted-foreground">
-                            SKU: {item.product?.sku || 'N/A'}
+                            SKU: {item.productSku || 'N/A'}
                           </p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        {item.configuration ? (
+                        {item.options ? (
                           <div className="text-sm">
-                            {Object.entries(item.configuration as any).map(([key, value]) => (
+                            {Object.entries(item.options as any).map(([key, value]) => (
                               <div key={key}>
                                 <span className="font-medium capitalize">
                                   {key.replace(/_/g, ' ')}:
@@ -360,10 +364,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <p className="text-sm font-medium text-muted-foreground mb-1">Customer</p>
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    <span>{order.user?.name || 'Guest Customer'}</span>
+                    <span>{order.User?.name || 'Guest Customer'}</span>
                   </div>
-                  {order.user && (
-                    <Link className="inline-block mt-2" href={`/admin/customers/${order.user.id}`}>
+                  {order.User && (
+                    <Link className="inline-block mt-2" href={`/admin/customers/${order.User.id}`}>
                       <Button size="sm" variant="outline">
                         View Profile
                         <ChevronRight className="h-3 w-3 ml-1" />
@@ -376,7 +380,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{order.user?.email || 'No email'}</span>
+                      <span className="text-sm">{order.User?.email || 'No email'}</span>
                     </div>
                     {shippingAddress?.phone && (
                       <div className="flex items-center gap-2">
@@ -433,13 +437,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </Card>
 
           {/* Order Notes */}
-          {order.notes && (
+          {order.adminNotes && (
             <Card>
               <CardHeader>
-                <CardTitle>Customer Notes</CardTitle>
+                <CardTitle>Admin Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm">{order.notes}</p>
+                <p className="text-sm">{order.adminNotes}</p>
               </CardContent>
             </Card>
           )}
@@ -488,7 +492,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Method</span>
                 <span className="text-sm font-medium">
-                  {order.paymentMethod || 'Not specified'}
+                  {'Credit Card'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -497,19 +501,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   {order.status === 'PENDING_PAYMENT' ? 'Pending' : 'Paid'}
                 </Badge>
               </div>
-              {order.Payment && order.Payment.length > 0 && (
+              {order.paidAt && (
                 <>
                   <Separator />
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Transaction ID</span>
-                    <span className="text-xs font-mono">
-                      {order.Payment[0].transactionId?.substring(0, 12)}...
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Amount</span>
-                    <span className="text-sm font-medium">
-                      ${(order.Payment[0].amount / 100).toFixed(2)}
+                    <span className="text-sm text-muted-foreground">Paid Date</span>
+                    <span className="text-xs">
+                      {new Date(order.paidAt).toLocaleDateString()}
                     </span>
                   </div>
                 </>

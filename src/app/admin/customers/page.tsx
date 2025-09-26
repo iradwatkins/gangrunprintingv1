@@ -46,7 +46,7 @@ async function getCustomersData() {
       totalOrders: orders.length,
       totalSpent,
       lastOrderDate: lastOrderDate ? new Date(lastOrderDate) : null,
-      status: customer.emailVerified ? 'verified' : 'unverified',
+      status: (customer.emailVerified ? 'verified' : 'unverified') as 'verified' | 'unverified',
     }
   })
 

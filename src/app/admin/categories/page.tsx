@@ -113,7 +113,7 @@ export default function CategoriesPage() {
         throw new Error(error.error || 'Failed to save category')
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to save category')
+      toast.error(error instanceof Error ? error.message : 'Failed to save category')
     } finally {
       setSaving(false)
     }
