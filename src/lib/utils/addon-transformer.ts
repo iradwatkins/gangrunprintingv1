@@ -79,12 +79,12 @@ function calculatePriceDisplay(addon: RawAddon): { price: number; priceDisplay: 
  * Transform addon set items into standardized addon objects
  * Removes complex grouping and creates consistent structure like sizes
  */
-export function transformAddonSets(productAddonSets: RawProductAddonSet[]): StandardizedAddon[] {
+export function transformAddonSets(productAddonSets: any[]): StandardizedAddon[] {
   const allAddons: StandardizedAddon[] = []
 
   for (const productAddonSet of productAddonSets) {
-    for (const setItem of productAddonSet.addOnSet.addOnSetItems) {
-      const addon = setItem.addOn
+    for (const setItem of productAddonSet.AddOnSet.addOnSetItems) {
+      const addon = setItem.AddOn
       const { price, priceDisplay } = calculatePriceDisplay(addon)
 
       // Create standardized addon object similar to how sizes are handled

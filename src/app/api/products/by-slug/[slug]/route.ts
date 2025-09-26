@@ -43,6 +43,21 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
             AddOn: true,
           },
         },
+        productAddOnSets: {
+          include: {
+            AddOnSet: {
+              include: {
+                addOnSetItems: {
+                  include: {
+                    AddOn: true,
+                  },
+                  orderBy: { sortOrder: 'asc' },
+                },
+              },
+            },
+          },
+          orderBy: { sortOrder: 'asc' },
+        },
       },
     })
 

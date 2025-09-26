@@ -53,9 +53,16 @@ export interface AddonsGrouped {
   belowDropdown: Addon[]
 }
 
-export interface DesignAddonConfig {
+export interface DesignConfig {
+  enabled: boolean
   selectedOption: string | null
-  selectedSide?: 'oneSide' | 'twoSides'
+  selectedSide?: 'oneSide' | 'twoSides' | null
+  uploadedFiles: any[]
+}
+
+export interface ImageUploadConfig {
+  enabled: boolean
+  selectedOption: string | null
   uploadedFiles: any[]
 }
 
@@ -72,9 +79,10 @@ export interface AddonAccordionProps {
   onBandingChange?: (config: BandingConfig) => void
   cornerRoundingConfig?: CornerRoundingConfig
   onCornerRoundingChange?: (config: CornerRoundingConfig) => void
-  designAddonConfig?: DesignAddonConfig
-  onDesignAddonChange?: (config: DesignAddonConfig) => void
-  designAddons?: Addon[]
+  designConfig?: DesignConfig
+  onDesignChange?: (config: DesignConfig) => void
+  imageUploadConfig?: ImageUploadConfig
+  onImageUploadChange?: (config: ImageUploadConfig) => void
   quantity?: number
   turnaroundTimes?: TurnaroundTime[]
   disabled?: boolean
