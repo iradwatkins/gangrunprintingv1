@@ -11,11 +11,13 @@ import { useVariableData } from './hooks/useVariableData'
 import { usePerforation } from './hooks/usePerforation'
 import { useBanding } from './hooks/useBanding'
 import { useCornerRounding } from './hooks/useCornerRounding'
+import { useDesignAddon } from './hooks/useDesignAddon'
 import { VariableDataSection } from './components/VariableDataSection'
 import { PerforationSection } from './components/PerforationSection'
 import { BandingSection } from './components/BandingSection'
 import { CornerRoundingSection } from './components/CornerRoundingSection'
 import { AddonCheckbox } from './components/AddonCheckbox'
+import { DesignAddonSelector } from './DesignAddonSelector'
 
 export function AddonAccordion({
   addons,
@@ -30,6 +32,9 @@ export function AddonAccordion({
   onBandingChange,
   cornerRoundingConfig,
   onCornerRoundingChange,
+  designAddonConfig,
+  onDesignAddonChange,
+  designAddons = [],
   quantity = 100,
   turnaroundTimes = [],
   disabled = false,
@@ -39,6 +44,11 @@ export function AddonAccordion({
   const perforation = usePerforation(perforationConfig, onPerforationChange)
   const banding = useBanding(bandingConfig, onBandingChange)
   const cornerRounding = useCornerRounding(cornerRoundingConfig, onCornerRoundingChange)
+  const designAddon = useDesignAddon({
+    config: designAddonConfig,
+    onChange: onDesignAddonChange,
+    designAddons
+  })
 
   const handleAddonToggle = (addonId: string, checked: boolean) => {
     if (disabled) return
@@ -59,6 +69,19 @@ export function AddonAccordion({
 
   return (
     <div className="w-full space-y-4">
+      {/* Design Add-on Selector - Always visible at top */}
+      {designAddons.length > 0 && (
+        <DesignAddonSelector
+          designAddons={designAddons}
+          selectedDesignOption={designAddon.selectedOption}
+          selectedSide={designAddon.selectedSide}
+          uploadedFiles={designAddon.uploadedFiles}
+          onDesignOptionChange={designAddon.handleDesignOptionChange}
+          onFilesUploaded={designAddon.handleFilesUploaded}
+          disabled={disabled}
+        />
+      )}
+
       {/* Addons positioned ABOVE dropdown - always visible */}
       {displayAddons.aboveDropdown.length > 0 && (
         <div className="space-y-2">

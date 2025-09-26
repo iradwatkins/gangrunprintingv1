@@ -114,11 +114,11 @@ export default function AutomationPage() {
   const getTriggerLabel = (trigger: Record<string, unknown>) => {
     switch (trigger.type) {
       case 'event':
-        return `Event: ${trigger.event?.replace(/_/g, ' ') || 'Unknown'}`
+        return `Event: ${typeof trigger.event === 'string' ? trigger.event.replace(/_/g, ' ') : 'Unknown'}`
       case 'schedule':
-        return `Schedule: ${trigger.schedule?.type || 'Unknown'}`
+        return `Schedule: ${(trigger.schedule as any)?.type || 'Unknown'}`
       case 'condition':
-        return `Condition: ${trigger.condition?.field || 'Unknown'}`
+        return `Condition: ${(trigger.condition as any)?.field || 'Unknown'}`
       default:
         return 'Unknown trigger'
     }

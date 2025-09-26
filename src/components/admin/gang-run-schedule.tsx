@@ -33,7 +33,7 @@ const gangRuns = [
   },
 ]
 
-export function GangRunSchedule() : unknown {
+export function GangRunSchedule() {
   return (
     <Card className="h-full">
       <CardHeader>

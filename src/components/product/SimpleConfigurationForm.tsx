@@ -13,6 +13,7 @@ import {
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
 import AddonAccordionWithVariable from './AddonAccordionWithVariable'
+import { DesignAddonConfig } from './addons/types/addon.types'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -146,6 +147,7 @@ interface SimpleProductConfiguration {
   perforationConfig?: PerforationConfig // For Perforation add-on
   bandingConfig?: BandingConfig // For Banding add-on
   cornerRoundingConfig?: CornerRoundingConfig // For Corner Rounding add-on
+  designAddonConfig?: DesignAddonConfig // For Design add-ons
 }
 
 interface SimpleConfigurationFormProps {
@@ -223,6 +225,11 @@ export default function SimpleConfigurationForm({
           turnaround: data.defaults.turnaround || data.turnaroundTimes[0]?.id || '',
           uploadedFiles: [],
           selectedAddons: data.defaults.addons || [],
+          designAddonConfig: {
+            selectedOption: null,
+            selectedSide: 'oneSide',
+            uploadedFiles: []
+          },
         }
         setConfiguration(newConfig)
       } catch (err) {
@@ -491,7 +498,21 @@ export default function SimpleConfigurationForm({
       addonCosts += cornerRoundingCost
     }
 
-    return baseProductPrice + addonCosts
+    // Calculate design addon costs
+    let designAddonCost = 0
+    if (config.designAddonConfig?.selectedOption) {
+      const designAddon = configData.addons?.find(a => a.id === config.designAddonConfig?.selectedOption)
+      if (designAddon) {
+        if (designAddon.configuration?.requiresSideSelection && designAddon.configuration.sideOptions) {
+          const side = config.designAddonConfig.selectedSide || 'oneSide'
+          designAddonCost = designAddon.configuration.sideOptions[side].price
+        } else {
+          designAddonCost = designAddon.configuration?.basePrice || designAddon.price || 0
+        }
+      }
+    }
+
+    return baseProductPrice + addonCosts + designAddonCost
   }
 
   // Handle configuration changes
@@ -577,6 +598,15 @@ export default function SimpleConfigurationForm({
   // Handle Corner Rounding changes
   const handleCornerRoundingChange = (cornerRounding: CornerRoundingConfig) => {
     const newConfig = { ...configuration, cornerRoundingConfig: cornerRounding }
+    setConfiguration(newConfig)
+
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
+  // Handle Design Addon changes
+  const handleDesignAddonChange = (designAddon: DesignAddonConfig) => {
+    const newConfig = { ...configuration, designAddonConfig: designAddon }
     setConfiguration(newConfig)
 
     const price = calculatePrice(newConfig)
@@ -1020,7 +1050,12 @@ export default function SimpleConfigurationForm({
 
       {/* Add-ons & Upgrades Section (with positioning support) */}
       <AddonAccordionWithVariable
-        addons={configData.addons || []}
+        addons={configData.addons?.filter(a =>
+          !a.id.startsWith('addon_upload_') &&
+          !a.id.startsWith('addon_standard_design') &&
+          !a.id.startsWith('addon_rush_design') &&
+          !a.id.startsWith('addon_design_changes')
+        ) || []}
         addonsGrouped={configData.addonsGrouped}
         bandingConfig={configuration.bandingConfig}
         cornerRoundingConfig={configuration.cornerRoundingConfig}
@@ -1029,11 +1064,19 @@ export default function SimpleConfigurationForm({
         quantity={getQuantityValue(configuration)}
         selectedAddons={configuration.selectedAddons}
         variableDataConfig={configuration.variableDataConfig}
+        designAddonConfig={configuration.designAddonConfig}
+        designAddons={configData.addons?.filter(a =>
+          a.id.startsWith('addon_upload_') ||
+          a.id.startsWith('addon_standard_design') ||
+          a.id.startsWith('addon_rush_design') ||
+          a.id.startsWith('addon_design_changes')
+        ) || []}
         onAddonChange={handleAddonChange}
         onBandingChange={handleBandingChange}
         onCornerRoundingChange={handleCornerRoundingChange}
         onPerforationChange={handlePerforationChange}
         onVariableDataChange={handleVariableDataChange}
+        onDesignAddonChange={handleDesignAddonChange}
       />
 
       {/* Turnaround Time Selection */}

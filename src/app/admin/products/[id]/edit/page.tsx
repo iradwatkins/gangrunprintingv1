@@ -96,7 +96,7 @@ function EditProductClient({ id }: { id: string }) {
         shortDescription: data.shortDescription || '',
         isActive: data.isActive ?? true,
         isFeatured: data.isFeatured ?? false,
-        images: data.ProductImage || [],
+        images: data.productImages || data.ProductImages || [],
 
         // Map paper stock set
         selectedPaperStockSet: data.productPaperStockSets?.[0]?.paperStockSetId || '',
@@ -213,6 +213,8 @@ function EditProductClient({ id }: { id: string }) {
         sizeGroupId: selectedSizeGroup,
         addOnSetId: selectedAddOnSet || null,
         turnaroundTimeSetId: selectedTurnaroundTimeSet,
+        options: [], // Add empty options array
+        pricingTiers: [], // Add empty pricing tiers array
       }
 
       const response = await fetch(`/api/products/${id}`, {

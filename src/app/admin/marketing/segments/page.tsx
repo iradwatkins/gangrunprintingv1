@@ -97,10 +97,14 @@ export default function SegmentsPage() {
   const [segments, setSegments] = useState<Segment[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [newSegment, setNewSegment] = useState({
+  const [newSegment, setNewSegment] = useState<{
+    name: string
+    description: string
+    rules: SegmentRule[]
+  }>({
     name: '',
     description: '',
-    rules: [{ field: '', operator: '', value: '', type: 'user' as const }],
+    rules: [{ field: '', operator: '', value: '', type: 'user' }],
   })
 
   useEffect(() => {

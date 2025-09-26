@@ -184,9 +184,9 @@ model CampaignSend {
 model CoatingOption {
   id                 String              @id
   name               String              @unique
-  description        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime
+  description        String?
   paperStockCoatings PaperStockCoating[]
 }
 
@@ -320,10 +320,10 @@ model File {
   id         String   @id
   orderId    String
   filename   String
-  fileUrl    String
-  fileSize   Int
-  mimeType   String
-  uploadedBy String
+  fileUrl    String?
+  fileSize   Int?
+  mimeType   String?
+  uploadedBy String?
   metadata   Json?
   createdAt  DateTime @default(now())
   updatedAt  DateTime
@@ -568,21 +568,21 @@ model PaperException {
 }
 
 model PaperStock {
-  id                String              @id
-  name              String              @unique
-  pricePerSqInch    Float               @default(0.001)
-  tooltipText       String?
-  isActive          Boolean             @default(true)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  weight            Float               @default(0.0015)
-  OrderItem         OrderItem[]
-  PaperException    PaperException?
+  id                 String              @id
+  name               String              @unique
+  pricePerSqInch     Float               @default(0.001)
+  tooltipText        String?
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  weight             Float               @default(0.0015)
+  OrderItem          OrderItem[]
+  PaperException     PaperException?
   paperStockCoatings PaperStockCoating[]
   paperStockSetItems PaperStockSetItem[]
-  paperStockSides   PaperStockSides[]
-  ProductPaperStock ProductPaperStock[]
-  VendorPaperStock  VendorPaperStock[]
+  paperStockSides    PaperStockSides[]
+  ProductPaperStock  ProductPaperStock[]
+  VendorPaperStock   VendorPaperStock[]
 }
 
 model PaperStockCoating {
@@ -654,37 +654,37 @@ model PricingTier {
 }
 
 model Product {
-  id                       String                     @id
-  name                     String
-  slug                     String                     @unique
-  description              String?
-  categoryId               String
-  basePrice                Float
-  isActive                 Boolean                    @default(true)
-  isFeatured               Boolean                    @default(false)
-  metadata                 Json?
-  productionTime           Int
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime
-  gangRunEligible          Boolean                    @default(false)
-  maxGangQuantity          Int?
-  minGangQuantity          Int?
-  rushAvailable            Boolean                    @default(false)
-  rushDays                 Int?
-  rushFee                  Float?
-  setupFee                 Float                      @default(0)
-  shortDescription         String?
-  sku                      String                     @unique
+  id                        String                     @id
+  name                      String
+  slug                      String                     @unique
+  description               String?
+  categoryId                String
+  basePrice                 Float
+  isActive                  Boolean                    @default(true)
+  isFeatured                Boolean                    @default(false)
+  metadata                  Json?
+  productionTime            Int
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime
+  gangRunEligible           Boolean                    @default(false)
+  maxGangQuantity           Int?
+  minGangQuantity           Int?
+  rushAvailable             Boolean                    @default(false)
+  rushDays                  Int?
+  rushFee                   Float?
+  setupFee                  Float                      @default(0)
+  shortDescription          String?
+  sku                       String                     @unique
   pricingTiers              PricingTier[]
-  productCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
+  productCategory           ProductCategory            @relation(fields: [categoryId], references: [id])
   productAddOns             ProductAddOn[]
   productAddOnSets          ProductAddOnSet[]
   productImages             ProductImage[]
   productOptions            ProductOption[]
   productPaperStocks        ProductPaperStock[]
   productPaperStockSets     ProductPaperStockSet[]
-  productPricingConfig     ProductPricingConfig?
-  productQuantities          ProductQuantity[]
+  productPricingConfig      ProductPricingConfig?
+  productQuantities         ProductQuantity[]
   productQuantityGroups     ProductQuantityGroup[]
   productSizes              ProductSize[]
   productSizeGroups         ProductSizeGroup[]
@@ -924,18 +924,18 @@ model PushSubscription {
 }
 
 model QuantityGroup {
-  id                   String                 @id
-  name                 String                 @unique
-  description          String?
-  values               String
-  defaultValue         String
-  customMin            Int?
-  customMax            Int?
-  sortOrder            Int                    @default(0)
-  isActive             Boolean                @default(true)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime
-  products ProductQuantityGroup[]
+  id           String                 @id
+  name         String                 @unique
+  description  String?
+  values       String
+  defaultValue String
+  customMin    Int?
+  customMax    Int?
+  sortOrder    Int                    @default(0)
+  isActive     Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime
+  products     ProductQuantityGroup[]
 }
 
 model Quote {
@@ -1019,13 +1019,13 @@ model ShippingRate {
 }
 
 model SidesOption {
-  id               String            @id
-  name             String            @unique
-  code             String            @unique
-  description      String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime
-  paperStockSides  PaperStockSides[]
+  id              String            @id
+  name            String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  code            String            @unique
+  description     String?
+  paperStockSides PaperStockSides[]
 }
 
 model SizeGroup {
@@ -1329,29 +1329,29 @@ model TurnaroundTimeSetItem {
 }
 
 model User {
-  id                String              @id
-  email             String              @unique
-  emailVerified     Boolean             @default(false)
-  image             String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  name              String?
-  role              UserRole            @default(CUSTOMER)
-  isBroker          Boolean             @default(false)
-  brokerDiscounts   Json?
-  marketingOptIn    Boolean             @default(true)
-  phoneNumber       String?
-  smsOptIn          Boolean             @default(false)
-  accounts          Account[]
-  campaignSends     CampaignSend[]
-  customerJourney   CustomerJourney?
-  orders            Order[]
-  pushNotifications PushNotification[]
-  pushSubscriptions PushSubscription[]
-  quotes            Quote[]
-  smsSends          SMSSend[]
-  session           Session[]
-  tenantUsers       TenantUser[]
+  id                 String              @id
+  email              String              @unique
+  emailVerified      Boolean             @default(false)
+  image              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  name               String?
+  role               UserRole            @default(CUSTOMER)
+  isBroker           Boolean             @default(false)
+  brokerDiscounts    Json?
+  marketingOptIn     Boolean             @default(true)
+  phoneNumber        String?
+  smsOptIn           Boolean             @default(false)
+  accounts           Account[]
+  campaignSends      CampaignSend[]
+  customerJourney    CustomerJourney?
+  orders             Order[]
+  pushNotifications  PushNotification[]
+  pushSubscriptions  PushSubscription[]
+  quotes             Quote[]
+  smsSends           SMSSend[]
+  session            Session[]
+  tenantUsers        TenantUser[]
   workflowExecutions WorkflowExecution[]
 }
 

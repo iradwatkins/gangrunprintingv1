@@ -89,6 +89,11 @@ interface ConfigurationData {
   paperStocks: PaperStock[]
   turnaroundTimes: TurnaroundTime[]
   addons: Addon[]
+  addonsGrouped?: {
+    aboveDropdown: Addon[]
+    inDropdown: Addon[]
+    belowDropdown: Addon[]
+  }
   defaults: {
     quantity?: string
     size?: string
@@ -227,6 +232,11 @@ export default function ProductConfigurationForm({
       })) || [],
       turnaroundTimes: data.turnaroundTimes || [],
       addons: data.addons || [],
+      addonsGrouped: data.addonsGrouped || {
+        aboveDropdown: [],
+        inDropdown: [],
+        belowDropdown: []
+      },
       defaults: data.defaults || {},
     }
   }
@@ -489,6 +499,7 @@ export default function ProductConfigurationForm({
         {legacyConfigData.addons && legacyConfigData.addons.length > 0 && (
           <AddonAccordion
             addons={legacyConfigData.addons}
+            addonsGrouped={legacyConfigData.addonsGrouped}
             disabled={loading}
             selectedAddons={configuration.selectedAddons}
             turnaroundTimes={legacyConfigData.turnaroundTimes}
