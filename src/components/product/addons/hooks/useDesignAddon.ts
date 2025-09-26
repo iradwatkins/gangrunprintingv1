@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 
 interface DesignAddonConfig {
   selectedOption: string | null
-  selectedSide?: 'oneSide' | 'twoSides'
+  selectedSide?: 'oneSide' | 'twoSides' | null
   uploadedFiles: any[]
 }
 
@@ -20,8 +20,8 @@ export function useDesignAddon({
   const [selectedOption, setSelectedOption] = useState<string | null>(
     config?.selectedOption ?? null
   )
-  const [selectedSide, setSelectedSide] = useState<'oneSide' | 'twoSides'>(
-    config?.selectedSide ?? 'oneSide'
+  const [selectedSide, setSelectedSide] = useState<'oneSide' | 'twoSides' | null>(
+    config?.selectedSide ?? null
   )
   const [uploadedFiles, setUploadedFiles] = useState<any[]>(
     config?.uploadedFiles ?? []
@@ -29,13 +29,17 @@ export function useDesignAddon({
 
   const handleDesignOptionChange = useCallback((
     optionId: string | null,
-    side?: string,
+    side?: string | null,
     files?: any[]
   ) => {
     setSelectedOption(optionId)
 
-    if (side) {
-      setSelectedSide(side as 'oneSide' | 'twoSides')
+    // Reset side selection when changing primary option
+    if (side !== undefined) {
+      setSelectedSide(side as 'oneSide' | 'twoSides' | null)
+    } else if (optionId !== selectedOption) {
+      // Clear side selection when primary option changes
+      setSelectedSide(null)
     }
 
     if (files !== undefined) {
@@ -44,10 +48,10 @@ export function useDesignAddon({
 
     onChange?.({
       selectedOption: optionId,
-      selectedSide: side as 'oneSide' | 'twoSides' | undefined,
+      selectedSide: side !== undefined ? (side as 'oneSide' | 'twoSides' | null) : selectedSide,
       uploadedFiles: files ?? uploadedFiles
     })
-  }, [onChange, uploadedFiles])
+  }, [onChange, uploadedFiles, selectedOption, selectedSide])
 
   const handleFilesUploaded = useCallback((files: any[]) => {
     setUploadedFiles(files)
@@ -75,21 +79,26 @@ export function useDesignAddon({
     return addon.configuration?.basePrice ?? addon.price ?? 0
   }, [selectedOption, selectedSide, designAddons])
 
-  // Check if the current selection is valid
+  // Check if the current selection is valid for cart
   const isValid = useMemo(() => {
     if (!selectedOption) return true // No selection is valid
 
     const addon = designAddons.find(a => a.id === selectedOption)
     if (!addon) return false
 
-    // For options that require side selection, ensure side is selected
+    // For Standard/Rush Design options, side selection is required
     if (addon.configuration?.requiresSideSelection && !selectedSide) {
       return false
     }
 
-    // File upload is optional, so always valid
+    // File upload is always optional, so doesn't affect validity
     return true
   }, [selectedOption, selectedSide, designAddons])
+
+  // Check if we can add to cart (prevent checkout with incomplete selection)
+  const canAddToCart = useMemo(() => {
+    return isValid
+  }, [isValid])
 
   // Get the display text for the current selection
   const getDisplayText = useCallback(() => {
@@ -144,6 +153,7 @@ export function useDesignAddon({
     handleFilesUploaded,
     calculatePrice,
     isValid,
+    canAddToCart,
     getDisplayText,
     shouldShowFileUpload,
     getOrderConfiguration

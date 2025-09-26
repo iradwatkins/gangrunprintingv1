@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 export default function DesignAddonTestPage() {
   const [designAddons, setDesignAddons] = useState<any[]>([])
   const [selectedDesignOption, setSelectedDesignOption] = useState<string | null>(null)
-  const [selectedSide, setSelectedSide] = useState<'oneSide' | 'twoSides'>('oneSide')
+  const [selectedSide, setSelectedSide] = useState<'oneSide' | 'twoSides' | null>(null)
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -37,12 +37,15 @@ export default function DesignAddonTestPage() {
 
   const handleDesignOptionChange = (
     optionId: string | null,
-    side?: string,
+    side?: string | null,
     files?: any[]
   ) => {
     setSelectedDesignOption(optionId)
-    if (side) {
-      setSelectedSide(side as 'oneSide' | 'twoSides')
+    if (side !== undefined) {
+      setSelectedSide(side as 'oneSide' | 'twoSides' | null)
+    } else if (optionId !== selectedDesignOption) {
+      // Reset side when changing primary option
+      setSelectedSide(null)
     }
     if (files !== undefined) {
       setUploadedFiles(files)
@@ -59,8 +62,15 @@ export default function DesignAddonTestPage() {
     if (!addon) return null
 
     let price = 0
+    let isValid = true
+
     if (addon.configuration?.requiresSideSelection && addon.configuration.sideOptions) {
-      price = addon.configuration.sideOptions[selectedSide].price
+      if (selectedSide) {
+        price = addon.configuration.sideOptions[selectedSide].price
+      } else {
+        // No side selected - invalid for Standard/Rush options
+        isValid = false
+      }
     } else {
       price = addon.configuration?.basePrice || addon.price || 0
     }
@@ -69,7 +79,9 @@ export default function DesignAddonTestPage() {
       name: addon.name,
       side: addon.configuration?.requiresSideSelection ? selectedSide : null,
       price: price,
-      files: uploadedFiles.length
+      files: uploadedFiles.length,
+      isValid: isValid,
+      requiresSideSelection: addon.configuration?.requiresSideSelection || false
     }
   }
 
@@ -111,11 +123,22 @@ export default function DesignAddonTestPage() {
             {selectedInfo ? (
               <div className="space-y-2">
                 <p><strong>Selected Service:</strong> {selectedInfo.name}</p>
-                {selectedInfo.side && (
-                  <p><strong>Sides:</strong> {selectedInfo.side === 'oneSide' ? 'One Side' : 'Two Sides'}</p>
+                {selectedInfo.requiresSideSelection && (
+                  <>
+                    {selectedInfo.side ? (
+                      <p><strong>Sides:</strong> {selectedInfo.side === 'oneSide' ? 'One Side' : 'Two Sides'}</p>
+                    ) : (
+                      <p className="text-orange-600"><strong>⚠️ Sides:</strong> Please select sides to continue</p>
+                    )}
+                  </>
                 )}
                 <p><strong>Price:</strong> ${selectedInfo.price.toFixed(2)}</p>
                 <p><strong>Files Uploaded:</strong> {selectedInfo.files}</p>
+                <p><strong>Valid for Cart:</strong>
+                  <span className={selectedInfo.isValid ? 'text-green-600' : 'text-red-600'}>
+                    {selectedInfo.isValid ? ' ✓ Yes' : ' ✗ No (incomplete selection)'}
+                  </span>
+                </p>
               </div>
             ) : (
               <p className="text-muted-foreground">No design service selected</p>
@@ -158,7 +181,7 @@ export default function DesignAddonTestPage() {
             <Button
               onClick={() => {
                 setSelectedDesignOption(null)
-                setSelectedSide('oneSide')
+                setSelectedSide(null)
                 setUploadedFiles([])
               }}
               variant="outline"
@@ -167,10 +190,15 @@ export default function DesignAddonTestPage() {
             </Button>
             <Button
               onClick={() => {
-                alert(`Configuration would be submitted:\n${JSON.stringify(getSelectedAddonInfo(), null, 2)}`)
+                const info = getSelectedAddonInfo()
+                if (info?.isValid) {
+                  alert(`Configuration would be submitted:\n${JSON.stringify(info, null, 2)}`)
+                } else {
+                  alert('Cannot submit: Please complete your selection')
+                }
               }}
               variant="default"
-              disabled={!selectedDesignOption}
+              disabled={!selectedDesignOption || !selectedInfo?.isValid}
             >
               Submit Configuration
             </Button>
