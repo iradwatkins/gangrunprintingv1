@@ -16,7 +16,7 @@ interface CalculateBasePriceRequest {
 
   // Paper configuration
   paperStockId: string
-  sides: 'single' | 'double'
+  sidesOptionId: string
 
   // Product context (for validation)
   productId?: string
@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Paper stock ID is required' }, { status: 400 })
     }
 
-    if (!['single', 'double'].includes(data.sides)) {
+    if (!data.sidesOptionId) {
       return NextResponse.json(
-        { error: 'Sides must be either "single" or "double"' },
+        { error: 'Sides option ID is required' },
         { status: 400 }
       )
     }
@@ -41,13 +41,26 @@ export async function POST(request: NextRequest) {
     // Load paper stock data
     const paperStock = await prisma.paperStock.findUnique({
       where: { id: data.paperStockId },
-      include: {
-        PaperException: true,
+    })
+
+    // Load sides multiplier from PaperStockSides
+    const paperStockSides = await prisma.paperStockSides.findUnique({
+      where: {
+        paperStockId_sidesOptionId: {
+          paperStockId: data.paperStockId,
+          sidesOptionId: data.sidesOptionId,
+        },
       },
     })
 
     if (!paperStock) {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
+    }
+
+    if (!paperStockSides) {
+      return NextResponse.json({
+        error: 'Sides configuration not available for this paper stock'
+      }, { status: 404 })
     }
 
     let standardSize = null
@@ -226,9 +239,7 @@ export async function POST(request: NextRequest) {
       standardQuantity: standardQuantity || undefined,
       customQuantity: data.customQuantity,
       basePaperPrice: paperStock.pricePerSqInch,
-      sides: data.sides,
-      isExceptionPaper: !!paperStock.PaperException,
-      paperException: paperStock.PaperException || undefined,
+      sidesMultiplier: paperStockSides.priceMultiplier,
     }
 
     // Calculate base price using exact formula
@@ -254,8 +265,10 @@ export async function POST(request: NextRequest) {
         id: paperStock.id,
         name: paperStock.name,
         pricePerSqInch: paperStock.pricePerSqInch,
-        isExceptionPaper: !!paperStock.PaperException,
-        exceptionType: paperStock.PaperException?.exceptionType,
+      },
+      sidesConfiguration: {
+        sidesOptionId: data.sidesOptionId,
+        priceMultiplier: paperStockSides.priceMultiplier,
       },
       standardSize: standardSize
         ? {
