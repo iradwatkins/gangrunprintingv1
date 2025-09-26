@@ -115,7 +115,7 @@ function CartPageContent() {
                     {item.fileName && <p>File: {item.fileName}</p>}
                   </div>
                   <Badge className="mt-2" variant="secondary">
-                    {item.turnaround}
+                    {item.turnaround.displayName || item.turnaround.name}
                   </Badge>
                 </div>
                 <Button

@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma-singleton'
+import { createProductService } from '@/services/ProductService'
+import { createProductRepository } from '@/repositories/ProductRepository'
 import { transformSizeGroup } from '@/lib/utils/size-transformer'
 import {
   transformAddonSets,
@@ -292,13 +294,29 @@ const SIMPLE_CONFIG = {
   },
 }
 
-// GET /api/products/[id]/configuration - Fetch turnaround times from database
+// GET /api/products/[id]/configuration - Optimized with service layer
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: productId } = await params
 
     if (!productId) {
       return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
+    }
+
+    // Use service layer for business logic
+    const productService = createProductService(prisma)
+    const config = await productService.getProductConfiguration(productId)
+
+    if (config) {
+      return NextResponse.json(config, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=300', // 5 minute cache
+          'X-API-Version': 'v4-service-layer',
+          'X-Product-Id': productId,
+        },
+      })
     }
 
     // Try to fetch quantities from database

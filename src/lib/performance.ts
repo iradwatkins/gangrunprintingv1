@@ -3,7 +3,7 @@
  * Provides helpers for memoization, debouncing, and performance monitoring
  */
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { DEBOUNCE_DELAY } from '@/config/constants'
 
 /**
@@ -288,12 +288,13 @@ export async function measurePerformance<T>(name: string, fn: () => T | Promise<
     const duration = performance.now() - start
 
     if (process.env.NODE_ENV === 'development') {
+      console.log(`Performance: ${name} took ${duration}ms`)
     }
 
     return result
   } catch (error) {
     const duration = performance.now() - start
-    }ms`, error)
+    console.error(`Performance measurement failed for ${name} after ${duration}ms`, error)
     throw error
   }
 }

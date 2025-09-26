@@ -59,16 +59,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(category)
-  } catch (error) {
-    if (error.code === 'P2002') {
-      const field = error.meta?.target?.[0]
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      const field = error?.meta?.target?.[0]
       return NextResponse.json(
         { error: `A category with this ${field} already exists` },
         { status: 400 }
       )
     }
 
-    if (error.code === 'P2025') {
+    if (error?.code === 'P2025') {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
@@ -91,12 +91,17 @@ export async function DELETE(
       user = authResult.user
       session = authResult.session
     } catch (authError) {
-      console.error('Auth validation error in DELETE:', authError)
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
+      return NextResponse.json({
+        error: 'Authentication failed',
+        details: process.env.NODE_ENV === 'development' ? String(authError) : undefined
+      }, { status: 401 })
     }
 
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
+      return NextResponse.json({
+        error: 'Unauthorized - Admin access required',
+        details: { hasSession: !!session, hasUser: !!user, userRole: user?.role }
+      }, { status: 401 })
     }
 
     // Check if category has products
@@ -138,7 +143,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Category deleted successfully' })
   } catch (error: any) {
-    console.error('Delete category error:', error)
 
     // Handle Prisma-specific errors
     if (error?.code === 'P2025') {

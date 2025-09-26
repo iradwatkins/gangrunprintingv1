@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       apple:
         tenantContext?.tenant?.branding?.logoUrl ||
         '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
-    },
+    } as any,
     alternates: {
       languages: {
         en: `/en`,
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [
         {
           url:
-            tenantContext?.tenant?.branding?.logoUrl ||
+            (tenantContext?.tenant?.branding?.logoUrl as string) ||
             '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
           width: 1200,
           height: 630,

@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { deleteProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
+import { transformProductForFrontend } from '@/lib/data-transformers'
+import { createSuccessResponse, createNotFoundErrorResponse, createDatabaseErrorResponse } from '@/lib/api-response'
 
 // GET /api/products/[id] - Get single product
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -62,12 +64,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      return createNotFoundErrorResponse('Product')
     }
 
-    return NextResponse.json(product)
+    // Transform for frontend compatibility
+    const transformedProduct = transformProductForFrontend(product)
+    return createSuccessResponse(transformedProduct)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
+    return createDatabaseErrorResponse(error)
   }
 }
 

@@ -5,7 +5,7 @@ import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals'
 import { reportWebVitals } from '@/lib/monitoring'
 
 // Web Vitals monitoring component
-export function PerformanceMonitor() : unknown {
+export function PerformanceMonitor(): null {
   useEffect(() => {
     // Monitor Core Web Vitals
     onCLS(reportWebVitals)
@@ -345,7 +345,7 @@ export function ErrorRateMonitor() : unknown {
 }
 
 // Combined performance monitoring component
-export function ComprehensivePerformanceMonitor() : unknown {
+export function ComprehensivePerformanceMonitor(): JSX.Element | null {
   return (
     <>
       <PerformanceMonitor />

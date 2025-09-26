@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { SafeProductImage, ProductImageWithErrorBoundary } from '@/components/product/ProductImageErrorBoundary'
 
 interface OptimizedImageProps {
   src: string
@@ -130,36 +131,43 @@ export function ProductImage({ images, productName, className }: ProductImagePro
 
   if (!images || images.length === 0) {
     return (
-      <div className={cn('relative aspect-square bg-gray-100', className)}>
-        <OptimizedImage
-          fill
-          alt="No image available"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          src="/images/product-placeholder.jpg"
-        />
-      </div>
+      <ProductImageWithErrorBoundary productName={productName}>
+        <div className={cn('relative aspect-square bg-gray-100', className)}>
+          <SafeProductImage
+            fill
+            alt="No image available"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            src="/images/product-placeholder.jpg"
+            productName={productName}
+          />
+        </div>
+      </ProductImageWithErrorBoundary>
     )
   }
 
   const currentImage = images[selectedIndex]
 
   return (
-    <div className={cn('space-y-4', className)}>
-      {/* Main image */}
-      <div
-        className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-gray-100"
-        onClick={() => setIsZoomed(!isZoomed)}
-      >
-        <OptimizedImage
-          fill
-          priority
-          alt={currentImage.alt || productName}
-          objectFit={isZoomed ? 'contain' : 'cover'}
-          quality={90}
-          sizes="(max-width: 768px) 100vw, 50vw"
-          src={currentImage.url}
-        />
-      </div>
+    <ProductImageWithErrorBoundary productName={productName}>
+      <div className={cn('space-y-4', className)}>
+        {/* Main image */}
+        <div
+          className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-gray-100"
+          onClick={() => setIsZoomed(!isZoomed)}
+        >
+          <SafeProductImage
+            fill
+            priority
+            alt={currentImage.alt || productName}
+            className={cn(
+              'transition-transform duration-300',
+              isZoomed ? 'scale-110' : 'scale-100'
+            )}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            src={currentImage.url}
+            productName={productName}
+          />
+        </div>
 
       {/* Thumbnail gallery */}
       {images.length > 1 && (
@@ -175,18 +183,19 @@ export function ProductImage({ images, productName, className }: ProductImagePro
               )}
               onClick={() => setSelectedIndex(index)}
             >
-              <OptimizedImage
+              <SafeProductImage
                 fill
                 alt={`${productName} ${index + 1}`}
-                quality={60}
                 sizes="80px"
                 src={image.url}
+                productName={productName}
               />
             </button>
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </ProductImageWithErrorBoundary>
   )
 }
 

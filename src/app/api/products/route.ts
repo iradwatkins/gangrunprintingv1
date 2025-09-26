@@ -12,7 +12,7 @@ import {
   generateRequestId,
 } from '@/lib/api-response'
 import { createProductSchema } from '@/lib/validation'
-import { transformProductsForFrontend } from '@/lib/data-transformers'
+import { transformProductsForFrontend, transformProductForFrontend } from '@/lib/data-transformers'
 import type { Product } from '@/types/product'
 
 // GET /api/products - List all products
@@ -359,7 +359,9 @@ export async function POST(request: NextRequest) {
       }
     )
 
-    return createSuccessResponse(product, 201, null, requestId)
+    // Transform product for frontend compatibility
+    const transformedProduct = transformProductForFrontend(product)
+    return createSuccessResponse(transformedProduct, 201, null, requestId)
   } catch (error) {
     // Handle transaction timeouts
     if (error.name === 'TransactionTimeout') {

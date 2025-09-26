@@ -449,7 +449,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'ABOVE_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-green-50 rounded text-sm">
-                                  <div className="font-medium">{item.AddOn?.name}</div>
+                                  <div className="font-medium">{item.addOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default
@@ -468,7 +468,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'IN_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-blue-50 rounded text-sm">
-                                  <div className="font-medium">{item.AddOn?.name}</div>
+                                  <div className="font-medium">{item.addOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default
@@ -489,7 +489,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'BELOW_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-orange-50 rounded text-sm">
-                                  <div className="font-medium">{item.AddOn?.name}</div>
+                                  <div className="font-medium">{item.addOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default

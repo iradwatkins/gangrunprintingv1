@@ -55,7 +55,6 @@ function isValidSlug(slug: string): boolean {
 
 async function getProduct(slug: string) {
   // Enhanced logging for debugging
-  console.log(`[Product Page] Fetching product with slug: ${slug}`)
 
   // Validate slug format to prevent potential issues
   if (!isValidSlug(slug)) {
@@ -128,9 +127,9 @@ async function getProduct(slug: string) {
     })
 
     if (!product) {
-      console.log(`[Product Page] Product not found for slug: ${slug}`)
+      // Product not found for this slug
     } else {
-      console.log(`[Product Page] Found product: ${product.name} (ID: ${product.id})`)
+      // Product successfully found
     }
 
     return product
@@ -150,7 +149,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Await params to fix Next.js 15 warning
   const { slug } = await params
 
-  console.log(`[Product Page] Rendering page for slug: ${slug}`)
 
   // Validate slug before processing
   if (!slug || typeof slug !== 'string') {
@@ -162,7 +160,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await getProduct(slug)
 
   if (!product) {
-    console.log(`[Product Page] Triggering 404 for slug: ${slug}`)
     notFound()
   }
 
@@ -180,11 +177,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     shortDescription: product.shortDescription || '',
   }
 
-  console.log(`[Product Page] Rendering product: ${transformedProduct.name}`)
 
   // Pass the server-fetched data to the client component with error boundary
   return (
     // Error boundary temporarily disabled for build
-    <ProductDetailClient product={transformedProduct} />
+    <ProductDetailClient product={transformedProduct as any} />
   )
 }

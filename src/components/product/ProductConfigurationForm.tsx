@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
 import { Info } from 'lucide-react'
-
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import {
@@ -13,15 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 
 import { AddonAccordion } from './addons/AddonAccordion'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
-import {
-  calculateVariableDataPrice,
-  calculatePerforationPrice,
-  calculateBandingPrice,
-  calculateCornerRoundingPrice,
-} from './addons/utils/pricing'
+import { useProductConfiguration } from '@/hooks/useProductConfiguration'
+import { usePriceCalculation } from '@/hooks/usePriceCalculation'
 
 // Types for configuration data
 interface PaperStock {
@@ -153,433 +148,143 @@ export default function ProductConfigurationForm({
   onConfigurationChange,
   onPriceChange,
 }: ProductConfigurationFormProps) {
-  const [configData, setConfigData] = useState<ConfigurationData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // Use the refactored hooks for state management
+  const {
+    configData,
+    configuration,
+    loading,
+    error,
+    updateConfiguration,
+    getQuantityValue,
+  } = useProductConfiguration({
+    productId,
+    onConfigurationChange: (config) => {
+      const isComplete = Boolean(
+        config.quantity &&
+        config.size &&
+        config.sides &&
+        config.paper &&
+        config.coating &&
+        config.turnaround
+      )
 
-  // Configuration state
-  const [configuration, setConfiguration] = useState<ProductConfiguration>({
-    quantity: '',
-    size: '',
-    exactSize: false,
-    sides: '',
-    paperStock: '',
-    coating: '',
-    turnaround: '',
-    selectedAddons: [],
-    variableDataConfig: {
-      enabled: false,
-      locationsCount: '',
-      locations: '',
-    },
-    perforationConfig: {
-      enabled: false,
-      verticalCount: '0',
-      verticalPosition: '',
-      horizontalCount: '0',
-      horizontalPosition: '',
-    },
-    bandingConfig: {
-      enabled: false,
-      bandingType: 'paper',
-      itemsPerBundle: 100,
-    },
-    cornerRoundingConfig: {
-      enabled: false,
-      cornerType: 'All Four',
+      // Convert to legacy format for backward compatibility
+      const legacyConfig: ProductConfiguration = {
+        quantity: config.quantity,
+        size: config.size,
+        exactSize: false, // TODO: Add exact size to new hook
+        sides: config.sides,
+        paperStock: config.paper, // Map from new 'paper' to legacy 'paperStock'
+        coating: config.coating,
+        turnaround: config.turnaround,
+        selectedAddons: config.selectedAddons,
+        variableDataConfig: config.variableDataConfig,
+        perforationConfig: config.perforationConfig,
+        bandingConfig: config.bandingConfig,
+        cornerRoundingConfig: config.cornerRoundingConfig,
+      }
+
+      onConfigurationChange?.(legacyConfig, isComplete)
+
+      // Calculate price and trigger price change
+      const price = calculateFinalPrice(config)
+      onPriceChange?.(price)
     },
   })
 
-  // Fetch configuration data
-  useEffect(() => {
-    const fetchConfigurationData = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch(`/api/products/${productId}/configuration`, {
-          // Add timeout to prevent hanging requests
-          signal: AbortSignal.timeout(10000), // 10 second timeout
-        })
+  // Price calculation using the new hook
+  const { calculateFinalPrice } = usePriceCalculation({
+    configData,
+    getQuantityValue,
+  })
 
-        if (!response.ok && response.status !== 200) {
-          throw new Error(`API returned ${response.status}`)
-        }
+  // Get legacy-compatible data structures for existing UI
+  const legacyConfigData = configData ? convertToLegacyFormat(configData) : null
 
-        const data = await response.json()
-
-        // Check if we're using fallback data
-        if (data._isFallback) {
-          // Using fallback configuration
-        }
-
-        setConfigData(data)
-
-        // Set default values
-        if (data.defaults) {
-          const newConfig = {
-            quantity: data.defaults.quantity || data.quantities[0]?.id || '',
-            size: data.defaults.size || data.sizes[0]?.id || '',
-            exactSize: false,
-            paperStock: data.defaults.paper || data.paperStocks[0]?.id || '',
-            sides: '',
-            coating: '',
-            turnaround: data.defaults.turnaround || data.turnaroundTimes?.[0]?.id || '',
-            selectedAddons: data.defaults.addons || [],
-          }
-
-          // Set default sides and coating based on selected paper
-          if (newConfig.paperStock && data.paperStocks) {
-            const selectedPaper = data.paperStocks.find((p: any) => p.id === newConfig.paperStock)
-            if (selectedPaper) {
-              // Set default coating
-              const defaultCoating = selectedPaper.coatings.find((c: any) => c.isDefault)
-              newConfig.coating = defaultCoating?.id || selectedPaper.coatings[0]?.id || ''
-
-              // Set default sides (first enabled option)
-              const firstEnabledSide = selectedPaper.sides.find((s: any) => s.isDefault)
-              newConfig.sides = firstEnabledSide?.id || selectedPaper.sides[0]?.id || ''
-            }
-          }
-
-          setConfiguration(newConfig)
-
-          // Check if configuration is complete
-          const isComplete =
-            newConfig.quantity &&
-            newConfig.size &&
-            newConfig.sides &&
-            newConfig.paperStock &&
-            newConfig.coating &&
-            newConfig.turnaround
-
-          onConfigurationChange?.(newConfig, Boolean(isComplete))
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-      } finally {
-        setLoading(false)
-      }
+  function convertToLegacyFormat(data: any): ConfigurationData {
+    return {
+      quantities: data.quantities || [],
+      sizes: data.sizes || [],
+      paperStocks: data.paperStocks?.map((paper: any) => ({
+        ...paper,
+        paperStockCoatings: paper.coatings?.map((coating: any) => ({
+          coatingId: coating.id,
+          isDefault: coating.isDefault,
+          coating: {
+            id: coating.id,
+            name: coating.name,
+          },
+        })) || [],
+        paperStockSides: paper.sides?.map((side: any) => ({
+          sidesOptionId: side.id,
+          priceMultiplier: side.priceMultiplier,
+          isEnabled: true,
+          sidesOption: {
+            id: side.id,
+            name: side.name,
+          },
+        })) || [],
+      })) || [],
+      turnaroundTimes: data.turnaroundTimes || [],
+      addons: data.addons || [],
+      defaults: data.defaults || {},
     }
+  }
 
-    if (productId) {
-      fetchConfigurationData()
-    }
-  }, [productId, onConfigurationChange])
+  // Get available coatings and sides based on selected paper
+  const availableCoatings = legacyConfigData?.paperStocks
+    .find((p) => p.id === configuration.paper)
+    ?.paperStockCoatings.map((psc) => ({
+      id: psc.coatingId,
+      name: psc.coating.name,
+      isDefault: psc.isDefault,
+    })) || []
 
-  // Get available coatings for selected paper
-  const availableCoatings = useMemo(() => {
-    if (!configData || !configuration.paperStock) return []
+  const availableSides = legacyConfigData?.paperStocks
+    .find((p) => p.id === configuration.paper)
+    ?.paperStockSides
+    .filter((pss) => pss.isEnabled)
+    .map((pss) => ({
+      id: pss.sidesOptionId,
+      name: pss.sidesOption.name,
+      multiplier: pss.priceMultiplier,
+    })) || []
 
-    const selectedPaper = configData.paperStocks.find((p) => p.id === configuration.paperStock)
-    return (
-      selectedPaper?.paperStockCoatings.map((psc) => ({
-        id: psc.coatingId,
-        name: psc.coating.name,
-        isDefault: psc.isDefault,
-      })) || []
-    )
-  }, [configData, configuration.paperStock])
-
-  // Get available sides for selected paper
-  const availableSides = useMemo(() => {
-    if (!configData || !configuration.paperStock) return []
-
-    const selectedPaper = configData.paperStocks.find((p) => p.id === configuration.paperStock)
-    return (
-      selectedPaper?.paperStockSides
-        .filter((pss) => pss.isEnabled)
-        .map((pss) => ({
-          id: pss.sidesOptionId,
-          name: pss.sidesOption.name,
-          multiplier: pss.priceMultiplier,
-        })) || []
-    )
-  }, [configData, configuration.paperStock])
-
-  // Handle paper stock change (triggers cascade)
+  // Handle paper stock change (uses the new hook's automatic cascade logic)
   const handlePaperStockChange = (paperId: string) => {
-    if (!configData) return
-
-    const selectedPaper = configData.paperStocks.find((p) => p.id === paperId)
-    if (!selectedPaper) return
-
-    // Get new available options for this paper
-    const newAvailableCoatings = (selectedPaper.paperStockCoatings || []).map((psc) => psc.coatingId)
-    const newAvailableSides = (selectedPaper.paperStockSides || [])
-      .filter((pss) => pss.isEnabled)
-      .map((pss) => pss.sidesOptionId)
-
-    // Reset coating if current selection is no longer available
-    let newCoating = configuration.coating
-    if (!newAvailableCoatings.includes(configuration.coating)) {
-      const defaultCoating = selectedPaper.paperStockCoatings.find((c) => c.isDefault)
-      newCoating = defaultCoating?.coatingId || newAvailableCoatings[0] || ''
-    }
-
-    // Reset sides if current selection is no longer available
-    let newSides = configuration.sides
-    if (!newAvailableSides.includes(configuration.sides)) {
-      newSides = newAvailableSides[0] || ''
-    }
-
-    const newConfig = {
-      ...configuration,
-      paperStock: paperId,
-      coating: newCoating,
-      sides: newSides,
-    }
-
-    setConfiguration(newConfig)
-
-    // Check if configuration is complete
-    const isComplete =
-      newConfig.quantity &&
-      newConfig.size &&
-      newConfig.sides &&
-      newConfig.paperStock &&
-      newConfig.coating
-
-    onConfigurationChange?.(newConfig, Boolean(isComplete))
+    updateConfiguration({ paper: paperId })
   }
 
-  // Calculate pricing based on current configuration
-  const calculatePrice = useMemo(() => {
-    if (
-      !configData ||
-      !configuration.quantity ||
-      !configuration.size ||
-      !configuration.paperStock ||
-      !configuration.sides
-    ) {
-      return 0
-    }
+  // Calculate current price using the new hook
+  const currentPrice = calculateFinalPrice(configuration)
 
-    try {
-      // Get selected quantities, sizes, and paper
-      const selectedQuantity = configData.quantities.find((q) => q.id === configuration.quantity)
-      const selectedSize = configData.sizes.find((s) => s.id === configuration.size)
-      const selectedPaper = configData.paperStocks.find((p) => p.id === configuration.paperStock)
-      const selectedSide = selectedPaper?.paperStockSides.find(
-        (ps) => ps.sidesOptionId === configuration.sides
-      )
-
-      if (!selectedQuantity || !selectedSize || !selectedPaper || !selectedSide) {
-        return 0
-      }
-
-      // Validate quantity value
-      const quantityValue = Math.max(0, selectedQuantity.calculationValue || 0)
-      if (quantityValue === 0) {
-        return 0
-      }
-
-      // Base pricing calculation
-      let totalPrice = basePrice
-
-      // Add paper cost (price per square inch * area)
-      const paperArea = selectedSize.preCalculatedValue || (selectedSize.width * selectedSize.height)
-      const paperCost = selectedPaper.pricePerSqInch * paperArea * quantityValue
-      totalPrice += paperCost
-
-      // Apply sides multiplier
-      totalPrice *= selectedSide.priceMultiplier
-
-      // Apply quantity discounts (simplified example)
-      let quantityDiscount = 1.0
-      if (quantityValue >= 5000) {
-        quantityDiscount = 0.85 // 15% discount for 5000+
-      } else if (quantityValue >= 2500) {
-        quantityDiscount = 0.9 // 10% discount for 2500+
-      } else if (quantityValue >= 1000) {
-        quantityDiscount = 0.95 // 5% discount for 1000+
-      }
-
-      totalPrice *= quantityDiscount
-
-      // Apply exact size markup if selected (12.5% markup)
-      if (configuration.exactSize) {
-        totalPrice *= 1.125
-      }
-
-      // Apply turnaround multiplier
-      if (configuration.turnaround) {
-        const selectedTurnaround = configData.turnaroundTimes.find(
-          (t) => t.id === configuration.turnaround
-        )
-        if (selectedTurnaround && selectedTurnaround.priceMultiplier) {
-          totalPrice *= selectedTurnaround.priceMultiplier
-        }
-      }
-
-      // Add setup fee
-      totalPrice += setupFee
-
-      // CRITICAL FIX: Calculate and add addon prices
-      let addonTotal = 0
-
-      // 1. Variable Data Addon
-      if (configuration.variableDataConfig?.enabled) {
-        const variableDataPrice = calculateVariableDataPrice(quantityValue)
-        addonTotal += variableDataPrice
-      }
-
-      // 2. Perforation Addon
-      if (configuration.perforationConfig?.enabled) {
-        const perforationPrice = calculatePerforationPrice(quantityValue)
-        addonTotal += perforationPrice
-      }
-
-      // 3. Banding Addon
-      if (configuration.bandingConfig?.enabled) {
-        const itemsPerBundle = Math.max(1, configuration.bandingConfig.itemsPerBundle || 100)
-        const bandingPrice = calculateBandingPrice(quantityValue, itemsPerBundle)
-        addonTotal += bandingPrice
-      }
-
-      // 4. Corner Rounding Addon
-      if (configuration.cornerRoundingConfig?.enabled) {
-        const cornerRoundingPrice = calculateCornerRoundingPrice(quantityValue)
-        addonTotal += cornerRoundingPrice
-      }
-
-      // 5. Standard addons from selected list
-      if (configuration.selectedAddons && configuration.selectedAddons.length > 0) {
-        configuration.selectedAddons.forEach((addonId) => {
-          const addon = configData.addons.find((a) => a.id === addonId)
-          if (addon) {
-            // Calculate addon price based on pricing model
-            if (addon.pricingModel === 'FIXED_FEE') {
-              addonTotal += addon.price || 0
-            } else if (addon.pricingModel === 'PER_UNIT') {
-              addonTotal += (addon.price || 0) * quantityValue
-            } else if (addon.pricingModel === 'PERCENTAGE') {
-              // Percentage of base price
-              addonTotal += totalPrice * ((addon.price || 0) / 100)
-            }
-          }
-        })
-      }
-
-      // Add all addon costs to total
-      totalPrice += addonTotal
-
-      // Ensure price is never negative
-      return Math.max(0, totalPrice)
-    } catch (error) {
-      console.error('Price calculation error:', error)
-      return 0
-    }
-  }, [configData, configuration, basePrice, setupFee])
-
-  // Update price when configuration changes
-  useEffect(() => {
-    if (calculatePrice > 0) {
-      onPriceChange?.(calculatePrice)
-    }
-  }, [calculatePrice, onPriceChange])
-
-  // Check if configuration is complete
-  const isConfigurationComplete = () => {
-    return (
-      configuration.quantity &&
-      configuration.size &&
-      configuration.sides &&
-      configuration.paperStock &&
-      configuration.coating &&
-      configuration.turnaround
-    )
+  // Simplified handlers using the new hook
+  const handleConfigChange = (field: string, value: any) => {
+    updateConfiguration({ [field]: value })
   }
 
-  // Handle other configuration changes
-  const handleConfigChange = (
-    field: keyof ProductConfiguration,
-    value: string | boolean | string[]
-  ) => {
-    const newConfig = { ...configuration, [field]: value }
-    setConfiguration(newConfig)
-
-    // Check if configuration is complete
-    const isComplete =
-      newConfig.quantity &&
-      newConfig.size &&
-      newConfig.sides &&
-      newConfig.paperStock &&
-      newConfig.coating &&
-      newConfig.turnaround
-
-    onConfigurationChange?.(newConfig, Boolean(isComplete))
-  }
-
-  // Handle turnaround changes
-  const handleTurnaroundChange = (turnaroundId: string) => {
-    if (!configData) return
-
-    const selectedTurnaround = configData.turnaroundTimes.find((t) => t.id === turnaroundId)
-    let newConfig = { ...configuration, turnaround: turnaroundId }
-
-    // If turnaround requires no coating, force coating to "No Coating" if available
-    if (selectedTurnaround?.requiresNoCoating) {
-      const selectedPaper = configData.paperStocks.find(
-        (p: any) => p.id === configuration.paperStock
-      )
-      const noCoatingOption = selectedPaper?.paperStockCoatings.find(
-        (c: any) => c.coating.name === 'No Coating'
-      )
-      if (noCoatingOption) {
-        newConfig = { ...newConfig, coating: noCoatingOption.coatingId }
-      }
-    }
-
-    setConfiguration(newConfig)
-
-    // Check if configuration is complete
-    const isComplete =
-      newConfig.quantity &&
-      newConfig.size &&
-      newConfig.sides &&
-      newConfig.paperStock &&
-      newConfig.coating &&
-      newConfig.turnaround
-
-    onConfigurationChange?.(newConfig, Boolean(isComplete))
-  }
-
-  // Handle addon changes
   const handleAddonChange = (selectedAddonIds: string[]) => {
-    const newConfig = { ...configuration, selectedAddons: selectedAddonIds }
-    setConfiguration(newConfig)
-
-    // Check if configuration is complete
-    const isComplete =
-      newConfig.quantity &&
-      newConfig.size &&
-      newConfig.sides &&
-      newConfig.paperStock &&
-      newConfig.coating &&
-      newConfig.turnaround
-
-    onConfigurationChange?.(newConfig, Boolean(isComplete))
+    updateConfiguration({ selectedAddons: selectedAddonIds })
   }
 
   if (loading) {
+    return <LoadingSkeleton count={8} />
+  }
+
+  if (error) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="space-y-2">
-              <div className="h-4 bg-gray-200 rounded w-24"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ErrorState
+        message={error}
+        title="Configuration Error"
+        onRetry={() => window.location.reload()}
+      />
     )
   }
 
-  if (error || !configData) {
+  if (!legacyConfigData) {
     return (
-      <div className="text-center py-6">
-        <p className="text-red-500">Error loading configuration options</p>
-        <p className="text-sm text-muted-foreground">{error}</p>
+      <div className="text-center py-4">
+        <p className="text-gray-500">No configuration data available</p>
       </div>
     )
   }
@@ -610,9 +315,9 @@ export default function ProductConfigurationForm({
               <SelectValue placeholder="Select quantity" />
             </SelectTrigger>
             <SelectContent>
-              {(configData.quantities || []).map((qty) => (
+              {(legacyConfigData.quantities || []).map((qty) => (
                 <SelectItem key={qty.id} value={qty.id}>
-                  {qty.displayValue.toLocaleString()}
+                  {qty.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -642,7 +347,7 @@ export default function ProductConfigurationForm({
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
-              {(configData.sizes || []).map((size) => (
+              {(legacyConfigData.sizes || []).map((size) => (
                 <SelectItem key={size.id} value={size.id}>
                   {size.displayName}
                 </SelectItem>
@@ -668,9 +373,12 @@ export default function ProductConfigurationForm({
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              checked={configuration.exactSize}
+              checked={false} // TODO: Add exactSize to new configuration
               id="exactSize"
-              onCheckedChange={(checked) => handleConfigChange('exactSize', String(checked))}
+              onCheckedChange={(checked) => {
+                // TODO: Handle exact size with new configuration
+                console.log('Exact size:', checked)
+              }}
             />
             <Label
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -729,12 +437,12 @@ export default function ProductConfigurationForm({
               </TooltipContent>
             </Tooltip>
           </div>
-          <Select value={configuration.paperStock} onValueChange={handlePaperStockChange}>
+          <Select value={configuration.paper} onValueChange={handlePaperStockChange}>
             <SelectTrigger className="w-full h-11 bg-gray-100 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
               <SelectValue placeholder="Select paper" />
             </SelectTrigger>
             <SelectContent>
-              {(configData.paperStocks || []).map((paper) => (
+              {(legacyConfigData.paperStocks || []).map((paper) => (
                 <SelectItem key={paper.id} value={paper.id}>
                   {paper.name}
                 </SelectItem>
@@ -778,15 +486,13 @@ export default function ProductConfigurationForm({
         </div>
 
         {/* Add-ons & Upgrades Section */}
-        {configData.addons && configData.addons.length > 0 && (
+        {legacyConfigData.addons && legacyConfigData.addons.length > 0 && (
           <AddonAccordion
-            addons={configData.addons}
+            addons={legacyConfigData.addons}
             disabled={loading}
             selectedAddons={configuration.selectedAddons}
-            turnaroundTimes={configData.turnaroundTimes}
-            quantity={
-              configData.quantities.find((q) => q.id === configuration.quantity)?.calculationValue || 100
-            }
+            turnaroundTimes={legacyConfigData.turnaroundTimes}
+            quantity={getQuantityValue(configuration)}
             onAddonChange={handleAddonChange}
             variableDataConfig={configuration.variableDataConfig}
             onVariableDataChange={(config) =>
@@ -806,17 +512,15 @@ export default function ProductConfigurationForm({
         )}
 
         {/* Turnaround Time Selection */}
-        {configData.turnaroundTimes && configData.turnaroundTimes.length > 0 && (
+        {legacyConfigData.turnaroundTimes && legacyConfigData.turnaroundTimes.length > 0 && (
           <TurnaroundTimeSelector
-            baseProductPrice={calculatePrice || 0}
+            baseProductPrice={currentPrice}
             currentCoating={configuration.coating}
             disabled={loading}
-            quantity={
-              (configData.quantities || []).find((q) => q.id === configuration.quantity)?.value || 1
-            }
+            quantity={getQuantityValue(configuration)}
             selectedTurnaroundId={configuration.turnaround}
-            turnaroundTimes={configData.turnaroundTimes}
-            onTurnaroundChange={handleTurnaroundChange}
+            turnaroundTimes={legacyConfigData.turnaroundTimes}
+            onTurnaroundChange={(turnaroundId) => handleConfigChange('turnaround', turnaroundId)}
           />
         )}
       </div>
