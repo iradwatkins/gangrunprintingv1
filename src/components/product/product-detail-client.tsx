@@ -1,40 +1,39 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Upload, ShoppingCart, Clock, Check, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { ArrowLeft, Clock, Check } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/cart-context'
-import toast from '@/lib/toast'
 import { ProductImageGallery } from './ProductImageGallery'
-import SimpleConfigurationForm from './SimpleConfigurationForm'
+import ProductConfigurationForm from './ProductConfigurationForm'
+import { PriceCalculator } from './PriceCalculator'
+import { AddToCartSection } from './AddToCartSection'
+import { useImageUpload } from '@/hooks/useImageUpload'
+import { useProductConfiguration } from '@/hooks/useProductConfiguration'
+import { usePriceCalculation } from '@/hooks/usePriceCalculation'
 
 interface ProductImage {
   id: string
   url: string
-  thumbnailUrl?: string
-  largeUrl?: string
-  mediumUrl?: string
-  webpUrl?: string
-  blurDataUrl?: string
-  alt?: string
-  caption?: string
+  thumbnailUrl?: string | null
+  largeUrl?: string | null
+  mediumUrl?: string | null
+  webpUrl?: string | null
+  blurDataUrl?: string | null
+  alt?: string | null
+  caption?: string | null
   isPrimary: boolean
   sortOrder: number
-  width?: number
-  height?: number
+  width?: number | null
+  height?: number | null
+  fileSize?: number | null
+  mimeType?: string | null
+  createdAt?: Date
+  updatedAt?: Date
+  productId?: string
 }
 
 interface Product {
@@ -105,81 +104,35 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const router = useRouter()
   const { addItem, openCart } = useCart()
 
-  // Product configuration state - now managed by ProductConfigurationForm
+  // Legacy state management for backward compatibility with SimpleConfigurationForm
   const [productConfiguration, setProductConfiguration] = useState<any>(null)
   const [isConfigurationComplete, setIsConfigurationComplete] = useState(false)
   const [calculatedPrice, setCalculatedPrice] = useState<number>(product.basePrice)
 
-  // Customer image upload state
-  const [customerImages, setCustomerImages] = useState<CustomerImage[]>([])
-  const [uploadingImages, setUploadingImages] = useState<File[]>([])
-  const [isUploading, setIsUploading] = useState(false)
-
-  // Handle customer image upload
-  const handleImageUpload = async (files: File[]) => {
-    if (!files.length) return
-
-    setIsUploading(true)
-    setUploadingImages([...uploadingImages, ...files])
-
-    for (const file of files) {
-      try {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('productId', product.id)
-        formData.append('isCustomerUpload', 'true')
-
-        const response = await fetch('/api/products/upload-customer-image', {
-          method: 'POST',
-          body: formData,
+  // Image upload management using new hook
+  const imageUpload = useImageUpload({
+    productId: product.id,
+    onImagesChange: (images) => {
+      // Update product configuration with uploaded files for backward compatibility
+      if (productConfiguration) {
+        const uploadedFiles = images.map(img => ({
+          fileId: img.id,
+          originalName: img.fileName,
+          size: img.fileSize,
+          mimeType: 'image/jpeg',
+          thumbnailUrl: img.thumbnailUrl,
+          uploadedAt: img.uploadedAt,
+          isImage: true,
+        }))
+        setProductConfiguration({
+          ...productConfiguration,
+          uploadedFiles
         })
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          throw new Error('Upload failed')
-        }
-
-        const data = await response.json()
-
-        setCustomerImages((prev) => [
-          ...prev,
-          {
-            id: data.id,
-            url: data.url,
-            thumbnailUrl: data.thumbnailUrl,
-            fileName: file.name,
-            fileSize: file.size,
-            uploadedAt: new Date().toISOString(),
-          },
-        ])
-
-        toast.success(`${file.name} uploaded successfully`)
-      } catch (error) {
-        toast.error(`Failed to upload ${file.name}`)
       }
-    }
+    },
+  })
 
-    setUploadingImages([])
-    setIsUploading(false)
-  }
-
-  // Handle image deletion
-  const handleDeleteImage = async (imageId: string) => {
-    try {
-      const response = await fetch(`/api/products/customer-images?imageId=${imageId}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete image')
-      }
-
-      setCustomerImages((prev) => prev.filter((img) => img.id !== imageId))
-      toast.success('Image deleted successfully')
-    } catch (error) {
-      toast.error('Failed to delete image')
-    }
-  }
+  // Image upload handlers are now handled by the useImageUpload hook
 
   // Handle configuration changes from ProductConfigurationForm
   const handleConfigurationChange = (config: Record<string, unknown>, isComplete: boolean) => {
@@ -192,51 +145,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setCalculatedPrice(price)
   }
 
-  // Handle add to cart
-  const handleAddToCart = () => {
-    if (
-      !productConfiguration ||
-      !productConfiguration.uploadedFiles ||
-      productConfiguration.uploadedFiles.length === 0
-    ) {
-      toast.error('Please upload your design file')
-      return
-    }
-
-    if (!isConfigurationComplete || !productConfiguration) {
-      toast.error('Please complete your product configuration')
-      return
-    }
-
-    const uploadedFile = productConfiguration.uploadedFiles[0]
-
-    addItem({
-      productId: product.id,
-      productName: product.name,
-      productSlug: product.slug,
-      sku: `${product.slug}-${productConfiguration.paper}-${productConfiguration.quantity}`,
-      price: calculatedPrice,
-      quantity: parseInt(productConfiguration.quantity) || 1,
-      turnaround: `${product.productionTime} business days`,
-      options: {
-        size: productConfiguration.size || 'Standard',
-        paperStock: productConfiguration.paper,
-        paperStockId: productConfiguration.paper,
-        sides: productConfiguration.sides,
-        coating: productConfiguration.coating,
-      },
-      fileUrl: uploadedFile?.thumbnailUrl || '',
-      fileName: uploadedFile?.originalName || '',
-      fileSize: uploadedFile?.size || 0,
-      image:
-        product.ProductImage.find((img) => img.isPrimary)?.thumbnailUrl ||
-        product.ProductImage[0]?.thumbnailUrl ||
-        product.ProductImage[0]?.url,
-    })
-
-    toast.success('Product added to cart!')
-    openCart()
-  }
+  // Add to cart logic is now handled by the AddToCartSection component
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -284,11 +193,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* Simple Configuration Form - Already includes turnaround times, add-ons, and file upload in correct order */}
-              <SimpleConfigurationForm
+              {/* Refactored Configuration Form with modular architecture */}
+              <ProductConfigurationForm
                 productId={product.id}
-                onConfigurationChange={(config, price) => {
-                  handleConfigurationChange(config, true)
+                basePrice={product.basePrice}
+                setupFee={product.setupFee}
+                onConfigurationChange={(config, isComplete) => {
+                  handleConfigurationChange(config, isComplete)
+                }}
+                onPriceChange={(price) => {
                   handlePriceChange(price)
                 }}
               />
@@ -336,41 +249,33 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsContent>
           </Tabs>
 
-          {/* Price Display and Cart Button */}
-          <div className="border-t pt-6">
-            <div className="flex items-end justify-between mb-4">
-              <div>
-                <span className="text-sm text-muted-foreground">Total Price</span>
-                <p className="text-3xl font-bold">${calculatedPrice.toFixed(2)}</p>
-                {product.setupFee > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Includes ${product.setupFee.toFixed(2)} setup fee
-                  </p>
-                )}
-              </div>
-              <Badge className="mb-1" variant="outline">
-                <Clock className="mr-1 h-3 w-3" />
-                {product.productionTime} days
-              </Badge>
-            </div>
+          {/* Price Display and Cart Button - Now using extracted components */}
+          {productConfiguration && (
+            <>
+              <PriceCalculator
+                configData={null} // Will be populated when we switch to new configuration
+                configuration={productConfiguration}
+                getQuantityValue={() => parseInt(productConfiguration.quantity) || 1}
+                setupFee={product.setupFee}
+                productionTime={product.productionTime}
+              />
 
-            {/* Add to Cart Button */}
-            <Button
-              className="w-full"
-              disabled={!productConfiguration?.uploadedFiles?.length || !isConfigurationComplete}
-              size="lg"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart
-            </Button>
-
-            {!productConfiguration?.uploadedFiles?.length && (
-              <p className="text-sm text-destructive text-center mt-2">
-                Please upload your design file before adding to cart
-              </p>
-            )}
-          </div>
+              <AddToCartSection
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  productionTime: product.productionTime,
+                  images: product.ProductImage,
+                }}
+                configuration={productConfiguration}
+                isConfigurationComplete={isConfigurationComplete}
+                calculatedPrice={calculatedPrice}
+                getQuantityValue={() => parseInt(productConfiguration.quantity) || 1}
+                className="mt-4"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

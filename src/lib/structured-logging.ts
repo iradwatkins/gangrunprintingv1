@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import { reportError, addBreadcrumb } from '@/lib/sentry'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
@@ -351,7 +352,7 @@ class StructuredLogger {
     if (process.env.NODE_ENV === 'development') {
       // Pretty print in development
       const color = this.getLogColor(entry.level)
-      }] %c${entry.timestamp} %c${entry.context}:%c ${entry.message}`,
+      console.log(`%c[${entry.level.toUpperCase()}] %c${entry.timestamp} %c${entry.context}:%c ${entry.message}`,
         `color: ${color}; font-weight: bold;`,
         'color: #6b7280;',
         'color: #3b82f6; font-weight: bold;',
@@ -360,7 +361,7 @@ class StructuredLogger {
       )
     } else {
       // Structured JSON in production
-      )
+      console.log(JSON.stringify(entry))
     }
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
+import type { CartItem, CartState, CartContextType } from '@/lib/cart-types'
 
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
 
@@ -193,7 +194,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
 
-export function useCart() : unknown {
+export function useCart(): CartContextType {
   const context = useContext(CartContext)
   if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider')

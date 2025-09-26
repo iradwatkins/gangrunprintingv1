@@ -219,17 +219,13 @@ const nextConfig = {
   },
 
   // TypeScript configuration
-  // WARNING: Temporarily enabling ignoreBuildErrors for deployment
-  // TODO: Fix all TypeScript errors and set back to false
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // ESLint configuration
-  // WARNING: Temporarily enabling ignoreDuringBuilds for deployment
-  // TODO: Fix all ESLint warnings and set back to false
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 }
 

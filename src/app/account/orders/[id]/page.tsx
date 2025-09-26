@@ -315,10 +315,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                   <p className="text-sm text-muted-foreground">SKU: {item.productSku}</p>
                   {item.options && (
                     <div className="text-sm text-muted-foreground mt-1">
-                      {item.options.size && <p>Size: {item.options.size}</p>}
-                      {item.options.paperStock && <p>Paper: {item.options.paperStock}</p>}
-                      {item.options.coating && <p>Coating: {item.options.coating}</p>}
-                      {item.options.fileName && <p>File: {item.options.fileName}</p>}
+                      {(item.options.size && <p>Size: {String(item.options.size)}</p>) as any}
+                      {item.options.paperStock && <p>Paper: {String(item.options.paperStock)}</p>}
+                      {item.options.coating && <p>Coating: {String(item.options.coating)}</p>}
+                      {item.options.fileName && <p>File: {String(item.options.fileName)}</p>}
                     </div>
                   )}
                 </div>

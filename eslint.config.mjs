@@ -19,8 +19,9 @@ export default [
     ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'scripts/**', 'next-env.d.ts', 'playwright-tests/**'],
   },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  // TypeScript files configuration
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     plugins: {
       '@typescript-eslint': typescript,
       prettier: prettier,
@@ -67,6 +68,42 @@ export default [
       'react/no-unescaped-entities': 'off',
     },
   },
+  // JavaScript files configuration (no TypeScript parser)
+  {
+    files: ['**/*.{js,jsx}'],
+    plugins: {
+      prettier: prettier,
+    },
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    rules: {
+      'no-console': [
+        'warn',
+        {
+          allow: ['warn', 'error'],
+        },
+      ],
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      'react/jsx-sort-props': [
+        'warn',
+        {
+          callbacksLast: true,
+          shorthandFirst: true,
+          ignoreCase: true,
+          reservedFirst: true,
+        },
+      ],
+      'react/no-unescaped-entities': 'off',
+    },
+  },
   {
     ignores: [
       'node_modules/**',
@@ -89,6 +126,11 @@ export default [
       'screenshot.js',
       'scripts/**/*.js',
       'next-env.d.ts',
+      '*.js',
+      'debug-*.js',
+      'test-*.js',
+      'restore-*.js',
+      'server.js',
     ],
   },
 ]
