@@ -239,15 +239,25 @@ export default function AddOnSetsPage() {
   }
 
   const handleDeleteSet = async (set: AddOnSet) => {
-    if (!confirm(`Are you sure you want to delete "${set.name}"?`)) return
+    // Show warning if addon set is in use
+    if (set._count.productAddOnSets > 0) {
+      const confirmMessage = `"${set.name}" is currently used by ${set._count.productAddOnSets} product(s).\n\nDeleting this will remove it from all products.\n\nAre you sure you want to continue?`
+      if (!confirm(confirmMessage)) return
+    } else {
+      if (!confirm(`Are you sure you want to delete "${set.name}"?`)) return
+    }
 
     try {
       const response = await fetch(`/api/addon-sets/${set.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ force: true }), // Force delete even if in use
       })
 
       if (response.ok) {
-        toast.success('Addon set deleted')
+        toast.success('Addon set deleted successfully')
         fetchAddOnSets()
       } else {
         const error = await response.json()
@@ -417,7 +427,6 @@ export default function AddOnSetsPage() {
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
-                        disabled={set._count.productAddOnSets > 0}
                         size="sm"
                         variant="outline"
                         onClick={() => handleDeleteSet(set)}
@@ -440,7 +449,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'ABOVE_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-green-50 rounded text-sm">
-                                  <div className="font-medium">{item.addOn.name}</div>
+                                  <div className="font-medium">{item.AddOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default
@@ -459,7 +468,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'IN_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-blue-50 rounded text-sm">
-                                  <div className="font-medium">{item.addOn.name}</div>
+                                  <div className="font-medium">{item.AddOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default
@@ -480,7 +489,7 @@ export default function AddOnSetsPage() {
                               .filter((item) => item.displayPosition === 'BELOW_DROPDOWN')
                               .map((item) => (
                                 <div key={item.id} className="p-2 bg-orange-50 rounded text-sm">
-                                  <div className="font-medium">{item.addOn.name}</div>
+                                  <div className="font-medium">{item.AddOn?.name}</div>
                                   {item.isDefault && (
                                     <Badge className="text-xs" variant="outline">
                                       Default

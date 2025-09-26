@@ -14,8 +14,14 @@ import {
 } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import AddonAccordion from './AddonAccordion'
+import { AddonAccordion } from './addons/AddonAccordion'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
+import {
+  calculateVariableDataPrice,
+  calculatePerforationPrice,
+  calculateBandingPrice,
+  calculateCornerRoundingPrice,
+} from './addons/utils/pricing'
 
 // Types for configuration data
 interface PaperStock {
@@ -108,6 +114,28 @@ interface ProductConfiguration {
   coating: string
   turnaround: string
   selectedAddons: string[]
+  // Special addon configurations
+  variableDataConfig?: {
+    enabled: boolean
+    locationsCount: string
+    locations: string
+  }
+  perforationConfig?: {
+    enabled: boolean
+    verticalCount: string
+    verticalPosition: string
+    horizontalCount: string
+    horizontalPosition: string
+  }
+  bandingConfig?: {
+    enabled: boolean
+    bandingType: string
+    itemsPerBundle: number
+  }
+  cornerRoundingConfig?: {
+    enabled: boolean
+    cornerType: string
+  }
 }
 
 interface ProductConfigurationFormProps {
@@ -139,6 +167,27 @@ export default function ProductConfigurationForm({
     coating: '',
     turnaround: '',
     selectedAddons: [],
+    variableDataConfig: {
+      enabled: false,
+      locationsCount: '',
+      locations: '',
+    },
+    perforationConfig: {
+      enabled: false,
+      verticalCount: '0',
+      verticalPosition: '',
+      horizontalCount: '0',
+      horizontalPosition: '',
+    },
+    bandingConfig: {
+      enabled: false,
+      bandingType: 'paper',
+      itemsPerBundle: 100,
+    },
+    cornerRoundingConfig: {
+      enabled: false,
+      cornerType: 'All Four',
+    },
   })
 
   // Fetch configuration data
@@ -317,12 +366,18 @@ export default function ProductConfigurationForm({
         return 0
       }
 
+      // Validate quantity value
+      const quantityValue = Math.max(0, selectedQuantity.calculationValue || 0)
+      if (quantityValue === 0) {
+        return 0
+      }
+
       // Base pricing calculation
       let totalPrice = basePrice
 
       // Add paper cost (price per square inch * area)
-      const paperArea = selectedSize.preCalculatedValue
-      const paperCost = selectedPaper.pricePerSqInch * paperArea * selectedQuantity.calculationValue
+      const paperArea = selectedSize.preCalculatedValue || (selectedSize.width * selectedSize.height)
+      const paperCost = selectedPaper.pricePerSqInch * paperArea * quantityValue
       totalPrice += paperCost
 
       // Apply sides multiplier
@@ -330,21 +385,87 @@ export default function ProductConfigurationForm({
 
       // Apply quantity discounts (simplified example)
       let quantityDiscount = 1.0
-      if (selectedQuantity.calculationValue >= 5000) {
+      if (quantityValue >= 5000) {
         quantityDiscount = 0.85 // 15% discount for 5000+
-      } else if (selectedQuantity.calculationValue >= 2500) {
+      } else if (quantityValue >= 2500) {
         quantityDiscount = 0.9 // 10% discount for 2500+
-      } else if (selectedQuantity.calculationValue >= 1000) {
+      } else if (quantityValue >= 1000) {
         quantityDiscount = 0.95 // 5% discount for 1000+
       }
 
       totalPrice *= quantityDiscount
 
+      // Apply exact size markup if selected (12.5% markup)
+      if (configuration.exactSize) {
+        totalPrice *= 1.125
+      }
+
+      // Apply turnaround multiplier
+      if (configuration.turnaround) {
+        const selectedTurnaround = configData.turnaroundTimes.find(
+          (t) => t.id === configuration.turnaround
+        )
+        if (selectedTurnaround && selectedTurnaround.priceMultiplier) {
+          totalPrice *= selectedTurnaround.priceMultiplier
+        }
+      }
+
       // Add setup fee
       totalPrice += setupFee
 
+      // CRITICAL FIX: Calculate and add addon prices
+      let addonTotal = 0
+
+      // 1. Variable Data Addon
+      if (configuration.variableDataConfig?.enabled) {
+        const variableDataPrice = calculateVariableDataPrice(quantityValue)
+        addonTotal += variableDataPrice
+      }
+
+      // 2. Perforation Addon
+      if (configuration.perforationConfig?.enabled) {
+        const perforationPrice = calculatePerforationPrice(quantityValue)
+        addonTotal += perforationPrice
+      }
+
+      // 3. Banding Addon
+      if (configuration.bandingConfig?.enabled) {
+        const itemsPerBundle = Math.max(1, configuration.bandingConfig.itemsPerBundle || 100)
+        const bandingPrice = calculateBandingPrice(quantityValue, itemsPerBundle)
+        addonTotal += bandingPrice
+      }
+
+      // 4. Corner Rounding Addon
+      if (configuration.cornerRoundingConfig?.enabled) {
+        const cornerRoundingPrice = calculateCornerRoundingPrice(quantityValue)
+        addonTotal += cornerRoundingPrice
+      }
+
+      // 5. Standard addons from selected list
+      if (configuration.selectedAddons && configuration.selectedAddons.length > 0) {
+        configuration.selectedAddons.forEach((addonId) => {
+          const addon = configData.addons.find((a) => a.id === addonId)
+          if (addon) {
+            // Calculate addon price based on pricing model
+            if (addon.pricingModel === 'FIXED_FEE') {
+              addonTotal += addon.price || 0
+            } else if (addon.pricingModel === 'PER_UNIT') {
+              addonTotal += (addon.price || 0) * quantityValue
+            } else if (addon.pricingModel === 'PERCENTAGE') {
+              // Percentage of base price
+              addonTotal += totalPrice * ((addon.price || 0) / 100)
+            }
+          }
+        })
+      }
+
+      // Add all addon costs to total
+      totalPrice += addonTotal
+
+      // Ensure price is never negative
       return Math.max(0, totalPrice)
     } catch (error) {
+      console.error('Price calculation error:', error)
       return 0
     }
   }, [configData, configuration, basePrice, setupFee])
@@ -663,7 +784,24 @@ export default function ProductConfigurationForm({
             disabled={loading}
             selectedAddons={configuration.selectedAddons}
             turnaroundTimes={configData.turnaroundTimes}
+            quantity={
+              configData.quantities.find((q) => q.id === configuration.quantity)?.calculationValue || 100
+            }
             onAddonChange={handleAddonChange}
+            variableDataConfig={configuration.variableDataConfig}
+            onVariableDataChange={(config) =>
+              handleConfigChange('variableDataConfig', config)
+            }
+            perforationConfig={configuration.perforationConfig}
+            onPerforationChange={(config) =>
+              handleConfigChange('perforationConfig', config)
+            }
+            bandingConfig={configuration.bandingConfig}
+            onBandingChange={(config) => handleConfigChange('bandingConfig', config)}
+            cornerRoundingConfig={configuration.cornerRoundingConfig}
+            onCornerRoundingChange={(config) =>
+              handleConfigChange('cornerRoundingConfig', config)
+            }
           />
         )}
 
