@@ -17,6 +17,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  type LucideIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import {
@@ -40,7 +41,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // Status configuration with colors and icons
-const statusConfig: Record<string, { label: string; color: string; icon: Record<string, unknown> }> = {
+const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
@@ -104,8 +105,8 @@ interface OrdersPageProps {
 async function OrdersContent({ searchParams }: { searchParams: Record<string, unknown> }) {
   const page = Number(searchParams?.page) || 1
   const pageSize = 20
-  const statusFilter = searchParams?.status || 'all'
-  const searchQuery = searchParams?.search || ''
+  const statusFilter = String(searchParams?.status || 'all')
+  const searchQuery = String(searchParams?.search || '')
 
   try {
     // Build where clause for filtering
