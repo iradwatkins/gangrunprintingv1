@@ -477,7 +477,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         </div>
       }
     >
-      <OrdersContent searchParams={params} />
+      <OrdersContent searchParams={params || {}} />
     </Suspense>
   )
 }
