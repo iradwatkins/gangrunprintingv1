@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/api/auth'
 import { successResponse, handleApiError, commonErrors } from '@/lib/api/responses'

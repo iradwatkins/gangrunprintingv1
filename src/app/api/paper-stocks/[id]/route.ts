@@ -52,10 +52,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         },
         include: {
           paperStockCoatings: {
-            include: { coating: true },
+            include: { CoatingOption: true },
           },
           paperStockSides: {
-            include: { sidesOption: true },
+            include: { SidesOption: true },
           },
         },
       })

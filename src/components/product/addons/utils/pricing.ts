@@ -8,7 +8,14 @@
  * @returns Calculated price
  */
 export function calculateVariableDataPrice(quantity: number): number {
-  return 60 + 0.02 * quantity
+  // Validate input
+  const validQuantity = Math.max(0, quantity || 0)
+
+  // Base fee + per piece charge
+  const baseFee = 60
+  const perPieceRate = 0.02
+
+  return baseFee + (perPieceRate * validQuantity)
 }
 
 /**
@@ -17,7 +24,14 @@ export function calculateVariableDataPrice(quantity: number): number {
  * @returns Calculated price
  */
 export function calculatePerforationPrice(quantity: number): number {
-  return 20 + 0.01 * quantity
+  // Validate input
+  const validQuantity = Math.max(0, quantity || 0)
+
+  // Setup fee + per piece charge
+  const setupFee = 20
+  const perPieceRate = 0.01
+
+  return setupFee + (perPieceRate * validQuantity)
 }
 
 /**
@@ -27,8 +41,21 @@ export function calculatePerforationPrice(quantity: number): number {
  * @returns Calculated price
  */
 export function calculateBandingPrice(quantity: number, bundleSize: number): number {
-  const bundles = Math.ceil(quantity / bundleSize)
-  return 15 + 0.5 * bundles
+  // Validate inputs
+  const validQuantity = Math.max(0, quantity || 0)
+
+  // Default bundle size if invalid or not provided
+  const DEFAULT_BUNDLE_SIZE = 100
+  const validBundleSize = (bundleSize && bundleSize > 0) ? bundleSize : DEFAULT_BUNDLE_SIZE
+
+  // Calculate number of bundles needed
+  const bundles = validQuantity > 0 ? Math.ceil(validQuantity / validBundleSize) : 0
+
+  // Base fee + per bundle charge
+  const baseFee = 15
+  const perBundleRate = 0.5
+
+  return validQuantity > 0 ? baseFee + (perBundleRate * bundles) : 0
 }
 
 /**
@@ -37,7 +64,14 @@ export function calculateBandingPrice(quantity: number, bundleSize: number): num
  * @returns Calculated price
  */
 export function calculateCornerRoundingPrice(quantity: number): number {
-  return 25 + 0.02 * quantity
+  // Validate input
+  const validQuantity = Math.max(0, quantity || 0)
+
+  // Setup fee + per piece charge
+  const setupFee = 25
+  const perPieceRate = 0.02
+
+  return setupFee + (perPieceRate * validQuantity)
 }
 
 /**

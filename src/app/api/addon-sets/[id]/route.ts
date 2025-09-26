@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -85,8 +86,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         // Create new items
         if (addOnItems.length > 0) {
           await tx.addOnSetItem.createMany({
-            data: addOnItems.map((item: Record<string, unknown>, index: number) => ({
-              id: uuidv4(),
+            data: addOnItems.map((item: any, index: number) => ({
+              id: randomUUID(),
               addOnSetId: id,
               addOnId: item.addOnId,
               displayPosition: item.displayPosition || 'IN_DROPDOWN',
@@ -129,29 +130,56 @@ export async function DELETE(
   try {
     const { id } = await params
 
+    // Check if request has a body with force flag
+    let force = false
+    try {
+      const body = await request.json()
+      force = body.force === true
+    } catch {
+      // No body or invalid JSON, force remains false
+    }
+
     if (!id) {
       return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
 
-    // Check if addon set is in use by products
-    const productCount = await prisma.productAddOnSet.count({
-      where: { addOnSetId: id },
-    })
+    // Use transaction to ensure all deletions happen together
+    await prisma.$transaction(async (tx) => {
+      // Check if addon set is in use by products
+      const productCount = await tx.productAddOnSet.count({
+        where: { addOnSetId: id },
+      })
 
-    if (productCount > 0) {
-      return NextResponse.json(
-        { error: `Cannot delete addon set. It is currently used by ${productCount} product(s).` },
-        { status: 400 }
-      )
-    }
+      if (productCount > 0 && !force) {
+        throw new Error(
+          `Cannot delete addon set. It is currently used by ${productCount} product(s).`
+        )
+      }
 
-    // Delete the addon set (cascade will handle items)
-    await prisma.addOnSet.delete({
-      where: { id },
+      // If forcing delete or no products are using it, proceed with deletion
+      if (productCount > 0 && force) {
+        // Remove all product associations first
+        await tx.productAddOnSet.deleteMany({
+          where: { addOnSetId: id },
+        })
+      }
+
+      // Delete addon set items
+      await tx.addOnSetItem.deleteMany({
+        where: { addOnSetId: id },
+      })
+
+      // Delete the addon set
+      await tx.addOnSet.delete({
+        where: { id },
+      })
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
     return NextResponse.json({ error: 'Failed to delete addon set' }, { status: 500 })
   }
 }

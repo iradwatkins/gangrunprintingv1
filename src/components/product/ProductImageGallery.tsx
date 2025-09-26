@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Expand } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { ProductImageErrorBoundary, SafeProductImage } from './ProductImageErrorBoundary'
 
 interface ProductImage {
   id: string
@@ -90,18 +91,17 @@ export function ProductImageGallery({
     <>
       <div className={cn('space-y-4', className)}>
         {/* Main Image Display */}
-        <div className="relative group">
-          <div
-            className={cn(
-              'relative aspect-square bg-gray-100 rounded-lg overflow-hidden',
-              enableZoom && 'cursor-zoom-in'
-            )}
-            onClick={() => enableLightbox && setIsLightboxOpen(true)}
-          >
-            {/* Use picture element for WebP support with fallback */}
-            <picture>
-              <source srcSet={currentImage.webpUrl || currentImage.url} type="image/webp" />
-              <Image
+        <ProductImageErrorBoundary productName={productName}>
+          <div className="relative group">
+            <div
+              className={cn(
+                'relative aspect-square bg-gray-100 rounded-lg overflow-hidden',
+                enableZoom && 'cursor-zoom-in'
+              )}
+              onClick={() => enableLightbox && setIsLightboxOpen(true)}
+            >
+              {/* Use SafeProductImage for error handling */}
+              <SafeProductImage
                 fill
                 alt={getAltText(currentImage, selectedIndex)}
                 blurDataURL={currentImage.blurDataUrl}
@@ -113,10 +113,10 @@ export function ProductImageGallery({
                 priority={selectedIndex === 0}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 src={currentImage.largeUrl || currentImage.url}
+                productName={productName}
                 onMouseEnter={() => enableZoom && setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
               />
-            </picture>
 
             {/* Primary Badge */}
             {currentImage.isPrimary && (
@@ -164,6 +164,7 @@ export function ProductImageGallery({
             )}
           </div>
         </div>
+        </ProductImageErrorBoundary>
 
         {/* Thumbnail Gallery */}
         {showThumbnails && sortedImages.length > 1 && (
