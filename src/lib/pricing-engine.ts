@@ -18,7 +18,6 @@ export interface PaperStock {
   id: string
   name: string
   pricePerSqInch: number
-  secondSideMarkupPercent: number
   defaultCoatingId?: string
 }
 
@@ -33,7 +32,7 @@ export interface PrintSize {
 export interface TurnaroundTime {
   id: string
   name: string
-  priceMarkupPercent: number
+  priceMultiplier: number // Direct multiplier (1.0 = no markup, 1.5 = 50% markup)
   businessDays: number
 }
 
@@ -152,7 +151,7 @@ export interface ProductConfiguration {
   paperStock: PaperStock
   printSize: PrintSize
   quantity: number
-  sides: 'single' | 'double'
+  sidesMultiplier: number // Resolved multiplier from PaperStockSides table
   turnaroundTime: TurnaroundTime
   addOns: AddOnConfiguration
   isBroker: boolean
@@ -181,7 +180,7 @@ export interface PriceCalculation {
   priceAfterBasePercentageModifiers: number
 
   // Step 4: Turnaround
-  turnaroundMarkupPercentage: number
+  turnaroundMultiplier: number
   priceAfterTurnaround: number
 
   // Step 5: Add-ons
@@ -213,7 +212,7 @@ export class PricingEngine {
       effectiveQuantity: config.quantity,
       effectiveArea: config.printSize.width * config.printSize.height,
       paperStockBasePricePerSqInch: config.paperStock.pricePerSqInch,
-      sidesFactor: this.calculateSidesFactor(config.sides, config.paperStock),
+      sidesFactor: config.sidesMultiplier,
       basePaperPrintPrice: 0,
 
       brokerDiscountApplied: false,
@@ -226,7 +225,7 @@ export class PricingEngine {
       exactSizeMarkupPercentage: 12.5,
       priceAfterBasePercentageModifiers: 0,
 
-      turnaroundMarkupPercentage: config.turnaroundTime.priceMarkupPercent,
+      turnaroundMultiplier: config.turnaroundTime.priceMultiplier,
       priceAfterTurnaround: 0,
 
       discreteAddonCosts: [],
@@ -283,9 +282,9 @@ export class PricingEngine {
       result.breakdown.exactSizeMarkup = exactSizeMarkup
     }
 
-    // Step 4: Apply Turnaround Markup
+    // Step 4: Apply Turnaround Multiplier
     result.priceAfterTurnaround =
-      result.priceAfterBasePercentageModifiers * (1 + result.turnaroundMarkupPercentage / 100)
+      result.priceAfterBasePercentageModifiers * result.turnaroundMultiplier
     result.breakdown.turnaroundMarkup =
       result.priceAfterTurnaround - result.priceAfterBasePercentageModifiers
 
@@ -305,14 +304,6 @@ export class PricingEngine {
     return result
   }
 
-  private calculateSidesFactor(sides: 'single' | 'double', paperStock: PaperStock): number {
-    if (sides === 'single') {
-      return 1.0
-    } else {
-      // Double sided: 1 + (2nd Side Markup % / 100)
-      return 1.0 + paperStock.secondSideMarkupPercent / 100
-    }
-  }
 
   private calculateAddonCosts(
     config: ProductConfiguration

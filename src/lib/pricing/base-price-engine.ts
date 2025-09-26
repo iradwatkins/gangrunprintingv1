@@ -30,13 +30,6 @@ export interface StandardQuantity {
   isActive: boolean
 }
 
-export interface PaperException {
-  id: string
-  paperStockId: string
-  exceptionType: string
-  doubleSidedMultiplier: number
-  description?: string
-}
 
 export interface PricingInput {
   // Size selection
@@ -52,9 +45,7 @@ export interface PricingInput {
 
   // Paper and pricing
   basePaperPrice: number
-  sides: 'single' | 'double'
-  isExceptionPaper: boolean
-  paperException?: PaperException
+  sidesMultiplier: number // Resolved multiplier from caller
 }
 
 export interface BasePriceResult {
@@ -102,8 +93,8 @@ export class BasePriceEngine {
     // Step 2: Calculate Quantity
     const quantity = this.calculateQuantity(input)
 
-    // Step 3: Calculate Sides Multiplier
-    const sidesMultiplier = this.calculateSidesMultiplier(input)
+    // Step 3: Use provided Sides Multiplier
+    const sidesMultiplier = input.sidesMultiplier
 
     // Step 4: Apply EXACT formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
     const basePrice = input.basePaperPrice * sidesMultiplier * size * quantity
@@ -192,22 +183,6 @@ export class BasePriceEngine {
     }
   }
 
-  /**
-   * SIDES MULTIPLIER - PAPER-DEPENDENT LOGIC
-   * IF Paper Type is Exception Type (e.g., Text Paper)
-   *   IF Sides = "Double Sided (4/4)"
-   *     THEN Sides Multiplier = 1.75
-   *   ELSE
-   *     Sides Multiplier = 1.0
-   * ELSE (for most papers like Cardstock)
-   *   Sides Multiplier = 1.0 (regardless of single or double-sided)
-   */
-  private calculateSidesMultiplier(input: PricingInput): number {
-    if (input.isExceptionPaper && input.sides === 'double') {
-      return input.paperException?.doubleSidedMultiplier || 1.75
-    }
-    return 1.0
-  }
 
   /**
    * Validate input data
@@ -270,9 +245,9 @@ export class BasePriceEngine {
       errors.push('Quantity selection must be either "standard" or "custom"')
     }
 
-    // Validate sides
-    if (!['single', 'double'].includes(input.sides)) {
-      errors.push('Sides must be either "single" or "double"')
+    // Validate sides multiplier
+    if (!input.sidesMultiplier || input.sidesMultiplier <= 0) {
+      errors.push('Sides multiplier must be greater than 0')
     }
 
     return {
