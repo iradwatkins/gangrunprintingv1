@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { HelpCircle } from 'lucide-react'
@@ -30,9 +29,9 @@ interface DesignOption {
 interface DesignAddonSelectorProps {
   designAddons: DesignOption[]
   selectedDesignOption: string | null
-  selectedSide?: 'oneSide' | 'twoSides'
+  selectedSide?: 'oneSide' | 'twoSides' | null
   uploadedFiles?: any[]
-  onDesignOptionChange: (optionId: string | null, side?: string, files?: any[]) => void
+  onDesignOptionChange: (optionId: string | null, side?: string | null, files?: any[]) => void
   onFilesUploaded?: (files: any[]) => void
   disabled?: boolean
 }
@@ -40,45 +39,56 @@ interface DesignAddonSelectorProps {
 export function DesignAddonSelector({
   designAddons,
   selectedDesignOption,
-  selectedSide = 'oneSide',
+  selectedSide = null,
   uploadedFiles = [],
   onDesignOptionChange,
   onFilesUploaded,
   disabled = false
 }: DesignAddonSelectorProps) {
-  const [currentSide, setCurrentSide] = useState<'oneSide' | 'twoSides'>(selectedSide)
-  const [showFileUpload, setShowFileUpload] = useState(false)
+  const [primarySelection, setPrimarySelection] = useState<string>('none')
+  const [secondarySelection, setSecondarySelection] = useState<string>('')
 
-  const selectedAddon = designAddons.find(addon => addon.id === selectedDesignOption)
-
+  // Initialize state from props
   useEffect(() => {
-    // Show file upload only when "Upload My Artwork" is selected
-    const shouldShowUpload = selectedAddon?.configuration?.requiresFileUpload === true
-    setShowFileUpload(shouldShowUpload)
-  }, [selectedAddon])
-
-  const handleDesignOptionChange = (value: string) => {
-    if (value === 'none') {
-      onDesignOptionChange(null)
-      setShowFileUpload(false)
-      return
+    if (selectedDesignOption) {
+      setPrimarySelection(selectedDesignOption)
+      if (selectedSide) {
+        setSecondarySelection(selectedSide)
+      }
     }
+  }, [selectedDesignOption, selectedSide])
 
-    const addon = designAddons.find(a => a.id === value)
-    if (!addon) return
+  const selectedAddon = designAddons.find(addon => addon.id === primarySelection)
 
-    // Check if side selection is required
-    if (addon.configuration?.requiresSideSelection) {
-      onDesignOptionChange(value, currentSide)
+  const handlePrimaryChange = (value: string) => {
+    setPrimarySelection(value)
+    setSecondarySelection('') // Clear secondary selection when primary changes
+
+    if (value === 'none') {
+      onDesignOptionChange(null, null, [])
     } else {
-      onDesignOptionChange(value)
+      const addon = designAddons.find(a => a.id === value)
+      if (addon) {
+        // For options that don't require side selection, immediately update
+        if (!addon.configuration?.requiresSideSelection) {
+          onDesignOptionChange(value, null, uploadedFiles)
+        } else {
+          // For options requiring side selection, wait for secondary selection
+          onDesignOptionChange(value, null, uploadedFiles)
+        }
+      }
     }
   }
 
-  const handleSideChange = (value: 'oneSide' | 'twoSides') => {
-    setCurrentSide(value)
-    if (selectedDesignOption) {
-      onDesignOptionChange(selectedDesignOption, value)
+  const handleSecondaryChange = (value: string) => {
+    setSecondarySelection(value)
+    onDesignOptionChange(primarySelection, value, uploadedFiles)
+  }
+
+  const handleFilesUploaded = (files: any[]) => {
+    onFilesUploaded?.(files)
+    if (primarySelection !== 'none') {
+      onDesignOptionChange(primarySelection, secondarySelection || null, files)
     }
   }
 
@@ -90,158 +100,179 @@ export function DesignAddonSelector({
     }).format(price)
   }
 
-  const getOptionLabel = (addon: DesignOption) => {
-    if (addon.configuration?.requiresSideSelection && addon.configuration.sideOptions) {
-      return addon.name
-    }
-
-    const price = addon.configuration?.basePrice ?? addon.price ?? 0
-    return price > 0 ? `${addon.name} - ${formatPrice(price)}` : addon.name
+  const getPrimaryOptionLabel = (addon: DesignOption) => {
+    return addon.name
   }
 
-  const getOptionPrice = (addon: DesignOption, side?: 'oneSide' | 'twoSides') => {
-    if (addon.configuration?.requiresSideSelection && addon.configuration.sideOptions && side) {
-      return addon.configuration.sideOptions[side].price
+  const getDisplayPrice = () => {
+    if (!selectedAddon) return null
+
+    // For Standard/Rush Design with side selection
+    if (selectedAddon.configuration?.requiresSideSelection && selectedAddon.configuration.sideOptions) {
+      if (secondarySelection) {
+        const side = secondarySelection as 'oneSide' | 'twoSides'
+        return formatPrice(selectedAddon.configuration.sideOptions[side].price)
+      }
+      return null // No price until side is selected
     }
-    return addon.configuration?.basePrice ?? addon.price ?? 0
+
+    // For Minor/Major changes with flat price
+    const price = selectedAddon.configuration?.basePrice ?? selectedAddon.price ?? 0
+    if (price > 0) {
+      return formatPrice(price)
+    }
+
+    return null
   }
+
+  const shouldShowFileUpload = primarySelection === 'addon_upload_artwork'
+  const shouldShowSecondaryDropdown = selectedAddon?.configuration?.requiresSideSelection === true
+  const shouldShowPrice = (
+    primarySelection === 'addon_design_changes_minor' ||
+    primarySelection === 'addon_design_changes_major'
+  )
 
   return (
     <TooltipProvider>
       <div className="space-y-4">
-      {/* Main Design Option Selection */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="design-option">Design</Label>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              Please select the design option you would like.
-            </TooltipContent>
-          </Tooltip>
-        </div>
-
-        <RadioGroup
-          value={selectedDesignOption || 'none'}
-          onValueChange={handleDesignOptionChange}
-          disabled={disabled}
-          className="space-y-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="none" id="design-none" />
-            <Label htmlFor="design-none" className="font-normal cursor-pointer">
-              No design service needed
-            </Label>
-          </div>
-
-          {designAddons.map((addon) => (
-            <div key={addon.id} className="flex items-center space-x-2">
-              <RadioGroupItem value={addon.id} id={`design-${addon.id}`} />
-              <div className="flex-1 flex items-center gap-2">
-                <Label htmlFor={`design-${addon.id}`} className="font-normal cursor-pointer flex-1">
-                  {getOptionLabel(addon)}
-                </Label>
-                {addon.tooltipText && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      {addon.tooltipText}
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
-
-      {/* Side Selection for Standard/Rush Design */}
-      {selectedAddon?.configuration?.requiresSideSelection && selectedAddon.configuration.sideOptions && (
-        <div className="ml-6 space-y-2 p-4 bg-muted/50 rounded-lg">
-          <Label>Select Design Sides</Label>
-          <Select
-            value={currentSide}
-            onValueChange={(value) => handleSideChange(value as 'oneSide' | 'twoSides')}
-            disabled={disabled}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="oneSide">
-                {selectedAddon.configuration.sideOptions.oneSide.label} - {formatPrice(selectedAddon.configuration.sideOptions.oneSide.price)}
-              </SelectItem>
-              <SelectItem value="twoSides">
-                {selectedAddon.configuration.sideOptions.twoSides.label} - {formatPrice(selectedAddon.configuration.sideOptions.twoSides.price)}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {/* File Upload Zone for "Upload My Artwork" */}
-      {showFileUpload && (
-        <div className="ml-6 space-y-2">
+        {/* Primary Dropdown */}
+        <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label>Upload Artwork (Optional)</Label>
+            <Label htmlFor="design-option">Design</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                You can upload your files now or email them to us later
+                Please select the design option you would like.
               </TooltipContent>
             </Tooltip>
           </div>
 
-          <div className="p-4 bg-muted/30 rounded-lg">
+          <Select
+            value={primarySelection}
+            onValueChange={handlePrimaryChange}
+            disabled={disabled}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Options" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Select Options</SelectItem>
+              {designAddons.map((addon) => (
+                <SelectItem key={addon.id} value={addon.id}>
+                  {getPrimaryOptionLabel(addon)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Conditional Secondary Elements */}
+
+        {/* Secondary Dropdown for Standard/Rush Design */}
+        {shouldShowSecondaryDropdown && selectedAddon?.configuration?.sideOptions && (
+          <div className="ml-6 space-y-2">
+            <Label>Select Sides *</Label>
+            <Select
+              value={secondarySelection}
+              onValueChange={handleSecondaryChange}
+              disabled={disabled}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose number of sides..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="oneSide">
+                  One Side: {formatPrice(selectedAddon.configuration.sideOptions.oneSide.price)}
+                </SelectItem>
+                <SelectItem value="twoSides">
+                  Two Sides: {formatPrice(selectedAddon.configuration.sideOptions.twoSides.price)}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {!secondarySelection && (
+              <p className="text-sm text-muted-foreground">
+                Please select the number of sides for your design
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* File Upload for "Upload My Artwork" Only */}
+        {shouldShowFileUpload && (
+          <div className="ml-6 space-y-2">
+            <div className="flex items-center gap-2">
+              <Label>Upload Artwork (Optional)</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  You can upload your files now or email them to us later
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
             <FileUploadZone
-              onFilesUploaded={(files) => {
-                onFilesUploaded?.(files)
-                if (selectedDesignOption) {
-                  onDesignOptionChange(selectedDesignOption, undefined, files)
-                }
-              }}
+              onFilesUploaded={handleFilesUploaded}
               maxFiles={5}
               maxFileSize={25}
               disabled={disabled}
             />
 
-            {selectedAddon?.configuration?.allowDeferredUpload && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Note: File upload is optional. You can email your files to us after placing your order.
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Note: File upload is optional. You can email your files to us after placing your order.
+            </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Display Selected Option Summary */}
-      {selectedAddon && (
-        <div className="mt-4 p-3 bg-primary/5 rounded-lg">
-          <div className="text-sm font-medium">Selected Design Service:</div>
-          <div className="text-sm text-muted-foreground mt-1">
-            {selectedAddon.name}
-            {selectedAddon.configuration?.requiresSideSelection && currentSide && selectedAddon.configuration.sideOptions && (
-              <span> - {selectedAddon.configuration.sideOptions[currentSide].label}</span>
-            )}
-            {' '}
-            <span className="font-medium">
-              ({formatPrice(getOptionPrice(selectedAddon, currentSide))})
-            </span>
+        {/* Static Price Display for Minor/Major Changes */}
+        {shouldShowPrice && (
+          <div className="ml-6 p-3 bg-muted/50 rounded-lg">
+            <p className="text-sm font-medium">
+              Price: {getDisplayPrice()}
+            </p>
           </div>
-          {uploadedFiles.length > 0 && (
-            <div className="text-sm text-muted-foreground mt-1">
-              {uploadedFiles.length} file(s) uploaded
+        )}
+
+        {/* Summary Display */}
+        {primarySelection !== 'none' && selectedAddon && (
+          <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="text-sm space-y-1">
+              <div className="font-medium">Selected: {selectedAddon.name}</div>
+
+              {/* Show side selection if applicable */}
+              {shouldShowSecondaryDropdown && secondarySelection && (
+                <div className="text-muted-foreground">
+                  Sides: {secondarySelection === 'oneSide' ? 'One Side' : 'Two Sides'}
+                </div>
+              )}
+
+              {/* Show price if available */}
+              {getDisplayPrice() && (
+                <div className="font-medium text-primary">
+                  Total: {getDisplayPrice()}
+                </div>
+              )}
+
+              {/* Show uploaded files count */}
+              {shouldShowFileUpload && uploadedFiles.length > 0 && (
+                <div className="text-muted-foreground">
+                  {uploadedFiles.length} file(s) uploaded
+                </div>
+              )}
+
+              {/* Warning if Standard/Rush selected but no side chosen */}
+              {shouldShowSecondaryDropdown && !secondarySelection && (
+                <div className="text-orange-600 text-xs mt-2">
+                  ⚠️ Please select the number of sides to continue
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+      </div>
     </TooltipProvider>
   )
 }

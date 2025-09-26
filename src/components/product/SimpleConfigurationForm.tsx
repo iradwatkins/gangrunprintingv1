@@ -227,7 +227,7 @@ export default function SimpleConfigurationForm({
           selectedAddons: data.defaults.addons || [],
           designAddonConfig: {
             selectedOption: null,
-            selectedSide: 'oneSide',
+            selectedSide: null,
             uploadedFiles: []
           },
         }
@@ -501,11 +501,15 @@ export default function SimpleConfigurationForm({
     // Calculate design addon costs
     let designAddonCost = 0
     if (config.designAddonConfig?.selectedOption) {
-      const designAddon = configData.addons?.find(a => a.id === config.designAddonConfig?.selectedOption)
+      const designAddon = configData.addons?.find(a => a.id === config.designAddonConfig.selectedOption)
       if (designAddon) {
         if (designAddon.configuration?.requiresSideSelection && designAddon.configuration.sideOptions) {
-          const side = config.designAddonConfig.selectedSide || 'oneSide'
-          designAddonCost = designAddon.configuration.sideOptions[side].price
+          // Only add cost if side is selected (for validation)
+          if (config.designAddonConfig.selectedSide) {
+            const side = config.designAddonConfig.selectedSide
+            designAddonCost = designAddon.configuration.sideOptions[side].price
+          }
+          // If no side selected, cost remains 0 (incomplete selection)
         } else {
           designAddonCost = designAddon.configuration?.basePrice || designAddon.price || 0
         }
