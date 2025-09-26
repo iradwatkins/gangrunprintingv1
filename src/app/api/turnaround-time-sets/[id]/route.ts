@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 // GET /api/turnaround-time-sets/[id] - Get a single turnaround time set
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -34,6 +35,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const body = await request.json()
     const { name, description, isActive, turnaroundTimeIds } = body
 
@@ -96,6 +101,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     // Check if set is in use by any products
     const productsUsingSet = await prisma.productTurnaroundTimeSet.count({

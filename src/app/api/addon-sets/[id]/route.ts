@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
@@ -56,6 +57,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const body = await request.json()
     const { name, description, isActive, addOnItems } = body
 
@@ -129,6 +134,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     // Check if request has a body with force flag
     let force = false

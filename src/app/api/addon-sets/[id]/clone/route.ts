@@ -1,10 +1,16 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
+import { randomUUID } from 'crypto'
 
 // POST /api/addon-sets/[id]/clone - Clone an addon set
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const body = await request.json()
     const { name } = body
 
@@ -37,7 +43,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       // Create the new addon set
       const newAddOnSet = await tx.addOnSet.create({
         data: {
-          id: uuidv4(),
+          id: randomUUID(),
           name,
           description: originalAddOnSet.description
             ? `${originalAddOnSet.description} (Copy)`
@@ -53,7 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if (originalAddOnSet.addOnSetItems.length > 0) {
         await tx.addOnSetItem.createMany({
           data: originalAddOnSet.addOnSetItems.map((item) => ({
-            id: uuidv4(),
+            id: randomUUID(),
             addOnSetId: newAddOnSet.id,
             addOnId: item.addOnId,
             displayPosition: item.displayPosition,

@@ -127,6 +127,10 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Category deleted successfully' })
   } catch (error) {
+    console.error('Delete category error:', error)
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 })
   }
 }
