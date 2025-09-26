@@ -11,13 +11,13 @@ import { useVariableData } from './hooks/useVariableData'
 import { usePerforation } from './hooks/usePerforation'
 import { useBanding } from './hooks/useBanding'
 import { useCornerRounding } from './hooks/useCornerRounding'
-import { useDesignAddon } from './hooks/useDesignAddon'
 import { VariableDataSection } from './components/VariableDataSection'
 import { PerforationSection } from './components/PerforationSection'
 import { BandingSection } from './components/BandingSection'
 import { CornerRoundingSection } from './components/CornerRoundingSection'
+import { DesignSection } from './components/DesignSection'
+import { ImageUploadSection } from './components/ImageUploadSection'
 import { AddonCheckbox } from './components/AddonCheckbox'
-import { DesignAddonSelector } from './DesignAddonSelector'
 
 export function AddonAccordion({
   addons,
@@ -32,9 +32,10 @@ export function AddonAccordion({
   onBandingChange,
   cornerRoundingConfig,
   onCornerRoundingChange,
-  designAddonConfig,
-  onDesignAddonChange,
-  designAddons = [],
+  designConfig,
+  onDesignChange,
+  imageUploadConfig,
+  onImageUploadChange,
   quantity = 100,
   turnaroundTimes = [],
   disabled = false,
@@ -44,11 +45,40 @@ export function AddonAccordion({
   const perforation = usePerforation(perforationConfig, onPerforationChange)
   const banding = useBanding(bandingConfig, onBandingChange)
   const cornerRounding = useCornerRounding(cornerRoundingConfig, onCornerRoundingChange)
-  const designAddon = useDesignAddon({
-    config: designAddonConfig,
-    onChange: onDesignAddonChange,
-    designAddons
-  })
+
+  // Design state (simplified since it's now a single addon)
+  const design = {
+    enabled: designConfig?.enabled || false,
+    selectedOption: designConfig?.selectedOption || null,
+    selectedSide: designConfig?.selectedSide || null,
+    uploadedFiles: designConfig?.uploadedFiles || [],
+    onToggle: (checked: boolean) => onDesignChange?.({ ...designConfig, enabled: checked }),
+    onOptionChange: (optionId: string | null, side?: string | null, files?: any[]) =>
+      onDesignChange?.({
+        ...designConfig,
+        selectedOption: optionId,
+        selectedSide: side,
+        uploadedFiles: files || []
+      }),
+    onFilesUploaded: (files: any[]) =>
+      onDesignChange?.({ ...designConfig, uploadedFiles: files })
+  }
+
+  // Image Upload state
+  const imageUpload = {
+    enabled: imageUploadConfig?.enabled || false,
+    selectedOption: imageUploadConfig?.selectedOption || null,
+    uploadedFiles: imageUploadConfig?.uploadedFiles || [],
+    onToggle: (checked: boolean) => onImageUploadChange?.({ ...imageUploadConfig, enabled: checked }),
+    onOptionChange: (optionId: string | null, files?: any[]) =>
+      onImageUploadChange?.({
+        ...imageUploadConfig,
+        selectedOption: optionId,
+        uploadedFiles: files || []
+      }),
+    onFilesUploaded: (files: any[]) =>
+      onImageUploadChange?.({ ...imageUploadConfig, uploadedFiles: files })
+  }
 
   const handleAddonToggle = (addonId: string, checked: boolean) => {
     if (disabled) return
@@ -69,19 +99,6 @@ export function AddonAccordion({
 
   return (
     <div className="w-full space-y-4">
-      {/* Design Add-on Selector - Always visible at top */}
-      {designAddons.length > 0 && (
-        <DesignAddonSelector
-          designAddons={designAddons}
-          selectedDesignOption={designAddon.selectedOption}
-          selectedSide={designAddon.selectedSide}
-          uploadedFiles={designAddon.uploadedFiles}
-          onDesignOptionChange={designAddon.handleDesignOptionChange}
-          onFilesUploaded={designAddon.handleFilesUploaded}
-          disabled={disabled}
-        />
-      )}
-
       {/* Addons positioned ABOVE dropdown - always visible */}
       {displayAddons.aboveDropdown.length > 0 && (
         <div className="space-y-2">
@@ -107,6 +124,11 @@ export function AddonAccordion({
             <div className="space-y-6">
               {/* Special Feature Sections */}
               <div className="space-y-4">
+                <DesignSection
+                  {...design}
+                  disabled={disabled}
+                />
+
                 <VariableDataSection
                   {...variableData}
                   quantity={quantity}
@@ -128,6 +150,11 @@ export function AddonAccordion({
                 <CornerRoundingSection
                   {...cornerRounding}
                   quantity={quantity}
+                  disabled={disabled}
+                />
+
+                <ImageUploadSection
+                  {...imageUpload}
                   disabled={disabled}
                 />
               </div>
