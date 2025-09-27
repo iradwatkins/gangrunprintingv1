@@ -25,8 +25,16 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get all sessions from database
-    const sessions = await prisma.session.findMany({
+    // Get pagination parameters
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1', 10)
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 200) // Max 200 sessions
+    const skip = (page - 1) * limit
+
+    // Get total count and sessions with pagination
+    const [totalCount, sessions] = await Promise.all([
+      prisma.session.count(),
+      prisma.session.findMany({
       include: {
         user: {
           select: {
@@ -39,10 +47,13 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: {
-        expiresAt: 'desc',
-      },
-    })
+        orderBy: {
+          expiresAt: 'desc',
+        },
+        skip,
+        take: limit,
+      })
+    ])
 
     const now = new Date()
 
@@ -66,9 +77,10 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Calculate statistics
+    // Calculate statistics (for current page only)
     const stats = {
-      total: sessions.length,
+      pageTotal: sessions.length,
+      totalCount,
       active: processedSessions.filter(s => !s.isExpired).length,
       expired: processedSessions.filter(s => s.isExpired).length,
       expiringSoon: processedSessions.filter(s => s.isExpiringSoon && !s.isExpired).length,
@@ -89,13 +101,23 @@ export async function GET(request: NextRequest) {
 
     authLogger.debug(`Admin ${user.email} viewed sessions`, {
       adminId: user.id,
-      totalSessions: stats.total,
+      totalSessions: totalCount,
       activeSessions: stats.active,
     })
+
+    const totalPages = Math.ceil(totalCount / limit)
 
     return NextResponse.json({
       sessions: processedSessions,
       stats,
+      pagination: {
+        totalCount,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      },
       timestamp: now.toISOString(),
     })
   } catch (error) {

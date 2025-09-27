@@ -1,13 +1,22 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { verifyMagicLink, lucia } from '@/lib/auth'
+import { withRateLimit, RateLimitPresets } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  // Apply rate limiting for auth endpoints
+  const rateLimitResponse = await withRateLimit(request, {
+    ...RateLimitPresets.auth,
+    prefix: 'auth-verify'
+  })
+  if (rateLimitResponse) return rateLimitResponse
+
   const requestId = Math.random().toString(36).substring(7)
   const searchParams = request.nextUrl.searchParams
   const token = searchParams.get('token')
   const email = searchParams.get('email')
 
-  console.log(`Magic link verification request: ${requestId} for email: ${email}`)
+  // Security: Don't log sensitive user information
+  console.log(`Magic link verification request: ${requestId}`)
   if (!token || !email) {
     return NextResponse.redirect(new URL('/auth/verify?error=missing_params', request.url))
   }
@@ -15,7 +24,8 @@ export async function GET(request: NextRequest) {
   try {
     const { user, session } = await verifyMagicLink(token, email)
 
-    console.log(`Magic link verified successfully for user: ${user.id}`)
+    // Log success without exposing user ID
+    console.log(`Magic link verified successfully`)
 
     // Create the redirect response
     const redirectUrl = new URL('/account/dashboard', request.url)
@@ -25,13 +35,15 @@ export async function GET(request: NextRequest) {
     const sessionCookie = lucia.createSessionCookie(session.id)
     response.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
-    console.log(`Session cookie set for redirect: ${sessionCookie.name}`)
+    // Log cookie set without exposing details
+    console.log(`Session cookie set for redirect`)
 
     // Add a small delay to ensure database operations are committed
     // This prevents race conditions where the redirect happens before session is fully committed
     await new Promise(resolve => setTimeout(resolve, 100))
 
-    console.log(`Magic link verification completed successfully`)
+    // Log completion
+    console.log(`Verification completed`)
 
     return response
   } catch (error) {

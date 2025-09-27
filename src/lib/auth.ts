@@ -218,27 +218,49 @@ export async function generateMagicLink(email: string): Promise<string> {
 }
 
 export async function sendMagicLink(email: string, name?: string): Promise<void> {
-  // Debug logging disabled for production - uncomment for debugging
   const token = await generateMagicLink(email)
   // Use API route for verification to properly handle cookies
   const baseUrl = SERVICE_ENDPOINTS.APP_BASE_URL
   const magicLink = `${baseUrl}/api/auth/verify?token=${token}&email=${email}`
 
-  // await resend().emails.send({
-  //   from: 'GangRun Printing <noreply@gangrunprinting.com>',
-  //   to: email,
-  //   subject: 'Sign in to GangRun Printing',
-  //   html: `
-  //     <h1>Sign in to GangRun Printing</h1>
-  //     <p>Hello${name ? ` ${name}` : ''},</p>
-  //     <p>Click the link below to sign in to your account:</p>
-  //     <p><a href="${magicLink}" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Sign In</a></p>
-  //     <p>This link will expire in 15 minutes.</p>
-  //     <p>If you didn't request this, you can safely ignore this email.</p>
-  //   `,
-  // })
+  // Import sendEmail from resend module
+  const { sendEmail } = await import('./resend')
 
-  console.log('Magic link (email disabled):', magicLink)
+  try {
+    await sendEmail({
+      to: email,
+      subject: 'Sign in to GangRun Printing',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Sign in to GangRun Printing</h1>
+          <p style="color: #666; font-size: 16px; margin-bottom: 10px;">Hello${name ? ` ${name}` : ''},</p>
+          <p style="color: #666; font-size: 16px; margin-bottom: 30px;">Click the button below to sign in to your account:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${magicLink}" style="background: #007bff; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px; font-weight: 500;">Sign In to Your Account</a>
+          </div>
+          <p style="color: #999; font-size: 14px; margin-top: 30px;">Or copy and paste this link into your browser:</p>
+          <p style="color: #007bff; font-size: 14px; word-break: break-all; margin: 10px 0;">${magicLink}</p>
+          <hr style="border: 1px solid #eee; margin: 30px 0;">
+          <p style="color: #999; font-size: 14px;"><strong>Security Notice:</strong> This link will expire in 15 minutes for your security.</p>
+          <p style="color: #999; font-size: 14px;">If you didn't request this sign-in link, you can safely ignore this email.</p>
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #999; font-size: 12px; margin: 0;">GangRun Printing - Professional Printing Services</p>
+            <p style="color: #999; font-size: 12px; margin: 5px 0;">© ${new Date().getFullYear()} GangRun Printing. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+      text: `Sign in to GangRun Printing\n\nHello${name ? ` ${name}` : ''},\n\nClick the link below to sign in to your account:\n${magicLink}\n\nThis link will expire in 15 minutes.\n\nIf you didn't request this, you can safely ignore this email.\n\nGangRun Printing`,
+    })
+
+    authLogger.info('Magic link email sent successfully', { email })
+  } catch (error) {
+    authLogger.error('Failed to send magic link email:', error)
+    // For development, log the link if email fails
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Dev fallback - Magic link:', magicLink)
+    }
+    throw new Error('Failed to send magic link email. Please try again.')
+  }
 }
 
 export async function verifyMagicLink(token: string, email: string) {
@@ -348,20 +370,12 @@ export async function verifyMagicLink(token: string, email: string) {
     const cookieStore = await cookies()
     cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
-    // Log session creation for monitoring
+    // Log session creation without sensitive data
     sessionUtils.logSessionActivity(session.id, 'session_created', {
-      userId: user.id,
-      userEmail: user.email,
       method: 'magic_link',
-      expiresAt: session.expiresAt.toISOString(),
     })
 
-    authLogger.info('Session created successfully', {
-      sessionId: session.id,
-      userId: user.id,
-      userEmail: user.email,
-      expiresAt: session.expiresAt.toISOString(),
-    })
+    authLogger.info('Session created successfully')
   } catch (sessionError) {
     authLogger.error('Failed to create session:', sessionError)
     throw new MagicLinkError(
@@ -383,18 +397,10 @@ export async function signOut() {
     }
   }
 
-  // Log session invalidation for monitoring
-  sessionUtils.logSessionActivity(session.id, 'session_signed_out', {
-    userId: user?.id,
-    userEmail: user?.email,
-    sessionId: session.id,
-  })
+  // Log session invalidation without sensitive data
+  sessionUtils.logSessionActivity(session.id, 'session_signed_out', {})
 
-  authLogger.info('User signed out', {
-    sessionId: session.id,
-    userId: user?.id,
-    userEmail: user?.email,
-  })
+  authLogger.info('User signed out')
 
   await lucia.invalidateSession(session.id)
 

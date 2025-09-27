@@ -10,6 +10,11 @@ export async function GET(request: NextRequest) {
     const orderNumber = searchParams.get('orderNumber')
     const email = searchParams.get('email')
 
+    // Pagination parameters
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '25', 10), 100) // Max 100 items per page
+    const skip = (page - 1) * limit
+
     if (orderNumber) {
       // Search by order number
       const order = await prisma.order.findUnique({
@@ -39,54 +44,98 @@ export async function GET(request: NextRequest) {
     }
 
     if (email) {
-      // Search by email
-      const orders = await prisma.order.findMany({
-        where: { email },
-        include: {
-          OrderItem: true,
-          StatusHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
+      // Search by email with pagination
+      const [totalCount, orders] = await Promise.all([
+        prisma.order.count({ where: { email } }),
+        prisma.order.findMany({
+          where: { email },
+          include: {
+            OrderItem: true,
+            StatusHistory: {
+              take: 1,
+              orderBy: { createdAt: 'desc' },
+            },
           },
-        },
-        orderBy: { createdAt: 'desc' },
-      })
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        })
+      ])
 
-      return NextResponse.json(orders)
+      return NextResponse.json({
+        orders,
+        pagination: {
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNextPage: page < Math.ceil(totalCount / limit),
+          hasPreviousPage: page > 1
+        }
+      })
     }
 
-    // Admin: Get all orders
+    // Admin: Get all orders with pagination
     if (user?.role === 'ADMIN') {
-      const orders = await prisma.order.findMany({
-        include: {
-          OrderItem: true,
-          StatusHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
+      const [totalCount, orders] = await Promise.all([
+        prisma.order.count(),
+        prisma.order.findMany({
+          include: {
+            OrderItem: true,
+            StatusHistory: {
+              take: 1,
+              orderBy: { createdAt: 'desc' },
+            },
           },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 100,
-      })
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        })
+      ])
 
-      return NextResponse.json(orders)
+      return NextResponse.json({
+        orders,
+        pagination: {
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNextPage: page < Math.ceil(totalCount / limit),
+          hasPreviousPage: page > 1
+        }
+      })
     }
 
-    // User: Get their orders
+    // User: Get their orders with pagination
     if (user?.email) {
-      const orders = await prisma.order.findMany({
-        where: { email: user.email },
-        include: {
-          OrderItem: true,
-          StatusHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
+      const [totalCount, orders] = await Promise.all([
+        prisma.order.count({ where: { email: user.email } }),
+        prisma.order.findMany({
+          where: { email: user.email },
+          include: {
+            OrderItem: true,
+            StatusHistory: {
+              take: 1,
+              orderBy: { createdAt: 'desc' },
+            },
           },
-        },
-        orderBy: { createdAt: 'desc' },
-      })
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        })
+      ])
 
-      return NextResponse.json(orders)
+      return NextResponse.json({
+        orders,
+        pagination: {
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNextPage: page < Math.ceil(totalCount / limit),
+          hasPreviousPage: page > 1
+        }
+      })
     }
 
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
