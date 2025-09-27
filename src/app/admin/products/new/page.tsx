@@ -18,6 +18,9 @@ import {
   Calculator,
   AlertCircle,
   RefreshCw,
+  CheckCircle2,
+  Circle,
+  ChevronRight,
 } from 'lucide-react'
 import { responseToJsonSafely } from '@/lib/safe-json'
 
@@ -68,7 +71,39 @@ export default function NewProductPage() {
     }
   }
 
+  // Calculate completion progress
+  const calculateProgress = () => {
+    let completed = 0
+    let total = 8 // Total required fields
+
+    if (formData.name) completed++
+    if (formData.sku) completed++
+    if (formData.categoryId) completed++
+    if (formData.description) completed++
+    if (formData.selectedQuantityGroup) completed++
+    if (formData.selectedSizeGroup) completed++
+    if (formData.selectedPaperStockSet) completed++
+    if (formData.imageUrl) completed++
+
+    return Math.round((completed / total) * 100)
+  }
+
+  const progress = calculateProgress()
+
   const handleSubmit = async () => {
+    // Enhanced validation with specific error messages
+    const validationErrors = []
+    if (!formData.name) validationErrors.push('Product name is required')
+    if (!formData.categoryId) validationErrors.push('Category must be selected')
+    if (!formData.selectedQuantityGroup) validationErrors.push('Quantity group must be selected')
+    if (!formData.selectedSizeGroup) validationErrors.push('Size group must be selected')
+    if (!formData.selectedPaperStockSet) validationErrors.push('Paper stock must be selected')
+
+    if (validationErrors.length > 0) {
+      toast.error(`Please fix the following:\n${validationErrors.join('\n')}`)
+      return
+    }
+
     if (!validateForm()) return
 
     setSubmitting(true)
@@ -192,8 +227,77 @@ export default function NewProductPage() {
     )
   }
 
+  // Quick fill for testing
+  const handleQuickFill = () => {
+    if (options.categories.length > 0 &&
+        options.quantityGroups.length > 0 &&
+        options.sizeGroups.length > 0 &&
+        options.paperStockSets.length > 0) {
+      updateFormData({
+        name: 'Test Product ' + Date.now(),
+        categoryId: options.categories[0].id,
+        description: 'Test product description',
+        selectedQuantityGroup: options.quantityGroups[0].id,
+        selectedSizeGroup: options.sizeGroups[0].id,
+        selectedPaperStockSet: options.paperStockSets[0].id,
+        selectedAddOnSet: options.addOnSets.length > 0 ? options.addOnSets[0].id : '',
+        selectedTurnaroundTimeSet: options.turnaroundTimeSets.length > 0 ? options.turnaroundTimeSets[0].id : '',
+      })
+      toast.success('Form filled with test data')
+    } else {
+      toast.error('Configuration options not loaded yet')
+    }
+  }
+
   return (
     <div className="container mx-auto py-6 max-w-6xl">
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium">Product Creation Progress</span>
+          <span className="text-sm font-medium">{progress}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Workflow Steps */}
+      <div className="flex items-center justify-center mb-8 space-x-2">
+        <div className="flex items-center">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            formData.name && formData.categoryId ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
+          }`}>
+            {formData.name && formData.categoryId ? <CheckCircle2 className="h-5 w-5" /> : <span>1</span>}
+          </div>
+          <span className="ml-2 text-sm font-medium">Basic Info</span>
+        </div>
+        <ChevronRight className="h-5 w-5 text-gray-400" />
+        <div className="flex items-center">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            formData.selectedQuantityGroup && formData.selectedSizeGroup && formData.selectedPaperStockSet
+              ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
+          }`}>
+            {formData.selectedQuantityGroup && formData.selectedSizeGroup && formData.selectedPaperStockSet
+              ? <CheckCircle2 className="h-5 w-5" /> : <span>2</span>}
+          </div>
+          <span className="ml-2 text-sm font-medium">Specifications</span>
+        </div>
+        <ChevronRight className="h-5 w-5 text-gray-400" />
+        <div className="flex items-center">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            formData.selectedAddOnSet || formData.selectedTurnaroundTimeSet
+              ? 'bg-purple-500 text-white' : 'bg-gray-300 text-gray-600'
+          }`}>
+            <span>3</span>
+          </div>
+          <span className="ml-2 text-sm font-medium">Options</span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -204,6 +308,14 @@ export default function NewProductPage() {
           <h1 className="text-3xl font-bold">Create Product</h1>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleQuickFill}
+            className="border-purple-300 text-purple-600 hover:bg-purple-50"
+            title="Quick fill form with test data"
+          >
+            Quick Fill (Test)
+          </Button>
           <Button
             disabled={testing}
             variant="outline"

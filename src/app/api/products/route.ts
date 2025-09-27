@@ -229,9 +229,9 @@ export async function GET_OLD(request: NextRequest) {
 
 // POST /api/products - Create new product
 export async function POST(request: NextRequest) {
-  // Apply rate limiting for admin endpoints
+  // Apply rate limiting for admin endpoints (using api preset instead of sensitive)
   const rateLimitResponse = await withRateLimit(request, {
-    ...RateLimitPresets.sensitive,
+    ...RateLimitPresets.api,
     prefix: 'products-create'
   })
   if (rateLimitResponse) return rateLimitResponse
@@ -285,6 +285,43 @@ export async function POST(request: NextRequest) {
       setupFee,
     } = data
 
+    // Check for duplicate SKU and generate unique one if needed
+    let uniqueSku = sku
+    let skuCounter = 1
+    while (true) {
+      const existingSku = await prisma.product.findUnique({
+        where: { sku: uniqueSku },
+        select: { id: true }
+      })
+      if (!existingSku) break
+      uniqueSku = `${sku}-${skuCounter}`
+      skuCounter++
+      if (skuCounter > 100) {
+        return createErrorResponse('Unable to generate unique SKU after 100 attempts', 400, null, requestId)
+      }
+    }
+
+    // Generate slug from name and ensure it's unique
+    const baseSlug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+
+    let uniqueSlug = baseSlug
+    let slugCounter = 1
+    while (true) {
+      const existingSlug = await prisma.product.findUnique({
+        where: { slug: uniqueSlug },
+        select: { id: true }
+      })
+      if (!existingSlug) break
+      uniqueSlug = `${baseSlug}-${slugCounter}`
+      slugCounter++
+      if (slugCounter > 100) {
+        return createErrorResponse('Unable to generate unique slug after 100 attempts', 400, null, requestId)
+      }
+    }
+
     try {
       const [category, paperStockSet, quantityGroup, sizeGroup, addOns] = await Promise.all([
         prisma.productCategory.findUnique({ where: { id: categoryId } }),
@@ -316,11 +353,6 @@ export async function POST(request: NextRequest) {
       return createDatabaseErrorResponse(validationError, requestId)
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-
     // Create product with optimized transaction
     const product = await prisma.$transaction(
       async (tx) => {
@@ -329,8 +361,8 @@ export async function POST(request: NextRequest) {
           data: {
             id: randomUUID(),
             name,
-            sku,
-            slug,
+            sku: uniqueSku,
+            slug: uniqueSlug,
             categoryId,
             description,
             shortDescription,
