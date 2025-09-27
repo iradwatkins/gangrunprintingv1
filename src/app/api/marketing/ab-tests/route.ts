@@ -5,7 +5,7 @@ import { ABTestingService } from '@/lib/marketing/ab-testing'
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

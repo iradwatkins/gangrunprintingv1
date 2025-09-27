@@ -87,11 +87,11 @@ async function processPendingNotifications() {
         } catch (error) {
           console.error(`Failed to send notification ${notification.id}:`, error)
 
-          // Update retry count
+          // Mark notification with error for tracking
           await prisma.notification.update({
             where: { id: notification.id },
             data: {
-              retryCount: (notification.retryCount || 0) + 1,
+              error: error instanceof Error ? error.message : String(error),
             },
           })
 

@@ -141,7 +141,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; ne
 
 // Generate order timeline based on order status
 function getOrderTimeline(order: any) {
-  const timeline = []
+  const timeline: any[] = []
   const currentStatus = order.status
 
   // Always show order placed
