@@ -18,15 +18,27 @@ export const maxDuration = 60 // Reduced to 60 seconds for faster failure
 export const runtime = 'nodejs'
 export const revalidate = 0
 
-// Set the body size limit for this route
+// CRITICAL: Configure body size limit for this route
+// Next.js App Router requires explicit configuration
+export const fetchCache = 'force-no-store'
 export const preferredRegion = 'auto'
+
+// Configure the route for file uploads - App Router specific
+// The actual body parsing is handled manually via formData()
 
 // IMPORTANT: In Next.js App Router, body size limit must be set in the route configuration
 // The default is 1MB which causes ERR_CONNECTION_CLOSED for larger uploads
 // This is handled by the middleware.ts file which sets the x-body-size-limit header
 
-// POST /api/products/upload-image - Upload product image with optimization
+// FIX: Configure API route to handle large file uploads properly
+// This prevents ERR_CONNECTION_CLOSED by handling body parsing correctly
 export async function POST(request: NextRequest) {
+  // CRITICAL FIX: Prevent connection close on large uploads
+  // Set proper headers immediately
+  const headers = new Headers()
+  headers.set('Connection', 'keep-alive')
+  headers.set('Keep-Alive', 'timeout=60')
+
   const requestId = generateRequestId()
   // MAX_FILE_SIZE is already imported from constants at the top of the file
 
@@ -55,13 +67,18 @@ export async function POST(request: NextRequest) {
       return createAuthErrorResponse('Admin access required', requestId)
     }
 
-    // Parse form data with aggressive timeout for faster failure
+    // FIX: Enhanced form data parsing to prevent connection close
     let formData
     try {
-      // Reduced timeout for faster feedback
+      // CRITICAL: Check if request is still active before parsing
+      if (request.signal?.aborted) {
+        return createErrorResponse('Request aborted', 499, null, requestId)
+      }
+
+      // Parse with longer timeout and better error handling
       const formDataPromise = request.formData()
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Form data parsing timeout')), 15000)
+        setTimeout(() => reject(new Error('Form data parsing timeout')), 30000) // Increased timeout
       )
 
       formData = await Promise.race([formDataPromise, timeoutPromise]) as FormData

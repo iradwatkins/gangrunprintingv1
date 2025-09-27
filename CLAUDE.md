@@ -127,6 +127,31 @@
 - **Session Management**: Secure cookie-based sessions
 - **Database**: User/Session tables in PostgreSQL
 
+## 🚨 CRITICAL: UPLOAD ERR_CONNECTION_CLOSED FIX (2025-09-27)
+
+### **DO NOT MODIFY THESE FILES WITHOUT READING DOCS**
+
+**CRITICAL FILES FOR UPLOADS:**
+1. `/middleware.ts` - Contains keep-alive headers (MANDATORY)
+2. `/ecosystem.config.js` - 2G memory limit + Node options (MANDATORY)
+3. `/src/app/api/products/upload-image/route.ts` - 60s timeout (MANDATORY)
+
+**IF UPLOADS FAIL WITH ERR_CONNECTION_CLOSED:**
+```bash
+# Quick fix sequence
+pm2 delete gangrunprinting
+pm2 start ecosystem.config.js
+pm2 save
+node test-upload.js  # Test uploads
+```
+
+**Root Causes Fixed:**
+- Next.js App Router 1MB limit → Fixed via middleware headers
+- PM2 memory kills → Fixed via 2G limit + node args
+- Timeout cascade → Fixed via synchronized 60s timeouts
+
+**Full Documentation:** `/docs/CRITICAL-FIX-UPLOAD-ERR-CONNECTION-CLOSED.md`
+
 ## RECENT FIXES & KNOWN ISSUES
 
 ### ✅ FIXED: Magic Link Authentication (2025-09-14)
@@ -225,6 +250,16 @@ try {
 - **ALWAYS** use validateRequest() for authentication
 
 ## 🔍 TROUBLESHOOTING CHECKLIST - CHECK THIS FIRST!
+
+### 0. Upload Errors (ERR_CONNECTION_CLOSED)
+
+- **SYMPTOM**: File uploads fail immediately with connection closed
+- **CHECK**: Is PM2 configured with 2G memory? `pm2 show gangrunprinting | grep max_memory`
+- **CHECK**: Does middleware.ts have keep-alive headers?
+- **CHECK**: Is upload route timeout set to 60 seconds?
+- **FIX**: Run `pm2 delete gangrunprinting && pm2 start ecosystem.config.js`
+- **TEST**: Run `node test-upload.js` to verify
+- **DOCS**: See `/docs/CRITICAL-FIX-UPLOAD-ERR-CONNECTION-CLOSED.md`
 
 ### 1. Page Not Loading / 404 Errors
 

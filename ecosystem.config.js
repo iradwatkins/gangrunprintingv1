@@ -8,14 +8,25 @@ module.exports = {
     exec_mode: 'fork',
     autorestart: true,
     watch: false,
-    max_memory_restart: '1G',
+    max_memory_restart: '2G', // INCREASED: Handle large file uploads
     min_uptime: '10s',
     max_restarts: 10,
     restart_delay: 4000,
     exp_backoff_restart_delay: 100,
+
+    // CRITICAL FIX: Node.js options for large uploads
+    node_args: '--max-old-space-size=2048 --max-http-header-size=32768',
+
     env: {
       NODE_ENV: 'production',
       PORT: 3002,
+
+      // CRITICAL FIX: Increase Node.js limits for file uploads
+      NODE_OPTIONS: '--max-old-space-size=2048 --max-http-header-size=32768',
+
+      // CRITICAL FIX: Keep connections alive during uploads
+      SERVER_KEEPALIVE_TIMEOUT: '65000',
+      SERVER_HEADERS_TIMEOUT: '66000',
 
       // Domain Configuration
       DOMAIN: 'gangrunprinting.com',
@@ -54,8 +65,9 @@ module.exports = {
     log_file: '/root/.pm2/logs/gangrunprinting-combined.log',
     time: true,
     merge_logs: true,
-    kill_timeout: 15000,
-    listen_timeout: 15000,
+    kill_timeout: 60000,    // INCREASED: 60 seconds for graceful shutdown during uploads
+    listen_timeout: 30000,   // INCREASED: 30 seconds for app startup
+    wait_ready: true,        // ADDED: Wait for app ready signal
     shutdown_with_message: true
   }]
 }
