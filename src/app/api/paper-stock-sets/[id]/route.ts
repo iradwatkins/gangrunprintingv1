@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       include: {
         PaperStockSetItem: {
           include: {
-            paperStock: {
+            PaperStock: {
               include: {
                 paperStockCoatings: {
                   include: {
@@ -147,7 +147,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         include: {
           PaperStockSetItem: {
             include: {
-              paperStock: {
+              PaperStock: {
                 include: {
                   paperStockCoatings: {
                     include: {
@@ -174,7 +174,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: 'Validation error', details: error.issues },
         { status: 400 }
       )
     }
@@ -194,7 +194,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        productPaperStockSets: true,
+        ProductPaperStockSet: true,
       },
     })
 

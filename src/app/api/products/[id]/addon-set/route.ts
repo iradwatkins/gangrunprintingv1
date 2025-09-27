@@ -23,7 +23,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validated.error.errors },
+        { error: 'Validation failed', details: validated.error.issues },
         { status: 400 }
       )
     }

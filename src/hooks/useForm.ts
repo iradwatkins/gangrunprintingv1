@@ -94,7 +94,7 @@ export function useForm<T extends Record<string, any>>({
         return true
       } catch (error) {
         if (error instanceof z.ZodError) {
-          setFieldError(field, error.errors[0]?.message || 'Invalid value')
+          setFieldError(field, error.issues[0]?.message || 'Invalid value')
         }
         return false
       }

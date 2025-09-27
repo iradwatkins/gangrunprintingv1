@@ -99,7 +99,7 @@ export async function validateRequestBody<T>(
     if (result.success) {
       return { success: true, data: result.data }
     } else {
-      const errors = result.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`)
+      const errors = result.error.issues.map((err) => `${err.path.join('.')}: ${err.message}`)
       return { success: false, errors }
     }
   } catch (error) {
@@ -121,7 +121,7 @@ export function validateSearchParams<T>(
     if (result.success) {
       return { success: true, data: result.data }
     } else {
-      const errors = result.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`)
+      const errors = result.error.issues.map((err) => `${err.path.join('.')}: ${err.message}`)
       return { success: false, errors }
     }
   } catch (error) {

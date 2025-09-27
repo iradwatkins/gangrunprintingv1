@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         productImages: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -75,12 +75,12 @@ export async function GET(request: NextRequest) {
         pricingTiers: {
           orderBy: { minQuantity: 'asc' },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: true,
           },
         },
-        productSizeGroups: {
+        ProductSizeGroup: {
           include: {
             SizeGroup: true,
           },
@@ -93,10 +93,10 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             productImages: true,
-            productPaperStockSets: true,
+            ProductPaperStockSet: true,
             productOptions: true,
-            productQuantityGroups: true,
-            productSizeGroups: true,
+            ProductQuantityGroup: true,
+            ProductSizeGroup: true,
             productAddOns: true,
           },
         },
@@ -322,7 +322,7 @@ export async function POST(request: NextRequest) {
           include: {
             productCategory: true,
             productImages: true,
-            productPaperStockSets: {
+            ProductPaperStockSet: {
               include: {
                 PaperStockSet: {
                   include: {
@@ -335,12 +335,12 @@ export async function POST(request: NextRequest) {
                 },
               },
             },
-            productQuantityGroups: {
+            ProductQuantityGroup: {
               include: {
                 QuantityGroup: true,
               },
             },
-            productSizeGroups: {
+            ProductSizeGroup: {
               include: {
                 SizeGroup: true,
               },

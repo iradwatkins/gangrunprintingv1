@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         productImages: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -28,12 +28,12 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
             },
           },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: true,
           },
         },
-        productSizeGroups: {
+        ProductSizeGroup: {
           include: {
             SizeGroup: true,
           },

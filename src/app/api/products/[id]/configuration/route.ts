@@ -43,7 +43,7 @@ function calculatePriceDisplay(addon: any): { price: number; priceDisplay: strin
 }
 
 // Helper function to transform quantity values
-function transformQuantityValues(quantityGroup: any) {
+function transformQuantityValues(QuantityGroup: any) {
   if (!quantityGroup?.values) return []
 
   const values = quantityGroup.values.split(',').map((v: string) => v.trim())
