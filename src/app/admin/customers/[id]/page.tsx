@@ -183,7 +183,7 @@ async function getCustomerStats(customerId: string) {
 
 // Generate activity timeline
 function getActivityTimeline(customer: any) {
-  const activities = []
+  const activities: any[] = []
 
   // Account created
   activities.push({
@@ -233,7 +233,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const activities = getActivityTimeline(customer)
 
   // Determine customer tags based on behavior
-  const tags = []
+  const tags: any[] = []
   if (stats.totalOrders === 0) tags.push({ label: 'New Customer', color: 'outline' })
   if (stats.totalOrders > 10) tags.push({ label: 'Loyal Customer', color: 'default' })
   if (stats.totalSpent > 1000) tags.push({ label: 'High Value', color: 'default' })

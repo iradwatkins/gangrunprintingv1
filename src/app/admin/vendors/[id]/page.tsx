@@ -121,7 +121,7 @@ async function getVendorStats(vendorId: string) {
   const cancellationRate = totalOrders > 0 ? (cancelledOrders / totalOrders) * 100 : 0
 
   // Monthly trend data (simplified)
-  const monthlyData = []
+  const monthlyData: any[] = []
   for (let i = 5; i >= 0; i--) {
     const startDate = new Date()
     startDate.setMonth(startDate.getMonth() - i)

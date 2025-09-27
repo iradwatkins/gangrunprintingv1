@@ -34,12 +34,12 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     }
 
     // Get file metadata from MinIO - using file.fileUrl as the objectName
-    const metadata = await getFileMetadata(file.fileUrl)
+    const metadata = await getFileMetadata(file.fileUrl || '')
 
     // Generate presigned download URL
     const downloadUrl = await getPresignedDownloadUrl(
       BUCKETS.UPLOADS,
-      file.fileUrl,
+      file.fileUrl || '',
       3600 // 1 hour expiry
     )
 
@@ -75,7 +75,9 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     }
 
     // Delete from MinIO - using file.fileUrl as the objectName
-    await deleteFile(file.fileUrl)
+    if (file.fileUrl) {
+      await deleteFile(file.fileUrl)
+    }
 
     // Delete from database
     await prisma.file.delete({
