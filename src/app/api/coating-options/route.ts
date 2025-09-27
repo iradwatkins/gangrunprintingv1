@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { getErrorCode } from '@/lib/error-utils'
 
 export async function GET() : Promise<unknown> {
   try {
@@ -44,7 +45,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(coatingOption, { status: 201 })
   } catch (error) {
-    if (error.code === 'P2002') {
+    const errorCode = getErrorCode(error)
+
+    if (errorCode === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },
         { status: 400 }

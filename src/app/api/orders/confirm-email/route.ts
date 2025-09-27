@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
       where: { id: orderId },
       include: {
         OrderItem: true,
-        user: true,
       },
     })
 
@@ -22,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Prepare email content
     const itemsList = order.OrderItem.map(
       (item: Record<string, unknown>) =>
-        `<li>${item.productName} - Qty: ${item.quantity} - $${item.price.toFixed(2)}</li>`
+        `<li>${item.productName} - Qty: ${item.quantity} - $${(item.price as number).toFixed(2)}</li>`
     ).join('')
 
     const emailHtml = `
@@ -53,7 +52,7 @@ export async function POST(request: NextRequest) {
           </div>
 
           <div class="content">
-            <p>Hi ${order.user?.name || 'Valued Customer'},</p>
+            <p>Hi Valued Customer,</p>
 
             <p>We've received your order and it's being processed. Here are your order details:</p>
 
@@ -69,10 +68,10 @@ export async function POST(request: NextRequest) {
             </ul>
 
             <div class="order-info">
-              <p>Subtotal: $${order.subtotal.toFixed(2)}</p>
-              <p>Tax: $${order.tax.toFixed(2)}</p>
-              <p>Shipping: $${order.shipping.toFixed(2)}</p>
-              <p class="total">Total: $${order.total.toFixed(2)}</p>
+              <p>Subtotal: $${(order.subtotal as number).toFixed(2)}</p>
+              <p>Tax: $${(order.tax as number).toFixed(2)}</p>
+              <p>Shipping: $${(order.shipping as number).toFixed(2)}</p>
+              <p class="total">Total: $${(order.total as number).toFixed(2)}</p>
             </div>
 
             <h3>Shipping Address:</h3>

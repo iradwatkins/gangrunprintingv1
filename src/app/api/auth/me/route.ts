@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     const errorDetails = {
       requestId,
       message: error instanceof Error ? error.message : 'Unknown error',
-      code: (error as any)?.code,
+      code: error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined,
       name: error instanceof Error ? error.name : 'UnknownError',
       stack: error instanceof Error ? error.stack?.split('\n').slice(0, 5).join('\n') : undefined,
       responseTime,

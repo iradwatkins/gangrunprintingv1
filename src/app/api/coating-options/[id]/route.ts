@@ -1,12 +1,13 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isPrismaError, getErrorCode } from '@/lib/error-utils'
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
-    if (!user || (user as any).role !== 'ADMIN') {
+    if (!user || user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -27,14 +28,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(coatingOption)
   } catch (error) {
-    if (error.code === 'P2002') {
+    const errorCode = getErrorCode(error)
+
+    if (errorCode === 'P2002') {
       return NextResponse.json(
         { error: 'A coating option with this name already exists' },
         { status: 400 }
       )
     }
 
-    if (error.code === 'P2025') {
+    if (errorCode === 'P2025') {
       return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
 
@@ -49,7 +52,7 @@ export async function DELETE(
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
-    if (!user || (user as any).role !== 'ADMIN') {
+    if (!user || user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -80,7 +83,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    if (error.code === 'P2025') {
+    const errorCode = getErrorCode(error)
+
+    if (errorCode === 'P2025') {
       return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
 

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
+import { processPendingNotifications, sendTestEmail } from '@/lib/notification-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,18 +11,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await processPendingNotifications()
+    const result = await processPendingNotifications()
 
     return NextResponse.json({
       success: true,
       message: 'Notifications processed successfully',
+      ...result,
     })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to process notifications' }, { status: 500 })
   }
 }
 
-// Test endpoint for SendGrid
+// Test endpoint for email
 export async function GET(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
@@ -45,6 +47,7 @@ export async function GET(request: NextRequest) {
       message: result.success
         ? `Test email sent to ${email}`
         : `Failed to send email: ${result.error}`,
+      messageId: result.messageId,
     })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to send test email' }, { status: 500 })

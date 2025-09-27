@@ -10,11 +10,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Get order with user check for security
     const order = await prisma.order.findFirst({
       where: {
-        AND: [{ id }, user ? { userId: user.id } : { email: user?.email || '' }],
+        AND: [{ id }, user ? { userId: user.id } : {}],
       },
       include: {
         OrderItem: true,
-        selectedAirport: true,
       },
     })
 

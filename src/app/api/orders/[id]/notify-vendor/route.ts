@@ -1,6 +1,7 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { NotificationType } from '@prisma/client'
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,13 +16,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const order = await prisma.order.findUnique({
       where: { id: id },
       include: {
-        vendor: true,
-        user: true,
-        OrderItem: {
-          include: {
-            product: true,
-          },
-        },
+        Vendor: true,
+        User: true,
+        OrderItem: true,
       },
     })
 
@@ -29,7 +26,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    if (!order.vendor) {
+    if (!order.Vendor) {
       return NextResponse.json({ error: 'No vendor assigned to this order' }, { status: 400 })
     }
 
@@ -37,15 +34,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const orderDetails = {
       orderNumber: order.referenceNumber || order.orderNumber,
       orderDate: order.createdAt,
-      customerName: order.user?.name || 'Guest',
+      customerName: order.User?.name || 'Guest',
       customerEmail: order.email,
       items: order.OrderItem.map((item) => ({
-        productName: item.product?.name || 'Unknown Product',
-        sku: item.product?.sku || '',
+        productName: item.productName || 'Unknown Product',
+        sku: item.productSku || '',
         quantity: item.quantity,
         price: item.price / 100,
         total: (item.price * item.quantity) / 100,
-        configuration: item.configuration,
+        configuration: item.options,
       })),
       subtotal: order.subtotal / 100,
       shipping: order.shipping / 100,
@@ -56,15 +53,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // If vendor has n8n webhook, send notification
-    if (order.vendor.n8nWebhookUrl) {
+    if (order.Vendor.n8nWebhookUrl) {
       try {
-        const webhookResponse = await fetch(order.vendor.n8nWebhookUrl, {
+        const webhookResponse = await fetch(order.Vendor.n8nWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             event: 'order_notification',
-            vendorId: order.vendor.id,
-            vendorName: order.vendor.name,
+            vendorId: order.Vendor.id,
+            vendorName: order.Vendor.name,
             order: orderDetails,
           }),
         })
@@ -78,7 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // If vendor has order email, prepare to send email notification
-    if (order.vendor.orderEmail) {
+    if (order.Vendor.orderEmail) {
       // Here you would integrate with your email service (SendGrid/Resend)
       // For now, we'll just log that an email would be sent
       // In production, you would uncomment and configure:
@@ -97,7 +94,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     await prisma.notification.create({
       data: {
         orderId: order.id,
-        type: 'VENDOR_NOTIFIED',
+        type: NotificationType.ORDER_PROCESSING,
         sent: true,
         sentAt: new Date(),
       },

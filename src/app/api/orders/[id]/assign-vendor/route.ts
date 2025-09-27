@@ -54,7 +54,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           : order.adminNotes,
       },
       include: {
-        vendor: true,
+        Vendor: true,
       },
     })
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         fromStatus: order.status,
         toStatus: order.status,
         notes: `Vendor assigned: ${vendor.name}`,
-        changedBy: userId,
+        changedBy: user.id,
       },
     })
 

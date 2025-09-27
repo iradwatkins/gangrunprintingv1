@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
 
       // Check authorization
       if (
-        !(user as any) ||
-        (order.email !== user.email && (user as any).role !== 'ADMIN')
+        !user ||
+        (order.email !== user.email && user.role !== 'ADMIN')
       ) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Admin: Get all orders
-    if (((user as any) as any)?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN') {
       const orders = await prisma.order.findMany({
         include: {
           user: {
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
     }
 
     // User: Get their orders
-    if ((user as any)?.email) {
+    if (user?.email) {
       const orders = await prisma.order.findMany({
         where: { email: user.email },
         include: {
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
           create: {
             toStatus: 'PENDING_PAYMENT',
             notes: 'Order created',
-            changedBy: (user as any)?.email || 'System',
+            changedBy: user?.email || 'System',
           },
         },
         notifications: {

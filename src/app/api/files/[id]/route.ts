@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
     // Check authorization
     const isOwner = file.Order?.email === user?.email
-    const isAdmin = (user as any)?.role === 'ADMIN'
+    const isAdmin = user?.role === 'ADMIN'
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     const { user, session } = await validateRequest()
 
     // Only admins can delete files
-    if (((user as any) as any)?.role !== 'ADMIN') {
+    if (user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
