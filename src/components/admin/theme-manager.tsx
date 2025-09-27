@@ -49,7 +49,7 @@ interface Theme {
   updatedAt: string
 }
 
-export function ThemeManager() : unknown {
+export function ThemeManager() {
   const [themes, setThemes] = useState<Theme[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)

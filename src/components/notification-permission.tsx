@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import toast from '@/lib/toast'
 
-export function NotificationPermission() : unknown {
+export function NotificationPermission() {
   const [permission, setPermission] = useState<NotificationPermission>('default')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -248,7 +248,7 @@ export function NotificationPermission() : unknown {
 }
 
 // Standalone notification trigger for testing
-export function TestNotificationButton() : unknown {
+export function TestNotificationButton() {
   const sendTestNotification = async () => {
     if (!('Notification' in window)) {
       toast.error('Notifications not supported')

@@ -47,7 +47,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       include: {
         addOnSetItems: {
           include: {
-            addOn: true,
+            AddOn: true,
           },
           orderBy: {
             sortOrder: 'asc',

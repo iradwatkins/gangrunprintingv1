@@ -4,7 +4,7 @@ import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/contexts/cart-context'
 
-export function CartButton() : unknown {
+export function CartButton() {
   const { itemCount, openCart } = useCart()
 
   return (

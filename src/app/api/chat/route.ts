@@ -107,7 +107,10 @@ export async function GET() : Promise<unknown> {
 
     if (response.ok) {
       const data = await response.json()
-      const hasModel = data.models?.some((m: Record<string, unknown>) => m.name.includes(OLLAMA_MODEL))
+      const hasModel = data.models?.some((m: Record<string, unknown>) => {
+        const name = m.name as string
+        return name?.includes(OLLAMA_MODEL) || false
+      })
 
       return NextResponse.json({
         status: 'online',

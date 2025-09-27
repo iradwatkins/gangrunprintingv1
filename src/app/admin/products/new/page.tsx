@@ -114,12 +114,13 @@ export default function NewProductPage() {
       toast.success('Product created successfully')
       router.push('/admin/products')
     } catch (error) {
-      if (error.name === 'AbortError') {
+      const err = error as Error
+      if (err.name === 'AbortError') {
         toast.error('Request timeout. Please try again.')
-      } else if (error.message?.includes('fetch')) {
+      } else if (err.message?.includes('fetch')) {
         toast.error('Network error. Please check your internet connection.')
       } else {
-        toast.error(error.message || 'Failed to create product')
+        toast.error(err.message || 'Failed to create product')
       }
       } finally {
       setSubmitting(false)

@@ -24,17 +24,17 @@ export function TenantProvider({ children, initialTenant }: TenantProviderProps)
   )
 }
 
-export function useTenant() : unknown {
+export function useTenant() {
   const context = useContext(TenantContextProvider)
   return context
 }
 
-export function useTenantInfo() : unknown {
+export function useTenantInfo() {
   const context = useContext(TenantContextProvider)
   return context?.tenant || null
 }
 
-export function useTenantSettings() : unknown {
+export function useTenantSettings() {
   const context = useContext(TenantContextProvider)
   return {
     tenant: context?.tenant || null,

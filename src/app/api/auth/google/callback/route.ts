@@ -49,7 +49,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     } catch (e) {}
 
     // Try to get user info from ID token first
-    let googleUser: GoogleUser
+    let googleUser: GoogleUser | undefined
 
     if (idToken) {
       try {
@@ -70,8 +70,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // Fall back to fetching from userinfo endpoint if no ID token
-    if (!idToken) {
+    // Fall back to fetching from userinfo endpoint if no ID token or if decoding failed
+    if (!googleUser) {
       const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       googleUser = await response.json()
     }
 
-    if (!googleUser.email) {
+    if (!googleUser || !googleUser.email) {
       throw new Error('No email received from Google OAuth')
     }
 
@@ -99,19 +99,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       // Create new user
       const role = googleUser.email === 'iradwatkins@gmail.com' ? 'ADMIN' : 'CUSTOMER'
 
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`
       user = await prisma.user.create({
         data: {
+          id: userId,
           email: googleUser.email,
           name: googleUser.name,
           image: googleUser.picture,
           emailVerified: googleUser.email_verified,
           role,
+          updatedAt: new Date(),
         },
       })
 
       // Create Google account link
+      const accountId = `account_${Date.now()}_${Math.random().toString(36).substring(7)}`
       await prisma.account.create({
         data: {
+          id: accountId,
           userId: user.id,
           type: 'oauth',
           provider: 'google',
@@ -145,8 +150,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
 
       if (!existingAccount) {
+        const accountId2 = `account_${Date.now()}_${Math.random().toString(36).substring(7)}`
         await prisma.account.create({
           data: {
+            id: accountId2,
             userId: user.id,
             type: 'oauth',
             provider: 'google',

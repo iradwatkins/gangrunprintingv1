@@ -196,7 +196,7 @@ const ROLE_TEMPLATES: Record<string, string[]> = {
   ],
 }
 
-export function AddStaffDialog() : unknown {
+export function AddStaffDialog() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({

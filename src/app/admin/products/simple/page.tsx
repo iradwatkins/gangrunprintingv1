@@ -132,7 +132,7 @@ export default function SimpleProductPage() {
       toast.success('Product created successfully!')
       router.push('/admin/products')
     } catch (error) {
-      toast.error(error.message || 'Failed to create product')
+      toast.error((error as Error).message || 'Failed to create product')
     } finally {
       setLoading(false)
     }
@@ -226,8 +226,8 @@ export default function SimpleProductPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat: Record<string, unknown>) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
+                    <SelectItem key={String(cat.id)} value={String(cat.id)}>
+                      {String(cat.name)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -247,8 +247,8 @@ export default function SimpleProductPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {paperStocks.map((stock: Record<string, unknown>) => (
-                    <SelectItem key={stock.id} value={stock.id}>
-                      {stock.name} - {stock.weight}pt
+                    <SelectItem key={String(stock.id)} value={String(stock.id)}>
+                      {String(stock.name)} - {String(stock.weight)}pt
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -268,8 +268,8 @@ export default function SimpleProductPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {quantityGroups.map((group: Record<string, unknown>) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
+                    <SelectItem key={String(group.id)} value={String(group.id)}>
+                      {String(group.name)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -289,8 +289,8 @@ export default function SimpleProductPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {sizeGroups.map((group: Record<string, unknown>) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
+                    <SelectItem key={String(group.id)} value={String(group.id)}>
+                      {String(group.name)}
                     </SelectItem>
                   ))}
                 </SelectContent>

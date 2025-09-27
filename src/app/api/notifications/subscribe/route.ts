@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
       active: true,
     }
 
-    if (session?.user?.id) {
-      data.userId = session.user.id
+    if ((user as any)?.id) {
+      data.userId = user.id
     }
 
     // Upsert subscription (update if exists, create if not)

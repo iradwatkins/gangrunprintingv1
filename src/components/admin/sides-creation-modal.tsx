@@ -18,6 +18,8 @@ import { Loader2, Square } from 'lucide-react'
 interface SidesOption {
   id: string
   name: string
+  code: string
+  description: string | null
 }
 
 interface SidesCreationModalProps {

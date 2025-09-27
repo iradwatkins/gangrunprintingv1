@@ -22,6 +22,22 @@ import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Calculator, Eye } from 'lucide-react'
 import Link from 'next/link'
 
+interface ProductImage {
+  id?: string
+  url: string
+  thumbnailUrl?: string
+  largeUrl?: string
+  mediumUrl?: string
+  webpUrl?: string
+  blurDataUrl?: string
+  alt?: string
+  caption?: string
+  isPrimary: boolean
+  sortOrder: number
+  file?: File
+  uploading?: boolean
+}
+
 interface EditProductPageProps {
   params: Promise<{
     id: string
@@ -54,7 +70,7 @@ function EditProductClient({ id }: { id: string }) {
     shortDescription: '',
     isActive: true,
     isFeatured: false,
-    images: [],
+    images: [] as ProductImage[],
 
     // Paper Stock Set - Single selection
     selectedPaperStockSet: '', // Single paper stock set ID

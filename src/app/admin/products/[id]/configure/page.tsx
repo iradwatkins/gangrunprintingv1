@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { Badge } from '@/components/ui/badge'
 
-import { box } from '@/components/ui/checkbox'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
@@ -297,7 +297,7 @@ export default function ConfigureProductPage({ params }: { params: Promise<{ id:
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {availableMaterialTypes.length === 0 ? (
+              {availablePaperStocks.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground mb-4">
                     No material types found. Please create material types first.

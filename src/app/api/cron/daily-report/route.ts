@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         },
       }),
       // New customers today
-      prisma.customer.count({
+      prisma.user.count({
         where: {
           createdAt: {
             gte: today,

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           description: original.description,
           tooltipText: original.tooltipText,
           pricingModel: original.pricingModel,
-          configuration: original.configuration,
+          configuration: original.configuration as any,
           additionalTurnaroundDays: original.additionalTurnaroundDays,
           sortOrder: original.sortOrder + 1, // Place after original
           isActive: false, // Start as inactive to prevent conflicts
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             addOnId: newAddOn.id,
             name: subOption.name,
             optionType: subOption.optionType,
-            options: subOption.options,
+            options: subOption.options as any,
             defaultValue: subOption.defaultValue,
             isRequired: subOption.isRequired,
             affectsPricing: subOption.affectsPricing,

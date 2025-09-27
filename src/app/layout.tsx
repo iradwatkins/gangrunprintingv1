@@ -11,8 +11,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 // Performance monitor temporarily disabled to fix signin page issues
 // import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
-import { SessionKeeper } from '@/components/auth/session-keeper'
-import { ErrorHandler } from '@/components/error-handler'
+// import { ErrorHandler } from '@/components/error-handler' // TEMPORARILY DISABLED TO FIX WEBPACK ERROR
 
 const inter = Inter({
   subsets: ['latin'],
@@ -42,8 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
         <ThemeInjector />
-        <SessionKeeper />
-        <ErrorHandler />
+        {/* <ErrorHandler /> TEMPORARILY DISABLED TO FIX WEBPACK ERROR */}
         <OfflineIndicator />
         {/* Performance monitor disabled to fix signin issues */}
         {/* ErrorBoundary temporarily disabled for build */}

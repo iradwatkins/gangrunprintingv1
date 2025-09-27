@@ -88,7 +88,7 @@ export function ThemeProvider({ children, tenant }: ThemeProviderProps) {
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>
 }
 
-export function useTheme() : unknown {
+export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')
@@ -133,7 +133,7 @@ function loadCustomFonts(fonts: string[]) {
 }
 
 // Hook to get current brand information
-export function useBrand() : unknown {
+export function useBrand() {
   const { tenant } = useTheme()
   return {
     logoUrl: tenant?.branding?.logoUrl,
@@ -157,7 +157,7 @@ export function useCSSVariable(variableName: string): string {
 }
 
 // Component to inject tenant-specific metadata
-export function TenantMetadata() : unknown {
+export function TenantMetadata() {
   const { tenant } = useTheme()
 
   useEffect(() => {
