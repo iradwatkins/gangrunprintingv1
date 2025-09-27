@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         productImages: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -29,12 +29,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: true,
           },
         },
-        productSizeGroups: {
+        ProductSizeGroup: {
           include: {
             SizeGroup: true,
           },
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             AddOnSet: true,
           },
         },
-        productTurnaroundTimeSets: {
+        ProductTurnaroundTimeSet: {
           include: {
             TurnaroundTimeSet: true,
           },
@@ -93,10 +93,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       where: { id },
       include: {
         productImages: true,
-        productPaperStockSets: true,
-        productQuantityGroups: true,
-        productSizeGroups: true,
-        productTurnaroundTimeSets: true,
+        ProductPaperStockSet: true,
+        ProductQuantityGroup: true,
+        ProductSizeGroup: true,
+        ProductTurnaroundTimeSet: true,
         productAddOnSets: true,
         productOptions: {
           include: {
@@ -160,7 +160,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 }
               : undefined,
           // Recreate paper stock set association
-          productPaperStockSets: paperStockSetId
+          ProductPaperStockSet: paperStockSetId
             ? {
                 create: {
                   paperStockSetId: paperStockSetId,
@@ -169,7 +169,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate quantity group association
-          productQuantityGroups: quantityGroupId
+          ProductQuantityGroup: quantityGroupId
             ? {
                 create: {
                   quantityGroupId: quantityGroupId,
@@ -177,7 +177,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate size group association
-          productSizeGroups: sizeGroupId
+          ProductSizeGroup: sizeGroupId
             ? {
                 create: {
                   sizeGroupId: sizeGroupId,
@@ -185,7 +185,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate turnaround time set association
-          productTurnaroundTimeSets: turnaroundTimeSetId
+          ProductTurnaroundTimeSet: turnaroundTimeSetId
             ? {
                 create: {
                   turnaroundTimeSetId: turnaroundTimeSetId,
@@ -239,7 +239,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           productCategory: true,
           productImages: true,
-          productPaperStockSets: {
+          ProductPaperStockSet: {
             include: {
               PaperStockSet: {
                 include: {
@@ -252,17 +252,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               },
             },
           },
-          productQuantityGroups: {
+          ProductQuantityGroup: {
             include: {
               QuantityGroup: true,
             },
           },
-          productSizeGroups: {
+          ProductSizeGroup: {
             include: {
               SizeGroup: true,
             },
           },
-          productTurnaroundTimeSets: {
+          ProductTurnaroundTimeSet: {
             include: {
               TurnaroundTimeSet: {
                 include: {

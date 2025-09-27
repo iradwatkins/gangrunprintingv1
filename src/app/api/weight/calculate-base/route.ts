@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       success: true,
       weight: result.weight,
       breakdown: result.breakdown,
-      paperStock: {
+      PaperStock: {
         id: paperStock.id,
         name: paperStock.name,
         weight: paperStock.weight,

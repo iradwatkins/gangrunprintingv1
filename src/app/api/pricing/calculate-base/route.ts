@@ -261,7 +261,7 @@ export async function POST(request: NextRequest) {
       success: true,
       basePrice: result.basePrice,
       breakdown: result.breakdown,
-      paperStock: {
+      PaperStock: {
         id: paperStock.id,
         name: paperStock.name,
         pricePerSqInch: paperStock.pricePerSqInch,
@@ -322,7 +322,7 @@ export async function GET(request: NextRequest) {
         _count: {
           select: {
             productSizes: true,
-            productQuantityGroups: true,
+            ProductQuantityGroup: true,
           },
         },
       },
@@ -380,7 +380,7 @@ export async function GET(request: NextRequest) {
           QuantityGroup: true,
         },
         orderBy: {
-          quantityGroup: {
+          QuantityGroup: {
             sortOrder: 'asc',
           },
         },
