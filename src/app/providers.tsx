@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { CartProvider } from '@/contexts/cart-context'
 import { CartDrawer } from '@/components/cart/cart-drawer'
+import { SessionKeeper } from '@/components/auth/session-keeper'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -26,6 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider disableTransitionOnChange enableSystem attribute="class" defaultTheme="system">
         <CartProvider>
+          <SessionKeeper />
           {children}
           <CartDrawer />
           <PWAInstallPrompt />

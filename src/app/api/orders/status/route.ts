@@ -1,19 +1,15 @@
-import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { OrderStatus } from '@prisma/client'
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management'
 import { N8NWorkflows } from '@/lib/n8n'
+import { requireAuth, requireAdminAuth, handleAuthError } from '@/lib/auth/api-helpers'
 
 // Update order status
 export async function PUT(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
-
     // Only admins can update order status
-    if (!session?.user || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAdminAuth()
 
     const body = await request.json()
     const { orderId, newStatus, notes } = body
@@ -66,7 +62,7 @@ export async function PUT(request: NextRequest) {
           fromStatus: order.status,
           toStatus: newStatus,
           notes: notes,
-          changedBy: session.user.email || session.user.id,
+          changedBy: user.email || user.id,
         },
       })
 
@@ -125,6 +121,10 @@ export async function PUT(request: NextRequest) {
       order: updatedOrder,
     })
   } catch (error) {
+    // Handle auth errors
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
   }
 }
@@ -132,11 +132,7 @@ export async function PUT(request: NextRequest) {
 // Get order status history
 export async function GET(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAuth()
 
     const { searchParams } = new URL(request.url)
     const orderId = searchParams.get('orderId')
@@ -159,7 +155,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    if (session.user.role !== 'ADMIN' && order.userId !== session.user.id) {
+    if (user.role !== 'ADMIN' && order.userId !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -175,6 +171,10 @@ export async function GET(request: NextRequest) {
       history: statusHistory,
     })
   } catch (error) {
+    // Handle auth errors
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
     return NextResponse.json({ error: 'Failed to fetch order status history' }, { status: 500 })
   }
 }

@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     const sidesOption = await prisma.sidesOption.create({
       data: {
         name,
+        code: name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''),
       },
     })
 

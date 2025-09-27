@@ -17,7 +17,7 @@ import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Building, Globe, Upload, Save, Loader2 } from 'lucide-react'
 
-export function GeneralSettingsForm() : unknown {
+export function GeneralSettingsForm() {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     companyName: 'GangRun Printing',

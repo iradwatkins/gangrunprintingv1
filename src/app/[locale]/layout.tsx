@@ -25,7 +25,7 @@ type Props = {
   params: Promise<{ locale: string }>
 }
 
-export function generateStaticParams() : unknown {
+export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 

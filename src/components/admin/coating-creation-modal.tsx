@@ -18,6 +18,7 @@ import { Loader2, Palette } from 'lucide-react'
 interface CoatingOption {
   id: string
   name: string
+  description: string | null
 }
 
 interface CoatingCreationModalProps {

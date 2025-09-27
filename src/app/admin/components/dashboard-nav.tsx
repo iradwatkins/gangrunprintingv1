@@ -75,7 +75,7 @@ const items = [
   },
 ]
 
-export function DashboardNav() : unknown {
+export function DashboardNav() {
   const pathname = usePathname()
 
   return (

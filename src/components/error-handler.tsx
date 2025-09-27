@@ -2,9 +2,12 @@
 
 import { useEffect } from 'react'
 
-export function ErrorHandler() : unknown {
+export function ErrorHandler(): null {
   useEffect(() => {
-    // Debug log
+    // Check if we're in the browser environment
+    if (typeof window === 'undefined') {
+      return
+    }
 
     // Global error handler for client-side errors
     const handleError = (event: ErrorEvent) => {
@@ -24,9 +27,8 @@ export function ErrorHandler() : unknown {
         event.preventDefault()
 
         // Check all forms on page for missing attributes
-        if (typeof document !== 'undefined') {
-          const inputs = document.querySelectorAll('input, select, textarea')
-          inputs.forEach(input => {
+        const inputs = document.querySelectorAll('input, select, textarea')
+        inputs.forEach(input => {
             const inputElement = input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
             if (!inputElement.name) {
               // Add a default name if missing
@@ -36,7 +38,6 @@ export function ErrorHandler() : unknown {
               inputElement.value = ''
             }
           })
-        }
         return
       }
 

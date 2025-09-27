@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
 
     const where: Record<string, unknown> = {
-      OR: [{ isPublic: true }, { createdBy: session.user.email || user?.id }],
+      OR: [{ isPublic: true }, { createdBy: user.email || user?.id }],
     }
 
     if (category) {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const template = await prisma.emailTemplate.create({
       data: {
         ...data,
-        createdBy: session.user.email || user?.id || 'system',
+        createdBy: user.email || user?.id || 'system',
       },
     })
 

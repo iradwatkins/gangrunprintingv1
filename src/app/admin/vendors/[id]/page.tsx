@@ -41,21 +41,21 @@ async function getVendor(id: string) {
   const vendor = await prisma.vendor.findUnique({
     where: { id },
     include: {
-      orders: {
+      Order: {
         orderBy: { createdAt: 'desc' },
         take: 50,
         include: {
-          user: true,
+          User: true,
         },
       },
-      vendorProducts: {
+      VendorProduct: {
         include: {
-          product: true,
+          Product: true,
         },
       },
-      vendorPaperStocks: {
+      VendorPaperStock: {
         include: {
-          paperStock: true,
+          PaperStock: true,
         },
       },
     },
@@ -333,21 +333,21 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {vendor.orders.length === 0 ? (
+                  {vendor.Order.length === 0 ? (
                     <TableRow>
                       <TableCell className="text-center py-8 text-muted-foreground" colSpan={6}>
                         No orders assigned yet
                       </TableCell>
                     </TableRow>
                   ) : (
-                    vendor.orders.map((order) => {
+                    vendor.Order.map((order) => {
                       const status = statusConfig[order.status] || statusConfig.PENDING_PAYMENT
                       return (
                         <TableRow key={order.id}>
                           <TableCell className="font-medium">
                             {order.referenceNumber || order.orderNumber}
                           </TableCell>
-                          <TableCell>{order.user?.name || 'Guest'}</TableCell>
+                          <TableCell>{order.User?.name || 'Guest'}</TableCell>
                           <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <Badge className={status.color}>{status.label}</Badge>
@@ -497,11 +497,11 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
             <CardHeader>
               <CardTitle>Assigned Products</CardTitle>
               <CardDescription>
-                Products this vendor can fulfill ({vendor.vendorProducts.length} total)
+                Products this vendor can fulfill ({vendor.VendorProduct.length} total)
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {vendor.vendorProducts.length === 0 ? (
+              {vendor.VendorProduct.length === 0 ? (
                 <p className="text-center py-8 text-muted-foreground">
                   No products assigned to this vendor yet
                 </p>
@@ -517,10 +517,10 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {vendor.vendorProducts.map((vp) => (
+                    {vendor.VendorProduct.map((vp) => (
                       <TableRow key={vp.id}>
-                        <TableCell className="font-medium">{vp.product.name}</TableCell>
-                        <TableCell>{vp.product.sku}</TableCell>
+                        <TableCell className="font-medium">{vp.Product.name}</TableCell>
+                        <TableCell>{vp.Product.sku}</TableCell>
                         <TableCell>{vp.vendorSku || '-'}</TableCell>
                         <TableCell>
                           {vp.vendorPrice ? `$${vp.vendorPrice.toFixed(2)}` : '-'}

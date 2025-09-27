@@ -3,6 +3,17 @@ import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
+interface CartItem {
+  id: string
+  productName: string
+  sku: string
+  quantity: number
+  price: number
+  options?: any
+  fileName?: string
+  fileSize?: number
+}
+
 interface UploadedImage {
   id: string
   url: string
@@ -42,10 +53,13 @@ export async function POST(request: NextRequest) {
     )
 
     // Create order in database with PENDING_PAYMENT status
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(7)}`
     const order = await prisma.order.create({
       data: {
+        id: orderId,
         orderNumber,
         referenceNumber: orderNumber,
+        updatedAt: new Date(),
         userId: user?.id || null,
         email: customerInfo.email,
         phone: customerInfo.phone,
@@ -56,14 +70,14 @@ export async function POST(request: NextRequest) {
         shippingMethod: shippingRate
           ? `${shippingRate.carrier} - ${shippingRate.serviceName}`
           : null,
-        shippingRate: shippingRate || null,
+        ShippingRate: shippingRate || null,
         selectedAirportId,
         shippingAddress,
         billingAddress: billingAddress || shippingAddress,
         status: 'PENDING_PAYMENT',
         squareCustomerId: squareCustomer.id,
-        // Store uploaded images in metadata
-        metadata: uploadedImages ? { uploadedImages } : undefined,
+        // Store uploaded images in adminNotes as JSON
+        adminNotes: uploadedImages ? JSON.stringify({ uploadedImages }) : undefined,
         OrderItem: {
           create: cartItems.map((item: CartItem) => ({
             id: `${orderNumber}-${item.id}`,

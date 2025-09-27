@@ -33,9 +33,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
+    const coatingId = `coating_${Date.now()}_${Math.random().toString(36).substring(7)}`
     const coatingOption = await prisma.coatingOption.create({
       data: {
+        id: coatingId,
         name,
+        updatedAt: new Date(),
       },
     })
 

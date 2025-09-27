@@ -67,12 +67,13 @@ export async function POST(request: NextRequest) {
 
     // Create Square order
     let squareOrderId: string | undefined
+    let squareLineItems: any[] = []
     try {
-      const squareLineItems = orderItems.map((item: Record<string, unknown>) => ({
-        name: item.productName,
-        quantity: item.quantity.toString(),
+      squareLineItems = orderItems.map((item: Record<string, unknown>) => ({
+        name: item.productName as string,
+        quantity: String(item.quantity),
         basePriceMoney: {
-          amount: BigInt(Math.round(item.price)),
+          amount: BigInt(Math.round(Number(item.price))),
           currency: 'USD',
         },
       }))
@@ -105,10 +106,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create order in database
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(7)}`
     const order = await prisma.order.create({
       data: {
+        id: orderId,
         orderNumber,
         referenceNumber,
+        updatedAt: new Date(),
         email,
         phone,
         userId: user?.id || null,

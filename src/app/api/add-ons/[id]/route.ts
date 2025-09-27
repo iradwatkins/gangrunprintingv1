@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         },
         productAddOns: {
           include: {
-            product: {
+            Product: {
               select: {
                 id: true,
                 name: true,

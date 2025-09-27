@@ -9,7 +9,7 @@ import { useCart } from '@/contexts/cart-context'
 import { CartItemImages } from './cart-item-images'
 import Link from 'next/link'
 
-export function CartDrawer() : unknown {
+export function CartDrawer() {
   const {
     items,
     isOpen,

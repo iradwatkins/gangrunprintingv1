@@ -13,7 +13,7 @@ interface Message {
   timestamp: Date
 }
 
-export function ChatWidget() : unknown {
+export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {

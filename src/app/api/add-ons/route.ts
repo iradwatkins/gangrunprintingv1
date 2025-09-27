@@ -11,7 +11,7 @@ const createAddOnSchema = z.object({
   description: z.string().optional(),
   tooltipText: z.string().optional(),
   pricingModel: z.enum(['FLAT', 'PERCENTAGE', 'PER_UNIT', 'CUSTOM']),
-  configuration: z.record(z.any()).default({}),
+  configuration: z.record(z.string(), z.any()).default({}),
   additionalTurnaroundDays: z.number().min(0).default(0),
   sortOrder: z.number().min(0).default(0),
   isActive: z.boolean().default(true),
@@ -50,7 +50,7 @@ export const POST = withAuth(
       const validation = createAddOnSchema.safeParse(body)
 
       if (!validation.success) {
-        const errors = validation.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`)
+        const errors = validation.error.issues.map((err) => `${err.path.join('.')}: ${err.message}`)
         return commonErrors.validationError(`Validation failed: ${errors.join(', ')}`)
       }
 
@@ -64,7 +64,7 @@ export const POST = withAuth(
 
       return successResponse(addOn, 201)
     } catch (error) {
-      return handleApiError(error, 'Failed to create add-on')
+      return handleApiError(error as Error, 'Failed to create add-on')
     }
   },
   { requireAdmin: true }

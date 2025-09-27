@@ -88,10 +88,10 @@ export async function GET(request: NextRequest) {
     const responseTime = Date.now() - startTime
     const errorDetails = {
       requestId,
-      message: error.message,
-      code: error.code,
-      name: error.name,
-      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
+      message: error instanceof Error ? error.message : 'Unknown error',
+      code: (error as any)?.code,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      stack: error instanceof Error ? error.stack?.split('\n').slice(0, 5).join('\n') : undefined,
       responseTime,
       timestamp: new Date().toISOString(),
     }

@@ -6,7 +6,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -49,7 +49,7 @@ export async function DELETE(
   try {
     const { id } = await params
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

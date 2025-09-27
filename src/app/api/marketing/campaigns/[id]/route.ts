@@ -5,7 +5,7 @@ import { CampaignService } from '@/lib/marketing/campaign-service'
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!user || (user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

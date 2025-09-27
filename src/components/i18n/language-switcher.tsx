@@ -231,7 +231,7 @@ export function LanguageButtonGroup({ className }: { className?: string }) {
 }
 
 // Hook to get language information
-export function useLanguageInfo() : unknown {
+export function useLanguageInfo() {
   const locale = useLocale()
   const tenant = useTenantInfo()
 

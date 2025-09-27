@@ -108,7 +108,7 @@ export function PerformanceMonitor(): null {
 }
 
 // Performance timing hook
-export function usePerformanceTiming() : unknown {
+export function usePerformanceTiming() {
   const startTiming = (name: string) => {
     performance.mark(`${name}-start`)
   }
@@ -154,7 +154,7 @@ export function usePerformanceTiming() : unknown {
 }
 
 // Network quality monitoring
-export function NetworkMonitor() : unknown {
+export function NetworkMonitor() {
   useEffect(() => {
     // Monitor network connection
     if ('connection' in navigator) {
@@ -190,7 +190,7 @@ export function NetworkMonitor() : unknown {
 }
 
 // Device performance monitoring
-export function DeviceMonitor() : unknown {
+export function DeviceMonitor() {
   useEffect(() => {
     const reportDeviceInfo = () => {
       if (typeof window !== 'undefined' && window.gtag) {
@@ -236,7 +236,7 @@ export function DeviceMonitor() : unknown {
 }
 
 // User interaction monitoring
-export function InteractionMonitor() : unknown {
+export function InteractionMonitor() {
   useEffect(() => {
     let interactionCount = 0
     const sessionStart = Date.now()
@@ -294,7 +294,7 @@ export function InteractionMonitor() : unknown {
 }
 
 // Error rate monitoring
-export function ErrorRateMonitor() : unknown {
+export function ErrorRateMonitor() {
   useEffect(() => {
     let errorCount = 0
     const sessionStart = Date.now()

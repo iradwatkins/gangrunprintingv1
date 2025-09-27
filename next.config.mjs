@@ -19,6 +19,16 @@ const nextConfig = {
   // React strict mode
   reactStrictMode: true,
 
+  // Enable TypeScript checking during build
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
+  // Enable ESLint checking during build
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+
   // Image optimization
   images: {
     remotePatterns: [

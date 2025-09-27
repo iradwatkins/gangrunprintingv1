@@ -106,10 +106,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create translation
+    // Create translation with unique ID
+    const translationId = `${tenantId}_${namespace}_${key}_${locale}`.replace(/[^a-zA-Z0-9_-]/g, '_')
     const translation = await prisma.translation.create({
       data: {
-        tenantId,
+        id: translationId,
+        tenantId: tenantId!,
         key,
         namespace,
         locale,
@@ -118,6 +120,7 @@ export async function POST(request: NextRequest) {
         source: 'MANUAL',
         isApproved: true, // Manual translations are auto-approved
         translatedBy: 'admin', // TODO: Get from auth context
+        updatedAt: new Date(),
       },
     })
 

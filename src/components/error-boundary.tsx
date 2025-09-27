@@ -212,7 +212,7 @@ export function handleAsyncError(error: Error, context?: string) {
 }
 
 // Custom hook for error handling in functional components
-export function useErrorHandler() : unknown {
+export function useErrorHandler() {
   return React.useCallback((error: Error, context?: string) => {
     handleAsyncError(error, context)
   }, [])

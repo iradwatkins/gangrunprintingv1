@@ -13,7 +13,7 @@ import {
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
 import AddonAccordionWithVariable from './AddonAccordionWithVariable'
-import { DesignAddonConfig } from './addons/types/addon.types'
+import { DesignConfig } from './addons/types/addon.types'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -147,7 +147,7 @@ interface SimpleProductConfiguration {
   perforationConfig?: PerforationConfig // For Perforation add-on
   bandingConfig?: BandingConfig // For Banding add-on
   cornerRoundingConfig?: CornerRoundingConfig // For Corner Rounding add-on
-  designAddonConfig?: DesignAddonConfig // For Design add-ons
+  designConfig?: DesignConfig // For Design add-on
 }
 
 interface SimpleConfigurationFormProps {
@@ -225,7 +225,8 @@ export default function SimpleConfigurationForm({
           turnaround: data.defaults.turnaround || data.turnaroundTimes[0]?.id || '',
           uploadedFiles: [],
           selectedAddons: data.defaults.addons || [],
-          designAddonConfig: {
+          designConfig: {
+            enabled: false,
             selectedOption: null,
             selectedSide: null,
             uploadedFiles: []
@@ -500,18 +501,24 @@ export default function SimpleConfigurationForm({
 
     // Calculate design addon costs
     let designAddonCost = 0
-    if (config.designAddonConfig?.selectedOption) {
-      const designAddon = configData.addons?.find(a => a.id === config.designAddonConfig.selectedOption)
+    if (config.designConfig?.enabled && config.designConfig?.selectedOption) {
+      // Find the single Design add-on
+      const designAddon = configData.addons?.find(a => a.name === 'Design')
       if (designAddon) {
-        if (designAddon.configuration?.requiresSideSelection && designAddon.configuration.sideOptions) {
-          // Only add cost if side is selected (for validation)
-          if (config.designAddonConfig.selectedSide) {
-            const side = config.designAddonConfig.selectedSide
-            designAddonCost = designAddon.configuration.sideOptions[side].price
+        const selectedOptionId = config.designConfig.selectedOption
+        const optionConfig = designAddon.configuration?.options?.[selectedOptionId]
+
+        if (optionConfig) {
+          if (optionConfig.requiresSideSelection && optionConfig.sideOptions) {
+            // Only add cost if side is selected (for validation)
+            if (config.designConfig.selectedSide) {
+              const side = config.designConfig.selectedSide
+              designAddonCost = optionConfig.sideOptions[side].price
+            }
+            // If no side selected, cost remains 0 (incomplete selection)
+          } else {
+            designAddonCost = optionConfig.basePrice || 0
           }
-          // If no side selected, cost remains 0 (incomplete selection)
-        } else {
-          designAddonCost = designAddon.configuration?.basePrice || designAddon.price || 0
         }
       }
     }
@@ -608,9 +615,9 @@ export default function SimpleConfigurationForm({
     onConfigurationChange?.(newConfig, price)
   }
 
-  // Handle Design Addon changes
-  const handleDesignAddonChange = (designAddon: DesignAddonConfig) => {
-    const newConfig = { ...configuration, designAddonConfig: designAddon }
+  // Handle Design changes
+  const handleDesignChange = (design: DesignConfig) => {
+    const newConfig = { ...configuration, designConfig: design }
     setConfiguration(newConfig)
 
     const price = calculatePrice(newConfig)
@@ -1068,19 +1075,13 @@ export default function SimpleConfigurationForm({
         quantity={getQuantityValue(configuration)}
         selectedAddons={configuration.selectedAddons}
         variableDataConfig={configuration.variableDataConfig}
-        designAddonConfig={configuration.designAddonConfig}
-        designAddons={configData.addons?.filter(a =>
-          a.id.startsWith('addon_upload_') ||
-          a.id.startsWith('addon_standard_design') ||
-          a.id.startsWith('addon_rush_design') ||
-          a.id.startsWith('addon_design_changes')
-        ) || []}
+        designConfig={configuration.designConfig}
+        onDesignChange={handleDesignChange}
         onAddonChange={handleAddonChange}
         onBandingChange={handleBandingChange}
         onCornerRoundingChange={handleCornerRoundingChange}
         onPerforationChange={handlePerforationChange}
         onVariableDataChange={handleVariableDataChange}
-        onDesignAddonChange={handleDesignAddonChange}
       />
 
       {/* Turnaround Time Selection */}

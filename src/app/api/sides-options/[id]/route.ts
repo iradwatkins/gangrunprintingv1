@@ -1,14 +1,11 @@
-import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAdminAuth, handleAuthError } from '@/lib/auth/api-helpers'
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAdminAuth()
 
     const body = await request.json()
     const { name, code, description, isDefault } = body
@@ -28,7 +25,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(sidesOption)
-  } catch (error) {
+  } catch (error: any) {
+    // Handle auth errors first
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
+
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A sides option with this name or code already exists' },
@@ -50,10 +52,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const { user, session } = await validateRequest()
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAdminAuth()
 
     // Check if sides option is in use
     const sidesWithRelations = await prisma.sidesOption.findUnique({
@@ -81,7 +80,12 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
+    // Handle auth errors first
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
+
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Sides option not found' }, { status: 404 })
     }

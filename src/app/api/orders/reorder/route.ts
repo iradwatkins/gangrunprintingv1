@@ -1,15 +1,11 @@
-import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth, handleAuthError } from '@/lib/auth/api-helpers'
 
 // Re-order functionality - creates a new cart from previous order
 export async function POST(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAuth()
 
     const body = await request.json()
     const { orderId } = body
@@ -40,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user owns the order or is admin
-    if (session.user.role !== 'ADMIN' && originalOrder.userId !== session.user.id) {
+    if (user.role !== 'ADMIN' && originalOrder.userId !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -79,6 +75,10 @@ export async function POST(request: NextRequest) {
         'Order data loaded. Please review and update any necessary information before placing the new order.',
     })
   } catch (error) {
+    // Handle auth errors
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
     return NextResponse.json({ error: 'Failed to prepare re-order' }, { status: 500 })
   }
 }
@@ -86,11 +86,7 @@ export async function POST(request: NextRequest) {
 // Get re-orderable items for a user
 export async function GET(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { user } = await requireAuth()
 
     // Get user's delivered orders from the last year
     const oneYearAgo = new Date()
@@ -125,6 +121,10 @@ export async function GET(request: NextRequest) {
       reorderableOrders: orders,
     })
   } catch (error) {
+    // Handle auth errors
+    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+      return handleAuthError(error)
+    }
     return NextResponse.json({ error: 'Failed to fetch re-orderable orders' }, { status: 500 })
   }
 }

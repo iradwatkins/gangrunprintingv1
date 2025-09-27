@@ -16,7 +16,7 @@ const ComprehensivePerformanceMonitor = dynamic(
   }
 )
 
-export function LazyPerformanceMonitor() : unknown {
+export function LazyPerformanceMonitor() {
   const pathname = usePathname()
   const [shouldLoad, setShouldLoad] = useState(false)
 
