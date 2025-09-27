@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String   @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -20,7 +20,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -37,7 +39,7 @@ model AddOn {
   isActive                 Boolean          @default(true)
   adminNotes               String?
   createdAt                DateTime         @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt                DateTime         @updatedAt
   addOnSetItems            AddOnSetItem[]
   addOnSubOptions          AddOnSubOption[]
   orderItemAddOns          OrderItemAddOn[]
@@ -51,7 +53,7 @@ model AddOnSet {
   sortOrder        Int               @default(0)
   isActive         Boolean           @default(true)
   createdAt        DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt        DateTime          @updatedAt
   addOnSetItems    AddOnSetItem[]
   productAddOnSets ProductAddOnSet[]
 }
@@ -64,7 +66,7 @@ model AddOnSetItem {
   isDefault       Boolean         @default(false)
   sortOrder       Int             @default(0)
   createdAt       DateTime        @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime        @updatedAt
   AddOn           AddOn           @relation(fields: [addOnId], references: [id], onDelete: Cascade)
   AddOnSet        AddOnSet        @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
 
@@ -85,7 +87,7 @@ model AddOnSubOption {
   tooltipText    String?
   displayOrder   Int      @default(0)
   createdAt      DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime @updatedAt
   AddOn          AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
 }
 
@@ -126,7 +128,7 @@ model CampaignABTest {
   startedAt         DateTime?
   endedAt           DateTime?
   createdAt         DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
@@ -171,7 +173,7 @@ model CampaignSend {
   errorMessage      String?
   trackingData      Json?
   createdAt         DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User              User?             @relation(fields: [userId], references: [id])
 
@@ -185,7 +187,7 @@ model CoatingOption {
   id                 String              @id @default(cuid())
   name               String              @unique
   createdAt          DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime            @updatedAt
   description        String?
   paperStockCoatings PaperStockCoating[]
 }
@@ -204,7 +206,7 @@ model Currency {
   countries          String[]
   isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])
@@ -219,7 +221,7 @@ model CustomTheme {
   customCSS         String?
   isActive          Boolean  @default(false)
   createdAt         DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime @updatedAt
 
   @@index([isActive])
 }
@@ -238,7 +240,7 @@ model CustomerJourney {
   engagement         Json?
   preferences        Json?
   createdAt          DateTime             @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime             @updatedAt
   User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   CustomerTouchpoint CustomerTouchpoint[]
 
@@ -258,7 +260,7 @@ model CustomerSegment {
   count             Int                 @default(0)
   lastUpdated       DateTime            @default(now())
   createdAt         DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   MarketingCampaign MarketingCampaign[]
   MarketingWorkflow MarketingWorkflow[]
   SMSCampaign       SMSCampaign[]
@@ -294,7 +296,7 @@ model EmailTemplate {
   tags        String[]
   createdBy   String
   createdAt   DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([isPublic])
@@ -326,7 +328,7 @@ model File {
   uploadedBy String?
   metadata   Json?
   createdAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
   Order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
@@ -344,7 +346,7 @@ model Locale {
   isActive       Boolean  @default(true)
   sortOrder      Int      @default(0)
   createdAt      DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime @updatedAt
 
   @@index([code])
   @@index([isActive])
@@ -362,7 +364,7 @@ model MarketingAsset {
   folder     String?
   createdBy  String
   createdAt  DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt  DateTime  @updatedAt
 
   @@index([folder])
   @@index([type])
@@ -393,7 +395,7 @@ model MarketingCampaign {
   utmMedium         String              @default("email")
   createdBy         String
   createdAt         DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   CampaignABTest    CampaignABTest[]
   CampaignAnalytics CampaignAnalytics[]
   CampaignSend      CampaignSend[]
@@ -415,7 +417,7 @@ model MarketingWorkflow {
   segmentId         String?
   settings          Json?
   createdAt         DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   CustomerSegment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
   WorkflowExecution WorkflowExecution[]
 
@@ -433,7 +435,7 @@ model N8NWebhook {
   lastTriggered DateTime?
   triggerCount  Int             @default(0)
   createdAt     DateTime        @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt     DateTime        @updatedAt
   N8NWebhookLog N8NWebhookLog[]
 
   @@index([isActive])
@@ -475,7 +477,7 @@ model OptionValue {
   width          Float?
   height         Float?
   createdAt      DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime      @updatedAt
   ProductOption  ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
   @@index([optionId])
@@ -494,7 +496,7 @@ model Order {
   shippingMethod      String?
   trackingNumber      String?
   createdAt           DateTime        @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt           DateTime        @updatedAt
   adminNotes          String?
   carrier             Carrier?
   deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
@@ -561,7 +563,7 @@ model PaperException {
   doubleSidedMultiplier Float      @default(1.75)
   description           String?
   createdAt             DateTime   @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt             DateTime   @updatedAt
   PaperStock            PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
 
   @@index([exceptionType])
@@ -574,7 +576,7 @@ model PaperStock {
   tooltipText        String?
   isActive           Boolean             @default(true)
   createdAt          DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime            @updatedAt
   weight             Float               @default(0.0015)
   OrderItem          OrderItem[]
   PaperException     PaperException?
@@ -604,7 +606,7 @@ model PaperStockSet {
   sortOrder            Int                    @default(0)
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt            DateTime               @updatedAt
   PaperStockSetItem    PaperStockSetItem[]
   ProductPaperStockSet ProductPaperStockSet[]
 }
@@ -616,7 +618,7 @@ model PaperStockSetItem {
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   PaperStock      PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
 
@@ -646,7 +648,7 @@ model PricingTier {
   unitPrice   Float
   setupFee    Float    @default(0)
   createdAt   DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
   Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, minQuantity])
@@ -665,7 +667,7 @@ model Product {
   metadata                  Json?
   productionTime            Int
   createdAt                 DateTime                   @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt                 DateTime                   @updatedAt
   gangRunEligible           Boolean                    @default(false)
   maxGangQuantity           Int?
   minGangQuantity           Int?
@@ -702,7 +704,7 @@ model ProductAddOn {
   priceOverride Float?
   isMandatory   Boolean  @default(false)
   createdAt     DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt     DateTime @updatedAt
   AddOn         AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
   Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -716,7 +718,7 @@ model ProductAddOnSet {
   isDefault  Boolean  @default(false)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
   AddOnSet   AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
   Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -733,7 +735,7 @@ model ProductCategory {
   sortOrder   Int       @default(0)
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
   products    Product[]
 }
 
@@ -751,7 +753,7 @@ model ProductImage {
   fileSize     Int?
   mimeType     String?
   createdAt    DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt    DateTime @updatedAt
   Product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
@@ -765,7 +767,7 @@ model ProductOption {
   required    Boolean       @default(false)
   sortOrder   Int           @default(0)
   createdAt   DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime      @updatedAt
   OptionValue OptionValue[]
   Product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -793,7 +795,7 @@ model ProductPaperStockSet {
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -814,7 +816,7 @@ model ProductPricingConfig {
   minCustomQuantity   Int?
   maxCustomQuantity   Int?
   createdAt           DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt           DateTime @updatedAt
   Product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
@@ -825,7 +827,7 @@ model ProductQuantity {
   isDefault          Boolean          @default(false)
   isActive           Boolean          @default(true)
   createdAt          DateTime         @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime         @updatedAt
   Product            Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardQuantity   StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
 
@@ -839,7 +841,7 @@ model ProductQuantityGroup {
   productId       String
   quantityGroupId String
   createdAt       DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   QuantityGroup   QuantityGroup @relation(fields: [quantityGroupId], references: [id], onDelete: Cascade)
 
@@ -855,7 +857,7 @@ model ProductSize {
   isDefault      Boolean      @default(false)
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime     @updatedAt
   Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardSize   StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
 
@@ -869,7 +871,7 @@ model ProductSizeGroup {
   productId   String
   sizeGroupId String
   createdAt   DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
   Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   SizeGroup   SizeGroup @relation(fields: [sizeGroupId], references: [id], onDelete: Cascade)
 
@@ -884,7 +886,7 @@ model ProductTurnaroundTimeSet {
   turnaroundTimeSetId String
   isDefault           Boolean           @default(false)
   createdAt           DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt           DateTime          @updatedAt
   Product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -916,7 +918,7 @@ model PushSubscription {
   subscription Json
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt    DateTime @updatedAt
   User         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([active])
@@ -934,7 +936,7 @@ model QuantityGroup {
   sortOrder    Int                    @default(0)
   isActive     Boolean                @default(true)
   createdAt    DateTime               @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt    DateTime               @updatedAt
   products     ProductQuantityGroup[]
 }
 
@@ -953,7 +955,7 @@ model Quote {
   createdBy          String?
   convertedToOrderId String?
   createdAt          DateTime    @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime    @updatedAt
   User               User?       @relation(fields: [userId], references: [id])
 }
 
@@ -967,7 +969,7 @@ model SMSCampaign {
   sentAt          DateTime?
   createdBy       String
   createdAt       DateTime         @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime         @updatedAt
   CustomerSegment CustomerSegment? @relation(fields: [segmentId], references: [id])
   SMSSend         SMSSend[]
 
@@ -985,7 +987,7 @@ model SMSSend {
   deliveredAt  DateTime?
   errorMessage String?
   createdAt    DateTime    @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt    DateTime    @updatedAt
   SMSCampaign  SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User         User?       @relation(fields: [userId], references: [id])
 
@@ -998,6 +1000,8 @@ model Session {
   id        String   @id @default(cuid())
   userId    String
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -1022,7 +1026,7 @@ model SidesOption {
   id              String            @id @default(cuid())
   name            String            @unique
   createdAt       DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime          @updatedAt
   code            String            @unique
   description     String?
   paperStockSides PaperStockSides[]
@@ -1041,7 +1045,7 @@ model SizeGroup {
   sortOrder        Int                @default(0)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt        DateTime           @updatedAt
   ProductSizeGroup ProductSizeGroup[]
 }
 
@@ -1053,7 +1057,7 @@ model StandardQuantity {
   sortOrder        Int               @default(0)
   isActive         Boolean           @default(true)
   createdAt        DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt        DateTime          @updatedAt
   ProductQuantity  ProductQuantity[]
 
   @@index([isActive])
@@ -1070,7 +1074,7 @@ model StandardSize {
   sortOrder          Int           @default(0)
   isActive           Boolean       @default(true)
   createdAt          DateTime      @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime      @updatedAt
   ProductSize        ProductSize[]
 
   @@index([isActive])
@@ -1110,7 +1114,7 @@ model Tenant {
   trialEndsAt        DateTime?
   suspendedAt        DateTime?
   createdAt          DateTime             @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime             @updatedAt
   TenantBrand        TenantBrand[]
   TenantDomain       TenantDomain[]
   TenantUser         TenantUser[]
@@ -1147,7 +1151,7 @@ model TenantBrand {
   emailFooterText String?
   emailColors     Json?
   createdAt       DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt       DateTime @updatedAt
   Tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, name])
@@ -1168,7 +1172,7 @@ model TenantDomain {
   sslCertificateId   String?
   sslExpiresAt       DateTime?
   createdAt          DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime  @updatedAt
   Tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([domain])
@@ -1206,7 +1210,7 @@ model ThemeTemplate {
   tags        String[] @default([])
   createdBy   String
   createdAt   DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([isActive])
@@ -1231,7 +1235,7 @@ model Translation {
   originalText     String?
   translationModel String?
   createdAt        DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt        DateTime          @updatedAt
   Tenant           Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, key, namespace, locale])
@@ -1264,7 +1268,7 @@ model TranslationRequest {
   autoConfidence Float?
   requestedBy    String
   createdAt      DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt      DateTime            @updatedAt
   Tenant         Tenant?             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([assignedTo])
@@ -1289,7 +1293,7 @@ model TurnaroundTime {
   restrictedCoatings    String[]                @default([])
   restrictedOptions     Json?
   createdAt             DateTime                @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt             DateTime                @updatedAt
   TurnaroundTimeSetItem TurnaroundTimeSetItem[]
 
   @@index([isActive])
@@ -1303,7 +1307,7 @@ model TurnaroundTimeSet {
   isActive                 Boolean                    @default(true)
   sortOrder                Int                        @default(0)
   createdAt                DateTime                   @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt                DateTime                   @updatedAt
   ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
   TurnaroundTimeSetItem    TurnaroundTimeSetItem[]
 
@@ -1319,7 +1323,7 @@ model TurnaroundTimeSetItem {
   sortOrder           Int               @default(0)
   priceOverride       Float?
   createdAt           DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt           DateTime          @updatedAt
   TurnaroundTime      TurnaroundTime    @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -1334,7 +1338,7 @@ model User {
   emailVerified      Boolean             @default(false)
   image              String?
   createdAt          DateTime            @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt          DateTime            @updatedAt
   name               String?
   role               UserRole            @default(CUSTOMER)
   isBroker           Boolean             @default(false)
@@ -1372,7 +1376,7 @@ model Vendor {
   n8nWebhookUrl       String?
   apiCredentials      Json?
   createdAt           DateTime           @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt           DateTime           @updatedAt
   Order               Order[]
   VendorPaperStock    VendorPaperStock[]
   VendorProduct       VendorProduct[]
@@ -1387,7 +1391,7 @@ model VendorPaperStock {
   leadTime     Int?
   minQuantity  Int?
   createdAt    DateTime   @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt    DateTime   @updatedAt
   PaperStock   PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   Vendor       Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
@@ -1403,7 +1407,7 @@ model VendorProduct {
   isPreferred Boolean  @default(false)
   notes       String?
   createdAt   DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
   Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   Vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
@@ -1411,9 +1415,12 @@ model VendorProduct {
 }
 
 model VerificationToken {
+  id         String   @id @default(cuid())
   identifier String
   token      String   @unique
   expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
 }
@@ -1429,7 +1436,7 @@ model WorkflowExecution {
   errorMessage      String?
   stepResults       Json?
   createdAt         DateTime          @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   User              User?             @relation(fields: [userId], references: [id])
   MarketingWorkflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 

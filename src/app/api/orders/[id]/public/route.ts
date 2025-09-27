@@ -18,12 +18,6 @@ export async function GET(
       },
       include: {
         OrderItem: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
       },
     })
 

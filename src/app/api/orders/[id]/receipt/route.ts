@@ -12,12 +12,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       },
       include: {
         OrderItem: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
       },
     })
 
@@ -39,16 +33,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-function generateReceiptHtml(order: Record<string, unknown>): string {
-  const itemsList = order.OrderItem.map(
+function generateReceiptHtml(order: Record<string, any>): string {
+  const itemsList = (order.OrderItem as any[])?.map(
     (item: Record<string, unknown>) =>
       `<tr>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.productName}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${item.price.toFixed(2)}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price as number).toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${((item.price as number) * (item.quantity as number)).toFixed(2)}</td>
       </tr>`
-  ).join('')
+  )?.join('') || ''
 
   const shippingAddress =
     typeof order.shippingAddress === 'string'
@@ -159,7 +153,6 @@ function generateReceiptHtml(order: Record<string, unknown>): string {
           <h3>Customer Information</h3>
           <p><strong>Email:</strong> ${order.email}</p>
           ${order.phone ? `<p><strong>Phone:</strong> ${order.phone}</p>` : ''}
-          ${order.user?.name ? `<p><strong>Name:</strong> ${order.user.name}</p>` : ''}
         </div>
 
         <div>
@@ -194,19 +187,19 @@ function generateReceiptHtml(order: Record<string, unknown>): string {
         <table>
           <tr>
             <td>Subtotal:</td>
-            <td style="text-align: right;">$${order.subtotal.toFixed(2)}</td>
+            <td style="text-align: right;">$${(order.subtotal as number).toFixed(2)}</td>
           </tr>
           <tr>
             <td>Tax:</td>
-            <td style="text-align: right;">$${order.tax.toFixed(2)}</td>
+            <td style="text-align: right;">$${(order.tax as number).toFixed(2)}</td>
           </tr>
           <tr>
             <td>Shipping:</td>
-            <td style="text-align: right;">$${order.shipping.toFixed(2)}</td>
+            <td style="text-align: right;">$${(order.shipping as number).toFixed(2)}</td>
           </tr>
           <tr class="total-row">
             <td>Total:</td>
-            <td style="text-align: right;">$${order.total.toFixed(2)}</td>
+            <td style="text-align: right;">$${(order.total as number).toFixed(2)}</td>
           </tr>
         </table>
       </div>

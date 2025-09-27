@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       include: {
         OrderItem: {
           include: {
-            orderItemAddOns: {
+            OrderItemAddOn: {
               include: {
                 AddOn: true,
               },
@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity,
         price: item.price,
         options: item.options,
-        addOns: item.orderItemAddOns.map((addon) => ({
+        addOns: item.OrderItemAddOn.map((addon) => ({
           addOnId: addon.addOnId,
-          addOnName: addon.addOn.name,
+          addOnName: addon.AddOn.name,
           configuration: addon.configuration,
           price: addon.calculatedPrice,
         })),

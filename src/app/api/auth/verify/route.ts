@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     let errorCode = 'unknown'
     if (error && typeof error === 'object' && 'code' in error) {
-      errorCode = (error as any).code
+      errorCode = String(error.code)
     }
 
     return NextResponse.redirect(new URL(`/auth/verify?error=${errorCode}`, request.url))

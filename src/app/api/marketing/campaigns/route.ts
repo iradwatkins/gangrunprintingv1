@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { CampaignService } from '@/lib/marketing/campaign-service'
+import { CampaignStatus, CampaignType } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
