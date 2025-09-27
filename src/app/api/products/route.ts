@@ -364,7 +364,7 @@ export async function POST(request: NextRequest) {
     return createSuccessResponse(transformedProduct, 201, null, requestId)
   } catch (error) {
     // Handle transaction timeouts
-    if (error.name === 'TransactionTimeout') {
+    if ((error as any)?.name === 'TransactionTimeout') {
       return createErrorResponse(
         'Product creation timed out. Please try again.',
         408,

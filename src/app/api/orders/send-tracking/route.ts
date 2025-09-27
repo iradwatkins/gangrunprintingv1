@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendEmail } from '@/lib/resend'
 import { getTrackingInfo, formatTrackingNumber, getCarrierName } from '@/lib/tracking'
 
 export async function POST(request: NextRequest) {
@@ -11,7 +12,6 @@ export async function POST(request: NextRequest) {
       where: { id: orderId },
       include: {
         OrderItem: true,
-        user: true,
       },
     })
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           </div>
 
           <div class="content">
-            <p>Hi ${order.user?.name || 'Valued Customer'},</p>
+            <p>Hi Valued Customer,</p>
 
             <p>Your order <strong>${order.referenceNumber || order.orderNumber}</strong> has been shipped and is on its way to you!</p>
 
@@ -131,15 +131,12 @@ export async function POST(request: NextRequest) {
       </html>
     `
 
-    const msg = {
+    await sendEmail({
       to: order.email,
-      from: process.env.SENDGRID_FROM_EMAIL || 'shipping@gangrunprinting.com',
       subject: `Your Order Has Shipped - ${order.referenceNumber || order.orderNumber}`,
       text: `Your order ${order.referenceNumber || order.orderNumber} has shipped! Track your package with ${getCarrierName(order.carrier)}: ${formattedTrackingNumber}. Track at: ${trackingInfo.trackingUrl}`,
       html: emailHtml,
-    }
-
-    await sgMail.send(msg)
+    })
 
     // Update order notification
     await prisma.notification.create({

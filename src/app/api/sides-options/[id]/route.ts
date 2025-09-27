@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json(sidesOption)
   } catch (error: any) {
     // Handle auth errors first
-    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
       return handleAuthError(error)
     }
 
@@ -82,7 +82,7 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error: any) {
     // Handle auth errors first
-    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
       return handleAuthError(error)
     }
 
