@@ -62,9 +62,6 @@ export async function POST(request: NextRequest) {
         ...(payload.details?.trackingNumber && {
           trackingNumber: payload.details.trackingNumber
         }),
-        ...(payload.details?.estimatedDelivery && {
-          estimatedDelivery: new Date(payload.details.estimatedDelivery)
-        }),
         statusHistory: {
           create: {
             status: transition.newStatus!,

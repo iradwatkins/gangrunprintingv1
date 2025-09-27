@@ -105,7 +105,6 @@ export async function PUT(request: NextRequest) {
           ? {
               trackingNumber: updatedOrder.trackingNumber,
               carrier: updatedOrder.carrier || 'FEDEX',
-              estimatedDelivery: updatedOrder.estimatedDelivery,
             }
           : null
 
@@ -122,7 +121,7 @@ export async function PUT(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
@@ -172,7 +171,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if (error.name === 'AuthenticationError' || error.name === 'AuthorizationError') {
+    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to fetch order status history' }, { status: 500 })

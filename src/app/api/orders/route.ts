@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
       const order = await prisma.order.findUnique({
         where: { orderNumber },
         include: {
-          items: true,
-          files: true,
-          statusHistory: {
+          OrderItem: true,
+          File: true,
+          StatusHistory: {
             orderBy: { createdAt: 'desc' },
           },
         },
@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
       const orders = await prisma.order.findMany({
         where: { email },
         include: {
-          items: true,
-          statusHistory: {
+          OrderItem: true,
+          StatusHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
           },
@@ -59,14 +59,8 @@ export async function GET(request: NextRequest) {
     if (user?.role === 'ADMIN') {
       const orders = await prisma.order.findMany({
         include: {
-          user: {
-            select: {
-              name: true,
-              email: true,
-            },
-          },
-          items: true,
-          statusHistory: {
+          OrderItem: true,
+          StatusHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
           },
@@ -83,8 +77,8 @@ export async function GET(request: NextRequest) {
       const orders = await prisma.order.findMany({
         where: { email: user.email },
         include: {
-          items: true,
-          statusHistory: {
+          OrderItem: true,
+          StatusHistory: {
             take: 1,
             orderBy: { createdAt: 'desc' },
           },
@@ -125,7 +119,7 @@ export async function POST(request: NextRequest) {
         total,
         shippingAddress,
         status: 'PENDING_PAYMENT',
-        items: {
+        OrderItem: {
           create: items.map((item: Record<string, unknown>) => ({
             productName: item.productName,
             productSku: item.productSku,
@@ -134,7 +128,7 @@ export async function POST(request: NextRequest) {
             options: item.options,
           })),
         },
-        files: files
+        File: files
           ? {
               create: files.map((file: Record<string, unknown>) => ({
                 fileName: file.fileName,
@@ -145,14 +139,14 @@ export async function POST(request: NextRequest) {
               })),
             }
           : undefined,
-        statusHistory: {
+        StatusHistory: {
           create: {
             toStatus: 'PENDING_PAYMENT',
             notes: 'Order created',
             changedBy: user?.email || 'System',
           },
         },
-        notifications: {
+        Notification: {
           create: {
             type: 'ORDER_CONFIRMED',
             sent: false,
@@ -160,9 +154,9 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        items: true,
-        files: true,
-        statusHistory: true,
+        OrderItem: true,
+        File: true,
+        StatusHistory: true,
       },
     })
 
