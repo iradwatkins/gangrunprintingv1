@@ -3,7 +3,7 @@
  * Provides standardized error handling, retries, and response parsing
  */
 
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logger-safe'
 import {
   API_TIMEOUT,
   API_RETRY_ATTEMPTS,

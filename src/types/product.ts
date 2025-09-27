@@ -293,6 +293,13 @@ export interface TransformedProduct {
   ProductPaperStocks?: TransformedPaperStock[]
   ProductAddons?: TransformedAddon[]
 
+  // New group-based configuration
+  productSizeGroups?: any[]
+  productQuantityGroups?: any[]
+  productPaperStockSets?: any[]
+  productTurnaroundTimeSets?: any[]
+  productAddOnSets?: any[]
+
   // Backward compatibility
   productCategory?: ProductCategory
   productImages?: ProductImage[]

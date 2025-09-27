@@ -207,7 +207,21 @@ export function useProductForm() {
     return true
   }
 
-  const transformForSubmission = () => {
+  const transformForSubmission = async () => {
+    // Resolve addon set to individual addon IDs if needed
+    let selectedAddOnIds: string[] = []
+    if (formData.selectedAddOnSet) {
+      try {
+        const response = await fetch(`/api/addon-sets/${formData.selectedAddOnSet}`)
+        if (response.ok) {
+          const addOnSet = await response.json()
+          selectedAddOnIds = addOnSet.addOnSetItems?.map((item: any) => item.addOnId) || []
+        }
+      } catch (error) {
+        console.error('Failed to fetch addon set details:', error)
+      }
+    }
+
     return {
       name: formData.name,
       sku: formData.sku,
@@ -219,7 +233,9 @@ export function useProductForm() {
       paperStockSetId: formData.selectedPaperStockSet,
       quantityGroupId: formData.selectedQuantityGroup,
       sizeGroupId: formData.selectedSizeGroup,
-      selectedAddOns: [],
+      selectedAddOns: selectedAddOnIds,
+      turnaroundTimeSetId: formData.selectedTurnaroundTimeSet,
+      addOnSetId: formData.selectedAddOnSet,
       productionTime: 3,
       rushAvailable: false,
       rushDays: null,

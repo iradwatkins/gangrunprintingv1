@@ -2,6 +2,9 @@
 // import createNextIntlPlugin from 'next-intl/plugin'
 // const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
+// Sentry configuration - Phase 3 Enterprise Enhancement
+import { withSentryConfig } from '@sentry/nextjs'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Output configuration for Docker deployment
@@ -243,8 +246,24 @@ const nextConfig = {
 let config = nextConfig
 // config = withNextIntl(config)
 
-// Sentry configuration temporarily disabled due to Next.js 15 compatibility issues
-// TODO: Re-enable when @sentry/nextjs supports Next.js 15
+// Apply plugins in order
+let finalConfig = nextConfig
 
-// export default withNextIntl(nextConfig)
-export default nextConfig
+// Add Sentry if DSN is configured
+if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  const sentryWebpackOptions = {
+    silent: true,
+    hideSourceMaps: true,
+    widenClientFileUpload: true,
+  }
+
+  const sentryOptions = {
+    org: process.env.SENTRY_ORG || 'gangrun-printing',
+    project: process.env.SENTRY_PROJECT || 'gangrun-printing',
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+  }
+
+  finalConfig = withSentryConfig(finalConfig, sentryOptions, sentryWebpackOptions)
+}
+
+export default finalConfig

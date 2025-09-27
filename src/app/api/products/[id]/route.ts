@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         productImages: {
           orderBy: { sortOrder: 'asc' },
         },
-        ProductPaperStockSet: {
+        productPaperStockSets: {
           include: {
             PaperStockSet: {
               include: {
@@ -29,12 +29,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        ProductQuantityGroup: {
+        productQuantityGroups: {
           include: {
             QuantityGroup: true,
           },
         },
-        ProductSizeGroup: {
+        productSizeGroups: {
           include: {
             SizeGroup: true,
           },
@@ -44,9 +44,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             AddOnSet: true,
           },
         },
-        ProductTurnaroundTimeSet: {
+        productTurnaroundTimeSets: {
           include: {
-            TurnaroundTimeSet: true,
+            TurnaroundTimeSet: {
+              include: {
+                TurnaroundTimeSetItem: {
+                  include: {
+                    TurnaroundTime: true,
+                  },
+                },
+              },
+            },
           },
         },
         productOptions: {
@@ -93,10 +101,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       where: { id },
       include: {
         productImages: true,
-        ProductPaperStockSet: true,
-        ProductQuantityGroup: true,
-        ProductSizeGroup: true,
-        ProductTurnaroundTimeSet: true,
+        productPaperStockSets: true,
+        productQuantityGroups: true,
+        productSizeGroups: true,
+        productTurnaroundTimeSets: true,
         productAddOnSets: true,
         productOptions: {
           include: {
@@ -160,7 +168,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 }
               : undefined,
           // Recreate paper stock set association
-          ProductPaperStockSet: paperStockSetId
+          productPaperStockSets: paperStockSetId
             ? {
                 create: {
                   paperStockSetId: paperStockSetId,
@@ -169,7 +177,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate quantity group association
-          ProductQuantityGroup: quantityGroupId
+          productQuantityGroups: quantityGroupId
             ? {
                 create: {
                   quantityGroupId: quantityGroupId,
@@ -177,7 +185,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate size group association
-          ProductSizeGroup: sizeGroupId
+          productSizeGroups: sizeGroupId
             ? {
                 create: {
                   sizeGroupId: sizeGroupId,
@@ -185,7 +193,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               }
             : undefined,
           // Recreate turnaround time set association
-          ProductTurnaroundTimeSet: turnaroundTimeSetId
+          productTurnaroundTimeSets: turnaroundTimeSetId
             ? {
                 create: {
                   turnaroundTimeSetId: turnaroundTimeSetId,
@@ -239,7 +247,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           productCategory: true,
           productImages: true,
-          ProductPaperStockSet: {
+          productPaperStockSets: {
             include: {
               PaperStockSet: {
                 include: {
@@ -252,17 +260,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               },
             },
           },
-          ProductQuantityGroup: {
+          productQuantityGroups: {
             include: {
               QuantityGroup: true,
             },
           },
-          ProductSizeGroup: {
+          productSizeGroups: {
             include: {
               SizeGroup: true,
             },
           },
-          ProductTurnaroundTimeSet: {
+          productTurnaroundTimeSets: {
             include: {
               TurnaroundTimeSet: {
                 include: {

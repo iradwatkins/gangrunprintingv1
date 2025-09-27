@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateRequest, lucia } from '@/lib/auth'
-import { authLogger } from '@/lib/logger'
+import { authLogger } from '@/lib/logger-safe'
 import { SESSION_CONFIG } from '@/config/constants'
 
 /**

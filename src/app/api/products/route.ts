@@ -4,7 +4,7 @@ import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
 import { NextRequest } from 'next/server'
 import { withRateLimit, RateLimitPresets } from '@/lib/rate-limit'
-import { ProductService } from '@/services/product-service'
+import { ProductService } from '@/services/ProductService'
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -143,7 +143,7 @@ export async function GET_OLD(request: NextRequest) {
           },
           orderBy: { sortOrder: 'asc' },
         },
-        ProductPaperStockSet: {
+        productPaperStockSets: {
           select: {
             id: true,
             paperStockSetId: true,
@@ -183,10 +183,10 @@ export async function GET_OLD(request: NextRequest) {
         _count: {
           select: {
             productImages: true,
-            ProductPaperStockSet: true,
+            productPaperStockSets: true,
             productOptions: true,
-            ProductQuantityGroup: true,
-            ProductSizeGroup: true,
+            productQuantityGroups: true,
+            productSizeGroups: true,
             productAddOns: true,
           },
         },
@@ -275,6 +275,8 @@ export async function POST(request: NextRequest) {
       quantityGroupId,
       sizeGroupId,
       selectedAddOns,
+      turnaroundTimeSetId,
+      addOnSetId,
       productionTime,
       rushAvailable,
       rushDays,
@@ -381,7 +383,33 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Add-ons (optional)
+        // Turnaround time set (optional)
+        if (turnaroundTimeSetId) {
+          relationshipPromises.push(
+            tx.productTurnaroundTimeSet.create({
+              data: {
+                productId: newProduct.id,
+                turnaroundTimeSetId: turnaroundTimeSetId,
+                isDefault: true,
+              },
+            })
+          )
+        }
+
+        // Add-on set (optional but preferred over individual add-ons)
+        if (addOnSetId) {
+          relationshipPromises.push(
+            tx.productAddOnSet.create({
+              data: {
+                productId: newProduct.id,
+                addOnSetId: addOnSetId,
+                isDefault: false,
+              },
+            })
+          )
+        }
+
+        // Individual add-ons (optional, for backward compatibility)
         if (selectedAddOns.length > 0) {
           relationshipPromises.push(
             tx.productAddOn.createMany({
@@ -433,7 +461,7 @@ export async function POST(request: NextRequest) {
           include: {
             productCategory: true,
             productImages: true,
-            ProductPaperStockSet: {
+            productPaperStockSets: {
               include: {
                 PaperStockSet: {
                   include: {
@@ -446,12 +474,12 @@ export async function POST(request: NextRequest) {
                 },
               },
             },
-            ProductQuantityGroup: {
+            productQuantityGroups: {
               include: {
                 QuantityGroup: true,
               },
             },
-            ProductSizeGroup: {
+            productSizeGroups: {
               include: {
                 SizeGroup: true,
               },
