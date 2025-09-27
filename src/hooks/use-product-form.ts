@@ -96,8 +96,8 @@ export function useProductForm() {
       ] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
-        fetch('/api/quantities'),
-        fetch('/api/sizes'),
+        fetch('/api/quantity-groups'),
+        fetch('/api/size-groups'),
         fetch('/api/addon-sets'),
         fetch('/api/turnaround-time-sets'),
       ])
