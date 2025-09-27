@@ -47,6 +47,13 @@ export function transformProductForFrontend(product: Product): TransformedProduc
     ProductPaperStocks: transformPaperStocksForFrontend(product.productPaperStocks || product.paperStocks || []),
     ProductAddons: transformAddonsForFrontend(product.productAddons || product.addons || []),
 
+    // New group-based fields (keep raw for now)
+    productSizeGroups: product.productSizeGroups,
+    productQuantityGroups: product.productQuantityGroups,
+    productPaperStockSets: product.productPaperStockSets,
+    productTurnaroundTimeSets: product.productTurnaroundTimeSets,
+    productAddOnSets: product.productAddOnSets,
+
     // Keep backward compatibility
     productCategory: product.productCategory,
     productImages: product.productImages,

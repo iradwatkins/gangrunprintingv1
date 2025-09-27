@@ -79,7 +79,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
 
       if (!response.ok) {
-        const errorText = await response.text()
         throw new Error(`Failed to fetch user info: ${response.status}`)
       }
 
@@ -213,7 +212,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
 
+    // Enhanced error logging for debugging
+    console.error('[Google OAuth] Authentication failed:', {
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    })
+
     if (error instanceof OAuth2RequestError) {
+      console.error('[Google OAuth] OAuth2RequestError details:', {
+        code: error.code,
+        description: error.description
+      })
       return NextResponse.redirect(`${baseUrl}/auth/signin?error=oauth_error`)
     }
 

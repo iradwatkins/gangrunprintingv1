@@ -1,5 +1,6 @@
 import * as Minio from 'minio'
 import { API_RETRY_ATTEMPTS, API_RETRY_DELAY } from '@/config/constants'
+import { logger } from './logger-safe'
 
 // Lazy initialization singleton pattern
 let minioClient: Minio.Client | null = null
@@ -39,7 +40,7 @@ async function retryWithBackoff<T>(
       const jitter = Math.random() * 0.1 * delay // Add up to 10% jitter
       const finalDelay = delay + jitter
 
-      console.log(`Retrying in ${Math.round(finalDelay)}ms...`)
+      logger.warn(`MinIO operation retry ${attempt}/${maxAttempts}`, { operation: operationName, delay: finalDelay, error: lastError.message })
       await new Promise(resolve => setTimeout(resolve, finalDelay))
     }
   }
@@ -104,7 +105,7 @@ export async function getMinioClient(): Promise<Minio.Client> {
       initAttempted = true
       initError = null
 
-      console.log('MinIO client initialized successfully')
+      logger.info('MinIO client initialized successfully')
       return minioClient
 
     } catch (error) {

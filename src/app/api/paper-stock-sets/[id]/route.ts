@@ -26,9 +26,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        PaperStockSetItem: {
+        paperStockSetItems: {
           include: {
-            PaperStock: {
+            paperStock: {
               include: {
                 paperStockCoatings: {
                   include: {
@@ -145,9 +145,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return await tx.paperStockSet.findUnique({
         where: { id: params.id },
         include: {
-          PaperStockSetItem: {
+          paperStockSetItems: {
             include: {
-              PaperStock: {
+              paperStock: {
                 include: {
                   paperStockCoatings: {
                     include: {
@@ -194,7 +194,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        ProductPaperStockSet: true,
+        productPaperStockSets: true,
       },
     })
 

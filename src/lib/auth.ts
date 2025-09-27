@@ -4,7 +4,7 @@ import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 
 import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION, SESSION_CONFIG } from '@/config/constants'
-import { authLogger } from '@/lib/logger'
+import { authLogger } from '@/lib/logger-safe'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
 

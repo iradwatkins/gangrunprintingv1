@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateRequest, lucia } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { authLogger } from '@/lib/logger'
+import { authLogger } from '@/lib/logger-safe'
 
 /**
  * GET /api/admin/sessions

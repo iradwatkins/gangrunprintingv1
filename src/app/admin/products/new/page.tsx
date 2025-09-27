@@ -74,7 +74,7 @@ export default function NewProductPage() {
     setSubmitting(true)
 
     try {
-      const productData = transformForSubmission()
+      const productData = await transformForSubmission()
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000)
 
