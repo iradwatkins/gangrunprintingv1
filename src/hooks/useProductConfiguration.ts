@@ -196,28 +196,28 @@ export function useProductConfiguration({
     try {
       clearErrors() // Clear any previous errors
 
-      const data: SimpleConfigData = await withLoading(
-        async () => {
-          const response = await fetch(`/api/products/${productId}/configuration`, {
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Cache-Control': 'no-cache',
-            },
-          })
+      console.log('[useProductConfiguration] Fetching config for product:', productId)
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-          }
-
-          return response.json()
+      const response = await fetch(`/api/products/${productId}/configuration`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Cache-Control': 'no-cache',
         },
-        {
-          label: 'Loading product configuration...',
-          type: 'spinner',
-          context: 'product-configuration',
-        }
-      )
+      })
+
+      console.log('[useProductConfiguration] Response status:', response.status)
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const data: SimpleConfigData = await response.json()
+      console.log('[useProductConfiguration] Data received:', {
+        quantities: data.quantities?.length,
+        sizes: data.sizes?.length,
+        paperStocks: data.paperStocks?.length,
+      })
 
       // Set defaults
       const defaultConfig: SimpleProductConfiguration = {
@@ -244,9 +244,10 @@ export function useProductConfiguration({
 
       onConfigurationChange?.(defaultConfig)
     } catch (err) {
+      console.error('[useProductConfiguration] Error:', err)
       handleError(err instanceof Error ? err : new Error('Failed to load configuration'))
     }
-  }, [productId, onConfigurationChange, withLoading, handleError, clearErrors])
+  }, [productId, onConfigurationChange, handleError, clearErrors])
 
   useEffect(() => {
     fetchConfiguration()

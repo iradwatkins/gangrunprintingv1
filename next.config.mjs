@@ -8,7 +8,7 @@ import { withSentryConfig } from '@sentry/nextjs'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Output configuration for Docker deployment
-  output: 'standalone',
+  // output: 'standalone', // DISABLED - causes caching issues with next start
 
   // Enable experimental features for App Router
   experimental: {

@@ -17,7 +17,9 @@ import {
 import toast from '@/lib/toast'
 
 interface Product {
-  // API returns PascalCase properties
+  // Keep lowercase id for API calls
+  id: string
+  // API returns PascalCase properties for display
   Id: string
   Name: string
   Slug: string
@@ -84,28 +86,34 @@ export default function ProductsPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (productId: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return
 
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      console.log('[Admin] Deleting product:', productId)
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'DELETE',
       })
+
+      console.log('[Admin] Delete response status:', response.status)
 
       if (response.ok) {
         toast.success('Product deleted')
         fetchProducts()
       } else {
-        throw new Error('Failed to delete product')
+        const errorData = await response.json()
+        console.error('[Admin] Delete failed:', errorData)
+        toast.error(errorData.error || 'Failed to delete product')
       }
     } catch (error) {
-      toast.error('Failed to delete product')
+      console.error('[Admin] Delete error:', error)
+      toast.error('Failed to delete product: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
   }
 
-  const toggleActive = async (id: string, isActive: boolean) => {
+  const toggleActive = async (productId: string, isActive: boolean) => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !isActive }),
@@ -318,7 +326,7 @@ export default function ProductsPage() {
                         <Badge
                           className="w-fit cursor-pointer"
                           variant={product.IsActive ? 'default' : 'secondary'}
-                          onClick={() => toggleActive(product.Id, product.IsActive)}
+                          onClick={() => toggleActive(product.id, product.IsActive)}
                         >
                           {product.IsActive ? 'Active' : 'Inactive'}
                         </Badge>
@@ -326,7 +334,7 @@ export default function ProductsPage() {
                           <Badge
                             className="w-fit text-xs cursor-pointer"
                             variant="outline"
-                            onClick={() => toggleFeatured(product.Id, product.IsFeatured)}
+                            onClick={() => toggleFeatured(product.id, product.IsFeatured)}
                           >
                             Featured
                           </Badge>
@@ -340,7 +348,7 @@ export default function ProductsPage() {
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href={`/admin/products/${product.Id}/edit`}>
+                        <Link href={`/admin/products/${product.id}/edit`}>
                           <Button size="sm" title="Edit Product" variant="ghost">
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -349,7 +357,7 @@ export default function ProductsPage() {
                           size="sm"
                           title="Duplicate Product"
                           variant="ghost"
-                          onClick={() => handleDuplicate(product.Id, product.Name)}
+                          onClick={() => handleDuplicate(product.id, product.Name)}
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
@@ -357,7 +365,7 @@ export default function ProductsPage() {
                           size="sm"
                           title="Delete Product"
                           variant="ghost"
-                          onClick={() => handleDelete(product.Id)}
+                          onClick={() => handleDelete(product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

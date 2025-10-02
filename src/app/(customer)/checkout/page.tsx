@@ -608,32 +608,71 @@ function CheckoutPageContent() {
                       </p>
                     </div>
 
+                    {/* DEBUG INFO */}
+                    <div className="bg-yellow-100 border-2 border-yellow-500 p-4 mb-4 rounded">
+                      <h3 className="font-bold text-yellow-900">DEBUG INFO:</h3>
+                      <p><strong>Items count:</strong> {items.length}</p>
+                      <p><strong>Items is array:</strong> {String(Array.isArray(items))}</p>
+                      <p><strong>First item:</strong> {items[0] ? JSON.stringify({
+                        qty: items[0].quantity,
+                        width: items[0].dimensions?.width,
+                        height: items[0].dimensions?.height,
+                        paperWeight: items[0].paperStockWeight
+                      }) : 'No items'}</p>
+                    </div>
+
                     {/* Shipping Rates */}
-                    <ShippingRates
-                      items={items.map((item) => ({
+                    {(() => {
+                      console.log('🔍 CHECKOUT: Items type:', typeof items, 'Is array:', Array.isArray(items), 'Value:', items)
+
+                      if (!Array.isArray(items) || items.length === 0) {
+                        console.error('❌ CHECKOUT: Items is not an array or is empty!', items)
+                        return (
+                          <div className="text-red-600 p-4 border border-red-300 rounded">
+                            Error: Cart items not properly loaded. Please refresh the page.
+                          </div>
+                        )
+                      }
+
+                      const mappedItems = items.map((item) => ({
                         quantity: item.quantity,
-                        width: 8.5, // Default width
-                        height: 11, // Default height
-                        paperStockWeight: 0.1, // Default weight
-                      }))}
-                      toAddress={{
+                        width: item.dimensions?.width || 4,
+                        height: item.dimensions?.height || 6,
+                        paperStockWeight: item.paperStockWeight || 0.0009,
+                        paperStockId: item.options?.paperStockId,
+                      }))
+
+                      const address = {
                         street: formData.address,
                         city: formData.city,
                         state: formData.state,
                         zipCode: formData.zipCode,
                         country: 'US',
-                      }}
-                      onAirportSelected={setSelectedAirportId}
-                      onRateSelected={(rate) => {
-                        setSelectedShippingRate({
-                          carrier: rate.carrier,
-                          serviceName: rate.serviceName,
-                          rateAmount: rate.rateAmount,
-                          estimatedDays: rate.estimatedDays,
-                          transitDays: rate.estimatedDays, // For backward compatibility
-                        })
-                      }}
-                    />
+                      }
+
+                      console.log('🔍 CHECKOUT PAGE: Rendering ShippingRates component')
+                      console.log('🔍 CHECKOUT: Cart items:', items)
+                      console.log('🔍 CHECKOUT: Mapped items for ShippingRates:', mappedItems)
+                      console.log('🔍 CHECKOUT: Address:', address)
+
+                      return (
+                        <ShippingRates
+                          items={mappedItems}
+                          toAddress={address}
+                          onAirportSelected={setSelectedAirportId}
+                          onRateSelected={(rate) => {
+                            console.log('🔍 CHECKOUT: Rate selected:', rate)
+                            setSelectedShippingRate({
+                              carrier: rate.carrier,
+                              serviceName: rate.serviceName,
+                              rateAmount: rate.rateAmount,
+                              estimatedDays: rate.estimatedDays,
+                              transitDays: rate.estimatedDays,
+                            })
+                          }}
+                        />
+                      )
+                    })()}
 
                     {/* Navigation Buttons */}
                     <div className="flex justify-between pt-6 border-t">
@@ -934,6 +973,15 @@ function CheckoutPageContent() {
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="flex items-center">
+                      <Package2 className="h-4 w-4 mr-1 text-gray-400" />
+                      Weight
+                    </span>
+                    <span className="font-medium text-gray-600">
+                      {currentItem ? `${(currentItem.quantity * 0.0015).toFixed(2)} lbs` : '0.00 lbs'}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="flex items-center">

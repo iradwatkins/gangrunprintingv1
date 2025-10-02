@@ -1,12 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// GET /api/products/by-slug/[slug] - Get product by slug with all related data
+// GET /api/products/by-slug/[slug] - Get product by slug or SKU with all related data
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const product = await prisma.product.findUnique({
+    console.log('[API by-slug] Looking up product by slug/sku:', params.slug)
+
+    // Look up by slug OR SKU
+    const product = await prisma.product.findFirst({
       where: {
-        slug: params.slug,
+        OR: [
+          { slug: params.slug },
+          { sku: params.slug }
+        ],
         isActive: true,
       },
       include: {

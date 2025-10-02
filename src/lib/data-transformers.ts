@@ -26,11 +26,27 @@ export function transformProductForFrontend(product: Product): TransformedProduc
   if (!product) return null
 
   return {
+    // Keep lowercase fields for API calls
+    id: product.id,
+    sku: product.sku,
+    categoryId: product.categoryId,
+    basePrice: product.basePrice || product.base_price || 0,
+    setupFee: product.setupFee || product.setup_fee || 0,
+    productionTime: product.productionTime || product.production_time,
+    description: product.description,
+    shortDescription: product.shortDescription || product.short_description,
+
+    // PascalCase for frontend display
     Id: product.id,
+    Sku: product.sku,
+    CategoryId: product.categoryId,
     Name: product.name,
     Slug: product.slug,
     Description: product.description,
-    BasePrice: product.basePrice || product.base_price,
+    ShortDescription: product.shortDescription || product.short_description,
+    BasePrice: product.basePrice || product.base_price || 0,
+    SetupFee: product.setupFee || product.setup_fee || 0,
+    ProductionTime: product.productionTime || product.production_time,
     TurnaroundTime: product.turnaroundTime || product.turnaround_time,
     IsActive: product.isActive ?? product.is_active ?? true,
     IsFeatured: product.isFeatured ?? product.is_featured ?? false,

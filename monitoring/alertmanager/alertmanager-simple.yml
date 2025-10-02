@@ -1,0 +1,39 @@
+# Simplified AlertManager Configuration for Initial Deployment
+
+global:
+  resolve_timeout: 5m
+
+# Route configuration
+route:
+  # Default receiver
+  receiver: 'webhook'
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+
+  # Critical alerts - immediate notification
+  routes:
+    - match:
+        severity: critical
+      receiver: 'webhook'
+      group_wait: 0s
+      repeat_interval: 15m
+
+# Receivers configuration
+receivers:
+  # Webhook receiver - logs to application
+  - name: 'webhook'
+    webhook_configs:
+      - url: 'http://host.docker.internal:3002/api/webhooks/alerts'
+        send_resolved: true
+        max_alerts: 0
+
+# Inhibition rules - prevent notification floods
+inhibit_rules:
+  # If the entire app is down, don't send component alerts
+  - source_match:
+      alertname: 'ApplicationDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['instance']

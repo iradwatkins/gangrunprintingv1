@@ -1,0 +1,164 @@
+# CRITICAL: AlertManager Configuration for GangRun Printing
+# Handles alert routing, grouping, and notifications
+
+global:
+  # SMTP configuration for email alerts
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@gangrunprinting.com'
+  smtp_auth_username: '{{ SMTP_USERNAME }}'
+  smtp_auth_password: '{{ SMTP_PASSWORD }}'
+  smtp_require_tls: true
+
+  # Global settings
+  resolve_timeout: 5m
+
+# Templates for alert formatting
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route configuration
+route:
+  # Default receiver
+  receiver: 'default'
+
+  # Group alerts by these labels
+  group_by: ['alertname', 'severity', 'team']
+
+  # Wait before sending grouped notifications
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+
+  # Child routes for specific alert routing
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 0s
+      repeat_interval: 15m
+      continue: true
+
+    # Business alerts
+    - match:
+        team: business
+      receiver: 'business-team'
+      group_wait: 30s
+      repeat_interval: 4h
+
+    # Engineering alerts
+    - match:
+        team: engineering
+      receiver: 'engineering-team'
+      group_wait: 30s
+      repeat_interval: 1h
+
+    # Security alerts
+    - match:
+        team: security
+      receiver: 'security-team'
+      group_wait: 0s
+      repeat_interval: 30m
+
+    # Infrastructure alerts
+    - match:
+        team: infrastructure
+      receiver: 'infrastructure-team'
+      group_wait: 1m
+      repeat_interval: 2h
+
+# Receivers configuration
+receivers:
+  # Default receiver - logs only
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:3002/api/webhooks/alerts'
+        send_resolved: true
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'iradwatkins@gmail.com'
+        headers:
+          Subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }} - GangRun Printing'
+        html: |
+          <h2>🚨 Critical Alert</h2>
+          <p><strong>Alert:</strong> {{ .GroupLabels.alertname }}</p>
+          <p><strong>Description:</strong> {{ range .Alerts }}{{ .Annotations.description }}{{ end }}</p>
+          <p><strong>Time:</strong> {{ .Alerts.Firing | len }} firing, {{ .Alerts.Resolved | len }} resolved</p>
+          <p><strong>Action Required:</strong> Immediate attention needed</p>
+        send_resolved: true
+
+    # Webhook for critical alerts (e.g., PagerDuty, Slack)
+    webhook_configs:
+      - url: 'http://localhost:3002/api/webhooks/critical'
+        send_resolved: true
+
+    # SMS via webhook (optional)
+    # webhook_configs:
+    #   - url: 'https://api.twilio.com/webhook'
+    #     send_resolved: false
+
+  # Business team alerts
+  - name: 'business-team'
+    email_configs:
+      - to: 'business@gangrunprinting.com'
+        headers:
+          Subject: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+  # Engineering team alerts
+  - name: 'engineering-team'
+    email_configs:
+      - to: 'engineering@gangrunprinting.com'
+        headers:
+          Subject: '🔧 Engineering Alert: {{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+    # Slack webhook for engineering
+    slack_configs:
+      - api_url: '{{ SLACK_WEBHOOK_URL }}'
+        channel: '#engineering-alerts'
+        title: 'Engineering Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        send_resolved: true
+
+  # Security team alerts
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@gangrunprinting.com'
+        headers:
+          Subject: '🔒 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+          Priority: 'Urgent'
+        send_resolved: true
+
+  # Infrastructure team alerts
+  - name: 'infrastructure-team'
+    email_configs:
+      - to: 'infrastructure@gangrunprinting.com'
+        headers:
+          Subject: '🏗️ Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+# Inhibition rules - prevent notification floods
+inhibit_rules:
+  # If the entire app is down, don't send component alerts
+  - source_match:
+      alertname: 'ApplicationDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['instance']
+
+  # If database is down, don't send query performance alerts
+  - source_match:
+      alertname: 'PostgreSQLDown'
+    target_match:
+      alertname: 'SlowDatabaseQueries'
+
+  # If high CPU, don't send slow response alerts
+  - source_match:
+      alertname: 'HighCPUUsage'
+      severity: 'critical'
+    target_match:
+      alertname: 'SlowAPIResponse'
+      severity: 'warning'

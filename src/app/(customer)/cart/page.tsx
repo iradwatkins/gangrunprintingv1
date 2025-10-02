@@ -72,13 +72,15 @@ function CartPageContent() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
-          href="/products"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Continue Shopping
-        </Link>
+        {cartItems.length > 0 && cartItems[0].productSlug && (
+          <Link
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+            href={`/products/${cartItems[0].productSlug}`}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Edit Product
+          </Link>
+        )}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Shopping Cart</h1>
           {cartItems.length > 0 && (
@@ -130,24 +132,8 @@ function CartPageContent() {
 
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-2">
-                  <Button
-                    disabled={item.quantity <= 1}
-                    size="icon"
-                    variant="outline"
-                    onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <div className="w-20 text-center">
-                    <span className="font-medium">{item.quantity}</span>
-                  </div>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                  <span className="text-sm text-muted-foreground">Quantity: </span>
+                  <span className="font-medium">{item.quantity}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold">${item.subtotal.toFixed(2)}</p>

@@ -120,10 +120,19 @@ export class ProductService {
           productImages: {
             select: {
               id: true,
-              url: true,
-              thumbnailUrl: true,
-              alt: true,
+              imageId: true,
               isPrimary: true,
+              sortOrder: true,
+              Image: {
+                select: {
+                  id: true,
+                  url: true,
+                  thumbnailUrl: true,
+                  alt: true,
+                  width: true,
+                  height: true,
+                },
+              },
             },
             where: { isPrimary: true },
             take: 1,
@@ -201,6 +210,22 @@ export class ProductService {
         updatedAt: true,
         productCategory: true,
         productImages: {
+          select: {
+            id: true,
+            imageId: true,
+            isPrimary: true,
+            sortOrder: true,
+            Image: {
+              select: {
+                id: true,
+                url: true,
+                thumbnailUrl: true,
+                alt: true,
+                width: true,
+                height: true,
+              },
+            },
+          },
           orderBy: { sortOrder: 'asc' },
         },
         ...(includeDetails ? {
@@ -362,20 +387,34 @@ export class ProductService {
               addOnId,
             })),
           }),
-        // Images
-        validated.images.length > 0 &&
-          tx.productImage.createMany({
-            data: validated.images.map((img, index) => ({
-              productId: newProduct.id,
+      ])
+
+      // Handle images separately (can't use createMany due to foreign key)
+      if (validated.images.length > 0) {
+        for (let index = 0; index < validated.images.length; index++) {
+          const img = validated.images[index]
+          // Create Image record first
+          const image = await tx.image.create({
+            data: {
+              name: `${slug}-${Date.now()}-${index}`,
               url: img.url,
               thumbnailUrl: img.thumbnailUrl || img.url,
               alt: img.alt || validated.name,
-              caption: img.caption,
-              isPrimary: img.isPrimary || index === 0,
+              category: 'product',
+            },
+          })
+
+          // Link image to product via ProductImage
+          await tx.productImage.create({
+            data: {
+              productId: newProduct.id,
+              imageId: image.id,
               sortOrder: index,
-            })),
-          }),
-      ])
+              isPrimary: img.isPrimary || index === 0,
+            },
+          })
+        }
+      }
 
       return newProduct
     })

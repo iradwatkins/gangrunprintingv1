@@ -1,8 +1,10 @@
+import { Carrier } from '@prisma/client'
+import type { ShippingConfiguration } from './interfaces'
 
 // FedEx configuration
 export const fedexConfig: ShippingConfiguration = {
-  enabled: !!process.env.FEDEX_API_KEY,
-  testMode: process.env.FEDEX_TEST_MODE === 'true',
+  enabled: true, // Always enabled - will use test mode if no API keys
+  testMode: !process.env.FEDEX_API_KEY || process.env.FEDEX_TEST_MODE === 'true',
   defaultPackaging: {
     weight: 0.5, // 0.5 lbs for box/packaging
   },
@@ -21,7 +23,7 @@ export const upsConfig: ShippingConfiguration = {
 
 // Southwest Cargo configuration
 export const southwestCargoConfig: ShippingConfiguration = {
-  enabled: true, // Always enabled as it's simple weight-based
+  enabled: true, // ENABLED: Airport-to-airport freight shipping
   testMode: false,
   defaultPackaging: {
     weight: 1.0, // Heavier packaging for freight
@@ -67,10 +69,10 @@ export const SERVICE_NAMES = {
 
 // Default sender address (your warehouse)
 export const DEFAULT_SENDER_ADDRESS = {
-  street: '1234 Print Shop Way',
-  city: 'Houston',
-  state: 'TX',
-  zipCode: '77001',
+  street: '1300 Basswood Road',
+  city: 'Schaumburg',
+  state: 'IL',
+  zipCode: '60173',
   country: 'US',
   isResidential: false,
 }

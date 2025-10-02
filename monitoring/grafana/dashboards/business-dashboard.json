@@ -1,0 +1,222 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "gangrun-business",
+    "title": "GangRun Printing - Business Dashboard",
+    "tags": ["business", "revenue", "orders"],
+    "timezone": "America/Chicago",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+        "type": "stat",
+        "title": "Total Orders Today",
+        "targets": [
+          {
+            "expr": "increase(gangrun_orders_total[24h])",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 10 },
+                { "color": "green", "value": 50 }
+              ]
+            },
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+        "type": "stat",
+        "title": "Revenue Today",
+        "targets": [
+          {
+            "expr": "increase(gangrun_revenue_total_cents[24h]) / 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 100 },
+                { "color": "green", "value": 1000 }
+              ]
+            },
+            "unit": "currencyUSD"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+        "type": "stat",
+        "title": "Active Sessions",
+        "targets": [
+          {
+            "expr": "gangrun_active_sessions",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "yellow", "value": null },
+                { "color": "green", "value": 5 }
+              ]
+            },
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+        "type": "stat",
+        "title": "Conversion Rate",
+        "targets": [
+          {
+            "expr": "rate(gangrun_orders_total[1h]) / rate(gangrun_product_views_total[1h]) * 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "green", "value": 5 }
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+        "type": "timeseries",
+        "title": "Orders per Hour",
+        "targets": [
+          {
+            "expr": "sum(rate(gangrun_orders_total[1h])) by (status) * 3600",
+            "legendFormat": "{{status}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "showPoints": "never"
+            },
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "type": "timeseries",
+        "title": "Revenue per Hour",
+        "targets": [
+          {
+            "expr": "sum(rate(gangrun_revenue_total_cents[1h])) * 3600 / 100",
+            "legendFormat": "Revenue",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "custom": {
+              "drawStyle": "bars",
+              "lineWidth": 1,
+              "fillOpacity": 50,
+              "showPoints": "never"
+            },
+            "unit": "currencyUSD"
+          }
+        }
+      },
+      {
+        "id": 7,
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+        "type": "piechart",
+        "title": "Orders by Product Type",
+        "targets": [
+          {
+            "expr": "sum(increase(gangrun_orders_total[24h])) by (product_type)",
+            "legendFormat": "{{product_type}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+        "type": "bargauge",
+        "title": "Top Products by Revenue",
+        "targets": [
+          {
+            "expr": "topk(5, sum(increase(gangrun_revenue_total_cents[24h])) by (product_type)) / 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+        "type": "table",
+        "title": "Order Details (Last Hour)",
+        "targets": [
+          {
+            "expr": "sum(increase(gangrun_orders_total[1h])) by (status, payment_method)",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  }
+}

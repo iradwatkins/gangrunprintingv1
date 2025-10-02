@@ -5,7 +5,9 @@ import type { CartItem, CartState, CartContextType } from '@/lib/cart-types'
 
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
 
-const SHIPPING_RATE = 10.0
+// Shipping will be calculated dynamically at checkout based on FedEx rates
+// This is just a placeholder for cart display before checkout
+const ESTIMATED_SHIPPING = 0 // Set to 0 - actual shipping calculated at checkout
 
 const initialState: CartState = {
   items: [],
@@ -27,27 +29,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   const updatedState = (() => {
     switch (action.type) {
       case 'ADD_ITEM': {
-        const existingItemIndex = state.items.findIndex((item) => item.id === action.payload.id)
-
-        if (existingItemIndex >= 0) {
-          const newItems = [...state.items]
-          const existingItem = newItems[existingItemIndex]
-          newItems[existingItemIndex] = {
-            ...existingItem,
-            quantity: existingItem.quantity + action.payload.quantity,
-            subtotal: existingItem.price * (existingItem.quantity + action.payload.quantity),
-          }
-          return {
-            ...state,
-            items: newItems,
-            isOpen: true,
-            lastUpdated: new Date().toISOString(),
-          }
-        }
-
+        // SINGLE PRODUCT MODEL: Replace existing cart item with new one
+        // Users can only order one product at a time
         return {
           ...state,
-          items: [...state.items, action.payload],
+          items: [action.payload], // Replace entire cart with just this item
           isOpen: true,
           lastUpdated: new Date().toISOString(),
         }
@@ -122,9 +108,36 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const savedCart = localStorage.getItem('gangrun_cart')
         if (savedCart) {
           const parsedCart = JSON.parse(savedCart) as CartState
+
+          // Validate cart items have required shipping fields AND correct weight
+          if (parsedCart.items && parsedCart.items.length > 0) {
+            const invalidItems = parsedCart.items.filter((item: any) => {
+              // Check for missing shipping data
+              if (!item.dimensions || !item.paperStockWeight) {
+                return true
+              }
+              // Check for incorrect paper weight (0.0015 is wrong, causes 180 lbs for 5000 postcards)
+              if (item.paperStockWeight === 0.0015) {
+                console.warn('⚠️ Item has incorrect paper weight (0.0015). Needs to be re-added with correct weight.')
+                return true
+              }
+              return false
+            })
+
+            if (invalidItems.length > 0) {
+              console.warn('⚠️ Cart has items with invalid shipping data. Clearing cart. Please re-add items.')
+              console.warn('Invalid items:', invalidItems)
+              localStorage.removeItem('gangrun_cart')
+              // Don't load the invalid cart
+              setIsLoading(false)
+              return
+            }
+          }
+
           dispatch({ type: 'LOAD_CART', payload: parsedCart })
         }
       } catch (error) {
+        console.error('Error loading cart:', error)
       } finally {
         setIsLoading(false)
       }
@@ -170,7 +183,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0)
   const subtotal = state.items.reduce((sum, item) => sum + item.subtotal, 0)
   const tax = subtotal * TAX_RATE
-  const shipping = state.items.length > 0 ? SHIPPING_RATE : 0
+  // Shipping is calculated dynamically at checkout - using placeholder for cart display
+  const shipping = state.items.length > 0 ? ESTIMATED_SHIPPING : 0
   const total = subtotal + tax + shipping
 
   const value: CartContextType = {

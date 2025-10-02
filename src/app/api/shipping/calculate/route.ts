@@ -38,9 +38,12 @@ const calculateRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('[Shipping API] Request body:', JSON.stringify(body, null, 2))
+
     const validation = calculateRequestSchema.safeParse(body)
 
     if (!validation.success) {
+      console.error('[Shipping API] Validation failed:', validation.error.flatten())
       return NextResponse.json(
         { error: 'Invalid request', details: validation.error.flatten() },
         { status: 400 }
@@ -49,15 +52,18 @@ export async function POST(request: NextRequest) {
 
     const { toAddress, items, fromAddress } = validation.data
 
-    // Default from address (your warehouse)
+    // Default from address (GangRun Printing warehouse)
     const shipFrom: ShippingAddress = fromAddress || {
-      street: '1234 Print Shop Way',
-      city: 'Houston',
-      state: 'TX',
-      zipCode: '77001',
+      street: '1300 Basswood Road',
+      city: 'Schaumburg',
+      state: 'IL',
+      zipCode: '60173',
       country: 'US',
       isResidential: false,
     }
+
+    console.log('[Shipping API] Ship from:', shipFrom)
+    console.log('[Shipping API] Ship to:', toAddress)
 
     // Calculate weight for each item
     const packages: ShippingPackage[] = []
@@ -74,6 +80,7 @@ export async function POST(request: NextRequest) {
           height: item.height,
           quantity: item.quantity,
         })
+        console.log('[Shipping API] Calculated weight from paperStockWeight:', weight, 'lbs')
       }
       // Otherwise, look up the paper stock
       else if (item.paperStockId) {
@@ -88,20 +95,24 @@ export async function POST(request: NextRequest) {
             height: item.height,
             quantity: item.quantity,
           })
+          console.log('[Shipping API] Calculated weight from DB paperStock:', weight, 'lbs')
         }
       }
-      // Default weight if no paper stock info
+      // Default weight if no paper stock info (using typical 60lb offset = 0.0009)
       else {
         weight = calculateWeight({
-          paperStockWeight: 0.0015, // Default weight
+          paperStockWeight: 0.0009, // Default: 60lb offset paper (~0.0009 lbs/sq in)
           width: item.width,
           height: item.height,
           quantity: item.quantity,
         })
+        console.log('[Shipping API] Calculated weight from default (60lb offset):', weight, 'lbs')
       }
 
       totalWeight += weight
     }
+
+    console.log('[Shipping API] Total weight:', totalWeight, 'lbs')
 
     // Create a single package with the total weight
     // In a real scenario, you might want to split into multiple packages
@@ -114,8 +125,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('[Shipping API] Package:', packages[0])
+
     // Get rates from all carriers
     const rates = await shippingCalculator.getAllRates(shipFrom, toAddress, packages)
+
+    console.log('[Shipping API] Rates received:', rates.length, 'rates')
+    console.log('[Shipping API] Rates:', JSON.stringify(rates, null, 2))
 
     return NextResponse.json({
       success: true,
@@ -123,6 +139,10 @@ export async function POST(request: NextRequest) {
       totalWeight: totalWeight.toFixed(2),
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
+    console.error('[Shipping API] Error:', error)
+    return NextResponse.json({
+      error: 'Failed to calculate shipping rates',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }

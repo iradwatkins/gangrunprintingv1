@@ -134,12 +134,19 @@ export async function GET_OLD(request: NextRequest) {
         productImages: {
           select: {
             id: true,
-            url: true,
-            thumbnailUrl: true,
-            alt: true,
-            caption: true,
+            imageId: true,
             isPrimary: true,
             sortOrder: true,
+            Image: {
+              select: {
+                id: true,
+                url: true,
+                thumbnailUrl: true,
+                alt: true,
+                width: true,
+                height: true,
+              },
+            },
           },
           orderBy: { sortOrder: 'asc' },
         },
@@ -453,35 +460,37 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Images (optional)
+        // Images (optional) - Create Image records first, then link to product
         if (images.length > 0) {
-          relationshipPromises.push(
-            tx.productImage.createMany({
-              data: images.map((img: {
-                url: string
-                thumbnailUrl?: string
-                alt?: string
-                caption?: string
-                isPrimary?: boolean
-                width?: number
-                height?: number
-                fileSize?: number
-                mimeType?: string
-              }, index: number) => ({
-                productId: newProduct.id,
+          for (let index = 0; index < images.length; index++) {
+            const img = images[index]
+            // Create Image record
+            const image = await tx.image.create({
+              data: {
+                name: `${slug}-${Date.now()}-${index}`,
                 url: img.url,
                 thumbnailUrl: img.thumbnailUrl || img.url,
                 alt: img.alt || name,
-                caption: img.caption,
-                isPrimary: img.isPrimary || index === 0,
-                sortOrder: index,
                 width: img.width,
                 height: img.height,
                 fileSize: img.fileSize,
                 mimeType: img.mimeType,
-              })),
+                category: 'product',
+              },
             })
-          )
+
+            // Link image to product via ProductImage
+            relationshipPromises.push(
+              tx.productImage.create({
+                data: {
+                  productId: newProduct.id,
+                  imageId: image.id,
+                  sortOrder: index,
+                  isPrimary: img.isPrimary || index === 0,
+                },
+              })
+            )
+          }
         }
 
         // Wait for all relationships to be created

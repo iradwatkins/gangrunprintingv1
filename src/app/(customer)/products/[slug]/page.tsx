@@ -16,8 +16,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
 
   try {
-    const product = await prisma.product.findUnique({
-      where: { slug, isActive: true },
+    // Look up by slug or SKU
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { slug: slug },
+          { sku: slug }
+        ],
+        isActive: true
+      },
       select: {
         name: true,
         description: true,
@@ -55,6 +62,7 @@ function isValidSlug(slug: string): boolean {
 
 async function getProduct(slug: string) {
   // Enhanced logging for debugging
+  console.log('[Product Page] Looking up product by slug/sku:', slug)
 
   // Validate slug format to prevent potential issues
   if (!isValidSlug(slug)) {
@@ -63,9 +71,13 @@ async function getProduct(slug: string) {
   }
 
   try {
-    const product = await prisma.product.findUnique({
+    // Try to find by slug first, then by SKU (for backward compatibility)
+    const product = await prisma.product.findFirst({
       where: {
-        slug: slug,
+        OR: [
+          { slug: slug },
+          { sku: slug }
+        ],
         isActive: true,
       },
       include: {
@@ -167,6 +179,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Add defensive checks for all nested data
   const transformedProduct = {
     ...product,
+    id: product.id, // Explicitly include ID
     ProductCategory: product.productCategory || { id: '', name: 'Uncategorized' },
     ProductImage: product.productImages || [],
     // Ensure all required fields have safe defaults
@@ -177,6 +190,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     shortDescription: product.shortDescription || '',
   }
 
+  console.log('[Product Page] Passing product to client:', {
+    id: transformedProduct.id,
+    name: transformedProduct.name,
+    hasId: !!transformedProduct.id
+  })
 
   // Pass the server-fetched data to the client component with error boundary
   return (

@@ -101,47 +101,61 @@ function EditProductClient({ id }: { id: string }) {
     try {
       const res = await fetch(`/api/products/${id}`)
       if (!res.ok) throw new Error('Failed to fetch product')
-      const data = await res.json()
+      const response = await res.json()
+
+      // Handle both direct response and wrapped response with data property
+      const data = response.data || response
 
       // Map the product data to form data structure
-      setFormData({
-        name: data.name || '',
-        sku: data.sku || '',
-        categoryId: data.categoryId || '',
-        description: data.description || '',
-        shortDescription: data.shortDescription || '',
-        isActive: data.isActive ?? true,
-        isFeatured: data.isFeatured ?? false,
+      const mappedData = {
+        name: data.name || data.Name || '',
+        sku: data.sku || data.Sku || '',
+        categoryId: data.categoryId || data.CategoryId || '',
+        description: data.description || data.Description || '',
+        shortDescription: data.shortDescription || data.ShortDescription || '',
+        isActive: data.isActive ?? data.IsActive ?? true,
+        isFeatured: data.isFeatured ?? data.IsFeatured ?? false,
         images: data.productImages || data.ProductImages || [],
 
         // Map paper stock set
-        selectedPaperStockSet: data.productPaperStockSets?.[0]?.paperStockSetId || '',
+        selectedPaperStockSet: data.productPaperStockSets?.[0]?.paperStockSetId || data.productPaperStockSets?.[0]?.PaperStockSet?.id || '',
 
         // Map quantity and size groups
-        selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || '',
-        selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || '',
-        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || '',
-        selectedTurnaroundTimeSet: data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId || '',
+        selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || data.productQuantityGroups?.[0]?.QuantityGroup?.id || '',
+        selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || data.productSizeGroups?.[0]?.SizeGroup?.id || '',
+        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || data.productAddOnSets?.[0]?.AddOnSet?.id || '',
+        selectedTurnaroundTimeSet: data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId || data.productTurnaroundTimeSets?.[0]?.TurnaroundTimeSet?.id || '',
 
         // Turnaround times
-        productionTime: data.productionTime || 3,
-        rushAvailable: data.rushAvailable || false,
-        rushDays: data.rushDays || 1,
-        rushFee: data.rushFee || 0,
+        productionTime: data.productionTime || data.ProductionTime || 3,
+        rushAvailable: data.rushAvailable || data.RushAvailable || false,
+        rushDays: data.rushDays || data.RushDays || 1,
+        rushFee: data.rushFee || data.RushFee || 0,
 
         // Pricing
-        basePrice: data.basePrice || 0,
-        setupFee: data.setupFee || 0,
+        basePrice: data.basePrice || data.BasePrice || 0,
+        setupFee: data.setupFee || data.SetupFee || 0,
+      }
+
+      console.log('[Edit Product] Form data mapped:', {
+        selectedPaperStockSet: mappedData.selectedPaperStockSet,
+        selectedTurnaroundTimeSet: mappedData.selectedTurnaroundTimeSet,
+        selectedQuantityGroup: mappedData.selectedQuantityGroup,
+        selectedSizeGroup: mappedData.selectedSizeGroup,
       })
+
+      setFormData(mappedData)
     } catch (error) {
+      console.error('[Edit Product] Error loading product:', error)
       toast.error('Failed to load product')
-      } finally {
+    } finally {
       setLoadingProduct(false)
     }
   }
 
   const fetchData = async () => {
     try {
+      console.log('[Edit Product] Fetching configuration data...')
       const [catRes, paperRes, qtyRes, sizeRes, addOnRes, turnaroundRes] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
@@ -151,14 +165,39 @@ function EditProductClient({ id }: { id: string }) {
         fetch('/api/turnaround-time-sets'),
       ])
 
-      if (catRes.ok) setCategories(await catRes.json())
-      if (paperRes.ok) setPaperStockSets(await paperRes.json())
-      if (qtyRes.ok) setQuantityGroups(await qtyRes.json())
-      if (sizeRes.ok) setSizeGroups(await sizeRes.json())
-      if (addOnRes.ok) setAddOnSets(await addOnRes.json())
-      if (turnaroundRes.ok) setTurnaroundTimeSets(await turnaroundRes.json())
-    } catch (error) {
+      if (catRes.ok) {
+        const cats = await catRes.json()
+        console.log('[Edit Product] Loaded categories:', cats.length)
+        setCategories(cats)
       }
+      if (paperRes.ok) {
+        const papers = await paperRes.json()
+        console.log('[Edit Product] Loaded paper stock sets:', papers.length, papers)
+        setPaperStockSets(papers)
+      }
+      if (qtyRes.ok) {
+        const qtys = await qtyRes.json()
+        console.log('[Edit Product] Loaded quantity groups:', qtys.length)
+        setQuantityGroups(qtys)
+      }
+      if (sizeRes.ok) {
+        const sizes = await sizeRes.json()
+        console.log('[Edit Product] Loaded size groups:', sizes.length)
+        setSizeGroups(sizes)
+      }
+      if (addOnRes.ok) {
+        const addons = await addOnRes.json()
+        console.log('[Edit Product] Loaded addon sets:', addons.length)
+        setAddOnSets(addons)
+      }
+      if (turnaroundRes.ok) {
+        const turnarounds = await turnaroundRes.json()
+        console.log('[Edit Product] Loaded turnaround time sets:', turnarounds.length, turnarounds)
+        setTurnaroundTimeSets(turnarounds)
+      }
+    } catch (error) {
+      console.error('[Edit Product] Error fetching configuration data:', error)
+    }
   }
 
   const testPrice = async () => {
@@ -233,20 +272,28 @@ function EditProductClient({ id }: { id: string }) {
         pricingTiers: [], // Add empty pricing tiers array
       }
 
+      console.log('[Edit Product] Sending update request with data:', apiData)
+
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiData),
       })
 
+      console.log('[Edit Product] Response status:', response.status)
+
       if (response.ok) {
         toast.success('Product updated successfully')
         router.push('/admin/products')
       } else {
-        throw new Error('Failed to update product')
+        const errorData = await response.json()
+        console.error('[Edit Product] Update failed:', errorData)
+        toast.error(errorData.error || errorData.details || 'Failed to update product')
+        throw new Error(errorData.error || 'Failed to update product')
       }
     } catch (error) {
-      toast.error('Failed to update product')
+      console.error('[Edit Product] Error:', error)
+      toast.error('Failed to update product: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setLoading(false)
     }

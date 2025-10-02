@@ -1,0 +1,15 @@
+
+=== STEP 1: Navigating to admin login ===
+Screenshot saved: step1-login-page.png
+
+=== STEP 2: Logging in ===
+
+=== ERROR DURING INVESTIGATION ===
+No element found for selector: input[name="password"]
+Error: No element found for selector: input[name="password"]
+    at assert (/root/websites/gangrunprinting/node_modules/puppeteer-core/lib/cjs/puppeteer/util/assert.js:18:15)
+    at CdpFrame.type (/root/websites/gangrunprinting/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Frame.js:885:40)
+    at async investigateProductCreation (/root/websites/gangrunprinting/investigate-product-creation.js:101:7)
+Error screenshot saved: error-screenshot.png
+
+Keeping browser open for 5 seconds...

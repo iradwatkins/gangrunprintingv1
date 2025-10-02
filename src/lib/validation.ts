@@ -34,12 +34,56 @@ export const createProductSchema = z.object({
   quantityGroupId: z.string().cuid('Quantity group ID must be valid'),
   sizeGroupId: z.string().cuid('Size group ID must be valid'),
   selectedAddOns: z.array(z.string().cuid()).default([]),
+  turnaroundTimeSetId: z.string().optional().nullable(),
+  addOnSetId: z.string().optional().nullable(),
   productionTime: z.number().int().min(1).max(365).default(3),
   rushAvailable: z.boolean().default(false),
   rushDays: z.number().int().min(1).max(30).optional().nullable(),
   rushFee: z.number().min(0).max(10000).optional().nullable(),
   basePrice: z.number().min(0).max(100000).default(0),
   setupFee: z.number().min(0).max(10000).default(0),
+})
+
+// Pricing calculation validation schema
+export const pricingCalculationRequestSchema = z.object({
+  productId: z.string().optional(),
+  categoryId: z.string().optional(),
+
+  // Size configuration
+  sizeSelection: z.enum(['standard', 'custom']).default('standard'),
+  standardSizeId: z.string().optional().nullable(),
+  customWidth: z.number().positive().optional().nullable(),
+  customHeight: z.number().positive().optional().nullable(),
+
+  // Quantity configuration
+  quantitySelection: z.enum(['standard', 'custom']).default('standard'),
+  standardQuantityId: z.string().optional().nullable(),
+  customQuantity: z.number().int().positive().optional().nullable(),
+
+  // Paper configuration
+  paperStockId: z.string().optional().nullable(),
+  sides: z.enum(['single', 'double']).default('single'),
+
+  // Turnaround
+  turnaroundId: z.string().optional().nullable(),
+
+  // Add-ons
+  selectedAddons: z.array(
+    z.object({
+      addonId: z.string(),
+      quantity: z.number().int().positive().optional(),
+      configuration: z.record(z.unknown()).optional(),
+    })
+  ).default([]),
+
+  // Customer type
+  isBroker: z.boolean().default(false),
+  brokerCategoryDiscounts: z.array(
+    z.object({
+      categoryId: z.string(),
+      discountPercent: z.number().min(0).max(100),
+    })
+  ).default([]),
 })
 
 // Common validation helpers

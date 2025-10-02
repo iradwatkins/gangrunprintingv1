@@ -1,0 +1,119 @@
+# CRITICAL: Prometheus Configuration for GangRun Printing
+# This configuration scrapes metrics from all components
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'gangrun-monitor'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # ========================================
+  # APPLICATION METRICS
+  # ========================================
+  - job_name: 'gangrunprinting'
+    metrics_path: '/api/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['host.docker.internal:3002']
+        labels:
+          service: 'gangrun-app'
+          component: 'nextjs'
+
+  # ========================================
+  # SYSTEM METRICS
+  # ========================================
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'gangrun-system'
+          component: 'host'
+
+  # ========================================
+  # CONTAINER METRICS
+  # ========================================
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'gangrun-containers'
+          component: 'docker'
+
+  # ========================================
+  # DATABASE METRICS
+  # ========================================
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+        labels:
+          service: 'gangrun-database'
+          component: 'postgresql'
+
+  # ========================================
+  # REDIS METRICS (if available)
+  # ========================================
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis_exporter:9121']
+        labels:
+          service: 'gangrun-cache'
+          component: 'redis'
+
+  # ========================================
+  # PROMETHEUS SELF-MONITORING
+  # ========================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'gangrun-monitoring'
+          component: 'prometheus'
+
+  # ========================================
+  # GRAFANA METRICS
+  # ========================================
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          service: 'gangrun-monitoring'
+          component: 'grafana'
+
+  # ========================================
+  # PM2 METRICS (Application Process)
+  # ========================================
+  - job_name: 'pm2'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['172.22.0.1:9209']  # PM2 metrics exporter if configured
+        labels:
+          service: 'gangrun-app'
+          component: 'pm2'
+
+# Service discovery configurations for dynamic environments
+# Uncomment if using Kubernetes or Docker Swarm
+# kubernetes_sd_configs:
+#   - role: pod
+#     namespaces:
+#       names:
+#         - gangrun
+
+# docker_sd_configs:
+#   - host: unix:///var/run/docker.sock
+#     filters:
+#       - name: label
+#         values: ["monitoring=true"]

@@ -1,19 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowLeft, Clock, Check } from 'lucide-react'
+import { Clock, Check } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useCart } from '@/contexts/cart-context'
+import { ArrowLeft } from 'lucide-react'
 import { ProductImageGallery } from './ProductImageGallery'
-import ProductConfigurationForm from './ProductConfigurationForm'
-import { PriceCalculator } from './PriceCalculator'
-import { AddToCartSection } from './AddToCartSection'
-import { useImageUpload } from '@/hooks/useImageUpload'
-import { useProductConfiguration } from '@/hooks/useProductConfiguration'
-import { usePriceCalculation } from '@/hooks/usePriceCalculation'
+import SimpleQuantityTest from './SimpleQuantityTest'
 
 interface ProductImage {
   id: string
@@ -101,51 +94,8 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const router = useRouter()
-  const { addItem, openCart } = useCart()
-
-  // Legacy state management for backward compatibility with SimpleConfigurationForm
-  const [productConfiguration, setProductConfiguration] = useState<any>(null)
-  const [isConfigurationComplete, setIsConfigurationComplete] = useState(false)
-  const [calculatedPrice, setCalculatedPrice] = useState<number>(product.basePrice)
-
-  // Image upload management using new hook
-  const imageUpload = useImageUpload({
-    productId: product.id,
-    onImagesChange: (images) => {
-      // Update product configuration with uploaded files for backward compatibility
-      if (productConfiguration) {
-        const uploadedFiles = images.map(img => ({
-          fileId: img.id,
-          originalName: img.fileName,
-          size: img.fileSize,
-          mimeType: 'image/jpeg',
-          thumbnailUrl: img.thumbnailUrl,
-          uploadedAt: img.uploadedAt,
-          isImage: true,
-        }))
-        setProductConfiguration({
-          ...productConfiguration,
-          uploadedFiles
-        })
-      }
-    },
-  })
-
-  // Image upload handlers are now handled by the useImageUpload hook
-
-  // Handle configuration changes from ProductConfigurationForm
-  const handleConfigurationChange = (config: Record<string, unknown>, isComplete: boolean) => {
-    setProductConfiguration(config)
-    setIsConfigurationComplete(isComplete)
-  }
-
-  // Handle price changes from ProductConfigurationForm
-  const handlePriceChange = (price: number) => {
-    setCalculatedPrice(price)
-  }
-
-  // Add to cart logic is now handled by the AddToCartSection component
+  // All cart logic is now handled inside SimpleQuantityTest component
+  // No state management needed in parent - cleaner architecture
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -193,18 +143,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* Refactored Configuration Form with modular architecture */}
-              <ProductConfigurationForm
-                productId={product.id}
-                basePrice={product.basePrice}
-                setupFee={product.setupFee}
-                onConfigurationChange={(config, isComplete) => {
-                  handleConfigurationChange(config, isComplete)
-                }}
-                onPriceChange={(price) => {
-                  handlePriceChange(price)
-                }}
-              />
+              {/* SIMPLE TEST - Debug product ID */}
+              <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                <strong>Debug:</strong> Product ID = {product.id || 'UNDEFINED'}
+                <br /><strong>Product Keys:</strong> {Object.keys(product || {}).join(', ')}
+              </div>
+              {product.id ? (
+                <SimpleQuantityTest
+                  productId={product.id}
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    productionTime: product.productionTime,
+                    ProductImage: product.ProductImage,
+                  }}
+                />
+              ) : (
+                <div className="p-4 text-red-500">
+                  Error: Product ID is missing. Cannot load configuration.
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent className="space-y-4" value="specifications">
@@ -248,34 +207,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             </TabsContent>
           </Tabs>
-
-          {/* Price Display and Cart Button - Now using extracted components */}
-          {productConfiguration && (
-            <>
-              <PriceCalculator
-                configData={null} // Will be populated when we switch to new configuration
-                configuration={productConfiguration}
-                getQuantityValue={() => parseInt(productConfiguration.quantity) || 1}
-                setupFee={product.setupFee}
-                productionTime={product.productionTime}
-              />
-
-              <AddToCartSection
-                product={{
-                  id: product.id,
-                  name: product.name,
-                  slug: product.slug,
-                  productionTime: product.productionTime,
-                  images: product.ProductImage,
-                }}
-                configuration={productConfiguration}
-                isConfigurationComplete={isConfigurationComplete}
-                calculatedPrice={calculatedPrice}
-                getQuantityValue={() => parseInt(productConfiguration.quantity) || 1}
-                className="mt-4"
-              />
-            </>
-          )}
         </div>
       </div>
     </div>

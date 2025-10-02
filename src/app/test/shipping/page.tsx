@@ -21,16 +21,10 @@ export default function ShippingTestPage() {
 
   const [items] = useState([
     {
-      quantity: 1000,
-      width: 8.5, // inches
-      height: 11, // inches
-      paperStockWeight: 0.002, // 100lb text paper
-    },
-    {
-      quantity: 500,
-      width: 5,
-      height: 7,
-      paperStockWeight: 0.003, // 14pt card stock
+      quantity: 5000,
+      width: 4, // inches
+      height: 6, // inches
+      paperStockWeight: 0.0009, // 9pt paper (~65lb cover)
     },
   ])
 
@@ -60,20 +54,18 @@ export default function ShippingTestPage() {
           <CardContent>
             <div className="space-y-2 text-sm">
               <div>
-                1. <strong>1000 Flyers</strong> - 8.5" × 11" on 100lb text (0.002 lbs/sq inch)
-              </div>
-              <div>
-                2. <strong>500 Business Cards</strong> - 5" × 7" on 14pt card stock (0.003 lbs/sq
-                inch)
+                <strong>5,000 Postcards</strong> - 4" × 6" on 9pt paper (65lb cover)
               </div>
               <div className="mt-4 rounded bg-muted p-3">
                 <strong>Weight Calculation:</strong>
                 <br />
-                Flyers: 0.002 × 8.5 × 11 × 1000 = 187 lbs
+                Paper Weight: 0.0009 lbs/sq inch
                 <br />
-                Cards: 0.003 × 5 × 7 × 500 = 52.5 lbs
+                Total: 0.0009 × 4 × 6 × 5000 = <strong>108 lbs</strong>
                 <br />
-                <strong>Total: 239.5 lbs</strong>
+                <span className="text-xs text-muted-foreground">
+                  (FedEx Ground supports up to 150 lbs)
+                </span>
               </div>
             </div>
           </CardContent>

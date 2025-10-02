@@ -1,0 +1,36 @@
+schema: 1
+story: 'product-creation-checkout-audit'
+gate: FAIL
+status_reason: 'Critical payment integration missing, no production data, and required MCP tools not configured.'
+reviewer: 'Quinn'
+updated: '2025-09-28T14:30:00Z'
+top_issues:
+  - id: 'REQ-001'
+    severity: high
+    finding: 'Square payment API returns mock data - no real payment processing'
+    suggested_action: 'Implement actual Square SDK integration before production'
+  - id: 'TEST-001'
+    severity: high
+    finding: 'Chrome DevTools MCP not installed despite being mandatory requirement'
+    suggested_action: 'Install @chromedevtools/chrome-devtools-mcp immediately'
+  - id: 'TEST-002'
+    severity: high
+    finding: 'Puppeteer not installed despite being mandatory for testing'
+    suggested_action: 'Install puppeteer and puppeteer-mcp-server packages'
+  - id: 'REQ-002'
+    severity: high
+    finding: 'All seed data uses test/fake values instead of production data'
+    suggested_action: 'Create real product catalog with actual pricing and specifications'
+  - id: 'ARCH-001'
+    severity: medium
+    finding: 'shadcn-ui-mcp installed but not configured with API key'
+    suggested_action: 'Configure GitHub API key for shadcn MCP server'
+  - id: 'SEC-001'
+    severity: medium
+    finding: 'No validation that uploaded images match order specifications'
+    suggested_action: 'Add image validation for size, format, and resolution requirements'
+  - id: 'REL-001'
+    severity: low
+    finding: 'Upload timeout fixes documented but not verified in production'
+    suggested_action: 'Test upload reliability with large files in production environment'
+waiver: { active: false }

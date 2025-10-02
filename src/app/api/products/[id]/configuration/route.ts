@@ -1,8 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma-singleton'
-import { createProductService } from '@/services/ProductService'
-import { createProductRepository } from '@/repositories/ProductRepository'
 import { transformSizeGroup } from '@/lib/utils/size-transformer'
 import {
   transformAddonSets,
@@ -43,7 +41,7 @@ function calculatePriceDisplay(addon: any): { price: number; priceDisplay: strin
 }
 
 // Helper function to transform quantity values
-function transformQuantityValues(QuantityGroup: any) {
+function transformQuantityValues(quantityGroup: any) {
   if (!quantityGroup?.values) return []
 
   const values = quantityGroup.values.split(',').map((v: string) => v.trim())
@@ -303,63 +301,165 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
     }
 
-    // Use service layer for business logic
-    const productService = createProductService(prisma)
-    const config = await productService.getProductConfiguration(productId)
-
-    if (config) {
-      return NextResponse.json(config, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minute cache
-          'X-API-Version': 'v4-service-layer',
-          'X-Product-Id': productId,
-        },
-      })
-    }
-
-    // Try to fetch quantities from database
+    // Fetch product configuration from database
+    // Try to fetch quantities from database using product's linked quantity groups
     let quantities = SIMPLE_CONFIG.quantities // Default fallback
 
     try {
-      // Fetch the Basic Gangrun Price quantity group
-
-      const quantityData = await prisma.quantityGroup.findFirst({
+      // Fetch the product's linked quantity groups
+      const productQuantityGroup = await prisma.productQuantityGroup.findFirst({
         where: {
-          name: 'Basic Gangrun Price',
-          isActive: true,
+          productId: productId,
+        },
+        include: {
+          QuantityGroup: true,
         },
       })
 
-      if (quantityData) {
-        quantities = transformQuantityValues(quantityData)
+      if (productQuantityGroup?.QuantityGroup) {
+        console.log('[Config API] Found quantity group:', productQuantityGroup.QuantityGroup.name)
+        quantities = transformQuantityValues(productQuantityGroup.QuantityGroup)
+        console.log('[Config API] Transformed quantities:', quantities.length)
       } else {
+        console.log('[Config API] No quantity group found for product:', productId)
       }
     } catch (dbError) {
+      console.error('[Config API] Error fetching quantities:', dbError)
       // Continue with hardcoded fallback
     }
 
-    // Try to fetch sizes from database
+    // Try to fetch sizes from database using product's linked size groups
     let sizes = SIMPLE_CONFIG.sizes // Default fallback
 
     try {
-      // Fetch Business Card Sizes or any available size group
-
-      const sizeData = await prisma.sizeGroup.findFirst({
+      // Fetch the product's linked size groups
+      const productSizeGroup = await prisma.productSizeGroup.findFirst({
         where: {
-          OR: [{ name: 'Business Card Sizes' }, { isActive: true }],
+          productId: productId,
         },
-        orderBy: {
-          sortOrder: 'asc',
+        include: {
+          SizeGroup: true,
         },
       })
 
-      if (sizeData) {
-        sizes = transformSizeGroup(sizeData)
-      } else {
+      if (productSizeGroup?.SizeGroup) {
+        sizes = transformSizeGroup(productSizeGroup.SizeGroup)
       }
     } catch (dbError) {
+      console.error('[Config API] Error fetching sizes:', dbError)
+      // Continue with hardcoded fallback
+    }
+
+    // Try to fetch paper stocks from product's linked paper stock sets
+    let paperStocks = SIMPLE_CONFIG.paperStocks // Default fallback
+
+    try {
+      // Fetch the product's linked paper stock sets
+      const productPaperStockSets = await prisma.productPaperStockSet.findMany({
+        where: {
+          productId: productId,
+        },
+        include: {
+          PaperStockSet: {
+            include: {
+              PaperStockSetItem: {
+                include: {
+                  PaperStock: {
+                    include: {
+                      paperStockCoatings: {
+                        include: {
+                          CoatingOption: true,
+                        },
+                      },
+                      paperStockSides: {
+                        include: {
+                          SidesOption: true,
+                        },
+                      },
+                    },
+                  },
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (productPaperStockSets.length > 0 && productPaperStockSets[0].PaperStockSet) {
+        const paperStockSet = productPaperStockSets[0].PaperStockSet
+        paperStocks = paperStockSet.PaperStockSetItem.map((item: any, index: number) => ({
+          id: `paper_${index}`,
+          name: item.PaperStock.name,
+          description: item.PaperStock.description || '',
+          pricePerUnit: item.PaperStock.pricePerSqInch || 0.05,
+          coatings: item.PaperStock.paperStockCoatings.map((psc: any) => ({
+            id: `coating_${psc.CoatingOption.id}`,
+            name: psc.CoatingOption.name,
+            priceMultiplier: 1.0,
+            isDefault: psc.isDefault || false,
+          })),
+          sides: item.PaperStock.paperStockSides.map((pss: any) => ({
+            id: `sides_${pss.SidesOption.id}`,
+            name: pss.SidesOption.name,
+            priceMultiplier: pss.priceMultiplier || 1.0,
+            isDefault: pss.isEnabled || false,
+          })),
+        }))
+        console.log('[Config API] Loaded real paper stocks:', paperStocks.length)
+      }
+    } catch (dbError) {
+      console.error('[Config API] Error fetching paper stocks:', dbError)
+      // Continue with hardcoded fallback
+    }
+
+    // Try to fetch turnaround times from product's linked turnaround time sets
+    let turnaroundTimes = SIMPLE_CONFIG.turnaroundTimes // Default fallback
+
+    try {
+      // Fetch the product's linked turnaround time sets
+      const productTurnaroundSets = await prisma.productTurnaroundTimeSet.findMany({
+        where: {
+          productId: productId,
+        },
+        include: {
+          TurnaroundTimeSet: {
+            include: {
+              TurnaroundTimeSetItem: {
+                include: {
+                  TurnaroundTime: true,
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (productTurnaroundSets.length > 0 && productTurnaroundSets[0].TurnaroundTimeSet) {
+        const turnaroundSet = productTurnaroundSets[0].TurnaroundTimeSet
+        turnaroundTimes = turnaroundSet.TurnaroundTimeSetItem.map((item: any, index: number) => ({
+          id: `turnaround_${index}`,
+          name: item.TurnaroundTime.name,
+          displayName: item.TurnaroundTime.name,
+          description: item.TurnaroundTime.description || '',
+          daysMin: item.TurnaroundTime.daysMin || 0,
+          daysMax: item.TurnaroundTime.daysMax || item.TurnaroundTime.daysMin || 0,
+          pricingModel: item.TurnaroundTime.pricingModel || 'FLAT',
+          basePrice: item.TurnaroundTime.basePrice || 0,
+          priceMultiplier: item.TurnaroundTime.priceMultiplier || 1.0,
+          requiresNoCoating: false,
+          restrictedCoatings: [],
+          isDefault: item.isDefault || false,
+        }))
+        console.log('[Config API] Loaded real turnaround times:', turnaroundTimes.length)
+      }
+    } catch (dbError) {
+      console.error('[Config API] Error fetching turnaround times:', dbError)
       // Continue with hardcoded fallback
     }
 
@@ -485,86 +585,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     } catch (groupingError) {
       }
 
-    // Try to fetch turnaround times from database
-    let turnaroundTimes = SIMPLE_CONFIG.turnaroundTimes // Default fallback
-
-    try {
-      // Fetch the default turnaround time set for this product
-      const productTurnaroundTimeSet = await prisma.productTurnaroundTimeSet.findFirst({
-        where: {
-          productId,
-          isDefault: true,
-        },
-        include: {
-          TurnaroundTimeSet: {
-            include: {
-              TurnaroundTimeSetItem: {
-                include: {
-                  TurnaroundTime: true,
-                },
-                orderBy: {
-                  sortOrder: 'asc',
-                },
-              },
-            },
-          },
-        },
-      })
-
-      // If no default set, try to get any assigned set
-      const assignedSet =
-        productTurnaroundTimeSet ||
-        (await prisma.productTurnaroundTimeSet.findFirst({
-          where: { productId },
-          include: {
-            TurnaroundTimeSet: {
-              include: {
-                TurnaroundTimeSetItem: {
-                  include: {
-                    TurnaroundTime: true,
-                  },
-                  orderBy: {
-                    sortOrder: 'asc',
-                  },
-                },
-              },
-            },
-          },
-        }))
-
-      if (assignedSet?.turnaroundTimeSet?.TurnaroundTimeSetItem) {
-        // Map the database turnaround times to the API format
-        turnaroundTimes = assignedSet.turnaroundTimeSet.TurnaroundTimeSetItem.map((item, index) => {
-          const tt = item.TurnaroundTime
-          return {
-            id: `turnaround_${index + 1}`,
-            name: tt.name,
-            displayName: tt.displayName,
-            description: tt.description || '',
-            daysMin: tt.daysMin,
-            daysMax: tt.daysMax || tt.daysMin,
-            pricingModel: tt.pricingModel,
-            basePrice: tt.basePrice,
-            priceMultiplier: tt.priceMultiplier,
-            requiresNoCoating: tt.requiresNoCoating,
-            restrictedCoatings: tt.restrictedCoatings || [],
-            isDefault: item.isDefault || index === 0, // First one is default if none specified
-          }
-        })
-      } else {
-      }
-    } catch (dbError) {
-      // Continue with hardcoded fallback
-    }
-
-    // Build the configuration object with dynamic quantities, sizes, addons and turnaround times
+    // Build the configuration object with dynamic quantities, sizes, paper stocks, turnaround times, and addons
     const fallbackConfig = {
       ...SIMPLE_CONFIG,
       quantities,
       sizes,
+      paperStocks,
+      turnaroundTimes,
       addons,
       addonsGrouped,
-      turnaroundTimes,
     }
 
     // Update the defaults for quantities, sizes, addons and turnaround times

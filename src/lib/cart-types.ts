@@ -39,6 +39,12 @@ export interface CartItem {
       configuration?: Record<string, unknown>
     }>
   }
+  // Shipping calculation data
+  dimensions?: {
+    width: number
+    height: number
+  }
+  paperStockWeight?: number
   fileUrl?: string
   fileName?: string
   fileSize?: number

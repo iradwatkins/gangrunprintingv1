@@ -31,7 +31,7 @@ export function CartDrawer() {
           <SheetTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <ShoppingBag className="h-5 w-5" />
-              Shopping Cart ({itemCount})
+              Shopping Cart
             </span>
             {items.length > 0 && (
               <Button
@@ -87,26 +87,8 @@ export function CartDrawer() {
 
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center gap-2">
-                        <Button
-                          className="h-8 w-8"
-                          disabled={item.quantity <= 1}
-                          size="icon"
-                          variant="outline"
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-12 text-center text-sm font-medium">
-                          {item.quantity}
-                        </span>
-                        <Button
-                          className="h-8 w-8"
-                          size="icon"
-                          variant="outline"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                        <span className="text-xs text-muted-foreground">Qty: </span>
+                        <span className="text-sm font-medium">{item.quantity}</span>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">${item.subtotal.toFixed(2)}</p>
@@ -147,9 +129,13 @@ export function CartDrawer() {
                     Proceed to Checkout
                   </Link>
                 </Button>
-                <Button className="w-full" variant="outline" onClick={closeCart}>
-                  Continue Shopping
-                </Button>
+                {items.length > 0 && items[0].productSlug && (
+                  <Button asChild className="w-full" variant="outline">
+                    <Link href={`/products/${items[0].productSlug}`} onClick={closeCart}>
+                      Edit Product
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </>

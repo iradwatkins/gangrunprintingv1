@@ -739,24 +739,48 @@ model ProductCategory {
   products    Product[]
 }
 
-model ProductImage {
-  id           String   @id @default(cuid())
-  productId    String
-  url          String
-  thumbnailUrl String?
-  alt          String?
-  caption      String?
-  sortOrder    Int      @default(0)
-  isPrimary    Boolean  @default(false)
-  width        Int?
-  height       Int?
-  fileSize     Int?
-  mimeType     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  Product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+model Image {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  description   String?
+  url           String
+  thumbnailUrl  String?
+  largeUrl      String?
+  mediumUrl     String?
+  webpUrl       String?
+  avifUrl       String?
+  blurDataUrl   String?
+  alt           String?
+  width         Int?
+  height        Int?
+  fileSize      Int?
+  mimeType      String?
+  category      String         @default("general")
+  tags          String[]       @default([])
+  metadata      Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  productImages ProductImage[]
 
+  @@index([category])
+  @@index([createdAt])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  imageId   String
+  sortOrder Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  Image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, imageId])
   @@index([productId])
+  @@index([imageId])
+  @@index([isPrimary])
 }
 
 model ProductOption {

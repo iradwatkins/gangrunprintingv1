@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Carrier } from '@prisma/client'
 import { Package, Truck, Plane, Clock, Check } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -56,22 +56,75 @@ export function ShippingRates({
   const [selectedRate, setSelectedRate] = useState<string>('')
   const [totalWeight, setTotalWeight] = useState<string>('0')
   const [selectedAirportId, setSelectedAirportId] = useState<string | null>(null)
+  const hasFetchedRef = useRef(false)
+
+  // Create stable address key to detect real changes
+  const addressKey = useMemo(
+    () => `${toAddress.street}|${toAddress.city}|${toAddress.state}|${toAddress.zipCode}`,
+    [toAddress.street, toAddress.city, toAddress.state, toAddress.zipCode]
+  )
+
+  // Create stable items key to detect real changes
+  const itemsKey = useMemo(() => JSON.stringify(items), [items])
 
   useEffect(() => {
-    fetchShippingRates()
-  }, [toAddress, items])
+    // Reset fetch flag when address or items change
+    hasFetchedRef.current = false
+  }, [addressKey, itemsKey])
+
+  useEffect(() => {
+    // Only fetch once per address/items combination
+    if (hasFetchedRef.current) {
+      console.log('🔄 ShippingRates: Skipping duplicate fetch')
+      return
+    }
+
+    // Add a small delay to avoid rapid API calls
+    const timer = setTimeout(() => {
+      fetchShippingRates()
+      hasFetchedRef.current = true
+    }, 300)
+
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addressKey, itemsKey])
 
   const fetchShippingRates = async () => {
+    // Debug logging
+    console.log('🚚 ShippingRates: Fetching rates with address:', toAddress)
+    console.log('📦 ShippingRates: Items:', items)
+    console.log('📍 ShippingRates: Address check - street:', !!toAddress.street, 'city:', !!toAddress.city, 'state:', !!toAddress.state, 'zip:', !!toAddress.zipCode)
+
+    // Log each item's structure in detail
+    items.forEach((item, index) => {
+      console.log(`📦 Item ${index}:`, {
+        quantity: item.quantity,
+        width: item.width,
+        height: item.height,
+        paperStockWeight: item.paperStockWeight,
+        paperStockId: item.paperStockId,
+      })
+    })
+
     if (!toAddress.street || !toAddress.city || !toAddress.state || !toAddress.zipCode) {
+      console.log('❌ ShippingRates: Incomplete address - showing error')
       setError('Please enter a complete shipping address')
       setLoading(false)
+      setRates([]) // Clear any old rates
       return
     }
 
     setLoading(true)
     setError(null)
+    console.log('✅ ShippingRates: Making API call with payload:', {
+      toAddress,
+      items,
+    })
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
+
       const response = await fetch('/api/shipping/calculate', {
         method: 'POST',
         headers: {
@@ -81,13 +134,20 @@ export function ShippingRates({
           toAddress,
           items,
         }),
+        signal: controller.signal,
       })
 
+      clearTimeout(timeoutId)
       const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to calculate shipping')
       }
+
+      console.log('✅ ShippingRates: Full API response:', data)
+      console.log('✅ ShippingRates: Received rates:', data.rates)
+      console.log('✅ ShippingRates: Total weight:', data.totalWeight)
+      console.log('✅ ShippingRates: Success status:', data.success)
 
       setRates(data.rates || [])
       setTotalWeight(data.totalWeight || '0')
@@ -98,10 +158,20 @@ export function ShippingRates({
         const rateId = `${firstRate.carrier}-${firstRate.serviceCode}`
         setSelectedRate(rateId)
         onRateSelected(firstRate)
+        console.log('✅ ShippingRates: Auto-selected rate:', firstRate)
+      } else {
+        console.log('⚠️ ShippingRates: No rates returned - array is empty or undefined')
+        console.log('⚠️ ShippingRates: data.rates value:', data.rates)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to calculate shipping rates')
-      toast.error('Unable to calculate shipping rates')
+      console.error('❌ ShippingRates: Error fetching rates:', err)
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Request timed out. Please try again.')
+        toast.error('Shipping calculation timed out')
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to calculate shipping rates')
+        toast.error('Unable to calculate shipping rates')
+      }
     } finally {
       setLoading(false)
     }

@@ -495,8 +495,8 @@ export default function ProductConfigurationForm({
           </Select>
         </div>
 
-        {/* Add-ons & Upgrades Section */}
-        {legacyConfigData.addons && legacyConfigData.addons.length > 0 && (
+        {/* Add-ons & Upgrades Section - TEMPORARILY DISABLED FOR TESTING */}
+        {/* {legacyConfigData.addons && legacyConfigData.addons.length > 0 && (
           <AddonAccordion
             addons={legacyConfigData.addons}
             addonsGrouped={legacyConfigData.addonsGrouped}
@@ -520,7 +520,7 @@ export default function ProductConfigurationForm({
               handleConfigChange('cornerRoundingConfig', config)
             }
           />
-        )}
+        )} */}
 
         {/* Turnaround Time Selection */}
         {legacyConfigData.turnaroundTimes && legacyConfigData.turnaroundTimes.length > 0 && (

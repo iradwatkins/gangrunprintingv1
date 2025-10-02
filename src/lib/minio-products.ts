@@ -72,11 +72,15 @@ export const uploadProductImage = async (
     const baseName = `${timestamp}-${cleanFileName.split('.')[0]}`
 
     // Prepare upload metadata
+    // HTTP headers must only contain ASCII characters and no spaces or special chars
+    // Sanitize metadata values by replacing invalid characters with underscores
+    const sanitizeHeaderValue = (value: string) => value.replace(/[^\x20-\x7E]/g, '_').replace(/\s+/g, '_')
+
     const baseMetadata = {
-      'x-amz-meta-original-name': fileName,
+      'x-amz-meta-original-name': sanitizeHeaderValue(fileName),
       'x-amz-meta-upload-timestamp': timestamp.toString(),
-      'x-amz-meta-product-name': productName || 'Unknown',
-      'x-amz-meta-category': categoryName || 'Unknown',
+      'x-amz-meta-product-name': sanitizeHeaderValue(productName || 'Unknown'),
+      'x-amz-meta-category': sanitizeHeaderValue(categoryName || 'Unknown'),
       'x-amz-meta-profile': productProfile,
       'x-amz-meta-compression-ratio': processed.metadata.compressionRatio.toFixed(3),
       'x-amz-meta-original-size': processed.metadata.originalSize.toString(),
