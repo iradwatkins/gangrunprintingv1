@@ -519,8 +519,10 @@ function ProductsPageContent() {
               {sortedProducts.map((product) => {
                 const images = product.productImages || product.ProductImage || []
                 const primaryImage = images.find((img) => img.isPrimary) || images[0]
+                const slug = product.slug || product.Slug || product.id
+                const productName = product.name || product.Name || 'Product'
                 return (
-                  <Link key={product.id} href={`/products/${product.slug}`}>
+                  <Link key={product.id} href={`/products/${slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
                       <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
                         {product.isFeatured && (
@@ -532,7 +534,7 @@ function ProductsPageContent() {
                           {primaryImage ? (
                             <Image
                               fill
-                              alt={primaryImage.alt || product.name}
+                              alt={primaryImage.alt || productName}
                               className="w-full h-full object-cover"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               src={primaryImage.thumbnailUrl || primaryImage.url}
@@ -544,19 +546,19 @@ function ProductsPageContent() {
                       </div>
                       <CardContent className="p-4">
                         <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
-                          {product.name}
+                          {productName}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
                           {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
                         </p>
                         <p className="text-sm mb-3 line-clamp-2">
-                          {product.shortDescription || product.description}
+                          {product.shortDescription || product.ShortDescription || product.description || product.Description || ''}
                         </p>
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm text-muted-foreground">Starting at</span>
                             <p className="text-lg font-bold text-primary">
-                              ${product.basePrice.toFixed(2)}
+                              ${(product.basePrice || product.BasePrice || 0).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -571,8 +573,10 @@ function ProductsPageContent() {
               {sortedProducts.map((product) => {
                 const images = product.productImages || product.ProductImage || []
                 const primaryImage = images.find((img) => img.isPrimary) || images[0]
+                const slug = product.slug || product.Slug || product.id
+                const productName = product.name || product.Name || 'Product'
                 return (
-                  <Link key={product.id} href={`/products/${product.slug}`}>
+                  <Link key={product.id} href={`/products/${slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
                       <div className="flex">
                         <div className="w-48 bg-gradient-to-br from-primary/10 to-primary/5 relative flex-shrink-0">
@@ -585,7 +589,7 @@ function ProductsPageContent() {
                             {primaryImage ? (
                               <Image
                                 fill
-                                alt={primaryImage.alt || product.name}
+                                alt={primaryImage.alt || productName}
                                 className="w-full h-full object-cover"
                                 sizes="192px"
                                 src={primaryImage.thumbnailUrl || primaryImage.url}
@@ -599,19 +603,19 @@ function ProductsPageContent() {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <h3 className="font-semibold text-xl mb-1 group-hover:text-primary transition-colors">
-                                {product.name}
+                                {productName}
                               </h3>
                               <p className="text-sm text-muted-foreground mb-2">
                                 {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
                               </p>
                               <p className="text-sm mb-3">
-                                {product.shortDescription || product.description}
+                                {product.shortDescription || product.ShortDescription || product.description || product.Description || ''}
                               </p>
                             </div>
                             <div className="text-right ml-4">
                               <span className="text-sm text-muted-foreground">Starting at</span>
                               <p className="text-2xl font-bold text-primary">
-                                ${product.basePrice.toFixed(2)}
+                                ${(product.basePrice || product.BasePrice || 0).toFixed(2)}
                               </p>
                             </div>
                           </div>
