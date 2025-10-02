@@ -91,16 +91,21 @@ export function transformCategoryForFrontend(category: ProductCategory | undefin
 export function transformImagesForFrontend(images: ProductImage[] | undefined | null): TransformedImage[] {
   if (!images || !Array.isArray(images)) return []
 
-  return images.map(img => ({
-    Id: img.id,
-    Url: img.url,
-    ThumbnailUrl: img.thumbnailUrl || img.thumbnail_url,
-    MediumUrl: img.mediumUrl || img.medium_url,
-    LargeUrl: img.largeUrl || img.large_url,
-    AltText: img.altText || img.alt_text || '',
-    IsPrimary: img.isPrimary ?? img.is_primary ?? false,
-    DisplayOrder: img.displayOrder ?? img.display_order ?? 0,
-  }))
+  return images.map(img => {
+    // Handle nested Image relation from ProductService (ProductImage has Image nested)
+    const imageData = (img as any).Image || img
+
+    return {
+      Id: img.id,
+      Url: imageData.url || img.url,
+      ThumbnailUrl: imageData.thumbnailUrl || img.thumbnailUrl || img.thumbnail_url,
+      MediumUrl: imageData.mediumUrl || img.mediumUrl || img.medium_url,
+      LargeUrl: imageData.largeUrl || img.largeUrl || img.large_url,
+      AltText: imageData.alt || img.altText || img.alt_text || '',
+      IsPrimary: img.isPrimary ?? img.is_primary ?? false,
+      DisplayOrder: img.sortOrder ?? img.displayOrder ?? img.display_order ?? 0,
+    }
+  })
 }
 
 export function transformSizesForFrontend(sizes: ProductSize[] | undefined | null): TransformedSize[] {

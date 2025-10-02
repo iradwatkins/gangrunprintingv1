@@ -14,6 +14,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         productCategory: true,
         productImages: {
+          include: {
+            Image: true, // Include the Image relation to get URLs
+          },
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
@@ -115,7 +118,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        productImages: true,
+        productImages: {
+          include: {
+            Image: true, // Include Image relation to get URLs
+          },
+        },
         productPaperStockSets: true,
         productQuantityGroups: true,
         productSizeGroups: true,
@@ -138,7 +145,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     console.log('[PUT Product] Found existing product, processing images...')
 
     // Delete removed images from MinIO
-    const existingImageUrls = existingProduct.productImages.map((img) => img.url)
+    const existingImageUrls = existingProduct.productImages.map((img) => img.Image.url)
     const newImageUrls = images?.map((img: Record<string, unknown>) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
 
@@ -171,22 +178,47 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         where: { id },
         data: {
           ...productData,
-          // Recreate images
+          // Recreate images - handle both imageId (existing) and full image data (new)
           productImages:
             images?.length > 0
               ? {
-                  create: images.map((img: Record<string, unknown>, index: number) => ({
-                    url: img.url,
-                    thumbnailUrl: img.thumbnailUrl,
-                    alt: img.alt,
-                    caption: img.caption,
-                    isPrimary: img.isPrimary,
-                    sortOrder: index,
-                    width: img.width,
-                    height: img.height,
-                    fileSize: img.fileSize,
-                    mimeType: img.mimeType,
-                  })),
+                  create: await Promise.all(
+                    images.map(async (img: any, index: number) => {
+                      // If imageId is provided, use it directly
+                      if (img.imageId || img.id) {
+                        return {
+                          imageId: img.imageId || img.id,
+                          sortOrder: index,
+                          isPrimary: img.isPrimary || false,
+                        }
+                      }
+
+                      // Otherwise, create a new Image record first
+                      const newImage = await tx.image.create({
+                        data: {
+                          name: img.name || `product-${id}-${index}`,
+                          url: img.url,
+                          thumbnailUrl: img.thumbnailUrl,
+                          largeUrl: img.largeUrl,
+                          mediumUrl: img.mediumUrl,
+                          webpUrl: img.webpUrl,
+                          blurDataUrl: img.blurDataUrl,
+                          alt: img.alt,
+                          width: img.width,
+                          height: img.height,
+                          fileSize: img.fileSize,
+                          mimeType: img.mimeType,
+                          category: 'product',
+                        },
+                      })
+
+                      return {
+                        imageId: newImage.id,
+                        sortOrder: index,
+                        isPrimary: img.isPrimary || false,
+                      }
+                    })
+                  ),
                 }
               : undefined,
           // Recreate paper stock set association
@@ -268,7 +300,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         },
         include: {
           productCategory: true,
-          productImages: true,
+          productImages: {
+            include: {
+              Image: true,
+            },
+          },
           productPaperStockSets: {
             include: {
               PaperStockSet: {
@@ -309,7 +345,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             include: {
               AddOnSet: {
                 include: {
-                  AddOnSetItem: {
+                  addOnSetItems: {
                     include: {
                       AddOn: true,
                     },

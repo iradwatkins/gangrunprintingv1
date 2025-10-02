@@ -109,35 +109,48 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (savedCart) {
           const parsedCart = JSON.parse(savedCart) as CartState
 
-          // Validate cart items have required shipping fields AND correct weight
-          if (parsedCart.items && parsedCart.items.length > 0) {
+          // Ensure items is an array (critical defensive check)
+          if (!parsedCart.items || !Array.isArray(parsedCart.items)) {
+            console.warn('⚠️ Cart items is not an array. Resetting cart.')
+            localStorage.removeItem('gangrun_cart')
+            dispatch({ type: 'CLEAR_CART' })
+            setIsLoading(false)
+            return
+          }
+
+          // Validate cart items have required shipping fields (only if cart has items)
+          if (parsedCart.items.length > 0) {
             const invalidItems = parsedCart.items.filter((item: any) => {
-              // Check for missing shipping data
+              // Check for missing critical shipping data
               if (!item.dimensions || !item.paperStockWeight) {
                 return true
               }
-              // Check for incorrect paper weight (0.0015 is wrong, causes 180 lbs for 5000 postcards)
-              if (item.paperStockWeight === 0.0015) {
-                console.warn('⚠️ Item has incorrect paper weight (0.0015). Needs to be re-added with correct weight.')
+              // Check for invalid paper weight (must be positive number)
+              if (typeof item.paperStockWeight !== 'number' || item.paperStockWeight <= 0) {
+                console.warn('⚠️ Item has invalid paper weight:', item.paperStockWeight)
                 return true
               }
               return false
             })
 
             if (invalidItems.length > 0) {
-              console.warn('⚠️ Cart has items with invalid shipping data. Clearing cart. Please re-add items.')
+              console.warn('⚠️ Cart has items with invalid shipping data. Resetting cart.')
               console.warn('Invalid items:', invalidItems)
               localStorage.removeItem('gangrun_cart')
-              // Don't load the invalid cart
+              dispatch({ type: 'CLEAR_CART' }) // CRITICAL: Reset state, not just localStorage
               setIsLoading(false)
               return
             }
           }
 
+          // All validation passed - load the cart
           dispatch({ type: 'LOAD_CART', payload: parsedCart })
         }
       } catch (error) {
         console.error('Error loading cart:', error)
+        // On any error, reset to empty cart to prevent crashes
+        dispatch({ type: 'CLEAR_CART' })
+        localStorage.removeItem('gangrun_cart')
       } finally {
         setIsLoading(false)
       }
@@ -180,15 +193,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'TOGGLE_CART' })
   }, [])
 
-  const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = state.items.reduce((sum, item) => sum + item.subtotal, 0)
+  // CRITICAL: Always ensure items is an array to prevent .filter() errors
+  const safeItems = Array.isArray(state.items) ? state.items : []
+
+  const itemCount = safeItems.reduce((sum, item) => sum + item.quantity, 0)
+  const subtotal = safeItems.reduce((sum, item) => sum + item.subtotal, 0)
   const tax = subtotal * TAX_RATE
   // Shipping is calculated dynamically at checkout - using placeholder for cart display
-  const shipping = state.items.length > 0 ? ESTIMATED_SHIPPING : 0
+  const shipping = safeItems.length > 0 ? ESTIMATED_SHIPPING : 0
   const total = subtotal + tax + shipping
 
   const value: CartContextType = {
-    items: state.items,
+    items: safeItems, // Always an array
     isOpen: state.isOpen,
     itemCount,
     subtotal,
