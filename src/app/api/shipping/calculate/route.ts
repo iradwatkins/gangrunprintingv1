@@ -114,45 +114,27 @@ export async function POST(request: NextRequest) {
 
     console.log('[Shipping API] Total weight:', totalWeight, 'lbs')
 
-    // CRITICAL: Split into multiple boxes if over 36 lbs (FedEx/UPS max recommended weight)
-    const MAX_BOX_WEIGHT = 36
+    // Send total weight as ONE package for FedEx rating
+    // Note: We'll split into multiple boxes for actual shipping, but for pricing
+    // FedEx rates based on total weight in one shipment
     const minWeight = Math.max(totalWeight, 1) // Minimum 1 lb
 
-    if (minWeight <= MAX_BOX_WEIGHT) {
-      // Single box - under 36 lbs
-      packages.push({
-        weight: minWeight,
-        dimensions: {
-          width: 12,
-          height: 9,
-          length: 16,
-        },
-      })
-      console.log('[Shipping API] Single package:', minWeight, 'lbs')
-    } else {
-      // Multiple boxes needed - split evenly to stay under 36 lbs each
-      const numBoxes = Math.ceil(totalWeight / MAX_BOX_WEIGHT)
-      const weightPerBox = totalWeight / numBoxes
-
-      for (let i = 0; i < numBoxes; i++) {
-        packages.push({
-          weight: weightPerBox,
-          dimensions: {
-            width: 12,
-            height: 9,
-            length: 16,
-          },
-        })
-      }
-      console.log(`[Shipping API] Split into ${numBoxes} boxes at ${weightPerBox.toFixed(2)} lbs each`)
-    }
+    packages.push({
+      weight: minWeight,
+      dimensions: {
+        width: 12,
+        height: 9,
+        length: 16,
+      },
+    })
+    console.log('[Shipping API] Total weight for rating:', minWeight, 'lbs')
 
     console.log('[Shipping API] Total packages:', packages.length)
 
-    // Get rates from all carriers
-    const rates = await shippingCalculator.getAllRates(shipFrom, toAddress, packages)
+    // Get rates from FedEx only
+    const rates = await shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages)
 
-    console.log('[Shipping API] Rates received:', rates.length, 'rates')
+    console.log('[Shipping API] FedEx rates received:', rates.length, 'rates')
     console.log('[Shipping API] Rates:', JSON.stringify(rates, null, 2))
 
     return NextResponse.json({

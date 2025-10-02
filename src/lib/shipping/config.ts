@@ -8,7 +8,7 @@ export const fedexConfig: ShippingConfiguration = {
   defaultPackaging: {
     weight: 0.5, // 0.5 lbs for box/packaging
   },
-  markupPercentage: 10, // 10% markup on FedEx rates
+  markupPercentage: 0, // NO markup - show raw FedEx rates
 }
 
 // UPS configuration

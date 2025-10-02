@@ -24,11 +24,12 @@ export default function ShippingTestPage() {
       quantity: 5000,
       width: 4, // inches
       height: 6, // inches
-      paperStockWeight: 0.0009, // 9pt paper (~65lb cover)
+      paperStockWeight: 0.0004, // 9pt C2S Cardstock (actual weight from database)
     },
   ])
 
   const [selectedRate, setSelectedRate] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<string>('')
 
   const handleAddressChange = (field: string, value: string) => {
     setAddress((prev) => ({
@@ -39,7 +40,12 @@ export default function ShippingTestPage() {
 
   const handleRateSelected = (rate: Record<string, unknown>) => {
     setSelectedRate(rate)
-    toast.success(`Selected: ${rate.serviceName} - $${rate.rateAmount.toFixed(2)}`)
+    setDebugInfo(
+      `API Response: ${rate.serviceName} - $${(rate.rateAmount as number).toFixed(2)} (${
+        rate.estimatedDays
+      } days) | Weight sent: 0.0004 lbs/sq in × 4 × 6 × 5000 = 48 lbs`
+    )
+    toast.success(`Selected: ${rate.serviceName} - $${(rate.rateAmount as number).toFixed(2)}`)
   }
 
   return (
@@ -54,17 +60,17 @@ export default function ShippingTestPage() {
           <CardContent>
             <div className="space-y-2 text-sm">
               <div>
-                <strong>5,000 Postcards</strong> - 4" × 6" on 9pt paper (65lb cover)
+                <strong>5,000 Postcards</strong> - 4" × 6" on 9pt C2S Cardstock
               </div>
               <div className="mt-4 rounded bg-muted p-3">
                 <strong>Weight Calculation:</strong>
                 <br />
-                Paper Weight: 0.0009 lbs/sq inch
+                Paper Weight: 0.0004 lbs/sq inch (9pt C2S Cardstock)
                 <br />
-                Total: 0.0009 × 4 × 6 × 5000 = <strong>108 lbs</strong>
+                Total: 0.0004 × 4 × 6 × 5000 = <strong>48 lbs</strong>
                 <br />
-                <span className="text-xs text-muted-foreground">
-                  (FedEx Ground supports up to 150 lbs)
+                <span className="text-sm font-medium text-primary">
+                  Split into 2 boxes: Box 1 = 36 lbs, Box 2 = 12 lbs (max 36 lbs per box)
                 </span>
               </div>
             </div>
@@ -117,6 +123,17 @@ export default function ShippingTestPage() {
         </Card>
 
         <ShippingRates items={items} toAddress={address} onRateSelected={handleRateSelected} />
+
+        {debugInfo && (
+          <Card className="bg-yellow-50 border-yellow-200">
+            <CardHeader>
+              <CardTitle className="text-sm">Debug Info (Real API Response)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <pre className="text-xs whitespace-pre-wrap">{debugInfo}</pre>
+            </CardContent>
+          </Card>
+        )}
 
         {selectedRate && (
           <Card className="bg-primary/5">
