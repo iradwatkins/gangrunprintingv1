@@ -155,19 +155,25 @@ function ProductsPageContent() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      // Handle both lowercase and PascalCase property names
+      const name = product.name || product.Name || ''
+      const description = product.description || product.Description || ''
+      const shortDescription = product.shortDescription || product.ShortDescription || ''
+
       const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.description &&
-          product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (product.shortDescription &&
-          product.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
+        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (description && description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (shortDescription && shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
 
       // Filter by selected categories OR selected individual products
       const category = product.productCategory || product.ProductCategory
+      const categoryName = category?.name || category?.Name || ''
+      const productId = product.id || product.Id || ''
+
       const matchesSelection =
         (selectedCategories.length === 0 && selectedProducts.length === 0) ||
-        (category && selectedCategories.includes(category.name)) ||
-        selectedProducts.includes(product.id)
+        (categoryName && selectedCategories.includes(categoryName)) ||
+        selectedProducts.includes(productId)
 
       return matchesSearch && matchesSelection
     })
@@ -177,13 +183,21 @@ function ProductsPageContent() {
     const sorted = [...filteredProducts]
     switch (sortBy) {
       case 'price-asc':
-        return sorted.sort((a, b) => a.basePrice - b.basePrice)
+        return sorted.sort((a, b) => (a.basePrice || a.BasePrice || 0) - (b.basePrice || b.BasePrice || 0))
       case 'price-desc':
-        return sorted.sort((a, b) => b.basePrice - a.basePrice)
+        return sorted.sort((a, b) => (b.basePrice || b.BasePrice || 0) - (a.basePrice || a.BasePrice || 0))
       case 'name-asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name))
+        return sorted.sort((a, b) => {
+          const aName = a.name || a.Name || ''
+          const bName = b.name || b.Name || ''
+          return aName.localeCompare(bName)
+        })
       default: // featured
-        return sorted.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0))
+        return sorted.sort((a, b) => {
+          const aFeatured = a.isFeatured ?? a.IsFeatured ?? false
+          const bFeatured = b.isFeatured ?? b.IsFeatured ?? false
+          return (bFeatured ? 1 : 0) - (aFeatured ? 1 : 0)
+        })
     }
   }, [filteredProducts, sortBy])
 
