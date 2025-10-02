@@ -129,7 +129,8 @@ function ProductsPageContent() {
         ])
 
         setCategories(categoriesData)
-        setProducts(productsData)
+        // API returns { data: [...], pagination: {...} } so extract the data array
+        setProducts(productsData.data || productsData)
       } catch (error) {
         setFetchError(error instanceof Error ? error.message : 'Failed to load data')
       } finally {
