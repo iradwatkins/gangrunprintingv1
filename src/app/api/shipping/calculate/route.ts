@@ -114,18 +114,40 @@ export async function POST(request: NextRequest) {
 
     console.log('[Shipping API] Total weight:', totalWeight, 'lbs')
 
-    // Create a single package with the total weight
-    // In a real scenario, you might want to split into multiple packages
-    packages.push({
-      weight: Math.max(totalWeight, 1), // Minimum 1 lb
-      dimensions: {
-        width: 12, // Standard box dimensions
-        height: 9,
-        length: 16,
-      },
-    })
+    // CRITICAL: Split into multiple boxes if over 36 lbs (FedEx/UPS max recommended weight)
+    const MAX_BOX_WEIGHT = 36
+    const minWeight = Math.max(totalWeight, 1) // Minimum 1 lb
 
-    console.log('[Shipping API] Package:', packages[0])
+    if (minWeight <= MAX_BOX_WEIGHT) {
+      // Single box - under 36 lbs
+      packages.push({
+        weight: minWeight,
+        dimensions: {
+          width: 12,
+          height: 9,
+          length: 16,
+        },
+      })
+      console.log('[Shipping API] Single package:', minWeight, 'lbs')
+    } else {
+      // Multiple boxes needed - split evenly to stay under 36 lbs each
+      const numBoxes = Math.ceil(totalWeight / MAX_BOX_WEIGHT)
+      const weightPerBox = totalWeight / numBoxes
+
+      for (let i = 0; i < numBoxes; i++) {
+        packages.push({
+          weight: weightPerBox,
+          dimensions: {
+            width: 12,
+            height: 9,
+            length: 16,
+          },
+        })
+      }
+      console.log(`[Shipping API] Split into ${numBoxes} boxes at ${weightPerBox.toFixed(2)} lbs each`)
+    }
+
+    console.log('[Shipping API] Total packages:', packages.length)
 
     // Get rates from all carriers
     const rates = await shippingCalculator.getAllRates(shipFrom, toAddress, packages)
