@@ -32,12 +32,11 @@ async function getUserDashboardData(userId: string) {
         status: {
           in: [
             'PENDING_PAYMENT',
-            'PAID',
-            'PROCESSING',
-            'PRINTING',
+            'CONFIRMATION',
             'PRODUCTION',
-            'QUALITY_CHECK',
-            'PACKAGING',
+            'ON_HOLD',
+            'SHIPPED',
+            'ON_THE_WAY',
           ],
         },
       },
@@ -47,7 +46,7 @@ async function getUserDashboardData(userId: string) {
       where: {
         userId,
         status: {
-          in: ['DELIVERED', 'READY_FOR_PICKUP'],
+          in: ['DELIVERED', 'PICKED_UP', 'READY_FOR_PICKUP'],
         },
       },
     }),
@@ -116,11 +115,11 @@ export default async function DashboardPage() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                         ${
-                          order.status === 'DELIVERED'
+                          order.status === 'DELIVERED' || order.status === 'PICKED_UP'
                             ? 'bg-green-100 text-green-800'
-                            : order.status === 'PROCESSING' || order.status === 'PRINTING'
+                            : order.status === 'CONFIRMATION' || order.status === 'PRODUCTION'
                               ? 'bg-blue-100 text-blue-800'
-                              : order.status === 'SHIPPED'
+                              : order.status === 'SHIPPED' || order.status === 'ON_THE_WAY'
                                 ? 'bg-purple-100 text-purple-800'
                                 : 'bg-gray-100 text-gray-800'
                         }`}

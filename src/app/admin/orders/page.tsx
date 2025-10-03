@@ -35,41 +35,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { OrderQuickActions } from '@/components/admin/orders/order-quick-actions'
 
 // Force dynamic rendering for real-time data
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// Status configuration with colors and icons
+// Status configuration with colors and icons (Printing Company Order Statuses)
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
     icon: Clock,
   },
-  PAID: {
-    label: 'Paid',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: DollarSign,
+  PAYMENT_DECLINED: {
+    label: 'Payment Declined',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+    icon: XCircle,
   },
-  PROCESSING: {
-    label: 'Processing',
+  CONFIRMATION: {
+    label: 'Confirmation',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: Package,
-  },
-  PRINTING: {
-    label: 'Printing',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Package,
-  },
-  QUALITY_CHECK: {
-    label: 'Quality Check',
-    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
     icon: CheckCircle,
   },
-  PACKAGING: {
-    label: 'Packaging',
-    color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
+  ON_HOLD: {
+    label: 'On Hold',
+    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+    icon: AlertCircle,
+  },
+  PRODUCTION: {
+    label: 'Production',
+    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
     icon: Package,
   },
   SHIPPED: {
@@ -77,10 +73,30 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
     icon: Truck,
   },
+  READY_FOR_PICKUP: {
+    label: 'Ready for Pickup',
+    color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
+    icon: Package,
+  },
+  ON_THE_WAY: {
+    label: 'On the Way',
+    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
+    icon: Truck,
+  },
+  PICKED_UP: {
+    label: 'Picked Up',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+    icon: CheckCircle,
+  },
   DELIVERED: {
     label: 'Delivered',
     color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
     icon: CheckCircle,
+  },
+  REPRINT: {
+    label: 'Reprint',
+    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+    icon: AlertCircle,
   },
   CANCELLED: {
     label: 'Cancelled',
@@ -90,7 +106,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
   REFUNDED: {
     label: 'Refunded',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: AlertCircle,
+    icon: DollarSign,
   },
 }
 
@@ -198,16 +214,18 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {(statsMap['PENDING_PAYMENT'] || 0) +
-                (statsMap['PAID'] || 0) +
-                (statsMap['PROCESSING'] || 0)}
+                (statsMap['CONFIRMATION'] || 0) +
+                (statsMap['PRODUCTION'] || 0) +
+                (statsMap['SHIPPED'] || 0) +
+                (statsMap['ON_THE_WAY'] || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">Orders in progress</p>
+            <p className="text-xs text-muted-foreground">Active orders</p>
           </CardContent>
         </Card>
 
@@ -217,8 +235,10 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{statsMap['DELIVERED'] || 0}</div>
-            <p className="text-xs text-muted-foreground">Successfully delivered</p>
+            <div className="text-2xl font-bold">
+              {(statsMap['DELIVERED'] || 0) + (statsMap['PICKED_UP'] || 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">Successfully fulfilled</p>
           </CardContent>
         </Card>
 
@@ -366,12 +386,15 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Link href={`/admin/orders/${order.id}`}>
-                            <Button size="sm" variant="ghost">
-                              <Eye className="h-4 w-4 mr-1" />
-                              View
-                            </Button>
-                          </Link>
+                          <div className="flex items-center gap-2">
+                            <Link href={`/admin/orders/${order.id}`}>
+                              <Button size="sm" variant="ghost">
+                                <Eye className="h-4 w-4 mr-1" />
+                                View
+                              </Button>
+                            </Link>
+                            <OrderQuickActions order={order} onUpdate={() => window.location.reload()} />
+                          </div>
                         </TableCell>
                       </TableRow>
                     )

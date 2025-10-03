@@ -357,17 +357,17 @@ export async function GET(request: NextRequest) {
           isActive: true,
         },
         include: {
-          standardSize: true,
+          StandardSize: true,
         },
         orderBy: {
-          standardSize: {
+          StandardSize: {
             sortOrder: 'asc',
           },
         },
       })
 
       productSizes = productSizeLinks.map((link) => ({
-        ...link.standardSize,
+        ...link.StandardSize,
         isDefault: link.isDefault,
       }))
 
@@ -388,13 +388,13 @@ export async function GET(request: NextRequest) {
 
       // For each quantity group, parse the quantities and return them as individual options
       productQuantities = productQuantityGroupLinks.flatMap((link) => {
-        const group = link.quantityGroup
+        const group = link.QuantityGroup
         const valuesList = group.values
           .split(',')
-          .map((v) => v.trim())
-          .filter((v) => v)
+          .map((v: string) => v.trim())
+          .filter((v: string) => v)
 
-        return valuesList.map((value, index) => ({
+        return valuesList.map((value: string, index: number) => ({
           id: `${group.id}-${index}`, // Create unique ID for each quantity value
           displayValue: value === 'custom' ? 'Custom' : parseInt(value) || value,
           calculationValue: value === 'custom' ? null : parseInt(value) || null,

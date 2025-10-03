@@ -67,7 +67,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       include: {
         AddOnSet: {
           include: {
-            AddOnSetItem: {
+            addOnSetItems: {
               include: {
                 AddOn: true,
               },
@@ -122,11 +122,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         AddOnSet: {
           include: {
-            AddOnSetItem: {
+            addOnSetItems: {
               include: {
-                addOn: {
+                AddOn: {
                   include: {
-                    subOptions: true,
+                    addOnSubOptions: true,
                   },
                 },
               },

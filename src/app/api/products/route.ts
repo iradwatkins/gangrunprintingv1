@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
     try {
       rawData = await request.json()
     } catch (parseError) {
-      return createErrorResponse('Invalid JSON request body', 400, null, requestId)
+      return createErrorResponse('Invalid JSON request body', 400, undefined, requestId)
     }
 
     let data
@@ -264,9 +264,9 @@ export async function POST(request: NextRequest) {
       data = createProductSchema.parse(rawData)
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
-        return createValidationErrorResponse(validationError.errors, requestId)
+        return createValidationErrorResponse(validationError.issues, requestId)
       }
-      return createErrorResponse('Data validation failed', 400, null, requestId)
+      return createErrorResponse('Data validation failed', 400, undefined, requestId)
     }
 
     const {
@@ -304,7 +304,7 @@ export async function POST(request: NextRequest) {
       uniqueSku = `${sku}-${skuCounter}`
       skuCounter++
       if (skuCounter > 100) {
-        return createErrorResponse('Unable to generate unique SKU after 100 attempts', 400, null, requestId)
+        return createErrorResponse('Unable to generate unique SKU after 100 attempts', 400, undefined, requestId)
       }
     }
 
@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
       uniqueSlug = `${baseSlug}-${slugCounter}`
       slugCounter++
       if (slugCounter > 100) {
-        return createErrorResponse('Unable to generate unique slug after 100 attempts', 400, null, requestId)
+        return createErrorResponse('Unable to generate unique slug after 100 attempts', 400, undefined, requestId)
       }
     }
 
@@ -541,7 +541,7 @@ export async function POST(request: NextRequest) {
 
     // Transform product for frontend compatibility
     const transformedProduct = transformProductForFrontend(product)
-    return createSuccessResponse(transformedProduct, 201, null, requestId)
+    return createSuccessResponse(transformedProduct, 201, undefined, requestId)
   } catch (error) {
     // Handle transaction timeouts
     if ((error as any)?.name === 'TransactionTimeout') {

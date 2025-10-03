@@ -395,6 +395,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           name: item.PaperStock.name,
           description: item.PaperStock.description || '',
           pricePerUnit: item.PaperStock.pricePerSqInch || 0.05,
+          weight: item.PaperStock.weight || 0.0009, // Weight per square inch (lbs/sq in) - CRITICAL FOR SHIPPING
+          pricePerSqInch: item.PaperStock.pricePerSqInch || 0.05,
           coatings: item.PaperStock.paperStockCoatings.map((psc: any) => ({
             id: `coating_${psc.CoatingOption.id}`,
             name: psc.CoatingOption.name,

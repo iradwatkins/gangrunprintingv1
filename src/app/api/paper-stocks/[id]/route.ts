@@ -63,11 +63,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(paperStock)
   } catch (error) {
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }
 
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A paper stock with this name already exists' },
         { status: 400 }
@@ -108,7 +108,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json({ error: 'Paper stock not found' }, { status: 404 })
     }
 

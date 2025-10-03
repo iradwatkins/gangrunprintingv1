@@ -310,6 +310,15 @@ declare global {
 
   type AsyncReturnType<T extends (...args: any) => Promise<any>> =
     T extends (...args: any) => Promise<infer R> ? R : never
+
+  // Google Analytics gtag
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set' | 'js',
+      targetId: string,
+      config?: Record<string, any>
+    ) => void
+  }
 }
 
 // Export empty object to make this a module

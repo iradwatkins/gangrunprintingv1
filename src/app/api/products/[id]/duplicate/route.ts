@@ -17,19 +17,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         },
         productQuantities: {
           include: {
-            quantity: true,
+            StandardQuantity: true,
           },
         },
         productSizes: {
           include: {
-            size: true,
+            StandardSize: true,
           },
         },
-        ProductAddOnSet: {
+        productAddOnSets: {
           include: {
             AddOnSet: {
               include: {
-                AddOnSetItem: {
+                addOnSetItems: {
                   include: {
                     AddOn: true,
                   },
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             },
           },
         },
-        ProductTurnaroundTimeSet: {
+        productTurnaroundTimeSets: {
           include: {
             TurnaroundTimeSet: {
               include: {
@@ -51,8 +51,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             },
           },
         },
-        ProductImage: true,
-        ProductOption: true,
+        productImages: {
+          include: {
+            Image: true,
+          },
+        },
+        productOptions: {
+          include: {
+            OptionValue: true,
+          },
+        },
       },
     })
 
@@ -61,7 +69,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Generate a unique SKU and slug
-    const timestamp = Date.now()
     const randomSuffix = Math.random().toString(36).substring(7)
     const newSku = `${originalProduct.sku}-COPY-${randomSuffix}`.toUpperCase()
     const newSlug = `${originalProduct.slug}-copy-${randomSuffix}`
@@ -70,6 +77,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Create the duplicated product
     const duplicatedProduct = await prisma.product.create({
       data: {
+        // Basic fields
         name: newName,
         slug: newSlug,
         sku: newSku,
@@ -77,118 +85,131 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         shortDescription: originalProduct.shortDescription,
         categoryId: originalProduct.categoryId,
         basePrice: originalProduct.basePrice,
-        gangRunBasePrice: originalProduct.gangRunBasePrice,
+
+        // Gang run fields
         gangRunEligible: originalProduct.gangRunEligible,
-        minimumQuantity: originalProduct.minimumQuantity,
-        maximumQuantity: originalProduct.maximumQuantity,
-        quantityIncrement: originalProduct.quantityIncrement,
+        maxGangQuantity: originalProduct.maxGangQuantity,
+        minGangQuantity: originalProduct.minGangQuantity,
+
+        // Rush order fields
+        rushAvailable: originalProduct.rushAvailable,
+        rushDays: originalProduct.rushDays,
+        rushFee: originalProduct.rushFee,
+
+        // Other fields
+        setupFee: originalProduct.setupFee,
         productionTime: originalProduct.productionTime,
-        isActive: false, // Set to inactive by default for review
-        isFeatured: false, // Reset featured status
-        isDigital: originalProduct.isDigital,
-        customizationOptions: originalProduct.customizationOptions,
-        weightPerUnit: originalProduct.weightPerUnit,
-        shippingClass: originalProduct.shippingClass,
-        taxable: originalProduct.taxable,
-        taxClassId: originalProduct.taxClassId,
-        metaTitle: originalProduct.metaTitle ? `${originalProduct.metaTitle} (Copy)` : null,
-        metaDescription: originalProduct.metaDescription,
-        metaKeywords: originalProduct.metaKeywords,
-        customFields: originalProduct.customFields,
-        displayOrder: originalProduct.displayOrder,
-        configType: originalProduct.configType,
+        metadata: originalProduct.metadata as any,
+
+        // Set to inactive by default for review
+        isActive: false,
+        isFeatured: false,
+
         // Copy paper stocks
-        productPaperStocks: {
+        productPaperStocks: originalProduct.productPaperStocks.length > 0 ? {
           create: originalProduct.productPaperStocks.map((ps) => ({
             paperStockId: ps.paperStockId,
             isDefault: ps.isDefault,
+            additionalCost: ps.additionalCost,
           })),
-        },
+        } : undefined,
+
         // Copy quantities
-        productQuantities: {
+        productQuantities: originalProduct.productQuantities.length > 0 ? {
           create: originalProduct.productQuantities.map((pq) => ({
-            quantityId: pq.quantityId,
+            standardQuantityId: pq.standardQuantityId,
             isDefault: pq.isDefault,
+            isActive: pq.isActive,
           })),
-        },
+        } : undefined,
+
         // Copy sizes
-        productSizes: {
+        productSizes: originalProduct.productSizes.length > 0 ? {
           create: originalProduct.productSizes.map((ps) => ({
-            sizeId: ps.sizeId,
+            standardSizeId: ps.standardSizeId,
             isDefault: ps.isDefault,
+            isActive: ps.isActive,
           })),
-        },
+        } : undefined,
+
         // Copy addon sets
-        ProductAddOnSet:
-          originalProduct.ProductAddOnSet.length > 0
-            ? {
-                create: {
-                  addOnSetId: originalProduct.ProductAddOnSet[0].addOnSetId,
-                },
-              }
-            : undefined,
+        productAddOnSets: originalProduct.productAddOnSets.length > 0 ? {
+          create: originalProduct.productAddOnSets.map((pas) => ({
+            addOnSetId: pas.addOnSetId,
+            isDefault: pas.isDefault,
+            sortOrder: pas.sortOrder,
+          })),
+        } : undefined,
+
         // Copy turnaround time sets
-        ProductTurnaroundTimeSet:
-          originalProduct.ProductTurnaroundTimeSet.length > 0
-            ? {
-                create: {
-                  turnaroundTimeSetId:
-                    originalProduct.ProductTurnaroundTimeSet[0].turnaroundTimeSetId,
-                },
-              }
-            : undefined,
+        productTurnaroundTimeSets: originalProduct.productTurnaroundTimeSets.length > 0 ? {
+          create: originalProduct.productTurnaroundTimeSets.map((ptts) => ({
+            turnaroundTimeSetId: ptts.turnaroundTimeSetId,
+            isDefault: ptts.isDefault,
+          })),
+        } : undefined,
+
         // Copy product options
-        ProductOption: {
-          create: originalProduct.ProductOption.map((option) => ({
+        productOptions: originalProduct.productOptions.length > 0 ? {
+          create: originalProduct.productOptions.map((option) => ({
             name: option.name,
             type: option.type,
-            isRequired: option.isRequired,
-            options: option.options,
-            defaultValue: option.defaultValue,
-            priceModifier: option.priceModifier,
-            priceModifierType: option.priceModifierType,
-            displayOrder: option.displayOrder,
+            required: option.required,
+            sortOrder: option.sortOrder,
+            OptionValue: option.OptionValue.length > 0 ? {
+              create: option.OptionValue.map((value) => ({
+                value: value.value,
+                displayName: value.displayName,
+                additionalCost: value.additionalCost,
+                isDefault: value.isDefault,
+                sortOrder: value.sortOrder,
+                width: value.width,
+                height: value.height,
+              })),
+            } : undefined,
           })),
-        },
-        // Copy product images
-        ProductImage: {
-          create: originalProduct.ProductImage.map((image) => ({
-            url: image.url,
-            altText: image.altText,
-            isPrimary: image.isPrimary,
-            sortOrder: image.sortOrder,
+        } : undefined,
+
+        // Copy product images (reference same images)
+        productImages: originalProduct.productImages.length > 0 ? {
+          create: originalProduct.productImages.map((img) => ({
+            imageId: img.imageId,
+            isPrimary: img.isPrimary,
+            sortOrder: img.sortOrder,
           })),
-        },
+        } : undefined,
       },
       include: {
-        ProductCategory: true,
+        productCategory: true,
         productPaperStocks: {
           include: {
             PaperStock: true,
           },
         },
-        ProductImage: true,
+        productImages: {
+          include: {
+            Image: true,
+          },
+        },
         _count: {
           select: {
-            ProductImage: true,
+            productImages: true,
             productPaperStocks: true,
-            ProductOption: true,
+            productOptions: true,
           },
         },
       },
     })
 
     return NextResponse.json({
-      message: 'Product duplicated successfully',
+      success: true,
       product: duplicatedProduct,
+      message: `Product duplicated successfully as "${newName}"`,
     })
   } catch (error) {
-    console.error('Product duplication error:', error)
+    console.error('Error duplicating product:', error)
     return NextResponse.json(
-      {
-        error: 'Failed to duplicate product',
-        details: error instanceof Error ? error.message : 'Unknown error occurred'
-      },
+      { error: 'Failed to duplicate product' },
       { status: 500 }
     )
   }

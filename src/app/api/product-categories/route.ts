@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
-    if (error.code === 'P2002') {
-      const field = error.meta?.target?.[0]
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      const field = error && typeof error === 'object' && 'meta' in error && error.meta && typeof error.meta === 'object' && 'target' in error.meta ? (error.meta.target as string[])?.[0] : 'field'
       return NextResponse.json(
         { error: `A category with this ${field} already exists` },
         { status: 400 }

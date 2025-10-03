@@ -17,7 +17,7 @@ export class ConversionFunnelTracker {
       campaign,
     })
 
-    recordMetric('funnel.landing', 1, 'count', {
+    recordMetric('funnel.landing', 1, {
       source: source || 'direct',
       medium: medium || 'none',
       campaign: campaign || 'none',
@@ -41,7 +41,7 @@ export class ConversionFunnelTracker {
 
     this.sessionData.set(sessionId, sessionData)
 
-    recordMetric('funnel.browsing', 1, 'count', {
+    recordMetric('funnel.browsing', 1, {
       category: category || 'unknown',
     })
 
@@ -70,8 +70,8 @@ export class ConversionFunnelTracker {
 
     this.sessionData.set(sessionId, sessionData)
 
-    recordMetric('funnel.add_to_cart', 1, 'count')
-    recordMetric('funnel.cart_value', price * quantity, 'count')
+    recordMetric('funnel.add_to_cart', 1)
+    recordMetric('funnel.cart_value', price * quantity)
 
     businessMetrics.trackAddToCart(productId, quantity, price)
 
@@ -103,8 +103,8 @@ export class ConversionFunnelTracker {
 
     this.sessionData.set(sessionId, sessionData)
 
-    recordMetric('funnel.checkout_start', 1, 'count')
-    recordMetric('funnel.checkout_value', cartValue, 'count')
+    recordMetric('funnel.checkout_start', 1)
+    recordMetric('funnel.checkout_value', cartValue)
 
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'begin_checkout', {
@@ -125,7 +125,7 @@ export class ConversionFunnelTracker {
 
     this.sessionData.set(sessionId, sessionData)
 
-    recordMetric('funnel.payment_attempt', 1, 'count', {
+    recordMetric('funnel.payment_attempt', 1, {
       payment_method: method,
     })
 
@@ -154,11 +154,11 @@ export class ConversionFunnelTracker {
 
     this.sessionData.set(sessionId, sessionData)
 
-    recordMetric('funnel.conversion', 1, 'count', {
+    recordMetric('funnel.conversion', 1, {
       payment_method: method,
     })
-    recordMetric('funnel.conversion_value', amount, 'count')
-    recordMetric('funnel.time_to_convert', timeToConvert, 'millisecond')
+    recordMetric('funnel.conversion_value', amount)
+    recordMetric('funnel.time_to_convert', timeToConvert)
 
     businessMetrics.trackOrderCreated(orderId, amount, itemCount, method)
     businessMetrics.trackPaymentSuccess(orderId, amount, method)
@@ -185,8 +185,8 @@ export class ConversionFunnelTracker {
     if (sessionData.cart_value > 0) {
       businessMetrics.trackCartAbandonment(sessionData.cart_value, sessionData.cart_items || 0)
 
-      recordMetric('funnel.cart_abandonment', 1, 'count')
-      recordMetric('funnel.abandoned_value', sessionData.cart_value, 'count')
+      recordMetric('funnel.cart_abandonment', 1)
+      recordMetric('funnel.abandoned_value', sessionData.cart_value)
 
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'abandon_cart', {
@@ -239,7 +239,7 @@ export class ConversionFunnelTracker {
 export class ProductAnalytics {
   // Track product impressions
   trackProductImpression(productId: string, position: number, listName?: string) {
-    recordMetric('product.impression', 1, 'count', {
+    recordMetric('product.impression', 1, {
       product_id: productId,
       position: position.toString(),
       list: listName || 'unknown',
@@ -259,7 +259,7 @@ export class ProductAnalytics {
 
   // Track product clicks
   trackProductClick(productId: string, position: number, listName?: string) {
-    recordMetric('product.click', 1, 'count', {
+    recordMetric('product.click', 1, {
       product_id: productId,
       position: position.toString(),
       list: listName || 'unknown',
@@ -279,7 +279,7 @@ export class ProductAnalytics {
 
   // Track configuration changes
   trackConfigurationChange(productId: string, optionType: string, optionValue: string) {
-    recordMetric('product.configuration_change', 1, 'count', {
+    recordMetric('product.configuration_change', 1, {
       product_id: productId,
       option_type: optionType,
       option_value: optionValue,
@@ -304,7 +304,7 @@ export class ProductAnalytics {
     finalPrice: number,
     discounts?: number
   ) {
-    recordMetric('product.price_calculation', 1, 'count', {
+    recordMetric('product.price_calculation', 1, {
       product_id: productId,
     })
 
@@ -334,7 +334,7 @@ export class UserBehaviorAnalytics {
   trackPageEngagement(pageName: string, timeSpent: number) {
     this.pageViews++
 
-    recordMetric('user.page_engagement', timeSpent, 'millisecond', {
+    recordMetric('user.page_engagement', timeSpent, {
       page: pageName,
     })
 
@@ -355,7 +355,7 @@ export class UserBehaviorAnalytics {
     if (percentage > this.scrollDepth) {
       this.scrollDepth = percentage
 
-      recordMetric('user.scroll_depth', percentage, 'count')
+      recordMetric('user.scroll_depth', percentage)
 
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'scroll_depth', {
@@ -372,7 +372,7 @@ export class UserBehaviorAnalytics {
     action: 'start' | 'complete' | 'abandon',
     fieldCount?: number
   ) {
-    recordMetric(`form.${action}`, 1, 'count', {
+    recordMetric(`form.${action}`, 1, {
       form: formName,
     })
 
@@ -391,7 +391,7 @@ export class UserBehaviorAnalytics {
   trackSearchBehavior(query: string, resultsCount: number, selectedResult?: number) {
     businessMetrics.trackSearchQuery(query, resultsCount)
 
-    recordMetric('user.search', 1, 'count')
+    recordMetric('user.search', 1)
 
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'search', {
@@ -408,8 +408,8 @@ export class UserBehaviorAnalytics {
   trackSessionSummary() {
     const sessionDuration = Date.now() - this.sessionStart
 
-    recordMetric('user.session_duration', sessionDuration, 'millisecond')
-    recordMetric('user.page_views', this.pageViews, 'count')
+    recordMetric('user.session_duration', sessionDuration)
+    recordMetric('user.page_views', this.pageViews)
 
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'session_summary', {
@@ -428,7 +428,7 @@ export class UserBehaviorAnalytics {
 export class QualityMetrics {
   // Track form errors
   trackFormError(formName: string, fieldName: string, errorMessage: string) {
-    recordMetric('quality.form_error', 1, 'count', {
+    recordMetric('quality.form_error', 1, {
       form: formName,
       field: fieldName,
     })
@@ -447,7 +447,7 @@ export class QualityMetrics {
 
   // Track API errors
   trackApiError(endpoint: string, statusCode: number, errorMessage: string) {
-    recordMetric('quality.api_error', 1, 'count', {
+    recordMetric('quality.api_error', 1, {
       endpoint,
       status_code: statusCode.toString(),
     })
@@ -466,7 +466,7 @@ export class QualityMetrics {
 
   // Track feature usage
   trackFeatureUsage(featureName: string, context?: string) {
-    recordMetric('feature.usage', 1, 'count', {
+    recordMetric('feature.usage', 1, {
       feature: featureName,
       context: context || 'unknown',
     })

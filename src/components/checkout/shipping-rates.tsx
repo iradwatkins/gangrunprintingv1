@@ -50,6 +50,11 @@ export function ShippingRates({
   onRateSelected,
   onAirportSelected,
 }: ShippingRatesProps) {
+  console.log('🎯 ShippingRates COMPONENT MOUNTED/RENDERED')
+  console.log('   - toAddress:', toAddress)
+  console.log('   - items:', items)
+  console.log('   - items.length:', items?.length)
+
   const [rates, setRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -73,27 +78,44 @@ export function ShippingRates({
   }, [addressKey, itemsKey])
 
   useEffect(() => {
+    console.log('🔵 ShippingRates useEffect triggered')
+    console.log('   - addressKey:', addressKey)
+    console.log('   - itemsKey:', itemsKey)
+    console.log('   - hasFetchedRef:', hasFetchedRef.current)
+
     // Only fetch once per address/items combination
     if (hasFetchedRef.current) {
       console.log('🔄 ShippingRates: Skipping duplicate fetch')
       return
     }
 
+    console.log('⏰ ShippingRates: Setting timeout to fetch in 300ms')
     // Add a small delay to avoid rapid API calls
     const timer = setTimeout(() => {
+      console.log('⏰ ShippingRates: Timeout fired, calling fetchShippingRates()')
       fetchShippingRates()
       hasFetchedRef.current = true
     }, 300)
 
-    return () => clearTimeout(timer)
+    return () => {
+      console.log('🧹 ShippingRates: Cleanup - clearing timeout')
+      clearTimeout(timer)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addressKey, itemsKey])
 
   const fetchShippingRates = async () => {
     // Debug logging
-    console.log('🚚 ShippingRates: Fetching rates with address:', toAddress)
-    console.log('📦 ShippingRates: Items:', items)
-    console.log('📍 ShippingRates: Address check - street:', !!toAddress.street, 'city:', !!toAddress.city, 'state:', !!toAddress.state, 'zip:', !!toAddress.zipCode)
+    console.log('='.repeat(80))
+    console.log('🚚 ShippingRates: STARTING FETCH')
+    console.log('='.repeat(80))
+    console.log('📦 ShippingRates: Items:', JSON.stringify(items, null, 2))
+    console.log('📍 ShippingRates: Address:', JSON.stringify(toAddress, null, 2))
+    console.log('📍 ShippingRates: Address validation:')
+    console.log('   - street:', toAddress.street, '(empty?', !toAddress.street, ')')
+    console.log('   - city:', toAddress.city, '(empty?', !toAddress.city, ')')
+    console.log('   - state:', toAddress.state, '(empty?', !toAddress.state, ')')
+    console.log('   - zipCode:', toAddress.zipCode, '(empty?', !toAddress.zipCode, ')')
 
     // Log each item's structure in detail
     items.forEach((item, index) => {

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         productImages: {
           orderBy: { sortOrder: 'asc' },
         },
-        ProductPaperStockSet: {
+        productPaperStockSets: {
           include: {
             PaperStockSet: {
               include: {

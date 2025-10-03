@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CreditCard, Smartphone, DollarSign, ChevronRight } from 'lucide-react'
+import { CreditCard, Smartphone, DollarSign, ChevronRight, Banknote } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -18,9 +18,17 @@ export function PaymentMethods({
   isProcessing,
   onPaymentMethodSelect,
 }: PaymentMethodsProps) {
-  const [selectedMethod, setSelectedMethod] = useState<string>('card')
+  const [selectedMethod, setSelectedMethod] = useState<string>('test_cash')
 
   const paymentMethods = [
+    {
+      id: 'test_cash',
+      name: 'Test Cash Payment',
+      description: '🧪 Testing only - simulates successful payment',
+      icon: Banknote,
+      popular: false,
+      testOnly: true,
+    },
     {
       id: 'card',
       name: 'Credit/Debit Card',
@@ -111,6 +119,11 @@ export function PaymentMethods({
                                   Recommended
                                 </span>
                               )}
+                              {method.testOnly && (
+                                <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                                  Test Mode
+                                </span>
+                              )}
                               {method.comingSoon && (
                                 <span className="bg-muted-foreground text-muted text-xs px-2 py-1 rounded-full">
                                   Coming Soon
@@ -153,13 +166,15 @@ export function PaymentMethods({
           ) : (
             <>
               <CreditCard className="mr-2 h-5 w-5" />
-              {selectedMethod === 'card'
-                ? 'Continue to Card Details'
-                : selectedMethod === 'square'
-                  ? 'Pay with Square'
-                  : selectedMethod === 'cashapp'
-                    ? 'Pay with Cash App'
-                    : 'Pay with PayPal'}
+              {selectedMethod === 'test_cash'
+                ? '🧪 Complete Test Order'
+                : selectedMethod === 'card'
+                  ? 'Continue to Card Details'
+                  : selectedMethod === 'square'
+                    ? 'Pay with Square'
+                    : selectedMethod === 'cashapp'
+                      ? 'Pay with Cash App'
+                      : 'Pay with PayPal'}
             </>
           )}
         </Button>

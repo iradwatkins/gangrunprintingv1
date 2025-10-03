@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { shippingCalculator, type ShippingAddress, type ShippingPackage } from '@/lib/shipping'
 import { prisma } from '@/lib/prisma'
 import { calculateWeight } from '@/lib/shipping/weight-calculator'
+import { splitIntoBoxes, getBoxSplitSummary } from '@/lib/shipping/box-splitter'
 
 const calculateRequestSchema = z.object({
   toAddress: z.object({
@@ -36,9 +37,17 @@ const calculateRequestSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  console.log('='.repeat(80))
+  console.log('[Shipping API] 🚀 REQUEST RECEIVED at', new Date().toISOString())
+  console.log('='.repeat(80))
   try {
-    const body = await request.json()
-    console.log('[Shipping API] Request body:', JSON.stringify(body, null, 2))
+    const rawBody = await request.text()
+    console.log('[Shipping API] Raw body (first 500 chars):', rawBody.substring(0, 500))
+
+    const body = JSON.parse(rawBody)
+    console.log('[Shipping API] Parsed body:', JSON.stringify(body, null, 2))
+    console.log('[Shipping API] toAddress exists?', !!body.toAddress)
+    console.log('[Shipping API] items exists?', !!body.items)
 
     const validation = calculateRequestSchema.safeParse(body)
 
@@ -112,24 +121,17 @@ export async function POST(request: NextRequest) {
       totalWeight += weight
     }
 
-    console.log('[Shipping API] Total weight:', totalWeight, 'lbs')
+    console.log('[Shipping API] Total product weight:', totalWeight, 'lbs')
 
-    // Send total weight as ONE package for FedEx rating
-    // Note: We'll split into multiple boxes for actual shipping, but for pricing
-    // FedEx rates based on total weight in one shipment
-    const minWeight = Math.max(totalWeight, 1) // Minimum 1 lb
+    // Split into boxes using standard box dimensions and 36lb max weight
+    const boxes = splitIntoBoxes(totalWeight)
+    const boxSummary = getBoxSplitSummary(boxes)
 
-    packages.push({
-      weight: minWeight,
-      dimensions: {
-        width: 12,
-        height: 9,
-        length: 16,
-      },
-    })
-    console.log('[Shipping API] Total weight for rating:', minWeight, 'lbs')
+    console.log('[Shipping API] Box split:', boxSummary)
+    console.log('[Shipping API] Boxes created:', JSON.stringify(boxes, null, 2))
 
-    console.log('[Shipping API] Total packages:', packages.length)
+    // Use the split boxes for rating
+    packages.push(...boxes)
 
     // Get rates from FedEx only
     const rates = await shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages)
@@ -141,6 +143,8 @@ export async function POST(request: NextRequest) {
       success: true,
       rates,
       totalWeight: totalWeight.toFixed(2),
+      boxSummary,
+      numBoxes: boxes.length,
     })
   } catch (error) {
     console.error('[Shipping API] Error:', error)

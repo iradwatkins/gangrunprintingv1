@@ -155,20 +155,18 @@ function ProductsPageContent() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      // Handle both lowercase and PascalCase property names
-      const name = product.name || product.Name || ''
-      const description = product.description || product.Description || ''
-      const shortDescription = product.shortDescription || product.ShortDescription || ''
+      const name = product.name || ''
+      const description = product.description || ''
+      const shortDescription = product.shortDescription || ''
 
       const matchesSearch =
         name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (description && description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (shortDescription && shortDescription.toLowerCase().includes(searchQuery.toLowerCase()))
 
-      // Filter by selected categories OR selected individual products
-      const category = product.productCategory || product.ProductCategory
-      const categoryName = category?.name || category?.Name || ''
-      const productId = product.id || product.Id || ''
+      const category = product.productCategory
+      const categoryName = category?.name || ''
+      const productId = product.id || ''
 
       const matchesSelection =
         (selectedCategories.length === 0 && selectedProducts.length === 0) ||
@@ -183,19 +181,19 @@ function ProductsPageContent() {
     const sorted = [...filteredProducts]
     switch (sortBy) {
       case 'price-asc':
-        return sorted.sort((a, b) => (a.basePrice || a.BasePrice || 0) - (b.basePrice || b.BasePrice || 0))
+        return sorted.sort((a, b) => (a.basePrice || 0) - (b.basePrice || 0))
       case 'price-desc':
-        return sorted.sort((a, b) => (b.basePrice || b.BasePrice || 0) - (a.basePrice || a.BasePrice || 0))
+        return sorted.sort((a, b) => (b.basePrice || 0) - (a.basePrice || 0))
       case 'name-asc':
         return sorted.sort((a, b) => {
-          const aName = a.name || a.Name || ''
-          const bName = b.name || b.Name || ''
+          const aName = a.name || ''
+          const bName = b.name || ''
           return aName.localeCompare(bName)
         })
       default: // featured
         return sorted.sort((a, b) => {
-          const aFeatured = a.isFeatured ?? a.IsFeatured ?? false
-          const bFeatured = b.isFeatured ?? b.IsFeatured ?? false
+          const aFeatured = a.isFeatured ?? false
+          const bFeatured = b.isFeatured ?? false
           return (bFeatured ? 1 : 0) - (aFeatured ? 1 : 0)
         })
     }
@@ -517,10 +515,10 @@ function ProductsPageContent() {
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {sortedProducts.map((product) => {
-                const images = product.productImages || product.ProductImage || []
+                const images = product.productImages || []
                 const primaryImage = images.find((img) => img.isPrimary) || images[0]
-                const slug = product.slug || product.Slug || product.id
-                const productName = product.name || product.Name || 'Product'
+                const slug = product.slug || product.id
+                const productName = product.name || 'Product'
                 return (
                   <Link key={product.id} href={`/products/${slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
@@ -549,16 +547,16 @@ function ProductsPageContent() {
                           {productName}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
+                          {product.productCategory?.name || 'Uncategorized'}
                         </p>
                         <p className="text-sm mb-3 line-clamp-2">
-                          {product.shortDescription || product.ShortDescription || product.description || product.Description || ''}
+                          {product.shortDescription || product.description || ''}
                         </p>
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm text-muted-foreground">Starting at</span>
                             <p className="text-lg font-bold text-primary">
-                              ${(product.basePrice || product.BasePrice || 0).toFixed(2)}
+                              ${(product.basePrice || 0).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -571,10 +569,10 @@ function ProductsPageContent() {
           ) : (
             <div className="space-y-4">
               {sortedProducts.map((product) => {
-                const images = product.productImages || product.ProductImage || []
+                const images = product.productImages || []
                 const primaryImage = images.find((img) => img.isPrimary) || images[0]
-                const slug = product.slug || product.Slug || product.id
-                const productName = product.name || product.Name || 'Product'
+                const slug = product.slug || product.id
+                const productName = product.name || 'Product'
                 return (
                   <Link key={product.id} href={`/products/${slug}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer">
@@ -606,16 +604,16 @@ function ProductsPageContent() {
                                 {productName}
                               </h3>
                               <p className="text-sm text-muted-foreground mb-2">
-                                {(product.productCategory || product.ProductCategory)?.name || 'Uncategorized'}
+                                {product.productCategory?.name || 'Uncategorized'}
                               </p>
                               <p className="text-sm mb-3">
-                                {product.shortDescription || product.ShortDescription || product.description || product.Description || ''}
+                                {product.shortDescription || product.description || ''}
                               </p>
                             </div>
                             <div className="text-right ml-4">
                               <span className="text-sm text-muted-foreground">Starting at</span>
                               <p className="text-2xl font-bold text-primary">
-                                ${(product.basePrice || product.BasePrice || 0).toFixed(2)}
+                                ${(product.basePrice || 0).toFixed(2)}
                               </p>
                             </div>
                           </div>

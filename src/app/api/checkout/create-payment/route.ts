@@ -121,16 +121,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send confirmation email (fire and forget - don't block checkout)
-    fetch(`${process.env.NEXTAUTH_URL}/api/orders/confirm-email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-      }),
-    }).catch((error) => {
-      })
+    // Note: Confirmation email will be sent by Square webhook after payment completes
+    // Flow: Square webhook → OrderService.processPayment → OrderEmailService.sendOrderConfirmation
 
     return NextResponse.json({
       success: true,

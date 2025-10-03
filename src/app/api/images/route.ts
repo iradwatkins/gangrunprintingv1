@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
     let formData
     try {
       if (request.signal?.aborted) {
-        return createErrorResponse('Request aborted', 499, null, requestId)
+        return createErrorResponse('Request aborted', 499, undefined, requestId)
       }
 
       const formDataPromise = request.formData()
@@ -151,11 +151,11 @@ export async function POST(request: NextRequest) {
     const category = formData.get('category') as string || 'general'
 
     if (!file) {
-      return createErrorResponse('No file provided', 400, null, requestId)
+      return createErrorResponse('No file provided', 400, undefined, requestId)
     }
 
     if (!name) {
-      return createErrorResponse('Image name is required', 400, null, requestId)
+      return createErrorResponse('Image name is required', 400, undefined, requestId)
     }
 
     // Additional file validation
@@ -263,7 +263,7 @@ export async function POST(request: NextRequest) {
       updatedAt: image.updatedAt,
     }
 
-    return createSuccessResponse(responseData, 201, null, requestId)
+    return createSuccessResponse(responseData, 201, undefined, requestId)
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes('MinIO') || error.message.includes('storage')) {
@@ -274,7 +274,7 @@ export async function POST(request: NextRequest) {
           requestId
         )
       } else if (error.message.includes('timeout')) {
-        return createTimeoutErrorResponse('Image processing', null, requestId)
+        return createTimeoutErrorResponse('Image processing', undefined, requestId)
       } else if (error.message.includes('exceeds 10MB')) {
         return createUploadErrorResponse(error.message, MAX_FILE_SIZE, requestId)
       }

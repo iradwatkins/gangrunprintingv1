@@ -107,9 +107,9 @@ export async function PUT(
       }
     })
 
-    return createSuccessResponse(updatedImage, 200, null, requestId)
+    return createSuccessResponse(updatedImage, 200, undefined, requestId)
   } catch (error) {
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return createErrorResponse(
         'An image with this name already exists',
         400,

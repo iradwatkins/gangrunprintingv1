@@ -1,17 +1,18 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { OrderService } from '@/lib/services/order-service'
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { user } = await validateRequest()
 
-    if (!user?.id) {
+    if (!user || user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { vendorId, notes } = await request.json()
+    const { vendorId, productionDeadline, notes } = await request.json()
 
     if (!vendorId) {
       return NextResponse.json({ error: 'Vendor ID is required' }, { status: 400 })
@@ -19,81 +20,54 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Get the order
     const order = await prisma.order.findUnique({
-      where: { id: id },
+      where: { id },
+      include: { OrderItem: true }
     })
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    // Check if order is in a valid state for vendor assignment
-    const validStatuses = ['PAID', 'PROCESSING', 'PRINTING', 'QUALITY_CHECK', 'PACKAGING']
-    if (!validStatuses.includes(order.status)) {
-      return NextResponse.json(
-        { error: 'Order is not in a valid state for vendor assignment' },
-        { status: 400 }
-      )
+    // Calculate production deadline if not provided
+    let deadline: Date
+    if (productionDeadline) {
+      deadline = new Date(productionDeadline)
+    } else {
+      // Default: 3 business days from now
+      deadline = new Date()
+      deadline.setDate(deadline.getDate() + 3)
     }
 
-    // Verify vendor exists and is active
-    const vendor = await prisma.vendor.findUnique({
-      where: { id: vendorId },
+    // Assign vendor via OrderService
+    await OrderService.assignVendor({
+      orderId: id,
+      vendorId,
+      productionDeadline: deadline,
+      notes
     })
 
-    if (!vendor || !vendor.isActive) {
-      return NextResponse.json({ error: 'Invalid or inactive vendor' }, { status: 400 })
-    }
-
-    // Update the order with vendor assignment
-    const updatedOrder = await prisma.order.update({
-      where: { id: id },
-      data: {
-        vendorId,
-        adminNotes: notes
-          ? `${order.adminNotes ? order.adminNotes + '\n' : ''}Vendor assigned to ${vendor.name}${notes ? ': ' + notes : ''}`
-          : order.adminNotes,
-      },
+    // Return updated order
+    const updatedOrder = await prisma.order.findUnique({
+      where: { id },
       include: {
         Vendor: true,
-      },
-    })
-
-    // Create status history entry
-    await prisma.statusHistory.create({
-      data: {
-        orderId: id,
-        fromStatus: order.status,
-        toStatus: order.status,
-        notes: `Vendor assigned: ${vendor.name}`,
-        changedBy: user.id,
-      },
-    })
-
-    // If vendor has n8n webhook, trigger it
-    if (vendor.n8nWebhookUrl) {
-      try {
-        await fetch(vendor.n8nWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'order_assigned',
-            orderId: order.id,
-            orderNumber: order.orderNumber,
-            vendorId: vendor.id,
-            vendorName: vendor.name,
-            orderTotal: order.total / 100,
-            notes: notes || '',
-          }),
-        })
-      } catch (webhookError) {
+        StatusHistory: {
+          orderBy: { createdAt: 'desc' },
+          take: 1
         }
-    }
+      }
+    })
 
     return NextResponse.json({
       success: true,
       order: updatedOrder,
+      message: 'Vendor assigned successfully'
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to assign vendor' }, { status: 500 })
+    console.error('[Vendor Assignment] Error:', error)
+
+    const errorMessage = error instanceof Error ? error.message : 'Failed to assign vendor'
+
+    return NextResponse.json({ error: errorMessage }, { status: 400 })
   }
 }

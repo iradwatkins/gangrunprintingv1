@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -44,6 +45,16 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
+          <div className="mb-8 flex justify-center">
+            <Image
+              src="/gangrunprinting_logo_new_1448921366__42384-432x65.png"
+              alt="GangRun Printing"
+              width={432}
+              height={65}
+              priority
+              className="h-16 w-auto"
+            />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign in to GangRun Printing</h1>
           <p className="text-gray-600">Choose your preferred sign-in method</p>
         </div>

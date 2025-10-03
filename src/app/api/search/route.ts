@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 
 import { logSearch } from '@/components/GoogleAnalytics'
 import { prisma } from '@/lib/prisma'
@@ -14,7 +15,6 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') || 'relevance'
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
-    const inStock = searchParams.get('inStock') === 'true'
 
     // Generate cache key
     const cacheKey = `search:${JSON.stringify({
@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
       sortBy,
       page,
       limit,
-      inStock,
     })}`
 
     // Try to get from cache
@@ -34,25 +33,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(cached)
     }
 
-    // Build search conditions
-    const where: Record<string, unknown> = {
-      AND: [],
-    }
+    // Build search conditions properly typed
+    const whereConditions: Prisma.ProductWhereInput[] = []
+
+    // Only show active products
+    whereConditions.push({ isActive: true })
 
     // Text search
     if (query) {
-      where.AND.push({
+      whereConditions.push({
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { description: { contains: query, mode: 'insensitive' } },
-          { tags: { hasSome: query.split(' ') } },
+          { shortDescription: { contains: query, mode: 'insensitive' } },
         ],
       })
     }
 
     // Category filter
     if (category) {
-      where.AND.push({
+      whereConditions.push({
         productCategory: {
           name: { equals: category, mode: 'insensitive' },
         },
@@ -61,24 +61,19 @@ export async function GET(request: NextRequest) {
 
     // Price range filter
     if (minPrice || maxPrice) {
-      const priceFilter: Record<string, unknown> = {}
+      const priceFilter: Prisma.FloatFilter = {}
       if (minPrice) priceFilter.gte = parseFloat(minPrice)
       if (maxPrice) priceFilter.lte = parseFloat(maxPrice)
-      where.AND.push({ basePrice: priceFilter })
+      whereConditions.push({ basePrice: priceFilter })
     }
 
-    // Stock filter
-    if (inStock) {
-      where.AND.push({ inStock: true })
+    const where: Prisma.ProductWhereInput = {
+      AND: whereConditions,
     }
 
-    // Clean up empty AND array if no filters
-    if (where.AND.length === 0) {
-      delete where.AND
-    }
+    // Determine order by - properly typed
+    let orderBy: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[] = {}
 
-    // Determine order by
-    let orderBy: Record<string, unknown> = {}
     switch (sortBy) {
       case 'price_asc':
         orderBy = { basePrice: 'asc' }
@@ -93,11 +88,12 @@ export async function GET(request: NextRequest) {
         orderBy = { createdAt: 'desc' }
         break
       case 'popular':
-        orderBy = { orderCount: 'desc' }
+        // Sort by featured first, then by creation date
+        orderBy = [{ isFeatured: 'desc' }, { createdAt: 'desc' }]
         break
       default:
-        // For relevance, we'll sort by a combination of factors
-        orderBy = [{ featured: 'desc' }, { orderCount: 'desc' }, { createdAt: 'desc' }]
+        // Relevance: featured first, then newest
+        orderBy = [{ isFeatured: 'desc' }, { createdAt: 'desc' }]
     }
 
     // Execute search with pagination
@@ -109,13 +105,21 @@ export async function GET(request: NextRequest) {
         take: limit,
         include: {
           productCategory: true,
-          images: {
+          productImages: {
+            where: { isPrimary: true },
             take: 1,
-            orderBy: { order: 'asc' },
+            include: {
+              Image: true,
+            },
           },
-          sizes: true,
-          paperStocks: true,
-          coatingOptions: true,
+          productSizes: {
+            where: { isActive: true },
+          },
+          productPaperStocks: {
+            include: {
+              PaperStock: true,
+            },
+          },
         },
       }),
       prisma.product.count({ where }),
@@ -133,15 +137,19 @@ export async function GET(request: NextRequest) {
         name: product.name,
         slug: product.slug,
         description: product.description,
+        shortDescription: product.shortDescription,
         basePrice: product.basePrice,
         category: product.productCategory?.name,
-        image: product.images[0]?.url || null,
-        inStock: product.inStock,
-        featured: product.featured,
-        turnaroundTime: product.turnaroundTime,
-        sizes: product.sizes.length,
-        paperStocks: product.paperStocks.length,
-        coatingOptions: product.coatingOptions.length,
+        categorySlug: product.productCategory?.slug,
+        image: product.productImages[0]?.Image?.url || null,
+        thumbnailUrl: product.productImages[0]?.Image?.thumbnailUrl || null,
+        isFeatured: product.isFeatured,
+        isActive: product.isActive,
+        productionTime: product.productionTime,
+        sizesCount: product.productSizes.length,
+        paperStocksCount: product.productPaperStocks.length,
+        setupFee: product.setupFee,
+        rushAvailable: product.rushAvailable,
       })),
       pagination: {
         page,
@@ -151,166 +159,29 @@ export async function GET(request: NextRequest) {
         hasNextPage,
         hasPrevPage,
       },
-      facets: {
-        categories: await getCategories(),
-        priceRange: await getPriceRange(where),
-        attributes: await getAttributes(where),
+      query,
+      filters: {
+        category,
+        minPrice: minPrice ? parseFloat(minPrice) : null,
+        maxPrice: maxPrice ? parseFloat(maxPrice) : null,
+        sortBy,
       },
     }
 
-    // Cache the response for 5 minutes
+    // Cache the results for 5 minutes
     await cache.set(cacheKey, response, 300)
 
-    // Log search to analytics
+    // Log the search
     if (query) {
-      logSearch(query)
+      logSearch(query, totalCount)
     }
 
     return NextResponse.json(response)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to search products' }, { status: 500 })
-  }
-}
-
-// Get available categories with counts
-async function getCategories() {
-  const categories = await prisma.productCategory.findMany({
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      _count: {
-        select: { products: true },
-      },
-    },
-    orderBy: {
-      products: {
-        _count: 'desc',
-      },
-    },
-  })
-
-  return categories.map((cat) => ({
-    id: cat.id,
-    name: cat.name,
-    slug: cat.slug,
-    count: cat._count.products,
-  }))
-}
-
-// Get price range for filters
-async function getPriceRange(where: Record<string, unknown>) {
-  const result = await prisma.product.aggregate({
-    where,
-    _min: { basePrice: true },
-    _max: { basePrice: true },
-    _avg: { basePrice: true },
-  })
-
-  return {
-    min: result._min.basePrice || 0,
-    max: result._max.basePrice || 1000,
-    avg: result._avg.basePrice || 0,
-  }
-}
-
-// Get available attributes for filtering
-async function getAttributes(where: Record<string, unknown>) {
-  const products = await prisma.product.findMany({
-    where,
-    select: {
-      sizes: { select: { name: true } },
-      paperStocks: { select: { name: true } },
-      coatingOptions: { select: { name: true } },
-      TurnaroundTime: true,
-    },
-  })
-
-  // Aggregate unique attributes
-  const sizes = new Set<string>()
-  const paperStocks = new Set<string>()
-  const coatings = new Set<string>()
-  const turnaroundTimes = new Set<string>()
-
-  products.forEach((product) => {
-    product.sizes.forEach((s) => sizes.add(s.name))
-    product.paperStocks.forEach((p) => paperStocks.add(p.name))
-    product.coatingOptions.forEach((c) => coatings.add(c.name))
-    if (product.turnaroundTime) turnaroundTimes.add(product.turnaroundTime)
-  })
-
-  return {
-    sizes: Array.from(sizes),
-    paperStocks: Array.from(paperStocks),
-    coatings: Array.from(coatings),
-    turnaroundTimes: Array.from(turnaroundTimes),
-  }
-}
-
-// Autocomplete suggestions
-export async function POST(request: NextRequest) {
-  try {
-    const { query } = await request.json()
-
-    if (!query || query.length < 2) {
-      return NextResponse.json({ suggestions: [] })
-    }
-
-    // Check cache first
-    const cacheKey = `autocomplete:${query}`
-    const cached = await cache.get(cacheKey)
-    if (cached) {
-      return NextResponse.json(cached)
-    }
-
-    // Get product name suggestions
-    const products = await prisma.product.findMany({
-      where: {
-        OR: [
-          { name: { startsWith: query, mode: 'insensitive' } },
-          { name: { contains: query, mode: 'insensitive' } },
-        ],
-      },
-      select: {
-        name: true,
-        productCategory: {
-          select: { name: true },
-        },
-      },
-      take: 10,
-      orderBy: {
-        orderCount: 'desc',
-      },
-    })
-
-    // Get category suggestions
-    const categories = await prisma.productCategory.findMany({
-      where: {
-        name: { contains: query, mode: 'insensitive' },
-      },
-      select: {
-        name: true,
-      },
-      take: 5,
-    })
-
-    const suggestions = {
-      products: products.map((p) => ({
-        text: p.name,
-        category: p.productCategory?.name,
-        type: 'product',
-      })),
-      categories: categories.map((c) => ({
-        text: c.name,
-        type: 'category',
-      })),
-    }
-
-    // Cache for 1 hour
-    await cache.set(cacheKey, suggestions, 3600)
-
-    return NextResponse.json(suggestions)
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to get suggestions' }, { status: 500 })
+    console.error('Search error:', error)
+    return NextResponse.json(
+      { error: 'Failed to perform search' },
+      { status: 500 }
+    )
   }
 }

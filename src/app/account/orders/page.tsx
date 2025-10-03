@@ -1,29 +1,93 @@
-'use client'
-
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Package } from 'lucide-react'
-import Link from 'next/link'
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
+import { validateRequest } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import AccountWrapper from '@/components/account/account-wrapper'
+import { OrdersList } from '@/components/account/orders-list'
+import { OrdersListSkeleton } from '@/components/account/orders-list-skeleton'
 
-export default function OrdersPage() {
+// Force dynamic rendering for real-time data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+interface PageProps {
+  searchParams: Promise<{
+    status?: string
+    search?: string
+    sort?: string
+    page?: string
+    startDate?: string
+    endDate?: string
+  }>
+}
+
+export default async function OrdersPage({ searchParams }: PageProps) {
+  // Authenticate user
+  const { user } = await validateRequest()
+
+  if (!user) {
+    redirect('/auth/signin?from=/account/orders')
+  }
+
+  // Await search params
+  const params = await searchParams
+
+  // Parse query parameters
+  const statusFilter = params.status || 'all'
+  const searchQuery = params.search || ''
+  const sortBy = params.sort || 'date_desc'
+  const page = parseInt(params.page || '1', 10)
+  const startDate = params.startDate
+  const endDate = params.endDate
+
+  // Fetch user's orders with related data
+  const ordersRaw = await prisma.order.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      OrderItem: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  // Serialize dates for client component
+  const orders = ordersRaw.map((order) => ({
+    ...order,
+    createdAt: order.createdAt.toISOString(),
+    updatedAt: order.updatedAt.toISOString(),
+    paidAt: order.paidAt?.toISOString() || null,
+    refundedAt: order.refundedAt?.toISOString() || null,
+    OrderItem: order.OrderItem.map((item) => ({
+      ...item,
+      createdAt: item.createdAt.toISOString(),
+    })),
+  }))
+
   return (
     <AccountWrapper>
-      <div className="max-w-4xl">
-        <h1 className="text-3xl font-bold mb-2">My Orders</h1>
-        <p className="text-muted-foreground mb-8">View and track all your orders</p>
+      <div className="max-w-7xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">My Orders</h1>
+          <p className="text-muted-foreground">
+            View and track all your orders
+          </p>
+        </div>
 
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-              <p className="mb-4">You haven't placed any orders yet</p>
-              <Link href="/products">
-                <Button>Browse Products</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <Suspense fallback={<OrdersListSkeleton />}>
+          <OrdersList
+            orders={orders}
+            currentPage={page}
+            statusFilter={statusFilter}
+            searchQuery={searchQuery}
+            sortBy={sortBy}
+            startDate={startDate}
+            endDate={endDate}
+            isBroker={false}
+          />
+        </Suspense>
       </div>
     </AccountWrapper>
   )

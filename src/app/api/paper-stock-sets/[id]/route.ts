@@ -26,18 +26,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        paperStockSetItems: {
+        PaperStockSetItem: {
           include: {
-            paperStock: {
+            PaperStock: {
               include: {
                 paperStockCoatings: {
                   include: {
-                    coating: true,
+                    CoatingOption: true,
                   },
                 },
                 paperStockSides: {
                   include: {
-                    sidesOption: true,
+                    SidesOption: true,
                   },
                 },
               },
@@ -145,18 +145,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return await tx.paperStockSet.findUnique({
         where: { id: params.id },
         include: {
-          paperStockSetItems: {
+          PaperStockSetItem: {
             include: {
-              paperStock: {
+              PaperStock: {
                 include: {
                   paperStockCoatings: {
                     include: {
-                      coating: true,
+                      CoatingOption: true,
                     },
                   },
                   paperStockSides: {
                     include: {
-                      sidesOption: true,
+                      SidesOption: true,
                     },
                   },
                 },
@@ -194,7 +194,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     const group = await prisma.paperStockSet.findUnique({
       where: { id: params.id },
       include: {
-        productPaperStockSets: true,
+        ProductPaperStockSet: true,
       },
     })
 
@@ -203,7 +203,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     // Check if group is being used by any products
-    if (group.productPaperStockSets.length > 0) {
+    if (group.ProductPaperStockSet.length > 0) {
       return NextResponse.json(
         { error: 'Cannot delete paper stock set that is assigned to products' },
         { status: 400 }

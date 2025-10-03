@@ -84,7 +84,7 @@ export async function POST(
     const { imageId, isPrimary, sortOrder } = body
 
     if (!imageId) {
-      return createErrorResponse('Image ID is required', 400, null, requestId)
+      return createErrorResponse('Image ID is required', 400, undefined, requestId)
     }
 
     // Check if product exists
@@ -93,7 +93,7 @@ export async function POST(
     })
 
     if (!product) {
-      return createErrorResponse('Product not found', 404, null, requestId)
+      return createErrorResponse('Product not found', 404, undefined, requestId)
     }
 
     // Check if image exists
@@ -102,7 +102,7 @@ export async function POST(
     })
 
     if (!image) {
-      return createErrorResponse('Image not found', 404, null, requestId)
+      return createErrorResponse('Image not found', 404, undefined, requestId)
     }
 
     // Check if relationship already exists
@@ -117,7 +117,7 @@ export async function POST(
       return createErrorResponse(
         'Image is already attached to this product',
         400,
-        null,
+        undefined,
         requestId
       )
     }
@@ -171,15 +171,15 @@ export async function POST(
         image: productImage.Image
       },
       201,
-      null,
+      undefined,
       requestId
     )
   } catch (error) {
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return createErrorResponse(
         'Image is already attached to this product',
         400,
-        null,
+        undefined,
         requestId
       )
     }
@@ -210,7 +210,7 @@ export async function DELETE(
     const imageId = searchParams.get('imageId')
 
     if (!imageId) {
-      return createErrorResponse('Image ID is required', 400, null, requestId)
+      return createErrorResponse('Image ID is required', 400, undefined, requestId)
     }
 
     // Check if relationship exists
@@ -225,7 +225,7 @@ export async function DELETE(
       return createErrorResponse(
         'Image is not attached to this product',
         404,
-        null,
+        undefined,
         requestId
       )
     }

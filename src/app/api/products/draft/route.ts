@@ -39,12 +39,13 @@ export async function GET(request: NextRequest) {
 
     const draftProducts = await prisma.product.findMany({
       where: {
-        isDraft: true,
-        createdBy: user.id,
+        // isDraft: true, // Field doesn't exist in schema
+        // createdBy: user.id, // Field doesn't exist in schema
+        isActive: false, // Use isActive as draft indicator
       },
       include: {
-        ProductCategory: true,
-        ProductImage: {
+        productCategory: true,
+        productImages: {
           orderBy: { sortOrder: 'asc' },
         },
       },

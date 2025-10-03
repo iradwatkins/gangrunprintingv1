@@ -45,6 +45,8 @@ import {
   Truck,
   Printer,
 } from 'lucide-react'
+import { BrokerDiscountButton } from '@/components/admin/broker-discount-button'
+import { BrokerDiscountDisplay } from '@/components/admin/broker-discount-display'
 import {
   Table,
   TableBody,
@@ -435,82 +437,57 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             <TabsContent className="space-y-4" value="broker">
               <Card>
                 <CardHeader>
-                  <CardTitle>Broker Configuration</CardTitle>
-                  <CardDescription>Manage broker status and pricing tiers</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Broker Configuration</CardTitle>
+                      <CardDescription>
+                        Manage category-specific discounts for this customer
+                      </CardDescription>
+                    </div>
+                    <BrokerDiscountButton
+                      customerId={customer.id}
+                      customerName={customer.name || customer.email}
+                      isBroker={customer.isBroker || false}
+                      currentDiscounts={customer.brokerDiscounts as Record<string, number> | null}
+                    />
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label>Customer Type</Label>
-                      <Select disabled defaultValue={customer.role}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CUSTOMER">Regular Customer</SelectItem>
-                          <SelectItem value="BROKER">Broker</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Broker Status</Label>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={customer.isBroker ? 'default' : 'outline'}>
+                          {customer.isBroker ? 'Broker Account' : 'Regular Customer'}
+                        </Badge>
+                        {customer.isBroker && customer.brokerDiscounts && (
+                          <span className="text-sm text-muted-foreground">
+                            {Object.keys(customer.brokerDiscounts as Record<string, number>).length}{' '}
+                            categories configured
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Broker tier section - disabled for now
-                    {customer.role === 'CUSTOMER' && customer.brokerTier && (
+                    {customer.isBroker && (
                       <>
-                        <div className="grid gap-2">
-                          <Label>Broker Tier</Label>
-                          <Select disabled defaultValue="SILVER">
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {brokerTiers.map((tier) => (
-                                <SelectItem key={tier.value} value={tier.value}>
-                                  {tier.label} ({tier.discount}% discount)
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="grid gap-2">
-                          <Label>Custom Discount (%)</Label>
-                          <Input disabled defaultValue="10" placeholder="0-100" type="number" />
-                          <p className="text-xs text-muted-foreground">
-                            Override tier discount with custom percentage
-                          </p>
-                        </div>
-
-                        <div className="grid gap-2">
-                          <Label>Authorized Categories</Label>
-                          <div className="flex flex-wrap gap-2">
-                            <Badge variant="secondary">Business Cards</Badge>
-                            <Badge variant="secondary">Flyers</Badge>
-                            <Badge variant="secondary">Banners</Badge>
-                            <Badge variant="outline">+ Add Category</Badge>
-                          </div>
-                        </div>
-
                         <Separator />
-
-                        <div className="space-y-2">
-                          <h4 className="font-medium">Broker Performance</h4>
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <p className="text-muted-foreground">This Month</p>
-                              <p className="font-medium">$2,450.00 in sales</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground">Commission Earned</p>
-                              <p className="font-medium">$245.00</p>
-                            </div>
-                          </div>
-                        </div>
+                        <BrokerDiscountDisplay
+                          isBroker={customer.isBroker}
+                          discounts={customer.brokerDiscounts as Record<string, number> | null}
+                        />
                       </>
-                    )} */}
+                    )}
 
-                    <div className="pt-4">
-                      <Button disabled>Save Broker Settings</Button>
-                    </div>
+                    {!customer.isBroker && (
+                      <div className="rounded-lg border bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">
+                          This customer is not currently set up as a broker. Click "Set Broker
+                          Discounts" to configure category-specific discounts and automatically
+                          enable broker status.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

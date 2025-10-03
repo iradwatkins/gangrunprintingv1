@@ -7,7 +7,10 @@
 // CORE STANDARD TYPES
 // =============================================================================
 
-export {
+// Import ModuleType as value (enum) for runtime use
+import { ModuleType, type ModulePricingContribution } from './StandardModuleTypes'
+
+export type {
   BaseModuleProps,
   StandardModuleProps,
   StandardModuleValue,
@@ -25,7 +28,7 @@ export {
 // SPECIFIC MODULE STANDARD TYPES
 // =============================================================================
 
-export {
+export type {
   // Quantity Module
   QuantityItem,
   QuantityValue,

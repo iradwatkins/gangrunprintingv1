@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     try {
       // CRITICAL: Check if request is still active before parsing
       if (request.signal?.aborted) {
-        return createErrorResponse('Request aborted', 499, null, requestId)
+        return createErrorResponse('Request aborted', 499, undefined, requestId)
       }
 
       // Parse with longer timeout and better error handling
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     const sortOrder = parseInt(formData.get('sortOrder') as string) || 0
 
     if (!file) {
-      return createErrorResponse('No file provided', 400, null, requestId)
+      return createErrorResponse('No file provided', 400, undefined, requestId)
     }
 
     // Additional file validation
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return createSuccessResponse(responseData, 200, null, requestId)
+    return createSuccessResponse(responseData, 200, undefined, requestId)
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes('MinIO') || error.message.includes('storage')) {

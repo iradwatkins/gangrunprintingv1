@@ -9,7 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const category = await prisma.productCategory.findUnique({
       where: { id },
       include: {
-        Product: {
+        products: {
           select: {
             id: true,
             name: true,
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         },
         _count: {
           select: {
-            Product: true,
+            products: true,
           },
         },
       },
@@ -110,7 +110,7 @@ export async function DELETE(
       include: {
         _count: {
           select: {
-            Product: true,
+            products: true,
           },
         },
       },
@@ -120,7 +120,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
-    if (category._count.Product > 0) {
+    if (category._count.products > 0) {
       // Soft delete - just deactivate
       const updatedCategory = await prisma.productCategory.update({
         where: { id },

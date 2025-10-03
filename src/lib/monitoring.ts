@@ -12,7 +12,7 @@ export interface WebVitalsMetric {
 
 export function reportWebVitals(metric: WebVitalsMetric) {
   // Record the metric in Sentry
-  recordMetric(`web_vitals.${metric.name.toLowerCase()}`, metric.value, 'millisecond', {
+  recordMetric(`web_vitals.${metric.name.toLowerCase()}`, metric.value, {
     rating: metric.rating,
     navigation_type: metric.navigationType,
   })
@@ -53,7 +53,7 @@ export class PerformanceMonitor {
     this.startTimes.delete(operation)
 
     // Record performance metric
-    recordMetric(`operation.${operation}`, duration, 'millisecond', metadata)
+    recordMetric(`operation.${operation}`, duration, metadata)
 
     addBreadcrumb(`Completed: ${operation}`, 'performance', { duration, ...metadata })
 
@@ -78,7 +78,7 @@ export function monitorApiCall(endpoint: string, method: string = 'GET') {
   return {
     success: (status: number, responseSize?: number) => {
       const duration = performance.now() - startTime
-      recordMetric('api.response_time', duration, 'millisecond', {
+      recordMetric('api.response_time', duration, {
         endpoint,
         method,
         status: status.toString(),
@@ -86,7 +86,7 @@ export function monitorApiCall(endpoint: string, method: string = 'GET') {
       })
 
       if (responseSize) {
-        recordMetric('api.response_size', responseSize, 'byte', {
+        recordMetric('api.response_size', responseSize, {
           endpoint,
           method,
         })
@@ -94,7 +94,7 @@ export function monitorApiCall(endpoint: string, method: string = 'GET') {
     },
     error: (status: number, error?: Error) => {
       const duration = performance.now() - startTime
-      recordMetric('api.response_time', duration, 'millisecond', {
+      recordMetric('api.response_time', duration, {
         endpoint,
         method,
         status: status.toString(),
@@ -120,14 +120,14 @@ export function monitorDatabaseQuery(operation: string, table: string) {
   return {
     success: (recordCount?: number) => {
       const duration = performance.now() - startTime
-      recordMetric('db.query_time', duration, 'millisecond', {
+      recordMetric('db.query_time', duration, {
         operation,
         table,
         result: 'success',
       })
 
       if (recordCount !== undefined) {
-        recordMetric('db.records_affected', recordCount, 'count', {
+        recordMetric('db.records_affected', recordCount, {
           operation,
           table,
         })
@@ -135,7 +135,7 @@ export function monitorDatabaseQuery(operation: string, table: string) {
     },
     error: (error: Error) => {
       const duration = performance.now() - startTime
-      recordMetric('db.query_time', duration, 'millisecond', {
+      recordMetric('db.query_time', duration, {
         operation,
         table,
         result: 'error',
@@ -154,51 +154,51 @@ export function monitorDatabaseQuery(operation: string, table: string) {
 export class BusinessMetricsTracker {
   // E-commerce specific metrics
   trackProductView(productId: string, productName: string, category?: string) {
-    recordMetric('business.product_view', 1, 'count', {
+    recordMetric('business.product_view', 1, {
       product_id: productId,
-      category,
+      ...(category && { category }),
     })
 
     addBreadcrumb('Product viewed', 'business', { productId, productName, category })
   }
 
   trackAddToCart(productId: string, quantity: number, price: number) {
-    recordMetric('business.add_to_cart', 1, 'count', {
+    recordMetric('business.add_to_cart', 1, {
       product_id: productId,
     })
-    recordMetric('business.cart_value_added', price * quantity, 'count')
+    recordMetric('business.cart_value_added', price * quantity)
 
     addBreadcrumb('Item added to cart', 'business', { productId, quantity, price })
   }
 
   trackCartAbandonment(cartValue: number, itemCount: number) {
-    recordMetric('business.cart_abandonment', 1, 'count')
-    recordMetric('business.abandoned_cart_value', cartValue, 'count')
+    recordMetric('business.cart_abandonment', 1)
+    recordMetric('business.abandoned_cart_value', cartValue)
 
     addBreadcrumb('Cart abandoned', 'business', { cartValue, itemCount })
   }
 
   trackOrderCreated(orderId: string, orderValue: number, itemCount: number, paymentMethod: string) {
-    recordMetric('business.order_created', 1, 'count', {
+    recordMetric('business.order_created', 1, {
       payment_method: paymentMethod,
     })
-    recordMetric('business.order_value', orderValue, 'count')
-    recordMetric('business.order_items', itemCount, 'count')
+    recordMetric('business.order_value', orderValue)
+    recordMetric('business.order_items', itemCount)
 
     addBreadcrumb('Order created', 'business', { orderId, orderValue, itemCount, paymentMethod })
   }
 
   trackPaymentSuccess(orderId: string, amount: number, method: string) {
-    recordMetric('business.payment_success', 1, 'count', {
+    recordMetric('business.payment_success', 1, {
       payment_method: method,
     })
-    recordMetric('business.revenue', amount, 'count')
+    recordMetric('business.revenue', amount)
 
     addBreadcrumb('Payment successful', 'business', { orderId, amount, method })
   }
 
   trackPaymentFailure(orderId: string, amount: number, method: string, error: string) {
-    recordMetric('business.payment_failure', 1, 'count', {
+    recordMetric('business.payment_failure', 1, {
       payment_method: method,
       error_type: error,
     })
@@ -207,7 +207,7 @@ export class BusinessMetricsTracker {
   }
 
   trackUserRegistration(method: 'email' | 'google') {
-    recordMetric('business.user_registration', 1, 'count', {
+    recordMetric('business.user_registration', 1, {
       method,
     })
 
@@ -215,8 +215,8 @@ export class BusinessMetricsTracker {
   }
 
   trackSearchQuery(query: string, resultCount: number) {
-    recordMetric('business.search_query', 1, 'count')
-    recordMetric('business.search_results', resultCount, 'count')
+    recordMetric('business.search_query', 1)
+    recordMetric('business.search_results', resultCount)
 
     addBreadcrumb('Search performed', 'business', { query, resultCount })
   }
@@ -227,13 +227,13 @@ export const businessMetrics = new BusinessMetricsTracker()
 
 // User experience monitoring
 export function trackUserInteraction(action: string, element?: string, value?: number) {
-  recordMetric('ux.interaction', 1, 'count', {
+  recordMetric('ux.interaction', 1, {
     action,
-    element,
+    ...(element && { element }),
   })
 
   if (value !== undefined) {
-    recordMetric(`ux.${action}_value`, value, 'count')
+    recordMetric(`ux.${action}_value`, value)
   }
 
   addBreadcrumb('User interaction', 'ux', { action, element, value })
@@ -241,7 +241,7 @@ export function trackUserInteraction(action: string, element?: string, value?: n
 
 // Error rate monitoring
 export function trackErrorRate(component: string, error: Error) {
-  recordMetric('error.rate', 1, 'count', {
+  recordMetric('error.rate', 1, {
     component,
     error_type: error.name,
   })
@@ -254,7 +254,7 @@ export function trackErrorRate(component: string, error: Error) {
 
 // Page load monitoring
 export function trackPageLoad(page: string, loadTime: number) {
-  recordMetric('page.load_time', loadTime, 'millisecond', {
+  recordMetric('page.load_time', loadTime, {
     page,
   })
 
@@ -267,7 +267,7 @@ export function trackResourceLoad(
   url: string,
   loadTime: number
 ) {
-  recordMetric('resource.load_time', loadTime, 'millisecond', {
+  recordMetric('resource.load_time', loadTime, {
     type,
     url,
   })

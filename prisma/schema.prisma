@@ -508,6 +508,7 @@ model Order {
   squareCustomerId    String?
   squareOrderId       String?
   squarePaymentId     String?
+  paymentMethod       String?
   status              OrderStatus     @default(PENDING_PAYMENT)
   shippingAddress     Json
   billingAddress      Json?
@@ -516,6 +517,25 @@ model Order {
   shippingLabelUrl    String?
   shippingServiceCode String?
   totalWeight         Float?
+  filesApprovedAt     DateTime?
+  filesApprovedBy     String?
+  vendorNotifiedAt    DateTime?
+  internalNotes       String?
+  customerNotes       String?
+  rushOrder           Boolean         @default(false)
+  priorityLevel       Int             @default(3)
+  tags                String[]        @default([])
+  productionDeadline  DateTime?
+  estimatedCompletion DateTime?
+  estimatedDelivery   DateTime?
+  pickedUpAt          DateTime?
+  pickedUpBy          String?
+  deliveredAt         DateTime?
+  reprintReason       String?
+  originalOrderId     String?
+  holdReason          String?
+  pickupLocation      String?
+  pickupInstructions  String?
   File                File[]
   Notification        Notification[]
   Airport             Airport?        @relation(fields: [selectedAirportId], references: [id])
@@ -1549,22 +1569,22 @@ enum OptionType {
 
 enum OrderStatus {
   PENDING_PAYMENT
+  PAYMENT_DECLINED
+  PAYMENT_FAILED
   PAID
   CONFIRMATION
-  PRE_PRESS
   ON_HOLD
   PROCESSING
-  PRODUCTION
   PRINTING
-  QUALITY_CHECK
-  BINDERY
-  PACKAGING
-  READY_FOR_PICKUP
+  PRODUCTION
   SHIPPED
+  READY_FOR_PICKUP
+  ON_THE_WAY
+  PICKED_UP
   DELIVERED
+  REPRINT
   CANCELLED
   REFUNDED
-  PAYMENT_FAILED
 }
 
 enum PricingModel {

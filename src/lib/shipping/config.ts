@@ -23,7 +23,7 @@ export const upsConfig: ShippingConfiguration = {
 
 // Southwest Cargo configuration
 export const southwestCargoConfig: ShippingConfiguration = {
-  enabled: true, // ENABLED: Airport-to-airport freight shipping
+  enabled: false, // DISABLED: Not using Southwest Cargo for now
   testMode: false,
   defaultPackaging: {
     weight: 1.0, // Heavier packaging for freight

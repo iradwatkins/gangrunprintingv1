@@ -57,7 +57,6 @@ export class OrderService {
             shippingAddress: input.shippingAddress as any,
             billingAddress: input.billingAddress as any,
             shippingMethod: input.shippingMethod,
-            metadata: input.metadata,
             adminNotes: input.adminNotes,
           },
         })
@@ -95,7 +94,8 @@ export class OrderService {
         await tx.statusHistory.create({
           data: {
             orderId: order.id,
-            status: 'PENDING_PAYMENT',
+            toStatus: 'PENDING_PAYMENT',
+            fromStatus: 'PENDING_PAYMENT',
             changedBy: this.context.userId || 'system',
             notes: 'Order created',
           },
@@ -217,7 +217,7 @@ export class OrderService {
       }
 
       const result = await prisma.$transaction(async (tx) => {
-        // Update order
+        // Update order with broker-specific timestamp fields
         const updatedOrder = await tx.order.update({
           where: { id: orderId },
           data: {
@@ -225,8 +225,10 @@ export class OrderService {
             adminNotes: input.adminNotes,
             trackingNumber: input.trackingNumber,
             carrier: input.carrier as any,
-            ...(input.status === 'PAID' && { paidAt: new Date() }),
+            ...(input.status === 'CONFIRMATION' && { paidAt: new Date() }),
             ...(input.status === 'SHIPPED' && { updatedAt: new Date() }),
+            ...(input.status === 'PICKED_UP' && { pickedUpAt: new Date() }),
+            ...(input.status === 'DELIVERED' && { deliveredAt: new Date() }),
           },
         })
 
@@ -234,7 +236,8 @@ export class OrderService {
         await tx.statusHistory.create({
           data: {
             orderId,
-            status: input.status as any,
+            toStatus: input.status as any,
+            fromStatus: currentOrder.status as any,
             changedBy: this.context.userId || 'system',
             notes: input.adminNotes || `Status changed to ${input.status}`,
           },
@@ -381,7 +384,8 @@ export class OrderService {
         await tx.statusHistory.create({
           data: {
             orderId,
-            status: 'CANCELLED',
+            toStatus: 'CANCELLED',
+            fromStatus: order.status as any,
             changedBy: this.context.userId || 'system',
             notes: reason || 'Order cancelled',
           },
@@ -484,24 +488,21 @@ export class OrderService {
   }
 
   private isValidStatusTransition(currentStatus: string, newStatus: string): boolean {
+    // Printing Company Order Status Transitions
     const validTransitions: Record<string, string[]> = {
-      'PENDING_PAYMENT': ['PAID', 'CANCELLED', 'PAYMENT_FAILED'],
-      'PAID': ['CONFIRMATION', 'CANCELLED', 'REFUNDED'],
-      'CONFIRMATION': ['PRE_PRESS', 'ON_HOLD', 'CANCELLED'],
-      'PRE_PRESS': ['PROCESSING', 'ON_HOLD'],
-      'ON_HOLD': ['PRE_PRESS', 'PROCESSING', 'CANCELLED'],
-      'PROCESSING': ['PRODUCTION', 'ON_HOLD'],
-      'PRODUCTION': ['PRINTING', 'ON_HOLD'],
-      'PRINTING': ['QUALITY_CHECK', 'ON_HOLD'],
-      'QUALITY_CHECK': ['BINDERY', 'PRINTING', 'ON_HOLD'],
-      'BINDERY': ['PACKAGING', 'ON_HOLD'],
-      'PACKAGING': ['READY_FOR_PICKUP', 'SHIPPED'],
-      'READY_FOR_PICKUP': ['DELIVERED', 'SHIPPED'],
-      'SHIPPED': ['DELIVERED'],
-      'DELIVERED': [], // Terminal state
-      'CANCELLED': [], // Terminal state
-      'REFUNDED': [], // Terminal state
-      'PAYMENT_FAILED': ['PENDING_PAYMENT', 'CANCELLED']
+      'PENDING_PAYMENT': ['CONFIRMATION', 'PAYMENT_DECLINED', 'CANCELLED'],
+      'PAYMENT_DECLINED': ['PENDING_PAYMENT', 'CANCELLED'],
+      'CONFIRMATION': ['PRODUCTION', 'ON_HOLD', 'CANCELLED', 'REFUNDED'],
+      'ON_HOLD': ['CONFIRMATION', 'PRODUCTION', 'CANCELLED'],
+      'PRODUCTION': ['SHIPPED', 'READY_FOR_PICKUP', 'ON_HOLD', 'REPRINT'],
+      'SHIPPED': ['ON_THE_WAY', 'DELIVERED', 'REPRINT'],
+      'READY_FOR_PICKUP': ['PICKED_UP', 'ON_THE_WAY', 'DELIVERED'],
+      'ON_THE_WAY': ['DELIVERED', 'PICKED_UP'],
+      'PICKED_UP': ['DELIVERED'],
+      'DELIVERED': ['REPRINT'], // Can request reprint after delivery
+      'REPRINT': ['PRODUCTION'], // Reprint goes back to production
+      'CANCELLED': ['REFUNDED'], // Can refund cancelled orders
+      'REFUNDED': [] // Terminal state
     }
 
     return validTransitions[currentStatus]?.includes(newStatus) || false

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -95,6 +95,44 @@ function CheckoutPageContent() {
 
   // Get the single item (since we're doing one product at a time)
   const currentItem = items.length > 0 ? items[0] : null
+
+  // Memoize mapped items for shipping calculation - stable reference
+  const mappedShippingItems = useMemo(() => {
+    console.log('🔄 mappedShippingItems useMemo running')
+    console.log('   - items:', items)
+    console.log('   - items.length:', items?.length)
+    console.log('   - Array.isArray(items):', Array.isArray(items))
+
+    if (!Array.isArray(items) || items.length === 0) {
+      console.log('   - Returning empty array (items not valid)')
+      return []
+    }
+
+    const mapped = items.map((item) => ({
+      quantity: Number(item.quantity) || 1,
+      width: Number(item.dimensions?.width) || 4,
+      height: Number(item.dimensions?.height) || 6,
+      paperStockWeight: Number(item.paperStockWeight) || 0.0009,
+      paperStockId: item.options?.paperStockId,
+    }))
+
+    console.log('   - Mapped result:', mapped)
+    return mapped
+  }, [items])
+
+  // Memoize shipping address - stable reference
+  const shippingAddress = useMemo(() => {
+    console.log('📍 shippingAddress useMemo running')
+    const addr = {
+      street: formData.address,
+      city: formData.city,
+      state: formData.state,
+      zipCode: formData.zipCode,
+      country: 'US',
+    }
+    console.log('   - Address:', addr)
+    return addr
+  }, [formData.address, formData.city, formData.state, formData.zipCode])
 
   // Fetch uploaded images for the current item
   useEffect(() => {
@@ -207,7 +245,9 @@ function CheckoutPageContent() {
     setIsProcessing(true)
 
     try {
-      if (_selectedPaymentMethod === 'square') {
+      if (_selectedPaymentMethod === 'test_cash') {
+        await processTestCashPayment()
+      } else if (_selectedPaymentMethod === 'square') {
         await processSquareCheckout()
       } else {
         toast.error(`${_selectedPaymentMethod} payment is coming soon!`)
@@ -216,6 +256,66 @@ function CheckoutPageContent() {
     } catch (error) {
       toast.error('Failed to process payment. Please try again.')
       setIsProcessing(false)
+    }
+  }
+
+  const processTestCashPayment = async () => {
+    try {
+      const checkoutData = createCheckoutData()
+
+      // Create order in database via API (same as Square, but with test payment method)
+      const response = await fetch('/api/checkout/create-test-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(checkoutData),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
+      }
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Simulate a successful payment (for testing purposes)
+        toast.success('🧪 Test payment successful!')
+
+        // Store order info in sessionStorage
+        sessionStorage.setItem(
+          'lastOrder',
+          JSON.stringify({
+            orderNumber: result.orderNumber,
+            orderId: result.orderId,
+            total: checkoutData.total,
+            items: checkoutData.cartItems,
+            uploadedImages: checkoutData.uploadedImages,
+            customerInfo: checkoutData.customerInfo,
+            shippingAddress: checkoutData.shippingAddress,
+            subtotal: checkoutData.subtotal,
+            tax: checkoutData.tax,
+            shipping: checkoutData.shipping,
+            paymentMethod: 'test_cash',
+            testMode: true,
+          })
+        )
+
+        // Clear cart
+        clearCart()
+
+        // Redirect to success page after a short delay
+        setTimeout(() => {
+          router.push('/checkout/success')
+        }, 1000)
+      } else {
+        throw new Error(result.error || 'Failed to create test order')
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process test payment'
+      toast.error(errorMessage)
+      throw error
     }
   }
 
@@ -611,68 +711,42 @@ function CheckoutPageContent() {
                     {/* DEBUG INFO */}
                     <div className="bg-yellow-100 border-2 border-yellow-500 p-4 mb-4 rounded">
                       <h3 className="font-bold text-yellow-900">DEBUG INFO:</h3>
-                      <p><strong>Items count:</strong> {items.length}</p>
+                      <p><strong>Cart items.length:</strong> {items.length}</p>
+                      <p><strong>mappedShippingItems.length:</strong> {mappedShippingItems.length}</p>
                       <p><strong>Items is array:</strong> {String(Array.isArray(items))}</p>
-                      <p><strong>First item:</strong> {items[0] ? JSON.stringify({
-                        qty: items[0].quantity,
+                      <p><strong>mappedShippingItems is array:</strong> {String(Array.isArray(mappedShippingItems))}</p>
+                      <p><strong>First cart item (raw):</strong> {items[0] ? JSON.stringify({
+                        quantity: items[0].quantity,
+                        quantityType: typeof items[0].quantity,
                         width: items[0].dimensions?.width,
                         height: items[0].dimensions?.height,
                         paperWeight: items[0].paperStockWeight
-                      }) : 'No items'}</p>
+                      }, null, 2) : 'No items'}</p>
+                      <p><strong>First mapped item:</strong> {mappedShippingItems[0] ? JSON.stringify(mappedShippingItems[0], null, 2) : 'mappedShippingItems is EMPTY!'}</p>
+                      <p><strong>Shipping Address:</strong> {JSON.stringify(shippingAddress, null, 2)}</p>
                     </div>
 
                     {/* Shipping Rates */}
-                    {(() => {
-                      console.log('🔍 CHECKOUT: Items type:', typeof items, 'Is array:', Array.isArray(items), 'Value:', items)
-
-                      if (!Array.isArray(items) || items.length === 0) {
-                        console.error('❌ CHECKOUT: Items is not an array or is empty!', items)
-                        return (
-                          <div className="text-red-600 p-4 border border-red-300 rounded">
-                            Error: Cart items not properly loaded. Please refresh the page.
-                          </div>
-                        )
-                      }
-
-                      const mappedItems = items.map((item) => ({
-                        quantity: item.quantity,
-                        width: item.dimensions?.width || 4,
-                        height: item.dimensions?.height || 6,
-                        paperStockWeight: item.paperStockWeight || 0.0009,
-                        paperStockId: item.options?.paperStockId,
-                      }))
-
-                      const address = {
-                        street: formData.address,
-                        city: formData.city,
-                        state: formData.state,
-                        zipCode: formData.zipCode,
-                        country: 'US',
-                      }
-
-                      console.log('🔍 CHECKOUT PAGE: Rendering ShippingRates component')
-                      console.log('🔍 CHECKOUT: Cart items:', items)
-                      console.log('🔍 CHECKOUT: Mapped items for ShippingRates:', mappedItems)
-                      console.log('🔍 CHECKOUT: Address:', address)
-
-                      return (
-                        <ShippingRates
-                          items={mappedItems}
-                          toAddress={address}
-                          onAirportSelected={setSelectedAirportId}
-                          onRateSelected={(rate) => {
-                            console.log('🔍 CHECKOUT: Rate selected:', rate)
-                            setSelectedShippingRate({
-                              carrier: rate.carrier,
-                              serviceName: rate.serviceName,
-                              rateAmount: rate.rateAmount,
-                              estimatedDays: rate.estimatedDays,
-                              transitDays: rate.estimatedDays,
-                            })
-                          }}
-                        />
-                      )
-                    })()}
+                    {mappedShippingItems.length === 0 ? (
+                      <div className="text-red-600 p-4 border border-red-300 rounded">
+                        Error: Cart items not properly loaded. Please refresh the page.
+                      </div>
+                    ) : (
+                      <ShippingRates
+                        items={mappedShippingItems}
+                        toAddress={shippingAddress}
+                        onAirportSelected={setSelectedAirportId}
+                        onRateSelected={(rate) => {
+                          setSelectedShippingRate({
+                            carrier: rate.carrier,
+                            serviceName: rate.serviceName,
+                            rateAmount: rate.rateAmount,
+                            estimatedDays: rate.estimatedDays,
+                            transitDays: rate.estimatedDays,
+                          })
+                        }}
+                      />
+                    )}
 
                     {/* Navigation Buttons */}
                     <div className="flex justify-between pt-6 border-t">
@@ -980,7 +1054,9 @@ function CheckoutPageContent() {
                       Weight
                     </span>
                     <span className="font-medium text-gray-600">
-                      {currentItem ? `${(currentItem.quantity * 0.0015).toFixed(2)} lbs` : '0.00 lbs'}
+                      {currentItem && currentItem.dimensions && currentItem.paperStockWeight ?
+                        `${(currentItem.paperStockWeight * currentItem.dimensions.width * currentItem.dimensions.height * currentItem.quantity).toFixed(2)} lbs` :
+                        'Calculating...'}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
