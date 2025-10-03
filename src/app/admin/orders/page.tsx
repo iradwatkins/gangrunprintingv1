@@ -393,7 +393,7 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                                 View
                               </Button>
                             </Link>
-                            <OrderQuickActions order={order} onUpdate={() => window.location.reload()} />
+                            <OrderQuickActions order={order} />
                           </div>
                         </TableCell>
                       </TableRow>

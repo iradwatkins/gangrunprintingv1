@@ -62,6 +62,9 @@ interface OrderQuickActionsProps {
 export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  
+  // Default to page reload if no onUpdate provided
+  const handleUpdate = onUpdate || (() => window.location.reload())
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
 
@@ -97,7 +100,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
 
       toast.success(`Order status updated to ${newStatus}`)
       setStatusDialogOpen(false)
-      onUpdate?.()
+      handleUpdate()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to update status')
     } finally {
@@ -125,7 +128,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
 
       toast.success('Payment captured successfully')
       setPaymentDialogOpen(false)
-      onUpdate?.()
+      handleUpdate()
     } catch (error) {
       toast.error('Failed to capture payment')
     } finally {
@@ -149,7 +152,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
       const data = await response.json()
       toast.success(`Invoice sent to ${order.email}`)
       setInvoiceDialogOpen(false)
-      onUpdate?.()
+      handleUpdate()
 
       // Open payment link in new tab
       if (data.paymentUrl) {
@@ -181,7 +184,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
 
       toast.success('Shipping info updated')
       setShippingDialogOpen(false)
-      onUpdate?.()
+      handleUpdate()
     } catch (error) {
       toast.error('Failed to update shipping')
     } finally {
