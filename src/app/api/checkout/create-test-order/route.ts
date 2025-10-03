@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           email: normalizedEmail,
           name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
           role: 'CUSTOMER',
-          isEmailVerified: false
+          emailVerified: false
         }
       })
     }
