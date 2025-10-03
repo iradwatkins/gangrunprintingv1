@@ -42,12 +42,37 @@ export async function POST(request: NextRequest) {
       total,
     } = body
 
+    // Normalize email to lowercase for consistent lookup
+    const normalizedEmail = customerInfo.email.toLowerCase()
+    
+    // Find or create customer
+    let customer = await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: normalizedEmail,
+          mode: 'insensitive'
+        }
+      }
+    })
+    
+    if (!customer) {
+      // Create new customer
+      customer = await prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
+          role: 'USER',
+          isEmailVerified: false
+        }
+      })
+    }
+
     // Generate order number
     const orderNumber = `GRP-${Date.now().toString(36).toUpperCase()}`
 
     // Create or update Square customer
     const squareCustomer = await createOrUpdateSquareCustomer(
-      customerInfo.email,
+      normalizedEmail,
       `${customerInfo.firstName} ${customerInfo.lastName}`,
       customerInfo.phone
     )
@@ -60,8 +85,8 @@ export async function POST(request: NextRequest) {
         orderNumber,
         referenceNumber: orderNumber,
         updatedAt: new Date(),
-        userId: user?.id || null,
-        email: customerInfo.email,
+        userId: customer.id,
+        email: normalizedEmail,
         phone: customerInfo.phone,
         subtotal,
         tax,
