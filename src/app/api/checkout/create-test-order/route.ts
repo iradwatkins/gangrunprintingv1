@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { OrderEmailService } from '@/lib/email/order-email-service'
 
 interface CartItem {
   id: string
@@ -88,7 +89,20 @@ export async function POST(request: NextRequest) {
           })),
         },
       },
+      include: {
+        OrderItem: true,
+        User: true,
+      },
     })
+
+    // Send confirmation email for test orders
+    try {
+      await OrderEmailService.sendOrderConfirmation(order)
+      console.log(`[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`)
+    } catch (emailError) {
+      console.error('[Test Order] Failed to send confirmation email:', emailError)
+      // Don't fail the order creation if email fails
+    }
 
     return NextResponse.json({
       success: true,
