@@ -157,42 +157,40 @@ async function getProduct(slug: string) {
   }
 }
 
-// Helper function to fetch product configuration on the server
+// Helper function to fetch product configuration - calls the API endpoint internally
 async function getProductConfiguration(productId: string) {
   try {
-    // Import the route handler logic directly to avoid HTTP overhead
-    // This is more efficient and avoids potential localhost resolution issues
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3002'
+    console.log('[Product Page Server] Fetching configuration for product:', productId)
 
-    console.log('[Product Page] Fetching configuration for product:', productId)
+    // Since we're on the server, we can call the API route handler directly
+    // Import the GET function from the API route
+    const { GET } = await import('@/app/api/products/[id]/configuration/route')
 
-    const response = await fetch(`${baseUrl}/api/products/${productId}/configuration`, {
-      cache: 'no-store', // Always get fresh data
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    // Create a mock request and params object
+    const mockRequest = new Request('http://localhost/api/products/' + productId + '/configuration')
+    const mockParams = Promise.resolve({ id: productId })
 
-    console.log('[Product Page] Configuration fetch status:', response.status)
+    // Call the API handler directly
+    const response = await GET(mockRequest, { params: mockParams })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`[Product Page] Configuration fetch failed: ${response.status}`, errorText)
+      console.error('[Product Page Server] API returned error:', response.status)
       return null
     }
 
-    const data = await response.json()
-    console.log(`[Product Page] Configuration loaded successfully:`, {
-      quantities: data.quantities?.length || 0,
-      sizes: data.sizes?.length || 0,
-      paperStocks: data.paperStocks?.length || 0,
-      turnaroundTimes: data.turnaroundTimes?.length || 0,
+    const configuration = await response.json()
+
+    console.log('[Product Page Server] Configuration loaded:', {
+      quantities: configuration.quantities?.length || 0,
+      sizes: configuration.sizes?.length || 0,
+      paperStocks: configuration.paperStocks?.length || 0,
+      turnaroundTimes: configuration.turnaroundTimes?.length || 0,
     })
 
-    return data
+    return configuration
   } catch (error) {
-    console.error('[Product Page] Error fetching configuration:', error)
-    console.error('[Product Page] Error stack:', error instanceof Error ? error.stack : 'No stack')
+    console.error('[Product Page Server] Error fetching configuration:', error)
+    console.error('[Product Page Server] Error details:', error instanceof Error ? error.message : String(error))
     return null
   }
 }
@@ -216,7 +214,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   // Fetch product configuration on the server (CRITICAL FIX for hydration issue)
+  console.log('[Product Page] About to fetch configuration for product ID:', product.id)
   const configuration = await getProductConfiguration(product.id)
+  console.log('[Product Page] Configuration fetch complete. Result:', configuration ? 'HAS DATA' : 'NULL')
 
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data
@@ -233,11 +233,25 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     shortDescription: product.shortDescription || '',
   }
 
+  // Serialize configuration to ensure it's JSON-compatible for client hydration
+  const serializedConfiguration = configuration ? JSON.parse(JSON.stringify(configuration)) : null
+
+  // Write configuration to temp file for debugging
+  if (serializedConfiguration) {
+    try {
+      const fs = require('fs')
+      fs.writeFileSync('/tmp/product-config-debug.json', JSON.stringify(serializedConfiguration, null, 2))
+    } catch (e) {
+      console.error('[Product Page] Could not write debug file:', e)
+    }
+  }
+
   console.log('[Product Page] Passing product to client:', {
     id: transformedProduct.id,
     name: transformedProduct.name,
     hasId: !!transformedProduct.id,
-    hasConfiguration: !!configuration
+    hasConfiguration: !!serializedConfiguration,
+    quantitiesCount: serializedConfiguration?.quantities?.length || 0,
   })
 
   // Pass the server-fetched data to the client component with error boundary
@@ -245,7 +259,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     // Error boundary temporarily disabled for build
     <ProductDetailClient
       product={transformedProduct as any}
-      configuration={configuration}
+      configuration={serializedConfiguration}
     />
   )
 }

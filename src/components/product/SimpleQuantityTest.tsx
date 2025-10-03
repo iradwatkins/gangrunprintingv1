@@ -54,9 +54,12 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
   const [error, setError] = useState('')
 
   useEffect(() => {
+    console.log('[SimpleQuantityTest] useEffect triggered. initialConfiguration:', !!initialConfiguration)
+
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {
       console.log('[SimpleQuantityTest] Using server-fetched configuration')
+      console.log('[SimpleQuantityTest] Quantities count:', initialConfiguration.quantities?.length || 0)
       const data = initialConfiguration
 
       setQuantities(data.quantities || [])
@@ -71,7 +74,10 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
 
       setLoading(false)
+      console.log('[SimpleQuantityTest] Configuration applied. Quantities state:', data.quantities?.length || 0)
       return // Don't fetch from API if we have server data
+    } else {
+      console.log('[SimpleQuantityTest] No initialConfiguration, will fetch from API')
     }
 
     // Fallback: Fetch from API if no initial configuration provided
