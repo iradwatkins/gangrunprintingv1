@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { OrderQuickActions } from '@/components/admin/orders/order-quick-actions'
+import { OrderStatusDropdown } from '@/components/admin/orders/order-status-dropdown'
 
 // Force dynamic rendering for real-time data
 export const dynamic = 'force-dynamic'
@@ -329,9 +330,6 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                   </TableRow>
                 ) : (
                   orders.map((order) => {
-                    const status = statusConfig[order.status] || statusConfig.PENDING_PAYMENT
-                    const StatusIcon = status.icon
-
                     return (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
@@ -363,10 +361,10 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                           ${order.total.toFixed(2)}
                         </TableCell>
                         <TableCell>
-                          <Badge className={`${status.color} gap-1`}>
-                            <StatusIcon className="h-3 w-3" />
-                            {status.label}
-                          </Badge>
+                          <OrderStatusDropdown
+                            orderId={order.id}
+                            currentStatus={order.status}
+                          />
                         </TableCell>
                         <TableCell>
                           <div>
