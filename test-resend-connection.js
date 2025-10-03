@@ -6,7 +6,11 @@
  */
 
 const fetch = require('node-fetch');
+const path = require('path');
+
+// Load environment variables from both .env and .env.local
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.local') });
 
 // Configuration
 const TEST_CONFIG = {
