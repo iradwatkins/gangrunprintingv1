@@ -274,6 +274,57 @@ try {
 - [Architecture Decisions](/docs/architecture/decisions.md)
 - [Remaining Work Stories](/docs/stories/remaining-work.md)
 
+## 🎓 LESSONS LEARNED (October 3, 2025) - CRITICAL
+
+### ⚠️ Issue: Product Configuration Not Loading
+**Discovery Date:** October 3, 2025
+**Severity:** P0 - Blocked 100% of customer purchases
+**Status:** Root cause identified, partial fix implemented, requires completion
+
+#### What Happened
+- Automated E2E testing revealed customers could not add products to cart
+- Product detail page showed "Loading quantities..." indefinitely
+- No "Add to Cart" button appeared
+- Complete sales funnel blockage
+
+#### Root Cause
+- **Primary:** React client-side hydration failure
+- **Secondary:** useEffect hook not executing on client
+- **Why:** Next.js 15 App Router SSR/hydration complexity
+- **API Status:** Working perfectly (verified)
+- **Database Status:** Working perfectly (verified)
+- **Issue Location:** Frontend React component hydration only
+
+#### Documentation Created
+1. **[ROOT-CAUSE-ANALYSIS-PRODUCT-CONFIGURATION.md](./ROOT-CAUSE-ANALYSIS-PRODUCT-CONFIGURATION.md)** - Complete technical analysis
+2. **[WEBSITE-AUDIT-REPORT-2025-10-03.md](./WEBSITE-AUDIT-REPORT-2025-10-03.md)** - Full audit with 5 customer personas
+3. **[DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md](./DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md)** - Comprehensive pre-deploy checklist
+4. **[test-e2e-customer-journey.js](./test-e2e-customer-journey.js)** - Automated E2E test suite
+
+#### Prevention Measures Implemented
+- ✅ E2E test suite with Puppeteer (5 customer personas)
+- ✅ Deployment prevention checklist (BMAD Method™)
+- ✅ Enhanced error logging for React hydration
+- ✅ Server-side configuration fetch (partial implementation)
+- ✅ Comprehensive root cause documentation
+
+#### Key Takeaways (CRITICAL - READ BEFORE EVERY DEPLOYMENT)
+1. **Test in browser, not just curl** - API working ≠ frontend working
+2. **Verify React hydration** - Open DevTools, check for hydration errors
+3. **Check useEffect executes** - Add console.logs, verify in browser console
+4. **Critical paths need SSR** - Move data fetching to server components
+5. **Add timeouts everywhere** - Never infinite loading states
+6. **Run E2E tests** - Before every production deployment
+
+#### Action Required
+**Before Next Deployment:**
+- [ ] Complete server-side configuration fetch debugging
+- [ ] Verify initialConfiguration prop passes correctly
+- [ ] Test complete customer journey in browser
+- [ ] Run E2E test suite and verify all 5 personas pass
+- [ ] Check React DevTools for hydration status
+- [ ] Verify no console errors on product pages
+
 ## REMEMBER
 
 - **NEVER** touch SteppersLife.com or any of its resources
@@ -283,6 +334,9 @@ try {
 - **ALWAYS** ensure isolation from existing applications
 - **ALWAYS** follow server component pattern for data fetching
 - **ALWAYS** use validateRequest() for authentication
+- **ALWAYS** test in real browser before deploying (see [Deployment Checklist](./DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md))
+- **ALWAYS** verify React hydration with Chrome DevTools
+- **ALWAYS** run E2E test suite before production deployments ([test-e2e-customer-journey.js](./test-e2e-customer-journey.js))
 
 ## 🔍 TROUBLESHOOTING CHECKLIST - CHECK THIS FIRST!
 
