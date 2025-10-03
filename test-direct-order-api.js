@@ -9,12 +9,12 @@ const fetch = require('node-fetch');
 
 const testOrderData = {
   cartItems: [{
-    id: "item-asdfasd",
-    productName: "asdfasd",
-    productId: "asdfasd",
-    sku: "ASDFASD-001",
-    quantity: 100,
-    price: 66.00,
+    id: `item-${Date.now()}`,
+    productName: "Premium Business Cards",
+    productId: "business-cards-premium",
+    sku: "BC-PREM-001",
+    quantity: 500,
+    price: 149.99,
     options: {
       size: "Standard",
       paperStock: "14pt",
@@ -60,21 +60,22 @@ const testOrderData = {
     transitDays: 3
   },
   selectedAirportId: null,
-  subtotal: 66.00,
-  tax: 5.45,
-  shipping: 8.95,
-  total: 80.40
+  subtotal: 149.99,
+  tax: 12.37,
+  shipping: 14.95,
+  total: 177.31
 };
 
 async function testOrder(testNumber) {
-  console.log(`\n🧪 TEST #${testNumber} - Creating order via API`);
+  console.log(`\n📦 ORDER #${testNumber} - Premium Business Cards`);
   console.log('=' .repeat(50));
   
   try {
-    console.log('📧 Customer: appvillagellc@gmail.com');
-    console.log('📍 Shipping: 2740 West 83rd Pl, Chicago, IL 60652');
+    console.log('📧 Customer: App Village LLC (appvillagellc@gmail.com)');
+    console.log('📍 Delivery: 2740 West 83rd Pl, Chicago, IL 60652');
+    console.log('🎨 Product: 500 Premium Business Cards');
     console.log('💰 Total: $' + testOrderData.total.toFixed(2));
-    console.log('💳 Payment: Test Cash\n');
+    console.log('💳 Payment: Processing...\n');
 
     const response = await fetch('https://gangrunprinting.com/api/checkout/create-test-order', {
       method: 'POST',
@@ -121,13 +122,13 @@ async function testOrder(testNumber) {
 
 async function runTests() {
   console.log('\n' + '='.repeat(60));
-  console.log('🎯 DIRECT API ORDER TEST');
-  console.log('📍 Testing 5 orders to appvillagellc@gmail.com');
+  console.log('🏢 APP VILLAGE LLC - BUSINESS CARD ORDER');
+  console.log('📍 Delivering to Chicago, IL 60652');
   console.log('='.repeat(60));
 
   const results = [];
   
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 3; i++) {
     const result = await testOrder(i);
     results.push(result);
     
@@ -146,7 +147,7 @@ async function runTests() {
   const successful = results.filter(r => r.success);
   const failed = results.filter(r => !r.success);
   
-  console.log(`\nTotal Tests: 5`);
+  console.log(`\nTotal Tests: 3`);
   console.log(`✅ Successful: ${successful.length}`);
   console.log(`❌ Failed: ${failed.length}`);
   
@@ -165,7 +166,7 @@ async function runTests() {
   }
   
   console.log('\n' + '='.repeat(60));
-  console.log(`🏁 TEST COMPLETE - ${successful.length}/5 orders created successfully`);
+  console.log(`🏁 TEST COMPLETE - ${successful.length}/3 orders created successfully`);
   console.log('📧 Check appvillagellc@gmail.com for confirmation emails');
   console.log('='.repeat(60) + '\n');
   

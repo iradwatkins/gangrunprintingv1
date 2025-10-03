@@ -42,13 +42,8 @@ import { OrderStatusDropdown } from '@/components/admin/orders/order-status-drop
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// Status configuration with colors and icons (Printing Company Order Statuses)
+// Status configuration with colors and icons (GangRun Printing Workflow)
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  PENDING_PAYMENT: {
-    label: 'Pending Payment',
-    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    icon: Clock,
-  },
   PAYMENT_DECLINED: {
     label: 'Payment Declined',
     color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
