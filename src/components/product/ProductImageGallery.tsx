@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, Expand } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { ProductImageErrorBoundary, SafeProductImage } from './ProductImageErrorBoundary'
 
 interface ProductImage {
@@ -201,6 +201,7 @@ export function ProductImageGallery({
         <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
           <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
             <DialogTitle className="sr-only">{productName} - Full size image view</DialogTitle>
+            <DialogDescription className="sr-only">Full size view of {productName} product image</DialogDescription>
             <div className="relative">
               <Image
                 priority
