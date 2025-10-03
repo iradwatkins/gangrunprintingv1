@@ -19,7 +19,8 @@ async function deleteTestProducts() {
           { slug: { contains: 'test' } },
           { name: { in: ['adsfasd', 'test', 'asdfasd'] } },
           { sku: { in: ['asdfasd', 'test', 'TEST'] } },
-          { description: { in: ['asdfas', 'test', null] } }
+          { description: { in: ['asdfas', 'test'] } },
+          { description: null }
         ]
       },
       select: {
