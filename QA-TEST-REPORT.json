@@ -1,0 +1,164 @@
+{
+  "testSuite": "BMAD QA Complete Order Flow",
+  "startTime": "2025-10-03T17:19:08.964Z",
+  "endTime": "2025-10-03T17:19:54.034Z",
+  "duration": 45070,
+  "configuration": {
+    "baseUrl": "https://gangrunprinting.com",
+    "productUrl": "https://gangrunprinting.com/products/asdfasd",
+    "customer": {
+      "email": "appvillagellc@gmail.com",
+      "firstName": "Test",
+      "lastName": "Customer",
+      "company": "App Village LLC",
+      "phone": "(773) 123-4567",
+      "address": "2740 West 83rd Pl",
+      "city": "Chicago",
+      "state": "IL",
+      "zipCode": "60652"
+    },
+    "iterations": 5,
+    "timeout": 120000,
+    "headless": false,
+    "slowMo": 100,
+    "screenshotDir": "./qa-test-screenshots",
+    "reportFile": "./QA-TEST-REPORT.json"
+  },
+  "summary": {
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "partiallyPassed": 0
+  },
+  "successRate": "0.00%",
+  "iterations": [
+    {
+      "iteration": 1,
+      "startTime": "2025-10-03T17:19:12.888Z",
+      "status": "FAILED",
+      "steps": [
+        {
+          "name": "Navigate to Product",
+          "status": "PASSED",
+          "startTime": "2025-10-03T17:19:12.888Z",
+          "endTime": "2025-10-03T17:19:16.054Z"
+        }
+      ],
+      "screenshots": [
+        "iteration-1-product-page-1759511955817.png",
+        "iteration-1-error-1759511956464.png"
+      ],
+      "orderDetails": null,
+      "failureReasons": [
+        "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector."
+      ],
+      "warnings": [],
+      "endTime": "2025-10-03T17:19:16.708Z",
+      "duration": 3820
+    },
+    {
+      "iteration": 2,
+      "startTime": "2025-10-03T17:19:22.736Z",
+      "status": "FAILED",
+      "steps": [
+        {
+          "name": "Navigate to Product",
+          "status": "PASSED",
+          "startTime": "2025-10-03T17:19:22.736Z",
+          "endTime": "2025-10-03T17:19:25.279Z"
+        }
+      ],
+      "screenshots": [
+        "iteration-2-product-page-1759511965032.png",
+        "iteration-2-error-1759511965692.png"
+      ],
+      "orderDetails": null,
+      "failureReasons": [
+        "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector."
+      ],
+      "warnings": [],
+      "endTime": "2025-10-03T17:19:26.003Z",
+      "duration": 3267
+    },
+    {
+      "iteration": 3,
+      "startTime": "2025-10-03T17:19:31.995Z",
+      "status": "FAILED",
+      "steps": [
+        {
+          "name": "Navigate to Product",
+          "status": "PASSED",
+          "startTime": "2025-10-03T17:19:31.995Z",
+          "endTime": "2025-10-03T17:19:34.495Z"
+        }
+      ],
+      "screenshots": [
+        "iteration-3-product-page-1759511974273.png",
+        "iteration-3-error-1759511974907.png"
+      ],
+      "orderDetails": null,
+      "failureReasons": [
+        "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector."
+      ],
+      "warnings": [],
+      "endTime": "2025-10-03T17:19:35.132Z",
+      "duration": 3137
+    },
+    {
+      "iteration": 4,
+      "startTime": "2025-10-03T17:19:41.092Z",
+      "status": "FAILED",
+      "steps": [
+        {
+          "name": "Navigate to Product",
+          "status": "PASSED",
+          "startTime": "2025-10-03T17:19:41.093Z",
+          "endTime": "2025-10-03T17:19:43.799Z"
+        }
+      ],
+      "screenshots": [
+        "iteration-4-product-page-1759511983571.png",
+        "iteration-4-error-1759511984210.png"
+      ],
+      "orderDetails": null,
+      "failureReasons": [
+        "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector."
+      ],
+      "warnings": [],
+      "endTime": "2025-10-03T17:19:44.446Z",
+      "duration": 3354
+    },
+    {
+      "iteration": 5,
+      "startTime": "2025-10-03T17:19:50.462Z",
+      "status": "FAILED",
+      "steps": [
+        {
+          "name": "Navigate to Product",
+          "status": "PASSED",
+          "startTime": "2025-10-03T17:19:50.462Z",
+          "endTime": "2025-10-03T17:19:52.971Z"
+        }
+      ],
+      "screenshots": [
+        "iteration-5-product-page-1759511992699.png",
+        "iteration-5-error-1759511993381.png"
+      ],
+      "orderDetails": null,
+      "failureReasons": [
+        "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector."
+      ],
+      "warnings": [],
+      "endTime": "2025-10-03T17:19:53.610Z",
+      "duration": 3148
+    }
+  ],
+  "recommendations": [
+    {
+      "severity": "HIGH",
+      "issue": "Failed to add product to cart: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button:has-text(\"ADD TO CART\")' is not a valid selector.",
+      "occurrences": 5,
+      "recommendation": "Investigate root cause and implement fix"
+    }
+  ]
+}

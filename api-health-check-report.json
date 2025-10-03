@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-10-03T17:19:00.492Z",
+  "url": "https://gangrunprinting.com",
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "total": 5
+  },
+  "avgResponseTime": 145.8,
+  "results": [
+    {
+      "endpoint": "Product List",
+      "status": "PASS",
+      "httpStatus": 200,
+      "responseTime": 383
+    },
+    {
+      "endpoint": "Checkout - Create Test Order",
+      "status": "PASS",
+      "httpStatus": 500,
+      "responseTime": 85
+    },
+    {
+      "endpoint": "Order Check",
+      "status": "PASS",
+      "httpStatus": 404,
+      "responseTime": 90
+    },
+    {
+      "endpoint": "Auth - Session Check",
+      "status": "FAIL",
+      "httpStatus": 404,
+      "expected": [
+        200,
+        401
+      ],
+      "responseTime": 89,
+      "error": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, user-scalable=yes\"/><link rel=\"styl"
+    },
+    {
+      "endpoint": "Shipping Rates",
+      "status": "PASS",
+      "httpStatus": 400,
+      "responseTime": 82
+    }
+  ],
+  "criticalIssues": []
+}
