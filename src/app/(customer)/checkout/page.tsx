@@ -60,7 +60,7 @@ function CheckoutPageContent() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [sameAsShipping, setSameAsShipping] = useState(true)
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('information')
-  const [_selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('test_cash')
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [selectedShippingRate, setSelectedShippingRate] = useState<{
     carrier: string
@@ -242,18 +242,28 @@ function CheckoutPageContent() {
   }
 
   const processPayment = async () => {
+    if (!selectedPaymentMethod) {
+      toast.error('Please select a payment method')
+      return
+    }
+
     setIsProcessing(true)
 
     try {
-      if (_selectedPaymentMethod === 'test_cash') {
+      if (selectedPaymentMethod === 'test_cash') {
         await processTestCashPayment()
-      } else if (_selectedPaymentMethod === 'square') {
+      } else if (selectedPaymentMethod === 'square') {
         await processSquareCheckout()
+      } else if (selectedPaymentMethod === 'card') {
+        // Card payment will be handled by Square embedded form or similar
+        toast.error('Direct card payment is coming soon! Please use Square Checkout.')
+        setIsProcessing(false)
       } else {
-        toast.error(`${_selectedPaymentMethod} payment is coming soon!`)
+        toast.error(`${selectedPaymentMethod} payment is coming soon!`)
         setIsProcessing(false)
       }
     } catch (error) {
+      console.error('Payment processing error:', error)
       toast.error('Failed to process payment. Please try again.')
       setIsProcessing(false)
     }
@@ -261,7 +271,9 @@ function CheckoutPageContent() {
 
   const processTestCashPayment = async () => {
     try {
+      console.log('Starting test cash payment process...')
       const checkoutData = createCheckoutData()
+      console.log('Checkout data prepared:', checkoutData)
 
       // Create order in database via API (same as Square, but with test payment method)
       const response = await fetch('/api/checkout/create-test-order', {
@@ -272,8 +284,10 @@ function CheckoutPageContent() {
         body: JSON.stringify(checkoutData),
       })
 
+      console.log('Response status:', response.status)
       if (!response.ok) {
         const errorText = await response.text()
+        console.error('Error response:', errorText)
         throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
       }
 
@@ -321,7 +335,9 @@ function CheckoutPageContent() {
 
   const processSquareCheckout = async () => {
     try {
+      console.log('Starting Square checkout process...')
       const checkoutData = createCheckoutData()
+      console.log('Checkout data prepared:', checkoutData)
 
       const response = await fetch('/api/checkout/create-payment', {
         method: 'POST',
@@ -331,8 +347,10 @@ function CheckoutPageContent() {
         body: JSON.stringify(checkoutData),
       })
 
+      console.log('Response status:', response.status)
       if (!response.ok) {
         const errorText = await response.text()
+        console.error('Error response:', errorText)
         throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
       }
 
@@ -944,7 +962,12 @@ function CheckoutPageContent() {
                           </Button>
                         </div>
                         <div className="text-sm text-gray-600">
-                          <p className="capitalize">{_selectedPaymentMethod || 'Square Checkout'}</p>
+                          <p className="capitalize">
+                            {selectedPaymentMethod === 'test_cash' ? '🧪 Test Cash Payment' :
+                             selectedPaymentMethod === 'square' ? 'Square Checkout' :
+                             selectedPaymentMethod === 'card' ? 'Credit/Debit Card' :
+                             selectedPaymentMethod || 'Not selected'}
+                          </p>
                         </div>
                       </div>
                     </div>

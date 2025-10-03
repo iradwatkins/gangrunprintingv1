@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
         shippingMethod: shippingRate
           ? `${shippingRate.carrier} - ${shippingRate.serviceName}`
           : null,
-        ShippingRate: shippingRate || null,
         selectedAirportId,
         shippingAddress,
         billingAddress: billingAddress || shippingAddress,
