@@ -601,7 +601,8 @@ async function testCustomerJourney(customer, testNumber) {
 
   // Create screenshots directory
   const fs = require('fs');
-  const screenshotDir = '/root/websites/gangrunprinting/screenshots';
+  const path = require('path');
+  const screenshotDir = path.join(process.cwd(), 'screenshots');
   if (!fs.existsSync(screenshotDir)) {
     fs.mkdirSync(screenshotDir, { recursive: true });
   }
