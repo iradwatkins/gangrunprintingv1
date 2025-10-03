@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-10-03T12:56:32.017Z",
+  "summary": {
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "successRate": "0.0%"
+  },
+  "results": [
+    {
+      "customer": "Sarah Johnson",
+      "email": "sarah.johnson.test@gangruntest.com",
+      "steps": [],
+      "success": false,
+      "orderId": null,
+      "orderNumber": null,
+      "errors": [
+        "Fatal error: Failed to launch the browser process:  Code: 1\n\nstderr:\n[2736805:2736805:1003/075611.575549:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY\n[2736805:2736805:1003/075611.576713:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.\n\nTROUBLESHOOTING: https://pptr.dev/troubleshooting\n"
+      ]
+    },
+    {
+      "customer": "Marcus Rodriguez",
+      "email": "marcus.rodriguez.test@gangruntest.com",
+      "steps": [],
+      "success": false,
+      "orderId": null,
+      "orderNumber": null,
+      "errors": [
+        "Fatal error: Failed to launch the browser process:  Code: 1\n\nstderr:\n[2736921:2736921:1003/075616.692458:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY\n[2736921:2736921:1003/075616.692506:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.\n\nTROUBLESHOOTING: https://pptr.dev/troubleshooting\n"
+      ]
+    },
+    {
+      "customer": "Elena Petrov",
+      "email": "elena.petrov.test@gangruntest.com",
+      "steps": [],
+      "success": false,
+      "orderId": null,
+      "orderNumber": null,
+      "errors": [
+        "Fatal error: Failed to launch the browser process:  Code: 1\n\nstderr:\n[2737062:2737062:1003/075621.790739:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY\n[2737062:2737062:1003/075621.790800:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.\n\nTROUBLESHOOTING: https://pptr.dev/troubleshooting\n"
+      ]
+    },
+    {
+      "customer": "James Chen",
+      "email": "james.chen.test@gangruntest.com",
+      "steps": [],
+      "success": false,
+      "orderId": null,
+      "orderNumber": null,
+      "errors": [
+        "Fatal error: Failed to launch the browser process:  Code: 1\n\nstderr:\n[2737192:2737192:1003/075626.895797:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY\n[2737192:2737192:1003/075626.895903:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.\n\nTROUBLESHOOTING: https://pptr.dev/troubleshooting\n"
+      ]
+    },
+    {
+      "customer": "Priya Sharma",
+      "email": "priya.sharma.test@gangruntest.com",
+      "steps": [],
+      "success": false,
+      "orderId": null,
+      "orderNumber": null,
+      "errors": [
+        "Fatal error: Failed to launch the browser process:  Code: 1\n\nstderr:\n[2737335:2737335:1003/075632.003500:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY\n[2737335:2737335:1003/075632.003568:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.\n\nTROUBLESHOOTING: https://pptr.dev/troubleshooting\n"
+      ]
+    }
+  ]
+}

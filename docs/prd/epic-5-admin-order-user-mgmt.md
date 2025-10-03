@@ -1,10 +1,11 @@
 # Epic 5: Admin Order & User Management
 
 ## Epic Status
-**STATUS: ⚠️ IN PROGRESS (85% Complete)**
+**STATUS: ⚠️ IN PROGRESS (90% Complete)**
 **Started:** 2025-09-16
 **Target Completion:** 2025-10-10
-**Implementation Score:** 85/100
+**Implementation Score:** 90/100
+**Stories Complete:** 7 of 8
 
 ---
 
@@ -421,6 +422,33 @@ User {
 - ❌ Save and apply discounts
 - ❌ Discount history log
 - ❌ API endpoints for broker discounts
+
+---
+
+### Story 5.8: Admin Order Processing System ✅
+**Status:** COMPLETE (Retrospective)
+**Description:** Comprehensive print broker order management with status tracking, payment processing, vendor assignment, and email notifications.
+**Story Points:** 21
+**Completed:** 2025-10-02
+
+**Acceptance Criteria:**
+- ✅ 13 broker-specific order statuses (PENDING_PAYMENT → DELIVERED workflow)
+- ✅ 18 new order tracking fields (deadlines, notes, pickup info, etc.)
+- ✅ OrderService with 6 core methods (processPayment, assignVendor, updateStatus, etc.)
+- ✅ Payment processing (Square webhook + manual capture)
+- ✅ Professional email templates (5 notifications: confirmation, production, shipping, on-hold, pickup)
+- ✅ Admin OrderQuickActions UI (status update, payment, invoice, shipping modals)
+- ✅ 6 API endpoints (webhooks, admin actions, status management)
+- ✅ Safe database migration with automatic backup
+
+**Documentation:**
+- Full story: [story-5.8-admin-order-processing-system.md](../stories/story-5.8-admin-order-processing-system.md)
+- Deployment guide: [ADMIN-ORDER-SYSTEM-README.md](../../ADMIN-ORDER-SYSTEM-README.md)
+
+**Known Issues:**
+- ⚠️ Migration not yet run on production database
+- ⚠️ Limited automated test coverage (~20%)
+- ⚠️ N8N webhooks not yet configured
 
 **Remaining Work:**
 

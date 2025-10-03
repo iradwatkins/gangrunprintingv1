@@ -91,9 +91,10 @@ interface CustomerImage {
 
 interface ProductDetailClientProps {
   product: Product
+  configuration?: any // Product configuration from server
 }
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, configuration }: ProductDetailClientProps) {
   // All cart logic is now handled inside SimpleQuantityTest component
   // No state management needed in parent - cleaner architecture
 
@@ -143,11 +144,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </TabsList>
 
             <TabsContent className="space-y-6" value="customize">
-              {/* SIMPLE TEST - Debug product ID */}
-              <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                <strong>Debug:</strong> Product ID = {product.id || 'UNDEFINED'}
-                <br /><strong>Product Keys:</strong> {Object.keys(product || {}).join(', ')}
-              </div>
               {product.id ? (
                 <SimpleQuantityTest
                   productId={product.id}
@@ -158,6 +154,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     productionTime: product.productionTime,
                     ProductImage: product.ProductImage,
                   }}
+                  initialConfiguration={configuration}
                 />
               ) : (
                 <div className="p-4 text-red-500">

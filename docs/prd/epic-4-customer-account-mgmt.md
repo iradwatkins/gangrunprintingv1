@@ -1,10 +1,11 @@
 # Epic 4: Customer Account Management
 
 ## Epic Status
-**STATUS: ⚠️ IN PROGRESS (90% Complete)**
+**STATUS: ⚠️ IN PROGRESS (80% Complete - Corrected)**
 **Started:** 2025-09-18
-**Target Completion:** 2025-10-05
-**Implementation Score:** 90/100
+**Target Completion:** 2025-10-10 (Extended due to Story 4.3 discovery)
+**Implementation Score:** 80/100
+**Critical Issue:** Story 4.3 marked complete but only stub exists - customers cannot view orders
 
 ---
 
@@ -251,19 +252,21 @@ This epic implements a comprehensive customer account portal with:
 
 ---
 
-### Story 4.3: Order History with Filtering ✅
-**Status:** COMPLETE
+### Story 4.3: Order History with Filtering ❌
+**Status:** NOT IMPLEMENTED (Documentation Error - Marked complete but only stub exists)
 **Description:** Create order history page with search, filter, and sort capabilities.
 
+**Current State:** Page exists at `/account/orders` but only shows hardcoded "no orders" message. Does NOT fetch or display actual orders from database.
+
 **Acceptance Criteria:**
-- ✅ Order history at `/account/orders`
-- ✅ Paginated order list
-- ✅ Filter by status
-- ✅ Filter by date range
-- ✅ Search by order number/product
-- ✅ Sort options (date, amount, status)
-- ✅ Order cards with key info
-- ✅ Empty state handling
+- ⚠️ Order history at `/account/orders` (page exists but non-functional)
+- ❌ Paginated order list
+- ❌ Filter by status
+- ❌ Filter by date range
+- ❌ Search by order number/product
+- ❌ Sort options (date, amount, status)
+- ❌ Order cards with key info
+- ⚠️ Empty state handling (exists but always shows, needs conditional logic)
 
 ---
 

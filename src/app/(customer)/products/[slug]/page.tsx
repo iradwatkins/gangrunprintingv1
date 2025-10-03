@@ -157,6 +157,46 @@ async function getProduct(slug: string) {
   }
 }
 
+// Helper function to fetch product configuration on the server
+async function getProductConfiguration(productId: string) {
+  try {
+    // Import the route handler logic directly to avoid HTTP overhead
+    // This is more efficient and avoids potential localhost resolution issues
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3002'
+
+    console.log('[Product Page] Fetching configuration for product:', productId)
+
+    const response = await fetch(`${baseUrl}/api/products/${productId}/configuration`, {
+      cache: 'no-store', // Always get fresh data
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    console.log('[Product Page] Configuration fetch status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`[Product Page] Configuration fetch failed: ${response.status}`, errorText)
+      return null
+    }
+
+    const data = await response.json()
+    console.log(`[Product Page] Configuration loaded successfully:`, {
+      quantities: data.quantities?.length || 0,
+      sizes: data.sizes?.length || 0,
+      paperStocks: data.paperStocks?.length || 0,
+      turnaroundTimes: data.turnaroundTimes?.length || 0,
+    })
+
+    return data
+  } catch (error) {
+    console.error('[Product Page] Error fetching configuration:', error)
+    console.error('[Product Page] Error stack:', error instanceof Error ? error.stack : 'No stack')
+    return null
+  }
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   // Await params to fix Next.js 15 warning
   const { slug } = await params
@@ -174,6 +214,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) {
     notFound()
   }
+
+  // Fetch product configuration on the server (CRITICAL FIX for hydration issue)
+  const configuration = await getProductConfiguration(product.id)
 
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data
@@ -193,12 +236,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   console.log('[Product Page] Passing product to client:', {
     id: transformedProduct.id,
     name: transformedProduct.name,
-    hasId: !!transformedProduct.id
+    hasId: !!transformedProduct.id,
+    hasConfiguration: !!configuration
   })
 
   // Pass the server-fetched data to the client component with error boundary
   return (
     // Error boundary temporarily disabled for build
-    <ProductDetailClient product={transformedProduct as any} />
+    <ProductDetailClient
+      product={transformedProduct as any}
+      configuration={configuration}
+    />
   )
 }

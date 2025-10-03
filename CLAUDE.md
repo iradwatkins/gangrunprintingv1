@@ -117,6 +117,41 @@
 - **Name**: Ira Watkins
 - **Password**: Iw2006js!
 
+## 🎯 BUSINESS MODEL (CRITICAL - READ THIS!)
+
+### **How GangRun Printing Actually Operates:**
+
+**Customer-Facing (What Customers See):**
+- We present as a **real, professional printing company** to ALL customers
+- 95% retail customers: Regular consumers ordering business cards, flyers, etc.
+- 5% broker customers: Print resellers who get category-specific % discounts (because they order in volume)
+- Customers place orders, pay, receive tracking updates, and get their printed products
+- **NO customer ever knows we use vendor partners** - they see us as their printer
+
+**Behind the Scenes (What We Actually Do):**
+- We **coordinate with vendor print shops** for physical production
+- Vendors handle: actual printing, quality control, bindery, packaging, and shipping
+- We handle: customer service, order management, payment processing, file review, and status tracking
+- We do **NOT** operate printing presses or manage physical production equipment
+- We focus on the customer experience and logistics, not manufacturing
+
+**Important Terminology:**
+- ✅ Use: "printing company", "print shop", "customer orders"
+- ❌ Avoid: "print broker workflow" (confusing - makes it sound like we're brokers ourselves)
+- ✅ "Broker customers" or "reseller customers" = The 5% who get discounts
+- ❌ "Broker workflow" = Wrong - implies we're a broker, not a printing company
+
+**Order Status Workflow:**
+- Order statuses reflect the printing process (CONFIRMATION → PRODUCTION → SHIPPED → DELIVERED)
+- Even though vendors do the physical work, customers see seamless status updates as if we're printing
+- Status: PRODUCTION = "Your order is being printed" (customer doesn't know it's at a vendor)
+
+**Broker Discount System:**
+- Database: User.isBroker (boolean flag)
+- Database: User.brokerDiscounts (JSONB with category-specific percentages)
+- Example: `{"Business Cards": 15, "Flyers": 20, "Brochures": 18}`
+- Pricing engine applies these discounts automatically at checkout
+
 ## CURRENT AUTHENTICATION SYSTEM
 
 ### ✅ Lucia Auth Implementation (Correct)

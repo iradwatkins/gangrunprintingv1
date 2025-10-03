@@ -28,9 +28,10 @@ interface ProductInfo {
 interface SimpleQuantityTestProps {
   productId: string
   product: ProductInfo
+  initialConfiguration?: any // Pre-fetched configuration from server
 }
 
-export default function SimpleQuantityTest({ productId, product }: SimpleQuantityTestProps) {
+export default function SimpleQuantityTest({ productId, product, initialConfiguration }: SimpleQuantityTestProps) {
   // Cart and routing hooks
   const { addItem, openCart, clearCart } = useCart()
   const router = useRouter()
@@ -49,10 +50,31 @@ export default function SimpleQuantityTest({ productId, product }: SimpleQuantit
   const [customQuantity, setCustomQuantity] = useState('')
   const [customWidth, setCustomWidth] = useState('')
   const [customHeight, setCustomHeight] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initialConfiguration) // Start loaded if we have initial data
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // If we have initial configuration from server, use it immediately
+    if (initialConfiguration) {
+      console.log('[SimpleQuantityTest] Using server-fetched configuration')
+      const data = initialConfiguration
+
+      setQuantities(data.quantities || [])
+      setSizes(data.sizes || [])
+      setPaperStocks(data.paperStocks || [])
+      setTurnaroundTimes(data.turnaroundTimes || [])
+      setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
+      setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
+      setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
+      setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
+      setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
+      setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
+
+      setLoading(false)
+      return // Don't fetch from API if we have server data
+    }
+
+    // Fallback: Fetch from API if no initial configuration provided
     if (!productId) {
       console.error('[SimpleQuantityTest] useEffect - No product ID')
       setError('No product ID provided')
@@ -60,7 +82,7 @@ export default function SimpleQuantityTest({ productId, product }: SimpleQuantit
       return
     }
 
-    console.log('[SimpleQuantityTest] useEffect triggered for productId:', productId)
+    console.log('[SimpleQuantityTest] Fetching configuration from API (fallback)')
     let mounted = true
     const timeoutId = setTimeout(() => {
       if (mounted && loading) {
@@ -127,7 +149,7 @@ export default function SimpleQuantityTest({ productId, product }: SimpleQuantit
       mounted = false
       clearTimeout(timeoutId)
     }
-  }, [productId])
+  }, [productId, initialConfiguration])
 
   // Memoize data arrays to prevent them from triggering useEffect re-renders
   // These arrays are only set once during initial fetch and never change
