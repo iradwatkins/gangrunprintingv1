@@ -34,15 +34,25 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
     icon: Package,
   },
+  SHIPPED: {
+    label: 'Shipped',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+    icon: Truck,
+  },
   ON_THE_WAY: {
     label: 'On The Way',
     color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
     icon: Truck,
   },
-  READY_FOR_PICKUP: {
-    label: 'Ready for Pickup',
+  DELIVERED: {
+    label: 'Delivered',
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
     icon: CheckCircle,
+  },
+  READY_FOR_PICKUP: {
+    label: 'Ready for Pickup',
+    color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
+    icon: Package,
   },
   PICKED_UP: {
     label: 'Has Been Picked Up',
@@ -58,6 +68,11 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
     icon: XCircle,
+  },
+  REFUNDED: {
+    label: 'Refunded',
+    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+    icon: DollarSign,
   },
 }
 
@@ -142,15 +157,27 @@ export function OrderStatusDropdown({
             Production
           </div>
         </SelectItem>
+        <SelectItem value="SHIPPED">
+          <div className="flex items-center gap-2">
+            <Truck className="h-4 w-4" />
+            Shipped
+          </div>
+        </SelectItem>
         <SelectItem value="ON_THE_WAY">
           <div className="flex items-center gap-2">
             <Truck className="h-4 w-4" />
             On The Way
           </div>
         </SelectItem>
-        <SelectItem value="READY_FOR_PICKUP">
+        <SelectItem value="DELIVERED">
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4" />
+            Delivered
+          </div>
+        </SelectItem>
+        <SelectItem value="READY_FOR_PICKUP">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4" />
             Ready for Pickup
           </div>
         </SelectItem>
@@ -170,6 +197,12 @@ export function OrderStatusDropdown({
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4" />
             Cancelled
+          </div>
+        </SelectItem>
+        <SelectItem value="REFUNDED">
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4" />
+            Refunded
           </div>
         </SelectItem>
       </SelectContent>
