@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
       data: {
         id: randomUUID(),
         name,
-        weight: weight || 0.0015,
-        pricePerSqInch: pricePerSqInch || 0.0015,
+        weight: weight || 0,
+        pricePerSqInch: pricePerSqInch || 0,
         tooltipText: tooltipText || null,
         isActive: isActive !== undefined ? isActive : true,
         updatedAt: new Date(),

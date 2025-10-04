@@ -82,8 +82,8 @@ export default function PaperStocksPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: '',
-    weight: 0.0015,
-    pricePerSqInch: 0.0015,
+    weight: 0,
+    pricePerSqInch: 0,
     tooltipText: '',
     isActive: true,
     selectedCoatings: [] as string[],
@@ -249,8 +249,8 @@ export default function PaperStocksPage() {
     setEditingStock(null)
     setFormData({
       name: '',
-      weight: 0.0015,
-      pricePerSqInch: 0.0015,
+      weight: 0,
+      pricePerSqInch: 0,
       tooltipText: '',
       isActive: true,
       selectedCoatings: [],
@@ -397,8 +397,8 @@ export default function PaperStocksPage() {
                             required
                             id="weight"
                             min="0"
-                            placeholder="0.0015"
-                            step="0.0001"
+                            placeholder="0.0000002"
+                            step="0.0000001"
                             type="number"
                             value={formData.weight}
                             onChange={(e) =>
@@ -406,7 +406,7 @@ export default function PaperStocksPage() {
                             }
                           />
                           <p className="text-xs text-muted-foreground">
-                            Numeric weight used for shipping rate calculations
+                            Numeric weight used for shipping rate calculations (supports up to 7 decimal places)
                           </p>
                         </div>
                         <div className="space-y-2">
@@ -414,7 +414,7 @@ export default function PaperStocksPage() {
                           <Input
                             id="pricePerSqInch"
                             min="0"
-                            step="0.0001"
+                            step="0.0000001"
                             type="number"
                             value={formData.pricePerSqInch}
                             onChange={(e) =>
@@ -424,6 +424,9 @@ export default function PaperStocksPage() {
                               })
                             }
                           />
+                          <p className="text-xs text-muted-foreground">
+                            Supports up to 7 decimal places for precise pricing
+                          </p>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -706,9 +709,9 @@ export default function PaperStocksPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{stock.weight.toFixed(4)}</TableCell>
+                    <TableCell>{stock.weight.toFixed(7)}</TableCell>
                     <TableCell className="text-center">
-                      ${stock.pricePerSqInch.toFixed(4)}
+                      ${stock.pricePerSqInch.toFixed(7)}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex flex-wrap gap-1 justify-center">

@@ -652,6 +652,7 @@ model PaperStockSides {
   sidesOptionId   String
   priceMultiplier Float       @default(1.0)
   isEnabled       Boolean     @default(true)
+  isDefault       Boolean     @default(false)
   PaperStock      PaperStock  @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   SidesOption     SidesOption @relation(fields: [sidesOptionId], references: [id], onDelete: Cascade)
 

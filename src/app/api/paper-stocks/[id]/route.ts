@@ -28,8 +28,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         where: { id },
         data: {
           name,
-          weight: weight || 0.0015,
-          pricePerSqInch: pricePerSqInch || 0.0015,
+          weight: weight || 0,
+          pricePerSqInch: pricePerSqInch || 0,
           tooltipText: tooltipText || null,
           isActive: isActive !== undefined ? isActive : true,
           // Add new coating relationships
