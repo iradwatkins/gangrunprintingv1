@@ -192,10 +192,40 @@ export async function POST(request: NextRequest) {
       throw uploadError // Re-throw to be caught by outer try-catch
     }
 
-    // Save to database if productId is provided
+    // ALWAYS save Image record to database (even without productId)
+    // This allows uploads before product creation (new product flow)
     let dbImage = null
-    if (productId) {
-      try {
+    let dbProductImage = null
+
+    try {
+      // STEP 1: Create Image record (always, even without productId)
+      dbImage = await prisma.image.create({
+        data: {
+          name: productId ? `product-${productId}-${imageCount}` : `temp-product-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+          url: uploadedImages.optimized || uploadedImages.large,
+          thumbnailUrl: uploadedImages.thumbnail,
+          largeUrl: uploadedImages.large,
+          mediumUrl: uploadedImages.medium,
+          webpUrl: uploadedImages.webp,
+          blurDataUrl: uploadedImages.blurDataUrl,
+          mimeType: 'image/jpeg', // All processed images are JPEG
+          fileSize: uploadedImages.metadata.size,
+          width: uploadedImages.metadata.width,
+          height: uploadedImages.metadata.height,
+          alt: uploadedImages.metadata.altText,
+          category: 'product',
+          metadata: {
+            productName,
+            categoryName,
+            originalSize: uploadedImages.metadata.originalSize,
+            compressionRatio: uploadedImages.metadata.compressionRatio,
+            temporary: !productId, // Flag as temporary if no productId
+          },
+        },
+      })
+
+      // STEP 2: If productId exists, create ProductImage link immediately
+      if (productId) {
         // Check if this is the first image (should be primary)
         const existingImagesCount = await prisma.productImage.count({
           where: { productId },
@@ -209,40 +239,37 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        dbImage = await prisma.productImage.create({
+        dbProductImage = await prisma.productImage.create({
           data: {
             productId,
-            url: uploadedImages.original,
-            thumbnailUrl: uploadedImages.thumbnail,
-            mimeType: 'image/jpeg', // All processed images are JPEG
-            fileSize: uploadedImages.metadata.size,
-            width: uploadedImages.metadata.width,
-            height: uploadedImages.metadata.height,
+            imageId: dbImage.id,
             sortOrder: sortOrder || imageCount,
             isPrimary: isPrimary || existingImagesCount === 0,
-            alt: uploadedImages.metadata.altText,
-            caption: `${productName} - High Quality ${categoryName} Printing`,
           },
         })
-      } catch (dbError) {
-        // Continue anyway - image is uploaded to storage
       }
+    } catch (dbError) {
+      // Log error but continue - image is uploaded to storage
+      console.error('Database error saving image:', dbError)
     }
 
     const responseData = {
       id: dbImage?.id,
-      productId: dbImage?.productId,
+      productId: dbProductImage?.productId,
+      imageId: dbImage?.id, // Include imageId for linking later
       url: uploadedImages.optimized || uploadedImages.large, // Use optimized instead of original
       thumbnailUrl: uploadedImages.thumbnail,
       largeUrl: uploadedImages.large,
       mediumUrl: uploadedImages.medium,
       webpUrl: uploadedImages.webp,
       blurDataUrl: uploadedImages.blurDataUrl,
-      sortOrder: dbImage?.sortOrder,
-      isPrimary: dbImage?.isPrimary,
+      sortOrder: dbProductImage?.sortOrder || 0,
+      isPrimary: dbProductImage?.isPrimary || !productId, // Default to primary if no productId
       alt: uploadedImages.metadata.altText,
       width: uploadedImages.metadata.width,
       height: uploadedImages.metadata.height,
+      fileSize: uploadedImages.metadata.size,
+      mimeType: 'image/jpeg',
       metadata: {
         originalSize: uploadedImages.metadata.originalSize,
         compressedSize: uploadedImages.metadata.size,

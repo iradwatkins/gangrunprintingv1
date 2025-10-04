@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-10-04T21:13:05.796Z",
+  "baseUrl": "http://72.60.28.175:3002",
+  "passRate": "0.0",
+  "results": {
+    "scenario1": {
+      "passed": false,
+      "errors": [
+        "Could not find \"ira watkins\" product or Edit button"
+      ],
+      "screenshots": [
+        "2025-10-04T21-13-02-975Z_scenario1_01-initial-page.png",
+        "2025-10-04T21-13-04-175Z_scenario1_05-products-list.png",
+        "2025-10-04T21-13-04-274Z_scenario1_ERROR-scenario1.png"
+      ]
+    },
+    "scenario2": {
+      "passed": false,
+      "errors": [
+        "No element found for selector: input[name=\"name\"], input#name"
+      ],
+      "screenshots": [
+        "2025-10-04T21-13-05-442Z_scenario2_10-new-product-page.png",
+        "2025-10-04T21-13-05-568Z_scenario2_ERROR-scenario2.png"
+      ]
+    },
+    "scenario3": {
+      "passed": false,
+      "errors": [
+        "Unexpected end of JSON input"
+      ],
+      "screenshots": []
+    }
+  }
+}

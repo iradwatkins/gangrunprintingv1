@@ -396,6 +396,7 @@ function EditProductClient({ id }: { id: string }) {
           <div>
             <Label>Product Images</Label>
             <ProductImageUpload
+              productId={id}
               images={formData.images}
               onImagesChange={(images) => setFormData({ ...formData, images })}
             />

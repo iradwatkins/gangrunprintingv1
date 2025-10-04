@@ -264,6 +264,10 @@ export async function POST(request: NextRequest) {
       data = createProductSchema.parse(rawData)
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
+        console.error(`[${requestId}] Validation failed:`, JSON.stringify({
+          errors: validationError.issues,
+          receivedData: rawData
+        }, null, 2))
         return createValidationErrorResponse(validationError.issues, requestId)
       }
       return createErrorResponse('Data validation failed', 400, undefined, requestId)
@@ -460,33 +464,47 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Images (optional) - Create Image records first, then link to product
+        // Images (optional) - Link existing images or create new ones
+        console.log(`[${requestId}] Processing ${images.length} images for product`)
         if (images.length > 0) {
           for (let index = 0; index < images.length; index++) {
             const img = images[index]
-            // Create Image record
-            const image = await tx.image.create({
-              data: {
-                name: `${slug}-${Date.now()}-${index}`,
-                url: img.url,
-                thumbnailUrl: img.thumbnailUrl || img.url,
-                alt: img.alt || name,
-                width: img.width,
-                height: img.height,
-                fileSize: img.fileSize,
-                mimeType: img.mimeType,
-                category: 'product',
-              },
-            })
+            console.log(`[${requestId}] Image ${index}:`, JSON.stringify(img))
+            let imageId: string
+
+            // Check if imageId exists (image already created by upload API)
+            if (img.imageId) {
+              // Image already exists, just use its ID
+              console.log(`[${requestId}] Using existing image ID: ${img.imageId}`)
+              imageId = img.imageId
+            } else {
+              console.log(`[${requestId}] Creating new Image record`)
+
+              // Create new Image record
+              const image = await tx.image.create({
+                data: {
+                  name: `${uniqueSlug}-${Date.now()}-${index}`,
+                  url: img.url,
+                  thumbnailUrl: img.thumbnailUrl || img.url,
+                  alt: img.alt || name,
+                  width: img.width,
+                  height: img.height,
+                  fileSize: img.fileSize,
+                  mimeType: img.mimeType,
+                  category: 'product',
+                },
+              })
+              imageId = image.id
+            }
 
             // Link image to product via ProductImage
             relationshipPromises.push(
               tx.productImage.create({
                 data: {
                   productId: newProduct.id,
-                  imageId: image.id,
-                  sortOrder: index,
-                  isPrimary: img.isPrimary || index === 0,
+                  imageId: imageId,
+                  sortOrder: img.sortOrder !== undefined ? img.sortOrder : index,
+                  isPrimary: img.isPrimary !== undefined ? img.isPrimary : index === 0,
                 },
               })
             )

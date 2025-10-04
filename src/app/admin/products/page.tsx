@@ -279,9 +279,14 @@ export default function ProductsPage() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {(product.ProductImages?.length || 0) > 0 ? (
-                          <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center">
-                            <ImageIcon className="h-5 w-5 text-gray-500" />
-                          </div>
+                          <img
+                            src={product.ProductImages[0].ThumbnailUrl || product.ProductImages[0].Url}
+                            alt={product.ProductImages[0].AltText || product.Name}
+                            className="w-10 h-10 rounded object-cover bg-gray-100"
+                            onError={(e) => {
+                              e.currentTarget.src = '/images/product-placeholder.jpg'
+                            }}
+                          />
                         ) : (
                           <div className="w-10 h-10 rounded border-2 border-dashed border-gray-300 flex items-center justify-center">
                             <ImageIcon className="h-5 w-5 text-gray-400" />

@@ -7,12 +7,31 @@ import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { validateImageFile, validateImageDimensions } from '@/lib/validation'
 import toast from '@/lib/toast'
 
-interface ProductImageUploadProps {
-  imageUrl: string
-  onImageUpdate: (url: string) => void
+interface ProductImage {
+  id?: string
+  imageId?: string
+  url: string
+  thumbnailUrl?: string
+  largeUrl?: string
+  mediumUrl?: string
+  webpUrl?: string
+  blurDataUrl?: string
+  alt?: string
+  isPrimary?: boolean
+  sortOrder?: number
+  width?: number
+  height?: number
+  fileSize?: number
+  mimeType?: string
 }
 
-export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUploadProps) {
+interface ProductImageUploadProps {
+  imageUrl: string
+  imageData?: ProductImage | null
+  onImageUpdate: (url: string, imageData?: ProductImage) => void
+}
+
+export function ProductImageUpload({ imageUrl, imageData, onImageUpdate }: ProductImageUploadProps) {
   const [uploading, setUploading] = useState(false)
 
   const validateImage = (file: File): Promise<void> => {
@@ -49,7 +68,7 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
     })
   }
 
-  const uploadImage = async (file: File): Promise<string> => {
+  const uploadImage = async (file: File): Promise<{ url: string; imageData: ProductImage }> => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('isPrimary', 'true')
@@ -81,14 +100,34 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
         }
       }
 
-      const data = await response.json()
-      const imageUrl = data.data?.url || data.url
+      const responseData = await response.json()
+      const data = responseData.data || responseData
+      const imageUrl = data.url
 
       if (!imageUrl) {
         throw new Error('Invalid response: missing image URL')
       }
 
-      return imageUrl
+      // Return full image data including imageId
+      const imageData: ProductImage = {
+        id: data.id,
+        imageId: data.imageId || data.id,
+        url: data.url,
+        thumbnailUrl: data.thumbnailUrl,
+        largeUrl: data.largeUrl,
+        mediumUrl: data.mediumUrl,
+        webpUrl: data.webpUrl,
+        blurDataUrl: data.blurDataUrl,
+        alt: data.alt,
+        isPrimary: data.isPrimary,
+        sortOrder: data.sortOrder,
+        width: data.width,
+        height: data.height,
+        fileSize: data.fileSize,
+        mimeType: data.mimeType,
+      }
+
+      return { url: imageUrl, imageData }
     } catch (error) {
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout. Please try with a smaller file or check your connection.')
@@ -105,8 +144,8 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
 
     try {
       await validateImage(file)
-      const url = await uploadImage(file)
-      onImageUpdate(url)
+      const { url, imageData } = await uploadImage(file)
+      onImageUpdate(url, imageData)
       toast.success('Image uploaded successfully')
     } catch (error) {
       toast.error(error.message || 'Failed to upload image')
@@ -117,7 +156,7 @@ export function ProductImageUpload({ imageUrl, onImageUpdate }: ProductImageUplo
   }
 
   const handleRemoveImage = () => {
-    onImageUpdate('')
+    onImageUpdate('', undefined)
   }
 
   return (

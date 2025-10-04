@@ -1,6 +1,24 @@
 import { useState, useEffect } from 'react'
 import toast from '@/lib/toast'
 
+export interface ProductImage {
+  id?: string
+  imageId?: string
+  url: string
+  thumbnailUrl?: string
+  largeUrl?: string
+  mediumUrl?: string
+  webpUrl?: string
+  blurDataUrl?: string
+  alt?: string
+  isPrimary?: boolean
+  sortOrder?: number
+  width?: number
+  height?: number
+  fileSize?: number
+  mimeType?: string
+}
+
 export interface ProductFormData {
   name: string
   sku: string
@@ -9,6 +27,7 @@ export interface ProductFormData {
   isActive: boolean
   isFeatured: boolean
   imageUrl: string
+  imageData: ProductImage | null
   selectedPaperStockSet: string
   selectedQuantityGroup: string
   selectedSizeGroup: string
@@ -33,6 +52,7 @@ const initialFormData: ProductFormData = {
   isActive: true,
   isFeatured: false,
   imageUrl: '',
+  imageData: null,
   selectedPaperStockSet: '',
   selectedQuantityGroup: '',
   selectedSizeGroup: '',
@@ -242,10 +262,17 @@ export function useProductForm() {
       rushFee: null,
       basePrice: 0,
       setupFee: 0,
-      images: formData.imageUrl ? [{
-        url: formData.imageUrl,
-        isPrimary: true,
-        alt: `${formData.name} product image`,
+      images: formData.imageData ? [{
+        imageId: formData.imageData.imageId || formData.imageData.id,
+        url: formData.imageData.url,
+        ...(formData.imageData.thumbnailUrl && { thumbnailUrl: formData.imageData.thumbnailUrl }),
+        alt: formData.imageData.alt || `${formData.name} product image`,
+        isPrimary: formData.imageData.isPrimary !== false,
+        sortOrder: formData.imageData.sortOrder || 0,
+        ...(formData.imageData.width && { width: formData.imageData.width }),
+        ...(formData.imageData.height && { height: formData.imageData.height }),
+        ...(formData.imageData.fileSize && { fileSize: formData.imageData.fileSize }),
+        ...(formData.imageData.mimeType && { mimeType: formData.imageData.mimeType }),
       }] : [],
     }
   }

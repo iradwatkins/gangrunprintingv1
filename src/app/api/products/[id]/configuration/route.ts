@@ -50,7 +50,7 @@ function transformQuantityValues(quantityGroup: any) {
     if (value.toLowerCase() === 'custom') {
       return {
         id: `qty_custom`,
-        value: null, // Custom has no preset value
+        value: 35000, // Default custom value so pricing never shows null
         label: 'Custom',
         isCustom: true,
         customMin: quantityGroup.customMin || 55000,
@@ -397,6 +397,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           pricePerUnit: item.PaperStock.pricePerSqInch || 0.05,
           weight: item.PaperStock.weight || 0.0009, // Weight per square inch (lbs/sq in) - CRITICAL FOR SHIPPING
           pricePerSqInch: item.PaperStock.pricePerSqInch || 0.05,
+          isDefault: item.isDefault || false, // CRITICAL: Use isDefault from PaperStockSetItem
           coatings: item.PaperStock.paperStockCoatings.map((psc: any) => ({
             id: `coating_${psc.CoatingOption.id}`,
             name: psc.CoatingOption.name,
@@ -611,6 +612,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Find default size or use first one
       const defaultSize = sizes.find((s) => s.isDefault) || sizes[0]
       updatedDefaults.size = defaultSize.id
+    }
+
+    if (paperStocks.length > 0) {
+      // Find default paper stock or use first one
+      const defaultPaper = paperStocks.find((p) => p.isDefault) || paperStocks[0]
+      updatedDefaults.paper = defaultPaper.id
+
+      // Also update default coating and sides from the default paper stock
+      if (defaultPaper.coatings && defaultPaper.coatings.length > 0) {
+        const defaultCoating = defaultPaper.coatings.find((c: any) => c.isDefault) || defaultPaper.coatings[0]
+        updatedDefaults.coating = defaultCoating.id
+      }
+
+      if (defaultPaper.sides && defaultPaper.sides.length > 0) {
+        const defaultSide = defaultPaper.sides.find((s: any) => s.isDefault) || defaultPaper.sides[0]
+        updatedDefaults.sides = defaultSide.id
+      }
     }
 
     if (addons.length > 0) {

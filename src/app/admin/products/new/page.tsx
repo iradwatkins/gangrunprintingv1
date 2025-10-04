@@ -361,7 +361,8 @@ export default function NewProductPage() {
 
         <ProductImageUpload
           imageUrl={formData.imageUrl}
-          onImageUpdate={(url) => updateFormData({ imageUrl: url })}
+          imageData={formData.imageData}
+          onImageUpdate={(url, imageData) => updateFormData({ imageUrl: url, imageData })}
         />
 
         <ProductSpecifications

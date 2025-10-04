@@ -230,72 +230,75 @@ export function ProductImageUpload({
 
     onImagesChange([...safeImages, ...newImages])
 
-    // Only upload immediately if we have a productId (editing existing product)
-    if (productId) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        const formData = new FormData()
-        formData.append('file', file)
+    // ALWAYS upload images immediately to prevent blob URLs in database
+    // Upload happens for both new and existing products
+    for (let i = 0; i < filesToProcess.length; i++) {
+      const file = filesToProcess[i]
+      const formData = new FormData()
+      formData.append('file', file)
+      if (productId) {
         formData.append('productId', productId)
+      }
 
-        try {
-          const res = await fetch('/api/products/upload-image', {
-            method: 'POST',
-            body: formData,
-          })
+      try {
+        const res = await fetch('/api/products/upload-image', {
+          method: 'POST',
+          body: formData,
+        })
 
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({ error: 'Upload failed' }))
-            throw new Error(errorData.error || 'Upload failed')
-          }
-
-          const data = await res.json()
-
-          // Validate response data
-          if (!data || !data.url) {
-            throw new Error('Invalid response from upload service')
-          }
-
-          // Update the image with the uploaded URL and clean up blob
-          onImagesChange((prev) => {
-            const currentImages = Array.isArray(prev) ? prev : []
-            return currentImages.map((img, idx) => {
-              if (idx === safeImages.length + i) {
-                // Clean up blob URL if it exists
-                if (img.isBlobUrl && img.url.startsWith('blob:')) {
-                  URL.revokeObjectURL(img.url)
-                }
-                return {
-                  ...img,
-                  url: data.url,
-                  thumbnailUrl: data.thumbnailUrl || data.url,
-                  largeUrl: data.largeUrl,
-                  mediumUrl: data.mediumUrl,
-                  webpUrl: data.webpUrl,
-                  blurDataUrl: data.blurDataUrl,
-                  alt: data.alt,
-                  width: data.width,
-                  height: data.height,
-                  uploading: false,
-                  isBlobUrl: false,
-                  file: undefined, // Remove file reference after upload
-                }
-              }
-              return img
-            })
-          })
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-          toast.error(`Failed to upload image ${i + 1}: ${errorMessage}`)
-          // Remove the failed image safely
-          onImagesChange((prev) => {
-            const currentImages = Array.isArray(prev) ? prev : []
-            return currentImages.filter((_, idx) => idx !== safeImages.length + i)
-          })
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ error: 'Upload failed' }))
+          throw new Error(errorData.error || 'Upload failed')
         }
+
+        const data = await res.json()
+        const uploadedUrl = data.data?.url || data.url
+
+        // Validate response data
+        if (!uploadedUrl) {
+          throw new Error('Invalid response from upload service')
+        }
+
+        // Update the image with the uploaded URL and clean up blob
+        onImagesChange((prev) => {
+          const currentImages = Array.isArray(prev) ? prev : []
+          return currentImages.map((img, idx) => {
+            if (idx === safeImages.length + i) {
+              // Clean up blob URL if it exists
+              if (img.isBlobUrl && img.url.startsWith('blob:')) {
+                URL.revokeObjectURL(img.url)
+              }
+              return {
+                ...img,
+                url: uploadedUrl,
+                thumbnailUrl: data.data?.thumbnailUrl || data.thumbnailUrl || uploadedUrl,
+                largeUrl: data.data?.largeUrl || data.largeUrl,
+                mediumUrl: data.data?.mediumUrl || data.mediumUrl,
+                webpUrl: data.data?.webpUrl || data.webpUrl,
+                blurDataUrl: data.data?.blurDataUrl || data.blurDataUrl,
+                alt: data.data?.alt || data.alt,
+                width: data.data?.width || data.width,
+                height: data.data?.height || data.height,
+                uploading: false,
+                isBlobUrl: false,
+                file: undefined, // Remove file reference after upload
+              }
+            }
+            return img
+          })
+        })
+
+        toast.success(`Image ${i + 1} uploaded successfully`)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        toast.error(`Failed to upload image ${i + 1}: ${errorMessage}`)
+        // Remove the failed image safely
+        onImagesChange((prev) => {
+          const currentImages = Array.isArray(prev) ? prev : []
+          return currentImages.filter((_, idx) => idx !== safeImages.length + i)
+        })
       }
     }
-    // For new products, images will be uploaded after product creation
   }
 
   const handleDragOver = (e: React.DragEvent) => {

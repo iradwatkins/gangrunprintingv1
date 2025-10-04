@@ -96,15 +96,19 @@ export function transformSizeGroup(group: SizeGroup): Size[] {
     const isDefault = value === group.defaultValue
 
     if (isCustomValue) {
-      // Custom size option
+      // Custom size option - default to 4x6 so pricing never shows null
+      const defaultWidth = 4
+      const defaultHeight = 6
+      const defaultSquareInches = defaultWidth * defaultHeight
+
       return {
         id: `${group.id}-custom`,
         name: 'Custom',
         displayName: 'Custom Size',
-        width: null,
-        height: null,
-        squareInches: null,
-        priceMultiplier: 1.0, // Will be calculated based on actual dimensions
+        width: defaultWidth,
+        height: defaultHeight,
+        squareInches: defaultSquareInches,
+        priceMultiplier: calculatePriceMultiplier(defaultSquareInches),
         isDefault,
         isCustom: true,
         customMinWidth: group.customMinWidth,

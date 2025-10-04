@@ -83,6 +83,9 @@ async function getProduct(slug: string) {
       include: {
         productCategory: true,
         productImages: {
+          include: {
+            Image: true,
+          },
           orderBy: { sortOrder: 'asc' },
         },
         productPaperStockSets: {
@@ -224,7 +227,23 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     ...product,
     id: product.id, // Explicitly include ID
     ProductCategory: product.productCategory || { id: '', name: 'Uncategorized' },
-    ProductImage: product.productImages || [],
+    // Transform productImages to flatten the nested Image data
+    ProductImage: (product.productImages || []).map((pi: any) => ({
+      id: pi.Image?.id || pi.id,
+      url: pi.Image?.url || '',
+      thumbnailUrl: pi.Image?.thumbnailUrl || pi.Image?.url || '',
+      largeUrl: pi.Image?.largeUrl,
+      mediumUrl: pi.Image?.mediumUrl,
+      webpUrl: pi.Image?.webpUrl,
+      blurDataUrl: pi.Image?.blurDataUrl,
+      alt: pi.Image?.alt || `${product.name} product image`,
+      isPrimary: pi.isPrimary || false,
+      sortOrder: pi.sortOrder || 0,
+      width: pi.Image?.width,
+      height: pi.Image?.height,
+      fileSize: pi.Image?.fileSize,
+      mimeType: pi.Image?.mimeType,
+    })),
     // Ensure all required fields have safe defaults
     basePrice: product.basePrice ?? 0,
     setupFee: product.setupFee ?? 0,
