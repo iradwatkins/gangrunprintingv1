@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
               sidesOptionId: s.id,
               priceMultiplier: s.multiplier || 1.0,
               isEnabled: true,
+              isDefault: s.isDefault || false,
             })) || [],
         },
       },

@@ -47,6 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 sidesOptionId: s.id,
                 priceMultiplier: s.multiplier || 1.0,
                 isEnabled: true,
+                isDefault: s.isDefault || false,
               })) || [],
           },
         },

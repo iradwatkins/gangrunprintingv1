@@ -47,6 +47,7 @@ interface PaperStockSidesRelation {
   sidesOptionId: string
   priceMultiplier: number
   isEnabled: boolean
+  isDefault: boolean
 }
 
 interface PaperStockCoatingRelation {
@@ -88,6 +89,7 @@ export default function PaperStocksPage() {
     selectedCoatings: [] as string[],
     defaultCoating: '' as string,
     selectedSides: [] as string[],
+    defaultSides: '' as string,
     sidesMultipliers: {} as Record<string, number>,
   })
 
@@ -164,6 +166,7 @@ export default function PaperStocksPage() {
         sidesOptions: formData.selectedSides.map((sidesId) => ({
           id: sidesId,
           multiplier: formData.sidesMultipliers[sidesId] || 1.0,
+          isDefault: sidesId === formData.defaultSides,
         })),
       }
 
@@ -196,6 +199,7 @@ export default function PaperStocksPage() {
 
     // Extract sides data and multipliers
     const selectedSides = stock.paperStockSides.map((ps) => ps.sidesOptionId)
+    const defaultSides = stock.paperStockSides.find((ps) => ps.isDefault)?.sidesOptionId || ''
     const sidesMultipliers = stock.paperStockSides.reduce(
       (acc, ps) => {
         acc[ps.sidesOptionId] = ps.priceMultiplier
@@ -213,6 +217,7 @@ export default function PaperStocksPage() {
       selectedCoatings,
       defaultCoating,
       selectedSides,
+      defaultSides,
       sidesMultipliers,
     })
     setDialogOpen(true)
@@ -251,6 +256,7 @@ export default function PaperStocksPage() {
       selectedCoatings: [],
       defaultCoating: '',
       selectedSides: [],
+      defaultSides: '',
       sidesMultipliers: {},
     })
   }
@@ -268,6 +274,7 @@ export default function PaperStocksPage() {
 
     // Extract sides data and multipliers
     const selectedSides = stock.paperStockSides.map((ps) => ps.sidesOptionId)
+    const defaultSides = stock.paperStockSides.find((ps) => ps.isDefault)?.sidesOptionId || ''
     const sidesMultipliers = stock.paperStockSides.reduce(
       (acc, ps) => {
         acc[ps.sidesOptionId] = ps.priceMultiplier
@@ -285,6 +292,7 @@ export default function PaperStocksPage() {
       selectedCoatings,
       defaultCoating,
       selectedSides,
+      defaultSides,
       sidesMultipliers,
     })
     setDialogOpen(true)
@@ -306,10 +314,11 @@ export default function PaperStocksPage() {
     // Add to the list of available sides options
     setAllSidesOptions((prev) => [...prev, newSides])
 
-    // Auto-select the new sides option with default multiplier
+    // Auto-select the new sides option with default multiplier and set as default if first one
     setFormData((prev) => ({
       ...prev,
       selectedSides: [...prev.selectedSides, newSides.id],
+      defaultSides: prev.selectedSides.length === 0 ? newSides.id : prev.defaultSides,
       sidesMultipliers: {
         ...prev.sidesMultipliers,
         [newSides.id]: 1.0,
@@ -559,6 +568,11 @@ export default function PaperStocksPage() {
                                     setFormData({
                                       ...formData,
                                       selectedSides: [...formData.selectedSides, sides.id],
+                                      // Set as default if it's the first sides selected
+                                      defaultSides:
+                                        formData.selectedSides.length === 0
+                                          ? sides.id
+                                          : formData.defaultSides,
                                       // Set default multiplier if not already set
                                       sidesMultipliers: {
                                         ...formData.sidesMultipliers,
@@ -573,6 +587,11 @@ export default function PaperStocksPage() {
                                       selectedSides: formData.selectedSides.filter(
                                         (id) => id !== sides.id
                                       ),
+                                      // Clear default if this was the default sides
+                                      defaultSides:
+                                        formData.defaultSides === sides.id
+                                          ? ''
+                                          : formData.defaultSides,
                                       sidesMultipliers: remainingMultipliers,
                                     })
                                   }
@@ -583,40 +602,60 @@ export default function PaperStocksPage() {
                                   <Label className="font-medium" htmlFor={`sides-${sides.id}`}>
                                     {sides.name}
                                   </Label>
+                                  {formData.defaultSides === sides.id && (
+                                    <Badge className="text-xs" variant="secondary">
+                                      DEFAULT
+                                    </Badge>
+                                  )}
                                   {formData.selectedSides.includes(sides.id) && (
                                     <Badge className="text-xs" variant="outline">
                                       {(formData.sidesMultipliers[sides.id] || 1.0).toFixed(1)}x
                                     </Badge>
                                   )}
                                 </div>
-                                <div className="text-sm text-gray-500 mt-1">Code: {sides.code}</div>
                                 {sides.description && (
-                                  <div className="text-sm text-gray-500">{sides.description}</div>
+                                  <div className="text-sm text-gray-500 mt-1">{sides.description}</div>
                                 )}
                                 {formData.selectedSides.includes(sides.id) && (
-                                  <div className="mt-2">
-                                    <Label className="text-sm" htmlFor={`multiplier-${sides.id}`}>
-                                      Price Multiplier:
-                                    </Label>
-                                    <Input
-                                      className="w-24 h-8 text-sm mt-1"
-                                      id={`multiplier-${sides.id}`}
-                                      max="10"
-                                      min="0.1"
-                                      step="0.1"
-                                      type="number"
-                                      value={formData.sidesMultipliers[sides.id] || 1.0}
-                                      onChange={(e) => {
-                                        const value = parseFloat(e.target.value) || 1.0
-                                        setFormData({
-                                          ...formData,
-                                          sidesMultipliers: {
-                                            ...formData.sidesMultipliers,
-                                            [sides.id]: value,
-                                          },
-                                        })
-                                      }}
-                                    />
+                                  <div className="mt-2 space-y-2">
+                                    <div>
+                                      <Label className="text-sm" htmlFor={`multiplier-${sides.id}`}>
+                                        Price Multiplier:
+                                      </Label>
+                                      <Input
+                                        className="w-24 h-8 text-sm mt-1"
+                                        id={`multiplier-${sides.id}`}
+                                        max="10"
+                                        min="0.1"
+                                        step="0.1"
+                                        type="number"
+                                        value={formData.sidesMultipliers[sides.id] || 1.0}
+                                        onChange={(e) => {
+                                          const value = parseFloat(e.target.value) || 1.0
+                                          setFormData({
+                                            ...formData,
+                                            sidesMultipliers: {
+                                              ...formData.sidesMultipliers,
+                                              [sides.id]: value,
+                                            },
+                                          })
+                                        }}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="flex items-center space-x-2 text-sm">
+                                        <input
+                                          checked={formData.defaultSides === sides.id}
+                                          className="w-4 h-4"
+                                          name="defaultSides"
+                                          type="radio"
+                                          onChange={() =>
+                                            setFormData({ ...formData, defaultSides: sides.id })
+                                          }
+                                        />
+                                        <span>Set as default sides option</span>
+                                      </label>
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -691,6 +730,7 @@ export default function PaperStocksPage() {
                           stock.paperStockSides.map((ps) => (
                             <Badge key={ps.sidesOption.id} className="text-xs" variant="outline">
                               {ps.sidesOption.name} ({ps.priceMultiplier}x)
+                              {ps.isDefault && <span className="ml-1 font-bold">★</span>}
                             </Badge>
                           ))
                         ) : (
