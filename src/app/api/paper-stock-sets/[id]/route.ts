@@ -47,6 +47,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             sortOrder: 'asc',
           },
         },
+        ProductPaperStockSet: true,
       },
     })
 
@@ -54,7 +55,20 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Paper stock set not found' }, { status: 404 })
     }
 
-    return NextResponse.json(group)
+    // Transform the data to match frontend expectations
+    const transformedGroup = {
+      ...group,
+      paperStockItems: (group.PaperStockSetItem || []).map((item) => ({
+        id: item.id,
+        paperStockId: item.paperStockId,
+        isDefault: item.isDefault,
+        sortOrder: item.sortOrder,
+        paperStock: item.PaperStock,
+      })),
+      productPaperStockGroups: group.ProductPaperStockSet || [],
+    }
+
+    return NextResponse.json(transformedGroup)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch paper stock set' }, { status: 500 })
   }
@@ -166,9 +180,26 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
               sortOrder: 'asc',
             },
           },
+          ProductPaperStockSet: true,
         },
       })
     })
+
+    // Transform the data to match frontend expectations
+    if (updatedGroup) {
+      const transformedGroup = {
+        ...updatedGroup,
+        paperStockItems: (updatedGroup.PaperStockSetItem || []).map((item) => ({
+          id: item.id,
+          paperStockId: item.paperStockId,
+          isDefault: item.isDefault,
+          sortOrder: item.sortOrder,
+          paperStock: item.PaperStock,
+        })),
+        productPaperStockGroups: updatedGroup.ProductPaperStockSet || [],
+      }
+      return NextResponse.json(transformedGroup)
+    }
 
     return NextResponse.json(updatedGroup)
   } catch (error) {

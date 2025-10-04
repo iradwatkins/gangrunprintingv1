@@ -23,9 +23,50 @@ const paperStockSetSchema = z.object({
 // GET - List all paper stock sets
 export async function GET() : Promise<unknown> {
   try {
-    // Test with a simple query first
-    const groups = await prisma.paperStockSet.findMany()
-    return NextResponse.json(groups)
+    const groups = await prisma.paperStockSet.findMany({
+      include: {
+        PaperStockSetItem: {
+          include: {
+            PaperStock: {
+              include: {
+                paperStockCoatings: {
+                  include: {
+                    CoatingOption: true,
+                  },
+                },
+                paperStockSides: {
+                  include: {
+                    SidesOption: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            sortOrder: 'asc',
+          },
+        },
+        ProductPaperStockSet: true,
+      },
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    })
+
+    // Transform the data to match frontend expectations
+    const transformedGroups = groups.map((group) => ({
+      ...group,
+      paperStockItems: (group.PaperStockSetItem || []).map((item) => ({
+        id: item.id,
+        paperStockId: item.paperStockId,
+        isDefault: item.isDefault,
+        sortOrder: item.sortOrder,
+        paperStock: item.PaperStock,
+      })),
+      productPaperStockGroups: group.ProductPaperStockSet || [],
+    }))
+
+    return NextResponse.json(transformedGroups)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch paper stock sets' }, { status: 500 })
   }
@@ -96,11 +137,28 @@ export async function POST(request: NextRequest) {
               },
             },
           },
+          orderBy: {
+            sortOrder: 'asc',
+          },
         },
+        ProductPaperStockSet: true,
       },
     })
 
-    return NextResponse.json(group)
+    // Transform the data to match frontend expectations
+    const transformedGroup = {
+      ...group,
+      paperStockItems: (group.PaperStockSetItem || []).map((item) => ({
+        id: item.id,
+        paperStockId: item.paperStockId,
+        isDefault: item.isDefault,
+        sortOrder: item.sortOrder,
+        paperStock: item.PaperStock,
+      })),
+      productPaperStockGroups: group.ProductPaperStockSet || [],
+    }
+
+    return NextResponse.json(transformedGroup)
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
