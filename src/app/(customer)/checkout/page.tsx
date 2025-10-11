@@ -110,6 +110,13 @@ function CheckoutPageContent() {
   // Square configuration - reading from environment variables
   const SQUARE_APPLICATION_ID = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!
   const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
+  const SQUARE_ENVIRONMENT = (process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production'
+
+  // Debug logging for Square environment
+  console.log('[Checkout] Square Environment:', {
+    raw: process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT,
+    resolved: SQUARE_ENVIRONMENT
+  })
 
   // Get the single item (since we're doing one product at a time)
   const currentItem = items.length > 0 ? items[0] : null
@@ -121,6 +128,7 @@ function CheckoutPageContent() {
     }
 
     const mapped = items.map((item) => ({
+      productId: item.productId, // ✅ ADD productId for free shipping check
       quantity: Number(item.quantity) || 1,
       width: Number(item.dimensions?.width) || 4,
       height: Number(item.dimensions?.height) || 6,
@@ -1313,6 +1321,7 @@ function CheckoutPageContent() {
                               <SquareCardPayment
                                 applicationId={SQUARE_APPLICATION_ID}
                                 locationId={SQUARE_LOCATION_ID}
+                                environment={SQUARE_ENVIRONMENT}
                                 total={orderTotal}
                                 billingContact={{
                                   givenName: formData.firstName,

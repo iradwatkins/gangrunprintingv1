@@ -61,6 +61,15 @@ module.exports = {
         MINIO_SECRET_KEY: 'gangrun_minio_secret_2024',
         MINIO_USE_SSL: 'false',
         MINIO_BUCKET_NAME: 'gangrun-uploads',
+
+        // Square Payment Configuration - PRODUCTION (LIVE)
+        SQUARE_ACCESS_TOKEN: 'EAAAlxUo1UKk1Lin6wHkpILz-NgqN0-OiNMWN9LBAK-axvt4gmBUCKw8PW1HZeJD',
+        SQUARE_ENVIRONMENT: 'production',
+        NEXT_PUBLIC_SQUARE_ENVIRONMENT: 'production',
+        SQUARE_LOCATION_ID: 'LWMA9R9E2ENXP',
+        SQUARE_APPLICATION_ID: 'sq0idp-AJF8fI5VayKCq9veQRAw5g',
+        NEXT_PUBLIC_SQUARE_LOCATION_ID: 'LWMA9R9E2ENXP',
+        NEXT_PUBLIC_SQUARE_APPLICATION_ID: 'sq0idp-AJF8fI5VayKCq9veQRAw5g',
       },
       error_file: '/root/.pm2/logs/gangrunprinting-error.log',
       out_file: '/root/.pm2/logs/gangrunprinting-out.log',

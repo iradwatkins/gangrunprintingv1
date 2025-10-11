@@ -61,6 +61,46 @@ export async function POST(request: NextRequest) {
 
     const { toAddress, items, fromAddress } = validation.data
 
+    // Check if any product has free shipping
+    let hasFreeShipping = false
+    for (const item of items) {
+      if (item.productId) {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId },
+          select: { metadata: true },
+        })
+
+        if (product?.metadata && typeof product.metadata === 'object') {
+          const metadata = product.metadata as { freeShipping?: boolean }
+          if (metadata.freeShipping === true) {
+            hasFreeShipping = true
+            console.log('[Shipping API] ✅ Product has FREE SHIPPING:', item.productId)
+            break
+          }
+        }
+      }
+    }
+
+    // If free shipping, return immediately with $0 rate
+    if (hasFreeShipping) {
+      console.log('[Shipping API] 🎉 FREE SHIPPING APPLIED - Returning $0 rate')
+      return NextResponse.json({
+        success: true,
+        rates: [
+          {
+            carrier: 'FEDEX',
+            service: 'FREE_SHIPPING',
+            cost: 0,
+            deliveryDays: 5,
+            description: 'Free Standard Shipping',
+          },
+        ],
+        totalWeight: '0',
+        boxSummary: 'Free Shipping - No weight calculated',
+        numBoxes: 0,
+      })
+    }
+
     // Default from address (GangRun Printing warehouse)
     const shipFrom: ShippingAddress = fromAddress || {
       street: '1300 Basswood Road',
@@ -133,19 +173,41 @@ export async function POST(request: NextRequest) {
     // Use the split boxes for rating
     packages.push(...boxes)
 
-    // Get rates from both FedEx and Southwest Cargo
+    // Get rates from both FedEx and Southwest Cargo with timeout protection
     console.log('[Shipping API] Fetching rates from FedEx and Southwest Cargo...')
 
-    const [fedexRates, southwestRates] = await Promise.all([
-      shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages),
-      shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages),
-    ])
+    // Create timeout promise (10 seconds)
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Shipping rate calculation timed out')), 10000)
+    )
 
-    console.log('[Shipping API] FedEx rates received:', fedexRates.length, 'rates')
-    console.log('[Shipping API] Southwest Cargo rates received:', southwestRates.length, 'rates')
+    let rates: unknown[] = []
 
-    const rates = [...fedexRates, ...southwestRates]
-    console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
+    try {
+      const [fedexRates, southwestRates] = await Promise.race([
+        Promise.all([
+          shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages).catch((err) => {
+            console.error('[Shipping API] FedEx error:', err)
+            return []
+          }),
+          shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages).catch((err) => {
+            console.error('[Shipping API] Southwest error:', err)
+            return []
+          }),
+        ]),
+        timeout,
+      ])
+
+      console.log('[Shipping API] FedEx rates received:', fedexRates.length, 'rates')
+      console.log('[Shipping API] Southwest Cargo rates received:', southwestRates.length, 'rates')
+
+      rates = [...fedexRates, ...southwestRates]
+      console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
+    } catch (timeoutError) {
+      console.error('[Shipping API] Timeout error:', timeoutError)
+      // Empty rates array on timeout - UI will show "no shipping available"
+      rates = []
+    }
 
     return NextResponse.json({
       success: true,
