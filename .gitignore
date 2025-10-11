@@ -55,6 +55,9 @@ prisma/migrations/
 # backups
 /backups
 *.tar.gz
+*.bak
+*.backup
+*-backup.*
 
 # docker volumes
 postgres_data/
