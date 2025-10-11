@@ -560,6 +560,65 @@ const cardInstance = await paymentsInstance.card({
 
 ---
 
+## 🔧 **ADDITIONAL FIX: CSP Font Blocking + Browser Cache (October 11, 2025)**
+
+### **Issue 1**: CSP Blocking Square Fonts
+
+**Error Message**:
+```
+Refused to load the font 'https://d1g145x70srn7h.cloudfront.net/fonts/sqmarket/sqmarket-regular.woff2'
+because it violates the following Content Security Policy directive: "font-src 'self' data:".
+```
+
+**Root Cause**: Square loads fonts from CloudFront CDN, which wasn't in CSP allow list
+
+**Solution**: Updated `middleware.ts` to allow Square font sources:
+```typescript
+font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.net;
+```
+
+---
+
+### **Issue 2**: Browser Cached Old JavaScript
+
+**Problem**: Browser was loading old JavaScript bundle with broken styling code
+
+**Root Cause**:
+- Next.js caches built JavaScript in `.next` folder
+- Browser caches JavaScript bundles aggressively
+- Old bundle still had `fontFamily: 'system-ui, -apple-system...'` error
+
+**Solution**:
+1. Deleted `.next` build cache: `rm -rf .next`
+2. Fresh rebuild: `npm run build`
+3. Restarted PM2: `pm2 restart gangrunprinting`
+4. Browser now fetches new JavaScript with fixed styling
+
+**Deployment**:
+- ✅ Fixed: October 11, 2025 @ 3:00 PM
+- ✅ CSP updated in middleware.ts
+- ✅ Build cache cleared
+- ✅ Fresh build successful (no errors)
+- ✅ PM2 restart successful
+- ✅ Committed to git (hash: `f69543ea`)
+- ✅ All changes pushed to GitHub
+
+---
+
 **Implementation Completed**: October 11, 2025
 **Status**: ✅ **FULLY OPERATIONAL**
-**Next Action**: User should test both payment methods in checkout
+
+**Testing Instructions**:
+1. **Hard refresh your browser**: Press `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
+2. Navigate to: https://gangrunprinting.com/checkout
+3. Add product to cart and proceed to checkout
+4. Complete shipping information
+5. Click **"Credit Card"** payment option
+6. **Expected**: Square card input fields appear (no errors in console)
+7. Check browser console - should see:
+   - `[Square] Starting initialization process`
+   - `[Square] Card attached successfully`
+   - `[Square] Initialization complete`
+8. Test payment with Square test card: `4111 1111 1111 1111`
+
+**Next Action**: User should hard refresh browser and test credit card payment
