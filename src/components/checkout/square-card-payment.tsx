@@ -10,6 +10,17 @@ interface SquareCardPaymentProps {
   applicationId: string
   locationId: string
   total: number
+  billingContact?: {
+    givenName?: string
+    familyName?: string
+    email?: string
+    phone?: string
+    addressLines?: string[]
+    city?: string
+    state?: string
+    countryCode?: string
+    postalCode?: string
+  }
   onPaymentSuccess: (result: Record<string, unknown>) => void
   onPaymentError: (error: string) => void
   onBack: () => void
@@ -25,6 +36,7 @@ export function SquareCardPayment({
   applicationId,
   locationId,
   total,
+  billingContact,
   onPaymentSuccess,
   onPaymentError,
   onBack,
@@ -51,22 +63,7 @@ export function SquareCardPayment({
       try {
         console.log('[Square] Starting initialization...', { applicationId, locationId })
 
-        // Load Square Web Payments SDK
-        if (!window.Square) {
-          console.log('[Square] Loading SDK script...')
-          const script = document.createElement('script')
-          script.src = 'https://web.squarecdn.com/v1/square.js'
-          script.async = true
-          document.head.appendChild(script)
-
-          await new Promise((resolve, reject) => {
-            script.onload = resolve
-            script.onerror = reject
-          })
-          console.log('[Square] SDK script loaded')
-        }
-
-        // Wait for Square to be available
+        // Wait for Square SDK to be available (loaded by layout.tsx beforeInteractive script)
         let attempts = 0
         const maxAttempts = 50
         while (!window.Square && attempts < maxAttempts) {
@@ -75,7 +72,7 @@ export function SquareCardPayment({
         }
 
         if (!window.Square) {
-          throw new Error('Square Web Payments SDK failed to load')
+          throw new Error('Square Web Payments SDK failed to load - please refresh the page')
         }
 
         console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
@@ -199,8 +196,9 @@ export function SquareCardPayment({
     setError(null)
 
     try {
-      // Tokenize the card
-      const result = await card.tokenize()
+      // Tokenize the card with billing contact (recommended by Square docs)
+      const tokenizeOptions = billingContact ? { billingContact } : undefined
+      const result = await card.tokenize(tokenizeOptions)
 
       if (result.status === 'OK') {
         // Send token to your backend for processing

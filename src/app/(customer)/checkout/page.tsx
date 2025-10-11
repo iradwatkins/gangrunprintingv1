@@ -1313,6 +1313,19 @@ function CheckoutPageContent() {
                                 applicationId={SQUARE_APPLICATION_ID}
                                 locationId={SQUARE_LOCATION_ID}
                                 total={orderTotal}
+                                billingContact={{
+                                  givenName: formData.firstName,
+                                  familyName: formData.lastName,
+                                  email: formData.email,
+                                  phone: formData.phone,
+                                  addressLines: billingDifferent
+                                    ? [formData.billingAddress]
+                                    : [formData.address],
+                                  city: billingDifferent ? formData.billingCity : formData.city,
+                                  state: billingDifferent ? formData.billingState : formData.state,
+                                  countryCode: 'US',
+                                  postalCode: billingDifferent ? formData.billingZipCode : formData.zipCode,
+                                }}
                                 onBack={handlePreviousStep}
                                 onPaymentError={handleCardPaymentError}
                                 onPaymentSuccess={handleCardPaymentSuccess}
