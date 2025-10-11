@@ -58,6 +58,22 @@ export function SquareCardPayment({
     }
 
     console.log('[Square] Container ref confirmed ready, starting initialization')
+    console.log('[Square] Environment check:', {
+      appId: applicationId?.substring(0, 20) + '...',
+      locationId,
+      hasSquareSDK: typeof window.Square !== 'undefined',
+    })
+
+    // Safety timeout: if initialization takes more than 10 seconds, show error
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.error('[Square] Initialization timeout after 10 seconds')
+        setError(
+          'Payment form initialization timeout. Please refresh the page or contact support.'
+        )
+        setIsLoading(false)
+      }
+    }, 10000)
 
     const initializeSquare = async () => {
       try {
@@ -170,6 +186,12 @@ export function SquareCardPayment({
         console.log('[Square] Initialization complete')
       } catch (err) {
         console.error('[Square] Initialization error:', err)
+        console.error('[Square] Error details:', {
+          error: err,
+          applicationId: applicationId?.substring(0, 20) + '...',
+          locationId,
+          hasSquare: typeof window.Square !== 'undefined',
+        })
         const errorMsg = err instanceof Error ? err.message : 'Unknown error'
         setError(`Failed to initialize payment form: ${errorMsg}`)
         setIsLoading(false)
@@ -180,6 +202,7 @@ export function SquareCardPayment({
 
     // Cleanup
     return () => {
+      clearTimeout(timeout)
       if (card) {
         card.destroy()
       }
@@ -187,7 +210,7 @@ export function SquareCardPayment({
         applePay.destroy()
       }
     }
-  }, [applicationId, locationId])
+  }, [applicationId, locationId, isLoading])
 
   const handleCardPayment = async () => {
     if (!card || !payments) return
