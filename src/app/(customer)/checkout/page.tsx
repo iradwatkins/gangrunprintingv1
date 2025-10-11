@@ -23,6 +23,7 @@ import Image from 'next/image'
 import { PaymentMethods } from '@/components/checkout/payment-methods'
 import { ShippingRates } from '@/components/checkout/shipping-rates'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
+import { CashAppPayment } from '@/components/checkout/cash-app-payment'
 import { PayPalButton } from '@/components/checkout/paypal-button'
 // import { PageErrorBoundary } from '@/components/error-boundary'
 import { Button } from '@/components/ui/button'
@@ -1396,13 +1397,14 @@ function CheckoutPageContent() {
                           {selectedPaymentMethod === 'cashapp' && (
                             <div className="p-4 bg-white border-t">
                               <p className="text-sm text-gray-600 mb-4">Pay securely using Cash App Pay.</p>
-                              <Button
-                                className="w-full bg-green-600 hover:bg-green-700 text-white h-12 text-base font-semibold"
-                                size="lg"
-                                onClick={() => toast.error('Cash App Pay integration coming soon!')}
-                              >
-                                <span className="mr-2 text-xl font-bold">$</span> Cash App Pay
-                              </Button>
+                              <CashAppPayment
+                                applicationId={SQUARE_APPLICATION_ID}
+                                locationId={SQUARE_LOCATION_ID}
+                                total={orderTotal}
+                                onBack={handlePreviousStep}
+                                onPaymentError={handleCardPaymentError}
+                                onPaymentSuccess={handleCardPaymentSuccess}
+                              />
                             </div>
                           )}
                         </div>

@@ -51,13 +51,7 @@ export function SquareCardPayment({
   const applePayContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // CRITICAL FIX: Don't initialize until the container ref is attached
-    if (!cardContainerRef.current) {
-      console.log('[Square] Container ref not ready yet, skipping initialization')
-      return
-    }
-
-    console.log('[Square] Container ref confirmed ready, starting initialization')
+    console.log('[Square] Starting initialization process')
     console.log('[Square] Environment check:', {
       appId: applicationId?.substring(0, 20) + '...',
       locationId,
@@ -92,12 +86,6 @@ export function SquareCardPayment({
         }
 
         console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
-
-        // Double-check container still exists
-        if (!cardContainerRef.current) {
-          console.log('[Square] Container disappeared during SDK load, aborting')
-          return
-        }
 
         console.log('[Square] Creating payments instance...')
         const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
