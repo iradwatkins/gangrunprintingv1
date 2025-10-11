@@ -1300,11 +1300,7 @@ function CheckoutPageContent() {
                               <CreditCard className="h-5 w-5" />
                               <span className="font-medium">Credit Card</span>
                             </div>
-                            <div className="flex gap-1">
-                              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/visa.svg" alt="Visa" className="h-6 w-6 opacity-60" />
-                              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/mastercard.svg" alt="Mastercard" className="h-6 w-6 opacity-60" />
-                              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/americanexpress.svg" alt="Amex" className="h-6 w-6 opacity-60" />
-                            </div>
+                            <span className="text-xs text-gray-500">Visa, Mastercard, Amex</span>
                           </div>
                           {selectedPaymentMethod === 'square' && (
                             <div className="p-4 bg-white border-t">
