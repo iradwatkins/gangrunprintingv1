@@ -160,7 +160,9 @@ function CheckoutPageContent() {
             },
           ])
         }
-      } catch (error) {}
+      } catch (_error) {
+        // Intentionally ignoring error - image fetch is optional
+      }
     }
 
     fetchUploadedImages()
