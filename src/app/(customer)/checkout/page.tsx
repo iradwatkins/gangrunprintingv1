@@ -32,6 +32,7 @@ import { Label } from '@/components/ui/label'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import { cn } from '@/lib/utils'
+import SquareDebugger from '@/components/debug/SquareDebugger'
 
 interface PayPalOrderDetails {
   paymentID: string
@@ -535,6 +536,9 @@ function CheckoutPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Square Payment Debugger - Shows in dev or with ?debug=true */}
+      <SquareDebugger />
+
       {/* Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
