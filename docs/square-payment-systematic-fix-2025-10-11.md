@@ -501,6 +501,65 @@ Implementation based on official Square documentation:
 
 ---
 
+---
+
+## 🔧 **ADDITIONAL FIX: Style Configuration Error (October 11, 2025)**
+
+### **Issue**: Square SDK rejected custom styling
+
+**Error Message**:
+```
+Failed to initialize payment form: One or more style selectors and/or CSS properties are invalid
+Invalid style value 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' for property 'fontFamily'.
+Invalid style value '[object Object]' for property '::placeholder'.
+```
+
+**Root Cause**:
+1. Square SDK doesn't accept complex font-family fallback chains
+2. Nested `::placeholder` object inside `input` selector is invalid
+3. Must use flat selector structure at root level
+
+**Solution**:
+```typescript
+// ✅ FIXED - Simplified styling that Square accepts
+const cardInstance = await paymentsInstance.card({
+  style: {
+    '.input-container': {
+      borderRadius: '6px',
+      borderColor: '#D1D5DB',
+      borderWidth: '1px',
+    },
+    '.input-container.is-focus': {
+      borderColor: '#3B82F6',
+    },
+    '.input-container.is-error': {
+      borderColor: '#EF4444',
+    },
+    input: {
+      fontSize: '14px',
+      color: '#374151',
+    },
+    'input::placeholder': {
+      color: '#9CA3AF',
+    },
+  },
+})
+```
+
+**Changes Made**:
+- Removed complex fontFamily with multiple fallbacks
+- Moved `::placeholder` selector from nested to root level
+- Simplified focus state styling
+- Kept essential visual styling only
+
+**Deployment**:
+- ✅ Fixed: October 11, 2025 @ 2:45 PM
+- ✅ Build successful (no errors)
+- ✅ PM2 restart successful
+- ✅ Committed to git (hash: `f95b6f5b`)
+
+---
+
 **Implementation Completed**: October 11, 2025
 **Status**: ✅ **FULLY OPERATIONAL**
 **Next Action**: User should test both payment methods in checkout
