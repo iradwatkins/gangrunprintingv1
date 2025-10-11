@@ -67,12 +67,8 @@ function isValidSlug(slug: string): boolean {
 }
 
 async function getProduct(slug: string) {
-  // Enhanced logging for debugging
-  console.log('[Product Page] Looking up product by slug/sku:', slug)
-
   // Validate slug format to prevent potential issues
   if (!isValidSlug(slug)) {
-    console.warn(`[Product Page] Invalid slug format: ${slug}`)
     return null
   }
 
@@ -153,13 +149,7 @@ async function getProduct(slug: string) {
 
     return product
   } catch (error) {
-    console.error('[Product Page] Database error fetching product:', error)
-    // Log additional context for debugging
-    console.error('[Product Page] Error details:', {
-      slug,
-      errorName: error instanceof Error ? error.name : 'Unknown',
-      errorMessage: error instanceof Error ? error.message : String(error),
-    })
+    // Error fetching product from database
     return null
   }
 }
@@ -167,8 +157,6 @@ async function getProduct(slug: string) {
 // Helper function to fetch product configuration - calls the API endpoint internally
 async function getProductConfiguration(productId: string) {
   try {
-    console.log('[Product Page Server] Fetching configuration for product:', productId)
-
     // Since we're on the server, we can call the API route handler directly
     // Import the GET function from the API route
     const { GET } = await import('@/app/api/products/[id]/configuration/route')
@@ -181,26 +169,14 @@ async function getProductConfiguration(productId: string) {
     const response = await GET(mockRequest, { params: mockParams })
 
     if (!response.ok) {
-      console.error('[Product Page Server] API returned error:', response.status)
       return null
     }
 
     const configuration = await response.json()
 
-    console.log('[Product Page Server] Configuration loaded:', {
-      quantities: configuration.quantities?.length || 0,
-      sizes: configuration.sizes?.length || 0,
-      paperStocks: configuration.paperStocks?.length || 0,
-      turnaroundTimes: configuration.turnaroundTimes?.length || 0,
-    })
-
     return configuration
   } catch (error) {
-    console.error('[Product Page Server] Error fetching configuration:', error)
-    console.error(
-      '[Product Page Server] Error details:',
-      error instanceof Error ? error.message : String(error)
-    )
+    // Error fetching configuration
     return null
   }
 }
@@ -211,7 +187,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   // Validate slug before processing
   if (!slug || typeof slug !== 'string') {
-    console.error('[Product Page] Invalid slug parameter:', slug)
     notFound()
   }
 
@@ -223,12 +198,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   // Fetch product configuration on the server (CRITICAL FIX for hydration issue)
-  console.log('[Product Page] About to fetch configuration for product ID:', product.id)
   const configuration = await getProductConfiguration(product.id)
-  console.log(
-    '[Product Page] Configuration fetch complete. Result:',
-    configuration ? 'HAS DATA' : 'NULL'
-  )
 
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data
@@ -263,27 +233,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   // Serialize configuration to ensure it's JSON-compatible for client hydration
   const serializedConfiguration = configuration ? JSON.parse(JSON.stringify(configuration)) : null
-
-  // Write configuration to temp file for debugging
-  if (serializedConfiguration) {
-    try {
-      const fs = require('fs')
-      fs.writeFileSync(
-        '/tmp/product-config-debug.json',
-        JSON.stringify(serializedConfiguration, null, 2)
-      )
-    } catch (e) {
-      console.error('[Product Page] Could not write debug file:', e)
-    }
-  }
-
-  console.log('[Product Page] Passing product to client:', {
-    id: transformedProduct.id,
-    name: transformedProduct.name,
-    hasId: !!transformedProduct.id,
-    hasConfiguration: !!serializedConfiguration,
-    quantitiesCount: serializedConfiguration?.quantities?.length || 0,
-  })
 
   // Generate JSON-LD structured data for SEO and AI
   const schemas = generateAllProductSchemas(transformedProduct as any)
