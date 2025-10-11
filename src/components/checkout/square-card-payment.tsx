@@ -42,6 +42,7 @@ export function SquareCardPayment({
   onBack,
 }: SquareCardPaymentProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [isInitializing, setIsInitializing] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [card, setCard] = useState<any>(null)
@@ -51,23 +52,16 @@ export function SquareCardPayment({
   const applePayContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // CRITICAL: Set isLoading to false immediately so the container renders in the DOM
+    // We use isInitializing to track Square SDK initialization separately
+    setIsLoading(false)
+
     console.log('[Square] Starting initialization process')
     console.log('[Square] Environment check:', {
       appId: applicationId?.substring(0, 20) + '...',
       locationId,
       hasSquareSDK: typeof window.Square !== 'undefined',
     })
-
-    // Safety timeout: if initialization takes more than 10 seconds, show error
-    const timeout = setTimeout(() => {
-      if (isLoading) {
-        console.error('[Square] Initialization timeout after 10 seconds')
-        setError(
-          'Payment form initialization timeout. Please refresh the page or contact support.'
-        )
-        setIsLoading(false)
-      }
-    }, 10000)
 
     const initializeSquare = async () => {
       try {
@@ -168,7 +162,7 @@ export function SquareCardPayment({
           console.log('[Square] Cash App Pay not available:', cashAppError)
         }
 
-        setIsLoading(false)
+        setIsInitializing(false)
         console.log('[Square] Initialization complete')
       } catch (err) {
         console.error('[Square] Initialization error:', err)
@@ -180,15 +174,31 @@ export function SquareCardPayment({
         })
         const errorMsg = err instanceof Error ? err.message : 'Unknown error'
         setError(`Failed to initialize payment form: ${errorMsg}`)
-        setIsLoading(false)
+        setIsInitializing(false)
       }
     }
 
-    initializeSquare()
+    // Safety timeout: if initialization takes more than 10 seconds, show error
+    const timeout = setTimeout(() => {
+      if (isInitializing) {
+        console.error('[Square] Initialization timeout after 10 seconds')
+        setError(
+          'Payment form initialization timeout. Please refresh the page or contact support.'
+        )
+        setIsInitializing(false)
+      }
+    }, 10000)
+
+    // CRITICAL FIX: Wait for DOM to be fully ready before initializing
+    // This prevents "Card container element not found" error
+    const initTimer = setTimeout(() => {
+      initializeSquare()
+    }, 300)
 
     // Cleanup
     return () => {
       clearTimeout(timeout)
+      clearTimeout(initTimer)
       if (card) {
         card.destroy()
       }
@@ -196,7 +206,7 @@ export function SquareCardPayment({
         applePay.destroy()
       }
     }
-  }, [applicationId, locationId, isLoading])
+  }, [applicationId, locationId])
 
   const handleCardPayment = async () => {
     if (!card || !payments) return
@@ -205,11 +215,44 @@ export function SquareCardPayment({
     setError(null)
 
     try {
+      console.log('[Square] Tokenizing card...')
       // Tokenize the card with billing contact (recommended by Square docs)
       const tokenizeOptions = billingContact ? { billingContact } : undefined
       const result = await card.tokenize(tokenizeOptions)
 
       if (result.status === 'OK') {
+        console.log('[Square] Tokenization successful')
+
+        // CRITICAL: Verify buyer with 3D Secure (required by Square)
+        // Create verification details with ALL required fields
+        const verificationDetails = {
+          intent: 'CHARGE', // Required: string - what you're doing with this payment
+          amount: (Math.round(total * 100)).toString(), // Required: amount in cents as string
+          currencyCode: 'USD', // Required: string
+          billingContact: billingContact || {
+            givenName: 'Customer',
+            familyName: '',
+          },
+          // CRITICAL: These fields are required by Square API
+          customerInitiated: true, // Required: boolean - true = customer initiated payment (online checkout)
+          sellerKeyedIn: false, // Required: boolean - false = card entered online, true = keyed in by merchant (POS)
+        }
+
+        // Verify buyer for 3D Secure (Strong Customer Authentication)
+        let verificationToken: string | undefined = undefined
+        try {
+          console.log('[Square] Verifying buyer with 3D Secure...')
+          const verificationResult = await payments.verifyBuyer(
+            result.token,
+            verificationDetails
+          )
+          verificationToken = verificationResult.token
+          console.log('[Square] Buyer verification complete')
+        } catch (verifyError: any) {
+          console.warn('[Square] Verification error (may not be required for this card):', verifyError.message)
+          // Some cards don't require 3D Secure - continue without verification token
+        }
+
         // Send token to your backend for processing
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
@@ -218,6 +261,7 @@ export function SquareCardPayment({
           },
           body: JSON.stringify({
             sourceId: result.token,
+            verificationToken: verificationToken, // Include verification token if available
             amount: Math.round(total * 100), // Convert to cents
             currency: 'USD',
           }),
@@ -226,6 +270,7 @@ export function SquareCardPayment({
         const paymentResult = await response.json()
 
         if (paymentResult.success) {
+          console.log('[Square] Payment successful')
           onPaymentSuccess(paymentResult)
         } else {
           throw new Error(paymentResult.error || 'Payment failed')
@@ -238,6 +283,7 @@ export function SquareCardPayment({
         throw new Error(errorMessages || 'Card validation failed')
       }
     } catch (err) {
+      console.error('[Square] Payment error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Payment processing failed'
       setError(errorMessage)
       onPaymentError(errorMessage)
@@ -292,19 +338,6 @@ export function SquareCardPayment({
     }
   }
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-3">Loading payment form...</span>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <div className="space-y-4">
       <Card>
@@ -353,10 +386,17 @@ export function SquareCardPayment({
             <label className="block text-sm font-medium mb-2">Card Details</label>
             <div
               ref={cardContainerRef}
-              className="min-h-[60px] p-3 border rounded-md bg-background"
+              className="min-h-[60px] p-3 border rounded-md bg-background relative"
               id="card-container"
             >
-              {/* Square card form will be injected here */}
+              {/* Show loading indicator while initializing */}
+              {isInitializing && (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span className="ml-3 text-sm text-muted-foreground">Loading payment form...</span>
+                </div>
+              )}
+              {/* Square card form will be injected here when ready */}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               Your card information is secure and encrypted by Square
