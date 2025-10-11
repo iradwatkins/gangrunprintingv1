@@ -92,18 +92,10 @@ export function SquareCardPayment({
         setPayments(paymentsInstance)
         console.log('[Square] Payments instance created')
 
-        // Initialize card
+        // Initialize card (using simplified styling that Square accepts)
         console.log('[Square] Creating card instance...')
         const cardInstance = await paymentsInstance.card({
           style: {
-            input: {
-              fontSize: '14px',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-              color: '#374151',
-              '::placeholder': {
-                color: '#9CA3AF',
-              },
-            },
             '.input-container': {
               borderRadius: '6px',
               borderColor: '#D1D5DB',
@@ -111,10 +103,16 @@ export function SquareCardPayment({
             },
             '.input-container.is-focus': {
               borderColor: '#3B82F6',
-              borderWidth: '2px',
             },
             '.input-container.is-error': {
               borderColor: '#EF4444',
+            },
+            input: {
+              fontSize: '14px',
+              color: '#374151',
+            },
+            'input::placeholder': {
+              color: '#9CA3AF',
             },
           },
         })
