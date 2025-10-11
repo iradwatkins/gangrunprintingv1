@@ -239,6 +239,26 @@ const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
 - ✅ Application restarted with PM2
 - ✅ Live at: https://gangrunprinting.com/checkout
 
+### Update (2025-10-11 - Evening):
+**CRITICAL FIX: Missing NEXT_PUBLIC_ Environment Variable**
+
+**Issue Found:**
+- Square payment form stuck on "Loading payment form..."
+- SquareDebugger showed dummy values: `your_square_applicat...`
+- Payment form never appeared for customers
+
+**Root Cause:**
+- `.env` file had `SQUARE_APPLICATION_ID` (server-side only)
+- Missing `NEXT_PUBLIC_SQUARE_APPLICATION_ID` (client-side access)
+- Next.js requires `NEXT_PUBLIC_` prefix for browser-accessible variables
+
+**Fix Applied:**
+1. Added to `.env`: `NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-AJF8fI5VayKCq9veQRAw5g`
+2. Rebuilt application: `npm run build`
+3. Restarted PM2: `pm2 restart gangrunprinting`
+
+**Status:** ✅ **FULLY OPERATIONAL** - Square payment form now loads correctly
+
 ---
 
 ## 📞 Support Resources
