@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 // Force all routes to be dynamic to fix build issue
@@ -38,6 +39,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
+      <head>
+        {/* Square Web Payments SDK - Load early for checkout performance */}
+        <Script
+          src="https://web.squarecdn.com/v1/square.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
         <ThemeInjector />

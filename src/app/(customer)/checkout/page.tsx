@@ -105,9 +105,9 @@ function CheckoutPageContent() {
     billingZipCode: '',
   })
 
-  // Square configuration - must use actual env values, not process.env in client component
-  const SQUARE_APPLICATION_ID = 'sq0idp-AJF8fI5VayKCq9veQRAw5g' // Production Application ID
-  const SQUARE_LOCATION_ID = 'LWMA9R9E2ENXP' // Production Location ID
+  // Square configuration - reading from environment variables
+  const SQUARE_APPLICATION_ID = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!
+  const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
 
   // Get the single item (since we're doing one product at a time)
   const currentItem = items.length > 0 ? items[0] : null
