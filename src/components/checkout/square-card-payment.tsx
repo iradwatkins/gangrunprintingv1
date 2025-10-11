@@ -33,14 +33,27 @@ export function SquareCardPayment({
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [card, setCard] = useState<any>(null)
+  const [applePay, setApplePay] = useState<any>(null)
   const [payments, setPayments] = useState<any>(null)
   const cardContainerRef = useRef<HTMLDivElement>(null)
+  const applePayContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // CRITICAL FIX: Don't initialize until the container ref is attached
+    if (!cardContainerRef.current) {
+      console.log('[Square] Container ref not ready yet, skipping initialization')
+      return
+    }
+
+    console.log('[Square] Container ref confirmed ready, starting initialization')
+
     const initializeSquare = async () => {
       try {
+        console.log('[Square] Starting initialization...', { applicationId, locationId })
+
         // Load Square Web Payments SDK
         if (!window.Square) {
+          console.log('[Square] Loading SDK script...')
           const script = document.createElement('script')
           script.src = 'https://web.squarecdn.com/v1/square.js'
           script.async = true
@@ -50,17 +63,36 @@ export function SquareCardPayment({
             script.onload = resolve
             script.onerror = reject
           })
+          console.log('[Square] SDK script loaded')
+        }
+
+        // Wait for Square to be available
+        let attempts = 0
+        const maxAttempts = 50
+        while (!window.Square && attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
+          attempts++
         }
 
         if (!window.Square) {
           throw new Error('Square Web Payments SDK failed to load')
         }
 
-        // Initialize payments
-        const paymentsInstance = window.Square.payments(applicationId, locationId)
+        console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
+
+        // Double-check container still exists
+        if (!cardContainerRef.current) {
+          console.log('[Square] Container disappeared during SDK load, aborting')
+          return
+        }
+
+        console.log('[Square] Creating payments instance...')
+        const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
         setPayments(paymentsInstance)
+        console.log('[Square] Payments instance created')
 
         // Initialize card
+        console.log('[Square] Creating card instance...')
         const cardInstance = await paymentsInstance.card({
           style: {
             input: {
@@ -86,11 +118,63 @@ export function SquareCardPayment({
           },
         })
 
+        console.log('[Square] Attaching card to container...')
+
+        // CRITICAL: Wait for DOM element to be ready
+        let containerAttempts = 0
+        let container = document.getElementById('card-container')
+        while (!container && containerAttempts < 30) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
+          container = document.getElementById('card-container')
+          containerAttempts++
+        }
+
+        if (!container) {
+          throw new Error('Card container element not found after 3 seconds')
+        }
+
+        console.log('[Square] Container found, attaching card...')
         await cardInstance.attach('#card-container')
         setCard(cardInstance)
+        console.log('[Square] Card attached successfully')
+
+        // Initialize Apple Pay (will only show on supported devices)
+        try {
+          console.log('[Square] Attempting Apple Pay initialization...')
+          const applePayInstance = await paymentsInstance.applePay({
+            style: {
+              buttonType: 'plain',
+              buttonColor: 'black',
+              buttonLocale: 'en-US',
+            },
+          })
+          await applePayInstance.attach('#apple-pay-container')
+          setApplePay(applePayInstance)
+          console.log('[Square] Apple Pay initialized')
+        } catch (applePayError) {
+          // Apple Pay not available on this device/browser - this is expected on non-Safari browsers
+          console.log('[Square] Apple Pay not available:', applePayError)
+        }
+
+        // Try to initialize Cash App Pay
+        try {
+          console.log('[Square] Attempting Cash App Pay initialization...')
+          const cashAppInstance = await paymentsInstance.cashAppPay({
+            redirectURL: window.location.href,
+            referenceId: `order_${Date.now()}`,
+          })
+          console.log('[Square] Cash App Pay available:', cashAppInstance)
+          // We'll need to add UI for Cash App Pay if it initializes
+        } catch (cashAppError) {
+          console.log('[Square] Cash App Pay not available:', cashAppError)
+        }
+
         setIsLoading(false)
+        console.log('[Square] Initialization complete')
       } catch (err) {
-        setError('Failed to initialize payment form. Please refresh and try again.')
+        console.error('[Square] Initialization error:', err)
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error'
+        setError(`Failed to initialize payment form: ${errorMsg}`)
         setIsLoading(false)
       }
     }
@@ -102,10 +186,13 @@ export function SquareCardPayment({
       if (card) {
         card.destroy()
       }
+      if (applePay) {
+        applePay.destroy()
+      }
     }
   }, [applicationId, locationId])
 
-  const handlePayment = async () => {
+  const handleCardPayment = async () => {
     if (!card || !payments) return
 
     setIsProcessing(true)
@@ -138,11 +225,59 @@ export function SquareCardPayment({
         }
       } else {
         // Handle tokenization errors
-        const errorMessages = result.errors?.map((error: Record<string, unknown>) => error.message).join(', ')
+        const errorMessages = result.errors
+          ?.map((error: Record<string, unknown>) => error.message)
+          .join(', ')
         throw new Error(errorMessages || 'Card validation failed')
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Payment processing failed'
+      setError(errorMessage)
+      onPaymentError(errorMessage)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleApplePayPayment = async () => {
+    if (!applePay || !payments) return
+
+    setIsProcessing(true)
+    setError(null)
+
+    try {
+      // Tokenize Apple Pay
+      const result = await applePay.tokenize()
+
+      if (result.status === 'OK') {
+        // Send token to your backend for processing
+        const response = await fetch('/api/checkout/process-square-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sourceId: result.token,
+            amount: Math.round(total * 100), // Convert to cents
+            currency: 'USD',
+          }),
+        })
+
+        const paymentResult = await response.json()
+
+        if (paymentResult.success) {
+          onPaymentSuccess(paymentResult)
+        } else {
+          throw new Error(paymentResult.error || 'Payment failed')
+        }
+      } else {
+        const errorMessages = result.errors
+          ?.map((error: Record<string, unknown>) => error.message)
+          .join(', ')
+        throw new Error(errorMessages || 'Apple Pay validation failed')
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Apple Pay processing failed'
       setError(errorMessage)
       onPaymentError(errorMessage)
     } finally {
@@ -180,6 +315,33 @@ export function SquareCardPayment({
             </Alert>
           )}
 
+          {/* Apple Pay Button - Only shows on supported devices */}
+          {applePay && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Pay with Apple Pay</label>
+              <div
+                ref={applePayContainerRef}
+                className="mb-4"
+                id="apple-pay-container"
+                onClick={handleApplePayPayment}
+              >
+                {/* Apple Pay button will be injected here */}
+              </div>
+            </div>
+          )}
+
+          {/* Divider if Apple Pay is available */}
+          {applePay && (
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-muted-foreground">Or pay with card</span>
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-2">Card Details</label>
             <div
@@ -204,7 +366,7 @@ export function SquareCardPayment({
               <Button className="flex-1" disabled={isProcessing} variant="outline" onClick={onBack}>
                 Back
               </Button>
-              <Button className="flex-1" disabled={isProcessing} onClick={handlePayment}>
+              <Button className="flex-1" disabled={isProcessing} onClick={handleCardPayment}>
                 {isProcessing ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

@@ -13,7 +13,7 @@ import {
 import { LoadingSkeleton, ErrorState } from '@/components/common/loading'
 import FileUploadZone from './FileUploadZone'
 import AddonAccordionWithVariable from './AddonAccordionWithVariable'
-import { DesignConfig } from './addons/types/addon.types'
+import { type DesignConfig } from './addons/types/addon.types'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
 
@@ -229,7 +229,7 @@ export default function SimpleConfigurationForm({
             enabled: false,
             selectedOption: null,
             selectedSide: null,
-            uploadedFiles: []
+            uploadedFiles: [],
           },
         }
         setConfiguration(newConfig)
@@ -503,7 +503,7 @@ export default function SimpleConfigurationForm({
     let designAddonCost = 0
     if (config.designConfig?.enabled && config.designConfig?.selectedOption) {
       // Find the single Design add-on
-      const designAddon = configData.addons?.find(a => a.name === 'Design')
+      const designAddon = configData.addons?.find((a) => a.name === 'Design')
       if (designAddon) {
         const selectedOptionId = config.designConfig.selectedOption
         const optionConfig = designAddon.configuration?.options?.[selectedOptionId]
@@ -1061,25 +1061,28 @@ export default function SimpleConfigurationForm({
 
       {/* Add-ons & Upgrades Section (with positioning support) */}
       <AddonAccordionWithVariable
-        addons={configData.addons?.filter(a =>
-          !a.id.startsWith('addon_upload_') &&
-          !a.id.startsWith('addon_standard_design') &&
-          !a.id.startsWith('addon_rush_design') &&
-          !a.id.startsWith('addon_design_changes')
-        ) || []}
+        addons={
+          configData.addons?.filter(
+            (a) =>
+              !a.id.startsWith('addon_upload_') &&
+              !a.id.startsWith('addon_standard_design') &&
+              !a.id.startsWith('addon_rush_design') &&
+              !a.id.startsWith('addon_design_changes')
+          ) || []
+        }
         addonsGrouped={configData.addonsGrouped}
         bandingConfig={configuration.bandingConfig}
         cornerRoundingConfig={configuration.cornerRoundingConfig}
+        designConfig={configuration.designConfig}
         disabled={loading}
         perforationConfig={configuration.perforationConfig}
         quantity={getQuantityValue(configuration)}
         selectedAddons={configuration.selectedAddons}
         variableDataConfig={configuration.variableDataConfig}
-        designConfig={configuration.designConfig}
-        onDesignChange={handleDesignChange}
         onAddonChange={handleAddonChange}
         onBandingChange={handleBandingChange}
         onCornerRoundingChange={handleCornerRoundingChange}
+        onDesignChange={handleDesignChange}
         onPerforationChange={handlePerforationChange}
         onVariableDataChange={handleVariableDataChange}
       />

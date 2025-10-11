@@ -114,8 +114,7 @@ export default function PaperStocksPage() {
         const sidesData = await sidesRes.json()
         setAllSidesOptions(sidesData)
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const fetchPaperStocks = async () => {
@@ -406,7 +405,8 @@ export default function PaperStocksPage() {
                             }
                           />
                           <p className="text-xs text-muted-foreground">
-                            Numeric weight used for shipping rate calculations (supports up to 7 decimal places)
+                            Numeric weight used for shipping rate calculations (supports up to 7
+                            decimal places)
                           </p>
                         </div>
                         <div className="space-y-2">
@@ -617,7 +617,9 @@ export default function PaperStocksPage() {
                                   )}
                                 </div>
                                 {sides.description && (
-                                  <div className="text-sm text-gray-500 mt-1">{sides.description}</div>
+                                  <div className="text-sm text-gray-500 mt-1">
+                                    {sides.description}
+                                  </div>
                                 )}
                                 {formData.selectedSides.includes(sides.id) && (
                                   <div className="mt-2 space-y-2">

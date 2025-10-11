@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Generated Landing Page Images Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        .status {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+        .image-section {
+            margin-bottom: 60px;
+        }
+        .image-section h2 {
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+        .image-meta {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .image-container {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .prompt {
+            background: #f3f4f6;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            margin-top: 16px;
+        }
+        .prompt-label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .prompt-text {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .spec-item {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .spec-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .spec-value {
+            font-size: 16px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        .usage {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .usage-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .usage-list {
+            list-style: none;
+        }
+        .usage-list li {
+            color: #1e40af;
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        .usage-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            AI-Generated Landing Page Images
+            <span class="status">✅ Complete</span>
+        </h1>
+        <p class="subtitle">
+            Professional product photography generated using Google Imagen 4 (2K Resolution)
+        </p>
+
+        <!-- Generic Postcard Hero -->
+        <div class="image-section">
+            <h2>1. Generic Postcard Hero Image</h2>
+            <p class="image-meta">
+                <strong>For:</strong> Generic 4x6 Postcards product page<br>
+                <strong>URL:</strong> /products/postcards-4x6
+            </p>
+
+            <div class="image-container">
+                <img src="/generated-images/postcard-hero-generic.png"
+                     alt="Professional 4x6 postcards with vibrant designs - studio photography - GangRun Printing"
+                     onerror="this.parentElement.innerHTML='<div style=padding:40px;text-align:center;color:#ef4444>Image not found. Make sure files are in public/generated-images/</div>'">
+            </div>
+
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Resolution</div>
+                    <div class="spec-value">2K (2048x1536)</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Aspect Ratio</div>
+                    <div class="spec-value">4:3</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">File Size</div>
+                    <div class="spec-value">4.9 MB</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Format</div>
+                    <div class="spec-value">PNG</div>
+                </div>
+            </div>
+
+            <div class="prompt">
+                <div class="prompt-label">AI Prompt Used:</div>
+                <div class="prompt-text">
+                    Professional product photography of vibrant 4x6 postcards fanned out on a clean white surface,
+                    showing multiple colorful designs, studio lighting with soft shadows, high-end marketing photography,
+                    ultra sharp focus, premium paper texture visible, 4k resolution
+                </div>
+            </div>
+
+            <div class="usage">
+                <div class="usage-title">Usage Instructions:</div>
+                <ul class="usage-list">
+                    <li>Upload to "4x6 Postcards" product via admin</li>
+                    <li>Set as primary product image</li>
+                    <li>Add alt text: "Professional 4x6 postcards with vibrant designs - studio photography - GangRun Printing"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- NYC Postcard Hero -->
+        <div class="image-section">
+            <h2>2. NYC Postcard Hero Image</h2>
+            <p class="image-meta">
+                <strong>For:</strong> New York City 4x6 Postcards product page<br>
+                <strong>URL:</strong> /products/postcards-4x6-new-york-ny
+            </p>
+
+            <div class="image-container">
+                <img src="/generated-images/postcard-hero-nyc.png"
+                     alt="4x6 postcards featuring New York City skyline on marble desk - premium urban business aesthetic - GangRun Printing NYC"
+                     onerror="this.parentElement.innerHTML='<div style=padding:40px;text-align:center;color:#ef4444>Image not found. Make sure files are in public/generated-images/</div>'">
+            </div>
+
+            <div class="specs">
+                <div class="spec-item">
+                    <div class="spec-label">Resolution</div>
+                    <div class="spec-value">2K (2048x1536)</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Aspect Ratio</div>
+                    <div class="spec-value">4:3</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">File Size</div>
+                    <div class="spec-value">4.9 MB</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Format</div>
+                    <div class="spec-value">PNG</div>
+                </div>
+            </div>
+
+            <div class="prompt">
+                <div class="prompt-label">AI Prompt Used:</div>
+                <div class="prompt-text">
+                    Professional product photography of 4x6 postcards featuring New York City skyline imagery,
+                    postcards displayed on modern marble desk with Manhattan skyline visible through window in background,
+                    golden hour lighting, premium urban business aesthetic, 4k resolution, sophisticated composition
+                </div>
+            </div>
+
+            <div class="usage">
+                <div class="usage-title">Usage Instructions:</div>
+                <ul class="usage-list">
+                    <li>Upload to "4x6 Postcards - New York, NY" product via admin</li>
+                    <li>Set as primary product image</li>
+                    <li>Add alt text: "4x6 postcards featuring New York City skyline on marble desk - premium urban business aesthetic - GangRun Printing NYC"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 24px; border-radius: 8px; margin-top: 40px;">
+            <h3 style="color: #92400e; margin-bottom: 16px; font-size: 20px;">📋 Next Steps</h3>
+            <ol style="color: #78350f; line-height: 1.8; padding-left: 20px;">
+                <li>Go to <strong>Admin → Products</strong></li>
+                <li>Edit each product and upload the corresponding image</li>
+                <li>Add the SEO-optimized alt text shown above</li>
+                <li>Set as primary product image</li>
+                <li>Save and test on live pages</li>
+            </ol>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 14px;">
+            <p><strong>Generated:</strong> January 10, 2025 | <strong>Model:</strong> Google Imagen 4.0-generate-001 | <strong>Quality:</strong> 2K Ultra</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -22,14 +22,14 @@ export function PaperStockModule({
   return (
     <div className={`paper-stock-module ${className}`}>
       <PaperStockSelector
+        coatingValue={coatingValue}
+        disabled={disabled}
         paperStocks={paperStocks}
         paperValue={paperValue}
-        coatingValue={coatingValue}
         sidesValue={sidesValue}
-        onPaperChange={onPaperChange}
         onCoatingChange={onCoatingChange}
+        onPaperChange={onPaperChange}
         onSidesChange={onSidesChange}
-        disabled={disabled}
       />
     </div>
   )

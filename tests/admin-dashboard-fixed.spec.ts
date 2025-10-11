@@ -31,7 +31,6 @@ test.describe('Admin Dashboard Visual Verification', () => {
     // Check primary color is being used (Tangerine theme)
     const primaryElement = page.locator('.bg-primary').first()
     const exists = (await primaryElement.count()) > 0
-
   })
 
   test('📱 Responsive design at different breakpoints', async ({ page }) => {
@@ -93,14 +92,12 @@ test.describe('Admin Dashboard Visual Verification', () => {
     for (const term of printingTerms) {
       const elements = await page.locator(`text="${term}"`).count()
       if (elements > 0) {
-
       }
     }
 
     // Verify professional layout elements
     await expect(page.locator('text="Performance Overview"').first()).toBeVisible()
     await expect(page.locator('text="Recent Sales"').first()).toBeVisible()
-
   })
 
   test('🌓 Theme system works correctly', async ({ page }) => {
@@ -122,7 +119,6 @@ test.describe('Admin Dashboard Visual Verification', () => {
     await page.evaluate(() => {
       document.documentElement.classList.remove('dark')
     })
-
   })
 
   test('⚡ Performance and quality checks', async ({ page }) => {
@@ -147,13 +143,11 @@ test.describe('Admin Dashboard Visual Verification', () => {
     if (criticalErrors.length > 0) {
       console.warn('⚠️ Non-404 errors found:', criticalErrors)
     } else {
-
     }
 
     // Verify accessibility basics
     const hasMainContent = (await page.locator('main').count()) > 0
     const hasProperHeadings = (await page.locator('h1').count()) > 0
-
   })
 
   test('📊 Visual regression baseline', async ({ page }) => {
@@ -172,9 +166,7 @@ test.describe('Admin Dashboard Visual Verification', () => {
         await element.screenshot({
           path: `tests/screenshots/baseline-${section.name}.png`,
         })
-
       } else {
-
       }
     }
   })

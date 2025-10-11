@@ -36,10 +36,7 @@ interface OrderCardProps {
 }
 
 // Status configuration with colors and icons
-const statusConfig: Record<
-  string,
-  { label: string; color: string; icon: LucideIcon }
-> = {
+const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
@@ -141,10 +138,7 @@ export function OrderCard({ order, isBroker }: OrderCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <Link
-              href={`/account/orders/${order.id}`}
-              className="font-semibold hover:underline"
-            >
+            <Link className="font-semibold hover:underline" href={`/account/orders/${order.id}`}>
               {order.orderNumber}
             </Link>
             <p className="text-sm text-muted-foreground">{orderDate}</p>
@@ -192,16 +186,16 @@ export function OrderCard({ order, isBroker }: OrderCardProps) {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-2">
-          <Link href={`/account/orders/${order.id}`} className="block">
-            <Button variant="outline" className="w-full">
+          <Link className="block" href={`/account/orders/${order.id}`}>
+            <Button className="w-full" variant="outline">
               View Details
             </Button>
           </Link>
           <Button
-            variant="default"
             className="w-full"
-            onClick={() => setShowReorderModal(true)}
             disabled={!canReorder}
+            variant="default"
+            onClick={() => setShowReorderModal(true)}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             Re-Order
@@ -212,9 +206,9 @@ export function OrderCard({ order, isBroker }: OrderCardProps) {
       {/* Re-order Modal */}
       <ReorderModal
         open={showReorderModal}
-        onOpenChange={setShowReorderModal}
         orderId={order.id}
         orderNumber={order.orderNumber}
+        onOpenChange={setShowReorderModal}
       />
     </Card>
   )

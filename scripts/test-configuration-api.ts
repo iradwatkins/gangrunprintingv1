@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function testConfigurationAPI() {
-
   try {
     // Find our test products
     const products = await prisma.product.findMany({
@@ -15,7 +14,6 @@ async function testConfigurationAPI() {
     })
 
     for (const product of products) {
-
       // Test the configuration API
       const apiUrl = `http://localhost:3002/api/products/${product.id}/configuration`
 
@@ -24,13 +22,11 @@ async function testConfigurationAPI() {
         const data = await response.json()
 
         if (response.ok) {
-
           if (data.paperStocks && data.paperStocks.length > 0) {
             const firstPaper = data.paperStocks[0]
 
             // List coating options
             if (firstPaper.paperStockCoatings?.length > 0) {
-
               firstPaper.paperStockCoatings.slice(0, 3).forEach((coating: any) => {
                 console.log(
                   `        • ${coating.coating.name} ${coating.isDefault ? '(Default)' : ''}`
@@ -40,22 +36,13 @@ async function testConfigurationAPI() {
 
             // List sides options
             if (firstPaper.paperStockSides?.length > 0) {
-
-              firstPaper.paperStockSides.slice(0, 3).forEach((side: any) => {
-
-              })
+              firstPaper.paperStockSides.slice(0, 3).forEach((side: any) => {})
             }
           }
-
         } else {
-
         }
-      } catch (error) {
-
-      }
-
+      } catch (error) {}
     }
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

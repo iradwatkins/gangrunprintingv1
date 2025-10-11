@@ -17,7 +17,7 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
 
       // Check for TypeScript errors
       const errors: string[] = []
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error' && msg.text().includes('Type')) {
           errors.push(msg.text())
         }
@@ -84,7 +84,9 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
       const orderRows = await page.$$('tbody tr')
       if (orderRows.length > 0) {
         // Click first order
-        const firstOrder = await page.$('tbody tr:first-child a, tbody tr:first-child button:has-text("View")')
+        const firstOrder = await page.$(
+          'tbody tr:first-child a, tbody tr:first-child button:has-text("View")'
+        )
         if (firstOrder) {
           await firstOrder.click()
           await page.waitForURL(/\/admin\/orders\/[\w-]+/)
@@ -99,13 +101,13 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
 
           // Verify no TypeScript errors in console
           const errors: string[] = []
-          page.on('console', msg => {
+          page.on('console', (msg) => {
             if (msg.type() === 'error') {
               errors.push(msg.text())
             }
           })
           await page.waitForTimeout(2000)
-          expect(errors.filter(e => e.includes('undefined') || e.includes('null')).length).toBe(0)
+          expect(errors.filter((e) => e.includes('undefined') || e.includes('null')).length).toBe(0)
         }
       }
 
@@ -150,19 +152,19 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
       await page.goto(`${baseURL}/admin/marketing/automation`)
       await page.waitForSelector('h1', { timeout: 10000 })
 
-      const automationTitle = await page.$eval('h1', el => el.textContent)
+      const automationTitle = await page.$eval('h1', (el) => el.textContent)
       expect(automationTitle).toContain('Automation')
 
       // Test segments page
       await page.goto(`${baseURL}/admin/marketing/segments`)
       await page.waitForSelector('h1', { timeout: 10000 })
 
-      const segmentsTitle = await page.$eval('h1', el => el.textContent)
+      const segmentsTitle = await page.$eval('h1', (el) => el.textContent)
       expect(segmentsTitle).toContain('Segments')
 
       // Check for any rendering errors
       const errors: string[] = []
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error') {
           errors.push(msg.text())
         }
@@ -170,7 +172,7 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
       await page.waitForTimeout(2000)
 
       // Filter for TypeScript-related errors
-      const tsErrors = errors.filter(e => e.includes('Type') || e.includes('undefined'))
+      const tsErrors = errors.filter((e) => e.includes('Type') || e.includes('undefined'))
       expect(tsErrors).toHaveLength(0)
 
       await page.screenshot({ path: 'tests/screenshots/marketing-round1.png' })
@@ -195,7 +197,10 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
       expect(statusElements.length).toBeGreaterThan(0)
 
       // Check data consistency
-      const firstCustomerEmail = await page.$eval('tbody tr:first-child td:nth-child(3)', el => el.textContent)
+      const firstCustomerEmail = await page.$eval(
+        'tbody tr:first-child td:nth-child(3)',
+        (el) => el.textContent
+      )
       expect(firstCustomerEmail).toBeTruthy()
 
       await page.screenshot({ path: 'tests/screenshots/customers-round2.png' })
@@ -244,7 +249,7 @@ test.describe('TypeScript Fixes Validation - Quick Tests', () => {
       await page.waitForSelector('table', { timeout: 10000 })
 
       // Verify orders list renders consistently
-      const orderCount = await page.$$eval('tbody tr', rows => rows.length)
+      const orderCount = await page.$$eval('tbody tr', (rows) => rows.length)
       expect(orderCount).toBeGreaterThanOrEqual(0)
 
       await page.screenshot({ path: 'tests/screenshots/orders-round2.png' })

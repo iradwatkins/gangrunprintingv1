@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where.isActive = true
     }
     if (withProducts) {
-      where.products = {
+      where.Product = {
         some: {
           isActive: true,
         },
@@ -28,7 +28,15 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            products: true,
+            Product: true,
+            Subcategories: true,
+          },
+        },
+        ParentCategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
           },
         },
       },
@@ -66,6 +74,8 @@ export async function POST(request: NextRequest) {
         description: data.description,
         sortOrder: data.sortOrder || 0,
         isActive: data.isActive ?? true,
+        isHidden: data.isHidden ?? false,
+        parentCategoryId: data.parentCategoryId || null,
         updatedAt: new Date(),
       },
     })
@@ -73,7 +83,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
-      const field = error && typeof error === 'object' && 'meta' in error && error.meta && typeof error.meta === 'object' && 'target' in error.meta ? (error.meta.target as string[])?.[0] : 'field'
+      const field =
+        error &&
+        typeof error === 'object' &&
+        'meta' in error &&
+        error.meta &&
+        typeof error.meta === 'object' &&
+        'target' in error.meta
+          ? (error.meta.target as string[])?.[0]
+          : 'field'
       return NextResponse.json(
         { error: `A category with this ${field} already exists` },
         { status: 400 }

@@ -1,7 +1,13 @@
 'use client'
 
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Settings, Package, Ruler, FileText, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -28,14 +34,14 @@ export function ProductSpecifications({
   quantityGroups,
   sizeGroups,
   paperStockSets,
-  onUpdate
+  onUpdate,
 }: ProductSpecificationsProps) {
   // Debug logging to track data
   console.log('ProductSpecifications loaded:', {
     quantityGroups: quantityGroups?.length || 0,
     sizeGroups: sizeGroups?.length || 0,
     paperStockSets: paperStockSets?.length || 0,
-    currentSelections: formData
+    currentSelections: formData,
   })
 
   const hasData = quantityGroups.length > 0 && sizeGroups.length > 0 && paperStockSets.length > 0
@@ -48,8 +54,7 @@ export function ProductSpecifications({
           Product Specifications
         </CardTitle>
         <CardDescription>
-          Configure the core printing specifications for this product.
-          All fields are required.
+          Configure the core printing specifications for this product. All fields are required.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -57,7 +62,8 @@ export function ProductSpecifications({
           <div className="flex items-center gap-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
             <AlertCircle className="h-5 w-5 text-yellow-600" />
             <p className="text-sm text-yellow-800">
-              Loading configuration options... If this persists, check that configuration data exists.
+              Loading configuration options... If this persists, check that configuration data
+              exists.
             </p>
           </div>
         )}
@@ -68,7 +74,7 @@ export function ProductSpecifications({
               Quantity Options
               <span className="text-red-500">*</span>
             </Label>
-            <Badge variant="outline" className="text-xs">
+            <Badge className="text-xs" variant="outline">
               {quantityGroups.length} available
             </Badge>
           </div>
@@ -95,7 +101,10 @@ export function ProductSpecifications({
             </SelectContent>
           </Select>
           {formData.selectedQuantityGroup && (
-            <p className="text-xs text-green-600">✓ Selected: {quantityGroups.find(g => g.id === formData.selectedQuantityGroup)?.name}</p>
+            <p className="text-xs text-green-600">
+              ✓ Selected:{' '}
+              {quantityGroups.find((g) => g.id === formData.selectedQuantityGroup)?.name}
+            </p>
           )}
         </div>
 
@@ -106,7 +115,7 @@ export function ProductSpecifications({
               Size Options
               <span className="text-red-500">*</span>
             </Label>
-            <Badge variant="outline" className="text-xs">
+            <Badge className="text-xs" variant="outline">
               {sizeGroups.length} available
             </Badge>
           </div>
@@ -133,7 +142,9 @@ export function ProductSpecifications({
             </SelectContent>
           </Select>
           {formData.selectedSizeGroup && (
-            <p className="text-xs text-green-600">✓ Selected: {sizeGroups.find(g => g.id === formData.selectedSizeGroup)?.name}</p>
+            <p className="text-xs text-green-600">
+              ✓ Selected: {sizeGroups.find((g) => g.id === formData.selectedSizeGroup)?.name}
+            </p>
           )}
         </div>
 
@@ -144,7 +155,7 @@ export function ProductSpecifications({
               Paper Stock
               <span className="text-red-500">*</span>
             </Label>
-            <Badge variant="outline" className="text-xs">
+            <Badge className="text-xs" variant="outline">
               {paperStockSets.length} available
             </Badge>
           </div>
@@ -171,7 +182,10 @@ export function ProductSpecifications({
             </SelectContent>
           </Select>
           {formData.selectedPaperStockSet && (
-            <p className="text-xs text-green-600">✓ Selected: {paperStockSets.find(g => g.id === formData.selectedPaperStockSet)?.name}</p>
+            <p className="text-xs text-green-600">
+              ✓ Selected:{' '}
+              {paperStockSets.find((g) => g.id === formData.selectedPaperStockSet)?.name}
+            </p>
           )}
         </div>
 

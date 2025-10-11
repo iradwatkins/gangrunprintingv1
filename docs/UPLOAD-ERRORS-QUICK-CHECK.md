@@ -21,6 +21,7 @@ pm2 logs gangrunprinting --lines 50 | grep "Invalid character in header"
 **This is the MOST COMMON issue - filenames with spaces/special chars**
 
 ### Instant Fix Check:
+
 ```bash
 cd /root/websites/gangrunprinting
 
@@ -33,6 +34,7 @@ grep -A 2 "sanitizeHeaderValue" src/lib/minio-products.ts
 ```
 
 ### If function is MISSING:
+
 ```bash
 # Read the full fix documentation
 cat docs/IMAGE-UPLOAD-500-ERROR-FIX.md
@@ -43,6 +45,7 @@ npm run build && pm2 restart gangrunprinting
 ```
 
 ### If function EXISTS but still broken:
+
 ```bash
 # Check if build is outdated
 stat -c %y .next/BUILD_ID src/lib/minio-products.ts
@@ -56,11 +59,13 @@ npm run build && pm2 restart gangrunprinting
 ## 📋 Section B: Prisma Relation Errors
 
 ### Check for Prisma errors:
+
 ```bash
 pm2 logs gangrunprinting --lines 50 | grep -i "prisma\|unknown field"
 ```
 
 ### Common issue - Wrong relation names:
+
 ```bash
 # Check upload-image route
 grep -E "ProductCategory|ProductImage" src/app/api/products/upload-image/route.ts
@@ -70,6 +75,7 @@ grep -E "ProductCategory|ProductImage" src/app/api/products/upload-image/route.t
 ```
 
 ### Fix if wrong:
+
 1. Change to camelCase relation names
 2. Run: `npx prisma generate`
 3. Run: `npm run build && pm2 restart gangrunprinting`
@@ -79,21 +85,25 @@ grep -E "ProductCategory|ProductImage" src/app/api/products/upload-image/route.t
 ## 📋 Section C: Other Upload Issues
 
 ### Check authentication:
+
 ```bash
 pm2 logs gangrunprinting --lines 50 | grep -i "auth\|401\|403"
 ```
 
 ### Check file size:
+
 ```bash
 pm2 logs gangrunprinting --lines 50 | grep -i "size\|10mb\|exceed"
 ```
 
 ### Check MinIO connection:
+
 ```bash
 pm2 logs gangrunprinting --lines 50 | grep -i "minio\|connection\|econnrefused"
 ```
 
 ### Check disk space:
+
 ```bash
 df -h
 ```
@@ -130,6 +140,7 @@ pm2 logs gangrunprinting --lines 10 --nostream
 ## 📚 Full Documentation
 
 For detailed explanation, prevention strategies, and code examples:
+
 ```bash
 cat docs/IMAGE-UPLOAD-500-ERROR-FIX.md
 ```
@@ -147,6 +158,7 @@ cat docs/IMAGE-UPLOAD-500-ERROR-FIX.md
 ## ⚠️ REMEMBER
 
 **ALWAYS rebuild after code changes:**
+
 ```bash
 npm run build && pm2 restart gangrunprinting
 ```

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
         isActive: true,
       },
       include: {
-        addOnSetItems: include
+        AddOnSetItem: include
           ? {
               include: {
                 AddOn: true,
@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
           : false,
         _count: {
           select: {
-            addOnSetItems: true,
-            productAddOnSets: true,
+            AddOnSetItem: true,
+            ProductAddOnSet: true,
           },
         },
       },

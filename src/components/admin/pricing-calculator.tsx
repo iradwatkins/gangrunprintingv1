@@ -148,7 +148,11 @@ export function PricingCalculator({
     onTiersChange(newTiers)
   }
 
-  const handleTierChange = (index: number, field: keyof PricingTier, value: Record<string, unknown>) => {
+  const handleTierChange = (
+    index: number,
+    field: keyof PricingTier,
+    value: Record<string, unknown>
+  ) => {
     const newTiers = [...pricingTiers]
     newTiers[index] = {
       ...newTiers[index],

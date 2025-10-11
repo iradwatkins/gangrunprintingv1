@@ -7,7 +7,7 @@ async function main() {
 
   // 1. Check if Design add-on exists
   const designAddon = await prisma.addOn.findFirst({
-    where: { id: 'addon_design' }
+    where: { id: 'addon_design' },
   })
   console.log('1. Design Add-on exists:', !!designAddon)
   if (designAddon) {
@@ -18,7 +18,7 @@ async function main() {
 
   // 2. Check if Design Services addon set exists
   const designServiceSet = await prisma.addOnSet.findFirst({
-    where: { name: 'Design Services' }
+    where: { name: 'Design Services' },
   })
   console.log('\n2. Design Services AddOn Set exists:', !!designServiceSet)
   if (designServiceSet) {
@@ -30,8 +30,8 @@ async function main() {
   const addOnSetItem = await prisma.addOnSetItem.findFirst({
     where: {
       addOnSetId: designServiceSet?.id,
-      addOnId: designAddon?.id
-    }
+      addOnId: designAddon?.id,
+    },
   })
   console.log('\n3. Design add-on in Design Services set:', !!addOnSetItem)
   if (addOnSetItem) {
@@ -45,8 +45,8 @@ async function main() {
   const productAddonSet = await prisma.productAddOnSet.findFirst({
     where: {
       productId: productId,
-      addOnSetId: designServiceSet?.id
-    }
+      addOnSetId: designServiceSet?.id,
+    },
   })
   console.log('\n4. Product assigned to Design Services set:', !!productAddonSet)
   if (productAddonSet) {
@@ -65,14 +65,14 @@ async function main() {
             include: {
               addOnSetItems: {
                 include: {
-                  addOn: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  addOn: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   })
 
   console.log('\n5. Product with addons query result:')
@@ -93,8 +93,8 @@ async function main() {
   const allProductAddonSets = await prisma.productAddOnSet.findMany({
     include: {
       product: { select: { name: true } },
-      addOnSet: { select: { name: true } }
-    }
+      addOnSet: { select: { name: true } },
+    },
   })
   console.log('\n6. All ProductAddOnSet relationships:')
   allProductAddonSets.forEach((pas, i) => {

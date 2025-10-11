@@ -92,7 +92,11 @@ export function ProductPriceTestStep({
         const res = await fetch('/api/quantities')
         if (res.ok) {
           const allQuantities = await res.json()
-          setQuantities(allQuantities.filter((q: Record<string, unknown>) => formData.quantityIds.includes(q.id)))
+          setQuantities(
+            allQuantities.filter((q: Record<string, unknown>) =>
+              formData.quantityIds.includes(q.id)
+            )
+          )
         }
       }
 
@@ -110,8 +114,7 @@ export function ProductPriceTestStep({
           setSizes(allSizes.filter((s: Record<string, unknown>) => formData.sizeIds.includes(s.id)))
         }
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const calculateTestPrice = async () => {
@@ -148,7 +151,9 @@ export function ProductPriceTestStep({
           if (option.type === 'checkbox' && value) {
             total += option.pricing.fee || 0
           } else if (option.type === 'select' && option.values) {
-            const selectedValue = option.values.find((v: Record<string, unknown>) => v.value === value)
+            const selectedValue = option.values.find(
+              (v: Record<string, unknown>) => v.value === value
+            )
             if (selectedValue && selectedValue.additionalCost) {
               total += selectedValue.additionalCost
             }
@@ -158,7 +163,7 @@ export function ProductPriceTestStep({
 
       setCalculatedPrice(total)
     } catch (error) {
-      } finally {
+    } finally {
       setIsCalculating(false)
     }
   }

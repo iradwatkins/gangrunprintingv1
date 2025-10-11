@@ -305,7 +305,10 @@ export async function measurePerformance<T>(name: string, fn: () => T | Promise<
  * @param combiner - Function to combine selector results
  * @returns Memoized selector
  */
-export function createSelector<T extends readonly ((...args: Record<string, unknown>[]) => any)[], R>(
+export function createSelector<
+  T extends readonly ((...args: Record<string, unknown>[]) => any)[],
+  R,
+>(
   selectors: T,
   combiner: (...results: { [K in keyof T]: ReturnType<T[K]> }) => R
 ): (...args: Parameters<T[0]>) => R {

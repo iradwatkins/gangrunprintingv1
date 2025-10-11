@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Addon } from '../types/addon.types'
+import { type Addon } from '../types/addon.types'
 
 interface AddonCheckboxProps {
   addon: Addon
@@ -15,22 +15,17 @@ interface AddonCheckboxProps {
   onToggle: (addonId: string, checked: boolean) => void
 }
 
-export function AddonCheckbox({
-  addon,
-  checked,
-  disabled = false,
-  onToggle,
-}: AddonCheckboxProps) {
+export function AddonCheckbox({ addon, checked, disabled = false, onToggle }: AddonCheckboxProps) {
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center space-x-2">
         <Checkbox
-          id={`addon-${addon.id}`}
           checked={checked}
-          onCheckedChange={(checked) => onToggle(addon.id, checked as boolean)}
           disabled={disabled}
+          id={`addon-${addon.id}`}
+          onCheckedChange={(checked) => onToggle(addon.id, checked as boolean)}
         />
-        <Label htmlFor={`addon-${addon.id}`} className="font-medium cursor-pointer">
+        <Label className="font-medium cursor-pointer" htmlFor={`addon-${addon.id}`}>
           {addon.name}
         </Label>
         {addon.description && (
@@ -50,12 +45,11 @@ export function AddonCheckbox({
       <div className="flex items-center space-x-2">
         {addon.additionalTurnaroundDays && addon.additionalTurnaroundDays > 0 && (
           <span className="text-xs text-muted-foreground">
-            +{addon.additionalTurnaroundDays} {addon.additionalTurnaroundDays === 1 ? 'day' : 'days'}
+            +{addon.additionalTurnaroundDays}{' '}
+            {addon.additionalTurnaroundDays === 1 ? 'day' : 'days'}
           </span>
         )}
-        {addon.priceDisplay && (
-          <span className="text-sm font-medium">{addon.priceDisplay}</span>
-        )}
+        {addon.priceDisplay && <span className="text-sm font-medium">{addon.priceDisplay}</span>}
       </div>
     </div>
   )

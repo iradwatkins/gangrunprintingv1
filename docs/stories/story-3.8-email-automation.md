@@ -1,18 +1,23 @@
 # Story 3.8: Email Automation for Order Lifecycle
 
 ## Story Title
+
 Automate Email Notifications Throughout Order Lifecycle
 
 ## Story Type
+
 Feature Completion
 
 ## Story Points
+
 3
 
 ## Priority
+
 P1 - High (Customer Communication)
 
 ## Epic
+
 Epic 3: Core Commerce & Checkout
 
 ## Story Description
@@ -22,6 +27,7 @@ As a **customer**, I want to receive automatic email notifications when my order
 ## Background
 
 The email system is currently 60% complete:
+
 - ✅ Resend email service configured and working
 - ✅ Order confirmation email template created
 - ❌ Email sending not automated (must be triggered manually)
@@ -30,6 +36,7 @@ The email system is currently 60% complete:
 - ❌ No cancellation emails
 
 Currently, customers only receive emails if manually triggered by admin. This creates:
+
 - Poor customer experience (lack of communication)
 - Increased support requests ("Where's my order?")
 - Reduced trust in the business
@@ -40,6 +47,7 @@ This story completes the email automation to provide seamless customer communica
 ## Acceptance Criteria
 
 ### Must Have (P0)
+
 - [ ] **Order Confirmation Email (Automated):**
   - [ ] Automatically sent when order successfully created
   - [ ] Triggered after payment confirmation
@@ -77,6 +85,7 @@ This story completes the email automation to provide seamless customer communica
   - [ ] Different templates for customer vs admin cancellation
 
 ### Should Have (P1)
+
 - [ ] **Delivery Confirmation Email:**
   - [ ] Sent when carrier confirms delivery
   - [ ] Request for product review
@@ -105,6 +114,7 @@ This story completes the email automation to provide seamless customer communica
   - [ ] Customer inquiry submitted
 
 ### Nice to Have (P2)
+
 - [ ] **Smart Email Timing:**
   - [ ] Don't send emails between 10 PM - 8 AM customer local time
   - [ ] Batch multiple updates into single email (if < 1 hour apart)
@@ -126,6 +136,7 @@ This story completes the email automation to provide seamless customer communica
 ## Technical Details
 
 ### Email Service (Resend - Already Configured)
+
 ```typescript
 // Already exists in codebase
 import { Resend } from 'resend'
@@ -134,6 +145,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 ```
 
 ### Email Sending Service
+
 **File:** `src/services/EmailService.ts` (new)
 
 ```typescript
@@ -147,7 +159,7 @@ export class EmailService {
   /**
    * Send order confirmation email immediately after order creation
    */
-  static async sendOrderConfirmation(order: Order & { orderItems: any[], user: any }) {
+  static async sendOrderConfirmation(order: Order & { orderItems: any[]; user: any }) {
     try {
       await resend.emails.send({
         from: FROM_EMAIL,
@@ -161,8 +173,8 @@ export class EmailService {
           total: order.total,
           shippingAddress: order.shippingAddress,
           estimatedDelivery: this.calculateEstimatedDelivery(order),
-          trackingUrl: `${process.env.NEXT_PUBLIC_APP_URL}/track/${order.orderNumber}`
-        })
+          trackingUrl: `${process.env.NEXT_PUBLIC_APP_URL}/track/${order.orderNumber}`,
+        }),
       })
 
       console.log(`✅ Order confirmation email sent for order ${order.orderNumber}`)
@@ -177,13 +189,13 @@ export class EmailService {
    */
   static async sendStatusUpdate(order: Order & { user: any }, previousStatus: OrderStatus) {
     const statusMessages = {
-      PENDING: 'We\'ve received your order',
+      PENDING: "We've received your order",
       PROCESSING: 'Your order is being prepared',
       QUALITY_CHECK: 'Quality check in progress',
       READY_TO_SHIP: 'Your order is ready to ship',
       SHIPPED: 'Your order has been shipped',
       DELIVERED: 'Your order has been delivered',
-      CANCELLED: 'Your order has been cancelled'
+      CANCELLED: 'Your order has been cancelled',
     }
 
     try {
@@ -198,8 +210,8 @@ export class EmailService {
           previousStatus,
           statusMessage: statusMessages[order.status],
           trackingUrl: `${process.env.NEXT_PUBLIC_APP_URL}/track/${order.orderNumber}`,
-          estimatedDelivery: this.calculateEstimatedDelivery(order)
-        })
+          estimatedDelivery: this.calculateEstimatedDelivery(order),
+        }),
       })
 
       console.log(`✅ Status update email sent for order ${order.orderNumber}: ${order.status}`)
@@ -211,11 +223,15 @@ export class EmailService {
   /**
    * Send shipping notification with tracking info
    */
-  static async sendShippingNotification(order: Order & { user: any }, trackingNumber: string, carrier: string) {
+  static async sendShippingNotification(
+    order: Order & { user: any },
+    trackingNumber: string,
+    carrier: string
+  ) {
     const carrierUrls = {
-      'FedEx': `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`,
+      FedEx: `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`,
       'Southwest Cargo': `https://www.swacargo.com/tracking?trackingNumber=${trackingNumber}`,
-      'USPS': `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`
+      USPS: `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`,
     }
 
     try {
@@ -228,10 +244,11 @@ export class EmailService {
           customerName: order.user.name,
           trackingNumber,
           carrier,
-          trackingUrl: carrierUrls[carrier] || `${process.env.NEXT_PUBLIC_APP_URL}/track/${order.orderNumber}`,
+          trackingUrl:
+            carrierUrls[carrier] || `${process.env.NEXT_PUBLIC_APP_URL}/track/${order.orderNumber}`,
           estimatedDelivery: this.calculateEstimatedDelivery(order),
-          items: order.orderItems
-        })
+          items: order.orderItems,
+        }),
       })
 
       console.log(`✅ Shipping notification sent for order ${order.orderNumber}`)
@@ -261,8 +278,8 @@ export class EmailService {
           refundAmount: order.total,
           refundTimeline: '5-7 business days',
           supportEmail: 'support@gangrunprinting.com',
-          shopUrl: `${process.env.NEXT_PUBLIC_APP_URL}/products`
-        })
+          shopUrl: `${process.env.NEXT_PUBLIC_APP_URL}/products`,
+        }),
       })
 
       console.log(`✅ Cancellation email sent for order ${order.orderNumber}`)
@@ -286,8 +303,8 @@ export class EmailService {
           items: order.orderItems,
           reviewUrl: `${process.env.NEXT_PUBLIC_APP_URL}/account/orders/${order.id}/review`,
           discountCode: await this.generateDiscountCode(order.userId),
-          supportEmail: 'support@gangrunprinting.com'
-        })
+          supportEmail: 'support@gangrunprinting.com',
+        }),
       })
 
       console.log(`✅ Delivery confirmation sent for order ${order.orderNumber}`)
@@ -313,6 +330,7 @@ export class EmailService {
 ```
 
 ### Integration with Order Creation
+
 **File:** `src/app/api/checkout/process-square-payment/route.ts` (modify)
 
 ```typescript
@@ -325,8 +343,8 @@ await prisma.$transaction(async (tx) => {
     },
     include: {
       orderItems: true,
-      user: true
-    }
+      user: true,
+    },
   })
 
   // Clear cart
@@ -340,25 +358,23 @@ await EmailService.sendOrderConfirmation(order)
 
 return NextResponse.json({
   success: true,
-  orderId: order.id
+  orderId: order.id,
 })
 ```
 
 ### Integration with Order Status Updates
+
 **File:** `src/app/api/orders/[id]/route.ts` (modify)
 
 ```typescript
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { status, trackingNumber, carrier } = await request.json()
 
   // Get current order
   const currentOrder = await prisma.order.findUnique({
     where: { id },
-    include: { user: true, orderItems: true }
+    include: { user: true, orderItems: true },
   })
 
   if (!currentOrder) {
@@ -373,9 +389,9 @@ export async function PATCH(
       trackingNumber,
       carrier,
       shippedAt: status === 'SHIPPED' ? new Date() : undefined,
-      deliveredAt: status === 'DELIVERED' ? new Date() : undefined
+      deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
     },
-    include: { user: true, orderItems: true }
+    include: { user: true, orderItems: true },
   })
 
   // ✅ SEND APPROPRIATE EMAIL BASED ON STATUS CHANGE
@@ -396,6 +412,7 @@ export async function PATCH(
 ```
 
 ### Email Templates (React Email)
+
 **File:** `src/emails/OrderConfirmationEmail.tsx` (already exists, may need updates)
 
 ```tsx
@@ -409,7 +426,7 @@ export function OrderConfirmationEmail({
   total,
   shippingAddress,
   estimatedDelivery,
-  trackingUrl
+  trackingUrl,
 }) {
   return (
     <Html>
@@ -424,14 +441,16 @@ export function OrderConfirmationEmail({
             <Text style={styles.greeting}>Hi {customerName},</Text>
 
             <Text style={styles.text}>
-              Thank you for your order! We've received your order #{orderNumber} and we're
-              getting it ready for production.
+              Thank you for your order! We've received your order #{orderNumber} and we're getting
+              it ready for production.
             </Text>
 
             <Section style={styles.orderDetails}>
               <Text style={styles.subheading}>Order Details</Text>
               <Text style={styles.detail}>Order Number: #{orderNumber}</Text>
-              <Text style={styles.detail}>Order Date: {new Date(orderDate).toLocaleDateString()}</Text>
+              <Text style={styles.detail}>
+                Order Date: {new Date(orderDate).toLocaleDateString()}
+              </Text>
               <Text style={styles.detail}>
                 Estimated Delivery: {new Date(estimatedDelivery).toLocaleDateString()}
               </Text>
@@ -441,7 +460,9 @@ export function OrderConfirmationEmail({
               <Text style={styles.subheading}>Items Ordered</Text>
               {items.map((item, index) => (
                 <div key={index} style={styles.item}>
-                  <Text>{item.quantity}x {item.name}</Text>
+                  <Text>
+                    {item.quantity}x {item.name}
+                  </Text>
                   <Text>${item.unitPrice.toFixed(2)}</Text>
                 </div>
               ))}
@@ -464,9 +485,7 @@ export function OrderConfirmationEmail({
               Track Your Order
             </Button>
 
-            <Text style={styles.footer}>
-              Questions? Contact us at support@gangrunprinting.com
-            </Text>
+            <Text style={styles.footer}>Questions? Contact us at support@gangrunprinting.com</Text>
           </Section>
         </Container>
       </Body>
@@ -486,6 +505,7 @@ const styles = {
 ## Files to Create/Modify
 
 ### Backend (New Files)
+
 - `src/services/EmailService.ts` - Email sending logic
 - `src/emails/OrderStatusUpdateEmail.tsx` - Status update template
 - `src/emails/ShippingNotificationEmail.tsx` - Shipping template
@@ -493,23 +513,27 @@ const styles = {
 - `src/emails/DeliveryConfirmationEmail.tsx` - Delivery template
 
 ### Backend (Modifications)
+
 - `src/app/api/checkout/process-square-payment/route.ts` - Add email trigger
 - `src/app/api/orders/[id]/route.ts` - Add email triggers on status change
 - `src/emails/OrderConfirmationEmail.tsx` - Enhance existing template
 
 ### Configuration
+
 - `.env.production` - Ensure RESEND_API_KEY is set
 - Add FROM_EMAIL and SUPPORT_EMAIL variables
 
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] EmailService methods send emails correctly
 - [ ] Email templates render without errors
 - [ ] Email content includes all required fields
 - [ ] Email subject lines are descriptive
 
 ### Integration Tests
+
 - [ ] Order creation triggers confirmation email
 - [ ] Status update triggers appropriate email
 - [ ] Shipping update sends tracking email
@@ -517,6 +541,7 @@ const styles = {
 - [ ] Email failures don't block order processing
 
 ### Manual Testing Checklist
+
 - [ ] Place order, receive confirmation email
 - [ ] Check email formatting in Gmail, Outlook, Apple Mail
 - [ ] Check mobile email rendering
@@ -531,10 +556,12 @@ const styles = {
 ## Dependencies
 
 ### External Services
+
 - Resend (already configured)
 - React Email library (already installed)
 
 ### Environment Variables Required
+
 ```env
 RESEND_API_KEY=re_...
 NEXT_PUBLIC_APP_URL=https://gangrunprinting.com
@@ -543,18 +570,19 @@ FROM_EMAIL=orders@gangrunprinting.com
 ```
 
 ### Database
+
 - `Order` model (exists)
 - `User` model (exists)
 - `OrderItem` model (exists)
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Email service downtime | MEDIUM | LOW | Don't block order creation, queue for retry |
-| Emails marked as spam | MEDIUM | MEDIUM | Proper SPF/DKIM/DMARC setup, quality content |
-| Email delivery delays | LOW | MEDIUM | Acceptable - not critical path |
-| Email template rendering issues | LOW | LOW | Test across email clients |
+| Risk                            | Impact | Likelihood | Mitigation                                   |
+| ------------------------------- | ------ | ---------- | -------------------------------------------- |
+| Email service downtime          | MEDIUM | LOW        | Don't block order creation, queue for retry  |
+| Emails marked as spam           | MEDIUM | MEDIUM     | Proper SPF/DKIM/DMARC setup, quality content |
+| Email delivery delays           | LOW    | MEDIUM     | Acceptable - not critical path               |
+| Email template rendering issues | LOW    | LOW        | Test across email clients                    |
 
 ## Success Metrics
 
@@ -594,6 +622,7 @@ Status: CANCELLED
 ```
 
 ## Definition of Done
+
 - [ ] All acceptance criteria met
 - [ ] Unit tests passing
 - [ ] Integration tests passing
@@ -607,6 +636,7 @@ Status: CANCELLED
 - [ ] Ready for production deployment
 
 ## Related Stories
+
 - Story 3.5: Payment Processing (dependency - triggers confirmation email)
 - Story 3.6: Order Creation & Processing (dependency)
 - Story 5.4: Order Detail & Management (related - admin triggers status updates)

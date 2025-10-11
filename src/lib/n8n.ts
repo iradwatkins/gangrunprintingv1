@@ -94,7 +94,10 @@ export class N8NClient {
   }
 
   // Trigger payment received workflow
-  async triggerPaymentReceived(order: Record<string, unknown>, paymentDetails: Record<string, unknown>) {
+  async triggerPaymentReceived(
+    order: Record<string, unknown>,
+    paymentDetails: Record<string, unknown>
+  ) {
     return this.sendWebhook('payment.received', {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -158,7 +161,10 @@ export class N8NClient {
   }
 
   // Trigger customer notification workflow
-  async triggerCustomerNotification(order: Record<string, unknown>, notification: Record<string, unknown>) {
+  async triggerCustomerNotification(
+    order: Record<string, unknown>,
+    notification: Record<string, unknown>
+  ) {
     return this.sendWebhook('notification.send', {
       orderId: order.id,
       orderNumber: order.orderNumber,

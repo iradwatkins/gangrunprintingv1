@@ -56,8 +56,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: id }),
-      }).catch((error) => {
-        })
+      }).catch((error) => {})
     }
 
     return NextResponse.json({

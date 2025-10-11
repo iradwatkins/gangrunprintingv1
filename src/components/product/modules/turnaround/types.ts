@@ -1,10 +1,10 @@
 import {
   StandardModuleProps,
   StandardModuleValue,
-  TurnaroundItem,
+  type TurnaroundItem,
   TurnaroundValue,
-  TurnaroundModuleProps as StandardTurnaroundModuleProps,
-  TurnaroundModuleValue as StandardTurnaroundModuleValue
+  type TurnaroundModuleProps as StandardTurnaroundModuleProps,
+  type TurnaroundModuleValue as StandardTurnaroundModuleValue,
 } from '../types/StandardModuleTypes'
 
 // Use standardized interface with legacy compatibility
@@ -13,7 +13,8 @@ export interface TurnaroundTime extends TurnaroundItem {
 }
 
 // Use standardized props interface with legacy compatibility
-export interface TurnaroundModuleProps extends Omit<StandardTurnaroundModuleProps, 'onChange' | 'items' | 'value'> {
+export interface TurnaroundModuleProps
+  extends Omit<StandardTurnaroundModuleProps, 'onChange' | 'items' | 'value'> {
   turnaroundTimes: TurnaroundTime[]
   selectedTurnaroundId: string
   onTurnaroundChange: (turnaroundId: string) => void

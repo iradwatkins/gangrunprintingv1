@@ -38,8 +38,7 @@ export function NotificationPermission() {
         const registration = await navigator.serviceWorker.ready
         const subscription = await registration.pushManager.getSubscription()
         setIsSubscribed(!!subscription)
-      } catch (error) {
-        }
+      } catch (error) {}
     }
   }
 

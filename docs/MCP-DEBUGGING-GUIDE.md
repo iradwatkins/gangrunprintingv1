@@ -1,6 +1,7 @@
 # 🛠️ MCP DEBUGGING GUIDE - Chrome DevTools & Shadcn Integration
 
 ## 📅 Created: 2025-09-28
+
 ## 🎯 Purpose: Essential debugging tools for GangRun Printing
 
 ---
@@ -8,7 +9,9 @@
 ## 🔍 CHROME DEVTOOLS MCP
 
 ### Overview
+
 Chrome DevTools MCP provides deep integration with Chrome's developer tools, enabling:
+
 - **Visual Bug Detection** - Catch layout and rendering issues
 - **Performance Profiling** - Identify bottlenecks
 - **Network Monitoring** - Track API calls and resources
@@ -20,6 +23,7 @@ Chrome DevTools MCP provides deep integration with Chrome's developer tools, ena
 - **Accessibility Testing** - WCAG compliance verification
 
 ### Installation
+
 ```bash
 # Install Chrome DevTools MCP
 npm install -g @chromedevtools/chrome-devtools-mcp
@@ -29,6 +33,7 @@ npx -y @chromedevtools/chrome-devtools-mcp
 ```
 
 ### Configuration
+
 ```json
 {
   "chrome-devtools": {
@@ -53,42 +58,46 @@ npx -y @chromedevtools/chrome-devtools-mcp
 ### Common Debugging Scenarios
 
 #### 1. Visual Bug Detection
+
 ```javascript
 // Check for layout issues on product pages
-await chromeDevtools.inspect('https://gangrunprinting.com/products');
+await chromeDevtools.inspect('https://gangrunprinting.com/products')
 await chromeDevtools.checkLayout({
   viewport: [1920, 1080],
   elements: ['.product-card', '.product-grid'],
-  issues: ['overflow', 'z-index', 'positioning']
-});
+  issues: ['overflow', 'z-index', 'positioning'],
+})
 ```
 
 #### 2. Performance Profiling
+
 ```javascript
 // Profile page load performance
 await chromeDevtools.profile('https://gangrunprinting.com', {
   metrics: ['FCP', 'LCP', 'CLS', 'FID'],
-  duration: 5000
-});
+  duration: 5000,
+})
 ```
 
 #### 3. Network Monitoring
+
 ```javascript
 // Monitor API calls during checkout
 await chromeDevtools.monitorNetwork('https://gangrunprinting.com/checkout', {
   filter: 'api/*',
   captureHeaders: true,
-  captureBody: true
-});
+  captureBody: true,
+})
 ```
 
 #### 4. Console Error Detection
+
 ```javascript
 // Capture console errors during user interaction
 await chromeDevtools.captureConsole('https://gangrunprinting.com', {
   levels: ['error', 'warning'],
-  duration: 10000
-});
+  duration: 10000,
+})
 ```
 
 ---
@@ -96,7 +105,9 @@ await chromeDevtools.captureConsole('https://gangrunprinting.com', {
 ## 🎨 SHADCN MCP
 
 ### Overview
+
 Shadcn MCP provides seamless integration with the Shadcn UI component library:
+
 - **Component Installation** - Add components with proper configuration
 - **Theme Management** - Consistent styling across components
 - **Variant Generation** - Create component variations
@@ -106,6 +117,7 @@ Shadcn MCP provides seamless integration with the Shadcn UI component library:
 - **Responsive Design** - Mobile-first components
 
 ### Installation
+
 ```bash
 # Install Shadcn MCP
 npm install -g @jpisnice/shadcn-ui-mcp-server
@@ -115,6 +127,7 @@ npx -y @jpisnice/shadcn-ui-mcp-server
 ```
 
 ### Configuration
+
 ```json
 {
   "shadcn-ui": {
@@ -130,16 +143,18 @@ npx -y @jpisnice/shadcn-ui-mcp-server
 ### Component Usage Examples
 
 #### 1. Install New Component
+
 ```javascript
 // Add a new dialog component
 await shadcn.addComponent('dialog', {
   path: './components/ui',
   overwrite: false,
-  typescript: true
-});
+  typescript: true,
+})
 ```
 
 #### 2. Create Custom Variant
+
 ```javascript
 // Create a custom button variant
 await shadcn.createVariant('button', {
@@ -148,24 +163,25 @@ await shadcn.createVariant('button', {
     background: 'linear-gradient(to right, #667eea, #764ba2)',
     color: 'white',
     hover: {
-      opacity: 0.9
-    }
-  }
-});
+      opacity: 0.9,
+    },
+  },
+})
 ```
 
 #### 3. Theme Configuration
+
 ```javascript
 // Update theme colors for GangRun branding
 await shadcn.updateTheme({
   colors: {
-    primary: '#1e40af',    // Blue
-    secondary: '#dc2626',  // Red
-    accent: '#f59e0b',     // Orange
+    primary: '#1e40af', // Blue
+    secondary: '#dc2626', // Red
+    accent: '#f59e0b', // Orange
     background: '#ffffff',
-    foreground: '#0f172a'
-  }
-});
+    foreground: '#0f172a',
+  },
+})
 ```
 
 ---
@@ -175,38 +191,36 @@ await shadcn.updateTheme({
 ### Debugging Workflow
 
 #### Step 1: Visual Inspection with Chrome DevTools
+
 ```javascript
 // Check product page rendering
 const visualIssues = await chromeDevtools.inspect({
   url: 'https://gangrunprinting.com/products/business-cards',
-  checks: [
-    'layout-shift',
-    'image-loading',
-    'font-rendering',
-    'responsive-design'
-  ]
-});
+  checks: ['layout-shift', 'image-loading', 'font-rendering', 'responsive-design'],
+})
 ```
 
 #### Step 2: Fix Issues with Shadcn Components
+
 ```javascript
 // Replace problematic component with Shadcn alternative
 if (visualIssues.includes('button-accessibility')) {
   await shadcn.addComponent('button', {
     path: './src/components/ui',
     variant: 'default',
-    accessible: true
-  });
+    accessible: true,
+  })
 }
 ```
 
 #### Step 3: Performance Validation
+
 ```javascript
 // Validate performance after fixes
 const metrics = await chromeDevtools.lighthouse({
   url: 'https://gangrunprinting.com',
-  categories: ['performance', 'accessibility', 'seo']
-});
+  categories: ['performance', 'accessibility', 'seo'],
+})
 ```
 
 ---
@@ -214,6 +228,7 @@ const metrics = await chromeDevtools.lighthouse({
 ## 📊 DEBUGGING CHECKLIST FOR GANGRUN
 
 ### Visual Bugs to Check
+
 - [ ] Product cards alignment on grid
 - [ ] Image loading and aspect ratios
 - [ ] Mobile menu responsiveness
@@ -224,6 +239,7 @@ const metrics = await chromeDevtools.lighthouse({
 - [ ] Dropdown menu z-index issues
 
 ### Performance Issues to Monitor
+
 - [ ] Initial page load time > 3s
 - [ ] API response times > 500ms
 - [ ] Image optimization (WebP/AVIF)
@@ -232,6 +248,7 @@ const metrics = await chromeDevtools.lighthouse({
 - [ ] First Contentful Paint > 1.8s
 
 ### Common Errors to Track
+
 - [ ] Console errors on page load
 - [ ] Network failures during checkout
 - [ ] Form submission errors
@@ -244,60 +261,51 @@ const metrics = await chromeDevtools.lighthouse({
 ## 🚀 AUTOMATION SCRIPTS
 
 ### Daily Visual Regression Test
+
 ```javascript
 // automated-visual-test.js
-const chromeDevtools = require('@chromedevtools/chrome-devtools-mcp');
+const chromeDevtools = require('@chromedevtools/chrome-devtools-mcp')
 
 async function runVisualTests() {
-  const pages = [
-    '/',
-    '/products',
-    '/admin/dashboard',
-    '/checkout',
-    '/account'
-  ];
+  const pages = ['/', '/products', '/admin/dashboard', '/checkout', '/account']
 
   for (const page of pages) {
     const result = await chromeDevtools.visualTest({
       url: `https://gangrunprinting.com${page}`,
       baseline: `./baselines${page}.png`,
-      threshold: 5 // 5% difference tolerance
-    });
+      threshold: 5, // 5% difference tolerance
+    })
 
     if (!result.passed) {
-      console.error(`Visual regression on ${page}:`, result.differences);
+      console.error(`Visual regression on ${page}:`, result.differences)
     }
   }
 }
 
-runVisualTests();
+runVisualTests()
 ```
 
 ### Component Audit Script
+
 ```javascript
 // component-audit.js
-const shadcn = require('@jpisnice/shadcn-ui-mcp-server');
+const shadcn = require('@jpisnice/shadcn-ui-mcp-server')
 
 async function auditComponents() {
-  const components = await shadcn.listComponents('./src/components');
+  const components = await shadcn.listComponents('./src/components')
 
   for (const component of components) {
     const audit = await shadcn.audit(component, {
-      checks: [
-        'accessibility',
-        'typescript',
-        'dark-mode',
-        'responsive'
-      ]
-    });
+      checks: ['accessibility', 'typescript', 'dark-mode', 'responsive'],
+    })
 
     if (audit.issues.length > 0) {
-      console.log(`Issues in ${component}:`, audit.issues);
+      console.log(`Issues in ${component}:`, audit.issues)
     }
   }
 }
 
-auditComponents();
+auditComponents()
 ```
 
 ---
@@ -307,6 +315,7 @@ auditComponents();
 ### Chrome DevTools MCP Issues
 
 #### Connection Failed
+
 ```bash
 # Check if Chrome is running with debugging port
 chrome --remote-debugging-port=9222
@@ -316,6 +325,7 @@ npx @chromedevtools/chrome-devtools-mcp test-connection
 ```
 
 #### Performance Profiling Not Working
+
 ```bash
 # Enable performance APIs
 chrome --enable-precise-memory-info --enable-benchmarking
@@ -324,6 +334,7 @@ chrome --enable-precise-memory-info --enable-benchmarking
 ### Shadcn MCP Issues
 
 #### Component Installation Fails
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules/.cache
@@ -331,6 +342,7 @@ npx shadcn-ui add [component] --force
 ```
 
 #### Theme Not Applying
+
 ```bash
 # Regenerate CSS variables
 npx shadcn-ui generate-theme
@@ -341,6 +353,7 @@ npx shadcn-ui generate-theme
 ## 📚 BEST PRACTICES
 
 ### For Chrome DevTools MCP
+
 1. **Regular Visual Testing** - Run visual regression tests before deployments
 2. **Performance Budgets** - Set thresholds for key metrics
 3. **Error Monitoring** - Capture console errors in production
@@ -348,6 +361,7 @@ npx shadcn-ui generate-theme
 5. **Accessibility Checks** - Run Lighthouse audits weekly
 
 ### For Shadcn MCP
+
 1. **Component Consistency** - Use Shadcn components throughout
 2. **Theme Variables** - Define all colors in CSS variables
 3. **Variant Management** - Create reusable component variants
@@ -359,18 +373,19 @@ npx shadcn-ui generate-theme
 ## 🎯 INTEGRATION WITH MONITORING
 
 ### Connect to Existing Monitoring
+
 ```javascript
 // Send Chrome DevTools metrics to Prometheus
-const metrics = await chromeDevtools.getMetrics();
+const metrics = await chromeDevtools.getMetrics()
 await prometheus.push({
   job: 'chrome-devtools',
   metrics: {
-    'page_load_time': metrics.loadTime,
-    'dom_content_loaded': metrics.domContentLoaded,
-    'first_paint': metrics.firstPaint,
-    'layout_shifts': metrics.cls
-  }
-});
+    page_load_time: metrics.loadTime,
+    dom_content_loaded: metrics.domContentLoaded,
+    first_paint: metrics.firstPaint,
+    layout_shifts: metrics.cls,
+  },
+})
 ```
 
 ---

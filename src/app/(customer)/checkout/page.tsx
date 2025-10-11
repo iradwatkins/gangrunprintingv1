@@ -8,7 +8,6 @@ import {
   CreditCard,
   Loader2,
   Lock,
-  Image as ImageIcon,
   User,
   Truck,
   Shield,
@@ -16,16 +15,15 @@ import {
   ChevronRight,
   Package2,
   Mail,
-  Phone,
-  Building,
   MapPin,
-  FileText
+  FileText,
 } from 'lucide-react'
 import Image from 'next/image'
 
 import { PaymentMethods } from '@/components/checkout/payment-methods'
 import { ShippingRates } from '@/components/checkout/shipping-rates'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
+import { PayPalButton } from '@/components/checkout/paypal-button'
 // import { PageErrorBoundary } from '@/components/error-boundary'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -34,6 +32,14 @@ import { Label } from '@/components/ui/label'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import { cn } from '@/lib/utils'
+
+interface PayPalOrderDetails {
+  paymentID: string
+  orderID: string
+  payerID?: string
+  intent?: string
+  status?: string
+}
 
 interface UploadedImage {
   id: string
@@ -47,11 +53,15 @@ interface UploadedImage {
 // Checkout step types
 type CheckoutStep = 'information' | 'shipping' | 'payment' | 'review'
 
-const STEPS: { id: CheckoutStep; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const STEPS: {
+  id: CheckoutStep
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+}[] = [
   { id: 'information', label: 'Information', icon: User },
   { id: 'shipping', label: 'Shipping', icon: Truck },
   { id: 'payment', label: 'Payment', icon: CreditCard },
-  { id: 'review', label: 'Review', icon: Check }
+  { id: 'review', label: 'Review', icon: Check },
 ]
 
 function CheckoutPageContent() {
@@ -88,23 +98,16 @@ function CheckoutPageContent() {
     billingZipCode: '',
   })
 
-  // Square configuration (these should come from environment variables)
-  const SQUARE_APPLICATION_ID =
-    process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || 'sandbox-sq0idb-YOUR_APP_ID'
-  const SQUARE_LOCATION_ID = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || 'YOUR_LOCATION_ID'
+  // Square configuration - must use actual env values, not process.env in client component
+  const SQUARE_APPLICATION_ID = 'sq0idp-AJF8fI5VayKCq9veQRAw5g' // Production Application ID
+  const SQUARE_LOCATION_ID = 'LWMA9R9E2ENXP' // Production Location ID
 
   // Get the single item (since we're doing one product at a time)
   const currentItem = items.length > 0 ? items[0] : null
 
   // Memoize mapped items for shipping calculation - stable reference
   const mappedShippingItems = useMemo(() => {
-    console.log('🔄 mappedShippingItems useMemo running')
-    console.log('   - items:', items)
-    console.log('   - items.length:', items?.length)
-    console.log('   - Array.isArray(items):', Array.isArray(items))
-
     if (!Array.isArray(items) || items.length === 0) {
-      console.log('   - Returning empty array (items not valid)')
       return []
     }
 
@@ -116,13 +119,11 @@ function CheckoutPageContent() {
       paperStockId: item.options?.paperStockId,
     }))
 
-    console.log('   - Mapped result:', mapped)
     return mapped
   }, [items])
 
   // Memoize shipping address - stable reference
   const shippingAddress = useMemo(() => {
-    console.log('📍 shippingAddress useMemo running')
     const addr = {
       street: formData.address,
       city: formData.city,
@@ -130,7 +131,6 @@ function CheckoutPageContent() {
       zipCode: formData.zipCode,
       country: 'US',
     }
-    console.log('   - Address:', addr)
     return addr
   }, [formData.address, formData.city, formData.state, formData.zipCode])
 
@@ -149,17 +149,18 @@ function CheckoutPageContent() {
 
         // Otherwise fetch from API
         if (currentItem.fileUrl) {
-          setUploadedImages([{
-            id: '1',
-            url: currentItem.fileUrl,
-            thumbnailUrl: currentItem.fileUrl,
-            fileName: currentItem.fileName || 'Uploaded Design',
-            fileSize: currentItem.fileSize || 0,
-            uploadedAt: new Date().toISOString()
-          }])
+          setUploadedImages([
+            {
+              id: '1',
+              url: currentItem.fileUrl,
+              thumbnailUrl: currentItem.fileUrl,
+              fileName: currentItem.fileName || 'Uploaded Design',
+              fileSize: currentItem.fileSize || 0,
+              uploadedAt: new Date().toISOString(),
+            },
+          ])
         }
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     fetchUploadedImages()
@@ -173,15 +174,15 @@ function CheckoutPageContent() {
   }
 
   const handleNextStep = () => {
-    const stepIndex = STEPS.findIndex(s => s.id === currentStep)
+    const stepIndex = STEPS.findIndex((s) => s.id === currentStep)
     if (stepIndex < STEPS.length - 1) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]))
+      setCompletedSteps((prev) => new Set([...prev, currentStep]))
       setCurrentStep(STEPS[stepIndex + 1].id)
     }
   }
 
   const handlePreviousStep = () => {
-    const stepIndex = STEPS.findIndex(s => s.id === currentStep)
+    const stepIndex = STEPS.findIndex((s) => s.id === currentStep)
     if (stepIndex > 0) {
       setCurrentStep(STEPS[stepIndex - 1].id)
     }
@@ -253,10 +254,14 @@ function CheckoutPageContent() {
       if (selectedPaymentMethod === 'test_cash') {
         await processTestCashPayment()
       } else if (selectedPaymentMethod === 'square') {
-        await processSquareCheckout()
-      } else if (selectedPaymentMethod === 'card') {
-        // Card payment will be handled by Square embedded form or similar
-        toast.error('Direct card payment is coming soon! Please use Square Checkout.')
+        // Square payment will be handled by SquareCardPayment component
+        // Just advance to review step where Square form will be shown
+        handleNextStep()
+        setIsProcessing(false)
+      } else if (selectedPaymentMethod === 'paypal') {
+        // PayPal payment will be handled by PayPal button component
+        // Just advance to review step where PayPal button will be shown
+        handleNextStep()
         setIsProcessing(false)
       } else {
         toast.error(`${selectedPaymentMethod} payment is coming soon!`)
@@ -271,9 +276,7 @@ function CheckoutPageContent() {
 
   const processTestCashPayment = async () => {
     try {
-      console.log('Starting test cash payment process...')
       const checkoutData = createCheckoutData()
-      console.log('Checkout data prepared:', checkoutData)
 
       // Create order in database via API (same as Square, but with test payment method)
       const response = await fetch('/api/checkout/create-test-order', {
@@ -284,7 +287,6 @@ function CheckoutPageContent() {
         body: JSON.stringify(checkoutData),
       })
 
-      console.log('Response status:', response.status)
       if (!response.ok) {
         const errorText = await response.text()
         console.error('Error response:', errorText)
@@ -335,9 +337,7 @@ function CheckoutPageContent() {
 
   const processSquareCheckout = async () => {
     try {
-      console.log('Starting Square checkout process...')
       const checkoutData = createCheckoutData()
-      console.log('Checkout data prepared:', checkoutData)
 
       const response = await fetch('/api/checkout/create-payment', {
         method: 'POST',
@@ -347,7 +347,6 @@ function CheckoutPageContent() {
         body: JSON.stringify(checkoutData),
       })
 
-      console.log('Response status:', response.status)
       if (!response.ok) {
         const errorText = await response.text()
         console.error('Error response:', errorText)
@@ -458,6 +457,59 @@ function CheckoutPageContent() {
     setIsProcessing(false)
   }
 
+  const handlePayPalSuccess = async (details: PayPalOrderDetails) => {
+    toast.success('PayPal payment successful!')
+
+    // Create order in database
+    try {
+      const checkoutData = createCheckoutData()
+      const response = await fetch('/api/checkout/create-test-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...checkoutData,
+          paymentMethod: 'paypal',
+          paymentId: details.paymentID,
+          paypalOrderId: details.orderID,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        sessionStorage.setItem(
+          'lastOrder',
+          JSON.stringify({
+            orderNumber: result.orderNumber,
+            orderId: result.orderId,
+            total: checkoutData.total,
+            items: checkoutData.cartItems,
+            uploadedImages: checkoutData.uploadedImages,
+            customerInfo: checkoutData.customerInfo,
+            shippingAddress: checkoutData.shippingAddress,
+            subtotal: checkoutData.subtotal,
+            tax: checkoutData.tax,
+            shipping: checkoutData.shipping,
+            paymentMethod: 'paypal',
+          })
+        )
+
+        clearCart()
+        router.push('/checkout/success')
+      }
+    } catch (error) {
+      console.error('Failed to create order:', error)
+      toast.error('Payment successful but order creation failed. Please contact support.')
+    }
+  }
+
+  const handlePayPalError = (error: string) => {
+    toast.error(error)
+    setIsProcessing(false)
+  }
+
   const shippingCost = selectedShippingRate?.rateAmount || 0
   const orderTotal = subtotal + tax + shippingCost
 
@@ -498,8 +550,8 @@ function CheckoutPageContent() {
               const Icon = step.icon
               const isActive = currentStep === step.id
               const isCompleted = completedSteps.has(step.id)
-              const stepIndex = STEPS.findIndex(s => s.id === step.id)
-              const currentStepIndex = STEPS.findIndex(s => s.id === currentStep)
+              const stepIndex = STEPS.findIndex((s) => s.id === step.id)
+              const currentStepIndex = STEPS.findIndex((s) => s.id === currentStep)
               const isAccessible = stepIndex <= currentStepIndex || isCompleted
 
               return (
@@ -509,24 +561,28 @@ function CheckoutPageContent() {
                     disabled={!isAccessible}
                     onClick={() => isAccessible && setCurrentStep(step.id)}
                   >
-                    <div className={cn(
-                      "flex items-center justify-center w-10 h-10 rounded-full transition-colors",
-                      isActive && "bg-primary text-white",
-                      isCompleted && !isActive && "bg-green-500 text-white",
-                      !isActive && !isCompleted && "bg-gray-200 text-gray-500"
-                    )}>
+                    <div
+                      className={cn(
+                        'flex items-center justify-center w-10 h-10 rounded-full transition-colors',
+                        isActive && 'bg-primary text-white',
+                        isCompleted && !isActive && 'bg-green-500 text-white',
+                        !isActive && !isCompleted && 'bg-gray-200 text-gray-500'
+                      )}
+                    >
                       {isCompleted && !isActive ? (
                         <Check className="h-5 w-5" />
                       ) : (
                         <Icon className="h-5 w-5" />
                       )}
                     </div>
-                    <span className={cn(
-                      "ml-3 font-medium hidden md:inline-block",
-                      isActive && "text-primary",
-                      isCompleted && "text-green-600",
-                      !isActive && !isCompleted && "text-gray-500"
-                    )}>
+                    <span
+                      className={cn(
+                        'ml-3 font-medium hidden md:inline-block',
+                        isActive && 'text-primary',
+                        isCompleted && 'text-green-600',
+                        !isActive && !isCompleted && 'text-gray-500'
+                      )}
+                    >
                       {step.label}
                     </span>
                   </button>
@@ -552,7 +608,9 @@ function CheckoutPageContent() {
                   <div className="p-8">
                     <div className="mb-6">
                       <h2 className="text-2xl font-semibold mb-2">Customer Information</h2>
-                      <p className="text-sm text-gray-600">Please provide your contact details and shipping address</p>
+                      <p className="text-sm text-gray-600">
+                        Please provide your contact details and shipping address
+                      </p>
                     </div>
 
                     {/* Contact Section */}
@@ -563,39 +621,45 @@ function CheckoutPageContent() {
                       </div>
                       <div className="space-y-4 pl-7">
                         <div>
-                          <Label htmlFor="email" className="text-sm font-medium mb-1.5">Email Address *</Label>
+                          <Label className="text-sm font-medium mb-1.5" htmlFor="email">
+                            Email Address *
+                          </Label>
                           <Input
                             required
+                            className="h-11"
                             id="email"
                             name="email"
-                            type="email"
                             placeholder="john.doe@example.com"
-                            className="h-11"
+                            type="email"
                             value={formData.email}
                             onChange={handleInputChange}
                           />
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="firstName" className="text-sm font-medium mb-1.5">First Name *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="firstName">
+                              First Name *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="firstName"
                               name="firstName"
                               placeholder="John"
-                              className="h-11"
                               value={formData.firstName}
                               onChange={handleInputChange}
                             />
                           </div>
                           <div>
-                            <Label htmlFor="lastName" className="text-sm font-medium mb-1.5">Last Name *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="lastName">
+                              Last Name *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="lastName"
                               name="lastName"
                               placeholder="Doe"
-                              className="h-11"
                               value={formData.lastName}
                               onChange={handleInputChange}
                             />
@@ -603,25 +667,29 @@ function CheckoutPageContent() {
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="phone" className="text-sm font-medium mb-1.5">Phone Number *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="phone">
+                              Phone Number *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="phone"
                               name="phone"
-                              type="tel"
                               placeholder="(555) 123-4567"
-                              className="h-11"
+                              type="tel"
                               value={formData.phone}
                               onChange={handleInputChange}
                             />
                           </div>
                           <div>
-                            <Label htmlFor="company" className="text-sm font-medium mb-1.5">Company (Optional)</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="company">
+                              Company (Optional)
+                            </Label>
                             <Input
+                              className="h-11"
                               id="company"
                               name="company"
                               placeholder="ACME Corp"
-                              className="h-11"
                               value={formData.company}
                               onChange={handleInputChange}
                             />
@@ -638,52 +706,60 @@ function CheckoutPageContent() {
                       </div>
                       <div className="space-y-4 pl-7">
                         <div>
-                          <Label htmlFor="address" className="text-sm font-medium mb-1.5">Street Address *</Label>
+                          <Label className="text-sm font-medium mb-1.5" htmlFor="address">
+                            Street Address *
+                          </Label>
                           <Input
                             required
+                            className="h-11"
                             id="address"
                             name="address"
                             placeholder="123 Main Street"
-                            className="h-11"
                             value={formData.address}
                             onChange={handleInputChange}
                           />
                         </div>
                         <div className="grid md:grid-cols-3 gap-4">
                           <div className="md:col-span-1">
-                            <Label htmlFor="city" className="text-sm font-medium mb-1.5">City *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="city">
+                              City *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="city"
                               name="city"
                               placeholder="Dallas"
-                              className="h-11"
                               value={formData.city}
                               onChange={handleInputChange}
                             />
                           </div>
                           <div>
-                            <Label htmlFor="state" className="text-sm font-medium mb-1.5">State *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="state">
+                              State *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="state"
                               maxLength={2}
                               name="state"
                               placeholder="TX"
-                              className="h-11"
                               value={formData.state}
                               onChange={handleInputChange}
                             />
                           </div>
                           <div>
-                            <Label htmlFor="zipCode" className="text-sm font-medium mb-1.5">ZIP Code *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="zipCode">
+                              ZIP Code *
+                            </Label>
                             <Input
                               required
+                              className="h-11"
                               id="zipCode"
                               maxLength={10}
                               name="zipCode"
                               placeholder="75001"
-                              className="h-11"
                               value={formData.zipCode}
                               onChange={handleInputChange}
                             />
@@ -695,9 +771,9 @@ function CheckoutPageContent() {
                     {/* Navigation Buttons */}
                     <div className="flex justify-end pt-6 border-t">
                       <Button
-                        type="button"
-                        size="lg"
                         className="min-w-[200px]"
+                        size="lg"
+                        type="button"
                         onClick={handleStepSubmit}
                       >
                         Continue to Shipping
@@ -720,28 +796,17 @@ function CheckoutPageContent() {
                       <p className="text-sm font-medium text-gray-700 mb-1">Shipping to:</p>
                       <p className="text-sm text-gray-600">
                         {formData.firstName} {formData.lastName}
-                        {formData.company && <><br />{formData.company}</>}
-                        <br />{formData.address}
-                        <br />{formData.city}, {formData.state} {formData.zipCode}
+                        {formData.company && (
+                          <>
+                            <br />
+                            {formData.company}
+                          </>
+                        )}
+                        <br />
+                        {formData.address}
+                        <br />
+                        {formData.city}, {formData.state} {formData.zipCode}
                       </p>
-                    </div>
-
-                    {/* DEBUG INFO */}
-                    <div className="bg-yellow-100 border-2 border-yellow-500 p-4 mb-4 rounded">
-                      <h3 className="font-bold text-yellow-900">DEBUG INFO:</h3>
-                      <p><strong>Cart items.length:</strong> {items.length}</p>
-                      <p><strong>mappedShippingItems.length:</strong> {mappedShippingItems.length}</p>
-                      <p><strong>Items is array:</strong> {String(Array.isArray(items))}</p>
-                      <p><strong>mappedShippingItems is array:</strong> {String(Array.isArray(mappedShippingItems))}</p>
-                      <p><strong>First cart item (raw):</strong> {items[0] ? JSON.stringify({
-                        quantity: items[0].quantity,
-                        quantityType: typeof items[0].quantity,
-                        width: items[0].dimensions?.width,
-                        height: items[0].dimensions?.height,
-                        paperWeight: items[0].paperStockWeight
-                      }, null, 2) : 'No items'}</p>
-                      <p><strong>First mapped item:</strong> {mappedShippingItems[0] ? JSON.stringify(mappedShippingItems[0], null, 2) : 'mappedShippingItems is EMPTY!'}</p>
-                      <p><strong>Shipping Address:</strong> {JSON.stringify(shippingAddress, null, 2)}</p>
                     </div>
 
                     {/* Shipping Rates */}
@@ -769,20 +834,20 @@ function CheckoutPageContent() {
                     {/* Navigation Buttons */}
                     <div className="flex justify-between pt-6 border-t">
                       <Button
+                        size="lg"
                         type="button"
                         variant="outline"
-                        size="lg"
                         onClick={handlePreviousStep}
                       >
                         <ArrowLeft className="mr-2 h-5 w-5" />
                         Back
                       </Button>
                       <Button
-                        type="button"
-                        size="lg"
                         className="min-w-[200px]"
-                        onClick={handleStepSubmit}
                         disabled={!selectedShippingRate}
+                        size="lg"
+                        type="button"
+                        onClick={handleStepSubmit}
                       >
                         Continue to Payment
                         <ChevronRight className="ml-2 h-5 w-5" />
@@ -796,7 +861,9 @@ function CheckoutPageContent() {
                   <div className="p-8">
                     <div className="mb-6">
                       <h2 className="text-2xl font-semibold mb-2">Payment Method</h2>
-                      <p className="text-sm text-gray-600">Select how you'd like to pay for your order</p>
+                      <p className="text-sm text-gray-600">
+                        Select how you'd like to pay for your order
+                      </p>
                     </div>
 
                     {/* Billing Address */}
@@ -809,7 +876,10 @@ function CheckoutPageContent() {
                             id="sameAsShipping"
                             onCheckedChange={(checked) => setSameAsShipping(checked as boolean)}
                           />
-                          <Label className="text-sm font-normal cursor-pointer" htmlFor="sameAsShipping">
+                          <Label
+                            className="text-sm font-normal cursor-pointer"
+                            htmlFor="sameAsShipping"
+                          >
                             Same as shipping
                           </Label>
                         </div>
@@ -818,49 +888,60 @@ function CheckoutPageContent() {
                       {!sameAsShipping && (
                         <div className="space-y-4 pl-7">
                           <div>
-                            <Label htmlFor="billingAddress" className="text-sm font-medium mb-1.5">Street Address *</Label>
+                            <Label className="text-sm font-medium mb-1.5" htmlFor="billingAddress">
+                              Street Address *
+                            </Label>
                             <Input
+                              className="h-11"
                               id="billingAddress"
                               name="billingAddress"
                               required={!sameAsShipping}
-                              className="h-11"
                               value={formData.billingAddress}
                               onChange={handleInputChange}
                             />
                           </div>
                           <div className="grid md:grid-cols-3 gap-4">
                             <div>
-                              <Label htmlFor="billingCity" className="text-sm font-medium mb-1.5">City *</Label>
+                              <Label className="text-sm font-medium mb-1.5" htmlFor="billingCity">
+                                City *
+                              </Label>
                               <Input
+                                className="h-11"
                                 id="billingCity"
                                 name="billingCity"
                                 required={!sameAsShipping}
-                                className="h-11"
                                 value={formData.billingCity}
                                 onChange={handleInputChange}
                               />
                             </div>
                             <div>
-                              <Label htmlFor="billingState" className="text-sm font-medium mb-1.5">State *</Label>
+                              <Label className="text-sm font-medium mb-1.5" htmlFor="billingState">
+                                State *
+                              </Label>
                               <Input
+                                className="h-11"
                                 id="billingState"
                                 maxLength={2}
                                 name="billingState"
                                 placeholder="TX"
                                 required={!sameAsShipping}
-                                className="h-11"
                                 value={formData.billingState}
                                 onChange={handleInputChange}
                               />
                             </div>
                             <div>
-                              <Label htmlFor="billingZipCode" className="text-sm font-medium mb-1.5">ZIP Code *</Label>
+                              <Label
+                                className="text-sm font-medium mb-1.5"
+                                htmlFor="billingZipCode"
+                              >
+                                ZIP Code *
+                              </Label>
                               <Input
+                                className="h-11"
                                 id="billingZipCode"
                                 maxLength={10}
                                 name="billingZipCode"
                                 required={!sameAsShipping}
-                                className="h-11"
                                 value={formData.billingZipCode}
                                 onChange={handleInputChange}
                               />
@@ -883,9 +964,9 @@ function CheckoutPageContent() {
                     {/* Navigation Buttons */}
                     <div className="flex justify-between pt-6 border-t">
                       <Button
+                        size="lg"
                         type="button"
                         variant="outline"
-                        size="lg"
                         onClick={handlePreviousStep}
                       >
                         <ArrowLeft className="mr-2 h-5 w-5" />
@@ -900,7 +981,9 @@ function CheckoutPageContent() {
                   <div className="p-8">
                     <div className="mb-6">
                       <h2 className="text-2xl font-semibold mb-2">Review & Confirm</h2>
-                      <p className="text-sm text-gray-600">Review your order details before confirming</p>
+                      <p className="text-sm text-gray-600">
+                        Review your order details before confirming
+                      </p>
                     </div>
 
                     {/* Order Review Sections */}
@@ -910,15 +993,17 @@ function CheckoutPageContent() {
                         <div className="flex justify-between items-center mb-3">
                           <h3 className="font-medium">Contact Information</h3>
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="ghost"
                             onClick={() => setCurrentStep('information')}
                           >
                             Edit
                           </Button>
                         </div>
                         <div className="text-sm text-gray-600 space-y-1">
-                          <p>{formData.firstName} {formData.lastName}</p>
+                          <p>
+                            {formData.firstName} {formData.lastName}
+                          </p>
                           <p>{formData.email}</p>
                           <p>{formData.phone}</p>
                         </div>
@@ -929,8 +1014,8 @@ function CheckoutPageContent() {
                         <div className="flex justify-between items-center mb-3">
                           <h3 className="font-medium">Shipping Details</h3>
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="ghost"
                             onClick={() => setCurrentStep('shipping')}
                           >
                             Edit
@@ -938,12 +1023,16 @@ function CheckoutPageContent() {
                         </div>
                         <div className="text-sm text-gray-600 space-y-1">
                           <p>{formData.address}</p>
-                          <p>{formData.city}, {formData.state} {formData.zipCode}</p>
+                          <p>
+                            {formData.city}, {formData.state} {formData.zipCode}
+                          </p>
                           {selectedShippingRate && (
                             <p className="pt-2 font-medium">
                               {selectedShippingRate.carrier} - {selectedShippingRate.serviceName}
                               <br />
-                              <span className="text-gray-500">Est. {selectedShippingRate.estimatedDays} business days</span>
+                              <span className="text-gray-500">
+                                Est. {selectedShippingRate.estimatedDays} business days
+                              </span>
                             </p>
                           )}
                         </div>
@@ -954,8 +1043,8 @@ function CheckoutPageContent() {
                         <div className="flex justify-between items-center mb-3">
                           <h3 className="font-medium">Payment Method</h3>
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="ghost"
                             onClick={() => setCurrentStep('payment')}
                           >
                             Edit
@@ -963,44 +1052,79 @@ function CheckoutPageContent() {
                         </div>
                         <div className="text-sm text-gray-600">
                           <p className="capitalize">
-                            {selectedPaymentMethod === 'test_cash' ? '🧪 Test Cash Payment' :
-                             selectedPaymentMethod === 'square' ? 'Square Checkout' :
-                             selectedPaymentMethod === 'card' ? 'Credit/Debit Card' :
-                             selectedPaymentMethod || 'Not selected'}
+                            {selectedPaymentMethod === 'test_cash'
+                              ? '🧪 Test Cash Payment'
+                              : selectedPaymentMethod === 'square'
+                                ? 'Square Checkout'
+                                : selectedPaymentMethod === 'card'
+                                  ? 'Credit/Debit Card'
+                                  : selectedPaymentMethod || 'Not selected'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Place Order Button */}
-                    <div className="flex justify-between pt-6 border-t">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="lg"
-                        onClick={handlePreviousStep}
-                      >
-                        <ArrowLeft className="mr-2 h-5 w-5" />
-                        Back
-                      </Button>
-                      <Button
-                        size="lg"
-                        className="min-w-[200px]"
-                        onClick={processPayment}
-                        disabled={isProcessing}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="mr-2 h-5 w-5" />
-                            Place Order • ${orderTotal.toFixed(2)}
-                          </>
-                        )}
-                      </Button>
+                    {/* Payment UI - Square Card Form, PayPal Button, or Place Order */}
+                    <div className="space-y-4 pt-6 border-t">
+                      {selectedPaymentMethod === 'square' ? (
+                        <SquareCardPayment
+                          applicationId={SQUARE_APPLICATION_ID}
+                          locationId={SQUARE_LOCATION_ID}
+                          total={orderTotal}
+                          onBack={handlePreviousStep}
+                          onPaymentError={handleCardPaymentError}
+                          onPaymentSuccess={handleCardPaymentSuccess}
+                        />
+                      ) : selectedPaymentMethod === 'paypal' ? (
+                        <div>
+                          <PayPalButton
+                            total={orderTotal}
+                            onError={handlePayPalError}
+                            onSuccess={handlePayPalSuccess}
+                          />
+                          <div className="flex justify-start mt-4">
+                            <Button
+                              size="lg"
+                              type="button"
+                              variant="outline"
+                              onClick={handlePreviousStep}
+                            >
+                              <ArrowLeft className="mr-2 h-5 w-5" />
+                              Back
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between">
+                          <Button
+                            size="lg"
+                            type="button"
+                            variant="outline"
+                            onClick={handlePreviousStep}
+                          >
+                            <ArrowLeft className="mr-2 h-5 w-5" />
+                            Back
+                          </Button>
+                          <Button
+                            className="min-w-[200px]"
+                            disabled={isProcessing}
+                            size="lg"
+                            onClick={processPayment}
+                          >
+                            {isProcessing ? (
+                              <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="mr-2 h-5 w-5" />
+                                Place Order • ${orderTotal.toFixed(2)}
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1024,16 +1148,26 @@ function CheckoutPageContent() {
                     </div>
 
                     {/* Product Options */}
-                    {(currentItem.options.size || currentItem.options.paperStock || currentItem.options.coating) && (
+                    {(currentItem.options.size ||
+                      currentItem.options.paperStock ||
+                      currentItem.options.coating) && (
                       <div className="pt-2 border-t border-gray-200 space-y-1">
                         {currentItem.options.size && (
-                          <p className="text-sm"><span className="text-gray-500">Size:</span> {currentItem.options.size}</p>
+                          <p className="text-sm">
+                            <span className="text-gray-500">Size:</span> {currentItem.options.size}
+                          </p>
                         )}
                         {currentItem.options.paperStock && (
-                          <p className="text-sm"><span className="text-gray-500">Paper:</span> {currentItem.options.paperStock}</p>
+                          <p className="text-sm">
+                            <span className="text-gray-500">Paper:</span>{' '}
+                            {currentItem.options.paperStock}
+                          </p>
                         )}
                         {currentItem.options.coating && (
-                          <p className="text-sm"><span className="text-gray-500">Coating:</span> {currentItem.options.coating}</p>
+                          <p className="text-sm">
+                            <span className="text-gray-500">Coating:</span>{' '}
+                            {currentItem.options.coating}
+                          </p>
                         )}
                       </div>
                     )}
@@ -1047,7 +1181,10 @@ function CheckoutPageContent() {
                         </p>
                         <div className="grid grid-cols-2 gap-2">
                           {uploadedImages.slice(0, 2).map((img) => (
-                            <div key={img.id} className="relative aspect-square rounded border bg-white overflow-hidden">
+                            <div
+                              key={img.id}
+                              className="relative aspect-square rounded border bg-white overflow-hidden"
+                            >
                               <Image
                                 fill
                                 alt={img.fileName}
@@ -1058,7 +1195,9 @@ function CheckoutPageContent() {
                           ))}
                         </div>
                         {uploadedImages.length > 2 && (
-                          <p className="text-xs text-gray-500 mt-1">+{uploadedImages.length - 2} more files</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            +{uploadedImages.length - 2} more files
+                          </p>
                         )}
                       </div>
                     )}
@@ -1077,9 +1216,9 @@ function CheckoutPageContent() {
                       Weight
                     </span>
                     <span className="font-medium text-gray-600">
-                      {currentItem && currentItem.dimensions && currentItem.paperStockWeight ?
-                        `${(currentItem.paperStockWeight * currentItem.dimensions.width * currentItem.dimensions.height * currentItem.quantity).toFixed(2)} lbs` :
-                        'Calculating...'}
+                      {currentItem && currentItem.dimensions && currentItem.paperStockWeight
+                        ? `${(currentItem.paperStockWeight * currentItem.dimensions.width * currentItem.dimensions.height * currentItem.quantity).toFixed(2)} lbs`
+                        : 'Calculating...'}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -1102,7 +1241,9 @@ function CheckoutPageContent() {
                   <div className="pt-3 border-t">
                     <div className="flex justify-between">
                       <span className="text-lg font-semibold">Total</span>
-                      <span className="text-lg font-bold text-primary">${orderTotal.toFixed(2)}</span>
+                      <span className="text-lg font-bold text-primary">
+                        ${orderTotal.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1124,8 +1265,12 @@ function CheckoutPageContent() {
                 {/* Help Section */}
                 <div className="mt-4 pt-4 border-t">
                   <p className="text-xs text-center text-gray-500">
-                    Need help? Call us at<br />
-                    <a href="tel:1-800-PRINTING" className="font-medium text-primary hover:underline">
+                    Need help? Call us at
+                    <br />
+                    <a
+                      className="font-medium text-primary hover:underline"
+                      href="tel:1-800-PRINTING"
+                    >
                       1-800-PRINTING
                     </a>
                   </p>

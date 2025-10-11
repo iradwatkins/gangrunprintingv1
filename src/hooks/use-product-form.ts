@@ -80,26 +80,26 @@ export function useProductForm() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
-      setFormData(prev => ({ ...prev, sku }))
+      setFormData((prev) => ({ ...prev, sku }))
     }
   }, [formData.name])
 
   // Set default selections when data loads
   useEffect(() => {
     if (options.paperStockSets.length > 0 && !formData.selectedPaperStockSet) {
-      setFormData(prev => ({ ...prev, selectedPaperStockSet: options.paperStockSets[0].id }))
+      setFormData((prev) => ({ ...prev, selectedPaperStockSet: options.paperStockSets[0].id }))
     }
   }, [options.paperStockSets, formData.selectedPaperStockSet])
 
   useEffect(() => {
     if (options.quantityGroups.length > 0 && !formData.selectedQuantityGroup) {
-      setFormData(prev => ({ ...prev, selectedQuantityGroup: options.quantityGroups[0].id }))
+      setFormData((prev) => ({ ...prev, selectedQuantityGroup: options.quantityGroups[0].id }))
     }
   }, [options.quantityGroups, formData.selectedQuantityGroup])
 
   useEffect(() => {
     if (options.sizeGroups.length > 0 && !formData.selectedSizeGroup) {
-      setFormData(prev => ({ ...prev, selectedSizeGroup: options.sizeGroups[0].id }))
+      setFormData((prev) => ({ ...prev, selectedSizeGroup: options.sizeGroups[0].id }))
     }
   }, [options.sizeGroups, formData.selectedSizeGroup])
 
@@ -185,7 +185,7 @@ export function useProductForm() {
   }
 
   const updateFormData = (updates: Partial<ProductFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }))
+    setFormData((prev) => ({ ...prev, ...updates }))
   }
 
   const validateForm = (): boolean => {
@@ -262,18 +262,24 @@ export function useProductForm() {
       rushFee: null,
       basePrice: 0,
       setupFee: 0,
-      images: formData.imageData ? [{
-        imageId: formData.imageData.imageId || formData.imageData.id,
-        url: formData.imageData.url,
-        ...(formData.imageData.thumbnailUrl && { thumbnailUrl: formData.imageData.thumbnailUrl }),
-        alt: formData.imageData.alt || `${formData.name} product image`,
-        isPrimary: formData.imageData.isPrimary !== false,
-        sortOrder: formData.imageData.sortOrder || 0,
-        ...(formData.imageData.width && { width: formData.imageData.width }),
-        ...(formData.imageData.height && { height: formData.imageData.height }),
-        ...(formData.imageData.fileSize && { fileSize: formData.imageData.fileSize }),
-        ...(formData.imageData.mimeType && { mimeType: formData.imageData.mimeType }),
-      }] : [],
+      images: formData.imageData
+        ? [
+            {
+              imageId: formData.imageData.imageId || formData.imageData.id,
+              url: formData.imageData.url,
+              ...(formData.imageData.thumbnailUrl && {
+                thumbnailUrl: formData.imageData.thumbnailUrl,
+              }),
+              alt: formData.imageData.alt || `${formData.name} product image`,
+              isPrimary: formData.imageData.isPrimary !== false,
+              sortOrder: formData.imageData.sortOrder || 0,
+              ...(formData.imageData.width && { width: formData.imageData.width }),
+              ...(formData.imageData.height && { height: formData.imageData.height }),
+              ...(formData.imageData.fileSize && { fileSize: formData.imageData.fileSize }),
+              ...(formData.imageData.mimeType && { mimeType: formData.imageData.mimeType }),
+            },
+          ]
+        : [],
     }
   }
 

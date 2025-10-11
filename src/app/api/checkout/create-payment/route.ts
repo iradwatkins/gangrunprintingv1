@@ -44,26 +44,27 @@ export async function POST(request: NextRequest) {
 
     // Normalize email to lowercase for consistent lookup
     const normalizedEmail = customerInfo.email.toLowerCase()
-    
+
     // Find or create customer
     let customer = await prisma.user.findFirst({
       where: {
         email: {
           equals: normalizedEmail,
-          mode: 'insensitive'
-        }
-      }
+          mode: 'insensitive',
+        },
+      },
     })
-    
+
     if (!customer) {
       // Create new customer
       customer = await prisma.user.create({
         data: {
           email: normalizedEmail,
-          name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
+          name:
+            `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
           role: 'CUSTOMER',
-          emailVerified: false
-        }
+          emailVerified: false,
+        },
       })
     }
 

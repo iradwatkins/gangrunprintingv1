@@ -3,12 +3,10 @@
 import { prisma } from '../src/lib/prisma'
 
 async function seedProducts() {
-
   try {
     // Verify no products exist yet
     const existingCount = await prisma.product.count()
     if (existingCount > 0) {
-
       return
     }
 
@@ -164,7 +162,6 @@ async function seedProducts() {
     ]
 
     for (const productData of productsToCreate) {
-
       // Create the product with all relationships
       const product = await prisma.product.create({
         data: {
@@ -243,7 +240,6 @@ async function seedProducts() {
           },
         },
       })
-
     }
 
     // Display summary
@@ -251,7 +247,6 @@ async function seedProducts() {
     const activeProducts = await prisma.product.count({ where: { isActive: true } })
     const featuredProducts = await prisma.product.count({ where: { isFeatured: true } })
     const gangRunProducts = await prisma.product.count({ where: { gangRunEligible: true } })
-
   } catch (error) {
     console.error('❌ Error seeding products:', error)
     throw error
@@ -264,7 +259,6 @@ async function seedProducts() {
 if (require.main === module) {
   seedProducts()
     .then(() => {
-
       process.exit(0)
     })
     .catch((error) => {

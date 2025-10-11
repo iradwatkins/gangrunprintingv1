@@ -5,7 +5,13 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { calculateBandingPrice, formatPrice } from '../utils/pricing'
@@ -37,13 +43,8 @@ export function BandingSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox
-            id="banding"
-            checked={enabled}
-            onCheckedChange={onToggle}
-            disabled={disabled}
-          />
-          <Label htmlFor="banding" className="font-medium">
+          <Checkbox checked={enabled} disabled={disabled} id="banding" onCheckedChange={onToggle} />
+          <Label className="font-medium" htmlFor="banding">
             Banding
           </Label>
           <TooltipProvider>
@@ -52,9 +53,7 @@ export function BandingSection({
                 <HelpCircle className="h-4 w-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs">
-                  Bundle your items with paper or elastic bands
-                </p>
+                <p className="max-w-xs">Bundle your items with paper or elastic bands</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -66,11 +65,7 @@ export function BandingSection({
         <div className="space-y-3 pl-6">
           <div className="space-y-2">
             <Label className="text-sm">Banding Type</Label>
-            <Select
-              value={bandingType}
-              onValueChange={onBandingTypeChange}
-              disabled={disabled}
-            >
+            <Select disabled={disabled} value={bandingType} onValueChange={onBandingTypeChange}>
               <SelectTrigger className="max-w-xs">
                 <SelectValue />
               </SelectTrigger>
@@ -83,17 +78,17 @@ export function BandingSection({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="items-per-bundle" className="text-sm">
+            <Label className="text-sm" htmlFor="items-per-bundle">
               Items per Bundle
             </Label>
             <Input
+              className="max-w-xs"
+              disabled={disabled}
               id="items-per-bundle"
+              min="1"
               type="number"
               value={itemsPerBundle}
               onChange={(e) => onItemsPerBundleChange(parseInt(e.target.value) || 100)}
-              min="1"
-              disabled={disabled}
-              className="max-w-xs"
             />
           </div>
 

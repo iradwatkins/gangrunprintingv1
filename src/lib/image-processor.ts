@@ -147,7 +147,7 @@ export async function processProductImage(
     processImageInternal(buffer, fileName, opts, originalSize),
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Image processing timeout after 15 seconds')), 15000)
-    )
+    ),
   ])
 }
 
@@ -245,7 +245,7 @@ async function processImageInternal(
     }
 
     // Skip AVIF generation entirely for faster uploads
-    let avif: Buffer = Buffer.from([])
+    const avif: Buffer = Buffer.from([])
 
     // Generate fast blur placeholder
     let blurDataUrl = ''

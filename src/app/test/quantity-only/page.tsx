@@ -9,12 +9,12 @@ export default function TestQuantityOnly() {
 
   useEffect(() => {
     fetch(`/api/products/${productId}/configuration`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setData(data)
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err)
         setLoading(false)
       })
@@ -22,7 +22,8 @@ export default function TestQuantityOnly() {
 
   if (loading) return <div className="p-8">Loading...</div>
 
-  const isQuantityOnly = data &&
+  const isQuantityOnly =
+    data &&
     data.quantities?.length > 0 &&
     data.sizes?.length === 1 &&
     data.sizes[0]?.id === 'default_size' &&
@@ -38,8 +39,12 @@ export default function TestQuantityOnly() {
         <ul className="text-sm space-y-1">
           <li>✅ Data loaded: {data ? 'Yes' : 'No'}</li>
           <li>Quantities: {data?.quantities?.length || 0}</li>
-          <li>Sizes: {data?.sizes?.length || 0} (First: {data?.sizes?.[0]?.id})</li>
-          <li>Paper Stocks: {data?.paperStocks?.length || 0} (First: {data?.paperStocks?.[0]?.id})</li>
+          <li>
+            Sizes: {data?.sizes?.length || 0} (First: {data?.sizes?.[0]?.id})
+          </li>
+          <li>
+            Paper Stocks: {data?.paperStocks?.length || 0} (First: {data?.paperStocks?.[0]?.id})
+          </li>
           <li className="font-bold text-lg mt-2">
             Is Quantity-Only: {isQuantityOnly ? '✅ YES' : '❌ NO'}
           </li>
@@ -52,7 +57,9 @@ export default function TestQuantityOnly() {
           <label className="block mb-2 font-medium">SELECT QUANTITY:</label>
           <select className="w-full p-2 border rounded">
             {data.quantities.map((q: any) => (
-              <option key={q.id} value={q.id}>{q.label}</option>
+              <option key={q.id} value={q.id}>
+                {q.label}
+              </option>
             ))}
           </select>
         </div>

@@ -8,12 +8,9 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { OrderService } from '@/lib/services/order-service'
 import { prisma } from '@/lib/prisma'
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -33,7 +30,7 @@ export async function POST(
 
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { User: true }
+      include: { User: true },
     })
 
     if (!order) {
@@ -50,14 +47,11 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: 'Shipping information updated'
+      message: 'Shipping information updated',
     })
   } catch (error) {
     console.error('[Shipping Update] Error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Shipping update failed'
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: errorMessage }, { status: 400 })
   }
 }

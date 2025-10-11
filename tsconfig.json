@@ -42,8 +42,11 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "prisma/seed*.ts",
-    "prisma/seed*.js",
+    "prisma/**/*.ts",
+    "prisma/**/*.js",
+    "scripts/**/*.ts",
+    "scripts/**/*.js",
+    "get-real-data-ts.ts",
     ".next/**",
     "trash/**"
   ]

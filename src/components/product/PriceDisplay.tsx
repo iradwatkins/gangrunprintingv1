@@ -42,14 +42,17 @@ export function PriceDisplay({
   loading,
   error,
   showUnitPrice = true,
-  quantity
+  quantity,
 }: PriceDisplayProps) {
   const [showBreakdown, setShowBreakdown] = useState(false)
 
   // Loading state
   if (loading) {
     return (
-      <div className="price-display border rounded-lg p-6 bg-gray-50" data-testid="price-display-loading">
+      <div
+        className="price-display border rounded-lg p-6 bg-gray-50"
+        data-testid="price-display-loading"
+      >
         <div className="flex items-center justify-center space-x-3">
           <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
           <p className="text-gray-600 font-medium">Calculating price...</p>
@@ -64,9 +67,7 @@ export function PriceDisplay({
       <div className="price-display" data-testid="price-display-error">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       </div>
     )
@@ -75,17 +76,21 @@ export function PriceDisplay({
   // No price yet state
   if (price === null) {
     return (
-      <div className="price-display border rounded-lg p-6 bg-gray-50" data-testid="price-display-empty">
-        <p className="text-gray-500 text-center">
-          Select options to see price
-        </p>
+      <div
+        className="price-display border rounded-lg p-6 bg-gray-50"
+        data-testid="price-display-empty"
+      >
+        <p className="text-gray-500 text-center">Select options to see price</p>
       </div>
     )
   }
 
   // Success state - show price
   return (
-    <div className="price-display border rounded-lg p-6 bg-white shadow-sm" data-testid="price-display-success">
+    <div
+      className="price-display border rounded-lg p-6 bg-white shadow-sm"
+      data-testid="price-display-success"
+    >
       {/* Main Price Display */}
       <div className="price-main flex items-baseline justify-between mb-4">
         <div>
@@ -99,9 +104,7 @@ export function PriceDisplay({
         {showUnitPrice && unitPrice && quantity && quantity > 1 && (
           <div className="text-right">
             <span className="text-sm text-gray-600 block mb-1">Per Unit</span>
-            <span className="text-lg font-semibold text-gray-700">
-              ${unitPrice.toFixed(4)}
-            </span>
+            <span className="text-lg font-semibold text-gray-700">${unitPrice.toFixed(4)}</span>
           </div>
         )}
       </div>
@@ -110,10 +113,10 @@ export function PriceDisplay({
       {breakdown && (
         <div className="breakdown-section border-t pt-4">
           <Button
-            onClick={() => setShowBreakdown(!showBreakdown)}
-            variant="ghost"
             className="w-full justify-between hover:bg-gray-50"
             data-testid="breakdown-toggle"
+            variant="ghost"
+            onClick={() => setShowBreakdown(!showBreakdown)}
           >
             <span className="text-sm font-medium text-gray-700">
               {showBreakdown ? 'Hide' : 'Show'} Price Breakdown
@@ -131,44 +134,45 @@ export function PriceDisplay({
               {/* Base Price */}
               <div className="breakdown-item flex justify-between text-sm">
                 <span className="text-gray-600">Base Price:</span>
-                <span className="font-medium text-gray-900">
-                  ${breakdown.basePrice.toFixed(2)}
-                </span>
+                <span className="font-medium text-gray-900">${breakdown.basePrice.toFixed(2)}</span>
               </div>
 
               {/* Adjustments */}
-              {breakdown.adjustments.brokerDiscount && breakdown.adjustments.brokerDiscount.amount > 0 && (
-                <div className="breakdown-item flex justify-between text-sm">
-                  <span className="text-gray-600">
-                    Broker Discount ({breakdown.adjustments.brokerDiscount.percentage}%):
-                  </span>
-                  <span className="font-medium text-green-600">
-                    -${breakdown.adjustments.brokerDiscount.amount.toFixed(2)}
-                  </span>
-                </div>
-              )}
+              {breakdown.adjustments.brokerDiscount &&
+                breakdown.adjustments.brokerDiscount.amount > 0 && (
+                  <div className="breakdown-item flex justify-between text-sm">
+                    <span className="text-gray-600">
+                      Broker Discount ({breakdown.adjustments.brokerDiscount.percentage}%):
+                    </span>
+                    <span className="font-medium text-green-600">
+                      -${breakdown.adjustments.brokerDiscount.amount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
 
-              {breakdown.adjustments.taglineDiscount && breakdown.adjustments.taglineDiscount.amount > 0 && (
-                <div className="breakdown-item flex justify-between text-sm">
-                  <span className="text-gray-600">
-                    Tagline Discount ({breakdown.adjustments.taglineDiscount.percentage}%):
-                  </span>
-                  <span className="font-medium text-green-600">
-                    -${breakdown.adjustments.taglineDiscount.amount.toFixed(2)}
-                  </span>
-                </div>
-              )}
+              {breakdown.adjustments.taglineDiscount &&
+                breakdown.adjustments.taglineDiscount.amount > 0 && (
+                  <div className="breakdown-item flex justify-between text-sm">
+                    <span className="text-gray-600">
+                      Tagline Discount ({breakdown.adjustments.taglineDiscount.percentage}%):
+                    </span>
+                    <span className="font-medium text-green-600">
+                      -${breakdown.adjustments.taglineDiscount.amount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
 
-              {breakdown.adjustments.exactSizeMarkup && breakdown.adjustments.exactSizeMarkup.amount > 0 && (
-                <div className="breakdown-item flex justify-between text-sm">
-                  <span className="text-gray-600">
-                    Custom Size Markup ({breakdown.adjustments.exactSizeMarkup.percentage}%):
-                  </span>
-                  <span className="font-medium text-orange-600">
-                    +${breakdown.adjustments.exactSizeMarkup.amount.toFixed(2)}
-                  </span>
-                </div>
-              )}
+              {breakdown.adjustments.exactSizeMarkup &&
+                breakdown.adjustments.exactSizeMarkup.amount > 0 && (
+                  <div className="breakdown-item flex justify-between text-sm">
+                    <span className="text-gray-600">
+                      Custom Size Markup ({breakdown.adjustments.exactSizeMarkup.percentage}%):
+                    </span>
+                    <span className="font-medium text-orange-600">
+                      +${breakdown.adjustments.exactSizeMarkup.amount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
 
               {/* After Adjustments */}
               {breakdown.afterAdjustments !== breakdown.basePrice && (
@@ -203,9 +207,7 @@ export function PriceDisplay({
               {/* Final Total */}
               <div className="breakdown-item flex justify-between text-sm pt-2 border-t font-semibold">
                 <span className="text-gray-900">Total:</span>
-                <span className="text-gray-900">
-                  ${price.toFixed(2)}
-                </span>
+                <span className="text-gray-900">${price.toFixed(2)}</span>
               </div>
 
               {/* Display Breakdown Messages */}

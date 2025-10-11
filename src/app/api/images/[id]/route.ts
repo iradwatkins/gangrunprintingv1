@@ -12,10 +12,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 // GET /api/images/[id] - Get a single image
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -27,8 +24,8 @@ export async function GET(
       include: {
         _count: {
           select: {
-            productImages: true
-          }
+            productImages: true,
+          },
         },
         productImages: {
           include: {
@@ -36,12 +33,12 @@ export async function GET(
               select: {
                 id: true,
                 name: true,
-                slug: true
-              }
-            }
-          }
-        }
-      }
+                slug: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     if (!image) {
@@ -50,18 +47,12 @@ export async function GET(
 
     return NextResponse.json(image)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch image' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch image' }, { status: 500 })
   }
 }
 
 // PUT /api/images/[id] - Update an image
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const requestId = generateRequestId()
 
   try {
@@ -80,7 +71,7 @@ export async function PUT(
 
     // Check if image exists
     const existingImage = await prisma.image.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!existingImage) {
@@ -95,16 +86,23 @@ export async function PUT(
         description: description || null,
         alt: alt || name,
         category: category || 'general',
-        tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map((t: string) => t.trim()).filter(Boolean)) : [],
+        tags: tags
+          ? Array.isArray(tags)
+            ? tags
+            : tags
+                .split(',')
+                .map((t: string) => t.trim())
+                .filter(Boolean)
+          : [],
         updatedAt: new Date(),
       },
       include: {
         _count: {
           select: {
-            productImages: true
-          }
-        }
-      }
+            productImages: true,
+          },
+        },
+      },
     })
 
     return createSuccessResponse(updatedImage, 200, undefined, requestId)
@@ -118,20 +116,12 @@ export async function PUT(
       )
     }
 
-    return createErrorResponse(
-      'Failed to update image',
-      500,
-      { updateError: true },
-      requestId
-    )
+    return createErrorResponse('Failed to update image', 500, { updateError: true }, requestId)
   }
 }
 
 // DELETE /api/images/[id] - Delete an image
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const requestId = generateRequestId()
 
   try {
@@ -146,20 +136,20 @@ export async function DELETE(
       include: {
         _count: {
           select: {
-            productImages: true
-          }
+            productImages: true,
+          },
         },
         productImages: {
           include: {
             Product: {
               select: {
                 id: true,
-                name: true
-              }
-            }
-          }
-        }
-      }
+                name: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     if (!image) {
@@ -168,17 +158,17 @@ export async function DELETE(
 
     // Check if image is in use
     if (image._count.productImages > 0) {
-      const productNames = image.productImages.map(pi => pi.Product.name).join(', ')
+      const productNames = image.productImages.map((pi) => pi.Product.name).join(', ')
       return createErrorResponse(
         `Cannot delete image. It is currently used by ${image._count.productImages} product(s): ${productNames}`,
         400,
         {
           inUse: true,
           usageCount: image._count.productImages,
-          products: image.productImages.map(pi => ({
+          products: image.productImages.map((pi) => ({
             id: pi.Product.id,
-            name: pi.Product.name
-          }))
+            name: pi.Product.name,
+          })),
         },
         requestId
       )
@@ -205,24 +195,19 @@ export async function DELETE(
 
     // Delete from database
     await prisma.image.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     return createSuccessResponse(
       {
         message: 'Image deleted successfully',
-        id: params.id
+        id: params.id,
       },
       200,
       undefined,
       requestId
     )
   } catch (error) {
-    return createErrorResponse(
-      'Failed to delete image',
-      500,
-      { deleteError: true },
-      requestId
-    )
+    return createErrorResponse('Failed to delete image', 500, { deleteError: true }, requestId)
   }
 }

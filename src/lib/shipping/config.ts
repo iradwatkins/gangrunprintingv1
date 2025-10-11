@@ -1,4 +1,4 @@
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 import type { ShippingConfiguration } from './interfaces'
 
 // FedEx configuration
@@ -23,7 +23,7 @@ export const upsConfig: ShippingConfiguration = {
 
 // Southwest Cargo configuration
 export const southwestCargoConfig: ShippingConfiguration = {
-  enabled: false, // DISABLED: Not using Southwest Cargo for now
+  enabled: true, // ENABLED: Southwest Cargo is active
   testMode: false,
   defaultPackaging: {
     weight: 1.0, // Heavier packaging for freight

@@ -68,22 +68,26 @@ export const pricingCalculationRequestSchema = z.object({
   turnaroundId: z.string().optional().nullable(),
 
   // Add-ons
-  selectedAddons: z.array(
-    z.object({
-      addonId: z.string(),
-      quantity: z.number().int().positive().optional(),
-      configuration: z.record(z.unknown()).optional(),
-    })
-  ).default([]),
+  selectedAddons: z
+    .array(
+      z.object({
+        addonId: z.string(),
+        quantity: z.number().int().positive().optional(),
+        configuration: z.record(z.unknown()).optional(),
+      })
+    )
+    .default([]),
 
   // Customer type
   isBroker: z.boolean().default(false),
-  brokerCategoryDiscounts: z.array(
-    z.object({
-      categoryId: z.string(),
-      discountPercent: z.number().min(0).max(100),
-    })
-  ).default([]),
+  brokerCategoryDiscounts: z
+    .array(
+      z.object({
+        categoryId: z.string(),
+        discountPercent: z.number().min(0).max(100),
+      })
+    )
+    .default([]),
 })
 
 // Common validation helpers
@@ -98,7 +102,10 @@ export const imageUploadSchema = z.object({
   allowedTypes: z.array(z.string()).default(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
 })
 
-export function validateImageFile(file: File, maxSize = MAX_FILE_SIZE): { isValid: boolean; error?: string } {
+export function validateImageFile(
+  file: File,
+  maxSize = MAX_FILE_SIZE
+): { isValid: boolean; error?: string } {
   if (!file.type.startsWith('image/')) {
     return { isValid: false, error: 'Please select a valid image file (JPEG, PNG, WebP, or GIF)' }
   }
@@ -123,14 +130,14 @@ export function validateImageDimensions(
   if (width < minWidth || height < minHeight) {
     return {
       isValid: false,
-      error: `Image is ${width}x${height}px but must be at least ${minWidth}x${minHeight} pixels`
+      error: `Image is ${width}x${height}px but must be at least ${minWidth}x${minHeight} pixels`,
     }
   }
 
   if (width > maxWidth || height > maxHeight) {
     return {
       isValid: false,
-      error: `Image is ${width}x${height}px but cannot exceed ${maxWidth}x${maxHeight} pixels`
+      error: `Image is ${width}x${height}px but cannot exceed ${maxWidth}x${maxHeight} pixels`,
     }
   }
 

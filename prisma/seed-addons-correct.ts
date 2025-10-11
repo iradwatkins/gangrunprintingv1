@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   // Create Add-ons with correct pricing from documentation
   const addOns = [
     // 1. Digital Proof - $5.00 Fixed Fee
@@ -301,9 +300,7 @@ async function main() {
     const created = await prisma.addOn.create({
       data: addOn,
     })
-
   }
-
 }
 
 main()

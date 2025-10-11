@@ -26,13 +26,13 @@ export function TurnaroundModule({
   return (
     <div className={`turnaround-module ${className}`}>
       <TurnaroundSelector
-        turnaroundTimes={turnaroundTimes}
-        selectedTurnaroundId={selectedTurnaroundId}
-        onTurnaroundChange={onTurnaroundChange}
         baseProductPrice={baseProductPrice}
-        quantity={quantity}
         currentCoating={currentCoating}
         disabled={disabled}
+        quantity={quantity}
+        selectedTurnaroundId={selectedTurnaroundId}
+        turnaroundTimes={turnaroundTimes}
+        onTurnaroundChange={onTurnaroundChange}
       />
     </div>
   )

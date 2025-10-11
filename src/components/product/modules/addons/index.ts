@@ -7,5 +7,5 @@ export type {
   BandingConfig,
   CornerRoundingConfig,
   AddonsModuleProps,
-  AddonsModuleValue
+  AddonsModuleValue,
 } from './types'

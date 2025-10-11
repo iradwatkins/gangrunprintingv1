@@ -37,7 +37,6 @@ test.describe('Google OAuth Login Tests', () => {
   })
 
   test('Test 1: Google OAuth button exists and is clickable', async ({ page }) => {
-
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
 
@@ -74,25 +73,19 @@ test.describe('Google OAuth Login Tests', () => {
       .catch(() => false)
 
     if (hasError) {
-
       const errorText = await page.locator('body').textContent()
       console.log('Error page content:', errorText?.substring(0, 500))
     } else if (currentUrl.includes('accounts.google.com')) {
-
     } else if (currentUrl.includes('/auth/error')) {
-
       const errorMessage = await page
         .locator('[class*="error"], [id*="error"]')
         .textContent()
         .catch(() => 'No error message found')
-
     } else {
-
     }
   })
 
   test('Test 2: Check OAuth providers endpoint', async ({ page }) => {
-
     // Make API request to check providers
     const response = await page.request.get(`${BASE_URL}/api/auth/providers`)
     const providers = await response.json()
@@ -102,11 +95,9 @@ test.describe('Google OAuth Login Tests', () => {
     expect(providers.google).toHaveProperty('id', 'google')
     expect(providers.google).toHaveProperty('name', 'Google')
     expect(providers.google).toHaveProperty('type', 'oauth')
-
   })
 
   test('Test 3: Test OAuth flow with mock credentials', async ({ page }) => {
-
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
 
@@ -160,22 +151,17 @@ test.describe('Google OAuth Login Tests', () => {
         })
 
         if (consoleErrors.length > 0) {
-
         }
       } else if (currentUrl.includes('accounts.google.com')) {
-
         await page.screenshot({ path: 'test-3-google-oauth.png' })
       } else {
-
         await page.screenshot({ path: 'test-3-unexpected.png' })
       }
     } else {
-
     }
   })
 
   test('Test 4: Check session and CSRF token', async ({ page }) => {
-
     // Navigate to signin page
     await page.goto(SIGNIN_URL, { waitUntil: 'networkidle' })
 
@@ -188,9 +174,7 @@ test.describe('Google OAuth Login Tests', () => {
     const sessionData = await sessionResponse.json()
 
     if (sessionData.user) {
-
     } else {
-
     }
 
     // Try to initiate Google OAuth with CSRF token
@@ -219,7 +203,6 @@ test.describe('Google OAuth Login Tests', () => {
 
         await page.screenshot({ path: 'test-4-oauth-redirect.png' })
       } else {
-
         console.log('Response:', signInResponse.status(), await signInResponse.text())
       }
     }
@@ -228,7 +211,5 @@ test.describe('Google OAuth Login Tests', () => {
 
 // Summary test
 test.describe('Summary', () => {
-  test('Generate test report', async ({ page }) => {
-
-  })
+  test('Generate test report', async ({ page }) => {})
 })

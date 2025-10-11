@@ -5,14 +5,12 @@ const prisma = new PrismaClient()
 
 async function createAuthSession() {
   try {
-
     // Find the admin user (iradwatkins)
     const adminUser = await prisma.user.findUnique({
       where: { email: 'iradwatkins@gmail.com' },
     })
 
     if (!adminUser) {
-
       // Create admin user
       const newAdmin = await prisma.user.create({
         data: {
@@ -24,16 +22,13 @@ async function createAuthSession() {
       })
 
       adminUser = newAdmin
-
     } else {
-
       // Ensure user is admin
       if (adminUser.role !== 'ADMIN') {
         await prisma.user.update({
           where: { id: adminUser.id },
           data: { role: 'ADMIN' },
         })
-
       }
     }
 

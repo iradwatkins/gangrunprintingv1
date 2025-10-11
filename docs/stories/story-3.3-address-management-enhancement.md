@@ -1,18 +1,23 @@
 # Story 3.3: Address Management Enhancement
 
 ## Story Title
+
 Implement Address Book and Validation for Checkout
 
 ## Story Type
+
 Feature Enhancement
 
 ## Story Points
+
 5
 
 ## Priority
+
 P1 - High (Checkout UX)
 
 ## Epic
+
 Epic 3: Core Commerce & Checkout
 
 ## Story Description
@@ -22,6 +27,7 @@ As a **customer**, I want to save my shipping and billing addresses for future o
 ## Background
 
 The checkout address system is currently 70% complete:
+
 - ✅ Basic address forms exist (shipping & billing)
 - ✅ "Same as shipping" toggle works
 - ✅ Client-side validation with Zod
@@ -31,6 +37,7 @@ The checkout address system is currently 70% complete:
 - ❌ No international address support
 
 Customers must re-enter their address on every order, which:
+
 - Increases checkout friction
 - Slows down repeat purchases
 - Leads to address entry errors
@@ -41,6 +48,7 @@ This story completes the address management system to match customer expectation
 ## Acceptance Criteria
 
 ### Must Have (P0)
+
 - [ ] **Address Book Storage:**
   - [ ] Addresses saved to user account in database
   - [ ] Each address has label (e.g., "Home", "Office", "Mom's House")
@@ -79,6 +87,7 @@ This story completes the address management system to match customer expectation
   - [ ] Address validation on save
 
 ### Should Have (P1)
+
 - [ ] **Address Validation API:**
   - [ ] Integrate USPS Address Validation API (or similar)
   - [ ] Validate address before saving
@@ -102,6 +111,7 @@ This story completes the address management system to match customer expectation
   - [ ] Standardize street abbreviations
 
 ### Nice to Have (P2)
+
 - [ ] **International Address Support:**
   - [ ] Support addresses in Canada
   - [ ] Support addresses in UK
@@ -126,6 +136,7 @@ This story completes the address management system to match customer expectation
 ## Technical Details
 
 ### Database Schema (Existing - Needs Usage)
+
 ```prisma
 model Address {
   id          String   @id @default(cuid())
@@ -157,6 +168,7 @@ model Address {
 ```
 
 ### Address API Endpoints
+
 **File:** `src/app/api/addresses/route.ts` (new)
 
 ```typescript
@@ -167,10 +179,7 @@ export async function GET(request: NextRequest) {
 
   const addresses = await prisma.address.findMany({
     where: { userId: user.id },
-    orderBy: [
-      { isDefaultShipping: 'desc' },
-      { createdAt: 'desc' }
-    ]
+    orderBy: [{ isDefaultShipping: 'desc' }, { createdAt: 'desc' }],
   })
 
   return NextResponse.json({ addresses })
@@ -186,32 +195,35 @@ export async function POST(request: NextRequest) {
   // Validate address
   const validationResult = await validateAddress(data)
   if (!validationResult.isValid && !data.overrideValidation) {
-    return NextResponse.json({
-      error: 'Address validation failed',
-      suggestions: validationResult.suggestions
-    }, { status: 400 })
+    return NextResponse.json(
+      {
+        error: 'Address validation failed',
+        suggestions: validationResult.suggestions,
+      },
+      { status: 400 }
+    )
   }
 
   // If setting as default, unset other defaults
   if (data.isDefaultShipping) {
     await prisma.address.updateMany({
       where: { userId: user.id, isDefaultShipping: true },
-      data: { isDefaultShipping: false }
+      data: { isDefaultShipping: false },
     })
   }
 
   if (data.isDefaultBilling) {
     await prisma.address.updateMany({
       where: { userId: user.id, isDefaultBilling: true },
-      data: { isDefaultBilling: false }
+      data: { isDefaultBilling: false },
     })
   }
 
   const address = await prisma.address.create({
     data: {
       ...data,
-      userId: user.id
-    }
+      userId: user.id,
+    },
   })
 
   return NextResponse.json({ address })
@@ -222,10 +234,7 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 // PUT /api/addresses/[id] - Update address
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user } = await validateRequest()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -234,7 +243,7 @@ export async function PUT(
 
   // Verify ownership
   const existingAddress = await prisma.address.findFirst({
-    where: { id, userId: user.id }
+    where: { id, userId: user.id },
   })
 
   if (!existingAddress) {
@@ -244,30 +253,33 @@ export async function PUT(
   // Validate address
   const validationResult = await validateAddress(data)
   if (!validationResult.isValid && !data.overrideValidation) {
-    return NextResponse.json({
-      error: 'Address validation failed',
-      suggestions: validationResult.suggestions
-    }, { status: 400 })
+    return NextResponse.json(
+      {
+        error: 'Address validation failed',
+        suggestions: validationResult.suggestions,
+      },
+      { status: 400 }
+    )
   }
 
   // Handle default status
   if (data.isDefaultShipping && !existingAddress.isDefaultShipping) {
     await prisma.address.updateMany({
       where: { userId: user.id, isDefaultShipping: true, id: { not: id } },
-      data: { isDefaultShipping: false }
+      data: { isDefaultShipping: false },
     })
   }
 
   if (data.isDefaultBilling && !existingAddress.isDefaultBilling) {
     await prisma.address.updateMany({
       where: { userId: user.id, isDefaultBilling: true, id: { not: id } },
-      data: { isDefaultBilling: false }
+      data: { isDefaultBilling: false },
     })
   }
 
   const address = await prisma.address.update({
     where: { id },
-    data
+    data,
   })
 
   return NextResponse.json({ address })
@@ -285,7 +297,7 @@ export async function DELETE(
 
   // Verify ownership
   const address = await prisma.address.findFirst({
-    where: { id, userId: user.id }
+    where: { id, userId: user.id },
   })
 
   if (!address) {
@@ -299,6 +311,7 @@ export async function DELETE(
 ```
 
 ### Address Validation Service
+
 **File:** `src/services/AddressValidationService.ts` (new)
 
 ```typescript
@@ -319,7 +332,7 @@ export async function validateAddress(address: Partial<Address>): Promise<Addres
     // Option 1: USPS API (free for US addresses)
     const response = await fetch('https://secure.shippingapis.com/ShippingAPI.dll', {
       method: 'POST',
-      body: buildUSPSXML(address)
+      body: buildUSPSXML(address),
     })
 
     const result = await parseUSPSResponse(response)
@@ -328,14 +341,14 @@ export async function validateAddress(address: Partial<Address>): Promise<Addres
       return {
         isValid: true,
         suggestions: result.standardizedAddress ? [result.standardizedAddress] : undefined,
-        confidence: 'high'
+        confidence: 'high',
       }
     } else {
       return {
         isValid: false,
         errors: result.errors,
         suggestions: result.suggestions,
-        confidence: 'low'
+        confidence: 'low',
       }
     }
   } catch (error) {
@@ -346,12 +359,14 @@ export async function validateAddress(address: Partial<Address>): Promise<Addres
 }
 
 // Alternative: Google Address Validation API (paid, more accurate)
-async function validateAddressWithGoogle(address: Partial<Address>): Promise<AddressValidationResult> {
+async function validateAddressWithGoogle(
+  address: Partial<Address>
+): Promise<AddressValidationResult> {
   const response = await fetch('https://addressvalidation.googleapis.com/v1:validateAddress', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY
+      'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY,
     },
     body: JSON.stringify({
       address: {
@@ -359,9 +374,9 @@ async function validateAddressWithGoogle(address: Partial<Address>): Promise<Add
         locality: address.city,
         administrativeArea: address.state,
         postalCode: address.postalCode,
-        addressLines: [address.addressLine1, address.addressLine2].filter(Boolean)
-      }
-    })
+        addressLines: [address.addressLine1, address.addressLine2].filter(Boolean),
+      },
+    }),
   })
 
   const data = await response.json()
@@ -369,12 +384,13 @@ async function validateAddressWithGoogle(address: Partial<Address>): Promise<Add
   return {
     isValid: data.result.verdict.validationGranularity !== 'OTHER',
     suggestions: data.result.address ? [formatGoogleAddress(data.result.address)] : undefined,
-    confidence: data.result.verdict.addressComplete ? 'high' : 'medium'
+    confidence: data.result.verdict.addressComplete ? 'high' : 'medium',
   }
 }
 ```
 
 ### Checkout Address Selection Component
+
 **File:** `src/components/checkout/AddressSelection.tsx` (modify existing)
 
 ```typescript
@@ -518,32 +534,38 @@ export function AddressSelection({ type, selectedAddress, onAddressSelect }: Add
 ## Files to Create/Modify
 
 ### Backend (New Files)
+
 - `src/app/api/addresses/route.ts` - List and create addresses
 - `src/app/api/addresses/[id]/route.ts` - Update and delete addresses
 - `src/services/AddressValidationService.ts` - Address validation logic
 
 ### Frontend (New Files)
+
 - `src/components/checkout/AddressSelection.tsx` - Address selection component
 - `src/components/account/AddressBook.tsx` - Address management page
 - `src/components/account/AddressForm.tsx` - Address add/edit form
 
 ### Frontend (Modifications)
+
 - `src/app/(customer)/checkout/page.tsx` - Integrate AddressSelection
 - `src/app/account/addresses/page.tsx` - Already exists, needs enhancement
 
 ### Database
+
 - `Address` model already exists in Prisma schema
 - No schema changes required ✅
 
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Address CRUD operations work correctly
 - [ ] Default address logic works (only one default per type)
 - [ ] Address validation service returns correct results
 - [ ] Address formatting produces correct output
 
 ### Integration Tests
+
 - [ ] Save address during checkout
 - [ ] Select saved address on next order
 - [ ] Set default shipping address
@@ -552,6 +574,7 @@ export function AddressSelection({ type, selectedAddress, onAddressSelect }: Add
 - [ ] Delete address removes from list
 
 ### Manual Testing Checklist
+
 - [ ] Complete checkout, save new address
 - [ ] Start new order, see saved address in dropdown
 - [ ] Select saved address from dropdown
@@ -568,15 +591,18 @@ export function AddressSelection({ type, selectedAddress, onAddressSelect }: Add
 ## Dependencies
 
 ### Database
+
 - `Address` model (exists)
 - `User` model (exists)
 
 ### External Services (Optional)
+
 - USPS Address Validation API (free, US only)
 - Google Address Validation API (paid, global)
 - Google Places API (autocomplete)
 
 ### Environment Variables
+
 ```env
 # Optional - for address validation
 USPS_USER_ID=...
@@ -585,12 +611,12 @@ GOOGLE_MAPS_API_KEY=...
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Address validation API downtime | MEDIUM | LOW | Fail open - don't block checkout |
-| Invalid addresses causing shipping issues | MEDIUM | MEDIUM | Validation + manual review |
-| Performance with many addresses | LOW | LOW | Pagination, indexing |
-| International address complexity | MEDIUM | LOW | Start US-only, expand later |
+| Risk                                      | Impact | Likelihood | Mitigation                       |
+| ----------------------------------------- | ------ | ---------- | -------------------------------- |
+| Address validation API downtime           | MEDIUM | LOW        | Fail open - don't block checkout |
+| Invalid addresses causing shipping issues | MEDIUM | MEDIUM     | Validation + manual review       |
+| Performance with many addresses           | LOW    | LOW        | Pagination, indexing             |
+| International address complexity          | MEDIUM | LOW        | Start US-only, expand later      |
 
 ## Success Metrics
 
@@ -626,6 +652,7 @@ Continue to Shipping Method
 ```
 
 ## Definition of Done
+
 - [ ] All acceptance criteria met
 - [ ] Unit tests passing
 - [ ] Integration tests passing
@@ -638,6 +665,7 @@ Continue to Shipping Method
 - [ ] Ready for production deployment
 
 ## Related Stories
+
 - Story 3.4: Shipping Method Selection (related)
 - Story 3.5: Payment Processing Integration (related)
 - Story 4.7: Address Book (duplicate - already in account section)

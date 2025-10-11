@@ -630,4 +630,3 @@ CREATE INDEX "Product_category_idx" ON "Product"("category");
 CREATE INDEX "Cart_userId_idx" ON "Cart"("userId");
 CREATE INDEX "Cart_sessionId_idx" ON "Cart"("sessionId");
 ```
-

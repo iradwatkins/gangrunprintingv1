@@ -3,14 +3,14 @@ const { parse } = require('url')
 const next = require('next')
 
 const dev = process.env.NODE_ENV !== 'production'
-const hostname = '0.0.0.0'  // Listen on all interfaces (IPv4 and IPv6)
+const hostname = '0.0.0.0' // Listen on all interfaces (IPv4 and IPv6)
 const port = process.env.PORT || 3002
 
 // Check if port is already in use
 const checkPort = (port) => {
   return new Promise((resolve, reject) => {
     const tester = createServer()
-      .once('error', err => {
+      .once('error', (err) => {
         if (err.code === 'EADDRINUSE') {
           console.error(`Port ${port} is already in use`)
           reject(err)
@@ -33,10 +33,10 @@ const app = next({
   conf: {
     experimental: {
       serverActions: {
-        bodySizeLimit: '20mb'
-      }
-    }
-  }
+        bodySizeLimit: '20mb',
+      },
+    },
+  },
 })
 const handle = app.getRequestHandler()
 

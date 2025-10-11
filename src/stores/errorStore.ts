@@ -124,7 +124,10 @@ export const errorHelpers = {
   }),
 
   // API errors
-  apiError: (message: string, context?: Record<string, any>): Omit<AppError, 'id' | 'timestamp'> => ({
+  apiError: (
+    message: string,
+    context?: Record<string, any>
+  ): Omit<AppError, 'id' | 'timestamp'> => ({
     title: 'API Error',
     message,
     type: 'error',

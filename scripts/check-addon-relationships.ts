@@ -9,8 +9,8 @@ async function main() {
   const directAddons = await prisma.productAddOn.findMany({
     include: {
       Product: { select: { name: true } },
-      AddOn: { select: { name: true } }
-    }
+      AddOn: { select: { name: true } },
+    },
   })
 
   console.log('1. Direct ProductAddOn relationships:')
@@ -31,12 +31,12 @@ async function main() {
           name: true,
           addOnSetItems: {
             include: {
-              addOn: { select: { name: true } }
-            }
-          }
-        }
-      }
-    }
+              addOn: { select: { name: true } },
+            },
+          },
+        },
+      },
+    },
   })
 
   console.log('\n2. ProductAddOnSet relationships:')

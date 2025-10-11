@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
 const todoFixes = {
   // middleware.ts
   '/middleware.ts': {
-    pattern: /\/\/ TODO: Move tenant resolution to API routes or use edge-compatible database client/,
-    replacement: '// Tenant resolution handled via headers and context'
+    pattern:
+      /\/\/ TODO: Move tenant resolution to API routes or use edge-compatible database client/,
+    replacement: '// Tenant resolution handled via headers and context',
   },
 
   // marketing files
@@ -15,7 +16,7 @@ const todoFixes = {
     pattern: /\/\/ TODO: Calculate conversions and revenue based on tracking data/,
     replacement: `// Calculate conversions from tracking data
       const conversions = trackingData?.conversions || 0;
-      const revenue = trackingData?.revenue || 0;`
+      const revenue = trackingData?.revenue || 0;`,
   },
 
   '/lib/marketing/campaign-service.ts': {
@@ -23,15 +24,15 @@ const todoFixes = {
       {
         pattern: /\/\/ TODO: Queue actual email sending \(integrate with email service\)/,
         replacement: `// Queue email sending via Resend service
-        await emailQueue.add({ campaignId, recipientEmail, template });`
+        await emailQueue.add({ campaignId, recipientEmail, template });`,
       },
       {
         pattern: /\/\/ TODO: Calculate revenue and orders from tracking data/,
         replacement: `// Calculate metrics from tracking data
         const revenue = await this.calculateRevenue(campaignId);
-        const orders = await this.calculateOrders(campaignId);`
-      }
-    ]
+        const orders = await this.calculateOrders(campaignId);`,
+      },
+    ],
   },
 
   // Settings forms
@@ -44,7 +45,7 @@ const todoFixes = {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(settings)
-        });`
+        });`,
       },
       {
         pattern: /\/\/ TODO: Implement test notification API/,
@@ -53,9 +54,9 @@ const todoFixes = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: notificationType })
-        });`
-      }
-    ]
+        });`,
+      },
+    ],
   },
 
   '/components/admin/settings/general-settings-form.tsx': {
@@ -65,7 +66,7 @@ const todoFixes = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
-      });`
+      });`,
   },
 
   '/components/admin/customer-edit-dialog.tsx': {
@@ -75,7 +76,7 @@ const todoFixes = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customerData)
-      });`
+      });`,
   },
 
   '/components/admin/staff/add-staff-dialog.tsx': {
@@ -85,7 +86,7 @@ const todoFixes = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(staffData)
-      });`
+      });`,
   },
 
   '/components/admin/staff/staff-table.tsx': {
@@ -93,7 +94,7 @@ const todoFixes = {
       {
         pattern: /\/\/ TODO: Implement staff deletion/,
         replacement: `// Delete staff member
-        await fetch(\`/api/staff/\${staffId}\`, { method: 'DELETE' });`
+        await fetch(\`/api/staff/\${staffId}\`, { method: 'DELETE' });`,
       },
       {
         pattern: /\/\/ TODO: Implement status toggle/,
@@ -102,9 +103,9 @@ const todoFixes = {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isActive: !currentStatus })
-        });`
-      }
-    ]
+        });`,
+      },
+    ],
   },
 
   '/lib/marketing/workflow-engine.ts': {
@@ -112,70 +113,70 @@ const todoFixes = {
     replacement: `// Schedule workflow execution via cron
       const cronJob = cron.schedule(cronExpression, async () => {
         await this.executeWorkflow(workflowId);
-      });`
-  }
-};
+      });`,
+  },
+}
 
-let totalTodosFixed = 0;
-let filesModified = [];
+let totalTodosFixed = 0
+let filesModified = []
 
 function fixTodosInFile(filePath, fixes) {
   try {
-    let content = fs.readFileSync(filePath, 'utf8');
-    let modified = false;
+    let content = fs.readFileSync(filePath, 'utf8')
+    let modified = false
 
     if (fixes.patterns) {
       // Multiple patterns for this file
       for (const fix of fixes.patterns) {
         if (content.includes(fix.pattern.source || fix.pattern)) {
-          content = content.replace(fix.pattern, fix.replacement);
-          modified = true;
-          totalTodosFixed++;
+          content = content.replace(fix.pattern, fix.replacement)
+          modified = true
+          totalTodosFixed++
         }
       }
     } else if (fixes.pattern) {
       // Single pattern
       if (content.includes(fixes.pattern.source || fixes.pattern)) {
-        content = content.replace(fixes.pattern, fixes.replacement);
-        modified = true;
-        totalTodosFixed++;
+        content = content.replace(fixes.pattern, fixes.replacement)
+        modified = true
+        totalTodosFixed++
       }
     }
 
     if (modified) {
-      fs.writeFileSync(filePath, content);
-      filesModified.push(filePath.replace('/root/websites/gangrunprinting/', ''));
-      return true;
+      fs.writeFileSync(filePath, content)
+      filesModified.push(filePath.replace('/root/websites/gangrunprinting/', ''))
+      return true
     }
 
-    return false;
+    return false
   } catch (error) {
-    console.error(`Error processing ${filePath}:`, error.message);
-    return false;
+    console.error(`Error processing ${filePath}:`, error.message)
+    return false
   }
 }
 
-console.log('🔥 BMAD TODO Fixer Starting...\n');
+console.log('🔥 BMAD TODO Fixer Starting...\n')
 
-const projectRoot = '/root/websites/gangrunprinting';
+const projectRoot = '/root/websites/gangrunprinting'
 
 for (const [relativePath, fixes] of Object.entries(todoFixes)) {
-  const fullPath = path.join(projectRoot, 'src', relativePath);
+  const fullPath = path.join(projectRoot, 'src', relativePath)
   if (fs.existsSync(fullPath)) {
-    fixTodosInFile(fullPath, fixes);
+    fixTodosInFile(fullPath, fixes)
   }
 }
 
-console.log('\n✅ TODO Fixes Complete!');
-console.log('📊 Statistics:');
-console.log(`   TODOs Fixed: ${totalTodosFixed}`);
-console.log(`   Files Modified: ${filesModified.length}`);
+console.log('\n✅ TODO Fixes Complete!')
+console.log('📊 Statistics:')
+console.log(`   TODOs Fixed: ${totalTodosFixed}`)
+console.log(`   Files Modified: ${filesModified.length}`)
 
 if (filesModified.length > 0) {
-  console.log('\n📝 Modified Files:');
-  filesModified.forEach(file => {
-    console.log(`   ${file}`);
-  });
+  console.log('\n📝 Modified Files:')
+  filesModified.forEach((file) => {
+    console.log(`   ${file}`)
+  })
 }
 
-process.exit(0);
+process.exit(0)

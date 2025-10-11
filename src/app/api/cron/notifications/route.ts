@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-
 // For Vercel Cron Jobs
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

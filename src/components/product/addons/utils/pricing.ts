@@ -15,7 +15,7 @@ export function calculateVariableDataPrice(quantity: number): number {
   const baseFee = 60
   const perPieceRate = 0.02
 
-  return baseFee + (perPieceRate * validQuantity)
+  return baseFee + perPieceRate * validQuantity
 }
 
 /**
@@ -31,7 +31,7 @@ export function calculatePerforationPrice(quantity: number): number {
   const setupFee = 20
   const perPieceRate = 0.01
 
-  return setupFee + (perPieceRate * validQuantity)
+  return setupFee + perPieceRate * validQuantity
 }
 
 /**
@@ -46,7 +46,7 @@ export function calculateBandingPrice(quantity: number, bundleSize: number): num
 
   // Default bundle size if invalid or not provided
   const DEFAULT_BUNDLE_SIZE = 100
-  const validBundleSize = (bundleSize && bundleSize > 0) ? bundleSize : DEFAULT_BUNDLE_SIZE
+  const validBundleSize = bundleSize && bundleSize > 0 ? bundleSize : DEFAULT_BUNDLE_SIZE
 
   // Calculate number of bundles needed
   const bundles = validQuantity > 0 ? Math.ceil(validQuantity / validBundleSize) : 0
@@ -55,7 +55,7 @@ export function calculateBandingPrice(quantity: number, bundleSize: number): num
   const baseFee = 15
   const perBundleRate = 0.5
 
-  return validQuantity > 0 ? baseFee + (perBundleRate * bundles) : 0
+  return validQuantity > 0 ? baseFee + perBundleRate * bundles : 0
 }
 
 /**
@@ -71,7 +71,7 @@ export function calculateCornerRoundingPrice(quantity: number): number {
   const setupFee = 25
   const perPieceRate = 0.02
 
-  return setupFee + (perPieceRate * validQuantity)
+  return setupFee + perPieceRate * validQuantity
 }
 
 /**

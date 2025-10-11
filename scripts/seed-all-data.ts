@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStocks() {
-
   const paperStocks = [
     // Business Card Papers
     {
@@ -245,11 +244,9 @@ async function seedPaperStocks() {
       create: stock,
     })
   }
-
 }
 
 async function seedSizeGroups() {
-
   const sizeGroups = [
     {
       name: 'Business Card Sizes',
@@ -320,11 +317,9 @@ async function seedSizeGroups() {
       create: group,
     })
   }
-
 }
 
 async function seedQuantityGroups() {
-
   const quantityGroups = [
     {
       name: 'Business Card Quantities',
@@ -395,11 +390,9 @@ async function seedQuantityGroups() {
       create: group,
     })
   }
-
 }
 
 async function seedAddOns() {
-
   const addOns = [
     {
       name: 'Rounded Corners',
@@ -556,11 +549,9 @@ async function seedAddOns() {
       create: addOn,
     })
   }
-
 }
 
 async function seedCategories() {
-
   const categories = [
     {
       id: 'business-cards',
@@ -641,11 +632,9 @@ async function seedCategories() {
       create: { ...category, createdAt: new Date(), updatedAt: new Date() },
     })
   }
-
 }
 
 async function seedSidesAndCoatings() {
-
   // Sides options
   const sidesOptions = [
     {
@@ -703,19 +692,16 @@ async function seedSidesAndCoatings() {
       create: option,
     })
   }
-
 }
 
 async function main() {
   try {
-
     await seedCategories()
     await seedPaperStocks()
     await seedSizeGroups()
     await seedQuantityGroups()
     await seedAddOns()
     await seedSidesAndCoatings()
-
   } catch (error) {
     console.error('❌ Error seeding database:', error)
     throw error

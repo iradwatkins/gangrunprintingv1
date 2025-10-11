@@ -35,19 +35,19 @@ export function AddonsModule({
       <AddonAccordion
         addons={addons}
         addonsGrouped={addonsGrouped}
+        bandingConfig={bandingConfig}
+        cornerRoundingConfig={cornerRoundingConfig}
         disabled={disabled}
+        perforationConfig={perforationConfig}
+        quantity={quantity}
         selectedAddons={selectedAddons}
         turnaroundTimes={turnaroundTimes}
-        quantity={quantity}
-        onAddonChange={onAddonChange}
         variableDataConfig={variableDataConfig}
-        onVariableDataChange={onVariableDataChange}
-        perforationConfig={perforationConfig}
-        onPerforationChange={onPerforationChange}
-        bandingConfig={bandingConfig}
+        onAddonChange={onAddonChange}
         onBandingChange={onBandingChange}
-        cornerRoundingConfig={cornerRoundingConfig}
         onCornerRoundingChange={onCornerRoundingChange}
+        onPerforationChange={onPerforationChange}
+        onVariableDataChange={onVariableDataChange}
       />
     </div>
   )

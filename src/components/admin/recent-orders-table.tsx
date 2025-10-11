@@ -52,7 +52,10 @@ interface RecentOrdersTableProps {
   orders: Order[]
 }
 
-const statusConfig: Record<string, { label: string; variant: Record<string, unknown>; icon: Record<string, unknown> }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: Record<string, unknown>; icon: Record<string, unknown> }
+> = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',
     variant: 'secondary',

@@ -10,8 +10,8 @@ async function main() {
   const existing = await prisma.productAddOnSet.findFirst({
     where: {
       productId: productId,
-      addOnSetId: addonSetId
-    }
+      addOnSetId: addonSetId,
+    },
   })
 
   if (existing) {
@@ -25,8 +25,8 @@ async function main() {
       id: 'product_design_assignment',
       productId: productId,
       addOnSetId: addonSetId,
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   })
 
   console.log('Assigned Design Services addon set to printing product:', assignment.id)

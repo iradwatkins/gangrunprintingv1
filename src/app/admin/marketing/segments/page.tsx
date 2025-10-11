@@ -119,7 +119,7 @@ export default function SegmentsPage() {
         setSegments(data)
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -151,8 +151,7 @@ export default function SegmentsPage() {
           rules: [{ field: '', operator: '', value: '', type: 'user' }],
         })
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleRefreshSegment = async (segmentId: string) => {
@@ -164,8 +163,7 @@ export default function SegmentsPage() {
       if (response.ok) {
         fetchSegments() // Refresh the list
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleDeleteSegment = async (segmentId: string) => {
@@ -179,8 +177,7 @@ export default function SegmentsPage() {
       if (response.ok) {
         setSegments((prev) => prev.filter((s) => s.id !== segmentId))
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const addRule = () => {

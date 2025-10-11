@@ -54,6 +54,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         description: data.description,
         sortOrder: data.sortOrder,
         isActive: data.isActive,
+        isHidden: data.isHidden ?? false,
+        parentCategoryId: data.parentCategoryId || null,
         updatedAt: new Date(),
       },
     })
@@ -91,17 +93,23 @@ export async function DELETE(
       user = authResult.user
       session = authResult.session
     } catch (authError) {
-      return NextResponse.json({
-        error: 'Authentication failed',
-        details: process.env.NODE_ENV === 'development' ? String(authError) : undefined
-      }, { status: 401 })
+      return NextResponse.json(
+        {
+          error: 'Authentication failed',
+          details: process.env.NODE_ENV === 'development' ? String(authError) : undefined,
+        },
+        { status: 401 }
+      )
     }
 
     if (!session || !user || user.role !== 'ADMIN') {
-      return NextResponse.json({
-        error: 'Unauthorized - Admin access required',
-        details: { hasSession: !!session, hasUser: !!user, userRole: user?.role }
-      }, { status: 401 })
+      return NextResponse.json(
+        {
+          error: 'Unauthorized - Admin access required',
+          details: { hasSession: !!session, hasUser: !!user, userRole: user?.role },
+        },
+        { status: 401 }
+      )
     }
 
     // Check if category has products
@@ -143,23 +151,28 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Category deleted successfully' })
   } catch (error: any) {
-
     // Handle Prisma-specific errors
     if (error?.code === 'P2025') {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
     if (error?.code === 'P2003') {
-      return NextResponse.json({
-        error: 'Cannot delete category: It has related records that depend on it'
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Cannot delete category: It has related records that depend on it',
+        },
+        { status: 400 }
+      )
     }
 
     if (error instanceof Error) {
-      return NextResponse.json({
-        error: `Delete failed: ${error.message}`,
-        details: process.env.NODE_ENV === 'development' ? error : undefined
-      }, { status: 500 })
+      return NextResponse.json(
+        {
+          error: `Delete failed: ${error.message}`,
+          details: process.env.NODE_ENV === 'development' ? error : undefined,
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 })

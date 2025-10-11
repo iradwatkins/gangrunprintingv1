@@ -20,11 +20,11 @@ export function PriceCalculator({
   getQuantityValue,
   setupFee = 0,
   productionTime = 3,
-  className = ''
+  className = '',
 }: PriceCalculatorProps) {
   const { calculateFinalPrice, getPriceBreakdown } = usePriceCalculation({
     configData,
-    getQuantityValue
+    getQuantityValue,
   })
 
   const finalPrice = calculateFinalPrice(configuration)
@@ -76,7 +76,9 @@ export function PriceCalculator({
 
         {priceBreakdown.turnaroundCost > 0 && (
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Turnaround ({priceBreakdown.turnaroundDescription}):</span>
+            <span className="text-muted-foreground">
+              Turnaround ({priceBreakdown.turnaroundDescription}):
+            </span>
             <span>${priceBreakdown.turnaroundCost.toFixed(2)}</span>
           </div>
         )}

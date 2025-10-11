@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { themeManager } from '@/lib/theme-manager'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const activeTheme = await themeManager.getActiveTheme()
 

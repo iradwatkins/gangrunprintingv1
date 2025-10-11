@@ -120,7 +120,7 @@ export default function CampaignsPage() {
         setCampaigns(data.campaigns || [])
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -132,8 +132,7 @@ export default function CampaignsPage() {
         const data = await response.json()
         setSegments(data)
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleCreateCampaign = async () => {
@@ -162,8 +161,7 @@ export default function CampaignsPage() {
           router.push(`/admin/marketing/email-builder?campaignId=${campaign.id}`)
         }
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleSendCampaign = async (campaignId: string) => {
@@ -175,8 +173,7 @@ export default function CampaignsPage() {
       if (response.ok) {
         fetchCampaigns() // Refresh the list
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleDeleteCampaign = async (campaignId: string) => {
@@ -190,8 +187,7 @@ export default function CampaignsPage() {
       if (response.ok) {
         setCampaigns((prev) => prev.filter((c) => c.id !== campaignId))
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const filteredCampaigns = campaigns.filter((campaign) => {

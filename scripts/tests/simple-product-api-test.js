@@ -12,7 +12,6 @@ const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 const prisma = new PrismaClient()
 
 async function createProducts() {
-
   try {
     // Create authentication session
 
@@ -120,7 +119,6 @@ async function createProducts() {
 
         if (response.ok) {
           const data = await response.json()
-
         } else {
           const errorData = await response.json().catch(() => ({}))
           console.log(
@@ -128,12 +126,9 @@ async function createProducts() {
           )
 
           if (errorData.details) {
-
           }
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
 
       console.log('') // Empty line
     }

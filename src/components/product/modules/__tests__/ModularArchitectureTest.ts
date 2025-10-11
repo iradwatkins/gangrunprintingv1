@@ -21,12 +21,14 @@ const MOCK_QUANTITY_CONTRIBUTION: ModulePricingContribution = {
   isValid: true,
   calculation: {
     description: '5000 business cards',
-    breakdown: [{
-      type: 'quantity',
-      item: '5000 units',
-      cost: 5000
-    }]
-  }
+    breakdown: [
+      {
+        type: 'quantity',
+        item: '5000 units',
+        cost: 5000,
+      },
+    ],
+  },
 }
 
 const MOCK_PAPER_STOCK_CONTRIBUTION: ModulePricingContribution = {
@@ -38,9 +40,9 @@ const MOCK_PAPER_STOCK_CONTRIBUTION: ModulePricingContribution = {
     breakdown: [
       { type: 'paper', item: '14pt Cardstock', cost: 0.06 },
       { type: 'coating', item: 'Gloss UV', cost: 1.25 },
-      { type: 'sides', item: '4/4 (both sides)', cost: 1.2 }
-    ]
-  }
+      { type: 'sides', item: '4/4 (both sides)', cost: 1.2 },
+    ],
+  },
 }
 
 const MOCK_SIZE_CONTRIBUTION: ModulePricingContribution = {
@@ -49,12 +51,14 @@ const MOCK_SIZE_CONTRIBUTION: ModulePricingContribution = {
   isValid: true,
   calculation: {
     description: '3.5" x 2" (7 square inches)',
-    breakdown: [{
-      type: 'size',
-      item: '7 square inches',
-      cost: 1.0
-    }]
-  }
+    breakdown: [
+      {
+        type: 'size',
+        item: '7 square inches',
+        cost: 1.0,
+      },
+    ],
+  },
 }
 
 const MOCK_ADDONS_CONTRIBUTION: ModulePricingContribution = {
@@ -68,9 +72,9 @@ const MOCK_ADDONS_CONTRIBUTION: ModulePricingContribution = {
     breakdown: [
       { type: 'addon_flat', item: 'Setup fee', cost: 25 },
       { type: 'addon_per_unit', item: 'Rounded corners', cost: 0.02 },
-      { type: 'addon_percentage', item: 'Foil stamping (15%)', cost: 0.15 }
-    ]
-  }
+      { type: 'addon_percentage', item: 'Foil stamping (15%)', cost: 0.15 },
+    ],
+  },
 }
 
 const MOCK_TURNAROUND_CONTRIBUTION: ModulePricingContribution = {
@@ -79,12 +83,14 @@ const MOCK_TURNAROUND_CONTRIBUTION: ModulePricingContribution = {
   isValid: true,
   calculation: {
     description: 'Rush delivery (1-2 days)',
-    breakdown: [{
-      type: 'turnaround',
-      item: 'Rush charge (50%)',
-      cost: 1.5
-    }]
-  }
+    breakdown: [
+      {
+        type: 'turnaround',
+        item: 'Rush charge (50%)',
+        cost: 1.5,
+      },
+    ],
+  },
 }
 
 const MOCK_IMAGE_CONTRIBUTION: ModulePricingContribution = {
@@ -93,12 +99,14 @@ const MOCK_IMAGE_CONTRIBUTION: ModulePricingContribution = {
   isValid: true,
   calculation: {
     description: 'Images (no pricing impact)',
-    breakdown: [{
-      type: 'info',
-      item: 'Image uploads are optional',
-      cost: 0
-    }]
-  }
+    breakdown: [
+      {
+        type: 'info',
+        item: 'Image uploads are optional',
+        cost: 0,
+      },
+    ],
+  },
 }
 
 describe('Ultra-Independent Modular Architecture', () => {
@@ -139,7 +147,7 @@ describe('Ultra-Independent Modular Architecture', () => {
       // - 5000 × $0.02 = $100 per unit cost
       // - $600 × 15% = $90 percentage cost
       // Total addon cost: $25 + $100 + $90 = $215
-      const expectedAddonCost = 25 + (5000 * 0.02) + (600 * 0.15)
+      const expectedAddonCost = 25 + 5000 * 0.02 + 600 * 0.15
       expect(context.productPrice).toBe(600 + expectedAddonCost) // base + addons
     })
 
@@ -159,7 +167,7 @@ describe('Ultra-Independent Modular Architecture', () => {
       const productPrice = 600 + 215 // base + addons
 
       // Expected final price: product price × 1.5 (50% rush)
-      const expectedFinalPrice = productPrice + (productPrice * 0.5)
+      const expectedFinalPrice = productPrice + productPrice * 0.5
       expect(context.finalPrice).toBeCloseTo(expectedFinalPrice, 2)
     })
   })
@@ -252,9 +260,11 @@ describe('Ultra-Independent Modular Architecture', () => {
 
       // Breakdown should show all components
       expect(breakdown.breakdown).toHaveLength(3) // base, addons, turnaround
-      expect(breakdown.breakdown.find(item => item.module === ModuleType.QUANTITY)).toBeDefined()
-      expect(breakdown.breakdown.find(item => item.module === ModuleType.ADDONS)).toBeDefined()
-      expect(breakdown.breakdown.find(item => item.module === ModuleType.TURNAROUND)).toBeDefined()
+      expect(breakdown.breakdown.find((item) => item.module === ModuleType.QUANTITY)).toBeDefined()
+      expect(breakdown.breakdown.find((item) => item.module === ModuleType.ADDONS)).toBeDefined()
+      expect(
+        breakdown.breakdown.find((item) => item.module === ModuleType.TURNAROUND)
+      ).toBeDefined()
     })
   })
 
@@ -267,7 +277,7 @@ describe('Ultra-Independent Modular Architecture', () => {
       // Add invalid paper stock
       const invalidPaper: ModulePricingContribution = {
         basePrice: 0,
-        isValid: false
+        isValid: false,
       }
       pricingEngine.updateModuleContribution(ModuleType.PAPER_STOCK, invalidPaper)
 
@@ -387,10 +397,10 @@ describe('Ultra-Independent Modular Architecture', () => {
       // Final price: product_price × turnaround_multiplier
       // $815 × 1.5 = $1222.50
       const productPrice = 815
-      const expectedFinalPrice = productPrice + (productPrice * 0.5)
+      const expectedFinalPrice = productPrice + productPrice * 0.5
       expect(context.finalPrice).toBeCloseTo(expectedFinalPrice, 2)
     })
   })
 })
 
-export { }
+export {}

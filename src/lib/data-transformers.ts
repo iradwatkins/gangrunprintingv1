@@ -16,7 +16,7 @@ import type {
   TransformedSize,
   TransformedQuantity,
   TransformedPaperStock,
-  TransformedAddon
+  TransformedAddon,
 } from '@/types/product'
 
 /**
@@ -59,8 +59,12 @@ export function transformProductForFrontend(product: Product): TransformedProduc
     ProductCategory: transformCategoryForFrontend(product.productCategory || product.category),
     ProductImages: transformImagesForFrontend(product.productImages || product.images || []),
     ProductSizes: transformSizesForFrontend(product.productSizes || product.sizes || []),
-    ProductQuantities: transformQuantitiesForFrontend(product.productQuantities || product.quantities || []),
-    ProductPaperStocks: transformPaperStocksForFrontend(product.productPaperStocks || product.paperStocks || []),
+    ProductQuantities: transformQuantitiesForFrontend(
+      product.productQuantities || product.quantities || []
+    ),
+    ProductPaperStocks: transformPaperStocksForFrontend(
+      product.productPaperStocks || product.paperStocks || []
+    ),
     ProductAddons: transformAddonsForFrontend(product.productAddons || product.addons || []),
 
     // New group-based fields (keep raw for now)
@@ -76,7 +80,9 @@ export function transformProductForFrontend(product: Product): TransformedProduc
   }
 }
 
-export function transformCategoryForFrontend(category: ProductCategory | undefined | null): TransformedCategory | null {
+export function transformCategoryForFrontend(
+  category: ProductCategory | undefined | null
+): TransformedCategory | null {
   if (!category) return null
 
   return {
@@ -88,10 +94,12 @@ export function transformCategoryForFrontend(category: ProductCategory | undefin
   }
 }
 
-export function transformImagesForFrontend(images: ProductImage[] | undefined | null): TransformedImage[] {
+export function transformImagesForFrontend(
+  images: ProductImage[] | undefined | null
+): TransformedImage[] {
   if (!images || !Array.isArray(images)) return []
 
-  return images.map(img => {
+  return images.map((img) => {
     // Handle nested Image relation from ProductService (ProductImage has Image nested)
     const imageData = (img as any).Image || img
 
@@ -108,10 +116,12 @@ export function transformImagesForFrontend(images: ProductImage[] | undefined | 
   })
 }
 
-export function transformSizesForFrontend(sizes: ProductSize[] | undefined | null): TransformedSize[] {
+export function transformSizesForFrontend(
+  sizes: ProductSize[] | undefined | null
+): TransformedSize[] {
   if (!sizes || !Array.isArray(sizes)) return []
 
-  return sizes.map(size => ({
+  return sizes.map((size) => ({
     Id: size.id,
     ProductId: size.productId || size.product_id,
     Name: size.name,
@@ -122,10 +132,12 @@ export function transformSizesForFrontend(sizes: ProductSize[] | undefined | nul
   }))
 }
 
-export function transformQuantitiesForFrontend(quantities: ProductQuantity[] | undefined | null): TransformedQuantity[] {
+export function transformQuantitiesForFrontend(
+  quantities: ProductQuantity[] | undefined | null
+): TransformedQuantity[] {
   if (!quantities || !Array.isArray(quantities)) return []
 
-  return quantities.map(qty => ({
+  return quantities.map((qty) => ({
     Id: qty.id,
     ProductId: qty.productId || qty.product_id,
     Quantity: qty.quantity,
@@ -134,10 +146,12 @@ export function transformQuantitiesForFrontend(quantities: ProductQuantity[] | u
   }))
 }
 
-export function transformPaperStocksForFrontend(paperStocks: ProductPaperStock[] | undefined | null): TransformedPaperStock[] {
+export function transformPaperStocksForFrontend(
+  paperStocks: ProductPaperStock[] | undefined | null
+): TransformedPaperStock[] {
   if (!paperStocks || !Array.isArray(paperStocks)) return []
 
-  return paperStocks.map(stock => ({
+  return paperStocks.map((stock) => ({
     Id: stock.id,
     Name: stock.name,
     Weight: stock.weight,
@@ -148,10 +162,12 @@ export function transformPaperStocksForFrontend(paperStocks: ProductPaperStock[]
   }))
 }
 
-export function transformAddonsForFrontend(addons: ProductAddon[] | undefined | null): TransformedAddon[] {
+export function transformAddonsForFrontend(
+  addons: ProductAddon[] | undefined | null
+): TransformedAddon[] {
   if (!addons || !Array.isArray(addons)) return []
 
-  return addons.map(addon => ({
+  return addons.map((addon) => ({
     Id: addon.id,
     Name: addon.name,
     Description: addon.description,
@@ -165,7 +181,9 @@ export function transformAddonsForFrontend(addons: ProductAddon[] | undefined | 
 /**
  * Transform multiple products
  */
-export function transformProductsForFrontend(products: Product[] | undefined | null): (TransformedProduct | null)[] {
+export function transformProductsForFrontend(
+  products: Product[] | undefined | null
+): (TransformedProduct | null)[] {
   if (!products || !Array.isArray(products)) return []
   return products.map(transformProductForFrontend)
 }
@@ -173,12 +191,19 @@ export function transformProductsForFrontend(products: Product[] | undefined | n
 /**
  * Error boundary wrapper for safe image URL handling
  */
-export function safeImageUrl(imageUrl: string | undefined | null, fallback = '/placeholder.jpg'): string {
+export function safeImageUrl(
+  imageUrl: string | undefined | null,
+  fallback = '/placeholder.jpg'
+): string {
   try {
     if (!imageUrl) return fallback
 
     // Check if it's a valid URL
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('/')) {
+    if (
+      imageUrl.startsWith('http://') ||
+      imageUrl.startsWith('https://') ||
+      imageUrl.startsWith('/')
+    ) {
       return imageUrl
     }
 
@@ -193,7 +218,10 @@ export function safeImageUrl(imageUrl: string | undefined | null, fallback = '/p
 /**
  * Get primary image URL with error handling
  */
-export function getPrimaryImageUrl(product: Product | TransformedProduct, fallback = '/placeholder.jpg'): string {
+export function getPrimaryImageUrl(
+  product: Product | TransformedProduct,
+  fallback = '/placeholder.jpg'
+): string {
   try {
     const images = product.productImages || product.ProductImages || product.images || []
 
@@ -202,9 +230,10 @@ export function getPrimaryImageUrl(product: Product | TransformedProduct, fallba
     }
 
     // Find primary image or use first image
-    const primaryImage = images.find((img: ProductImage | TransformedImage) =>
-      'isPrimary' in img ? img.isPrimary : (img as TransformedImage).IsPrimary
-    ) || images[0]
+    const primaryImage =
+      images.find((img: ProductImage | TransformedImage) =>
+        'isPrimary' in img ? img.isPrimary : (img as TransformedImage).IsPrimary
+      ) || images[0]
 
     return safeImageUrl(primaryImage?.url || primaryImage?.Url, fallback)
   } catch (error) {

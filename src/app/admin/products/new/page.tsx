@@ -74,7 +74,7 @@ export default function NewProductPage() {
   // Calculate completion progress
   const calculateProgress = () => {
     let completed = 0
-    let total = 8 // Total required fields
+    const total = 8 // Total required fields
 
     if (formData.name) completed++
     if (formData.sku) completed++
@@ -157,7 +157,7 @@ export default function NewProductPage() {
       } else {
         toast.error(err.message || 'Failed to create product')
       }
-      } finally {
+    } finally {
       setSubmitting(false)
     }
   }
@@ -210,7 +210,8 @@ export default function NewProductPage() {
           <AlertTitle>Failed to Load Required Data</AlertTitle>
           <AlertDescription className="mt-2">
             <p className="mb-4">
-              Some required data could not be loaded. This prevents the product creation form from working properly.
+              Some required data could not be loaded. This prevents the product creation form from
+              working properly.
             </p>
             <div className="flex gap-2">
               <Button size="sm" onClick={() => fetchOptions()}>
@@ -229,10 +230,12 @@ export default function NewProductPage() {
 
   // Quick fill for testing
   const handleQuickFill = () => {
-    if (options.categories.length > 0 &&
-        options.quantityGroups.length > 0 &&
-        options.sizeGroups.length > 0 &&
-        options.paperStockSets.length > 0) {
+    if (
+      options.categories.length > 0 &&
+      options.quantityGroups.length > 0 &&
+      options.sizeGroups.length > 0 &&
+      options.paperStockSets.length > 0
+    ) {
       updateFormData({
         name: 'Test Product ' + Date.now(),
         categoryId: options.categories[0].id,
@@ -241,7 +244,8 @@ export default function NewProductPage() {
         selectedSizeGroup: options.sizeGroups[0].id,
         selectedPaperStockSet: options.paperStockSets[0].id,
         selectedAddOnSet: options.addOnSets.length > 0 ? options.addOnSets[0].id : '',
-        selectedTurnaroundTimeSet: options.turnaroundTimeSets.length > 0 ? options.turnaroundTimeSets[0].id : '',
+        selectedTurnaroundTimeSet:
+          options.turnaroundTimeSets.length > 0 ? options.turnaroundTimeSets[0].id : '',
       })
       toast.success('Form filled with test data')
     } else {
@@ -268,30 +272,51 @@ export default function NewProductPage() {
       {/* Workflow Steps */}
       <div className="flex items-center justify-center mb-8 space-x-2">
         <div className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            formData.name && formData.categoryId ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
-          }`}>
-            {formData.name && formData.categoryId ? <CheckCircle2 className="h-5 w-5" /> : <span>1</span>}
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              formData.name && formData.categoryId
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-300 text-gray-600'
+            }`}
+          >
+            {formData.name && formData.categoryId ? (
+              <CheckCircle2 className="h-5 w-5" />
+            ) : (
+              <span>1</span>
+            )}
           </div>
           <span className="ml-2 text-sm font-medium">Basic Info</span>
         </div>
         <ChevronRight className="h-5 w-5 text-gray-400" />
         <div className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            formData.selectedQuantityGroup && formData.selectedSizeGroup && formData.selectedPaperStockSet
-              ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
-          }`}>
-            {formData.selectedQuantityGroup && formData.selectedSizeGroup && formData.selectedPaperStockSet
-              ? <CheckCircle2 className="h-5 w-5" /> : <span>2</span>}
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              formData.selectedQuantityGroup &&
+              formData.selectedSizeGroup &&
+              formData.selectedPaperStockSet
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-300 text-gray-600'
+            }`}
+          >
+            {formData.selectedQuantityGroup &&
+            formData.selectedSizeGroup &&
+            formData.selectedPaperStockSet ? (
+              <CheckCircle2 className="h-5 w-5" />
+            ) : (
+              <span>2</span>
+            )}
           </div>
           <span className="ml-2 text-sm font-medium">Specifications</span>
         </div>
         <ChevronRight className="h-5 w-5 text-gray-400" />
         <div className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            formData.selectedAddOnSet || formData.selectedTurnaroundTimeSet
-              ? 'bg-purple-500 text-white' : 'bg-gray-300 text-gray-600'
-          }`}>
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              formData.selectedAddOnSet || formData.selectedTurnaroundTimeSet
+                ? 'bg-purple-500 text-white'
+                : 'bg-gray-300 text-gray-600'
+            }`}
+          >
             <span>3</span>
           </div>
           <span className="ml-2 text-sm font-medium">Options</span>
@@ -309,18 +334,14 @@ export default function NewProductPage() {
         </div>
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            onClick={handleQuickFill}
             className="border-purple-300 text-purple-600 hover:bg-purple-50"
             title="Quick fill form with test data"
+            variant="outline"
+            onClick={handleQuickFill}
           >
             Quick Fill (Test)
           </Button>
-          <Button
-            disabled={testing}
-            variant="outline"
-            onClick={testPrice}
-          >
+          <Button disabled={testing} variant="outline" onClick={testPrice}>
             {testing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -328,18 +349,13 @@ export default function NewProductPage() {
             )}
             <span className="ml-2">Test Price</span>
           </Button>
-          <Button
-            disabled={submitting}
-            onClick={handleSubmit}
-          >
+          <Button disabled={submitting} onClick={handleSubmit}>
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
             )}
-            <span className="ml-2">
-              {submitting ? 'Creating...' : 'Create Product'}
-            </span>
+            <span className="ml-2">{submitting ? 'Creating...' : 'Create Product'}</span>
           </Button>
         </div>
       </div>
@@ -347,6 +363,7 @@ export default function NewProductPage() {
       {/* Main Form */}
       <div className="grid gap-6">
         <ProductBasicInfo
+          categories={options.categories}
           formData={{
             name: formData.name,
             sku: formData.sku,
@@ -355,13 +372,13 @@ export default function NewProductPage() {
             isActive: formData.isActive,
             isFeatured: formData.isFeatured,
           }}
-          categories={options.categories}
           onUpdate={updateFormData}
         />
 
         <ProductImageUpload
-          imageUrl={formData.imageUrl}
           imageData={formData.imageData}
+          imageUrl={formData.imageUrl}
+          productName={formData.name}
           onImageUpdate={(url, imageData) => updateFormData({ imageUrl: url, imageData })}
         />
 
@@ -371,38 +388,30 @@ export default function NewProductPage() {
             selectedSizeGroup: formData.selectedSizeGroup,
             selectedPaperStockSet: formData.selectedPaperStockSet,
           }}
+          paperStockSets={options.paperStockSets}
           quantityGroups={options.quantityGroups}
           sizeGroups={options.sizeGroups}
-          paperStockSets={options.paperStockSets}
           onUpdate={updateFormData}
         />
 
         <ProductAdditionalOptions
+          addOnSets={options.addOnSets}
           formData={{
             selectedAddOnSet: formData.selectedAddOnSet,
             selectedTurnaroundTimeSet: formData.selectedTurnaroundTimeSet,
           }}
-          addOnSets={options.addOnSets}
           turnaroundTimeSets={options.turnaroundTimeSets}
           onUpdate={updateFormData}
         />
 
         {/* Bottom Action Buttons */}
         <div className="flex justify-between items-center py-6 border-t">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => router.push('/admin/products')}
-          >
+          <Button size="sm" variant="ghost" onClick={() => router.push('/admin/products')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Cancel
           </Button>
           <div className="flex gap-2">
-            <Button
-              disabled={testing}
-              variant="outline"
-              onClick={testPrice}
-            >
+            <Button disabled={testing} variant="outline" onClick={testPrice}>
               {testing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -411,19 +420,17 @@ export default function NewProductPage() {
               <span className="ml-2">Test Price</span>
             </Button>
             <Button
-              disabled={submitting}
-              onClick={handleSubmit}
-              size="lg"
               className="bg-blue-600 hover:bg-blue-700"
+              disabled={submitting}
+              size="lg"
+              onClick={handleSubmit}
             >
               {submitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              <span className="ml-2">
-                {submitting ? 'Creating...' : 'Create Product'}
-              </span>
+              <span className="ml-2">{submitting ? 'Creating...' : 'Create Product'}</span>
             </Button>
           </div>
         </div>

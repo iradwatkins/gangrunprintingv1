@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { OrderStatus } from '@prisma/client'
+import { type OrderStatus } from '@prisma/client'
 import {
   Select,
   SelectContent,
@@ -112,7 +112,7 @@ export function OrderStatusDropdown({
 
       setStatus(newStatus)
       toast.success(`Order status updated to ${statusConfig[newStatus]?.label || newStatus}`)
-      
+
       // Call the callback if provided
       onStatusChange?.()
     } catch (error) {
@@ -132,9 +132,9 @@ export function OrderStatusDropdown({
 
   return (
     <Select
+      disabled={isUpdating}
       value={status}
       onValueChange={(value) => handleStatusChange(value as OrderStatus)}
-      disabled={isUpdating}
     >
       <SelectTrigger className="w-[180px] border-0 p-0 h-auto">
         <SelectValue>

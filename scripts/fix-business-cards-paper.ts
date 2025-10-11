@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function fixBusinessCardsPaper() {
-
   try {
     // Find the Premium Business Cards product
     const product = await prisma.product.findUnique({
@@ -11,7 +10,6 @@ async function fixBusinessCardsPaper() {
     })
 
     if (!product) {
-
       return
     }
 
@@ -21,7 +19,6 @@ async function fixBusinessCardsPaper() {
     })
 
     if (!paperStockSet) {
-
       return
     }
 
@@ -34,7 +31,6 @@ async function fixBusinessCardsPaper() {
     })
 
     if (existing) {
-
     } else {
       // Link the paper stock set to the product
       await prisma.productPaperStockSet.create({
@@ -44,7 +40,6 @@ async function fixBusinessCardsPaper() {
           isDefault: true,
         },
       })
-
     }
 
     // Also fix the missing size group
@@ -67,7 +62,6 @@ async function fixBusinessCardsPaper() {
             sizeGroupId: sizeGroup.id,
           },
         })
-
       }
     }
 
@@ -92,7 +86,6 @@ async function fixBusinessCardsPaper() {
         },
       },
     })
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

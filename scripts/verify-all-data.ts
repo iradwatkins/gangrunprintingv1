@@ -3,8 +3,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function verifyAllData() {
-
-  console.log('=' .repeat(50))
+  console.log('='.repeat(50))
 
   try {
     // 1. Products
@@ -12,13 +11,11 @@ async function verifyAllData() {
       include: {
         productPaperStockSets: true,
         productAddOnSets: true,
-        productTurnaroundTimeSets: true
-      }
+        productTurnaroundTimeSets: true,
+      },
     })
 
-    products.forEach(p => {
-
-    })
+    products.forEach((p) => {})
 
     // 2. Categories
     const categories = await prisma.productCategory.count()
@@ -30,7 +27,7 @@ async function verifyAllData() {
     const paperStockSets = await prisma.paperStockSet.findMany()
     const paperStockItems = await prisma.paperStockSetItem.count()
 
-    paperStockSets.forEach(s => console.log(`   - ${s.name}`))
+    paperStockSets.forEach((s) => console.log(`   - ${s.name}`))
 
     // 5. Quantities
     const quantities = await prisma.quantity.count()
@@ -40,37 +37,43 @@ async function verifyAllData() {
 
     // 7. Add-ons
     const addOns = await prisma.addOn.findMany({
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
 
-    addOns.filter(a =>
-      a.name === 'Corner Rounding' ||
-      a.name === 'Variable Data Printing' ||
-      a.name === 'Perforation' ||
-      a.name === 'Banding'
-    ).forEach(a => console.log(`   ⭐ ${a.name} (${a.isActive ? 'Active' : 'Inactive'})`))
+    addOns
+      .filter(
+        (a) =>
+          a.name === 'Corner Rounding' ||
+          a.name === 'Variable Data Printing' ||
+          a.name === 'Perforation' ||
+          a.name === 'Banding'
+      )
+      .forEach((a) => console.log(`   ⭐ ${a.name} (${a.isActive ? 'Active' : 'Inactive'})`))
 
-    addOns.filter(a =>
-      a.name !== 'Corner Rounding' &&
-      a.name !== 'Variable Data Printing' &&
-      a.name !== 'Perforation' &&
-      a.name !== 'Banding'
-    ).forEach(a => console.log(`   - ${a.name} (${a.isActive ? 'Active' : 'Inactive'})`))
+    addOns
+      .filter(
+        (a) =>
+          a.name !== 'Corner Rounding' &&
+          a.name !== 'Variable Data Printing' &&
+          a.name !== 'Perforation' &&
+          a.name !== 'Banding'
+      )
+      .forEach((a) => console.log(`   - ${a.name} (${a.isActive ? 'Active' : 'Inactive'})`))
 
     // 8. Add-on Sets
     const addOnSets = await prisma.addOnSet.findMany()
     const addOnSetItems = await prisma.addOnSetItem.findMany({
-      include: { addOn: true }
+      include: { addOn: true },
     })
 
     // Show display positions
-    const aboveItems = addOnSetItems.filter(i => i.displayPosition === 'ABOVE_DROPDOWN')
-    const inItems = addOnSetItems.filter(i => i.displayPosition === 'IN_DROPDOWN')
-    const belowItems = addOnSetItems.filter(i => i.displayPosition === 'BELOW_DROPDOWN')
+    const aboveItems = addOnSetItems.filter((i) => i.displayPosition === 'ABOVE_DROPDOWN')
+    const inItems = addOnSetItems.filter((i) => i.displayPosition === 'IN_DROPDOWN')
+    const belowItems = addOnSetItems.filter((i) => i.displayPosition === 'BELOW_DROPDOWN')
 
-    aboveItems.forEach(i => console.log(`     • ${i.addOn.name}`))
+    aboveItems.forEach((i) => console.log(`     • ${i.addOn.name}`))
 
-    belowItems.forEach(i => console.log(`     • ${i.addOn.name}`))
+    belowItems.forEach((i) => console.log(`     • ${i.addOn.name}`))
 
     // 9. Turnaround Times
     const turnaroundTimes = await prisma.turnaroundTime.count()
@@ -79,12 +82,11 @@ async function verifyAllData() {
     const turnaroundTimeSets = await prisma.turnaroundTimeSet.findMany()
     const turnaroundTimeItems = await prisma.turnaroundTimeSetItem.count()
 
-    turnaroundTimeSets.forEach(s => console.log(`   - ${s.name}`))
+    turnaroundTimeSets.forEach((s) => console.log(`   - ${s.name}`))
 
-    console.log('\n' + '=' .repeat(50))
+    console.log('\n' + '='.repeat(50))
 
-    console.log('=' .repeat(50))
-
+    console.log('='.repeat(50))
   } catch (error) {
     console.error('Error during verification:', error)
   } finally {

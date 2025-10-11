@@ -1,9 +1,11 @@
 # EMERGENCY FIX: Chunk Loading Error on Production
 
 ## Problem
+
 Production site is experiencing critical chunk loading errors (ERR_ABORTED 400) preventing pages from loading.
 
 ## Root Cause
+
 - Webpack chunk hash mismatch between build and runtime
 - Client requesting chunks that don't exist on server
 - Build ID inconsistency across deployments
@@ -11,21 +13,25 @@ Production site is experiencing critical chunk loading errors (ERR_ABORTED 400) 
 ## Immediate Fix Steps
 
 ### 1. SSH to Production Server
+
 ```bash
 ssh root@72.60.28.175
 ```
 
 ### 2. Navigate to Application
+
 ```bash
 cd /root/gangrunprinting
 ```
 
 ### 3. Stop Current Application
+
 ```bash
 pm2 stop gangrun || docker stop gangrunprinting || true
 ```
 
 ### 4. Clear All Build Artifacts
+
 ```bash
 rm -rf .next
 rm -rf node_modules/.cache
@@ -33,11 +39,13 @@ rm -rf /var/cache/nginx/*
 ```
 
 ### 5. Pull Latest Changes
+
 ```bash
 git pull origin main
 ```
 
 ### 6. Apply Emergency Config
+
 ```bash
 cat > next.config.mjs << 'EOF'
 /** @type {import('next').NextConfig} */
@@ -99,16 +107,19 @@ EOF
 ```
 
 ### 7. Install Dependencies
+
 ```bash
 npm ci --production --legacy-peer-deps
 ```
 
 ### 8. Build Application
+
 ```bash
 NODE_ENV=production npm run build
 ```
 
 ### 9. Start with PM2
+
 ```bash
 pm2 delete gangrun 2>/dev/null || true
 pm2 start npm --name gangrun -- run start -- -p 3002
@@ -117,12 +128,14 @@ pm2 startup
 ```
 
 ### 10. Clear CDN Cache (CRITICAL)
+
 1. Go to Cloudflare Dashboard
 2. Navigate to Caching → Configuration
 3. Click "Purge Everything"
 4. Wait 2-3 minutes for propagation
 
 ### 11. Test the Fix
+
 ```bash
 # From server
 curl -I http://localhost:3002
@@ -151,6 +164,7 @@ docker run -d \
 ```
 
 ## Verification Checklist
+
 - [ ] No chunk loading errors in browser console
 - [ ] Products page loads correctly
 - [ ] Cart functionality works
@@ -158,7 +172,9 @@ docker run -d \
 - [ ] API endpoints responding
 
 ## Rollback Plan
+
 If the fix doesn't work:
+
 ```bash
 # Restore backup
 cd /root
@@ -169,6 +185,7 @@ pm2 restart gangrun
 ```
 
 ## Long-term Fix (After Emergency)
+
 1. Properly configure webpack chunking strategy
 2. Implement consistent build ID generation
 3. Set up proper CI/CD pipeline
@@ -176,7 +193,9 @@ pm2 restart gangrun
 5. Add monitoring for chunk loading errors
 
 ## Support
+
 If issues persist, check:
+
 - PM2 logs: `pm2 logs gangrun`
 - System logs: `journalctl -u nginx -n 100`
 - Disk space: `df -h`

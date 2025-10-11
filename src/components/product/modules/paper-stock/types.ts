@@ -1,40 +1,44 @@
 import {
   StandardModuleProps,
   StandardModuleValue,
-  PaperStockItem,
+  type PaperStockItem,
   PaperStockValue,
-  CoatingItem,
-  SidesItem,
-  PaperStockModuleProps as StandardPaperStockModuleProps,
-  PaperStockModuleValue as StandardPaperStockModuleValue
+  type CoatingItem,
+  type SidesItem,
+  type PaperStockModuleProps as StandardPaperStockModuleProps,
+  type PaperStockModuleValue as StandardPaperStockModuleValue,
 } from '../types/StandardModuleTypes'
 
 // Use standardized interface with legacy compatibility
 export interface Coating extends CoatingItem {
   priceMultiplier?: number // Legacy makes optional
-  isDefault?: boolean      // Legacy makes optional
+  isDefault?: boolean // Legacy makes optional
 }
 
 export interface SidesOption extends SidesItem {
   priceMultiplier?: number // Legacy makes optional
-  isDefault?: boolean      // Legacy makes optional
-  isEnabled?: boolean      // Additional legacy field
+  isDefault?: boolean // Legacy makes optional
+  isEnabled?: boolean // Additional legacy field
 }
 
 export interface PaperStock extends Omit<PaperStockItem, 'description' | 'pricePerUnit'> {
-  weight?: number              // Additional legacy field
-  description?: string         // Legacy makes optional
-  pricePerUnit?: number        // Legacy makes optional
-  pricePerSqInch?: number      // Additional legacy field
-  tooltipText?: string         // Additional legacy field
-  thumbnailUrl?: string        // Additional legacy field
-  texture?: string             // Additional legacy field
-  coatings: Coating[]          // Use legacy coating type
-  sides: SidesOption[]         // Use legacy sides type
+  weight?: number // Additional legacy field
+  description?: string // Legacy makes optional
+  pricePerUnit?: number // Legacy makes optional
+  pricePerSqInch?: number // Additional legacy field
+  tooltipText?: string // Additional legacy field
+  thumbnailUrl?: string // Additional legacy field
+  texture?: string // Additional legacy field
+  coatings: Coating[] // Use legacy coating type
+  sides: SidesOption[] // Use legacy sides type
 }
 
 // Use standardized props interface with legacy compatibility
-export interface PaperStockModuleProps extends Omit<StandardPaperStockModuleProps, 'onChange' | 'items' | 'value' | 'onCoatingChange' | 'onSidesChange'> {
+export interface PaperStockModuleProps
+  extends Omit<
+    StandardPaperStockModuleProps,
+    'onChange' | 'items' | 'value' | 'onCoatingChange' | 'onSidesChange'
+  > {
   paperStocks: PaperStock[]
   paperValue: string
   coatingValue: string

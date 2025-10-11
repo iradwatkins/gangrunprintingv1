@@ -32,7 +32,9 @@ async function retryWithBackoff<T>(
     } catch (error) {
       lastError = error as Error
       if (attempt === maxAttempts) {
-        throw new Error(`${operationName} failed after ${maxAttempts} attempts: ${lastError.message}`)
+        throw new Error(
+          `${operationName} failed after ${maxAttempts} attempts: ${lastError.message}`
+        )
       }
 
       // Exponential backoff with jitter
@@ -40,8 +42,12 @@ async function retryWithBackoff<T>(
       const jitter = Math.random() * 0.1 * delay // Add up to 10% jitter
       const finalDelay = delay + jitter
 
-      logger.warn(`MinIO operation retry ${attempt}/${maxAttempts}`, { operation: operationName, delay: finalDelay, error: lastError.message })
-      await new Promise(resolve => setTimeout(resolve, finalDelay))
+      logger.warn(`MinIO operation retry ${attempt}/${maxAttempts}`, {
+        operation: operationName,
+        delay: finalDelay,
+        error: lastError.message,
+      })
+      await new Promise((resolve) => setTimeout(resolve, finalDelay))
     }
   }
 
@@ -71,12 +77,12 @@ async function checkMinioHealth(): Promise<boolean> {
  */
 export async function getMinioClient(): Promise<Minio.Client> {
   // Return existing client if healthy and recent health check
-  if (minioClient && isHealthy && (Date.now() - lastHealthCheck) < HEALTH_CHECK_INTERVAL) {
+  if (minioClient && isHealthy && Date.now() - lastHealthCheck < HEALTH_CHECK_INTERVAL) {
     return minioClient
   }
 
   // If we have a client but it's been a while, check health
-  if (minioClient && (Date.now() - lastHealthCheck) >= HEALTH_CHECK_INTERVAL) {
+  if (minioClient && Date.now() - lastHealthCheck >= HEALTH_CHECK_INTERVAL) {
     const healthy = await checkMinioHealth()
     if (healthy) return minioClient
 
@@ -107,16 +113,17 @@ export async function getMinioClient(): Promise<Minio.Client> {
 
       logger.info('MinIO client initialized successfully')
       return minioClient
-
     } catch (error) {
       if (attempt === CONNECTION_RETRY_ATTEMPTS) {
         initError = error as Error
         initAttempted = true
-        throw new Error(`Failed to connect to MinIO after ${CONNECTION_RETRY_ATTEMPTS} attempts: ${error}`)
+        throw new Error(
+          `Failed to connect to MinIO after ${CONNECTION_RETRY_ATTEMPTS} attempts: ${error}`
+        )
       }
 
       // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, CONNECTION_RETRY_DELAY * attempt))
+      await new Promise((resolve) => setTimeout(resolve, CONNECTION_RETRY_DELAY * attempt))
     }
   }
 
@@ -135,7 +142,7 @@ export function getMinioClientSync(): Minio.Client {
 
 const BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'printshop-files'
 
-export async function ensureBucket() : Promise<unknown> {
+export async function ensureBucket(): Promise<unknown> {
   try {
     const client = await getMinioClient()
     const exists = await client.bucketExists(BUCKET_NAME)
@@ -194,7 +201,8 @@ export async function uploadFile(
       await client.putObject(bucket, objectName, buffer, buffer.length, meta)
 
       // Generate public URL using the public endpoint
-      const publicEndpoint = process.env.MINIO_PUBLIC_ENDPOINT || 'https://gangrunprinting.com/minio'
+      const publicEndpoint =
+        process.env.MINIO_PUBLIC_ENDPOINT || 'https://gangrunprinting.com/minio'
       const url = `${publicEndpoint}/${bucket}/${objectName}`
 
       return {
@@ -257,7 +265,7 @@ export async function getFileMetadata(objectName: string) {
   }
 }
 
-export async function initializeBuckets() : Promise<unknown> {
+export async function initializeBuckets(): Promise<unknown> {
   // Skip initialization during build
   if (process.env.NODE_ENV === 'production' && !process.env.MINIO_ENDPOINT) {
     return
@@ -275,7 +283,7 @@ export async function initializeBuckets() : Promise<unknown> {
     } catch (error) {
       // Don't throw - allow app to continue without MinIO
       if (process.env.NODE_ENV === 'production') {
-        }
+      }
     }
   }
 }
@@ -319,7 +327,7 @@ export function isMinioAvailable(): boolean {
 }
 
 // Reset function for testing
-export function resetMinioClient() : unknown {
+export function resetMinioClient(): unknown {
   minioClient = null
   initAttempted = false
   initError = null

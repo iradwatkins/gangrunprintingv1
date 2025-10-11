@@ -3,36 +3,26 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function checkDatabaseData() {
-
   try {
     // Check Paper Stock Sets
     const paperStockSets = await prisma.paperStockSet.findMany()
 
     if (paperStockSets.length > 0) {
-
-      paperStockSets.forEach(set => {
-
-      })
+      paperStockSets.forEach((set) => {})
     }
 
     // Check AddOn Sets
     const addOnSets = await prisma.addOnSet.findMany()
 
     if (addOnSets.length > 0) {
-
-      addOnSets.forEach(set => {
-
-      })
+      addOnSets.forEach((set) => {})
     }
 
     // Check Turnaround Time Sets
     const turnaroundTimeSets = await prisma.turnaroundTimeSet.findMany()
 
     if (turnaroundTimeSets.length > 0) {
-
-      turnaroundTimeSets.forEach(set => {
-
-      })
+      turnaroundTimeSets.forEach((set) => {})
     }
 
     // Check Paper Stocks
@@ -47,22 +37,19 @@ async function checkDatabaseData() {
         productPaperStockSets: true,
         productAddOnSets: true,
         productTurnaroundTimeSets: true,
-      }
+      },
     })
 
-    const productsWithSets = products.filter(p =>
-      p.productPaperStockSets.length > 0 ||
-      p.productAddOnSets.length > 0 ||
-      p.productTurnaroundTimeSets.length > 0
+    const productsWithSets = products.filter(
+      (p) =>
+        p.productPaperStockSets.length > 0 ||
+        p.productAddOnSets.length > 0 ||
+        p.productTurnaroundTimeSets.length > 0
     )
 
     if (productsWithSets.length > 0) {
-
-      productsWithSets.forEach(product => {
-
-      })
+      productsWithSets.forEach((product) => {})
     }
-
   } catch (error) {
     console.error('Error checking database:', error)
   } finally {

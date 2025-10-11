@@ -3,7 +3,11 @@
  * Validates all critical business rules and pricing calculations
  */
 
-import { unifiedPricingEngine, UnifiedPricingRequest, AddonPricingModel } from './unified-pricing-engine'
+import {
+  unifiedPricingEngine,
+  UnifiedPricingRequest,
+  AddonPricingModel,
+} from './unified-pricing-engine'
 
 // Mock catalog data
 const mockCatalog = {
@@ -17,7 +21,7 @@ const mockCatalog = {
       preCalculatedValue: 24, // Backend calculation value
       isCustom: false,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       id: 'size-8.5x11',
@@ -28,8 +32,8 @@ const mockCatalog = {
       preCalculatedValue: 93.5,
       isCustom: false,
       sortOrder: 2,
-      isActive: true
-    }
+      isActive: true,
+    },
   ],
   quantities: [
     {
@@ -39,7 +43,7 @@ const mockCatalog = {
       adjustmentValue: undefined,
       isCustom: false,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     {
       id: 'qty-500',
@@ -48,7 +52,7 @@ const mockCatalog = {
       adjustmentValue: 550, // Override adjustment
       isCustom: false,
       sortOrder: 2,
-      isActive: true
+      isActive: true,
     },
     {
       id: 'qty-5000',
@@ -57,7 +61,7 @@ const mockCatalog = {
       adjustmentValue: undefined,
       isCustom: false,
       sortOrder: 3,
-      isActive: true
+      isActive: true,
     },
     {
       id: 'qty-10000',
@@ -66,8 +70,8 @@ const mockCatalog = {
       adjustmentValue: undefined,
       isCustom: false,
       sortOrder: 4,
-      isActive: true
-    }
+      isActive: true,
+    },
   ],
   paperStocks: [
     {
@@ -78,7 +82,7 @@ const mockCatalog = {
       doubleSidedMultiplier: 1.0,
       paperType: 'cardstock' as const,
       thickness: '14pt',
-      coating: 'UV'
+      coating: 'UV',
     },
     {
       id: 'paper-text-70lb',
@@ -88,8 +92,8 @@ const mockCatalog = {
       doubleSidedMultiplier: 1.75,
       paperType: 'text' as const,
       thickness: '70lb',
-      coating: 'Matte'
-    }
+      coating: 'Matte',
+    },
   ],
   turnarounds: [
     {
@@ -98,7 +102,7 @@ const mockCatalog = {
       businessDays: 7,
       priceMarkupPercent: 0,
       isStandard: true,
-      sortOrder: 1
+      sortOrder: 1,
     },
     {
       id: 'turnaround-rush',
@@ -106,8 +110,8 @@ const mockCatalog = {
       businessDays: 3,
       priceMarkupPercent: 25,
       isStandard: false,
-      sortOrder: 2
-    }
+      sortOrder: 2,
+    },
   ],
   addons: [
     {
@@ -117,7 +121,7 @@ const mockCatalog = {
       pricingModel: AddonPricingModel.FLAT,
       configuration: { flatPrice: 5 },
       isActive: true,
-      sortOrder: 1
+      sortOrder: 1,
     },
     {
       id: 'addon-perforation',
@@ -127,10 +131,10 @@ const mockCatalog = {
       configuration: {
         setupFee: 20,
         pricePerUnit: 0.01,
-        unitType: 'piece'
+        unitType: 'piece',
       },
       isActive: true,
-      sortOrder: 2
+      sortOrder: 2,
     },
     {
       id: 'addon-our-tagline',
@@ -139,10 +143,10 @@ const mockCatalog = {
       pricingModel: AddonPricingModel.PERCENTAGE,
       configuration: {
         percentage: 5,
-        appliesTo: 'base_price'
+        appliesTo: 'base_price',
       },
       isActive: true,
-      sortOrder: 3
+      sortOrder: 3,
     },
     {
       id: 'addon-exact-size',
@@ -151,12 +155,12 @@ const mockCatalog = {
       pricingModel: AddonPricingModel.PERCENTAGE,
       configuration: {
         percentage: 12.5,
-        appliesTo: 'adjusted_base'
+        appliesTo: 'adjusted_base',
       },
       isActive: true,
-      sortOrder: 4
-    }
-  ]
+      sortOrder: 4,
+    },
+  ],
 }
 
 describe('Unified Pricing Engine', () => {
@@ -171,7 +175,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -193,7 +197,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -211,7 +215,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -229,7 +233,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'double',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -249,7 +253,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'double',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -270,7 +274,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -289,7 +293,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       expect(() => {
@@ -317,7 +321,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -329,7 +333,7 @@ describe('Unified Pricing Engine', () => {
     test('should accept custom quantities > 5000 in 5000 increments', () => {
       const validQuantities = [10000, 15000, 20000, 55000, 60000, 100000]
 
-      validQuantities.forEach(qty => {
+      validQuantities.forEach((qty) => {
         const request: UnifiedPricingRequest = {
           sizeSelection: 'standard',
           standardSizeId: 'size-4x6',
@@ -339,7 +343,7 @@ describe('Unified Pricing Engine', () => {
           sides: 'single',
           turnaroundId: 'turnaround-standard',
           selectedAddons: [],
-          isBroker: false
+          isBroker: false,
         }
 
         const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -358,7 +362,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       expect(() => {
@@ -371,10 +375,10 @@ describe('Unified Pricing Engine', () => {
         { input: 6000, lower: 5000, upper: 10000 },
         { input: 12500, lower: 10000, upper: 15000 },
         { input: 57000, lower: 55000, upper: 60000 },
-        { input: 99999, lower: 95000, upper: 100000 }
+        { input: 99999, lower: 95000, upper: 100000 },
       ]
 
-      testCases.forEach(test => {
+      testCases.forEach((test) => {
         const result = unifiedPricingEngine.validateCustomQuantity(test.input)
         expect(result.isValid).toBe(false)
         expect(result.suggestion).toEqual({ lower: test.lower, upper: test.upper })
@@ -395,9 +399,7 @@ describe('Unified Pricing Engine', () => {
         turnaroundId: 'turnaround-standard',
         selectedAddons: [],
         isBroker: true,
-        brokerCategoryDiscounts: [
-          { categoryId: 'cat-business-cards', discountPercent: 10 }
-        ]
+        brokerCategoryDiscounts: [{ categoryId: 'cat-business-cards', discountPercent: 10 }],
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -418,10 +420,8 @@ describe('Unified Pricing Engine', () => {
         paperStockId: 'paper-14pt-cardstock',
         sides: 'single',
         turnaroundId: 'turnaround-standard',
-        selectedAddons: [
-          { addonId: 'addon-our-tagline' }
-        ],
-        isBroker: false
+        selectedAddons: [{ addonId: 'addon-our-tagline' }],
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -442,13 +442,9 @@ describe('Unified Pricing Engine', () => {
         paperStockId: 'paper-14pt-cardstock',
         sides: 'single',
         turnaroundId: 'turnaround-standard',
-        selectedAddons: [
-          { addonId: 'addon-our-tagline' }
-        ],
+        selectedAddons: [{ addonId: 'addon-our-tagline' }],
         isBroker: true,
-        brokerCategoryDiscounts: [
-          { categoryId: 'cat-business-cards', discountPercent: 10 }
-        ]
+        brokerCategoryDiscounts: [{ categoryId: 'cat-business-cards', discountPercent: 10 }],
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -466,10 +462,8 @@ describe('Unified Pricing Engine', () => {
         paperStockId: 'paper-14pt-cardstock',
         sides: 'single',
         turnaroundId: 'turnaround-standard',
-        selectedAddons: [
-          { addonId: 'addon-exact-size' }
-        ],
-        isBroker: false
+        selectedAddons: [{ addonId: 'addon-exact-size' }],
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -493,16 +487,13 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-rush', // 25% markup
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
 
       expect(result.turnaround.markupPercent).toBe(25)
-      expect(result.turnaround.markupAmount).toBeCloseTo(
-        result.totals.afterAdjustments * 0.25,
-        2
-      )
+      expect(result.turnaround.markupAmount).toBeCloseTo(result.totals.afterAdjustments * 0.25, 2)
     })
 
     test('should not apply markup for standard turnaround', () => {
@@ -515,7 +506,7 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard', // 0% markup
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
@@ -536,14 +527,14 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [
-          { addonId: 'addon-digital-proof' } // $5 flat
+          { addonId: 'addon-digital-proof' }, // $5 flat
         ],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
 
-      const digitalProof = result.addons.find(a => a.name === 'Digital Proof')
+      const digitalProof = result.addons.find((a) => a.name === 'Digital Proof')
       expect(digitalProof?.cost).toBe(5)
       expect(result.totalAddonsCost).toBe(5)
     })
@@ -558,15 +549,15 @@ describe('Unified Pricing Engine', () => {
         sides: 'single',
         turnaroundId: 'turnaround-standard',
         selectedAddons: [
-          { addonId: 'addon-perforation' } // $20 setup + $0.01/piece
+          { addonId: 'addon-perforation' }, // $20 setup + $0.01/piece
         ],
-        isBroker: false
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)
 
-      const perforation = result.addons.find(a => a.name === 'Perforation')
-      expect(perforation?.cost).toBe(20 + (0.01 * 5000)) // $20 + $50 = $70
+      const perforation = result.addons.find((a) => a.name === 'Perforation')
+      expect(perforation?.cost).toBe(20 + 0.01 * 5000) // $20 + $50 = $70
       expect(perforation?.calculation).toContain('$20 setup + $0.01 × 5000 pieces')
     })
   })
@@ -581,11 +572,8 @@ describe('Unified Pricing Engine', () => {
         paperStockId: 'paper-14pt-cardstock',
         sides: 'single',
         turnaroundId: 'turnaround-rush',
-        selectedAddons: [
-          { addonId: 'addon-digital-proof' },
-          { addonId: 'addon-exact-size' }
-        ],
-        isBroker: false
+        selectedAddons: [{ addonId: 'addon-digital-proof' }, { addonId: 'addon-exact-size' }],
+        isBroker: false,
       }
 
       const result = unifiedPricingEngine.calculatePrice(request, mockCatalog)

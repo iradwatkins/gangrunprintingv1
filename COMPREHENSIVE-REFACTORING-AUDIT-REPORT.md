@@ -1,4 +1,5 @@
 # GangRun Printing - Comprehensive Code Audit & Refactoring Strategy
+
 **Date:** 2025-10-02
 **Audited By:** BMAD Architect Agent
 **Codebase Size:** 603 TypeScript files, 21,089 total lines of code
@@ -12,6 +13,7 @@
 The GangRun Printing Next.js application has **1,269 TypeScript errors** and **2,310+ ESLint warnings** that need systematic resolution. While the application is functional in production, significant technical debt exists that impacts maintainability, type safety, and code quality.
 
 **Key Findings:**
+
 - **311 Property Access Errors** (TS2339) - Database schema mismatches with code
 - **198 Type Assignment Errors** (TS2322) - Enum/type misalignments
 - **36 Prisma Include Errors** (TS2561) - PascalCase vs camelCase naming inconsistencies
@@ -19,6 +21,7 @@ The GangRun Printing Next.js application has **1,269 TypeScript errors** and **2
 - **200+ ESLint Warnings** - Unused variables, prop sorting, explicit any types
 
 **Risk Assessment:**
+
 - 🔴 **CRITICAL:** 23% of errors (Schema mismatches, security issues)
 - 🟠 **HIGH:** 41% of errors (Type safety, data integrity)
 - 🟡 **MEDIUM:** 28% of errors (Code quality, maintainability)
@@ -35,12 +38,14 @@ The GangRun Printing Next.js application has **1,269 TypeScript errors** and **2
 **Root Cause:** Prisma schema evolution hasn't been reflected in TypeScript code. Properties removed from schema are still referenced in application code.
 
 **Affected Files:**
+
 - `/src/app/api/products/[id]/duplicate/route.ts` (15+ missing properties)
 - `/src/app/api/orders/[id]/reorder/route.ts` (ProductImage vs productImages)
 - `/src/app/api/paper-stock-sets/[id]/route.ts` (paperStockSetItems vs PaperStockSetItem)
 - `/src/app/account/orders/page.tsx` (User.isBroker exists in schema line 1388)
 
 **Missing Properties Referenced in Code:**
+
 ```typescript
 // Schema DOES have these (Prisma line references):
 User.isBroker (line 1388) ✅
@@ -66,6 +71,7 @@ Product.configType ❌
 ```
 
 **Fix Strategy:**
+
 1. **Audit Schema vs Code** (4 hours)
    - Compare Prisma schema with all TypeScript interfaces
    - Create migration script to add missing columns OR remove code references
@@ -86,6 +92,7 @@ Product.configType ❌
    - Standardize: Use Prisma delegate naming conventions
 
 **Recommended Files to Fix First:**
+
 ```
 CRITICAL:
 - /src/app/api/products/[id]/duplicate/route.ts (80+ lines affected)
@@ -100,6 +107,7 @@ CRITICAL:
 **Root Cause:** Code uses outdated OrderStatus values not in Prisma schema enum.
 
 **Schema OrderStatus Enum (Lines 1570-1584):**
+
 ```typescript
 enum OrderStatus {
   PENDING_PAYMENT
@@ -119,25 +127,29 @@ enum OrderStatus {
 ```
 
 **Invalid Values Used in Code:**
+
 - `"PAID"` ❌ (should be `"CONFIRMATION"` or `"PRODUCTION"`)
 - `"PROCESSING"` ❌ (should be `"PRODUCTION"`)
 - `"PRINTING"` ❌ (should be `"PRODUCTION"`)
 - `"PAYMENT_FAILED"` ❌ (should be `"PAYMENT_DECLINED"`)
 
 **Affected Files:**
+
 - `/src/app/admin/dashboard/page.tsx` (lines 88, 97)
 - `/src/app/api/cron/daily-report/route.ts` (lines 58, 130)
 - `/src/types/order.ts` (custom type definition conflicts with Prisma)
 
 **Fix Strategy:**
+
 1. **Create Status Mapping** (3 hours)
+
    ```typescript
    // /src/lib/order-status-mapping.ts
    export const legacyStatusToEnum = {
-     'PAID': 'CONFIRMATION',
-     'PROCESSING': 'PRODUCTION',
-     'PRINTING': 'PRODUCTION',
-     'PAYMENT_FAILED': 'PAYMENT_DECLINED'
+     PAID: 'CONFIRMATION',
+     PROCESSING: 'PRODUCTION',
+     PRINTING: 'PRODUCTION',
+     PAYMENT_FAILED: 'PAYMENT_DECLINED',
    } as const
    ```
 
@@ -158,6 +170,7 @@ enum OrderStatus {
 **Root Cause:** Passing `null` where `undefined` expected, generic error handling.
 
 **Pattern 1: Null vs Undefined**
+
 ```typescript
 // ❌ WRONG
 NextResponse.json({ error: 'Not found' }, null)
@@ -169,6 +182,7 @@ NextResponse.json({ error: 'Not found' })
 ```
 
 **Pattern 2: Unknown Error Types**
+
 ```typescript
 // ❌ WRONG
 catch (error) {
@@ -184,28 +198,39 @@ catch (error) {
 ```
 
 **Fix Strategy:**
+
 1. **Create Error Handler Utility** (3 hours)
+
    ```typescript
    // /src/lib/api-error-handler.ts
    export function handleApiError(error: unknown) {
      if (error instanceof ZodError) {
-       return NextResponse.json({
-         error: 'Validation failed',
-         details: error.format()
-       }, { status: 400 })
+       return NextResponse.json(
+         {
+           error: 'Validation failed',
+           details: error.format(),
+         },
+         { status: 400 }
+       )
      }
 
      if (error instanceof Error) {
        logger.error(error.message, { stack: error.stack })
-       return NextResponse.json({
-         error: 'Internal server error'
-       }, { status: 500 })
+       return NextResponse.json(
+         {
+           error: 'Internal server error',
+         },
+         { status: 500 }
+       )
      }
 
      logger.error('Unknown error', { error })
-     return NextResponse.json({
-       error: 'Unknown error'
-     }, { status: 500 })
+     return NextResponse.json(
+       {
+         error: 'Unknown error',
+       },
+       { status: 500 }
+     )
    }
    ```
 
@@ -220,10 +245,12 @@ catch (error) {
 #### 4. Type Safety Issues (150+ errors)
 
 **Issue 4.1: Explicit Any Types**
+
 - **Count:** 0 direct violations (good!)
 - **Context:** Some implicit any in utility functions
 
 **Issue 4.2: Possibly Undefined Access**
+
 ```typescript
 // /src/app/api/orders/[id]/reorder/route.ts:129
 item.currentPrice // possibly undefined
@@ -233,6 +260,7 @@ const price = item.currentPrice ?? item.basePrice ?? 0
 ```
 
 **Issue 4.3: Array Type Mismatches**
+
 ```typescript
 // /src/app/api/products/[id]/configuration/route.ts
 sizes: any[] // assigned to never[]
@@ -241,6 +269,7 @@ sizes: any[] // assigned to never[]
 ```
 
 **Fix Strategy:**
+
 1. **Add Strict Null Checks** (8 hours)
    - Enable `strictNullChecks` in tsconfig.json gradually
    - Add `?.` optional chaining where needed
@@ -263,6 +292,7 @@ sizes: any[] // assigned to never[]
 **Root Cause:** Stale generated types, include/select mismatches
 
 **Issue 5.1: Missing Type Generation**
+
 ```bash
 # User.isBroker exists in schema but TypeScript doesn't recognize it
 # Solution:
@@ -270,6 +300,7 @@ npx prisma generate
 ```
 
 **Issue 5.2: Include Property Naming**
+
 ```typescript
 // ❌ WRONG - Mixing PascalCase and camelCase
 include: {
@@ -285,7 +316,9 @@ include: {
 ```
 
 **Fix Strategy:**
+
 1. **Regenerate Prisma Client** (1 hour)
+
    ```bash
    npx prisma generate
    npm run typecheck
@@ -303,8 +336,8 @@ include: {
      include: {
        productImages: { include: { Image: true } },
        productCategory: true,
-       productPaperStocks: { include: { PaperStock: true } }
-     }
+       productPaperStocks: { include: { PaperStock: true } },
+     },
    } satisfies Prisma.ProductInclude
    ```
 
@@ -317,19 +350,23 @@ include: {
 **Current State:** Console logs scattered throughout codebase
 
 **Issues:**
+
 - No structured logging format
 - Can't filter/search production logs
 - Security risk (may log sensitive data)
 - Performance impact in production
 
 **Affected Areas:**
+
 - `/src/app/(customer)/checkout/page.tsx` (8 console statements)
 - `/src/components/` (43 files with console logs)
 - `/src/lib/` (28 files with console logs)
 - `/src/app/api/` (15 files with console logs)
 
 **Fix Strategy:**
+
 1. **Implement Structured Logging** (8 hours)
+
    ```typescript
    // /src/lib/logger.ts (expand existing)
    export const logger = {
@@ -349,7 +386,7 @@ include: {
        if (process.env.NODE_ENV === 'development') {
          console.debug(`[DEBUG] ${message}`, meta)
        }
-     }
+     },
    }
    ```
 
@@ -363,6 +400,7 @@ include: {
 #### 7. Service Layer Incompleteness
 
 **Current State:**
+
 - ✅ ProductService (complete)
 - ✅ OrderService (complete)
 - ⚠️ CartService (partial)
@@ -371,12 +409,14 @@ include: {
 - ❌ PricingService (missing - logic in routes)
 
 **Issues:**
+
 - Business logic duplicated in API routes
 - No consistent error handling
 - Hard to unit test
 - Violates separation of concerns
 
 **Fix Strategy:**
+
 1. **Complete Existing Services** (12 hours)
    - Finish UserService with auth helpers
    - Expand CartService with pricing logic
@@ -394,28 +434,38 @@ include: {
 #### 8. Code Style & Conventions
 
 **ESLint Warnings Breakdown:**
+
 - **Unused variables:** 200+ (many prefixed with `_` should be)
 - **Prop sorting:** 150+ (react/jsx-sort-props)
 - **Unused imports:** 50+
 
 **Fix Strategy:**
+
 1. **Auto-fix ESLint** (2 hours)
+
    ```bash
    npm run lint -- --fix
    ```
 
 2. **Configure ESLint Rules** (2 hours)
+
    ```json
    {
      "rules": {
-       "@typescript-eslint/no-unused-vars": ["warn", {
-         "argsIgnorePattern": "^_",
-         "varsIgnorePattern": "^_"
-       }],
-       "react/jsx-sort-props": ["warn", {
-         "callbacksLast": true,
-         "shorthandFirst": true
-       }]
+       "@typescript-eslint/no-unused-vars": [
+         "warn",
+         {
+           "argsIgnorePattern": "^_",
+           "varsIgnorePattern": "^_"
+         }
+       ],
+       "react/jsx-sort-props": [
+         "warn",
+         {
+           "callbacksLast": true,
+           "shorthandFirst": true
+         }
+       ]
      }
    }
    ```
@@ -429,9 +479,11 @@ include: {
 ## Refactoring Strategy & Roadmap
 
 ### Phase 1: Foundation (Week 1) - CRITICAL FIXES
+
 **Goal:** Eliminate breaking type errors, ensure type safety
 
 **Tasks:**
+
 1. ✅ Regenerate Prisma types (`npx prisma generate`)
 2. ✅ Fix OrderStatus enum misalignments (create mapping)
 3. ✅ Audit & fix database schema mismatches
@@ -439,6 +491,7 @@ include: {
 5. ✅ Implement proper error handling patterns
 
 **Success Criteria:**
+
 - TypeScript errors reduced from 1,269 → <100
 - All API routes type-safe
 - Zero runtime errors from type mismatches
@@ -446,9 +499,11 @@ include: {
 ---
 
 ### Phase 2: Type Safety (Week 2) - HIGH PRIORITY
+
 **Goal:** Achieve comprehensive type safety
 
 **Tasks:**
+
 1. ✅ Fix null/undefined handling (replace null with undefined)
 2. ✅ Add explicit return types to all functions
 3. ✅ Enable strict null checks in tsconfig
@@ -456,6 +511,7 @@ include: {
 5. ✅ Create type-safe Prisma query builders
 
 **Success Criteria:**
+
 - TypeScript errors reduced to <20
 - All API routes validated with Zod
 - Strict mode enabled in tsconfig
@@ -463,9 +519,11 @@ include: {
 ---
 
 ### Phase 3: Architecture (Week 3) - MEDIUM PRIORITY
+
 **Goal:** Complete service layer, improve maintainability
 
 **Tasks:**
+
 1. ✅ Implement structured logging framework
 2. ✅ Replace all console statements with logger
 3. ✅ Complete service layer (User, Vendor, Pricing, Shipping)
@@ -473,6 +531,7 @@ include: {
 5. ✅ Add comprehensive JSDoc documentation
 
 **Success Criteria:**
+
 - All business logic in service layer
 - Zero console statements in production code
 - Structured logging in place
@@ -480,9 +539,11 @@ include: {
 ---
 
 ### Phase 4: Polish (Week 4) - LOW PRIORITY
+
 **Goal:** Code quality and developer experience
 
 **Tasks:**
+
 1. ✅ Auto-fix ESLint warnings
 2. ✅ Remove unused code and imports
 3. ✅ Improve prop sorting and code style
@@ -490,6 +551,7 @@ include: {
 5. ✅ Create developer documentation
 
 **Success Criteria:**
+
 - ESLint warnings reduced to <50
 - Clean git diffs (consistent formatting)
 - Developer onboarding docs complete
@@ -499,12 +561,14 @@ include: {
 ## Implementation Checklist
 
 ### Immediate Actions (Today)
+
 - [ ] Run `npx prisma generate` to regenerate types
 - [ ] Test if User.isBroker error disappears
 - [ ] Create OrderStatus mapping utility
 - [ ] Fix top 10 most critical files (see list below)
 
 ### Week 1 - Critical Fixes
+
 - [ ] Fix database schema mismatches (Product model)
 - [ ] Standardize Prisma include naming (PascalCase vs camelCase)
 - [ ] Update OrderStatus enum usage across codebase
@@ -512,6 +576,7 @@ include: {
 - [ ] Replace null with undefined in API responses
 
 ### Week 2 - Type Safety
+
 - [ ] Enable strictNullChecks in tsconfig
 - [ ] Add optional chaining where needed
 - [ ] Fix array type inference issues
@@ -519,6 +584,7 @@ include: {
 - [ ] Fix ZodError handling (errors → format())
 
 ### Week 3 - Architecture
+
 - [ ] Implement structured logging
 - [ ] Replace 335 console statements
 - [ ] Complete UserService
@@ -526,6 +592,7 @@ include: {
 - [ ] Extract PricingService from routes
 
 ### Week 4 - Polish
+
 - [ ] Run `npm run lint -- --fix`
 - [ ] Configure ESLint rules for unused vars
 - [ ] Remove unused imports and code
@@ -537,6 +604,7 @@ include: {
 ## Top 10 Critical Files to Fix First
 
 ### Priority 1 (Fix Today):
+
 1. **`/src/app/api/products/[id]/duplicate/route.ts`**
    - **Issues:** 15+ missing Product properties
    - **Impact:** Product duplication broken
@@ -553,6 +621,7 @@ include: {
    - **Effort:** 1.5 hours
 
 ### Priority 2 (Fix This Week):
+
 4. **`/src/app/api/paper-stock-sets/[id]/route.ts`**
    - **Issues:** Prisma include naming (paperStockSetItems)
    - **Impact:** Paper stock management broken
@@ -593,14 +662,17 @@ include: {
 ## Architectural Improvements Needed
 
 ### 1. Service Layer Completion
+
 **Current:** Only ProductService fully implemented
 **Needed:**
+
 - UserService (auth, profile, preferences)
 - VendorService (vendor management, order routing)
 - PricingService (centralized pricing logic)
 - ShippingService (rate calculation, label generation)
 
 **Benefits:**
+
 - Single source of truth for business logic
 - Easier unit testing
 - Better error handling
@@ -609,8 +681,10 @@ include: {
 ---
 
 ### 2. Error Handling Standardization
+
 **Current:** Mix of patterns, generic errors
 **Needed:**
+
 ```typescript
 // /src/lib/errors/index.ts
 export class AppError extends Error {
@@ -641,8 +715,10 @@ export class NotFoundError extends AppError {
 ---
 
 ### 3. Type Definition Organization
+
 **Current:** Types scattered across codebase
 **Needed:**
+
 ```
 /src/types/
   ├── index.ts           (re-export all)
@@ -656,6 +732,7 @@ export class NotFoundError extends AppError {
 ```
 
 **Benefits:**
+
 - Single import source
 - No duplication
 - Clear type ownership
@@ -663,7 +740,9 @@ export class NotFoundError extends AppError {
 ---
 
 ### 4. API Versioning (Future)
+
 **Recommendation:** Prepare for API versioning
+
 ```
 /src/app/api/v1/
   ├── products/
@@ -680,19 +759,23 @@ export class NotFoundError extends AppError {
 ## Monitoring & Validation
 
 ### Post-Refactoring Checks
+
 1. **TypeScript Validation:**
+
    ```bash
    npm run typecheck
    # Target: 0 errors
    ```
 
 2. **Linting:**
+
    ```bash
    npm run lint
    # Target: <50 warnings
    ```
 
 3. **Build:**
+
    ```bash
    npm run build
    # Target: No build errors
@@ -709,6 +792,7 @@ export class NotFoundError extends AppError {
 ## Risk Mitigation
 
 ### High-Risk Changes
+
 1. **OrderStatus Enum Migration**
    - **Risk:** Existing orders with old status values
    - **Mitigation:** Create database migration to update values
@@ -725,6 +809,7 @@ export class NotFoundError extends AppError {
    - **Rollback:** Git revert if critical issues
 
 ### Testing Strategy
+
 1. **Unit Tests:** Service layer functions
 2. **Integration Tests:** API routes with real Prisma
 3. **E2E Tests:** Critical user journeys
@@ -734,15 +819,16 @@ export class NotFoundError extends AppError {
 
 ## Estimated Total Effort
 
-| Phase | Priority | Estimated Hours | Target Completion |
-|-------|----------|-----------------|-------------------|
-| Phase 1: Foundation | CRITICAL | 24-32 hours | Week 1 |
-| Phase 2: Type Safety | HIGH | 32-40 hours | Week 2 |
-| Phase 3: Architecture | MEDIUM | 20-24 hours | Week 3 |
-| Phase 4: Polish | LOW | 8-12 hours | Week 4 |
-| **TOTAL** | | **84-108 hours** | **4 weeks** |
+| Phase                 | Priority | Estimated Hours  | Target Completion |
+| --------------------- | -------- | ---------------- | ----------------- |
+| Phase 1: Foundation   | CRITICAL | 24-32 hours      | Week 1            |
+| Phase 2: Type Safety  | HIGH     | 32-40 hours      | Week 2            |
+| Phase 3: Architecture | MEDIUM   | 20-24 hours      | Week 3            |
+| Phase 4: Polish       | LOW      | 8-12 hours       | Week 4            |
+| **TOTAL**             |          | **84-108 hours** | **4 weeks**       |
 
 **Resource Requirements:**
+
 - 1 Senior TypeScript Developer (full-time)
 - 1 QA Engineer (part-time for testing)
 - Code review from Tech Lead
@@ -752,6 +838,7 @@ export class NotFoundError extends AppError {
 ## Success Metrics
 
 ### Technical Metrics
+
 - ✅ TypeScript errors: 1,269 → 0
 - ✅ ESLint warnings: 2,310 → <50
 - ✅ Console statements: 335 → 0
@@ -760,6 +847,7 @@ export class NotFoundError extends AppError {
 - ✅ Type-safe API routes: 100%
 
 ### Business Metrics
+
 - ✅ Zero runtime type errors
 - ✅ Faster development velocity
 - ✅ Easier onboarding (better types)
@@ -778,6 +866,7 @@ The GangRun Printing codebase is **functional but requires systematic refactorin
 4. **Code Quality:** Console statements, unused code, style inconsistencies
 
 **Recommended Approach:**
+
 - **Start with Critical Fixes** (Week 1) to eliminate breaking errors
 - **Progress to Type Safety** (Week 2) for long-term stability
 - **Complete Architecture** (Week 3) for maintainability
@@ -791,6 +880,7 @@ The GangRun Printing codebase is **functional but requires systematic refactorin
 ## Appendix: Quick Reference Commands
 
 ### Development
+
 ```bash
 # Regenerate Prisma types
 npx prisma generate
@@ -809,6 +899,7 @@ npm run build
 ```
 
 ### Migration Scripts (To Create)
+
 ```bash
 # Fix OrderStatus values in database
 npm run migrate:order-status
@@ -821,6 +912,7 @@ npm run codemod:replace-console
 ```
 
 ### Validation
+
 ```bash
 # Check for breaking changes
 npm run validate:schema

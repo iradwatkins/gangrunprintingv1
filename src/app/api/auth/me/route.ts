@@ -14,12 +14,15 @@ export async function GET(request: NextRequest) {
 
     // Get all cookies for debugging
     const cookieHeader = request.headers.get('Cookie') || ''
-    const cookies = cookieHeader.split(';').map(c => c.trim()).filter(c => c.length > 0)
+    const cookies = cookieHeader
+      .split(';')
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0)
 
     console.log('Request details:', {
       requestId,
       cookies: cookies.slice(0),
-      hasAuthSession: cookies.some(c => c.startsWith('auth_session=')),
+      hasAuthSession: cookies.some((c) => c.startsWith('auth_session=')),
       cookieHeader: cookieHeader.substring(0, 200) + (cookieHeader.length > 200 ? '...' : ''),
     })
 
@@ -42,7 +45,7 @@ export async function GET(request: NextRequest) {
             timestamp: new Date().toISOString(),
             reason: !user ? 'no_user' : 'no_session',
             source: requestSource,
-          }
+          },
         },
         {
           status: 200,
@@ -74,7 +77,7 @@ export async function GET(request: NextRequest) {
           requestId,
           timestamp: new Date().toISOString(),
           source: requestSource,
-        }
+        },
       },
       {
         headers: {

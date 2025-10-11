@@ -41,6 +41,7 @@ Create a PRD for fixing the product configurator visibility issues. The requirem
 Analyze the existing architecture and identify the root cause of component visibility issues:
 
 1. **Repository Analysis Required:**
+
    ```
    - Examine prisma/schema.prisma for Product model structure
    - Identify how paper stock, addons, turnaround times are stored
@@ -124,10 +125,12 @@ const postcardProduct = {
 #### Phase 5: Testing
 
 Test these specific URLs:
+
 1. https://gangrunprinting.com/products/business-cards-quantity-only-test-1759153813144
 2. Any other product pages
 
 Verify:
+
 - ✅ Quantity selector visible and functional
 - ✅ Paper stock options showing
 - ✅ Addon checkboxes/selects working
@@ -138,6 +141,7 @@ Verify:
 ### For QA Agent
 
 Create test cases for:
+
 1. Component visibility (all options display)
 2. Price calculation accuracy
 3. Product creation process
@@ -164,6 +168,7 @@ Create test cases for:
 ## Definition of Success
 
 The project is complete when:
+
 1. All product configurator components are visible on the website
 2. New products can be created using the existing modular system
 3. Documentation explains how to create products without coding
@@ -183,7 +188,7 @@ The project is complete when:
 ```
 prisma/schema.prisma - Database structure
 app/products/* - Product pages
-app/api/products/* - Product APIs  
+app/api/products/* - Product APIs
 components/* - UI components
 lib/pricing/* - Pricing logic
 types/* - TypeScript definitions
@@ -194,6 +199,7 @@ types/* - TypeScript definitions
 https://gangrunprinting.com/products/business-cards-quantity-only-test-1759153813144
 
 This product should show:
+
 - Quantity options (100, 250, 500, 1000, etc.)
 - Paper stock (14pt, 16pt, 32pt, etc.)
 - Coating/finish options

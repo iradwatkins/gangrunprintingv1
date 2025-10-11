@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function setupPaperRelationships() {
-
   try {
     // Get all paper stocks
     const paperStocks = await prisma.paperStock.findMany()
@@ -12,7 +11,6 @@ async function setupPaperRelationships() {
 
     // For each paper stock, create relationships
     for (const paperStock of paperStocks) {
-
       // Check existing relationships
       const existingCoatings = await prisma.paperStockCoating.count({
         where: { paperStockId: paperStock.id },
@@ -39,9 +37,7 @@ async function setupPaperRelationships() {
             },
           })
         }
-
       } else {
-
       }
 
       // Add sides relationships if none exist
@@ -70,9 +66,7 @@ async function setupPaperRelationships() {
             },
           })
         }
-
       } else {
-
       }
     }
 
@@ -85,9 +79,7 @@ async function setupPaperRelationships() {
       const sidesCount = await prisma.paperStockSides.count({
         where: { paperStockId: paperStock.id },
       })
-
     }
-
   } catch (error) {
     console.error('❌ Error setting up relationships:', error)
   } finally {

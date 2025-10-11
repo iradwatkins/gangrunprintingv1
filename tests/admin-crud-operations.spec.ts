@@ -40,23 +40,28 @@ test.describe('Admin CRUD Operations Test Suite', () => {
         finish: 'Matte',
         isCoated: false,
         priceModifier: 1.0,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newPaperStock = await createResponse.json()
 
     // Update the paper stock
-    const updateResponse = await page.request.put(`${BASE_URL}/api/paper-stocks/${newPaperStock.id}`, {
-      data: {
-        name: `Updated ${newPaperStock.name}`,
-        priceModifier: 1.5
+    const updateResponse = await page.request.put(
+      `${BASE_URL}/api/paper-stocks/${newPaperStock.id}`,
+      {
+        data: {
+          name: `Updated ${newPaperStock.name}`,
+          priceModifier: 1.5,
+        },
       }
-    })
+    )
     expect(updateResponse.ok()).toBeTruthy()
 
     // Delete the paper stock
-    const deleteResponse = await page.request.delete(`${BASE_URL}/api/paper-stocks/${newPaperStock.id}`)
+    const deleteResponse = await page.request.delete(
+      `${BASE_URL}/api/paper-stocks/${newPaperStock.id}`
+    )
     expect(deleteResponse.ok()).toBeTruthy()
 
     console.log('✅ Paper Stocks CRUD functional')
@@ -91,8 +96,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
         quantity: Math.floor(Math.random() * 10000),
         displayName: `Test Quantity ${Date.now()}`,
         groupName: 'Test Group',
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newQuantity = await createResponse.json()
@@ -100,8 +105,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     // Update the quantity
     const updateResponse = await page.request.put(`${BASE_URL}/api/quantities/${newQuantity.id}`, {
       data: {
-        displayName: `Updated ${newQuantity.displayName}`
-      }
+        displayName: `Updated ${newQuantity.displayName}`,
+      },
     })
     expect(updateResponse.ok()).toBeTruthy()
 
@@ -128,8 +133,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
         height: 11,
         unit: 'INCH',
         groupName: 'Standard',
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newSize = await createResponse.json()
@@ -137,8 +142,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     // Update the size
     const updateResponse = await page.request.put(`${BASE_URL}/api/sizes/${newSize.id}`, {
       data: {
-        name: `Updated ${newSize.name}`
-      }
+        name: `Updated ${newSize.name}`,
+      },
     })
     expect(updateResponse.ok()).toBeTruthy()
 
@@ -163,9 +168,9 @@ test.describe('Admin CRUD Operations Test Suite', () => {
         name: `Test Add-on ${Date.now()}`,
         category: 'COATING',
         pricingType: 'FLAT',
-        flatPrice: 25.00,
-        isActive: true
-      }
+        flatPrice: 25.0,
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newAddon = await createResponse.json()
@@ -174,8 +179,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     const updateResponse = await page.request.put(`${BASE_URL}/api/add-ons/${newAddon.id}`, {
       data: {
         name: `Updated ${newAddon.name}`,
-        flatPrice: 30.00
-      }
+        flatPrice: 30.0,
+      },
     })
     expect(updateResponse.ok()).toBeTruthy()
 
@@ -199,8 +204,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
       data: {
         name: `Test Add-on Set ${Date.now()}`,
         description: 'Test Description',
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newAddonSet = await createResponse.json()
@@ -209,22 +214,27 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     const updateResponse = await page.request.put(`${BASE_URL}/api/addon-sets/${newAddonSet.id}`, {
       data: {
         name: `Updated ${newAddonSet.name}`,
-        description: 'Updated Description'
-      }
+        description: 'Updated Description',
+      },
     })
     expect(updateResponse.ok()).toBeTruthy()
 
     // Clone the addon set
-    const cloneResponse = await page.request.post(`${BASE_URL}/api/addon-sets/${newAddonSet.id}/clone`, {
-      data: {
-        name: `Cloned ${newAddonSet.name}`
+    const cloneResponse = await page.request.post(
+      `${BASE_URL}/api/addon-sets/${newAddonSet.id}/clone`,
+      {
+        data: {
+          name: `Cloned ${newAddonSet.name}`,
+        },
       }
-    })
+    )
     expect(cloneResponse.ok()).toBeTruthy()
     const clonedSet = await cloneResponse.json()
 
     // Delete both addon sets
-    const deleteResponse1 = await page.request.delete(`${BASE_URL}/api/addon-sets/${newAddonSet.id}`)
+    const deleteResponse1 = await page.request.delete(
+      `${BASE_URL}/api/addon-sets/${newAddonSet.id}`
+    )
     expect(deleteResponse1.ok()).toBeTruthy()
 
     const deleteResponse2 = await page.request.delete(`${BASE_URL}/api/addon-sets/${clonedSet.id}`)
@@ -246,25 +256,30 @@ test.describe('Admin CRUD Operations Test Suite', () => {
       data: {
         name: `Test Turnaround ${Date.now()}`,
         businessDays: 5,
-        price: 100.00,
+        price: 100.0,
         isDefault: false,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newTurnaround = await createResponse.json()
 
     // Update the turnaround time
-    const updateResponse = await page.request.put(`${BASE_URL}/api/turnaround-times/${newTurnaround.id}`, {
-      data: {
-        name: `Updated ${newTurnaround.name}`,
-        businessDays: 7
+    const updateResponse = await page.request.put(
+      `${BASE_URL}/api/turnaround-times/${newTurnaround.id}`,
+      {
+        data: {
+          name: `Updated ${newTurnaround.name}`,
+          businessDays: 7,
+        },
       }
-    })
+    )
     expect(updateResponse.ok()).toBeTruthy()
 
     // Delete the turnaround time
-    const deleteResponse = await page.request.delete(`${BASE_URL}/api/turnaround-times/${newTurnaround.id}`)
+    const deleteResponse = await page.request.delete(
+      `${BASE_URL}/api/turnaround-times/${newTurnaround.id}`
+    )
     expect(deleteResponse.ok()).toBeTruthy()
 
     console.log('✅ Turnaround Times CRUD functional')
@@ -283,35 +298,45 @@ test.describe('Admin CRUD Operations Test Suite', () => {
       data: {
         name: `Test Turnaround Set ${Date.now()}`,
         description: 'Test Description',
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newTurnaroundSet = await createResponse.json()
 
     // Update the turnaround time set
-    const updateResponse = await page.request.put(`${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}`, {
-      data: {
-        name: `Updated ${newTurnaroundSet.name}`,
-        description: 'Updated Description'
+    const updateResponse = await page.request.put(
+      `${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}`,
+      {
+        data: {
+          name: `Updated ${newTurnaroundSet.name}`,
+          description: 'Updated Description',
+        },
       }
-    })
+    )
     expect(updateResponse.ok()).toBeTruthy()
 
     // Duplicate the turnaround time set
-    const duplicateResponse = await page.request.post(`${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}/duplicate`, {
-      data: {
-        name: `Duplicated ${newTurnaroundSet.name}`
+    const duplicateResponse = await page.request.post(
+      `${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}/duplicate`,
+      {
+        data: {
+          name: `Duplicated ${newTurnaroundSet.name}`,
+        },
       }
-    })
+    )
     expect(duplicateResponse.ok()).toBeTruthy()
     const duplicatedSet = await duplicateResponse.json()
 
     // Delete both turnaround time sets
-    const deleteResponse1 = await page.request.delete(`${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}`)
+    const deleteResponse1 = await page.request.delete(
+      `${BASE_URL}/api/turnaround-time-sets/${newTurnaroundSet.id}`
+    )
     expect(deleteResponse1.ok()).toBeTruthy()
 
-    const deleteResponse2 = await page.request.delete(`${BASE_URL}/api/turnaround-time-sets/${duplicatedSet.id}`)
+    const deleteResponse2 = await page.request.delete(
+      `${BASE_URL}/api/turnaround-time-sets/${duplicatedSet.id}`
+    )
     expect(deleteResponse2.ok()).toBeTruthy()
 
     console.log('✅ Turnaround Time Sets CRUD functional')
@@ -335,8 +360,8 @@ test.describe('Admin CRUD Operations Test Suite', () => {
         basePrice: 99.99,
         isActive: true,
         category: 'business-cards',
-        productType: 'SIMPLE'
-      }
+        productType: 'SIMPLE',
+      },
     })
     expect(createResponse.ok()).toBeTruthy()
     const newProduct = await createResponse.json()
@@ -345,13 +370,15 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     const updateResponse = await page.request.put(`${BASE_URL}/api/products/${newProduct.id}`, {
       data: {
         name: `Updated ${newProduct.name}`,
-        basePrice: 149.99
-      }
+        basePrice: 149.99,
+      },
     })
     expect(updateResponse.ok()).toBeTruthy()
 
     // Duplicate the product
-    const duplicateResponse = await page.request.post(`${BASE_URL}/api/products/${newProduct.id}/duplicate`)
+    const duplicateResponse = await page.request.post(
+      `${BASE_URL}/api/products/${newProduct.id}/duplicate`
+    )
     expect(duplicateResponse.ok()).toBeTruthy()
     const duplicatedProduct = await duplicateResponse.json()
 
@@ -359,7 +386,9 @@ test.describe('Admin CRUD Operations Test Suite', () => {
     const deleteResponse1 = await page.request.delete(`${BASE_URL}/api/products/${newProduct.id}`)
     expect(deleteResponse1.ok()).toBeTruthy()
 
-    const deleteResponse2 = await page.request.delete(`${BASE_URL}/api/products/${duplicatedProduct.id}`)
+    const deleteResponse2 = await page.request.delete(
+      `${BASE_URL}/api/products/${duplicatedProduct.id}`
+    )
     expect(deleteResponse2.ok()).toBeTruthy()
 
     console.log('✅ Products CRUD functional')
@@ -376,8 +405,8 @@ test.describe('Integration Tests', () => {
         name: `Test Category ${timestamp}`,
         slug: `test-category-${timestamp}`,
         description: 'Integration test category',
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(categoryResponse.ok()).toBeTruthy()
     const category = await categoryResponse.json()
@@ -390,8 +419,8 @@ test.describe('Integration Tests', () => {
         finish: 'Glossy',
         isCoated: true,
         priceModifier: 1.2,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(paperStockResponse.ok()).toBeTruthy()
     const paperStock = await paperStockResponse.json()
@@ -403,8 +432,8 @@ test.describe('Integration Tests', () => {
         category: 'FINISHING',
         pricingType: 'PERCENTAGE',
         percentagePrice: 10,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(addonResponse.ok()).toBeTruthy()
     const addon = await addonResponse.json()
@@ -414,10 +443,10 @@ test.describe('Integration Tests', () => {
       data: {
         name: `Rush ${timestamp}`,
         businessDays: 2,
-        price: 50.00,
+        price: 50.0,
         isDefault: false,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
     expect(turnaroundResponse.ok()).toBeTruthy()
     const turnaround = await turnaroundResponse.json()
@@ -432,8 +461,8 @@ test.describe('Integration Tests', () => {
         basePrice: 199.99,
         isActive: true,
         category: category.slug,
-        productType: 'CONFIGURABLE'
-      }
+        productType: 'CONFIGURABLE',
+      },
     })
     expect(productResponse.ok()).toBeTruthy()
     const product = await productResponse.json()

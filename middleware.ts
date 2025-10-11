@@ -3,10 +3,11 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // CRITICAL FIX: Handle large file uploads to prevent ERR_CONNECTION_CLOSED
-  if (request.nextUrl.pathname.startsWith('/api/products/upload-image') ||
-      request.nextUrl.pathname.startsWith('/api/upload') ||
-      request.nextUrl.pathname.startsWith('/api/products/customer-images')) {
-
+  if (
+    request.nextUrl.pathname.startsWith('/api/products/upload-image') ||
+    request.nextUrl.pathname.startsWith('/api/upload') ||
+    request.nextUrl.pathname.startsWith('/api/products/customer-images')
+  ) {
     // Clone the request headers
     const requestHeaders = new Headers(request.headers)
 
@@ -21,8 +22,10 @@ export function middleware(request: NextRequest) {
     requestHeaders.set('x-middleware-next', '1')
 
     // FIX 4: Set content type if not already set
-    if (!requestHeaders.has('content-type') ||
-        requestHeaders.get('content-type')?.includes('multipart/form-data')) {
+    if (
+      !requestHeaders.has('content-type') ||
+      requestHeaders.get('content-type')?.includes('multipart/form-data')
+    ) {
       // Allow multipart/form-data to pass through
       requestHeaders.set('x-upload-route', 'true')
     }
@@ -41,7 +44,20 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  return NextResponse.next()
+  // Apply security headers to all responses
+  const response = NextResponse.next()
+
+  // TEST: Add verification header to confirm middleware is running
+  response.headers.set('X-Middleware-Active', 'true')
+  response.headers.set('X-Middleware-Version', '2025-10-10')
+
+  // Set Content Security Policy for payment processors and analytics
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://www.paypal.com https://*.paypal.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://pci-connect.squareup.com https://*.square.com https://*.squareup.com https://www.paypal.com https://*.paypal.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com https://fonts.gstatic.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; frame-src https://web.squarecdn.com https://www.paypal.com https://*.paypal.com; upgrade-insecure-requests;"
+  )
+
+  return response
 }
 
 export const config = {

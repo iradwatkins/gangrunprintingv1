@@ -23,12 +23,12 @@ export const ADMIN_ENTITIES: Record<string, EntityTestConfig> = {
       sku: 'TEST-SKU',
       categoryId: 'default-category',
       description: 'Test product description',
-      basePrice: 10.00,
+      basePrice: 10.0,
     },
     updateFields: {
       name: 'Updated Test Product',
       description: 'Updated description',
-      basePrice: 15.00,
+      basePrice: 15.0,
     },
     requiredFields: ['name', 'sku', 'categoryId'],
     uniqueFields: ['sku'],
@@ -181,7 +181,7 @@ export const ADMIN_ENTITIES: Record<string, EntityTestConfig> = {
       daysMin: 1,
       daysMax: 3,
       pricingModel: 'FLAT',
-      basePrice: 10.00,
+      basePrice: 10.0,
       priceMultiplier: 1.0,
       sortOrder: 1,
     },
@@ -189,7 +189,7 @@ export const ADMIN_ENTITIES: Record<string, EntityTestConfig> = {
       name: 'updated-turnaround',
       displayName: 'Updated Turnaround',
       description: 'Updated description',
-      basePrice: 15.00,
+      basePrice: 15.0,
     },
     requiredFields: ['name', 'displayName', 'daysMin', 'pricingModel'],
     uniqueFields: ['name'],
@@ -253,7 +253,7 @@ export function generateTestData(entityKey: string): Record<string, any> {
 
   // Add unique suffixes to unique fields
   const uniqueSuffix = randomUUID().substring(0, 8)
-  config.uniqueFields.forEach(field => {
+  config.uniqueFields.forEach((field) => {
     if (testData[field] && typeof testData[field] === 'string') {
       testData[field] = `${testData[field]}-${uniqueSuffix}`
     }
@@ -331,11 +331,7 @@ export async function updateEntityViaAPI(
 /**
  * Delete entity via API
  */
-export async function deleteEntityViaAPI(
-  page: Page,
-  entityKey: string,
-  id: string
-): Promise<void> {
+export async function deleteEntityViaAPI(page: Page, entityKey: string, id: string): Promise<void> {
   const config = ADMIN_ENTITIES[entityKey]
 
   const response = await page.request.delete(`${config.apiEndpoint}/${id}`)
@@ -384,10 +380,7 @@ export async function waitForEntityList(page: Page) {
 /**
  * Fill entity form fields
  */
-export async function fillEntityForm(
-  page: Page,
-  data: Record<string, any>
-) {
+export async function fillEntityForm(page: Page, data: Record<string, any>) {
   for (const [field, value] of Object.entries(data)) {
     const input = page.locator(`[name="${field}"], [data-testid="${field}"]`).first()
 
@@ -416,11 +409,7 @@ export async function submitEntityForm(page: Page) {
 /**
  * Verify entity exists in list
  */
-export async function verifyEntityInList(
-  page: Page,
-  entityKey: string,
-  searchText: string
-) {
+export async function verifyEntityInList(page: Page, entityKey: string, searchText: string) {
   const config = ADMIN_ENTITIES[entityKey]
   await navigateToAdminPage(page, entityKey)
   await waitForEntityList(page)
@@ -439,11 +428,7 @@ export async function verifyEntityInList(
 /**
  * Clean up test entities
  */
-export async function cleanupTestEntities(
-  page: Page,
-  entityKey: string,
-  searchPattern: string
-) {
+export async function cleanupTestEntities(page: Page, entityKey: string, searchPattern: string) {
   try {
     const config = ADMIN_ENTITIES[entityKey]
 

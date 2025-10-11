@@ -20,13 +20,13 @@ import {
   RefreshCw,
   Upload,
   Calculator,
-  Database
+  Database,
 } from 'lucide-react'
 import {
-  ModuleLoadingState,
-  ModuleLoadingOperation,
+  type ModuleLoadingState,
+  type ModuleLoadingOperation,
   ModuleLoadingType,
-  ModuleLoadingPriority
+  ModuleLoadingPriority,
 } from './ModuleLoadingSystem'
 
 // =============================================================================
@@ -37,7 +37,7 @@ import {
  * Get appropriate icon for loading operation type
  */
 function getLoadingIcon(type: ModuleLoadingType, size: number = 16) {
-  const iconProps = { size, className: "animate-spin" }
+  const iconProps = { size, className: 'animate-spin' }
 
   switch (type) {
     case ModuleLoadingType.INITIAL_LOAD:
@@ -63,25 +63,25 @@ function getPriorityStyling(priority: ModuleLoadingPriority) {
       return {
         badgeVariant: 'destructive' as const,
         progressClass: 'bg-red-500',
-        textClass: 'text-red-700'
+        textClass: 'text-red-700',
       }
     case ModuleLoadingPriority.HIGH:
       return {
         badgeVariant: 'default' as const,
         progressClass: 'bg-blue-500',
-        textClass: 'text-blue-700'
+        textClass: 'text-blue-700',
       }
     case ModuleLoadingPriority.NORMAL:
       return {
         badgeVariant: 'secondary' as const,
         progressClass: 'bg-gray-500',
-        textClass: 'text-gray-700'
+        textClass: 'text-gray-700',
       }
     case ModuleLoadingPriority.LOW:
       return {
         badgeVariant: 'outline' as const,
         progressClass: 'bg-gray-400',
-        textClass: 'text-gray-600'
+        textClass: 'text-gray-600',
       }
   }
 }
@@ -98,12 +98,12 @@ export interface ModuleLoadingSpinnerProps {
 export function ModuleLoadingSpinner({
   size = 'md',
   type = ModuleLoadingType.INITIAL_LOAD,
-  className = ''
+  className = '',
 }: ModuleLoadingSpinnerProps) {
   const sizes = {
     sm: 12,
     md: 16,
-    lg: 20
+    lg: 20,
   }
 
   return (
@@ -127,7 +127,7 @@ export function ModuleLoadingProgress({
   operation,
   showDetails = false,
   onCancel,
-  className = ''
+  className = '',
 }: ModuleLoadingProgressProps) {
   const styling = getPriorityStyling(operation.priority)
   const progress = operation.progress || 0
@@ -165,23 +165,19 @@ export function ModuleLoadingProgress({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           {getLoadingIcon(operation.type, 14)}
-          <span className={`text-sm font-medium ${styling.textClass}`}>
-            {operation.label}
-          </span>
-          <Badge variant={styling.badgeVariant} className="text-xs">
+          <span className={`text-sm font-medium ${styling.textClass}`}>{operation.label}</span>
+          <Badge className="text-xs" variant={styling.badgeVariant}>
             {operation.priority}
           </Badge>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-gray-500">
-            {progress.toFixed(0)}%
-          </span>
+          <span className="text-xs text-gray-500">{progress.toFixed(0)}%</span>
           {onCancel && (
             <Button
+              className="h-4 w-4 p-0"
               size="sm"
               variant="ghost"
-              className="h-4 w-4 p-0"
               onClick={() => onCancel(operation.id)}
             >
               <X className="h-3 w-3" />
@@ -190,7 +186,7 @@ export function ModuleLoadingProgress({
         </div>
       </div>
 
-      <Progress value={progress} className="h-2" />
+      <Progress className="h-2" value={progress} />
 
       {showDetails && (
         <div className="flex justify-between text-xs text-gray-500">
@@ -222,7 +218,7 @@ export function ModuleLoadingDisplay({
   showProgress = true,
   onCancelOperation,
   onClearAll,
-  className = ''
+  className = '',
 }: ModuleLoadingDisplayProps) {
   const operations = Array.from(loadingState.operations.values())
 
@@ -236,7 +232,7 @@ export function ModuleLoadingDisplay({
       [ModuleLoadingPriority.CRITICAL]: 4,
       [ModuleLoadingPriority.HIGH]: 3,
       [ModuleLoadingPriority.NORMAL]: 2,
-      [ModuleLoadingPriority.LOW]: 1
+      [ModuleLoadingPriority.LOW]: 1,
     }
 
     const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority]
@@ -251,21 +247,14 @@ export function ModuleLoadingDisplay({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-          <span className="text-sm font-medium text-gray-900">
-            {moduleName} Loading
-          </span>
-          <Badge variant="outline" className="text-xs">
+          <span className="text-sm font-medium text-gray-900">{moduleName} Loading</span>
+          <Badge className="text-xs" variant="outline">
             {operations.length} operation{operations.length > 1 ? 's' : ''}
           </Badge>
         </div>
 
         {onClearAll && operations.length > 1 && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={onClearAll}
-            className="text-xs h-6"
-          >
+          <Button className="text-xs h-6" size="sm" variant="ghost" onClick={onClearAll}>
             Clear All
           </Button>
         )}
@@ -278,7 +267,7 @@ export function ModuleLoadingDisplay({
             <span>Overall Progress</span>
             <span>{loadingState.overallProgress.toFixed(0)}%</span>
           </div>
-          <Progress value={loadingState.overallProgress} className="h-2" />
+          <Progress className="h-2" value={loadingState.overallProgress} />
         </div>
       )}
 
@@ -319,26 +308,25 @@ export interface ModuleLoadingIndicatorProps {
 export function ModuleLoadingIndicator({
   loadingState,
   onClick,
-  className = ''
+  className = '',
 }: ModuleLoadingIndicatorProps) {
   if (!loadingState.isLoading) return null
 
-  const highPriorityCount = Array.from(loadingState.operations.values())
-    .filter(op =>
-      op.priority === ModuleLoadingPriority.HIGH ||
-      op.priority === ModuleLoadingPriority.CRITICAL
-    ).length
+  const highPriorityCount = Array.from(loadingState.operations.values()).filter(
+    (op) =>
+      op.priority === ModuleLoadingPriority.HIGH || op.priority === ModuleLoadingPriority.CRITICAL
+  ).length
 
   return (
     <button
-      onClick={onClick}
       className={`inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 ${className}`}
       title={`${loadingState.totalOperations} loading operation${loadingState.totalOperations > 1 ? 's' : ''}`}
+      onClick={onClick}
     >
       <Loader2 className="h-3 w-3 animate-spin" />
       <span>{loadingState.totalOperations}</span>
       {highPriorityCount > 0 && (
-        <Badge variant="destructive" className="text-xs h-4">
+        <Badge className="text-xs h-4" variant="destructive">
           {highPriorityCount}
         </Badge>
       )}
@@ -360,7 +348,7 @@ export function ModuleLoadingSkeleton({
   lines = 3,
   showTitle = true,
   showProgress = false,
-  className = ''
+  className = '',
 }: ModuleLoadingSkeletonProps) {
   return (
     <div className={`space-y-3 ${className}`}>
@@ -370,10 +358,7 @@ export function ModuleLoadingSkeleton({
 
       <div className="space-y-2">
         {Array.from({ length: lines }).map((_, i) => (
-          <Skeleton
-            key={i}
-            className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
-          />
+          <Skeleton key={i} className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`} />
         ))}
       </div>
     </div>
@@ -391,10 +376,10 @@ export interface ModuleLoadingSuccessProps {
 }
 
 export function ModuleLoadingSuccess({
-  message = "Loading complete",
+  message = 'Loading complete',
   onDismiss,
   autoHide,
-  className = ''
+  className = '',
 }: ModuleLoadingSuccessProps) {
   const [visible, setVisible] = React.useState(true)
 
@@ -417,9 +402,9 @@ export function ModuleLoadingSuccess({
       <span>{message}</span>
       {onDismiss && (
         <Button
+          className="h-3 w-3 p-0"
           size="sm"
           variant="ghost"
-          className="h-3 w-3 p-0"
           onClick={() => {
             setVisible(false)
             onDismiss()
@@ -450,7 +435,7 @@ export function ModuleLoadingBoundary({
   hasErrors,
   moduleName,
   onRetry,
-  fallbackContent
+  fallbackContent,
 }: ModuleLoadingBoundaryProps) {
   // Show loading skeleton during critical loading
   if (loadingState.hasCriticalLoading) {
@@ -485,9 +470,7 @@ export function ModuleLoadingBoundary({
       )}
 
       {/* Module content */}
-      <div className={loadingState.isLoading ? 'opacity-75' : ''}>
-        {children}
-      </div>
+      <div className={loadingState.isLoading ? 'opacity-75' : ''}>{children}</div>
     </div>
   )
 }
@@ -499,5 +482,5 @@ export default {
   ModuleLoadingIndicator,
   ModuleLoadingSkeleton,
   ModuleLoadingSuccess,
-  ModuleLoadingBoundary
+  ModuleLoadingBoundary,
 }

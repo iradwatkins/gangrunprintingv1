@@ -304,7 +304,6 @@ export class PricingEngine {
     return result
   }
 
-
   private calculateAddonCosts(
     config: ProductConfiguration
   ): Array<{ name: string; cost: number; calculationDetails: string }> {

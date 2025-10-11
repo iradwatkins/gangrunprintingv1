@@ -31,14 +31,10 @@ const SHIPPING_PROVIDERS: ShippingProvider[] = [
     deliveryDays: {
       min: 3,
       max: 5,
-      text: '3-5 business days'
+      text: '3-5 business days',
     },
-    features: [
-      'Reliable nationwide delivery',
-      'Package tracking included',
-      'Up to $100 insurance'
-    ],
-    baseRate: 12.99
+    features: ['Reliable nationwide delivery', 'Package tracking included', 'Up to $100 insurance'],
+    baseRate: 12.99,
   },
   {
     id: 'southwest-dash',
@@ -48,16 +44,16 @@ const SHIPPING_PROVIDERS: ShippingProvider[] = [
     deliveryDays: {
       min: 1,
       max: 2,
-      text: '1-2 business days'
+      text: '1-2 business days',
     },
     features: [
       'Express priority shipping',
       'Real-time tracking',
       'Up to $500 insurance',
-      'Signature required'
+      'Signature required',
     ],
-    baseRate: 29.99
-  }
+    baseRate: 29.99,
+  },
 ]
 
 interface ShippingSelectionProps {
@@ -73,13 +69,13 @@ export function ShippingSelection({
   selectedId = 'fedex',
   className = '',
   rates,
-  loading = false
+  loading = false,
 }: ShippingSelectionProps) {
   const [selected, setSelected] = useState(selectedId)
 
   const handleSelect = (providerId: string) => {
     setSelected(providerId)
-    const provider = SHIPPING_PROVIDERS.find(p => p.id === providerId)
+    const provider = SHIPPING_PROVIDERS.find((p) => p.id === providerId)
     if (provider) {
       onSelect(provider)
     }
@@ -88,12 +84,12 @@ export function ShippingSelection({
   // Use dynamic rates if available, otherwise use static rates
   const getProviderRate = (providerId: string) => {
     if (rates && rates.length > 0) {
-      const dynamicRate = rates.find(r => r.provider === providerId)
+      const dynamicRate = rates.find((r) => r.provider === providerId)
       if (dynamicRate) {
         return dynamicRate.rate.amount
       }
     }
-    const staticProvider = SHIPPING_PROVIDERS.find(p => p.id === providerId)
+    const staticProvider = SHIPPING_PROVIDERS.find((p) => p.id === providerId)
     return staticProvider?.baseRate || 0
   }
 
@@ -127,26 +123,19 @@ export function ShippingSelection({
             const rate = getProviderRate(provider.id)
 
             return (
-              <Label
-                key={provider.id}
-                htmlFor={provider.id}
-                className="cursor-pointer block"
-              >
+              <Label key={provider.id} className="cursor-pointer block" htmlFor={provider.id}>
                 <Card
                   className={`
                     relative p-4 transition-all hover:shadow-md
-                    ${isSelected
-                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
-                      : 'hover:border-gray-400'
+                    ${
+                      isSelected
+                        ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
+                        : 'hover:border-gray-400'
                     }
                   `}
                 >
                   <div className="flex items-start gap-3">
-                    <RadioGroupItem
-                      value={provider.id}
-                      id={provider.id}
-                      className="mt-1"
-                    />
+                    <RadioGroupItem className="mt-1" id={provider.id} value={provider.id} />
 
                     <div className="flex-1">
                       {/* Header with logo and badges */}
@@ -154,14 +143,12 @@ export function ShippingSelection({
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-24 flex items-center">
                             {/* Using text as placeholder for logo */}
-                            <span className="font-bold text-sm">
-                              {provider.displayName}
-                            </span>
+                            <span className="font-bold text-sm">{provider.displayName}</span>
                           </div>
                           <div>
                             <p className="font-semibold">{provider.name}</p>
                             {isEconomy && (
-                              <Badge variant="secondary" className="mt-1">
+                              <Badge className="mt-1" variant="secondary">
                                 Most Popular
                               </Badge>
                             )}
@@ -170,9 +157,7 @@ export function ShippingSelection({
 
                         {/* Price Display */}
                         <div className="text-right">
-                          <p className="text-2xl font-bold">
-                            ${rate.toFixed(2)}
-                          </p>
+                          <p className="text-2xl font-bold">${rate.toFixed(2)}</p>
                         </div>
                       </div>
 
@@ -185,10 +170,7 @@ export function ShippingSelection({
                       {/* Features */}
                       <div className="space-y-1">
                         {provider.features.map((feature, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-2 text-xs text-gray-600"
-                          >
+                          <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
                             <div className="w-1 h-1 bg-gray-400 rounded-full" />
                             <span>{feature}</span>
                           </div>
@@ -201,15 +183,11 @@ export function ShippingSelection({
                   {isSelected && (
                     <div className="absolute top-2 right-2">
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clipRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            fillRule="evenodd"
                           />
                         </svg>
                       </div>

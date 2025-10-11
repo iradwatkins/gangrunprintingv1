@@ -67,12 +67,7 @@ interface ReorderModalProps {
   orderNumber: string
 }
 
-export function ReorderModal({
-  open,
-  onOpenChange,
-  orderId,
-  orderNumber,
-}: ReorderModalProps) {
+export function ReorderModal({ open, onOpenChange, orderId, orderNumber }: ReorderModalProps) {
   const router = useRouter()
   const [fetching, setFetching] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -116,17 +111,15 @@ export function ReorderModal({
     }
   }
 
-  const availableItems = reorderData?.items.filter(item => item.available) || []
-  const unavailableItems = reorderData?.items.filter(item => !item.available) || []
+  const availableItems = reorderData?.items.filter((item) => item.available) || []
+  const unavailableItems = reorderData?.items.filter((item) => !item.available) || []
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Re-Order #{orderNumber}</DialogTitle>
-          <DialogDescription>
-            Review items from your original order
-          </DialogDescription>
+          <DialogDescription>Review items from your original order</DialogDescription>
         </DialogHeader>
 
         {error && (
@@ -150,7 +143,8 @@ export function ReorderModal({
               <Alert className="border-yellow-500 bg-yellow-50">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  {reorderData.summary.unavailableItems} of {reorderData.summary.totalItems} items are no longer available
+                  {reorderData.summary.unavailableItems} of {reorderData.summary.totalItems} items
+                  are no longer available
                 </AlertDescription>
               </Alert>
             )}
@@ -169,10 +163,10 @@ export function ReorderModal({
                         {item.image ? (
                           <div className="relative h-16 w-16 flex-shrink-0">
                             <Image
-                              src={item.image}
-                              alt={item.productName}
                               fill
+                              alt={item.productName}
                               className="object-cover rounded"
+                              src={item.image}
                             />
                           </div>
                         ) : (
@@ -183,17 +177,16 @@ export function ReorderModal({
                         <div className="flex-1 min-w-0">
                           <h5 className="font-medium truncate">{item.productName}</h5>
                           <p className="text-sm text-muted-foreground">
-                            Quantity: {item.quantity} • ${(item.currentPrice || item.originalPrice).toFixed(2)} each
+                            Quantity: {item.quantity} • $
+                            {(item.currentPrice || item.originalPrice).toFixed(2)} each
                           </p>
                           <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                            Total: ${((item.currentPrice || item.originalPrice) * item.quantity).toFixed(2)}
+                            Total: $
+                            {((item.currentPrice || item.originalPrice) * item.quantity).toFixed(2)}
                           </p>
                         </div>
                         <div className="flex-shrink-0">
-                          <Button
-                            size="sm"
-                            onClick={() => handleReorderProduct(item)}
-                          >
+                          <Button size="sm" onClick={() => handleReorderProduct(item)}>
                             <ShoppingCart className="h-4 w-4 mr-2" />
                             Reorder
                           </Button>
@@ -221,10 +214,8 @@ export function ReorderModal({
                         </div>
                         <div className="flex-1">
                           <h5 className="font-medium text-muted-foreground">{item.productName}</h5>
-                          <p className="text-sm text-muted-foreground">
-                            Quantity: {item.quantity}
-                          </p>
-                          <Badge variant="destructive" className="mt-1">
+                          <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                          <Badge className="mt-1" variant="destructive">
                             {item.reason}
                           </Badge>
                         </div>

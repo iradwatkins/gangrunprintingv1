@@ -1,4 +1,5 @@
 # GangRun Printing - November 7, 1971, v2
+
 ## Major Milestone Documentation
 
 **Date:** November 22, 2024
@@ -16,6 +17,7 @@ GangRun Printing is now fully operational with complete CRUD functionality acros
 ## ✅ What's Working
 
 ### 1. **Product Management System**
+
 - ✅ Four permanent products (Product one, two, three, four)
 - ✅ Full CRUD operations (Create, Read, Update, Delete, Duplicate)
 - ✅ Product detail pages with dynamic routing (`/products/[slug]`)
@@ -24,6 +26,7 @@ GangRun Printing is now fully operational with complete CRUD functionality acros
 - ✅ File upload system for customer designs
 
 ### 2. **Add-on System with Positioning**
+
 - ✅ Three-tier add-on positioning:
   - **ABOVE_DROPDOWN**: Variable Data Printing, Plastic Card, Corner Rounding
   - **IN_DROPDOWN**: Foil Stamping, Signature Strip, Folding
@@ -33,7 +36,9 @@ GangRun Printing is now fully operational with complete CRUD functionality acros
 - ✅ Price modifiers and calculations
 
 ### 3. **Admin Panel Features**
+
 All admin panels support full CRUD operations:
+
 - ✅ Products (`/admin/products`)
 - ✅ Categories (`/admin/product-categories`)
 - ✅ Paper Stocks (`/admin/paper-stocks`)
@@ -46,6 +51,7 @@ All admin panels support full CRUD operations:
 - ✅ Turnaround Time Sets (`/admin/turnaround-time-sets`)
 
 ### 4. **Authentication System**
+
 - ✅ Lucia Auth implementation
 - ✅ Google OAuth integration
 - ✅ Magic link authentication
@@ -53,6 +59,7 @@ All admin panels support full CRUD operations:
 - ✅ Protected routes
 
 ### 5. **Shopping Cart & Checkout**
+
 - ✅ Context-based cart management
 - ✅ LocalStorage persistence
 - ✅ Real-time updates
@@ -60,6 +67,7 @@ All admin panels support full CRUD operations:
 - ✅ Price calculations
 
 ### 6. **File Upload System**
+
 - ✅ MinIO integration
 - ✅ Temporary file storage
 - ✅ Automatic cleanup
@@ -71,6 +79,7 @@ All admin panels support full CRUD operations:
 ## 🏗️ Architecture That Keeps It Working
 
 ### **1. Database Architecture**
+
 ```
 PostgreSQL + Prisma ORM
 ├── Normalized schema with UUIDs
@@ -81,6 +90,7 @@ PostgreSQL + Prisma ORM
 ```
 
 ### **2. API Architecture**
+
 ```
 Next.js App Router (v15.5.2)
 ├── Server Components for initial data
@@ -91,6 +101,7 @@ Next.js App Router (v15.5.2)
 ```
 
 ### **3. State Management**
+
 ```
 React Context + LocalStorage
 ├── Cart Context for shopping cart
@@ -102,24 +113,28 @@ React Context + LocalStorage
 ### **4. Key Design Decisions**
 
 #### **a. Product Configuration System**
+
 - Separate configuration API endpoint per product
 - Cached configuration data
 - Fallback to defaults when database unavailable
 - Transform functions for data consistency
 
 #### **b. Add-on Positioning System**
+
 - Database-driven positioning (ABOVE/IN/BELOW)
 - Grouped rendering in UI components
 - Backward compatibility with legacy add-ons
 - Default selections support
 
 #### **c. Error Handling**
+
 - Try-catch blocks at all database operations
 - Fallback data for critical paths
 - User-friendly error messages
 - Detailed server-side logging
 
 #### **d. Performance Optimizations**
+
 - Server-side data fetching
 - Client-side caching
 - Lazy loading for images
@@ -131,22 +146,26 @@ React Context + LocalStorage
 ## 📁 Critical Files and Their Roles
 
 ### **Core Product Files**
+
 - `/src/app/(customer)/products/[slug]/page.tsx` - Server component for product pages
 - `/src/components/product/product-detail-client.tsx` - Client component for product interaction
 - `/src/components/product/SimpleConfigurationForm.tsx` - Product configuration UI
 - `/src/app/api/products/[id]/configuration/route.ts` - Configuration API endpoint
 
 ### **Add-on System Files**
+
 - `/src/components/product/AddonAccordionWithVariable.tsx` - Add-on display with positioning
 - `/src/lib/utils/addon-transformer.ts` - Add-on data transformation utilities
 - `/scripts/update-product-addons.js` - Script to update product add-ons
 
 ### **Database Schema**
+
 - `/prisma/schema.prisma` - Complete database schema
 - All models use UUID primary keys
 - Proper relations and constraints
 
 ### **Configuration Files**
+
 - `/docker-compose.yml` - Docker deployment configuration
 - `/ecosystem.config.js` - PM2 process management
 - `/.env` - Environment variables (not in repo)
@@ -157,6 +176,7 @@ React Context + LocalStorage
 ## 🚀 Deployment Configuration
 
 ### **Production Server**
+
 - **URL:** https://gangrunprinting.com
 - **Port:** 3002
 - **Process Manager:** PM2 (gangrunprinting)
@@ -164,6 +184,7 @@ React Context + LocalStorage
 - **SSL:** Let's Encrypt
 
 ### **PM2 Configuration**
+
 ```javascript
 {
   name: 'gangrunprinting',
@@ -177,6 +198,7 @@ React Context + LocalStorage
 ```
 
 ### **Nginx Configuration**
+
 ```nginx
 server {
   server_name gangrunprinting.com;
@@ -196,16 +218,19 @@ server {
 ## 🔧 Critical Fixes Applied
 
 ### **1. Product Page 404 Fix**
+
 - **Issue:** Prisma relation names mismatch
 - **Solution:** Changed capital case to lowercase (ProductCategory → productCategory)
 - **File:** `/src/app/(customer)/products/[slug]/page.tsx`
 
 ### **2. Add-on Display Fix**
+
 - **Issue:** Add-ons not showing with positions
 - **Solution:** Fixed Prisma relations in configuration API
 - **Files:** `/src/app/api/products/[id]/configuration/route.ts`
 
 ### **3. Add-on Set Save Fix**
+
 - **Issue:** 500 error when saving add-on sets
 - **Solution:** Added UUID generation for all records
 - **File:** `/src/app/api/addon-sets/[id]/route.ts`
@@ -215,6 +240,7 @@ server {
 ## 📊 Database State
 
 ### **Products (4 permanent)**
+
 ```sql
 - Product one (slug: product-one, SKU: PROD001)
 - Product two (slug: product-two, SKU: PROD002)
@@ -223,11 +249,13 @@ server {
 ```
 
 ### **Add-on Set**
+
 ```sql
 - Multi-Position Add-ons (9 add-ons with 3 positions each)
 ```
 
 ### **Active Services**
+
 - PostgreSQL database
 - MinIO file storage
 - Redis caching
@@ -258,6 +286,7 @@ server {
 ## 🔄 Recovery Procedures
 
 ### **If Products Don't Load:**
+
 ```bash
 pm2 restart gangrunprinting
 npm run build
@@ -265,12 +294,14 @@ pm2 restart gangrunprinting
 ```
 
 ### **If Add-ons Don't Display:**
+
 ```bash
 node scripts/update-product-addons.js
 pm2 restart gangrunprinting
 ```
 
 ### **If Database Connection Fails:**
+
 ```bash
 pm2 restart gangrunprinting
 # Check connection string in .env
@@ -322,6 +353,7 @@ node scripts/update-product-addons.js
 ## ✨ Summary
 
 This version represents a fully functional e-commerce printing platform with:
+
 - Complete product management
 - Advanced add-on configuration
 - Full admin capabilities

@@ -16,7 +16,7 @@ alerting:
 
 # Load rules once and periodically evaluate them
 rule_files:
-  - "alerts.yml"
+  - 'alerts.yml'
 
 # Scrape configurations
 scrape_configs:
@@ -99,11 +99,10 @@ scrape_configs:
   - job_name: 'pm2'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['172.22.0.1:9209']  # PM2 metrics exporter if configured
+      - targets: ['172.22.0.1:9209'] # PM2 metrics exporter if configured
         labels:
           service: 'gangrun-app'
           component: 'pm2'
-
 # Service discovery configurations for dynamic environments
 # Uncomment if using Kubernetes or Docker Swarm
 # kubernetes_sd_configs:

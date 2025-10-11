@@ -10,18 +10,18 @@ test.describe('Story 4: Shipping Provider Selection', () => {
           destination: {
             zipCode: '10001',
             state: 'NY',
-            city: 'New York'
+            city: 'New York',
           },
           package: {
             weight: 5,
             dimensions: {
               length: 12,
               width: 10,
-              height: 8
-            }
+              height: 8,
+            },
           },
-          providers: ['fedex', 'southwest-dash']
-        }
+          providers: ['fedex', 'southwest-dash'],
+        },
       })
 
       expect(response.ok()).toBeTruthy()
@@ -55,12 +55,12 @@ test.describe('Story 4: Shipping Provider Selection', () => {
           destination: {
             zipCode: 'invalid',
             state: 'NY',
-            city: 'New York'
+            city: 'New York',
           },
           package: {
-            weight: 5
-          }
-        }
+            weight: 5,
+          },
+        },
       })
 
       expect(response.status()).toBe(400)
@@ -75,12 +75,12 @@ test.describe('Story 4: Shipping Provider Selection', () => {
           destination: {
             zipCode: '10001',
             state: 'NY',
-            city: 'New York'
+            city: 'New York',
           },
           package: {
-            weight: 200 // Over 150 lb limit
-          }
-        }
+            weight: 200, // Over 150 lb limit
+          },
+        },
       })
 
       expect(response.status()).toBe(400)
@@ -94,13 +94,13 @@ test.describe('Story 4: Shipping Provider Selection', () => {
           destination: {
             zipCode: '90210',
             state: 'CA',
-            city: 'Beverly Hills'
+            city: 'Beverly Hills',
           },
           package: {
-            weight: 2
+            weight: 2,
           },
-          providers: ['fedex']
-        }
+          providers: ['fedex'],
+        },
       })
 
       expect(response.ok()).toBeTruthy()
@@ -122,11 +122,11 @@ test.describe('Story 4: Shipping Provider Selection', () => {
                 productId: 'test-product',
                 quantity: 100,
                 price: 19.99,
-                total: 1999.00
-              }
+                total: 1999.0,
+              },
             ],
-            total: 1999.00
-          }
+            total: 1999.0,
+          },
         })
       })
 
@@ -183,15 +183,17 @@ test.describe('Story 4: Shipping Provider Selection', () => {
       await page.route('**/api/cart', async (route) => {
         await route.fulfill({
           json: {
-            items: [{
-              id: '1',
-              productId: 'test',
-              quantity: 1,
-              price: 100,
-              total: 100
-            }],
-            total: 100
-          }
+            items: [
+              {
+                id: '1',
+                productId: 'test',
+                quantity: 1,
+                price: 100,
+                total: 100,
+              },
+            ],
+            total: 100,
+          },
         })
       })
 
@@ -204,16 +206,16 @@ test.describe('Story 4: Shipping Provider Selection', () => {
                 provider: 'fedex',
                 providerName: 'FedEx Ground',
                 rate: { amount: 12.99, currency: 'USD' },
-                delivery: { estimatedDays: { min: 3, max: 5 } }
+                delivery: { estimatedDays: { min: 3, max: 5 } },
               },
               {
                 provider: 'southwest-dash',
                 providerName: 'Southwest Cargo DASH',
                 rate: { amount: 29.99, currency: 'USD' },
-                delivery: { estimatedDays: { min: 1, max: 2 } }
-              }
-            ]
-          }
+                delivery: { estimatedDays: { min: 1, max: 2 } },
+              },
+            ],
+          },
         })
       })
 

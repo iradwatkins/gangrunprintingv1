@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-007 |
-| **Phase** | Phase 2 |
-| **Priority** | HIGH |
-| **Status** | 50% Complete (Partial) |
-| **Story Points** | 21 |
-| **Estimated Duration** | 2-3 weeks |
-| **Dependencies** | Epic 5 (Admin Order Management) |
+| Field                  | Value                           |
+| ---------------------- | ------------------------------- |
+| **Epic ID**            | EPIC-007                        |
+| **Phase**              | Phase 2                         |
+| **Priority**           | HIGH                            |
+| **Status**             | 50% Complete (Partial)          |
+| **Story Points**       | 21                              |
+| **Estimated Duration** | 2-3 weeks                       |
+| **Dependencies**       | Epic 5 (Admin Order Management) |
 
 ---
 
@@ -25,6 +25,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 **Problem:** Currently requires manual vendor coordination and order placement
 **Solution:** Fully automated vendor order routing and status tracking
 **Impact:**
+
 - Reduce order processing time by 80% (from 30 minutes to 5 minutes)
 - Eliminate manual data entry errors
 - Handle 10x more orders with same staff
@@ -35,12 +36,14 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 ## Current State (50% Complete)
 
 ### ✅ What's Already Built:
+
 - Database schema for vendor management
 - Vendor model in Prisma
 - Basic vendor assignment UI
 - Order status tracking foundation
 
 ### ❌ What's Missing:
+
 - Automated order routing logic
 - Vendor API integrations
 - Automated status synchronization
@@ -58,6 +61,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 **So that** I don't need to manually assign vendors for every order
 
 **Acceptance Criteria:**
+
 - [ ] System automatically selects vendor based on product type
 - [ ] Considers vendor capacity and lead times
 - [ ] Fallback to secondary vendor if primary is unavailable
@@ -67,6 +71,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 - [ ] Rush orders prioritized to fast vendors
 
 **Tasks:**
+
 1. Create vendor selection algorithm
 2. Build capacity tracking system
 3. Implement vendor performance scoring
@@ -85,6 +90,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 **So that** orders are placed without human intervention
 
 **Acceptance Criteria:**
+
 - [ ] System formats order data per vendor requirements
 - [ ] Sends order via vendor's preferred method (API/Email/FTP)
 - [ ] Receives confirmation from vendor
@@ -94,6 +100,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 - [ ] Notifies admin of permanent failures
 
 **Tasks:**
+
 1. Design vendor API adapter pattern
 2. Build vendor-specific adapters (PrintFly, 4Over, etc.)
 3. Implement authentication handling
@@ -104,6 +111,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 8. Test with vendor sandbox environments
 
 **Vendor Integration Plan:**
+
 - **PrintFly** (primary vendor for business cards)
 - **4Over** (backup vendor for business cards, primary for flyers)
 - **PrintingCenterUSA** (large format printing)
@@ -117,6 +125,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 **So that** I know exactly where my order is in production
 
 **Acceptance Criteria:**
+
 - [ ] System polls vendor APIs for status updates
 - [ ] Updates order status automatically (PRODUCTION → SHIPPED)
 - [ ] Retrieves tracking numbers when available
@@ -126,6 +135,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 - [ ] Updates expected delivery dates
 
 **Tasks:**
+
 1. Build vendor status polling service
 2. Create status mapping (vendor statuses → our statuses)
 3. Implement tracking number extraction
@@ -144,6 +154,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 **So that** orders don't get stuck or lost
 
 **Acceptance Criteria:**
+
 - [ ] System detects vendor API failures
 - [ ] Automatically retries with exponential backoff
 - [ ] Escalates to admin after 3 failed attempts
@@ -153,6 +164,7 @@ Complete the vendor automation system that was partially implemented in Phase 1.
 - [ ] Maintains order integrity during failures
 
 **Tasks:**
+
 1. Build error detection system
 2. Implement retry logic (exponential backoff)
 3. Create admin escalation workflow
@@ -199,7 +211,7 @@ export class PrintFlyAdapter implements VendorAdapter {
     const response = await fetch('https://api.printfly.com/orders', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.PRINTFLY_API_KEY}`,
+        Authorization: `Bearer ${process.env.PRINTFLY_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(printFlyOrder),
@@ -209,14 +221,11 @@ export class PrintFlyAdapter implements VendorAdapter {
   }
 
   async getOrderStatus(vendorOrderId: string) {
-    const response = await fetch(
-      `https://api.printfly.com/orders/${vendorOrderId}/status`,
-      {
-        headers: {
-          'Authorization': `Bearer ${process.env.PRINTFLY_API_KEY}`,
-        },
-      }
-    )
+    const response = await fetch(`https://api.printfly.com/orders/${vendorOrderId}/status`, {
+      headers: {
+        Authorization: `Bearer ${process.env.PRINTFLY_API_KEY}`,
+      },
+    })
 
     const data = await response.json()
     return this.mapStatus(data.status)
@@ -224,10 +233,10 @@ export class PrintFlyAdapter implements VendorAdapter {
 
   private mapStatus(printFlyStatus: string): VendorStatus {
     const statusMap = {
-      'received': 'RECEIVED',
-      'in_production': 'PRODUCTION',
-      'shipped': 'SHIPPED',
-      'delivered': 'DELIVERED',
+      received: 'RECEIVED',
+      in_production: 'PRODUCTION',
+      shipped: 'SHIPPED',
+      delivered: 'DELIVERED',
     }
     return statusMap[printFlyStatus] || 'UNKNOWN'
   }
@@ -272,7 +281,7 @@ export class VendorSelector {
     // Lead time (20% weight)
     const leadTime = vendor.getLeadTime(order.productType)
     const targetLeadTime = order.rushOrder ? 2 : 5
-    score += (targetLeadTime >= leadTime) ? 20 : 0
+    score += targetLeadTime >= leadTime ? 20 : 0
 
     // Price (10% weight)
     const quote = await vendor.getQuote(order)
@@ -447,18 +456,21 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 ## Testing Strategy
 
 ### Unit Tests
+
 - Vendor adapter implementations
 - Status mapping logic
 - Vendor selection algorithm
 - Error handling and retry logic
 
 ### Integration Tests
+
 - API submissions to vendor sandboxes
 - Status polling and updates
 - Error detection and recovery
 - Order lifecycle (submit → track → complete)
 
 ### E2E Tests
+
 1. Create order → Auto-assign vendor → Submit → Track → Complete
 2. Vendor API failure → Retry → Switch vendor → Success
 3. Status sync → Customer notification
@@ -469,6 +481,7 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] 3+ vendor adapters implemented and tested
 - [ ] Automated vendor selection working
 - [ ] Status sync running every 5 minutes
@@ -477,12 +490,14 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 - [ ] Admin dashboard showing vendor performance
 
 ### Performance Targets
+
 - Vendor selection time: <2 seconds
 - Order submission time: <10 seconds
 - Status sync latency: <5 minutes
 - Error recovery rate: >95%
 
 ### Business Metrics (30 days post-launch)
+
 - Order processing time reduced by 80%
 - Vendor coordination time: <5 minutes per order
 - Automated order rate: >90%
@@ -494,27 +509,33 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 ## Risks & Mitigation
 
 ### Risk 1: Vendor API Changes
+
 **Impact:** High
 **Probability:** Medium
 **Mitigation:**
+
 - Version all API integrations
 - Monitor for API deprecation notices
 - Build adapter abstraction layer
 - Test vendor APIs weekly
 
 ### Risk 2: Vendor Downtime
+
 **Impact:** High
 **Probability:** Low
 **Mitigation:**
+
 - Maintain 2+ vendors per product type
 - Automatic failover to backup vendor
 - Queue orders during downtime
 - Real-time status monitoring
 
 ### Risk 3: Status Sync Delays
+
 **Impact:** Medium
 **Probability:** Medium
 **Mitigation:**
+
 - Poll vendor APIs every 5 minutes
 - Webhook support where available
 - Customer expectations set correctly
@@ -525,18 +546,21 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 ## Timeline
 
 ### Week 1: Foundation
+
 - Vendor adapter pattern implementation
 - Vendor selection algorithm
 - Database schema updates
 - Admin vendor management UI
 
 ### Week 2: Integration
+
 - PrintFly adapter implementation
 - 4Over adapter implementation
 - Order submission logic
 - Error handling system
 
 ### Week 3: Automation
+
 - Status synchronization service
 - Automated order routing
 - Retry logic
@@ -547,11 +571,13 @@ POST   /api/cron/submit-pending-orders // Auto-submit approved orders
 ## Dependencies
 
 **Required:**
+
 - Epic 5: Admin Order Management (complete)
 - Vendor API credentials and documentation
 - Vendor sandbox access for testing
 
 **Optional:**
+
 - N8N workflow automation (can enhance but not required)
 - Monitoring system (Sentry) for error tracking
 

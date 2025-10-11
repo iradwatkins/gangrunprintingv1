@@ -30,14 +30,7 @@ async function getUserDashboardData(userId: string) {
       where: {
         userId,
         status: {
-          in: [
-            'PENDING_PAYMENT',
-            'CONFIRMATION',
-            'PRODUCTION',
-            'ON_HOLD',
-            'SHIPPED',
-            'ON_THE_WAY',
-          ],
+          in: ['PENDING_PAYMENT', 'CONFIRMATION', 'PRODUCTION', 'ON_HOLD', 'SHIPPED', 'ON_THE_WAY'],
         },
       },
     }),

@@ -20,8 +20,8 @@ export const API_TIMEOUT = 10000 // 10 seconds
 
 // Business Logic
 export const TAX_RATE = 0.0825 // 8.25%
-export const MIN_ORDER_AMOUNT = 10.00
-export const MAX_ORDER_AMOUNT = 10000.00
+export const MIN_ORDER_AMOUNT = 10.0
+export const MAX_ORDER_AMOUNT = 10000.0
 export const DEFAULT_CURRENCY = 'USD'
 
 // UI Constants

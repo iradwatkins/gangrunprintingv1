@@ -2,7 +2,8 @@ import { test, expect, Page } from '@playwright/test'
 import path from 'path'
 
 const BASE_URL = 'http://localhost:3002'
-const TEST_IMAGE = '/root/websites/gangrunprinting/public/reference-images/screencapture-m13print-products-2025-06-14-09_41_27.png'
+const TEST_IMAGE =
+  '/root/websites/gangrunprinting/public/reference-images/screencapture-m13print-products-2025-06-14-09_41_27.png'
 
 test.describe('Complete Product CRUD Operations', () => {
   let createdProductIds: string[] = []
@@ -51,17 +52,17 @@ test.describe('Complete Product CRUD Operations', () => {
     await page.fill('input[name="slug"]', `product-${index}`)
     await page.fill('input[name="sku"]', `SKU00${index}`)
     await page.fill('textarea[name="description"]', `This is a test description for ${productName}`)
-    await page.fill('input[name="basePrice"]', `${99.99 + (index * 10)}`)
+    await page.fill('input[name="basePrice"]', `${99.99 + index * 10}`)
 
     // Select category
     const categorySelect = page.locator('select[name="category"]')
-    if (await categorySelect.count() > 0) {
+    if ((await categorySelect.count()) > 0) {
       await categorySelect.selectOption({ index: 1 })
     }
 
     // Upload image
     const fileInput = page.locator('input[type="file"]')
-    if (await fileInput.count() > 0) {
+    if ((await fileInput.count()) > 0) {
       await fileInput.setInputFiles(TEST_IMAGE)
       await page.waitForTimeout(2000) // Wait for upload
       console.log('  ✅ Image uploaded')
@@ -145,7 +146,7 @@ test.describe('Complete Product CRUD Operations', () => {
     if (response.ok()) {
       console.log('  ✅ Product deleted successfully')
       // Remove from tracking array
-      createdProductIds = createdProductIds.filter(id => id !== productId)
+      createdProductIds = createdProductIds.filter((id) => id !== productId)
       return true
     } else {
       console.log('  ❌ Failed to delete product')

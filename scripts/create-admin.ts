@@ -33,7 +33,6 @@ async function createAdminUser() {
           name: 'Ira Watkins',
         },
       })
-
     } else {
       // Create new admin user
       const newUser = await prisma.user.create({
@@ -45,9 +44,7 @@ async function createAdminUser() {
           emailVerified: new Date(),
         },
       })
-
     }
-
   } catch (error) {
     console.error('❌ Error creating admin user:', error)
   } finally {

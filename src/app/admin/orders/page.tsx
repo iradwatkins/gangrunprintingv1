@@ -124,324 +124,321 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
     // Build where clause for filtering
     const where: Record<string, unknown> = {}
 
-  if (statusFilter !== 'all') {
-    where.status = statusFilter
-  }
+    if (statusFilter !== 'all') {
+      where.status = statusFilter
+    }
 
-  if (searchQuery) {
-    where.OR = [
-      { orderNumber: { contains: searchQuery, mode: 'insensitive' } },
-      { email: { contains: searchQuery, mode: 'insensitive' } },
-      { phone: { contains: searchQuery, mode: 'insensitive' } },
-    ]
-  }
+    if (searchQuery) {
+      where.OR = [
+        { orderNumber: { contains: searchQuery, mode: 'insensitive' } },
+        { email: { contains: searchQuery, mode: 'insensitive' } },
+        { phone: { contains: searchQuery, mode: 'insensitive' } },
+      ]
+    }
 
-  // Get orders with pagination
-  const [orders, totalCount] = await Promise.all([
-    prisma.order.findMany({
-      where,
-      include: {
-        OrderItem: true,
-        _count: {
-          select: {
-            OrderItem: true,
+    // Get orders with pagination
+    const [orders, totalCount] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: {
+          OrderItem: true,
+          _count: {
+            select: {
+              OrderItem: true,
+            },
           },
         },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.order.count({ where }),
+    ])
+
+    const totalPages = Math.ceil(totalCount / pageSize)
+
+    // Get order statistics
+    const stats = await prisma.order.groupBy({
+      by: ['status'],
+      _count: true,
+    })
+
+    const statsMap = stats.reduce(
+      (acc, stat) => {
+        acc[stat.status] = stat._count
+        return acc
       },
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-    prisma.order.count({ where }),
-  ])
+      {} as Record<string, number>
+    )
 
-  const totalPages = Math.ceil(totalCount / pageSize)
+    // Calculate total revenue from delivered orders
+    const revenue = await prisma.order.aggregate({
+      where: {
+        status: 'DELIVERED',
+      },
+      _sum: {
+        total: true,
+      },
+    })
 
-  // Get order statistics
-  const stats = await prisma.order.groupBy({
-    by: ['status'],
-    _count: true,
-  })
-
-  const statsMap = stats.reduce(
-    (acc, stat) => {
-      acc[stat.status] = stat._count
-      return acc
-    },
-    {} as Record<string, number>
-  )
-
-  // Calculate total revenue from delivered orders
-  const revenue = await prisma.order.aggregate({
-    where: {
-      status: 'DELIVERED',
-    },
-    _sum: {
-      total: true,
-    },
-  })
-
-  return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-          <p className="text-muted-foreground mt-2">Manage and track all printing orders</p>
+    return (
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+            <p className="text-muted-foreground mt-2">Manage and track all printing orders</p>
+          </div>
+          <Button disabled>
+            <Plus className="mr-2 h-4 w-4" />
+            New Order
+          </Button>
         </div>
-        <Button disabled>
-          <Plus className="mr-2 h-4 w-4" />
-          New Order
-        </Button>
-      </div>
 
-      {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalCount}</div>
-            <p className="text-xs text-muted-foreground">All time orders</p>
-          </CardContent>
-        </Card>
+        {/* Statistics Cards */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalCount}</div>
+              <p className="text-xs text-muted-foreground">All time orders</p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(statsMap['PENDING_PAYMENT'] || 0) +
-                (statsMap['CONFIRMATION'] || 0) +
-                (statsMap['PRODUCTION'] || 0) +
-                (statsMap['SHIPPED'] || 0) +
-                (statsMap['ON_THE_WAY'] || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Active orders</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(statsMap['DELIVERED'] || 0) + (statsMap['PICKED_UP'] || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Successfully fulfilled</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              $
-              {(revenue._sum.total || 0).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">Total revenue</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Search */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Orders</CardTitle>
-          <CardDescription>A list of all orders including their status and details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <form>
-                <Input
-                  className="pl-10"
-                  defaultValue={searchQuery}
-                  name="search"
-                  placeholder="Search by order number, customer name or email..."
-                  type="text"
-                />
-              </form>
-            </div>
-            <form>
-              <Select defaultValue={statusFilter} name="status">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  {Object.entries(statusConfig).map(([value, config]) => (
-                    <SelectItem key={value} value={value}>
-                      {config.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </form>
-            <Button disabled variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              More Filters
-            </Button>
-            <Button disabled variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          </div>
-
-          {/* Orders Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Products</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.length === 0 ? (
-                  <TableRow>
-                    <TableCell className="text-center py-8" colSpan={7}>
-                      {searchQuery || statusFilter !== 'all'
-                        ? 'No orders found matching your filters'
-                        : 'No orders yet. Orders will appear here when customers place them.'}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  orders.map((order) => {
-                    return (
-                      <TableRow key={order.id}>
-                        <TableCell className="font-medium">
-                          <Link className="hover:underline" href={`/admin/orders/${order.id}`}>
-                            {order.orderNumber}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{order.email || 'Guest'}</p>
-                            {order.phone && (
-                              <p className="text-sm text-muted-foreground">{order.phone}</p>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{order._count.OrderItem} items</p>
-                            {order.OrderItem[0] && (
-                              <p className="text-sm text-muted-foreground">
-                                {order.OrderItem[0].productName}
-                                {order.OrderItem.length > 1 &&
-                                  ` +${order.OrderItem.length - 1} more`}
-                              </p>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          ${order.total.toFixed(2)}
-                        </TableCell>
-                        <TableCell>
-                          <OrderStatusDropdown
-                            orderId={order.id}
-                            currentStatus={order.status}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="text-sm">
-                              {new Date(order.createdAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(order.createdAt).toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Link href={`/admin/orders/${order.id}`}>
-                              <Button size="sm" variant="ghost">
-                                <Eye className="h-4 w-4 mr-1" />
-                                View
-                              </Button>
-                            </Link>
-                            <OrderQuickActions order={order} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-muted-foreground">
-                Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of{' '}
-                {totalCount} orders
-              </p>
-              <div className="flex gap-2">
-                <Link
-                  href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-                >
-                  <Button disabled={page <= 1} size="sm" variant="outline">
-                    Previous
-                  </Button>
-                </Link>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = page <= 3 ? i + 1 : page + i - 2
-                    if (pageNum > totalPages) return null
-                    return (
-                      <Link
-                        key={pageNum}
-                        href={`/admin/orders?page=${pageNum}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-                      >
-                        <Button size="sm" variant={pageNum === page ? 'default' : 'outline'}>
-                          {pageNum}
-                        </Button>
-                      </Link>
-                    )
-                  })}
-                </div>
-                <Link
-                  href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-                >
-                  <Button disabled={page >= totalPages} size="sm" variant="outline">
-                    Next
-                  </Button>
-                </Link>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+              <Clock className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {(statsMap['PENDING_PAYMENT'] || 0) +
+                  (statsMap['CONFIRMATION'] || 0) +
+                  (statsMap['PRODUCTION'] || 0) +
+                  (statsMap['SHIPPED'] || 0) +
+                  (statsMap['ON_THE_WAY'] || 0)}
               </div>
+              <p className="text-xs text-muted-foreground">Active orders</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completed</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {(statsMap['DELIVERED'] || 0) + (statsMap['PICKED_UP'] || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">Successfully fulfilled</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                $
+                {(revenue._sum.total || 0).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">Total revenue</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters and Search */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Orders</CardTitle>
+            <CardDescription>
+              A list of all orders including their status and details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <form>
+                  <Input
+                    className="pl-10"
+                    defaultValue={searchQuery}
+                    name="search"
+                    placeholder="Search by order number, customer name or email..."
+                    type="text"
+                  />
+                </form>
+              </div>
+              <form>
+                <Select defaultValue={statusFilter} name="status">
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    {Object.entries(statusConfig).map(([value, config]) => (
+                      <SelectItem key={value} value={value}>
+                        {config.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </form>
+              <Button disabled variant="outline">
+                <Filter className="mr-2 h-4 w-4" />
+                More Filters
+              </Button>
+              <Button disabled variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  )
+
+            {/* Orders Table */}
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Products</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.length === 0 ? (
+                    <TableRow>
+                      <TableCell className="text-center py-8" colSpan={7}>
+                        {searchQuery || statusFilter !== 'all'
+                          ? 'No orders found matching your filters'
+                          : 'No orders yet. Orders will appear here when customers place them.'}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    orders.map((order) => {
+                      return (
+                        <TableRow key={order.id}>
+                          <TableCell className="font-medium">
+                            <Link className="hover:underline" href={`/admin/orders/${order.id}`}>
+                              {order.orderNumber}
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{order.email || 'Guest'}</p>
+                              {order.phone && (
+                                <p className="text-sm text-muted-foreground">{order.phone}</p>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{order._count.OrderItem} items</p>
+                              {order.OrderItem[0] && (
+                                <p className="text-sm text-muted-foreground">
+                                  {order.OrderItem[0].productName}
+                                  {order.OrderItem.length > 1 &&
+                                    ` +${order.OrderItem.length - 1} more`}
+                                </p>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">${order.total.toFixed(2)}</TableCell>
+                          <TableCell>
+                            <OrderStatusDropdown currentStatus={order.status} orderId={order.id} />
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="text-sm">
+                                {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                })}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(order.createdAt).toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Link href={`/admin/orders/${order.id}`}>
+                                <Button size="sm" variant="ghost">
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                              </Link>
+                              <OrderQuickActions order={order} />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, totalCount)} of{' '}
+                  {totalCount} orders
+                </p>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+                  >
+                    <Button disabled={page <= 1} size="sm" variant="outline">
+                      Previous
+                    </Button>
+                  </Link>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const pageNum = page <= 3 ? i + 1 : page + i - 2
+                      if (pageNum > totalPages) return null
+                      return (
+                        <Link
+                          key={pageNum}
+                          href={`/admin/orders?page=${pageNum}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+                        >
+                          <Button size="sm" variant={pageNum === page ? 'default' : 'outline'}>
+                            {pageNum}
+                          </Button>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                  <Link
+                    href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+                  >
+                    <Button disabled={page >= totalPages} size="sm" variant="outline">
+                      Next
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    )
   } catch (error) {
     return (
       <div className="space-y-8">
@@ -457,11 +454,10 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
               <AlertCircle className="h-12 w-12 text-destructive" />
               <h2 className="text-xl font-semibold">Failed to Load Orders</h2>
               <p className="text-muted-foreground text-center max-w-md">
-                There was an error loading the orders. Please check your database connection and try again.
+                There was an error loading the orders. Please check your database connection and try
+                again.
               </p>
-              <Button onClick={() => window.location.reload()}>
-                Try Again
-              </Button>
+              <Button onClick={() => window.location.reload()}>Try Again</Button>
             </div>
           </CardContent>
         </Card>

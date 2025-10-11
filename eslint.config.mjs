@@ -16,7 +16,15 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'scripts/**', 'next-env.d.ts', 'playwright-tests/**'],
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'scripts/**',
+      'next-env.d.ts',
+      'playwright-tests/**',
+    ],
   },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   // TypeScript files configuration

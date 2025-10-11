@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
@@ -6,10 +6,7 @@ import { z } from 'zod'
 // Schema for broker discount updates
 const brokerDiscountSchema = z.record(z.string(), z.number().min(0).max(100))
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Authenticate and check admin role
     const { user } = await validateRequest()
@@ -41,17 +38,11 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error fetching broker discounts:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch broker discounts' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch broker discounts' }, { status: 500 })
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Authenticate and check admin role
     const { user } = await validateRequest()
@@ -99,9 +90,6 @@ export async function PUT(
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update broker discounts' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update broker discounts' }, { status: 500 })
   }
 }

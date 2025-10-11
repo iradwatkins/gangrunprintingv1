@@ -1,4 +1,3 @@
-
 export interface ShippingAddress {
   street: string
   street2?: string

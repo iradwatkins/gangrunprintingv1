@@ -30,32 +30,25 @@ export function PaymentMethods({
       testOnly: true,
     },
     {
-      id: 'card',
+      id: 'square',
       name: 'Credit/Debit Card',
       description: 'Pay securely with your credit or debit card',
       icon: CreditCard,
       popular: true,
     },
     {
-      id: 'square',
-      name: 'Square Checkout',
-      description: 'Secure checkout with Square (redirects to payment page)',
+      id: 'paypal',
+      name: 'PayPal',
+      description: 'Pay with your PayPal account',
       icon: DollarSign,
       popular: false,
+      comingSoon: false,
     },
     {
       id: 'cashapp',
       name: 'Cash App Pay',
       description: 'Pay instantly with Cash App',
       icon: Smartphone,
-      popular: false,
-      comingSoon: true,
-    },
-    {
-      id: 'paypal',
-      name: 'PayPal',
-      description: 'Pay with your PayPal account',
-      icon: DollarSign,
       popular: false,
       comingSoon: true,
     },
@@ -168,13 +161,11 @@ export function PaymentMethods({
               <CreditCard className="mr-2 h-5 w-5" />
               {selectedMethod === 'test_cash'
                 ? '🧪 Complete Test Order'
-                : selectedMethod === 'card'
-                  ? 'Continue to Card Details'
-                  : selectedMethod === 'square'
-                    ? 'Pay with Square'
-                    : selectedMethod === 'cashapp'
-                      ? 'Pay with Cash App'
-                      : 'Pay with PayPal'}
+                : selectedMethod === 'square'
+                  ? 'Continue to Payment'
+                  : selectedMethod === 'cashapp'
+                    ? 'Pay with Cash App'
+                    : 'Pay with PayPal'}
             </>
           )}
         </Button>

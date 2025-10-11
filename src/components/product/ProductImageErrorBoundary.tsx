@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Component, ReactNode, ErrorInfo } from 'react'
+import React, { Component, type ReactNode, type ErrorInfo } from 'react'
 import Image from 'next/image'
 import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -87,10 +87,7 @@ export function ProductImageWithErrorBoundary({
   fallbackImage?: string
 }) {
   return (
-    <ProductImageErrorBoundary
-      productName={productName}
-      fallbackImage={fallbackImage}
-    >
+    <ProductImageErrorBoundary fallbackImage={fallbackImage} productName={productName}>
       {children}
     </ProductImageErrorBoundary>
   )

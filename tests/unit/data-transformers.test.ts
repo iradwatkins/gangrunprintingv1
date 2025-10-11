@@ -7,7 +7,7 @@ import {
   transformQuantitiesForFrontend,
   transformPaperStocksForFrontend,
   transformAddonsForFrontend,
-  transformProductsForFrontend
+  transformProductsForFrontend,
 } from '@/lib/data-transformers'
 
 describe('Data Transformers', () => {
@@ -96,7 +96,7 @@ describe('Data Transformers', () => {
         name: 'Product with Relations',
         slug: 'product-with-relations',
         description: 'Description',
-        basePrice: 20.00,
+        basePrice: 20.0,
         productCategory: {
           id: 'cat-1',
           name: 'Business Cards',
@@ -111,7 +111,7 @@ describe('Data Transformers', () => {
             thumbnailUrl: '/images/product1_thumb.jpg',
             isPrimary: true,
             displayOrder: 1,
-          }
+          },
         ],
       }
 
@@ -206,7 +206,7 @@ describe('Data Transformers', () => {
           alt_text: 'Product image 2',
           is_primary: false,
           display_order: 2,
-        }
+        },
       ]
 
       const result = transformImagesForFrontend(images)
@@ -259,7 +259,7 @@ describe('Data Transformers', () => {
         {
           id: 'img-3',
           url: '/image3.jpg',
-        }
+        },
       ]
 
       const result = transformImagesForFrontend(images)
@@ -285,24 +285,24 @@ describe('Data Transformers', () => {
           name: 'Product 1',
           slug: 'product-1',
           description: 'Description 1',
-          basePrice: 10.00,
+          basePrice: 10.0,
         },
         {
           id: 'prod-2',
           name: 'Product 2',
           slug: 'product-2',
           description: 'Description 2',
-          base_price: 20.00,
-        }
+          base_price: 20.0,
+        },
       ]
 
       const result = transformProductsForFrontend(products)
 
       expect(result).toHaveLength(2)
       expect(result[0].Id).toBe('prod-1')
-      expect(result[0].BasePrice).toBe(10.00)
+      expect(result[0].BasePrice).toBe(10.0)
       expect(result[1].Id).toBe('prod-2')
-      expect(result[1].BasePrice).toBe(20.00)
+      expect(result[1].BasePrice).toBe(20.0)
     })
 
     it('should handle empty products array', () => {
@@ -332,7 +332,7 @@ describe('Data Transformers', () => {
           name: 'Valid Product',
           slug: 'valid-product',
           description: 'Valid description',
-          basePrice: 10.00,
+          basePrice: 10.0,
         },
         {
           // Missing required fields
@@ -343,8 +343,8 @@ describe('Data Transformers', () => {
           name: 'Another Valid',
           slug: 'another-valid',
           description: 'Another description',
-          base_price: 30.00,
-        }
+          base_price: 30.0,
+        },
       ]
 
       const result = transformProductsForFrontend(products)
@@ -364,8 +364,8 @@ describe('Data Transformers', () => {
         name: 'Mixed Case Product',
         slug: 'mixed-case',
         description: 'Description',
-        basePrice: 15.00,
-        base_price: 25.00, // Both present - should prefer camelCase
+        basePrice: 15.0,
+        base_price: 25.0, // Both present - should prefer camelCase
         turnaroundTime: 5,
         turnaround_time: 10, // Both present - should prefer camelCase
         isActive: true,
@@ -374,7 +374,7 @@ describe('Data Transformers', () => {
 
       const result = transformProductForFrontend(product)
 
-      expect(result?.BasePrice).toBe(15.00) // Should use camelCase version
+      expect(result?.BasePrice).toBe(15.0) // Should use camelCase version
       expect(result?.TurnaroundTime).toBe(5) // Should use camelCase version
       expect(result?.IsActive).toBe(true)
       expect(result?.IsFeatured).toBe(true)
@@ -386,7 +386,7 @@ describe('Data Transformers', () => {
         name: 'Nested Product',
         slug: 'nested',
         description: 'Description',
-        basePrice: 20.00,
+        basePrice: 20.0,
         productCategory: undefined,
         productImages: undefined,
         images: null,
@@ -415,7 +415,7 @@ describe('Data Transformers', () => {
         name: 'Circular Product',
         slug: 'circular',
         description: 'Description',
-        basePrice: 30.00,
+        basePrice: 30.0,
         productCategory: category,
       }
 

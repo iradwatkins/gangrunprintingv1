@@ -6,11 +6,8 @@ async function main() {
   // First, delete any existing image upload add-ons
   await prisma.addOn.deleteMany({
     where: {
-      OR: [
-        { id: 'addon_image_upload' },
-        { name: 'Image Upload' }
-      ]
-    }
+      OR: [{ id: 'addon_image_upload' }, { name: 'Image Upload' }],
+    },
   })
 
   // Create the Image Upload add-on
@@ -19,7 +16,8 @@ async function main() {
       id: 'addon_image_upload',
       name: 'Image Upload',
       description: 'Upload additional images or files for your project (optional)',
-      tooltipText: 'Upload multiple additional images, logos, or files for your project. You can also skip this and email files later.',
+      tooltipText:
+        'Upload multiple additional images, logos, or files for your project. You can also skip this and email files later.',
       pricingModel: 'CUSTOM',
       configuration: {
         type: 'image_upload',
@@ -32,12 +30,12 @@ async function main() {
           'image/webp',
           'application/pdf',
           'application/postscript',
-          'application/illustrator'
+          'application/illustrator',
         ],
         allowDeferredUpload: true,
         pricing: {
           basePrice: 0, // Free service
-          description: 'Free file upload service'
+          description: 'Free file upload service',
         },
         options: {
           upload_now: {
@@ -47,7 +45,7 @@ async function main() {
             tooltipText: 'Upload multiple images or files now. All uploads are free.',
             basePrice: 0,
             requiresFileUpload: true,
-            fileUploadOptional: false
+            fileUploadOptional: false,
           },
           upload_later: {
             id: 'upload_later',
@@ -56,28 +54,28 @@ async function main() {
             tooltipText: 'You can email us your additional files after placing the order',
             basePrice: 0,
             sendReminder: true,
-            allowDeferredUpload: true
-          }
+            allowDeferredUpload: true,
+          },
         },
         fileRequirements: {
           maxFiles: 10,
           maxFileSize: '25MB per file',
           formats: 'JPG, PNG, GIF, WebP, PDF, AI, EPS',
-          note: 'All file uploads are free of charge'
-        }
+          note: 'All file uploads are free of charge',
+        },
       },
       additionalTurnaroundDays: 0,
       sortOrder: 10,
       isActive: true,
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   })
 
   console.log('Created Image Upload add-on:', imageUploadAddon.id)
 
   // Find or create an addon set for additional services
   let additionalServicesSet = await prisma.addOnSet.findFirst({
-    where: { name: 'Additional Services' }
+    where: { name: 'Additional Services' },
   })
 
   if (!additionalServicesSet) {
@@ -88,8 +86,8 @@ async function main() {
         description: 'Optional additional services for your project',
         sortOrder: 5,
         isActive: true,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('Created Additional Services addon set:', additionalServicesSet.id)
   }
@@ -103,8 +101,8 @@ async function main() {
       displayPosition: 'IN_DROPDOWN',
       sortOrder: 1,
       isDefault: false,
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   })
 
   console.log('Added Image Upload add-on to Additional Services set:', addOnSetItem.id)

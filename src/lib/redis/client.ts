@@ -1,9 +1,9 @@
 // Redis Client Configuration
 // Singleton Redis client for session management and caching
 
-import Redis from 'ioredis';
+import Redis from 'ioredis'
 
-let redisClient: Redis | null = null;
+let redisClient: Redis | null = null
 
 export function getRedisClient(): Redis {
   if (!redisClient) {
@@ -14,16 +14,16 @@ export function getRedisClient(): Redis {
       db: parseInt(process.env.REDIS_DB || '0'),
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
+        const delay = Math.min(times * 50, 2000)
+        return delay
       },
       reconnectOnError: (err) => {
-        const targetError = 'READONLY';
+        const targetError = 'READONLY'
         if (err.message.includes(targetError)) {
           // Only reconnect when the error contains "READONLY"
-          return true;
+          return true
         }
-        return false;
+        return false
       },
       lazyConnect: true,
       enableOfflineQueue: true,
@@ -31,44 +31,44 @@ export function getRedisClient(): Redis {
       // Performance optimizations
       enableReadyCheck: true,
       keepAlive: 30000,
-    });
+    })
 
     redisClient.on('error', (error) => {
-      console.error('Redis Client Error:', error);
-    });
+      console.error('Redis Client Error:', error)
+    })
 
     redisClient.on('connect', () => {
-      console.log('Redis Client Connected');
-    });
+      console.log('Redis Client Connected')
+    })
 
     redisClient.on('ready', () => {
-      console.log('Redis Client Ready');
-    });
+      console.log('Redis Client Ready')
+    })
 
     redisClient.on('reconnecting', () => {
-      console.log('Redis Client Reconnecting...');
-    });
+      console.log('Redis Client Reconnecting...')
+    })
   }
 
-  return redisClient;
+  return redisClient
 }
 
 // Graceful shutdown
 export async function closeRedisConnection(): Promise<void> {
   if (redisClient) {
-    await redisClient.quit();
-    redisClient = null;
+    await redisClient.quit()
+    redisClient = null
   }
 }
 
 // Health check
 export async function checkRedisHealth(): Promise<boolean> {
   try {
-    const client = getRedisClient();
-    await client.ping();
-    return true;
+    const client = getRedisClient()
+    await client.ping()
+    return true
   } catch (error) {
-    console.error('Redis health check failed:', error);
-    return false;
+    console.error('Redis health check failed:', error)
+    return false
   }
 }

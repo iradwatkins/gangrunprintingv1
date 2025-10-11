@@ -42,6 +42,7 @@
 ## 🚀 QUICK START COMMANDS
 
 ### 1. Deploy Monitoring Stack
+
 ```bash
 # Start all monitoring services
 docker-compose -f docker-compose.monitoring.yml up -d
@@ -54,6 +55,7 @@ docker-compose -f docker-compose.monitoring.yml logs -f
 ```
 
 ### 2. Access Monitoring Services
+
 ```bash
 # Prometheus (metrics)
 http://gangrunprinting.com:9090
@@ -69,6 +71,7 @@ curl http://localhost:3002/api/metrics
 ```
 
 ### 3. Test Monitoring Pipeline
+
 ```bash
 # Generate test error
 curl -X POST http://localhost:3002/api/test-error
@@ -85,26 +88,29 @@ curl -I http://localhost:3002
 ## 📊 KEY METRICS TO MONITOR
 
 ### Business Metrics
-| Metric | Alert Threshold | Action Required |
-|--------|----------------|-----------------|
-| Orders per hour | < 1 | Check payment system |
-| Revenue per day | < $100 | Review marketing |
-| Error rate | > 5% | Investigate immediately |
-| Cart abandonment | > 50% | UX review needed |
+
+| Metric           | Alert Threshold | Action Required         |
+| ---------------- | --------------- | ----------------------- |
+| Orders per hour  | < 1             | Check payment system    |
+| Revenue per day  | < $100          | Review marketing        |
+| Error rate       | > 5%            | Investigate immediately |
+| Cart abandonment | > 50%           | UX review needed        |
 
 ### Technical Metrics
-| Metric | Alert Threshold | Action Required |
-|--------|----------------|-----------------|
-| Response time (p95) | > 1000ms | Performance optimization |
-| Database latency | > 500ms | Query optimization |
-| Memory usage | > 90% | Restart or scale |
-| CPU usage | > 80% | Scale horizontally |
+
+| Metric              | Alert Threshold | Action Required          |
+| ------------------- | --------------- | ------------------------ |
+| Response time (p95) | > 1000ms        | Performance optimization |
+| Database latency    | > 500ms         | Query optimization       |
+| Memory usage        | > 90%           | Restart or scale         |
+| CPU usage           | > 80%           | Scale horizontally       |
 
 ---
 
 ## 🔥 EMERGENCY PROCEDURES
 
 ### 1. High Error Rate Alert
+
 ```bash
 # Step 1: Check error details
 curl http://localhost:3002/api/health
@@ -120,6 +126,7 @@ pm2 restart gangrunprinting
 ```
 
 ### 2. Database Connection Issues
+
 ```bash
 # Step 1: Test database connection
 PGPASSWORD=GangRun2024Secure psql -U gangrun_user \
@@ -133,6 +140,7 @@ pm2 restart gangrunprinting
 ```
 
 ### 3. Performance Degradation
+
 ```bash
 # Step 1: Check current metrics
 curl -s http://localhost:3002/api/metrics | grep duration
@@ -151,6 +159,7 @@ free -m
 ## 📈 GRAFANA DASHBOARDS
 
 ### Business Dashboard
+
 - **URL**: http://gangrunprinting.com:3010/d/gangrun-business
 - **Panels**:
   - Total Orders Today
@@ -161,6 +170,7 @@ free -m
   - Top Products by Revenue
 
 ### Technical Dashboard (To Create)
+
 - **URL**: http://gangrunprinting.com:3010/d/gangrun-technical
 - **Panels**:
   - API Response Times
@@ -173,18 +183,21 @@ free -m
 ## 🔔 ALERT CONFIGURATIONS
 
 ### Critical Alerts (Immediate Action)
+
 1. **ApplicationDown** - Main app not responding
 2. **PostgreSQLDown** - Database unreachable
 3. **HighOrderFailureRate** - >5% orders failing
 4. **SecurityError** - Security breach detected
 
 ### Warning Alerts (Within 1 Hour)
+
 1. **SlowAPIResponse** - p95 > 1000ms
 2. **HighMemoryUsage** - >90% memory used
 3. **LowOrderRate** - <1 order/hour
 4. **DiskSpaceRunningOut** - <15% disk free
 
 ### Info Alerts (Monitor)
+
 1. **HighNetworkTraffic** - Unusual traffic patterns
 2. **CacheM issRate** - Cache efficiency dropped
 
@@ -193,6 +206,7 @@ free -m
 ## 🛠️ MAINTENANCE PROCEDURES
 
 ### Daily Tasks
+
 ```bash
 # Check health status
 curl http://localhost:3002/api/health | jq .
@@ -205,6 +219,7 @@ ls -la /backups/
 ```
 
 ### Weekly Tasks
+
 ```bash
 # Review Grafana dashboards
 # Check alert rules effectiveness
@@ -213,6 +228,7 @@ ls -la /backups/
 ```
 
 ### Monthly Tasks
+
 ```bash
 # Analyze performance trends
 # Capacity planning review
@@ -225,6 +241,7 @@ ls -la /backups/
 ## 📝 CONFIGURATION FILES
 
 ### Key Files Location
+
 ```
 /root/websites/gangrunprinting/
 ├── docker-compose.monitoring.yml       # Monitoring stack
@@ -253,6 +270,7 @@ ls -la /backups/
 ## 🔐 SECURITY CONSIDERATIONS
 
 ### Metrics Endpoint Security
+
 ```typescript
 // Add to .env for production
 METRICS_AUTH_TOKEN=your-secure-token
@@ -263,6 +281,7 @@ curl -H "Authorization: Bearer your-secure-token" \
 ```
 
 ### Grafana Security
+
 - Change default admin password ✅
 - Disable user sign-ups ✅
 - Use HTTPS in production
@@ -273,11 +292,13 @@ curl -H "Authorization: Bearer your-secure-token" \
 ## 📞 ESCALATION CONTACTS
 
 ### On-Call Rotation
+
 1. **Primary**: Engineering Team
 2. **Secondary**: DevOps Team
 3. **Escalation**: CTO/Management
 
 ### External Services
+
 - **Sentry**: Check dashboard for errors
 - **Email Alerts**: alerts@gangrunprinting.com
 - **SMS Alerts**: Configure Twilio webhook
@@ -287,6 +308,7 @@ curl -H "Authorization: Bearer your-secure-token" \
 ## 🎓 TROUBLESHOOTING GUIDE
 
 ### Metrics Not Showing
+
 ```bash
 # Check if endpoint is accessible
 curl -v http://localhost:3002/api/metrics
@@ -299,6 +321,7 @@ cat monitoring/prometheus/prometheus.yml
 ```
 
 ### Alerts Not Firing
+
 ```bash
 # Check AlertManager status
 curl http://localhost:9093/api/v1/status
@@ -310,6 +333,7 @@ curl -X POST http://localhost:9093/api/v1/alerts \
 ```
 
 ### Grafana Can't Connect
+
 ```bash
 # Check data source configuration
 docker-compose -f docker-compose.monitoring.yml \
@@ -325,6 +349,7 @@ docker-compose -f docker-compose.monitoring.yml \
 ## ✅ MONITORING CHECKLIST
 
 ### Initial Setup
+
 - [x] Sentry error tracking configured
 - [x] Correlation IDs implemented
 - [x] Prometheus metrics endpoint created
@@ -334,6 +359,7 @@ docker-compose -f docker-compose.monitoring.yml \
 - [x] Health endpoint enhanced
 
 ### Production Deployment
+
 - [ ] Deploy monitoring stack via Docker
 - [ ] Configure SMTP for email alerts
 - [ ] Set up PagerDuty integration
@@ -346,6 +372,7 @@ docker-compose -f docker-compose.monitoring.yml \
 ## 🏆 SUCCESS METRICS
 
 Your monitoring is successful when:
+
 1. **MTTD < 5 minutes** - Issues detected quickly
 2. **MTTR < 30 minutes** - Fast resolution
 3. **False Positive Rate < 10%** - Accurate alerts

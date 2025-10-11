@@ -117,7 +117,7 @@ async function getCustomer(id: string) {
   const customer = await prisma.user.findUnique({
     where: { id },
     include: {
-      orders: {
+      Order: {
         include: {
           OrderItem: true,
         },
@@ -208,7 +208,7 @@ function getActivityTimeline(customer: any) {
   }
 
   // Orders
-  customer.orders.forEach((order: any) => {
+  customer.Order.forEach((order: any) => {
     activities.push({
       type: 'order',
       icon: ShoppingCart,
@@ -306,7 +306,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {customer.orders.length === 0 ? (
+                  {customer.Order.length === 0 ? (
                     <div className="text-center py-8">
                       <ShoppingCart className="mx-auto h-12 w-12 text-muted-foreground/50" />
                       <p className="mt-2 text-sm text-muted-foreground">No orders yet</p>
@@ -327,7 +327,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {customer.orders.map((order) => {
+                          {customer.Order.map((order) => {
                             const status =
                               statusConfig[order.status] || statusConfig.PENDING_PAYMENT
                             const StatusIcon = status.icon
@@ -407,7 +407,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           <div className="flex-1 pt-1">
                             <div className="flex items-center gap-2">
                               {'link' in activity && activity.link ? (
-                                <Link className="font-medium hover:underline" href={activity.link as string}>
+                                <Link
+                                  className="font-medium hover:underline"
+                                  href={activity.link as string}
+                                >
                                   {activity.title}
                                 </Link>
                               ) : (
@@ -445,10 +448,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       </CardDescription>
                     </div>
                     <BrokerDiscountButton
+                      currentDiscounts={customer.brokerDiscounts as Record<string, number> | null}
                       customerId={customer.id}
                       customerName={customer.name || customer.email}
                       isBroker={customer.isBroker || false}
-                      currentDiscounts={customer.brokerDiscounts as Record<string, number> | null}
                     />
                   </div>
                 </CardHeader>
@@ -473,8 +476,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       <>
                         <Separator />
                         <BrokerDiscountDisplay
-                          isBroker={customer.isBroker}
                           discounts={customer.brokerDiscounts as Record<string, number> | null}
+                          isBroker={customer.isBroker}
                         />
                       </>
                     )}
@@ -565,9 +568,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      Customer Account
-                    </span>
+                    <span className="text-sm">Customer Account</span>
                   </div>
 
                   <div className="flex items-center gap-2">

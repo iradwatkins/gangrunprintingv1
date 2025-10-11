@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 // GET all vendors or a specific vendor
 export async function GET(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
+    const { user } = await validateRequest()
 
     // Only authenticated users can view vendors
     if (!user?.id) {
@@ -18,17 +19,17 @@ export async function GET(request: NextRequest) {
       const vendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
         include: {
-          vendorPaperStocks: {
+          VendorPaperStock: {
             include: {
               PaperStock: true,
             },
           },
-          vendorProducts: {
+          VendorProduct: {
             include: {
-              product: true,
+              Product: true,
             },
           },
-          orders: {
+          Order: {
             select: {
               id: true,
               referenceNumber: true,
@@ -55,9 +56,9 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            orders: true,
-            vendorProducts: true,
-            vendorPaperStocks: true,
+            Order: true,
+            VendorProduct: true,
+            VendorPaperStock: true,
           },
         },
       },
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(vendors)
   } catch (error) {
+    console.error('Failed to fetch vendors:', error)
     return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 })
   }
 }
@@ -72,7 +74,7 @@ export async function GET(request: NextRequest) {
 // CREATE a new vendor
 export async function POST(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
+    const { user } = await validateRequest()
 
     if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -110,6 +112,7 @@ export async function POST(request: NextRequest) {
 
     const vendor = await prisma.vendor.create({
       data: {
+        id: `vendor_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
         name,
         contactEmail,
         orderEmail: orderEmail || contactEmail,
@@ -123,6 +126,7 @@ export async function POST(request: NextRequest) {
         n8nWebhookUrl,
         notes,
         isActive: true,
+        updatedAt: new Date(),
       },
     })
 
@@ -131,6 +135,7 @@ export async function POST(request: NextRequest) {
       vendor,
     })
   } catch (error) {
+    console.error('Failed to create vendor:', error)
     return NextResponse.json({ error: 'Failed to create vendor' }, { status: 500 })
   }
 }
@@ -138,7 +143,7 @@ export async function POST(request: NextRequest) {
 // UPDATE a vendor
 export async function PUT(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
+    const { user } = await validateRequest()
 
     if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -153,7 +158,10 @@ export async function PUT(request: NextRequest) {
 
     const vendor = await prisma.vendor.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...updateData,
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
@@ -161,6 +169,7 @@ export async function PUT(request: NextRequest) {
       vendor,
     })
   } catch (error) {
+    console.error('Failed to update vendor:', error)
     return NextResponse.json({ error: 'Failed to update vendor' }, { status: 500 })
   }
 }
@@ -168,7 +177,7 @@ export async function PUT(request: NextRequest) {
 // DELETE a vendor
 export async function DELETE(request: NextRequest) {
   try {
-    const { user, session } = await validateRequest()
+    const { user } = await validateRequest()
 
     if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -199,9 +208,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Soft delete by setting isActive to false
-    const vendor = await prisma.vendor.update({
+    await prisma.vendor.update({
       where: { id },
-      data: { isActive: false },
+      data: {
+        isActive: false,
+        updatedAt: new Date(),
+      },
     })
 
     return NextResponse.json({
@@ -209,6 +221,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Vendor deactivated successfully',
     })
   } catch (error) {
+    console.error('Failed to delete vendor:', error)
     return NextResponse.json({ error: 'Failed to delete vendor' }, { status: 500 })
   }
 }

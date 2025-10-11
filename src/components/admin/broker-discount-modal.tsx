@@ -38,9 +38,7 @@ export function BrokerDiscountModal({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [discounts, setDiscounts] = useState<Record<string, number>>(
-    currentDiscounts || {}
-  )
+  const [discounts, setDiscounts] = useState<Record<string, number>>(currentDiscounts || {})
   const [globalDiscount, setGlobalDiscount] = useState('')
 
   // Reset discounts when modal opens with new data
@@ -97,16 +95,13 @@ export function BrokerDiscountModal({
     setError(null)
 
     try {
-      const response = await fetch(
-        `/api/admin/customers/${customerId}/broker-discounts`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ discounts }),
-        }
-      )
+      const response = await fetch(`/api/admin/customers/${customerId}/broker-discounts`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ discounts }),
+      })
 
       const data = await response.json()
 
@@ -133,9 +128,7 @@ export function BrokerDiscountModal({
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Configure Broker Discounts</DialogTitle>
-          <DialogDescription>
-            Set category-specific discounts for {customerName}
-          </DialogDescription>
+          <DialogDescription>Set category-specific discounts for {customerName}</DialogDescription>
         </DialogHeader>
 
         {error && (
@@ -163,16 +156,16 @@ export function BrokerDiscountModal({
             <div className="flex gap-2">
               <div className="flex-1">
                 <Input
-                  type="number"
-                  min="0"
                   max="100"
-                  step="0.5"
+                  min="0"
                   placeholder="e.g., 15"
+                  step="0.5"
+                  type="number"
                   value={globalDiscount}
                   onChange={(e) => setGlobalDiscount(e.target.value)}
                 />
               </div>
-              <Button onClick={handleGlobalDiscount} variant="outline">
+              <Button variant="outline" onClick={handleGlobalDiscount}>
                 Apply to All
               </Button>
             </div>
@@ -193,28 +186,23 @@ export function BrokerDiscountModal({
 
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
             {categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex items-center gap-3 p-3 border rounded-lg"
-              >
+              <div key={category.id} className="flex items-center gap-3 p-3 border rounded-lg">
                 <div className="flex-1">
-                  <Label htmlFor={category.id} className="text-sm font-medium">
+                  <Label className="text-sm font-medium" htmlFor={category.id}>
                     {category.name}
                   </Label>
                 </div>
                 <div className="flex items-center gap-2 w-32">
                   <Input
-                    id={category.id}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.5"
-                    placeholder="0"
-                    value={discounts[category.name] ?? ''}
-                    onChange={(e) =>
-                      handleCategoryDiscount(category.name, e.target.value)
-                    }
                     className="text-right"
+                    id={category.id}
+                    max="100"
+                    min="0"
+                    placeholder="0"
+                    step="0.5"
+                    type="number"
+                    value={discounts[category.name] ?? ''}
+                    onChange={(e) => handleCategoryDiscount(category.name, e.target.value)}
                   />
                   <Percent className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -224,14 +212,10 @@ export function BrokerDiscountModal({
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
+          <Button disabled={loading} variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={loading || success}>
+          <Button disabled={loading || success} onClick={handleSave}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Discounts
           </Button>

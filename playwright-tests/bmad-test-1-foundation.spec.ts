@@ -4,7 +4,10 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
   // Real foundation data for commercial printing business
   const foundationData = {
     categories: [
-      { name: 'Business Cards', description: 'Professional business cards and networking materials' },
+      {
+        name: 'Business Cards',
+        description: 'Professional business cards and networking materials',
+      },
       { name: 'Flyers & Brochures', description: 'Marketing materials and promotional items' },
       { name: 'Large Format Posters', description: 'Banners, posters, and large format printing' },
     ],
@@ -12,50 +15,50 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       {
         name: 'Standard Cardstock Set',
         description: 'Premium cardstock options for business cards',
-        paperStocks: ['16pt Card Stock', '14pt Card Stock', '12pt Card Stock']
+        paperStocks: ['16pt Card Stock', '14pt Card Stock', '12pt Card Stock'],
       },
       {
         name: 'Marketing Materials Set',
         description: 'Paper options for flyers and brochures',
-        paperStocks: ['100lb Gloss Text', '80lb Gloss Text', '100lb Matte Text']
-      }
+        paperStocks: ['100lb Gloss Text', '80lb Gloss Text', '100lb Matte Text'],
+      },
     ],
     quantityGroups: [
       {
         name: 'Business Card Quantities',
         values: '100,250,500,1000,2500,5000',
-        defaultValue: '500'
+        defaultValue: '500',
       },
       {
         name: 'Flyer Quantities',
         values: '25,50,100,250,500,1000,2500,5000,10000',
-        defaultValue: '100'
-      }
+        defaultValue: '100',
+      },
     ],
     sizeGroups: [
       {
         name: 'Business Card Sizes',
         values: '3.5" x 2" (Standard),3.5" x 2" (Rounded Corners)',
-        defaultValue: '3.5" x 2" (Standard)'
+        defaultValue: '3.5" x 2" (Standard)',
       },
       {
         name: 'Flyer Sizes',
         values: '8.5" x 11",5.5" x 8.5",4.25" x 11"',
-        defaultValue: '8.5" x 11"'
-      }
+        defaultValue: '8.5" x 11"',
+      },
     ],
     addOnSets: [
       {
         name: 'Premium Business Card Add-ons',
-        description: 'Enhancement options for business cards'
-      }
+        description: 'Enhancement options for business cards',
+      },
     ],
     turnaroundTimeSets: [
       {
         name: 'Standard Production Times',
-        description: 'Regular production schedule'
-      }
-    ]
+        description: 'Regular production schedule',
+      },
+    ],
   }
 
   const testProduct = {
@@ -75,7 +78,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
     // If we're redirected to signin, we need to authenticate
     if (page.url().includes('/auth/signin')) {
-
       // For now, we'll assume authentication is handled externally
       // In a real test environment, you'd handle auth here
     }
@@ -98,7 +100,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Wait for success and close modal
       await page.waitForSelector('text=success', { timeout: 5000 })
       await page.keyboard.press('Escape')
-
     }
   })
 
@@ -119,7 +120,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       // Wait for success
       await page.waitForSelector('text=success', { timeout: 5000 })
       await page.keyboard.press('Escape')
-
     }
   })
 
@@ -138,7 +138,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
       // Save quantity group
       await page.click('button:has-text("Save")')
-
     }
   })
 
@@ -157,7 +156,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
       // Save size group
       await page.click('button:has-text("Save")')
-
     }
   })
 
@@ -175,7 +173,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
       // Save add-on set
       await page.click('button:has-text("Save")')
-
     }
   })
 
@@ -193,7 +190,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
 
       // Save turnaround time set
       await page.click('button:has-text("Save")')
-
     }
   })
 
@@ -213,29 +209,37 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
     await page.fill('input[name="basePrice"]', testProduct.basePrice.toString())
 
     // Select category (first category we created)
-    const categorySelect = page.locator('select[name="categoryId"], button:has-text("Select category")')
-    if (await categorySelect.count() > 0) {
+    const categorySelect = page.locator(
+      'select[name="categoryId"], button:has-text("Select category")'
+    )
+    if ((await categorySelect.count()) > 0) {
       await categorySelect.click()
       await page.click('text=Business Cards')
     }
 
     // Select paper stock set (first one we created)
-    const paperStockSelect = page.locator('select[name="selectedPaperStockSet"], button:has-text("Select paper stock set")')
-    if (await paperStockSelect.count() > 0) {
+    const paperStockSelect = page.locator(
+      'select[name="selectedPaperStockSet"], button:has-text("Select paper stock set")'
+    )
+    if ((await paperStockSelect.count()) > 0) {
       await paperStockSelect.click()
       await page.click('text=Standard Cardstock Set')
     }
 
     // Select quantity group
-    const quantitySelect = page.locator('select[name="selectedQuantityGroup"], button:has-text("Select quantity group")')
-    if (await quantitySelect.count() > 0) {
+    const quantitySelect = page.locator(
+      'select[name="selectedQuantityGroup"], button:has-text("Select quantity group")'
+    )
+    if ((await quantitySelect.count()) > 0) {
       await quantitySelect.click()
       await page.click('text=Business Card Quantities')
     }
 
     // Select size group
-    const sizeSelect = page.locator('select[name="selectedSizeGroup"], button:has-text("Select size group")')
-    if (await sizeSelect.count() > 0) {
+    const sizeSelect = page.locator(
+      'select[name="selectedSizeGroup"], button:has-text("Select size group")'
+    )
+    if ((await sizeSelect.count()) > 0) {
       await sizeSelect.click()
       await page.click('text=Business Card Sizes')
     }
@@ -259,7 +263,7 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       { endpoint: '/api/quantity-groups', name: 'Quantity Groups' },
       { endpoint: '/api/size-groups', name: 'Size Groups' },
       { endpoint: '/api/addon-sets', name: 'Add-on Sets' },
-      { endpoint: '/api/turnaround-time-sets', name: 'Turnaround Time Sets' }
+      { endpoint: '/api/turnaround-time-sets', name: 'Turnaround Time Sets' },
     ]
 
     for (const apiTest of apiTests) {
@@ -269,7 +273,6 @@ test.describe('BMAD Test 1: Foundation Data Setup & Basic Product Creation', () 
       const data = await response.json()
       expect(Array.isArray(data)).toBe(true)
       expect(data.length).toBeGreaterThan(0)
-
     }
   })
 })

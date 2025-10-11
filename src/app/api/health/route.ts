@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger-safe'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     // Check database connection
     const startTime = Date.now()
@@ -25,17 +25,17 @@ export async function GET() : Promise<unknown> {
       prisma.order.count({
         where: {
           createdAt: {
-            gte: oneDayAgo
-          }
-        }
+            gte: oneDayAgo,
+          },
+        },
       }),
       prisma.session.count({
         where: {
           expiresAt: {
-            gte: now
-          }
-        }
-      })
+            gte: now,
+          },
+        },
+      }),
     ])
 
     // Check system resources (memory usage)
@@ -75,7 +75,7 @@ export async function GET() : Promise<unknown> {
         database: {
           status: 'connected',
           latencyMs: dbLatency,
-          health: dbLatency < 100 ? 'good' : dbLatency < 500 ? 'degraded' : 'critical'
+          health: dbLatency < 100 ? 'good' : dbLatency < 500 ? 'degraded' : 'critical',
         },
         app: {
           status: 'running',
@@ -99,8 +99,8 @@ export async function GET() : Promise<unknown> {
         performance: {
           dbLatencyMs: dbLatency,
           memoryUsagePercent: Math.round((memoryMB.heapUsed / memoryMB.heapTotal) * 100),
-          uptimeHours: Math.round(process.uptime() / 3600 * 100) / 100,
-        }
+          uptimeHours: Math.round((process.uptime() / 3600) * 100) / 100,
+        },
       },
       alerts: [
         ...(productCount === 0 ? ['WARNING: No products in database'] : []),
@@ -108,7 +108,7 @@ export async function GET() : Promise<unknown> {
         ...(dbLatency > 500 ? ['CRITICAL: Database latency high'] : []),
         ...(memoryMB.heapUsed > 500 ? ['WARNING: High memory usage'] : []),
         ...(healthScore < 90 ? [`INFO: System health score: ${healthScore}/100`] : []),
-      ]
+      ],
     })
   } catch (error) {
     logger.error('Health check failed:', error)

@@ -152,7 +152,7 @@ interface ConfigurationState {
 
 export function useProductConfiguration({
   productId,
-  onConfigurationChange
+  onConfigurationChange,
 }: UseProductConfigurationProps) {
   const { handleError, clearErrors } = useErrorHandler()
   const { withLoading, isLoading } = useLoadingManager()
@@ -236,7 +236,7 @@ export function useProductConfiguration({
         cornerRoundingConfig: undefined,
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         configData: data,
         configuration: defaultConfig,
@@ -254,188 +254,216 @@ export function useProductConfiguration({
   }, [fetchConfiguration])
 
   // Helper to get actual quantity value
-  const getQuantityValue = useCallback((config: SimpleProductConfiguration): number => {
-    const selectedQuantity = state.configData?.quantities.find(q => q.id === config.quantity)
-    if (selectedQuantity?.isCustom && config.customQuantity !== undefined && config.customQuantity > 0) {
-      return config.customQuantity
-    }
-    return selectedQuantity?.value || 0
-  }, [state.configData])
+  const getQuantityValue = useCallback(
+    (config: SimpleProductConfiguration): number => {
+      const selectedQuantity = state.configData?.quantities.find((q) => q.id === config.quantity)
+      if (
+        selectedQuantity?.isCustom &&
+        config.customQuantity !== undefined &&
+        config.customQuantity > 0
+      ) {
+        return config.customQuantity
+      }
+      return selectedQuantity?.value || 0
+    },
+    [state.configData]
+  )
 
   // Helper to get size dimensions
-  const getSizeDimensions = useCallback((config: SimpleProductConfiguration) => {
-    const selectedSize = state.configData?.sizes.find(s => s.id === config.size)
+  const getSizeDimensions = useCallback(
+    (config: SimpleProductConfiguration) => {
+      const selectedSize = state.configData?.sizes.find((s) => s.id === config.size)
 
-    if (selectedSize?.isCustom && config.customWidth && config.customHeight) {
-      return {
-        width: config.customWidth,
-        height: config.customHeight,
-        squareInches: config.customWidth * config.customHeight,
+      if (selectedSize?.isCustom && config.customWidth && config.customHeight) {
+        return {
+          width: config.customWidth,
+          height: config.customHeight,
+          squareInches: config.customWidth * config.customHeight,
+        }
       }
-    }
 
-    return {
-      width: selectedSize?.width || 0,
-      height: selectedSize?.height || 0,
-      squareInches: selectedSize?.squareInches || 0,
-    }
-  }, [state.configData])
+      return {
+        width: selectedSize?.width || 0,
+        height: selectedSize?.height || 0,
+        squareInches: selectedSize?.squareInches || 0,
+      }
+    },
+    [state.configData]
+  )
 
   // Update configuration
-  const updateConfiguration = useCallback((updates: Partial<SimpleProductConfiguration>) => {
-    setState(prev => {
-      const newConfig = { ...prev.configuration, ...updates }
+  const updateConfiguration = useCallback(
+    (updates: Partial<SimpleProductConfiguration>) => {
+      setState((prev) => {
+        const newConfig = { ...prev.configuration, ...updates }
 
-      // Handle paper change side effects
-      if ('paper' in updates && state.configData) {
-        const selectedPaper = state.configData.paperStocks.find(p => p.id === updates.paper)
-        if (selectedPaper) {
-          const defaultCoating = selectedPaper.coatings.find(c => c.isDefault) || selectedPaper.coatings[0]
-          const defaultSides = selectedPaper.sides.find(s => s.isDefault) || selectedPaper.sides[0]
+        // Handle paper change side effects
+        if ('paper' in updates && state.configData) {
+          const selectedPaper = state.configData.paperStocks.find((p) => p.id === updates.paper)
+          if (selectedPaper) {
+            const defaultCoating =
+              selectedPaper.coatings.find((c) => c.isDefault) || selectedPaper.coatings[0]
+            const defaultSides =
+              selectedPaper.sides.find((s) => s.isDefault) || selectedPaper.sides[0]
 
-          newConfig.coating = defaultCoating?.id || ''
-          newConfig.sides = defaultSides?.id || ''
+            newConfig.coating = defaultCoating?.id || ''
+            newConfig.sides = defaultSides?.id || ''
+          }
         }
-      }
 
-      onConfigurationChange?.(newConfig)
+        onConfigurationChange?.(newConfig)
 
-      return {
-        ...prev,
-        configuration: newConfig,
-      }
-    })
-  }, [state.configData, onConfigurationChange])
+        return {
+          ...prev,
+          configuration: newConfig,
+        }
+      })
+    },
+    [state.configData, onConfigurationChange]
+  )
 
   // Handle quantity changes with validation
-  const updateQuantity = useCallback((quantityId: string, customValue?: number) => {
-    const selectedQuantity = state.configData?.quantities.find(q => q.id === quantityId)
+  const updateQuantity = useCallback(
+    (quantityId: string, customValue?: number) => {
+      const selectedQuantity = state.configData?.quantities.find((q) => q.id === quantityId)
 
-    if (selectedQuantity?.isCustom) {
-      setCustomInputs(prev => ({
-        ...prev,
-        showCustomQuantityInput: true,
-        customQuantityValue: customValue?.toString() || '',
-      }))
-
-      // Validate custom quantity
-      if (customValue !== undefined) {
-        const minValue = selectedQuantity.customMin || 55000
-        const maxValue = selectedQuantity.customMax || 100000
-
-        let quantityError = ''
-        if (customValue < minValue) {
-          quantityError = `Minimum quantity is ${minValue.toLocaleString()}`
-        } else if (customValue > maxValue) {
-          quantityError = `Maximum quantity is ${maxValue.toLocaleString()}`
-        }
-
-        setState(prev => ({
+      if (selectedQuantity?.isCustom) {
+        setCustomInputs((prev) => ({
           ...prev,
-          validationErrors: { ...prev.validationErrors, quantity: quantityError },
+          showCustomQuantityInput: true,
+          customQuantityValue: customValue?.toString() || '',
         }))
 
-        if (!quantityError) {
-          updateConfiguration({ quantity: quantityId, customQuantity: customValue })
+        // Validate custom quantity
+        if (customValue !== undefined) {
+          const minValue = selectedQuantity.customMin || 55000
+          const maxValue = selectedQuantity.customMax || 100000
+
+          let quantityError = ''
+          if (customValue < minValue) {
+            quantityError = `Minimum quantity is ${minValue.toLocaleString()}`
+          } else if (customValue > maxValue) {
+            quantityError = `Maximum quantity is ${maxValue.toLocaleString()}`
+          }
+
+          setState((prev) => ({
+            ...prev,
+            validationErrors: { ...prev.validationErrors, quantity: quantityError },
+          }))
+
+          if (!quantityError) {
+            updateConfiguration({ quantity: quantityId, customQuantity: customValue })
+          }
+        } else {
+          updateConfiguration({ quantity: quantityId, customQuantity: undefined })
         }
       } else {
+        setCustomInputs((prev) => ({
+          ...prev,
+          showCustomQuantityInput: false,
+          customQuantityValue: '',
+        }))
+        setState((prev) => ({
+          ...prev,
+          validationErrors: { ...prev.validationErrors, quantity: '' },
+        }))
         updateConfiguration({ quantity: quantityId, customQuantity: undefined })
       }
-    } else {
-      setCustomInputs(prev => ({
-        ...prev,
-        showCustomQuantityInput: false,
-        customQuantityValue: '',
-      }))
-      setState(prev => ({
-        ...prev,
-        validationErrors: { ...prev.validationErrors, quantity: '' },
-      }))
-      updateConfiguration({ quantity: quantityId, customQuantity: undefined })
-    }
-  }, [state.configData, updateConfiguration])
+    },
+    [state.configData, updateConfiguration]
+  )
 
   // Handle size changes with validation
-  const updateSize = useCallback((sizeId: string, customWidth?: number, customHeight?: number) => {
-    const selectedSize = state.configData?.sizes.find(s => s.id === sizeId)
+  const updateSize = useCallback(
+    (sizeId: string, customWidth?: number, customHeight?: number) => {
+      const selectedSize = state.configData?.sizes.find((s) => s.id === sizeId)
 
-    if (selectedSize?.isCustom) {
-      setCustomInputs(prev => ({
-        ...prev,
-        showCustomSizeInput: true,
-        customWidthValue: customWidth?.toString() || '',
-        customHeightValue: customHeight?.toString() || '',
-      }))
+      if (selectedSize?.isCustom) {
+        setCustomInputs((prev) => ({
+          ...prev,
+          showCustomSizeInput: true,
+          customWidthValue: customWidth?.toString() || '',
+          customHeightValue: customHeight?.toString() || '',
+        }))
 
-      // Validate custom dimensions
-      let sizeError = ''
-      if (customWidth !== undefined) {
-        const minWidth = selectedSize.customMinWidth || 1
-        const maxWidth = selectedSize.customMaxWidth || 96
-        if (customWidth < minWidth) {
-          sizeError = `Minimum width is ${minWidth}"`
-        } else if (customWidth > maxWidth) {
-          sizeError = `Maximum width is ${maxWidth}"`
+        // Validate custom dimensions
+        let sizeError = ''
+        if (customWidth !== undefined) {
+          const minWidth = selectedSize.customMinWidth || 1
+          const maxWidth = selectedSize.customMaxWidth || 96
+          if (customWidth < minWidth) {
+            sizeError = `Minimum width is ${minWidth}"`
+          } else if (customWidth > maxWidth) {
+            sizeError = `Maximum width is ${maxWidth}"`
+          }
         }
-      }
 
-      if (customHeight !== undefined && !sizeError) {
-        const minHeight = selectedSize.customMinHeight || 1
-        const maxHeight = selectedSize.customMaxHeight || 96
-        if (customHeight < minHeight) {
-          sizeError = `Minimum height is ${minHeight}"`
-        } else if (customHeight > maxHeight) {
-          sizeError = `Maximum height is ${maxHeight}"`
+        if (customHeight !== undefined && !sizeError) {
+          const minHeight = selectedSize.customMinHeight || 1
+          const maxHeight = selectedSize.customMaxHeight || 96
+          if (customHeight < minHeight) {
+            sizeError = `Minimum height is ${minHeight}"`
+          } else if (customHeight > maxHeight) {
+            sizeError = `Maximum height is ${maxHeight}"`
+          }
         }
-      }
 
-      setState(prev => ({
-        ...prev,
-        validationErrors: { ...prev.validationErrors, size: sizeError },
-      }))
+        setState((prev) => ({
+          ...prev,
+          validationErrors: { ...prev.validationErrors, size: sizeError },
+        }))
 
-      if (!sizeError && customWidth && customHeight) {
+        if (!sizeError && customWidth && customHeight) {
+          updateConfiguration({
+            size: sizeId,
+            customWidth,
+            customHeight,
+          })
+        }
+      } else {
+        setCustomInputs((prev) => ({
+          ...prev,
+          showCustomSizeInput: false,
+          customWidthValue: '',
+          customHeightValue: '',
+        }))
+        setState((prev) => ({
+          ...prev,
+          validationErrors: { ...prev.validationErrors, size: '' },
+        }))
         updateConfiguration({
           size: sizeId,
-          customWidth,
-          customHeight
+          customWidth: undefined,
+          customHeight: undefined,
         })
       }
-    } else {
-      setCustomInputs(prev => ({
-        ...prev,
-        showCustomSizeInput: false,
-        customWidthValue: '',
-        customHeightValue: '',
-      }))
-      setState(prev => ({
-        ...prev,
-        validationErrors: { ...prev.validationErrors, size: '' },
-      }))
-      updateConfiguration({
-        size: sizeId,
-        customWidth: undefined,
-        customHeight: undefined
-      })
-    }
-  }, [state.configData, updateConfiguration])
+    },
+    [state.configData, updateConfiguration]
+  )
 
   // Handle turnaround changes with coating restrictions
-  const updateTurnaround = useCallback((turnaroundId: string) => {
-    const selectedTurnaround = state.configData?.turnaroundTimes.find(t => t.id === turnaroundId)
-    let updates: Partial<SimpleProductConfiguration> = { turnaround: turnaroundId }
+  const updateTurnaround = useCallback(
+    (turnaroundId: string) => {
+      const selectedTurnaround = state.configData?.turnaroundTimes.find(
+        (t) => t.id === turnaroundId
+      )
+      const updates: Partial<SimpleProductConfiguration> = { turnaround: turnaroundId }
 
-    // Handle "no coating" requirement
-    if (selectedTurnaround?.requiresNoCoating && state.configData) {
-      const selectedPaper = state.configData.paperStocks.find(p => p.id === state.configuration.paper)
-      const noCoatingOption = selectedPaper?.coatings.find(c => c.name === 'No Coating')
-      if (noCoatingOption) {
-        updates.coating = noCoatingOption.id
+      // Handle "no coating" requirement
+      if (selectedTurnaround?.requiresNoCoating && state.configData) {
+        const selectedPaper = state.configData.paperStocks.find(
+          (p) => p.id === state.configuration.paper
+        )
+        const noCoatingOption = selectedPaper?.coatings.find((c) => c.name === 'No Coating')
+        if (noCoatingOption) {
+          updates.coating = noCoatingOption.id
+        }
       }
-    }
 
-    updateConfiguration(updates)
-  }, [state.configData, state.configuration.paper, updateConfiguration])
+      updateConfiguration(updates)
+    },
+    [state.configData, state.configuration.paper, updateConfiguration]
+  )
 
   return {
     // State

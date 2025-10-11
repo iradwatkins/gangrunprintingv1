@@ -122,6 +122,5 @@ test.describe('Admin Dashboard Theme Verification', () => {
     const primaryHue = parseInt(rootStyles.primary.split(' ')[0])
     expect(primaryHue).toBeGreaterThan(15)
     expect(primaryHue).toBeLessThan(35)
-
   })
 })

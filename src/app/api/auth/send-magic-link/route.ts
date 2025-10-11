@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   // Apply strict rate limiting for magic link requests
   const rateLimitResponse = await withRateLimit(request, {
     ...RateLimitPresets.sensitive,
-    prefix: 'magic-link'
+    prefix: 'magic-link',
   })
   if (rateLimitResponse) return rateLimitResponse
 

@@ -54,9 +54,9 @@ export function initSentry() {
     initialScope: {
       tags: {
         component: 'gangrun-printing',
-        version: '3.0.0-enterprise'
-      }
-    }
+        version: '3.0.0-enterprise',
+      },
+    },
   })
 
   logger.info('Sentry initialized successfully')
@@ -74,7 +74,11 @@ export function reportError(error: Error, context?: Record<string, unknown>) {
   logger.error('Error reported:', { error: error.message, stack: error.stack, context })
 }
 
-export function reportBusinessError(message: string, level: 'info' | 'warning' | 'error' = 'error', context?: Record<string, unknown>) {
+export function reportBusinessError(
+  message: string,
+  level: 'info' | 'warning' | 'error' = 'error',
+  context?: Record<string, unknown>
+) {
   if (SENTRY_ENABLED) {
     Sentry.withScope((scope) => {
       scope.setLevel(level)
@@ -113,11 +117,15 @@ export function trackApiRoute(route: string, method: string, context?: Record<st
 
 export function setUser(user: { id: string; email?: string; role?: string } | null) {
   if (SENTRY_ENABLED) {
-    Sentry.setUser(user ? {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    } : null)
+    Sentry.setUser(
+      user
+        ? {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          }
+        : null
+    )
   }
   logger.debug('User context set:', { userId: user?.id, email: user?.email })
 }
@@ -134,7 +142,10 @@ export function captureException(error: Error, context?: Record<string, unknown>
   logger.error('Exception captured:', { error: error.message, stack: error.stack, context })
 }
 
-export function captureMessage(message: string, level: 'debug' | 'info' | 'warning' | 'error' = 'info') {
+export function captureMessage(
+  message: string,
+  level: 'debug' | 'info' | 'warning' | 'error' = 'info'
+) {
   if (SENTRY_ENABLED) {
     Sentry.captureMessage(message, level)
   }
@@ -159,7 +170,7 @@ export function startTransaction(name: string, op: string) {
 export function recordPerformance(transactionName: string, duration: number, success: boolean) {
   if (SENTRY_ENABLED) {
     recordMetric(`transaction.${transactionName}.duration`, duration, {
-      success: success.toString()
+      success: success.toString(),
     })
   }
   logger.info('Performance recorded:', { transactionName, duration, success })

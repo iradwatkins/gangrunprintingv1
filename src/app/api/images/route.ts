@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
     if (productId) {
       where.productImages = {
         some: {
-          productId: productId
-        }
+          productId: productId,
+        },
       }
     }
 
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
     if (includeUsage) {
       include._count = {
         select: {
-          productImages: true
-        }
+          productImages: true,
+        },
       }
       include.productImages = {
         include: {
@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               name: true,
-              slug: true
-            }
-          }
-        }
+              slug: true,
+            },
+          },
+        },
       }
     }
 
@@ -83,14 +83,11 @@ export async function GET(request: NextRequest) {
         total,
         limit,
         offset,
-        hasMore: offset + limit < total
-      }
+        hasMore: offset + limit < total,
+      },
     })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch images' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 })
   }
 }
 
@@ -131,7 +128,7 @@ export async function POST(request: NextRequest) {
         setTimeout(() => reject(new Error('Form data parsing timeout')), 30000)
       )
 
-      formData = await Promise.race([formDataPromise, timeoutPromise]) as FormData
+      formData = (await Promise.race([formDataPromise, timeoutPromise])) as FormData
     } catch (error) {
       if (error instanceof Error && error.message.includes('timeout')) {
         return createTimeoutErrorResponse('Form data parsing', 15000, requestId)
@@ -148,7 +145,7 @@ export async function POST(request: NextRequest) {
     const name = formData.get('name') as string
     const description = formData.get('description') as string
     const tags = formData.get('tags') as string
-    const category = formData.get('category') as string || 'general'
+    const category = (formData.get('category') as string) || 'general'
 
     if (!file) {
       return createErrorResponse('No file provided', 400, undefined, requestId)
@@ -231,7 +228,12 @@ export async function POST(request: NextRequest) {
         fileSize: uploadedImages.metadata.size,
         mimeType: 'image/jpeg', // All processed images are JPEG
         category,
-        tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        tags: tags
+          ? tags
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : [],
         metadata: {
           originalSize: uploadedImages.metadata.originalSize,
           compressedSize: uploadedImages.metadata.size,
@@ -280,11 +282,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return createErrorResponse(
-      'Failed to upload image',
-      500,
-      { uploadError: true },
-      requestId
-    )
+    return createErrorResponse('Failed to upload image', 500, { uploadError: true }, requestId)
   }
 }

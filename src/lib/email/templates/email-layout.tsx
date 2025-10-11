@@ -33,11 +33,11 @@ export const EmailLayout = ({ preview, children }: EmailLayoutProps) => {
           {/* Header */}
           <Section style={header}>
             <Img
-              src="https://gangrunprinting.com/gangrunprinting_logo_new_1448921366__42384-432x65.png"
-              width="216"
-              height="33"
               alt="GangRun Printing"
+              height="33"
+              src="https://gangrunprinting.com/gangrunprinting_logo_new_1448921366__42384-432x65.png"
               style={logo}
+              width="216"
             />
           </Section>
 

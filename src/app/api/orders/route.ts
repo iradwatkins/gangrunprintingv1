@@ -33,10 +33,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Check authorization
-      if (
-        !user ||
-        (order.email !== user.email && user.role !== 'ADMIN')
-      ) {
+      if (!user || (order.email !== user.email && user.role !== 'ADMIN')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
 
@@ -59,7 +56,7 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,
-        })
+        }),
       ])
 
       return NextResponse.json({
@@ -70,8 +67,8 @@ export async function GET(request: NextRequest) {
           limit,
           totalPages: Math.ceil(totalCount / limit),
           hasNextPage: page < Math.ceil(totalCount / limit),
-          hasPreviousPage: page > 1
-        }
+          hasPreviousPage: page > 1,
+        },
       })
     }
 
@@ -90,7 +87,7 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,
-        })
+        }),
       ])
 
       return NextResponse.json({
@@ -101,8 +98,8 @@ export async function GET(request: NextRequest) {
           limit,
           totalPages: Math.ceil(totalCount / limit),
           hasNextPage: page < Math.ceil(totalCount / limit),
-          hasPreviousPage: page > 1
-        }
+          hasPreviousPage: page > 1,
+        },
       })
     }
 
@@ -122,7 +119,7 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,
-        })
+        }),
       ])
 
       return NextResponse.json({
@@ -133,8 +130,8 @@ export async function GET(request: NextRequest) {
           limit,
           totalPages: Math.ceil(totalCount / limit),
           hasNextPage: page < Math.ceil(totalCount / limit),
-          hasPreviousPage: page > 1
-        }
+          hasPreviousPage: page > 1,
+        },
       })
     }
 

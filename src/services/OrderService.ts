@@ -1,14 +1,14 @@
-import { Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { logger, logBusinessEvent, logError, logPerformance } from '@/lib/logger-safe'
 import {
-  CreateOrderInput,
-  UpdateOrderStatusInput,
-  OrderSearchFilters,
-  PaginationOptions,
-  PaginatedResult,
-  ServiceContext,
-  ServiceResult
+  type CreateOrderInput,
+  type UpdateOrderStatusInput,
+  type OrderSearchFilters,
+  type PaginationOptions,
+  type PaginatedResult,
+  type ServiceContext,
+  type ServiceResult,
 } from '@/types/service'
 import {
   AppError,
@@ -16,7 +16,7 @@ import {
   NotFoundError,
   DatabaseError,
   BusinessLogicError,
-  normalizeError
+  normalizeError,
 } from '@/exceptions/AppError'
 
 export class OrderService {
@@ -110,30 +110,29 @@ export class OrderService {
         userId: input.userId,
         total: result.total,
         itemCount: input.items.length,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       logPerformance('create_order', Date.now() - startTime, {
         orderId: result.id,
-        itemCount: input.items.length
+        itemCount: input.items.length,
       })
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to create order')
       logError(normalizedError, {
         operation: 'create_order',
         input: { ...input, items: input.items.length },
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -146,28 +145,30 @@ export class OrderService {
       const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: {
-          OrderItem: includeItems ? {
-            include: {
-              OrderItemAddOn: {
+          OrderItem: includeItems
+            ? {
                 include: {
-                  AddOn: true
-                }
-              },
-              PaperStock: true
-            }
-          } : false,
+                  OrderItemAddOn: {
+                    include: {
+                      AddOn: true,
+                    },
+                  },
+                  PaperStock: true,
+                },
+              }
+            : false,
           StatusHistory: {
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
           },
           User: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
-          Vendor: true
-        }
+          Vendor: true,
+        },
       })
 
       if (!order) {
@@ -176,20 +177,19 @@ export class OrderService {
 
       return {
         success: true,
-        data: order
+        data: order,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to get order')
       logError(normalizedError, {
         operation: 'get_order_by_id',
         orderId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -197,12 +197,15 @@ export class OrderService {
   /**
    * Update order status with proper state transitions
    */
-  async updateOrderStatus(orderId: string, input: UpdateOrderStatusInput): Promise<ServiceResult<any>> {
+  async updateOrderStatus(
+    orderId: string,
+    input: UpdateOrderStatusInput
+  ): Promise<ServiceResult<any>> {
     try {
       // Validate status transition
       const currentOrder = await prisma.order.findUnique({
         where: { id: orderId },
-        select: { status: true, orderNumber: true }
+        select: { status: true, orderNumber: true },
       })
 
       if (!currentOrder) {
@@ -252,26 +255,25 @@ export class OrderService {
         oldStatus: currentOrder.status,
         newStatus: input.status,
         changedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to update order status')
       logError(normalizedError, {
         operation: 'update_order_status',
         orderId,
         input,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -296,22 +298,22 @@ export class OrderService {
                 id: true,
                 productName: true,
                 quantity: true,
-                price: true
-              }
+                price: true,
+              },
             },
             User: {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
+                email: true,
+              },
+            },
           },
           orderBy,
           skip: (pagination.page - 1) * pagination.limit,
           take: pagination.limit,
         }),
-        prisma.order.count({ where })
+        prisma.order.count({ where }),
       ])
 
       const totalPages = Math.ceil(total / pagination.limit)
@@ -325,26 +327,25 @@ export class OrderService {
           totalPages,
           hasNext: pagination.page < totalPages,
           hasPrev: pagination.page > 1,
-        }
+        },
       }
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to search orders')
       logError(normalizedError, {
         operation: 'search_orders',
         filters,
         pagination,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -356,7 +357,7 @@ export class OrderService {
     try {
       const order = await prisma.order.findUnique({
         where: { id: orderId },
-        select: { status: true, orderNumber: true }
+        select: { status: true, orderNumber: true },
       })
 
       if (!order) {
@@ -366,10 +367,9 @@ export class OrderService {
       // Check if order can be cancelled
       const cancellableStatuses = ['PENDING_PAYMENT', 'PAID', 'CONFIRMATION']
       if (!cancellableStatuses.includes(order.status)) {
-        throw new BusinessLogicError(
-          `Order cannot be cancelled from status: ${order.status}`,
-          { currentStatus: order.status }
-        )
+        throw new BusinessLogicError(`Order cannot be cancelled from status: ${order.status}`, {
+          currentStatus: order.status,
+        })
       }
 
       const result = await prisma.$transaction(async (tx) => {
@@ -399,26 +399,25 @@ export class OrderService {
         orderNumber: order.orderNumber,
         reason,
         cancelledBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to cancel order')
       logError(normalizedError, {
         operation: 'cancel_order',
         orderId,
         reason,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -448,7 +447,9 @@ export class OrderService {
 
   private generateOrderNumber(): string {
     const timestamp = Date.now()
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0')
     return `ORD-${timestamp}-${random}`
   }
 
@@ -459,7 +460,8 @@ export class OrderService {
     // Calculate subtotal from items
     const subtotal = input.items.reduce((sum, item) => {
       const itemTotal = item.price * item.quantity
-      const addOnTotal = item.addOns?.reduce((addOnSum, addOn) => addOnSum + addOn.calculatedPrice, 0) || 0
+      const addOnTotal =
+        item.addOns?.reduce((addOnSum, addOn) => addOnSum + addOn.calculatedPrice, 0) || 0
       return sum + itemTotal + addOnTotal
     }, 0)
 
@@ -490,19 +492,19 @@ export class OrderService {
   private isValidStatusTransition(currentStatus: string, newStatus: string): boolean {
     // Printing Company Order Status Transitions
     const validTransitions: Record<string, string[]> = {
-      'PENDING_PAYMENT': ['CONFIRMATION', 'PAYMENT_DECLINED', 'CANCELLED'],
-      'PAYMENT_DECLINED': ['PENDING_PAYMENT', 'CANCELLED'],
-      'CONFIRMATION': ['PRODUCTION', 'ON_HOLD', 'CANCELLED', 'REFUNDED'],
-      'ON_HOLD': ['CONFIRMATION', 'PRODUCTION', 'CANCELLED'],
-      'PRODUCTION': ['SHIPPED', 'READY_FOR_PICKUP', 'ON_HOLD', 'REPRINT'],
-      'SHIPPED': ['ON_THE_WAY', 'DELIVERED', 'REPRINT'],
-      'READY_FOR_PICKUP': ['PICKED_UP', 'ON_THE_WAY', 'DELIVERED'],
-      'ON_THE_WAY': ['DELIVERED', 'PICKED_UP'],
-      'PICKED_UP': ['DELIVERED'],
-      'DELIVERED': ['REPRINT'], // Can request reprint after delivery
-      'REPRINT': ['PRODUCTION'], // Reprint goes back to production
-      'CANCELLED': ['REFUNDED'], // Can refund cancelled orders
-      'REFUNDED': [] // Terminal state
+      PENDING_PAYMENT: ['CONFIRMATION', 'PAYMENT_DECLINED', 'CANCELLED'],
+      PAYMENT_DECLINED: ['PENDING_PAYMENT', 'CANCELLED'],
+      CONFIRMATION: ['PRODUCTION', 'ON_HOLD', 'CANCELLED', 'REFUNDED'],
+      ON_HOLD: ['CONFIRMATION', 'PRODUCTION', 'CANCELLED'],
+      PRODUCTION: ['SHIPPED', 'READY_FOR_PICKUP', 'ON_HOLD', 'REPRINT'],
+      SHIPPED: ['ON_THE_WAY', 'DELIVERED', 'REPRINT'],
+      READY_FOR_PICKUP: ['PICKED_UP', 'ON_THE_WAY', 'DELIVERED'],
+      ON_THE_WAY: ['DELIVERED', 'PICKED_UP'],
+      PICKED_UP: ['DELIVERED'],
+      DELIVERED: ['REPRINT'], // Can request reprint after delivery
+      REPRINT: ['PRODUCTION'], // Reprint goes back to production
+      CANCELLED: ['REFUNDED'], // Can refund cancelled orders
+      REFUNDED: [], // Terminal state
     }
 
     return validTransitions[currentStatus]?.includes(newStatus) || false
@@ -522,7 +524,7 @@ export class OrderService {
     if (filters.dateRange) {
       where.createdAt = {
         gte: filters.dateRange.from,
-        lte: filters.dateRange.to
+        lte: filters.dateRange.to,
       }
     }
 
@@ -548,7 +550,7 @@ export class OrderService {
     const sortOrder = pagination.sortOrder || 'desc'
 
     return {
-      [sortBy]: sortOrder
+      [sortBy]: sortOrder,
     }
   }
 }

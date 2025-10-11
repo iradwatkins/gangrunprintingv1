@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { redis } from '@/lib/redis'
 import { headers } from 'next/headers'
 
@@ -45,7 +45,7 @@ export async function rateLimit(
     pipeline.expire(key, interval)
 
     const results = await pipeline.exec()
-    const count = results?.[2]?.[1] as number || 0
+    const count = (results?.[2]?.[1] as number) || 0
 
     const remaining = Math.max(0, uniqueTokenPerInterval - count)
     const success = count <= uniqueTokenPerInterval
@@ -54,7 +54,7 @@ export async function rateLimit(
       success,
       limit: uniqueTokenPerInterval,
       remaining,
-      reset: now + interval * 1000
+      reset: now + interval * 1000,
     }
   } catch (error) {
     console.error('Rate limiting error:', error)
@@ -63,7 +63,7 @@ export async function rateLimit(
       success: true,
       limit: uniqueTokenPerInterval,
       remaining: uniqueTokenPerInterval,
-      reset: now + interval * 1000
+      reset: now + interval * 1000,
     }
   }
 }
@@ -106,7 +106,7 @@ export async function withRateLimit(
       {
         error: 'Too Many Requests',
         message: `Rate limit exceeded. Please try again after ${new Date(result.reset).toISOString()}`,
-        retryAfter: Math.ceil((result.reset - Date.now()) / 1000)
+        retryAfter: Math.ceil((result.reset - Date.now()) / 1000),
       },
       {
         status: 429,
@@ -114,8 +114,8 @@ export async function withRateLimit(
           'X-RateLimit-Limit': result.limit.toString(),
           'X-RateLimit-Remaining': result.remaining.toString(),
           'X-RateLimit-Reset': new Date(result.reset).toISOString(),
-          'Retry-After': Math.ceil((result.reset - Date.now()) / 1000).toString()
-        }
+          'Retry-After': Math.ceil((result.reset - Date.now()) / 1000).toString(),
+        },
       }
     )
   }
@@ -128,24 +128,24 @@ export const RateLimitPresets = {
   // Strict rate limit for auth endpoints
   auth: {
     interval: 60, // 1 minute
-    uniqueTokenPerInterval: 5 // 5 requests per minute
+    uniqueTokenPerInterval: 5, // 5 requests per minute
   },
 
   // Moderate rate limit for API endpoints
   api: {
     interval: 60, // 1 minute
-    uniqueTokenPerInterval: 30 // 30 requests per minute
+    uniqueTokenPerInterval: 30, // 30 requests per minute
   },
 
   // Lenient rate limit for public endpoints
   public: {
     interval: 60, // 1 minute
-    uniqueTokenPerInterval: 60 // 60 requests per minute
+    uniqueTokenPerInterval: 60, // 60 requests per minute
   },
 
   // Very strict for sensitive operations
   sensitive: {
     interval: 300, // 5 minutes
-    uniqueTokenPerInterval: 3 // 3 requests per 5 minutes
-  }
+    uniqueTokenPerInterval: 3, // 3 requests per 5 minutes
+  },
 }

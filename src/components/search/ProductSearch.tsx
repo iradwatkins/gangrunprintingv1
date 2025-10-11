@@ -80,8 +80,7 @@ export function ProductSearch({ className }: { className?: string }) {
         const data = await response.json()
         setSuggestions([...data.products, ...data.categories])
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }, [])
 
   // Debounced search for suggestions

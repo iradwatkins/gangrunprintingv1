@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-009 |
-| **Phase** | Phase 2 |
-| **Priority** | MEDIUM |
-| **Status** | Not Started |
-| **Story Points** | 34 |
-| **Estimated Duration** | 3-4 weeks |
-| **Dependencies** | Epic 5 (Admin Order Management 85% complete) |
+| Field                  | Value                                        |
+| ---------------------- | -------------------------------------------- |
+| **Epic ID**            | EPIC-009                                     |
+| **Phase**              | Phase 2                                      |
+| **Priority**           | MEDIUM                                       |
+| **Status**             | Not Started                                  |
+| **Story Points**       | 34                                           |
+| **Estimated Duration** | 3-4 weeks                                    |
+| **Dependencies**       | Epic 5 (Admin Order Management 85% complete) |
 
 ---
 
@@ -25,6 +25,7 @@ Build advanced admin tools for business operations including analytics dashboard
 **Problem:** Limited admin tools causing inefficiency and lack of business insights
 **Solution:** Comprehensive admin platform with analytics, automation, and bulk operations
 **Impact:**
+
 - Reduce admin time by 60% (from 10 hours/week to 4 hours/week)
 - Enable data-driven decision making
 - Improve order accuracy by 40%
@@ -41,6 +42,7 @@ Build advanced admin tools for business operations including analytics dashboard
 **So that** I can understand business performance and make data-driven decisions
 
 **Acceptance Criteria:**
+
 - [ ] Dashboard shows key metrics (revenue, orders, customers)
 - [ ] Date range selector (today, week, month, year, custom)
 - [ ] Revenue trends with charts
@@ -51,6 +53,7 @@ Build advanced admin tools for business operations including analytics dashboard
 - [ ] Export data to CSV/Excel
 
 **Key Metrics:**
+
 ```typescript
 interface DashboardMetrics {
   // Revenue
@@ -85,6 +88,7 @@ interface DashboardMetrics {
 ```
 
 **Tasks:**
+
 1. Design dashboard layout
 2. Create metrics calculation service
 3. Build chart components (line, bar, pie)
@@ -103,6 +107,7 @@ interface DashboardMetrics {
 **So that** I can manage large volumes efficiently
 
 **Acceptance Criteria:**
+
 - [ ] Can select multiple orders
 - [ ] Can bulk update order status
 - [ ] Can bulk assign vendors
@@ -113,6 +118,7 @@ interface DashboardMetrics {
 - [ ] Progress indicator for long operations
 
 **Bulk Operations Supported:**
+
 ```typescript
 // Orders
 - Bulk status update (PENDING → PRODUCTION)
@@ -135,6 +141,7 @@ interface DashboardMetrics {
 ```
 
 **Tasks:**
+
 1. Create bulk selection UI
 2. Build bulk action menu
 3. Implement progress tracking
@@ -153,6 +160,7 @@ interface DashboardMetrics {
 **So that** I can prevent out-of-stock situations
 
 **Acceptance Criteria:**
+
 - [ ] Can view inventory levels by product
 - [ ] Low stock alerts (email + dashboard)
 - [ ] Can set reorder points
@@ -162,6 +170,7 @@ interface DashboardMetrics {
 - [ ] Inventory reports
 
 **Database Schema:**
+
 ```prisma
 model Inventory {
   id              String   @id @default(cuid())
@@ -205,6 +214,7 @@ model InventoryTransaction {
 ```
 
 **Tasks:**
+
 1. Create inventory database schema
 2. Build inventory list page
 3. Add reorder point alerts
@@ -223,6 +233,7 @@ model InventoryTransaction {
 **So that** I can analyze specific aspects of the business
 
 **Acceptance Criteria:**
+
 - [ ] Pre-built report templates available
 - [ ] Can create custom reports
 - [ ] Can save and schedule reports
@@ -232,6 +243,7 @@ model InventoryTransaction {
 - [ ] Comparison periods (YoY, MoM)
 
 **Report Types:**
+
 ```typescript
 // Sales Reports
 - Daily/Weekly/Monthly Sales Summary
@@ -262,6 +274,7 @@ model InventoryTransaction {
 ```
 
 **Tasks:**
+
 1. Design report builder UI
 2. Create report templates
 3. Build custom report creator
@@ -280,6 +293,7 @@ model InventoryTransaction {
 **So that** I can track all system changes and troubleshoot issues
 
 **Acceptance Criteria:**
+
 - [ ] All admin actions are logged
 - [ ] Logs include user, timestamp, action, and changes
 - [ ] Can search and filter logs
@@ -289,6 +303,7 @@ model InventoryTransaction {
 - [ ] Sensitive data masked in logs
 
 **Logged Actions:**
+
 ```typescript
 // User Management
 - User created/updated/deleted
@@ -315,6 +330,7 @@ model InventoryTransaction {
 ```
 
 **Database Schema:**
+
 ```prisma
 model AuditLog {
   id          String   @id @default(cuid())
@@ -350,6 +366,7 @@ model AuditLog {
 ```
 
 **Tasks:**
+
 1. Create audit log database schema
 2. Build logging middleware
 3. Implement action tracking
@@ -410,9 +427,7 @@ export class AnalyticsService {
     })
 
     const revenueChange =
-      ((currentRevenue._sum.total - previousRevenue._sum.total) /
-        previousRevenue._sum.total) *
-      100
+      ((currentRevenue._sum.total - previousRevenue._sum.total) / previousRevenue._sum.total) * 100
 
     return {
       totalRevenue: currentRevenue._sum.total || 0,
@@ -580,18 +595,21 @@ GET    /api/admin/audit-logs/export
 ## Testing Strategy
 
 ### Unit Tests
+
 - Analytics calculations
 - Bulk operation logic
 - Inventory reduction calculations
 - Report generation
 
 ### Integration Tests
+
 - Dashboard data accuracy
 - Bulk operations with large datasets
 - Inventory transactions
 - Audit log creation
 
 ### E2E Tests
+
 1. View dashboard and verify metrics
 2. Perform bulk order status update
 3. Create custom report and export
@@ -603,6 +621,7 @@ GET    /api/admin/audit-logs/export
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] Dashboard loads in <2 seconds
 - [ ] Bulk operations handle 100+ items
 - [ ] All reports exportable
@@ -610,12 +629,14 @@ GET    /api/admin/audit-logs/export
 - [ ] Inventory alerts working
 
 ### Performance Targets
+
 - Dashboard load time: <2 seconds
 - Analytics query time: <500ms
 - Bulk operation: 10 items per second
 - Report generation: <10 seconds
 
 ### Business Metrics (30 days post-launch)
+
 - Admin efficiency increase: >50%
 - Time spent on reporting: Reduced by 70%
 - Inventory stockouts: Reduced by 80%
@@ -627,18 +648,22 @@ GET    /api/admin/audit-logs/export
 ## Risks & Mitigation
 
 ### Risk 1: Performance with Large Datasets
+
 **Impact:** High
 **Probability:** Medium
 **Mitigation:**
+
 - Database indexing on key fields
 - Query optimization
 - Pagination for bulk operations
 - Caching for analytics
 
 ### Risk 2: Data Accuracy
+
 **Impact:** High
 **Probability:** Low
 **Mitigation:**
+
 - Comprehensive test suite
 - Real-time validation
 - Audit trails for verification
@@ -649,24 +674,28 @@ GET    /api/admin/audit-logs/export
 ## Timeline
 
 ### Week 1: Analytics Dashboard
+
 - Metrics calculation service
 - Dashboard UI
 - Chart components
 - Export functionality
 
 ### Week 2: Bulk Operations
+
 - Bulk selection UI
 - Action processing
 - Progress tracking
 - Error handling
 
 ### Week 3: Inventory & Reporting
+
 - Inventory management
 - Report templates
 - Custom report builder
 - Scheduling system
 
 ### Week 4: Audit Logs & Polish
+
 - Audit logging
 - Log viewer UI
 - Performance optimization

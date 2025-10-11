@@ -31,6 +31,7 @@ import {
   TestTube,
   Settings,
   Wrench,
+  Search,
 } from 'lucide-react'
 
 import { NavMain } from './nav-main'
@@ -87,6 +88,10 @@ const data = {
         {
           title: 'All Products',
           url: '/admin/products',
+        },
+        {
+          title: 'Bulk Create Products',
+          url: '/admin/products/bulk-create',
         },
         {
           title: 'Categories',
@@ -185,6 +190,10 @@ const data = {
         {
           title: 'Vendors',
           url: '/admin/vendors',
+        },
+        {
+          title: 'SEO & Search Engines',
+          url: '/admin/seo',
         },
         {
           title: 'System Health',

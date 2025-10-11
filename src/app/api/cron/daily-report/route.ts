@@ -196,8 +196,7 @@ export async function GET(request: NextRequest) {
     // Trigger N8N daily report workflow
     try {
       await N8NWorkflows.generateDailyReport()
-    } catch (n8nError) {
-      }
+    } catch (n8nError) {}
 
     // Log report
 

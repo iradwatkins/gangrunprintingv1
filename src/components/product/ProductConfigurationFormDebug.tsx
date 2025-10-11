@@ -34,7 +34,8 @@ export default function ProductConfigurationFormDebug({ productId }: { productId
     return <div>Error: {error}</div>
   }
 
-  const isQuantityOnlyProduct = configData &&
+  const isQuantityOnlyProduct =
+    configData &&
     configData.quantities?.length > 0 &&
     configData.sizes?.length === 1 &&
     configData.sizes[0]?.id === 'default_size' &&
@@ -61,9 +62,7 @@ export default function ProductConfigurationFormDebug({ productId }: { productId
               ✅ Should show simplified quantity selector!
             </div>
           ) : (
-            <div className="text-red-600">
-              ❌ Will show full configuration form
-            </div>
+            <div className="text-red-600">❌ Will show full configuration form</div>
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest, lucia } from '@/lib/auth'
 import { authLogger } from '@/lib/logger-safe'
 import { SESSION_CONFIG } from '@/config/constants'
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'No valid session found',
-          code: 'NO_SESSION'
+          code: 'NO_SESSION',
         },
         { status: 401 }
       )
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Session has expired',
-          code: 'SESSION_EXPIRED'
+          code: 'SESSION_EXPIRED',
         },
         { status: 401 }
       )
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error during session refresh',
-        code: 'REFRESH_ERROR'
+        code: 'REFRESH_ERROR',
       },
       { status: 500 }
     )
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
  * Get the current session status without refreshing it.
  * Useful for checking if a session is valid and how much time is left.
  */
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const { user, session } = await validateRequest()
 
@@ -98,7 +98,7 @@ export async function GET() : Promise<unknown> {
         {
           authenticated: false,
           session: null,
-          user: null
+          user: null,
         },
         { status: 200 }
       )
@@ -111,7 +111,7 @@ export async function GET() : Promise<unknown> {
 
     // Determine if session should be refreshed soon
     const shouldRefreshSoon = timeUntilExpiry < SESSION_CONFIG.EXTENSION_WINDOW_MS
-    const isExpiringSoon = timeUntilExpiry < (7 * 24 * 60 * 60 * 1000) // 7 days
+    const isExpiringSoon = timeUntilExpiry < 7 * 24 * 60 * 60 * 1000 // 7 days
 
     return NextResponse.json({
       authenticated: true,
@@ -137,7 +137,7 @@ export async function GET() : Promise<unknown> {
     return NextResponse.json(
       {
         error: 'Internal server error during session check',
-        code: 'STATUS_CHECK_ERROR'
+        code: 'STATUS_CHECK_ERROR',
       },
       { status: 500 }
     )

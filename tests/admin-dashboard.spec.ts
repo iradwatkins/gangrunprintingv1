@@ -112,7 +112,6 @@ test.describe('Admin Dashboard Visual Tests', () => {
     const progressBars = page.locator('[role="progressbar"]')
     const progressCount = await progressBars.count()
     expect(progressCount).toBeGreaterThan(0)
-
   })
 
   test('printing industry terminology is used', async ({ page }) => {

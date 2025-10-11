@@ -193,14 +193,11 @@ test.describe('Create Real Commercial Products', () => {
       const isSuccess = await successMessage.isVisible().catch(() => false)
 
       if (isSuccess) {
-
       } else {
         // Check if we were redirected to the products list
         const currentUrl = page.url()
         if (currentUrl.includes('/admin/products') && !currentUrl.includes('/new')) {
-
         } else {
-
         }
       }
 
@@ -217,7 +214,6 @@ test.describe('Create Real Commercial Products', () => {
     for (const product of products) {
       const productRow = page.locator(`text=${product.name}`)
       await expect(productRow).toBeVisible({ timeout: 5000 })
-
     }
   })
 
@@ -240,7 +236,6 @@ test.describe('Create Real Commercial Products', () => {
       // Verify price is displayed
       const priceElement = page.locator(`text=/$${product.basePrice}/`)
       await expect(priceElement.first()).toBeVisible()
-
     }
   })
 })

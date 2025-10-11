@@ -8,9 +8,9 @@ const testAuth = () => {
     path: '/api/auth/me',
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       // Add a test cookie if needed
-    }
+    },
   }
 
   const req = https.request(options, (res) => {
@@ -21,13 +21,10 @@ const testAuth = () => {
     })
 
     res.on('end', () => {
-
       try {
         const parsed = JSON.parse(data)
         console.log('Parsed response:', JSON.stringify(parsed, null, 2))
-      } catch (e) {
-
-      }
+      } catch (e) {}
     })
   })
 

@@ -1,5 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getMetrics, getMetricsContentType, updateActiveMetrics, startMetricsCollection } from '@/lib/metrics'
+import { type NextRequest, NextResponse } from 'next/server'
+import {
+  getMetrics,
+  getMetricsContentType,
+  updateActiveMetrics,
+  startMetricsCollection,
+} from '@/lib/metrics'
 import { logger } from '@/lib/logger-safe'
 import { getCorrelationContext } from '@/lib/correlation'
 
@@ -25,10 +30,7 @@ export async function GET(request: NextRequest) {
         correlationId: getCorrelationContext()?.correlationId,
       })
 
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Update active metrics before returning

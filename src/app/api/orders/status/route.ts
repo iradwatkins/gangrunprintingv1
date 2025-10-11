@@ -112,8 +112,7 @@ export async function PUT(request: NextRequest) {
           await N8NWorkflows.onOrderShipped(orderId, trackingInfo)
         }
       }
-    } catch (n8nError) {
-      }
+    } catch (n8nError) {}
 
     return NextResponse.json({
       success: true,
@@ -121,7 +120,10 @@ export async function PUT(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
+    if (
+      (error as any)?.name === 'AuthenticationError' ||
+      (error as any)?.name === 'AuthorizationError'
+    ) {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
@@ -171,7 +173,10 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
+    if (
+      (error as any)?.name === 'AuthenticationError' ||
+      (error as any)?.name === 'AuthorizationError'
+    ) {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to fetch order status history' }, { status: 500 })

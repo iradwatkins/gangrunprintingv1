@@ -12,7 +12,6 @@ import {
   AlertCircle,
   MapPin,
   Calendar,
-  DollarSign,
   FileText,
 } from 'lucide-react'
 

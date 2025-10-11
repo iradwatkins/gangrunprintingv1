@@ -11,19 +11,15 @@ import {
   Clock,
   MapPin,
   User,
-  CreditCard,
   ImageIcon,
   Printer,
   FileText,
-  Calendar,
-  ArrowRight,
   Copy,
   Share2,
   MessageSquare,
-  AlertCircle,
   CheckCircle2,
   Check,
-  Phone
+  Phone,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,11 +28,20 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import toast from '@/lib/toast'
 
+interface ProductOptions {
+  size?: string
+  paperStock?: string
+  coating?: string
+  sides?: string
+  turnaround?: string
+  [key: string]: string | undefined
+}
+
 interface OrderItem {
   productName: string
   quantity: number
   price: number
-  options?: any
+  options?: ProductOptions
   fileUrl?: string
   fileName?: string
 }
@@ -114,8 +119,9 @@ function SuccessContent() {
             })
           }
         }
-      } catch (error) {
-        } finally {
+      } catch {
+        // Silently handle error - fallback to minimal order display
+      } finally {
         setIsLoading(false)
       }
     }
@@ -155,9 +161,9 @@ function SuccessContent() {
               <div className="flex items-center justify-center gap-3">
                 <p className="text-3xl font-bold font-mono">{orderNumber}</p>
                 <Button
-                  variant="ghost"
-                  size="sm"
                   className="text-white hover:bg-white/20"
+                  size="sm"
+                  variant="ghost"
                   onClick={() => {
                     navigator.clipboard.writeText(orderNumber)
                     toast.success('Order number copied!')
@@ -174,7 +180,7 @@ function SuccessContent() {
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </p>
               )}
@@ -198,98 +204,110 @@ function SuccessContent() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
-            {orderInfo?.items && orderInfo.items.length > 0 ? (
-              <>
-                {orderInfo.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-border/50 pb-4 last:border-b-0"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                        {item.options && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {item.options.size && <span>Size: {item.options.size}</span>}
-                            {item.options.size && item.options.paperStock && <span> • </span>}
-                            {item.options.paperStock && <span>Paper: {item.options.paperStock}</span>}
-                            {item.options.coating && <span> • Coating: {item.options.coating}</span>}
-                          </div>
-                        )}
-                      </div>
-                      <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-
-                    {/* Display uploaded images as thumbnails */}
-                    {(orderInfo.uploadedImages && orderInfo.uploadedImages.length > 0) && (
-                      <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-                        <p className="text-sm font-medium mb-2 flex items-center gap-1">
-                          <ImageIcon className="h-4 w-4" />
-                          Uploaded Design Files
-                        </p>
-                        <div className="grid grid-cols-4 gap-2">
-                          {orderInfo.uploadedImages.slice(0, 4).map((img) => (
-                            <div key={img.id} className="relative aspect-square rounded border bg-white overflow-hidden">
-                              <Image
-                                fill
-                                alt={img.fileName}
-                                className="object-contain p-1"
-                                src={img.thumbnailUrl || img.url}
-                              />
+                  {orderInfo?.items && orderInfo.items.length > 0 ? (
+                    <>
+                      {orderInfo.items.map((item, index) => (
+                        <div key={index} className="border-b border-border/50 pb-4 last:border-b-0">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <p className="font-medium">{item.productName}</p>
+                              <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                              {item.options && (
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {item.options.size && <span>Size: {item.options.size}</span>}
+                                  {item.options.size && item.options.paperStock && <span> • </span>}
+                                  {item.options.paperStock && (
+                                    <span>Paper: {item.options.paperStock}</span>
+                                  )}
+                                  {item.options.coating && (
+                                    <span> • Coating: {item.options.coating}</span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                          ))}
-                          {orderInfo.uploadedImages.length > 4 && (
-                            <div className="flex items-center justify-center bg-muted rounded border">
-                              <span className="text-xs text-muted-foreground">+{orderInfo.uploadedImages.length - 4}</span>
+                            <span className="font-medium">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
+
+                          {/* Display uploaded images as thumbnails */}
+                          {orderInfo.uploadedImages && orderInfo.uploadedImages.length > 0 && (
+                            <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+                              <p className="text-sm font-medium mb-2 flex items-center gap-1">
+                                <ImageIcon className="h-4 w-4" />
+                                Uploaded Design Files
+                              </p>
+                              <div className="grid grid-cols-4 gap-2">
+                                {orderInfo.uploadedImages.slice(0, 4).map((img) => (
+                                  <div
+                                    key={img.id}
+                                    className="relative aspect-square rounded border bg-white overflow-hidden"
+                                  >
+                                    <Image
+                                      fill
+                                      alt={img.fileName}
+                                      className="object-contain p-1"
+                                      src={img.thumbnailUrl || img.url}
+                                    />
+                                  </div>
+                                ))}
+                                {orderInfo.uploadedImages.length > 4 && (
+                                  <div className="flex items-center justify-center bg-muted rounded border">
+                                    <span className="text-xs text-muted-foreground">
+                                      +{orderInfo.uploadedImages.length - 4}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="mt-2 space-y-1">
+                                {orderInfo.uploadedImages.map((img) => (
+                                  <p
+                                    key={img.id}
+                                    className="text-xs text-muted-foreground truncate"
+                                  >
+                                    • {img.fileName}
+                                  </p>
+                                ))}
+                              </div>
                             </div>
                           )}
-                        </div>
-                        <div className="mt-2 space-y-1">
-                          {orderInfo.uploadedImages.map((img) => (
-                            <p key={img.id} className="text-xs text-muted-foreground truncate">
-                              • {img.fileName}
-                            </p>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Fallback for file name if no uploaded images */}
-                    {(!orderInfo.uploadedImages || orderInfo.uploadedImages.length === 0) && item.fileName && (
-                      <div className="mt-2 p-2 bg-muted/50 rounded">
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <ImageIcon className="h-3 w-3" />
-                          Design File: {item.fileName}
-                        </p>
+                          {/* Fallback for file name if no uploaded images */}
+                          {(!orderInfo.uploadedImages || orderInfo.uploadedImages.length === 0) &&
+                            item.fileName && (
+                              <div className="mt-2 p-2 bg-muted/50 rounded">
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <ImageIcon className="h-3 w-3" />
+                                  Design File: {item.fileName}
+                                </p>
+                              </div>
+                            )}
+                        </div>
+                      ))}
+                      <Separator />
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Subtotal</span>
+                          <span>${orderInfo.subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Tax</span>
+                          <span>${orderInfo.tax.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Shipping</span>
+                          <span>${orderInfo.shipping.toFixed(2)}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between text-lg font-semibold">
+                          <span>Total</span>
+                          <span>${orderInfo.total.toFixed(2)}</span>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-                <Separator />
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${orderInfo.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${orderInfo.tax.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>${orderInfo.shipping.toFixed(2)}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total</span>
-                    <span>${orderInfo.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-muted-foreground">Order details not available</p>
-            )}
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">Order details not available</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -361,48 +379,52 @@ function SuccessContent() {
 
             {/* Right Sidebar */}
             <div className="lg:col-span-1 space-y-6">
-          {orderInfo?.customerInfo && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Customer Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <p className="font-medium">
-                    {orderInfo.customerInfo.firstName} {orderInfo.customerInfo.lastName}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{orderInfo.customerInfo.email}</p>
-                  {orderInfo.customerInfo.phone && (
-                    <p className="text-sm text-muted-foreground">{orderInfo.customerInfo.phone}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              {orderInfo?.customerInfo && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Customer Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <p className="font-medium">
+                        {orderInfo.customerInfo.firstName} {orderInfo.customerInfo.lastName}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {orderInfo.customerInfo.email}
+                      </p>
+                      {orderInfo.customerInfo.phone && (
+                        <p className="text-sm text-muted-foreground">
+                          {orderInfo.customerInfo.phone}
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-          {orderInfo?.shippingAddress && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Shipping Address
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm">
-                  <p>{orderInfo.shippingAddress.street}</p>
-                  <p>
-                    {orderInfo.shippingAddress.city}, {orderInfo.shippingAddress.state}{' '}
-                    {orderInfo.shippingAddress.zipCode}
-                  </p>
-                  <p>{orderInfo.shippingAddress.country}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              {orderInfo?.shippingAddress && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      Shipping Address
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm">
+                      <p>{orderInfo.shippingAddress.street}</p>
+                      <p>
+                        {orderInfo.shippingAddress.city}, {orderInfo.shippingAddress.state}{' '}
+                        {orderInfo.shippingAddress.zipCode}
+                      </p>
+                      <p>{orderInfo.shippingAddress.country}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               {/* Next Steps Card */}
               <Card>
                 <CardHeader>
@@ -417,7 +439,9 @@ function SuccessContent() {
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
                       <div className="flex-1">
                         <p className="text-sm font-medium">Order Confirmation</p>
-                        <p className="text-xs text-gray-500">Sent to {orderInfo?.customerInfo?.email || 'your email'}</p>
+                        <p className="text-xs text-gray-500">
+                          Sent to {orderInfo?.customerInfo?.email || 'your email'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -452,9 +476,9 @@ function SuccessContent() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button
-                    variant="outline"
-                    size="sm"
                     className="w-full justify-start"
+                    size="sm"
+                    variant="outline"
                     onClick={() => {
                       if (orderInfo?.orderNumber) {
                         window.open(`/api/orders/${orderInfo.orderNumber}/receipt`, '_blank')
@@ -464,15 +488,15 @@ function SuccessContent() {
                     <Download className="mr-2 h-4 w-4" />
                     Download Receipt
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button className="w-full justify-start" size="sm" variant="outline">
                     <Printer className="mr-2 h-4 w-4" />
                     Print Order Details
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button className="w-full justify-start" size="sm" variant="outline">
                     <Share2 className="mr-2 h-4 w-4" />
                     Share Order
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button className="w-full justify-start" size="sm" variant="outline">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Contact Support
                   </Button>
@@ -492,13 +516,13 @@ function SuccessContent() {
               </div>
               <div className="flex gap-3">
                 <Link href="/track">
-                  <Button size="lg" className="min-w-[160px]">
+                  <Button className="min-w-[160px]" size="lg">
                     <Truck className="mr-2 h-5 w-5" />
                     Track Order
                   </Button>
                 </Link>
                 <Link href="/products">
-                  <Button size="lg" variant="outline" className="min-w-[160px]">
+                  <Button className="min-w-[160px]" size="lg" variant="outline">
                     <Package className="mr-2 h-5 w-5" />
                     Continue Shopping
                   </Button>
@@ -514,11 +538,17 @@ function SuccessContent() {
               Our support team is here to assist you with any questions about your order
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href="mailto:support@gangrunprinting.com" className="flex items-center gap-2 text-primary hover:underline">
+              <a
+                className="flex items-center gap-2 text-primary hover:underline"
+                href="mailto:support@gangrunprinting.com"
+              >
                 <Mail className="h-4 w-4" />
                 support@gangrunprinting.com
               </a>
-              <a href="tel:1-800-PRINTING" className="flex items-center gap-2 text-primary hover:underline">
+              <a
+                className="flex items-center gap-2 text-primary hover:underline"
+                href="tel:1-800-PRINTING"
+              >
                 <Phone className="h-4 w-4" />
                 1-800-PRINTING
               </a>

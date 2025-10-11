@@ -39,7 +39,7 @@ function logTest(test: string, status: 'PASS' | 'FAIL' | 'SKIP', message: string
 
 async function testDatabaseSchema() {
   console.log('\n🔍 TEST 1: Database Schema Validation')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     // Test that Order table exists and has required fields
@@ -50,9 +50,9 @@ async function testDatabaseSchema() {
         orderNumber: `TEST-SCHEMA-${Date.now()}`,
         email: 'schema-test@test.com',
         phone: '555-0000',
-        subtotal: 10.00,
+        subtotal: 10.0,
         tax: 0.82,
-        shipping: 5.00,
+        shipping: 5.0,
         total: 15.82,
         status: 'CONFIRMATION',
         paidAt: new Date(),
@@ -62,21 +62,18 @@ async function testDatabaseSchema() {
           city: 'Test City',
           state: 'TX',
           zipCode: '12345',
-          country: 'US'
-        }
-      }
+          country: 'US',
+        },
+      },
     })
 
-    logTest(
-      'Database Schema',
-      'PASS',
-      'Order table has all required fields',
-      { orderId: order.id, orderNumber: order.orderNumber }
-    )
+    logTest('Database Schema', 'PASS', 'Order table has all required fields', {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+    })
 
     // Clean up
     await prisma.order.delete({ where: { id: testOrderId } })
-
   } catch (error) {
     logTest(
       'Database Schema',
@@ -89,7 +86,7 @@ async function testDatabaseSchema() {
 
 async function testOrderCreation() {
   console.log('\n🔍 TEST 2: Test Order Creation (Simulating API Endpoint)')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     const testOrderNumber = `TEST-${Date.now().toString(36).toUpperCase()}`
@@ -107,7 +104,7 @@ async function testOrderCreation() {
         phone: '555-123-4567',
         subtotal: 25.99,
         tax: 2.14,
-        shipping: 8.50,
+        shipping: 8.5,
         total: 36.63,
         shippingMethod: 'FedEx - Ground',
         status: 'CONFIRMATION',
@@ -118,24 +115,24 @@ async function testOrderCreation() {
               id: '1',
               url: '/uploads/test-image.jpg',
               fileName: 'test-design.jpg',
-              fileSize: 1024000
-            }
+              fileSize: 1024000,
+            },
           ],
-          testMode: true
+          testMode: true,
         }),
         shippingAddress: {
           street: '456 Test Avenue',
           city: 'Houston',
           state: 'TX',
           zipCode: '77001',
-          country: 'US'
+          country: 'US',
         },
         billingAddress: {
           street: '456 Test Avenue',
           city: 'Houston',
           state: 'TX',
           zipCode: '77001',
-          country: 'US'
+          country: 'US',
         },
         OrderItem: {
           create: [
@@ -157,35 +154,29 @@ async function testOrderCreation() {
                     id: '1',
                     url: '/uploads/test-image.jpg',
                     fileName: 'test-design.jpg',
-                    fileSize: 1024000
-                  }
-                ]
-              }
-            }
-          ]
-        }
+                    fileSize: 1024000,
+                  },
+                ],
+              },
+            },
+          ],
+        },
       },
       include: {
-        OrderItem: true
-      }
+        OrderItem: true,
+      },
     })
 
-    logTest(
-      'Order Creation',
-      'PASS',
-      'Test cash order created successfully',
-      {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        status: order.status,
-        total: order.total,
-        itemCount: order.OrderItem.length,
-        paidAt: order.paidAt?.toISOString()
-      }
-    )
+    logTest('Order Creation', 'PASS', 'Test cash order created successfully', {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      status: order.status,
+      total: order.total,
+      itemCount: order.OrderItem.length,
+      paidAt: order.paidAt?.toISOString(),
+    })
 
     return order.id
-
   } catch (error) {
     logTest(
       'Order Creation',
@@ -199,7 +190,7 @@ async function testOrderCreation() {
 
 async function testOrderRetrieval(orderId: string | null) {
   console.log('\n🔍 TEST 3: Order Retrieval from Database')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Order Retrieval', 'SKIP', 'No order ID from previous test')
@@ -210,8 +201,8 @@ async function testOrderRetrieval(orderId: string | null) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        OrderItem: true
-      }
+        OrderItem: true,
+      },
     })
 
     if (!order) {
@@ -225,10 +216,10 @@ async function testOrderRetrieval(orderId: string | null) {
       { field: 'status', value: order.status, expected: 'CONFIRMATION' },
       { field: 'paidAt', value: order.paidAt, expected: 'not null' },
       { field: 'adminNotes', value: order.adminNotes, expected: 'contains testMode: true' },
-      { field: 'OrderItem', value: order.OrderItem.length, expected: 'at least 1' }
+      { field: 'OrderItem', value: order.OrderItem.length, expected: 'at least 1' },
     ]
 
-    const allChecksPassed = checks.every(check => {
+    const allChecksPassed = checks.every((check) => {
       if (check.field === 'orderNumber') return order.orderNumber?.startsWith('TEST-')
       if (check.field === 'status') return order.status === 'CONFIRMATION'
       if (check.field === 'paidAt') return order.paidAt !== null
@@ -238,27 +229,16 @@ async function testOrderRetrieval(orderId: string | null) {
     })
 
     if (allChecksPassed) {
-      logTest(
-        'Order Retrieval',
-        'PASS',
-        'All order fields retrieved correctly',
-        {
-          orderNumber: order.orderNumber,
-          status: order.status,
-          paidAt: order.paidAt?.toISOString(),
-          hasAdminNotes: !!order.adminNotes,
-          itemCount: order.OrderItem.length
-        }
-      )
+      logTest('Order Retrieval', 'PASS', 'All order fields retrieved correctly', {
+        orderNumber: order.orderNumber,
+        status: order.status,
+        paidAt: order.paidAt?.toISOString(),
+        hasAdminNotes: !!order.adminNotes,
+        itemCount: order.OrderItem.length,
+      })
     } else {
-      logTest(
-        'Order Retrieval',
-        'FAIL',
-        'Some order fields are incorrect',
-        { checks }
-      )
+      logTest('Order Retrieval', 'FAIL', 'Some order fields are incorrect', { checks })
     }
-
   } catch (error) {
     logTest(
       'Order Retrieval',
@@ -271,7 +251,7 @@ async function testOrderRetrieval(orderId: string | null) {
 
 async function testOrderItemsRetrieval(orderId: string | null) {
   console.log('\n🔍 TEST 4: Order Items Retrieval')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Order Items Retrieval', 'SKIP', 'No order ID from previous test')
@@ -280,7 +260,7 @@ async function testOrderItemsRetrieval(orderId: string | null) {
 
   try {
     const orderItems = await prisma.orderItem.findMany({
-      where: { orderId }
+      where: { orderId },
     })
 
     if (orderItems.length === 0) {
@@ -298,28 +278,17 @@ async function testOrderItemsRetrieval(orderId: string | null) {
     )
 
     if (hasRequiredFields) {
-      logTest(
-        'Order Items Retrieval',
-        'PASS',
-        'Order items have all required fields',
-        {
-          itemCount: orderItems.length,
-          firstItem: {
-            productName: item.productName,
-            quantity: item.quantity,
-            price: item.price
-          }
-        }
-      )
+      logTest('Order Items Retrieval', 'PASS', 'Order items have all required fields', {
+        itemCount: orderItems.length,
+        firstItem: {
+          productName: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+        },
+      })
     } else {
-      logTest(
-        'Order Items Retrieval',
-        'FAIL',
-        'Order items missing required fields',
-        { item }
-      )
+      logTest('Order Items Retrieval', 'FAIL', 'Order items missing required fields', { item })
     }
-
   } catch (error) {
     logTest(
       'Order Items Retrieval',
@@ -332,7 +301,7 @@ async function testOrderItemsRetrieval(orderId: string | null) {
 
 async function testCustomerOrderHistory(orderId: string | null) {
   console.log('\n🔍 TEST 5: Customer Order History (Guest User)')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Customer Order History', 'SKIP', 'No order ID from previous test')
@@ -342,7 +311,7 @@ async function testCustomerOrderHistory(orderId: string | null) {
   try {
     // Test guest user order (userId = null)
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order) {
@@ -352,27 +321,17 @@ async function testCustomerOrderHistory(orderId: string | null) {
 
     // Guest orders should be queryable by email
     const guestOrders = await prisma.order.findMany({
-      where: { email: order.email }
+      where: { email: order.email },
     })
 
     if (guestOrders.length > 0) {
-      logTest(
-        'Customer Order History',
-        'PASS',
-        'Guest order found by email',
-        {
-          email: order.email,
-          orderCount: guestOrders.length
-        }
-      )
+      logTest('Customer Order History', 'PASS', 'Guest order found by email', {
+        email: order.email,
+        orderCount: guestOrders.length,
+      })
     } else {
-      logTest(
-        'Customer Order History',
-        'FAIL',
-        'Guest order not found by email'
-      )
+      logTest('Customer Order History', 'FAIL', 'Guest order not found by email')
     }
-
   } catch (error) {
     logTest(
       'Customer Order History',
@@ -385,7 +344,7 @@ async function testCustomerOrderHistory(orderId: string | null) {
 
 async function testAdminPanelVisibility(orderId: string | null) {
   console.log('\n🔍 TEST 6: Admin Panel Order Visibility')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Admin Panel Visibility', 'SKIP', 'No order ID from previous test')
@@ -399,35 +358,25 @@ async function testAdminPanelVisibility(orderId: string | null) {
         OrderItem: true,
         _count: {
           select: {
-            OrderItem: true
-          }
-        }
+            OrderItem: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
-      take: 10
+      take: 10,
     })
 
-    const testOrder = orders.find(o => o.id === orderId)
+    const testOrder = orders.find((o) => o.id === orderId)
 
     if (testOrder) {
-      logTest(
-        'Admin Panel Visibility',
-        'PASS',
-        'Test order visible in admin panel query',
-        {
-          orderNumber: testOrder.orderNumber,
-          status: testOrder.status,
-          itemCount: testOrder._count.OrderItem
-        }
-      )
+      logTest('Admin Panel Visibility', 'PASS', 'Test order visible in admin panel query', {
+        orderNumber: testOrder.orderNumber,
+        status: testOrder.status,
+        itemCount: testOrder._count.OrderItem,
+      })
     } else {
-      logTest(
-        'Admin Panel Visibility',
-        'FAIL',
-        'Test order not visible in admin panel query'
-      )
+      logTest('Admin Panel Visibility', 'FAIL', 'Test order not visible in admin panel query')
     }
-
   } catch (error) {
     logTest(
       'Admin Panel Visibility',
@@ -440,7 +389,7 @@ async function testAdminPanelVisibility(orderId: string | null) {
 
 async function testTestModeFlag(orderId: string | null) {
   console.log('\n🔍 TEST 7: Test Mode Flag Verification')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Test Mode Flag', 'SKIP', 'No order ID from previous test')
@@ -449,7 +398,7 @@ async function testTestModeFlag(orderId: string | null) {
 
   try {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order || !order.adminNotes) {
@@ -460,21 +409,12 @@ async function testTestModeFlag(orderId: string | null) {
     const adminNotes = JSON.parse(order.adminNotes)
 
     if (adminNotes.testMode === true) {
-      logTest(
-        'Test Mode Flag',
-        'PASS',
-        'Test mode flag correctly set in adminNotes',
-        { testMode: adminNotes.testMode }
-      )
+      logTest('Test Mode Flag', 'PASS', 'Test mode flag correctly set in adminNotes', {
+        testMode: adminNotes.testMode,
+      })
     } else {
-      logTest(
-        'Test Mode Flag',
-        'FAIL',
-        'Test mode flag not set correctly',
-        { adminNotes }
-      )
+      logTest('Test Mode Flag', 'FAIL', 'Test mode flag not set correctly', { adminNotes })
     }
-
   } catch (error) {
     logTest(
       'Test Mode Flag',
@@ -487,7 +427,7 @@ async function testTestModeFlag(orderId: string | null) {
 
 async function testUploadedImagesStorage(orderId: string | null) {
   console.log('\n🔍 TEST 8: Uploaded Images Storage')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Uploaded Images Storage', 'SKIP', 'No order ID from previous test')
@@ -497,7 +437,7 @@ async function testUploadedImagesStorage(orderId: string | null) {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { OrderItem: true }
+      include: { OrderItem: true },
     })
 
     if (!order || !order.adminNotes) {
@@ -520,27 +460,17 @@ async function testUploadedImagesStorage(orderId: string | null) {
         'Uploaded images stored in both adminNotes and OrderItem options',
         {
           adminNotesImages: adminNotes.uploadedImages.length,
-          itemImages: itemOptions.uploadedImages.length
+          itemImages: itemOptions.uploadedImages.length,
         }
       )
     } else if (hasUploadedImages || hasImagesInItem) {
-      logTest(
-        'Uploaded Images Storage',
-        'PASS',
-        'Uploaded images stored (partial)',
-        {
-          inAdminNotes: hasUploadedImages,
-          inItemOptions: hasImagesInItem
-        }
-      )
+      logTest('Uploaded Images Storage', 'PASS', 'Uploaded images stored (partial)', {
+        inAdminNotes: hasUploadedImages,
+        inItemOptions: hasImagesInItem,
+      })
     } else {
-      logTest(
-        'Uploaded Images Storage',
-        'FAIL',
-        'Uploaded images not properly stored'
-      )
+      logTest('Uploaded Images Storage', 'FAIL', 'Uploaded images not properly stored')
     }
-
   } catch (error) {
     logTest(
       'Uploaded Images Storage',
@@ -553,7 +483,7 @@ async function testUploadedImagesStorage(orderId: string | null) {
 
 async function testOrderNumberFormat(orderId: string | null) {
   console.log('\n🔍 TEST 9: Order Number Format')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   if (!orderId) {
     logTest('Order Number Format', 'SKIP', 'No order ID from previous test')
@@ -562,7 +492,7 @@ async function testOrderNumberFormat(orderId: string | null) {
 
   try {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order) {
@@ -574,21 +504,14 @@ async function testOrderNumberFormat(orderId: string | null) {
     const isUnique = order.orderNumber !== order.referenceNumber || order.referenceNumber === null
 
     if (hasTestPrefix) {
-      logTest(
-        'Order Number Format',
-        'PASS',
-        'Order number has TEST- prefix',
-        { orderNumber: order.orderNumber }
-      )
+      logTest('Order Number Format', 'PASS', 'Order number has TEST- prefix', {
+        orderNumber: order.orderNumber,
+      })
     } else {
-      logTest(
-        'Order Number Format',
-        'FAIL',
-        'Order number missing TEST- prefix',
-        { orderNumber: order.orderNumber }
-      )
+      logTest('Order Number Format', 'FAIL', 'Order number missing TEST- prefix', {
+        orderNumber: order.orderNumber,
+      })
     }
-
   } catch (error) {
     logTest(
       'Order Number Format',
@@ -601,20 +524,19 @@ async function testOrderNumberFormat(orderId: string | null) {
 
 async function cleanupTestData() {
   console.log('\n🧹 Cleaning up test data...')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     // Delete all test orders created during this test run
     const result = await prisma.order.deleteMany({
       where: {
         orderNumber: {
-          startsWith: 'TEST-'
-        }
-      }
+          startsWith: 'TEST-',
+        },
+      },
     })
 
     console.log(`✅ Deleted ${result.count} test orders`)
-
   } catch (error) {
     console.log('⚠️  Warning: Failed to cleanup test data')
     console.log('   Error:', error instanceof Error ? error.message : String(error))
@@ -626,9 +548,9 @@ async function generateReport() {
   console.log('📊 QA TEST REPORT: Test Cash Payment Order Fix')
   console.log('='.repeat(60))
 
-  const passed = results.filter(r => r.status === 'PASS').length
-  const failed = results.filter(r => r.status === 'FAIL').length
-  const skipped = results.filter(r => r.status === 'SKIP').length
+  const passed = results.filter((r) => r.status === 'PASS').length
+  const failed = results.filter((r) => r.status === 'FAIL').length
+  const skipped = results.filter((r) => r.status === 'SKIP').length
   const total = results.length
 
   console.log(`\nTotal Tests: ${total}`)
@@ -642,8 +564,8 @@ async function generateReport() {
   if (failed > 0) {
     console.log('\n❌ FAILED TESTS:')
     results
-      .filter(r => r.status === 'FAIL')
-      .forEach(r => {
+      .filter((r) => r.status === 'FAIL')
+      .forEach((r) => {
         console.log(`   - ${r.test}: ${r.message}`)
       })
   }
@@ -696,7 +618,6 @@ async function main() {
 
     // Exit with appropriate code
     process.exit(allPassed ? 0 : 1)
-
   } catch (error) {
     console.error('\n💥 FATAL ERROR:', error)
     process.exit(1)

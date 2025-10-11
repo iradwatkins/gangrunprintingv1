@@ -6,7 +6,13 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import FileUploadZone from '../../FileUploadZone'
@@ -40,15 +46,15 @@ export function ImageUploadSection({
       description: 'Upload your additional files immediately',
       tooltipText: 'Upload multiple images or files now. All uploads are free.',
       requiresFileUpload: true,
-      fileUploadOptional: false
+      fileUploadOptional: false,
     },
     upload_later: {
       id: 'upload_later',
       name: 'Will Email Files Later',
       description: 'Submit files after placing order',
       tooltipText: 'You can email us your additional files after placing the order',
-      requiresFileUpload: false
-    }
+      requiresFileUpload: false,
+    },
   }
 
   const selectedUploadOption = uploadOptions[primarySelection as keyof typeof uploadOptions]
@@ -78,12 +84,12 @@ export function ImageUploadSection({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="image-upload"
               checked={enabled}
-              onCheckedChange={onToggle}
               disabled={disabled}
+              id="image-upload"
+              onCheckedChange={onToggle}
             />
-            <Label htmlFor="image-upload" className="font-medium">
+            <Label className="font-medium" htmlFor="image-upload">
               Additional Files
             </Label>
             <Tooltip>
@@ -117,9 +123,9 @@ export function ImageUploadSection({
               </div>
 
               <Select
+                disabled={disabled}
                 value={primarySelection}
                 onValueChange={handlePrimaryChange}
-                disabled={disabled}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose upload method..." />
@@ -151,10 +157,10 @@ export function ImageUploadSection({
                 </div>
 
                 <FileUploadZone
-                  onFilesUploaded={handleFilesUploaded}
+                  disabled={disabled}
                   maxFiles={10}
                   maxFileSize={25}
-                  disabled={disabled}
+                  onFilesUploaded={handleFilesUploaded}
                 />
 
                 <div className="text-sm text-muted-foreground space-y-1">
@@ -186,9 +192,7 @@ export function ImageUploadSection({
                   )}
 
                   {/* Price display */}
-                  <div className="font-medium text-green-600">
-                    Cost: FREE
-                  </div>
+                  <div className="font-medium text-green-600">Cost: FREE</div>
                 </div>
               </div>
             )}
@@ -197,8 +201,9 @@ export function ImageUploadSection({
             {primarySelection === 'none' && (
               <div className="ml-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                  💡 <strong>Optional:</strong> Upload additional images, logos, or files for your project.
-                  You can upload them now or email them to us later. This service is completely free.
+                  💡 <strong>Optional:</strong> Upload additional images, logos, or files for your
+                  project. You can upload them now or email them to us later. This service is
+                  completely free.
                 </p>
               </div>
             )}

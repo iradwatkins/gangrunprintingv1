@@ -71,21 +71,19 @@ export default async function OrdersPage({ searchParams }: PageProps) {
       <div className="max-w-7xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Orders</h1>
-          <p className="text-muted-foreground">
-            View and track all your orders
-          </p>
+          <p className="text-muted-foreground">View and track all your orders</p>
         </div>
 
         <Suspense fallback={<OrdersListSkeleton />}>
           <OrdersList
-            orders={orders}
             currentPage={page}
-            statusFilter={statusFilter}
+            endDate={endDate}
+            isBroker={false}
+            orders={orders}
             searchQuery={searchQuery}
             sortBy={sortBy}
             startDate={startDate}
-            endDate={endDate}
-            isBroker={false}
+            statusFilter={statusFilter}
           />
         </Suspense>
       </div>

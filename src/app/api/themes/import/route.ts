@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Get import history
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

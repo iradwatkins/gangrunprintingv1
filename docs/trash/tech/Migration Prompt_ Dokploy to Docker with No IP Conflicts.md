@@ -67,42 +67,42 @@ yaml
 _\# Database docker-compose.yml_  
 services:  
  postgres:  
- container_name: new_postgres_db  
+ container*name: new_postgres_db  
  networks:  
  new_web_network:  
  ipv4_address: 172.30.0.10  
  ports:  
- \- "5433:5432" _\# Different external port_
+ \- "5433:5432" *\# Different external port\_
 
 redis:  
- container_name: new_redis_cache  
+ container*name: new_redis_cache  
  networks:  
  new_web_network:  
  ipv4_address: 172.30.0.11  
  ports:  
- \- "6380:6379" _\# Different external port_
+ \- "6380:6379" *\# Different external port\_
 
 _\# SteppersLife docker-compose.yml_  
 services:  
  app:  
- container_name: new_stepperslife_app  
+ container*name: new_stepperslife_app  
  networks:  
  new_web_network:  
  ipv4_address: 172.30.0.20  
  expose:  
  \- "3001"  
- _\# NO ports: directive \- only internal_
+ *\# NO ports: directive \- only internal\_
 
 _\# GangrunPrinting docker-compose.yml_  
 services:  
  app:  
- container_name: new_gangrunprinting_app  
+ container*name: new_gangrunprinting_app  
  networks:  
  new_web_network:  
  ipv4_address: 172.30.0.21  
  expose:  
  \- "3002"  
- _\# NO ports: directive \- only internal_
+ *\# NO ports: directive \- only internal\_
 
 _\# Proxy docker-compose.yml_  
 services:  

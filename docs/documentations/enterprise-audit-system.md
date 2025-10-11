@@ -1,4 +1,5 @@
 # 🛡️ ENTERPRISE AUDIT & PREVENTION SYSTEM - GANGRUN PRINTING
+
 ## COMPREHENSIVE CODEBASE TRANSFORMATION & PROTECTION
 
 ---
@@ -6,10 +7,12 @@
 ## 📊 PHASE 1: COMPREHENSIVE AUDIT SYSTEM
 
 ### AUDIT AGENT PROMPT - DEEP SYSTEM ANALYSIS
-```markdown
+
+````markdown
 You are the Senior Audit Agent. Perform a COMPREHENSIVE enterprise-grade audit of GangRun Printing.
 
 ## AUDIT SCOPE:
+
 - Repository: https://github.com/iradwatkins/gangrunprintingv1
 - Stack: Next.js 15.5.2, PostgreSQL, Prisma, Docker, TypeScript
 - Critical: This audit will determine production stability
@@ -17,6 +20,7 @@ You are the Senior Audit Agent. Perform a COMPREHENSIVE enterprise-grade audit o
 ## EXECUTE COMPLETE AUDIT:
 
 ### 1. CODE QUALITY AUDIT
+
 ```bash
 #!/bin/bash
 # Save as: audit-code-quality.sh
@@ -60,61 +64,63 @@ npx madge --circular --extensions ts,tsx,js,jsx . > audit-circular.txt
 echo "Analyzing code complexity..."
 npx complexity-report --format json src/**/*.{ts,tsx} > audit-complexity.json
 ```
+````
 
 ### 2. ARCHITECTURE AUDIT
+
 ```typescript
 // audit-architecture.ts
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'fs'
+import * as path from 'path'
 
 interface ArchitectureIssue {
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  category: string;
-  issue: string;
-  file?: string;
-  recommendation: string;
+  severity: 'critical' | 'high' | 'medium' | 'low'
+  category: string
+  issue: string
+  file?: string
+  recommendation: string
 }
 
 class ArchitectureAuditor {
-  issues: ArchitectureIssue[] = [];
+  issues: ArchitectureIssue[] = []
 
   // Check folder structure
   checkFolderStructure() {
     const requiredFolders = [
-      'src/components/ui',      // UI components
+      'src/components/ui', // UI components
       'src/components/features', // Feature components
-      'src/lib',                 // Utilities
-      'src/hooks',               // Custom hooks
-      'src/types',               // TypeScript types
-      'src/services',            // Business logic
-      'src/utils',               // Helper functions
-      'src/constants',           // Constants
-      'tests/unit',              // Unit tests
-      'tests/integration',       // Integration tests
-      'tests/e2e',              // E2E tests
-      'docs/api',                // API documentation
-      'docs/architecture',       // Architecture docs
-    ];
+      'src/lib', // Utilities
+      'src/hooks', // Custom hooks
+      'src/types', // TypeScript types
+      'src/services', // Business logic
+      'src/utils', // Helper functions
+      'src/constants', // Constants
+      'tests/unit', // Unit tests
+      'tests/integration', // Integration tests
+      'tests/e2e', // E2E tests
+      'docs/api', // API documentation
+      'docs/architecture', // Architecture docs
+    ]
 
-    requiredFolders.forEach(folder => {
+    requiredFolders.forEach((folder) => {
       if (!fs.existsSync(folder)) {
         this.issues.push({
           severity: 'medium',
           category: 'Structure',
           issue: `Missing folder: ${folder}`,
-          recommendation: `Create ${folder} for better organization`
-        });
+          recommendation: `Create ${folder} for better organization`,
+        })
       }
-    });
+    })
   }
 
   // Check for anti-patterns
   checkAntiPatterns() {
-    const files = this.getAllFiles('src');
-    
-    files.forEach(file => {
-      const content = fs.readFileSync(file, 'utf-8');
-      
+    const files = this.getAllFiles('src')
+
+    files.forEach((file) => {
+      const content = fs.readFileSync(file, 'utf-8')
+
       // Check for console.logs in production code
       if (content.includes('console.log')) {
         this.issues.push({
@@ -122,10 +128,10 @@ class ArchitectureAuditor {
           category: 'Anti-pattern',
           issue: 'console.log in production code',
           file,
-          recommendation: 'Use proper logging service'
-        });
+          recommendation: 'Use proper logging service',
+        })
       }
-      
+
       // Check for any type usage
       if (content.includes(': any')) {
         this.issues.push({
@@ -133,10 +139,10 @@ class ArchitectureAuditor {
           category: 'TypeScript',
           issue: 'Usage of "any" type',
           file,
-          recommendation: 'Define proper types'
-        });
+          recommendation: 'Define proper types',
+        })
       }
-      
+
       // Check for missing error handling
       if (content.includes('catch') === false && content.includes('async')) {
         this.issues.push({
@@ -144,32 +150,33 @@ class ArchitectureAuditor {
           category: 'Error Handling',
           issue: 'Async function without error handling',
           file,
-          recommendation: 'Add try-catch blocks'
-        });
+          recommendation: 'Add try-catch blocks',
+        })
       }
-    });
+    })
   }
 
   generateReport() {
     return {
       total: this.issues.length,
-      critical: this.issues.filter(i => i.severity === 'critical').length,
-      high: this.issues.filter(i => i.severity === 'high').length,
-      medium: this.issues.filter(i => i.severity === 'medium').length,
-      low: this.issues.filter(i => i.severity === 'low').length,
-      issues: this.issues
-    };
+      critical: this.issues.filter((i) => i.severity === 'critical').length,
+      high: this.issues.filter((i) => i.severity === 'high').length,
+      medium: this.issues.filter((i) => i.severity === 'medium').length,
+      low: this.issues.filter((i) => i.severity === 'low').length,
+      issues: this.issues,
+    }
   }
 }
 ```
 
 ### 3. DATABASE AUDIT
+
 ```sql
 -- audit-database.sql
 -- Run complete database audit
 
 -- 1. Check for missing indexes
-SELECT 
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size,
@@ -177,8 +184,8 @@ SELECT
     seq_tup_read,
     idx_scan,
     idx_tup_fetch,
-    CASE 
-        WHEN seq_scan > 0 THEN 
+    CASE
+        WHEN seq_scan > 0 THEN
             ROUND(100.0 * idx_scan / (seq_scan + idx_scan), 2)
         ELSE 100
     END AS index_usage_percent
@@ -186,7 +193,7 @@ FROM pg_stat_user_tables
 ORDER BY seq_tup_read DESC;
 
 -- 2. Check for slow queries
-SELECT 
+SELECT
     query,
     calls,
     total_time,
@@ -199,9 +206,9 @@ ORDER BY mean_time DESC
 LIMIT 20;
 
 -- 3. Check for missing foreign key constraints
-SELECT 
-    tc.table_schema, 
-    tc.table_name, 
+SELECT
+    tc.table_schema,
+    tc.table_name,
     kcu.column_name
 FROM information_schema.table_constraints AS tc
 JOIN information_schema.key_column_usage AS kcu
@@ -209,7 +216,7 @@ JOIN information_schema.key_column_usage AS kcu
 WHERE tc.constraint_type = 'FOREIGN KEY';
 
 -- 4. Check for tables without primary keys
-SELECT 
+SELECT
     n.nspname AS schema_name,
     c.relname AS table_name
 FROM pg_class c
@@ -225,51 +232,54 @@ WHERE c.relkind = 'r'
 ```
 
 ### 4. PERFORMANCE AUDIT
+
 ```javascript
 // performance-audit.js
-const lighthouse = require('lighthouse');
-const chromeLauncher = require('chrome-launcher');
+const lighthouse = require('lighthouse')
+const chromeLauncher = require('chrome-launcher')
 
 async function performanceAudit() {
-  const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
+  const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] })
   const options = {
     logLevel: 'info',
     output: 'json',
     onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
-    port: chrome.port
-  };
-  
-  const runnerResult = await lighthouse('http://localhost:3000', options);
-  
+    port: chrome.port,
+  }
+
+  const runnerResult = await lighthouse('http://localhost:3000', options)
+
   // Generate report
   const report = {
     performance: runnerResult.lhr.categories.performance.score * 100,
     accessibility: runnerResult.lhr.categories.accessibility.score * 100,
     bestPractices: runnerResult.lhr.categories['best-practices'].score * 100,
     seo: runnerResult.lhr.categories.seo.score * 100,
-    
+
     metrics: {
       firstContentfulPaint: runnerResult.lhr.audits['first-contentful-paint'].numericValue,
       largestContentfulPaint: runnerResult.lhr.audits['largest-contentful-paint'].numericValue,
       timeToInteractive: runnerResult.lhr.audits['interactive'].numericValue,
       totalBlockingTime: runnerResult.lhr.audits['total-blocking-time'].numericValue,
       cumulativeLayoutShift: runnerResult.lhr.audits['cumulative-layout-shift'].numericValue,
-    }
-  };
-  
-  await chrome.kill();
-  return report;
+    },
+  }
+
+  await chrome.kill()
+  return report
 }
 ```
 
 ## OUTPUT REQUIRED:
+
 1. Complete code quality report with severity levels
 2. Architecture compliance score (0-100)
 3. Security vulnerability report
 4. Performance metrics and bottlenecks
 5. Database optimization opportunities
 6. Ranked list of critical issues to fix
-```
+
+````
 
 ---
 
@@ -324,10 +334,10 @@ export function errorHandler(error: Error, req: Request, res: Response, next: Ne
       }
     });
   }
-  
+
   // Log unexpected errors
   console.error('Unexpected error:', error);
-  
+
   return res.status(500).json({
     success: false,
     error: {
@@ -336,21 +346,22 @@ export function errorHandler(error: Error, req: Request, res: Response, next: Ne
     }
   });
 }
-```
+````
 
 ### 2. IMPLEMENT PROPER LOGGING
+
 ```typescript
 // src/lib/logger.ts
-import winston from 'winston';
-import { format } from 'logform';
+import winston from 'winston'
+import { format } from 'logform'
 
 const logLevels = {
   error: 0,
   warn: 1,
   info: 2,
   debug: 3,
-  trace: 4
-};
+  trace: 4,
+}
 
 export const logger = winston.createLogger({
   levels: logLevels,
@@ -365,83 +376,82 @@ export const logger = winston.createLogger({
     new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
     new winston.transports.File({ filename: 'logs/combined.log' }),
     new winston.transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.simple()
-      )
-    })
-  ]
-});
+      format: format.combine(format.colorize(), format.simple()),
+    }),
+  ],
+})
 
 // Replace all console.log with logger
 export function setupLogging() {
   if (process.env.NODE_ENV === 'production') {
-    console.log = (...args) => logger.info(args.join(' '));
-    console.error = (...args) => logger.error(args.join(' '));
-    console.warn = (...args) => logger.warn(args.join(' '));
+    console.log = (...args) => logger.info(args.join(' '))
+    console.error = (...args) => logger.error(args.join(' '))
+    console.warn = (...args) => logger.warn(args.join(' '))
   }
 }
 ```
 
 ### 3. IMPLEMENT DEPENDENCY INJECTION
+
 ```typescript
 // src/lib/container.ts
 export class DIContainer {
-  private services = new Map<string, any>();
-  private singletons = new Map<string, any>();
-  
+  private services = new Map<string, any>()
+  private singletons = new Map<string, any>()
+
   register<T>(name: string, factory: () => T, options = { singleton: true }) {
     if (options.singleton) {
-      this.services.set(name, factory);
+      this.services.set(name, factory)
     } else {
-      this.services.set(name, factory);
+      this.services.set(name, factory)
     }
   }
-  
+
   get<T>(name: string): T {
-    const factory = this.services.get(name);
+    const factory = this.services.get(name)
     if (!factory) {
-      throw new Error(`Service ${name} not found`);
+      throw new Error(`Service ${name} not found`)
     }
-    
+
     if (this.singletons.has(name)) {
-      return this.singletons.get(name);
+      return this.singletons.get(name)
     }
-    
-    const instance = factory();
-    this.singletons.set(name, instance);
-    return instance;
+
+    const instance = factory()
+    this.singletons.set(name, instance)
+    return instance
   }
 }
 
 // Register services
-export const container = new DIContainer();
+export const container = new DIContainer()
 
-container.register('prisma', () => new PrismaClient(), { singleton: true });
-container.register('logger', () => logger, { singleton: true });
-container.register('cache', () => new RedisCache(), { singleton: true });
+container.register('prisma', () => new PrismaClient(), { singleton: true })
+container.register('logger', () => logger, { singleton: true })
+container.register('cache', () => new RedisCache(), { singleton: true })
 ```
 
 ### 4. IMPLEMENT REPOSITORY PATTERN
+
 ```typescript
 // src/repositories/base.repository.ts
 export abstract class BaseRepository<T> {
   constructor(protected prisma: PrismaClient) {}
-  
-  abstract findAll(options?: FindOptions): Promise<T[]>;
-  abstract findById(id: string): Promise<T | null>;
-  abstract create(data: Partial<T>): Promise<T>;
-  abstract update(id: string, data: Partial<T>): Promise<T>;
-  abstract delete(id: string): Promise<void>;
-  
+
+  abstract findAll(options?: FindOptions): Promise<T[]>
+  abstract findById(id: string): Promise<T | null>
+  abstract create(data: Partial<T>): Promise<T>
+  abstract update(id: string, data: Partial<T>): Promise<T>
+  abstract delete(id: string): Promise<void>
+
   protected handleError(error: any): never {
     if (error.code === 'P2002') {
-      throw new ValidationError('Duplicate entry');
+      throw new ValidationError('Duplicate entry')
     }
     if (error.code === 'P2025') {
-      throw new NotFoundError('Record not found');
+      throw new NotFoundError('Record not found')
     }
-    throw new DatabaseError('Database operation failed', error);
+    throw new DatabaseError('Database operation failed', error)
   }
 }
 
@@ -449,23 +459,24 @@ export abstract class BaseRepository<T> {
 export class UserRepository extends BaseRepository<User> {
   async findAll(options?: FindOptions): Promise<User[]> {
     try {
-      return await this.prisma.user.findMany(options);
+      return await this.prisma.user.findMany(options)
     } catch (error) {
-      this.handleError(error);
+      this.handleError(error)
     }
   }
-  
+
   async findById(id: string): Promise<User | null> {
     try {
-      return await this.prisma.user.findUnique({ where: { id } });
+      return await this.prisma.user.findUnique({ where: { id } })
     } catch (error) {
-      this.handleError(error);
+      this.handleError(error)
     }
   }
 }
 ```
 
 ### 5. IMPLEMENT SERVICE LAYER
+
 ```typescript
 // src/services/user.service.ts
 export class UserService {
@@ -474,30 +485,31 @@ export class UserService {
     private logger: Logger,
     private cache: CacheService
   ) {}
-  
+
   async getUser(id: string): Promise<User> {
     // Check cache first
-    const cached = await this.cache.get(`user:${id}`);
+    const cached = await this.cache.get(`user:${id}`)
     if (cached) {
-      this.logger.debug(`Cache hit for user ${id}`);
-      return cached;
+      this.logger.debug(`Cache hit for user ${id}`)
+      return cached
     }
-    
+
     // Get from database
-    const user = await this.userRepo.findById(id);
+    const user = await this.userRepo.findById(id)
     if (!user) {
-      throw new NotFoundError(`User ${id} not found`);
+      throw new NotFoundError(`User ${id} not found`)
     }
-    
+
     // Cache for future
-    await this.cache.set(`user:${id}`, user, 300); // 5 minutes
-    
-    return user;
+    await this.cache.set(`user:${id}`, user, 300) // 5 minutes
+
+    return user
   }
 }
 ```
 
 ## REFACTORING CHECKLIST:
+
 - [ ] All console.logs replaced with logger
 - [ ] All 'any' types replaced with proper types
 - [ ] Error handling added to all async functions
@@ -508,7 +520,8 @@ export class UserService {
 - [ ] Integration tests for API endpoints
 - [ ] Code documented with JSDoc
 - [ ] Complex functions split into smaller ones
-```
+
+````
 
 ---
 
@@ -557,9 +570,10 @@ EXPOSE 3000
 ENV PORT 3000
 
 CMD ["node", "server.js"]
-```
+````
 
 ### 2. DOCKER COMPOSE PRODUCTION
+
 ```yaml
 # docker-compose.production.yml
 version: '3.8'
@@ -588,7 +602,7 @@ services:
           cpus: '1'
           memory: 1G
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:3000/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -609,7 +623,7 @@ services:
     networks:
       - gangrun-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -627,7 +641,7 @@ services:
     networks:
       - gangrun-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -639,8 +653,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - app
     networks:
@@ -656,6 +670,7 @@ networks:
 ```
 
 ### 3. MONITORING STACK
+
 ```yaml
 # docker-compose.monitoring.yml
 version: '3.8'
@@ -670,7 +685,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-      - "9090:9090"
+      - '9090:9090'
     networks:
       - gangrun-network
 
@@ -681,7 +696,7 @@ services:
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
     ports:
-      - "3001:3000"
+      - '3001:3000'
     networks:
       - gangrun-network
     environment:
@@ -694,7 +709,7 @@ services:
       - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml
       - loki-data:/loki
     ports:
-      - "3100:3100"
+      - '3100:3100'
     networks:
       - gangrun-network
 
@@ -714,72 +729,74 @@ volumes:
 ```
 
 ### 4. HEALTH CHECK SYSTEM
+
 ```typescript
 // src/monitoring/health.ts
 export interface HealthCheck {
-  name: string;
-  check: () => Promise<boolean>;
-  critical: boolean;
+  name: string
+  check: () => Promise<boolean>
+  critical: boolean
 }
 
 export class HealthMonitor {
-  private checks: HealthCheck[] = [];
-  
+  private checks: HealthCheck[] = []
+
   register(check: HealthCheck) {
-    this.checks.push(check);
+    this.checks.push(check)
   }
-  
+
   async runChecks() {
     const results = await Promise.all(
       this.checks.map(async (check) => {
         try {
-          const passed = await check.check();
-          return { name: check.name, passed, critical: check.critical };
+          const passed = await check.check()
+          return { name: check.name, passed, critical: check.critical }
         } catch (error) {
-          return { name: check.name, passed: false, critical: check.critical, error };
+          return { name: check.name, passed: false, critical: check.critical, error }
         }
       })
-    );
-    
-    const healthy = results.every(r => !r.critical || r.passed);
-    const status = healthy ? 'healthy' : 'unhealthy';
-    
-    return { status, checks: results, timestamp: new Date().toISOString() };
+    )
+
+    const healthy = results.every((r) => !r.critical || r.passed)
+    const status = healthy ? 'healthy' : 'unhealthy'
+
+    return { status, checks: results, timestamp: new Date().toISOString() }
   }
 }
 
 // Register health checks
-const monitor = new HealthMonitor();
+const monitor = new HealthMonitor()
 
 monitor.register({
   name: 'database',
   critical: true,
   check: async () => {
-    await prisma.$queryRaw`SELECT 1`;
-    return true;
-  }
-});
+    await prisma.$queryRaw`SELECT 1`
+    return true
+  },
+})
 
 monitor.register({
   name: 'redis',
   critical: false,
   check: async () => {
-    await redis.ping();
-    return true;
-  }
-});
+    await redis.ping()
+    return true
+  },
+})
 
 monitor.register({
   name: 'disk-space',
   critical: true,
   check: async () => {
-    const stats = await checkDiskSpace('/');
-    return stats.free > 1024 * 1024 * 1024; // 1GB minimum
-  }
-});
+    const stats = await checkDiskSpace('/')
+    return stats.free > 1024 * 1024 * 1024 // 1GB minimum
+  },
+})
 ```
 
 ## INFRASTRUCTURE DELIVERABLES:
+
 - [ ] Production Docker images optimized
 - [ ] Health checks implemented
 - [ ] Monitoring stack deployed
@@ -788,7 +805,8 @@ monitor.register({
 - [ ] SSL/TLS configured
 - [ ] Rate limiting implemented
 - [ ] DDoS protection enabled
-```
+
+````
 
 ---
 
@@ -813,162 +831,159 @@ describe('UserService', () => {
   let userRepo: jest.Mocked<UserRepository>;
   let cache: jest.Mocked<CacheService>;
   let logger: jest.Mocked<Logger>;
-  
+
   beforeEach(() => {
     userRepo = createMock<UserRepository>();
     cache = createMock<CacheService>();
     logger = createMock<Logger>();
     userService = new UserService(userRepo, cache, logger);
   });
-  
+
   describe('getUser', () => {
     it('should return cached user if available', async () => {
       const cachedUser = { id: '1', name: 'Test User' };
       cache.get.mockResolvedValue(cachedUser);
-      
+
       const result = await userService.getUser('1');
-      
+
       expect(result).toEqual(cachedUser);
       expect(cache.get).toHaveBeenCalledWith('user:1');
       expect(userRepo.findById).not.toHaveBeenCalled();
     });
-    
+
     it('should fetch from database if not cached', async () => {
       const dbUser = { id: '1', name: 'Test User' };
       cache.get.mockResolvedValue(null);
       userRepo.findById.mockResolvedValue(dbUser);
-      
+
       const result = await userService.getUser('1');
-      
+
       expect(result).toEqual(dbUser);
       expect(userRepo.findById).toHaveBeenCalledWith('1');
       expect(cache.set).toHaveBeenCalledWith('user:1', dbUser, 300);
     });
-    
+
     it('should throw NotFoundError if user not found', async () => {
       cache.get.mockResolvedValue(null);
       userRepo.findById.mockResolvedValue(null);
-      
+
       await expect(userService.getUser('1')).rejects.toThrow(NotFoundError);
     });
   });
 });
-```
+````
 
 ### 2. INTEGRATION TEST SUITE
+
 ```typescript
 // src/__tests__/integration/api.test.ts
-import request from 'supertest';
-import { app } from '../../app';
-import { prisma } from '../../lib/prisma';
+import request from 'supertest'
+import { app } from '../../app'
+import { prisma } from '../../lib/prisma'
 
 describe('API Integration Tests', () => {
   beforeAll(async () => {
-    await prisma.$connect();
-  });
-  
+    await prisma.$connect()
+  })
+
   afterAll(async () => {
-    await prisma.$disconnect();
-  });
-  
+    await prisma.$disconnect()
+  })
+
   beforeEach(async () => {
-    await prisma.$executeRaw`TRUNCATE TABLE "User" CASCADE`;
-  });
-  
+    await prisma.$executeRaw`TRUNCATE TABLE "User" CASCADE`
+  })
+
   describe('POST /api/users', () => {
     it('should create a new user', async () => {
       const userData = {
         email: 'test@example.com',
         name: 'Test User',
-        password: 'securePassword123'
-      };
-      
-      const response = await request(app)
-        .post('/api/users')
-        .send(userData)
-        .expect(201);
-      
+        password: 'securePassword123',
+      }
+
+      const response = await request(app).post('/api/users').send(userData).expect(201)
+
       expect(response.body).toMatchObject({
         success: true,
         data: {
           email: userData.email,
-          name: userData.name
-        }
-      });
-      
+          name: userData.name,
+        },
+      })
+
       const user = await prisma.user.findUnique({
-        where: { email: userData.email }
-      });
-      expect(user).toBeTruthy();
-    });
-    
+        where: { email: userData.email },
+      })
+      expect(user).toBeTruthy()
+    })
+
     it('should validate required fields', async () => {
-      const response = await request(app)
-        .post('/api/users')
-        .send({})
-        .expect(400);
-      
+      const response = await request(app).post('/api/users').send({}).expect(400)
+
       expect(response.body).toMatchObject({
         success: false,
         error: {
-          code: 'VALIDATION_ERROR'
-        }
-      });
-    });
-  });
-});
+          code: 'VALIDATION_ERROR',
+        },
+      })
+    })
+  })
+})
 ```
 
 ### 3. E2E TEST SUITE
+
 ```typescript
 // tests/e2e/user-flow.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
 test.describe('User Flow', () => {
   test('complete order flow', async ({ page }) => {
     // Navigate to homepage
-    await page.goto('/');
-    await expect(page).toHaveTitle('GangRun Printing');
-    
+    await page.goto('/')
+    await expect(page).toHaveTitle('GangRun Printing')
+
     // Login
-    await page.click('text=Login');
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'password123');
-    await page.click('button[type="submit"]');
-    
+    await page.click('text=Login')
+    await page.fill('[name="email"]', 'test@example.com')
+    await page.fill('[name="password"]', 'password123')
+    await page.click('button[type="submit"]')
+
     // Wait for redirect
-    await page.waitForURL('/dashboard');
-    
+    await page.waitForURL('/dashboard')
+
     // Select product
-    await page.click('text=Business Cards');
-    await page.selectOption('[name="quantity"]', '500');
-    await page.click('text=Add to Cart');
-    
+    await page.click('text=Business Cards')
+    await page.selectOption('[name="quantity"]', '500')
+    await page.click('text=Add to Cart')
+
     // Checkout
-    await page.click('text=Checkout');
-    await expect(page.locator('.order-total')).toContainText('$99.99');
-    
+    await page.click('text=Checkout')
+    await expect(page.locator('.order-total')).toContainText('$99.99')
+
     // Complete payment
-    await page.fill('[name="cardNumber"]', '4242424242424242');
-    await page.fill('[name="expiry"]', '12/25');
-    await page.fill('[name="cvc"]', '123');
-    await page.click('text=Complete Order');
-    
+    await page.fill('[name="cardNumber"]', '4242424242424242')
+    await page.fill('[name="expiry"]', '12/25')
+    await page.fill('[name="cvc"]', '123')
+    await page.click('text=Complete Order')
+
     // Verify success
-    await expect(page).toHaveURL(/\/order\/confirmation/);
-    await expect(page.locator('.confirmation-message')).toBeVisible();
-  });
-});
+    await expect(page).toHaveURL(/\/order\/confirmation/)
+    await expect(page.locator('.confirmation-message')).toBeVisible()
+  })
+})
 ```
 
 ### 4. PERFORMANCE TEST SUITE
+
 ```javascript
 // tests/performance/load-test.js
-import http from 'k6/http';
-import { check, sleep } from 'k6';
-import { Rate } from 'k6/metrics';
+import http from 'k6/http'
+import { check, sleep } from 'k6'
+import { Rate } from 'k6/metrics'
 
-const errorRate = new Rate('errors');
+const errorRate = new Rate('errors')
 
 export const options = {
   stages: [
@@ -976,28 +991,29 @@ export const options = {
     { duration: '5m', target: 100 }, // Stay at 100 users
     { duration: '2m', target: 200 }, // Spike
     { duration: '5m', target: 200 }, // Stay at 200 users
-    { duration: '2m', target: 0 },   // Ramp down
+    { duration: '2m', target: 0 }, // Ramp down
   ],
   thresholds: {
-    errors: ['rate<0.1'],           // Error rate < 10%
+    errors: ['rate<0.1'], // Error rate < 10%
     http_req_duration: ['p(95)<500'], // 95% of requests < 500ms
   },
-};
+}
 
 export default function () {
-  const res = http.get('https://gangrunprinting.com/api/products');
-  
+  const res = http.get('https://gangrunprinting.com/api/products')
+
   const success = check(res, {
     'status is 200': (r) => r.status === 200,
     'response time < 500ms': (r) => r.timings.duration < 500,
-  });
-  
-  errorRate.add(!success);
-  sleep(1);
+  })
+
+  errorRate.add(!success)
+  sleep(1)
 }
 ```
 
 ## TEST AUTOMATION SETUP:
+
 - [ ] Unit tests covering 80%+ code
 - [ ] Integration tests for all APIs
 - [ ] E2E tests for critical user flows
@@ -1006,7 +1022,8 @@ export default function () {
 - [ ] Accessibility tests passing
 - [ ] Visual regression tests
 - [ ] CI/CD pipeline with tests
-```
+
+````
 
 ---
 
@@ -1028,7 +1045,7 @@ import { AlertManager } from './alerts';
 export class RealtimeMonitor extends EventEmitter {
   private metrics = new MetricsCollector();
   private alerts = new AlertManager();
-  
+
   async startMonitoring() {
     // Database monitoring
     setInterval(async () => {
@@ -1037,7 +1054,7 @@ export class RealtimeMonitor extends EventEmitter {
         this.alerts.trigger('database_down', dbHealth);
       }
     }, 10000); // Every 10 seconds
-    
+
     // API response time monitoring
     setInterval(async () => {
       const apiMetrics = await this.checkAPIResponseTimes();
@@ -1045,7 +1062,7 @@ export class RealtimeMonitor extends EventEmitter {
         this.alerts.trigger('slow_api', apiMetrics);
       }
     }, 30000); // Every 30 seconds
-    
+
     // Memory usage monitoring
     setInterval(() => {
       const memUsage = process.memoryUsage();
@@ -1054,13 +1071,13 @@ export class RealtimeMonitor extends EventEmitter {
       }
     }, 60000); // Every minute
   }
-  
+
   private async checkDatabaseHealth() {
     try {
       const start = Date.now();
       await prisma.$queryRaw`SELECT 1`;
       const responseTime = Date.now() - start;
-      
+
       return {
         healthy: true,
         responseTime,
@@ -1074,7 +1091,7 @@ export class RealtimeMonitor extends EventEmitter {
       };
     }
   }
-  
+
   private async checkAPIResponseTimes() {
     const times = await this.metrics.getResponseTimes();
     return {
@@ -1085,140 +1102,145 @@ export class RealtimeMonitor extends EventEmitter {
     };
   }
 }
-```
+````
 
 ### 2. ALERT SYSTEM
+
 ```typescript
 // src/monitoring/alerts.ts
 export interface Alert {
-  type: string;
-  severity: 'critical' | 'warning' | 'info';
-  message: string;
-  data: any;
-  timestamp: Date;
+  type: string
+  severity: 'critical' | 'warning' | 'info'
+  message: string
+  data: any
+  timestamp: Date
 }
 
 export class AlertManager {
-  private handlers = new Map<string, (alert: Alert) => void>();
-  
+  private handlers = new Map<string, (alert: Alert) => void>()
+
   async trigger(type: string, data: any) {
     const alert: Alert = {
       type,
       severity: this.getSeverity(type),
       message: this.getMessage(type, data),
       data,
-      timestamp: new Date()
-    };
-    
+      timestamp: new Date(),
+    }
+
     // Log alert
-    logger.error('Alert triggered:', alert);
-    
+    logger.error('Alert triggered:', alert)
+
     // Send to monitoring service
-    await this.sendToMonitoring(alert);
-    
+    await this.sendToMonitoring(alert)
+
     // Send notifications
     if (alert.severity === 'critical') {
-      await this.sendEmail(alert);
-      await this.sendSlack(alert);
-      await this.sendPagerDuty(alert);
+      await this.sendEmail(alert)
+      await this.sendSlack(alert)
+      await this.sendPagerDuty(alert)
     }
   }
-  
+
   private async sendEmail(alert: Alert) {
     await sendgrid.send({
       to: process.env.ALERT_EMAIL,
       from: 'alerts@gangrunprinting.com',
       subject: `[CRITICAL] ${alert.type}`,
       text: alert.message,
-      html: this.formatAlertHTML(alert)
-    });
+      html: this.formatAlertHTML(alert),
+    })
   }
-  
+
   private async sendSlack(alert: Alert) {
     await fetch(process.env.SLACK_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         text: `:warning: *${alert.type}*`,
-        attachments: [{
-          color: 'danger',
-          fields: [
-            { title: 'Severity', value: alert.severity, short: true },
-            { title: 'Time', value: alert.timestamp.toISOString(), short: true },
-            { title: 'Message', value: alert.message, short: false }
-          ]
-        }]
-      })
-    });
+        attachments: [
+          {
+            color: 'danger',
+            fields: [
+              { title: 'Severity', value: alert.severity, short: true },
+              { title: 'Time', value: alert.timestamp.toISOString(), short: true },
+              { title: 'Message', value: alert.message, short: false },
+            ],
+          },
+        ],
+      }),
+    })
   }
 }
 ```
 
 ### 3. AUTOMATED RECOVERY
+
 ```typescript
 // src/monitoring/auto-recovery.ts
 export class AutoRecovery {
-  private recoveryStrategies = new Map<string, () => Promise<boolean>>();
-  
+  private recoveryStrategies = new Map<string, () => Promise<boolean>>()
+
   constructor() {
-    this.registerStrategies();
+    this.registerStrategies()
   }
-  
+
   private registerStrategies() {
     // Auto-restart on crash
     this.recoveryStrategies.set('app_crash', async () => {
-      logger.info('Attempting auto-restart after crash');
-      await exec('docker-compose restart app');
-      return true;
-    });
-    
+      logger.info('Attempting auto-restart after crash')
+      await exec('docker-compose restart app')
+      return true
+    })
+
     // Clear cache on memory issues
     this.recoveryStrategies.set('high_memory', async () => {
-      logger.info('Clearing cache due to high memory usage');
-      await cache.flush();
-      global.gc?.(); // Force garbage collection if available
-      return true;
-    });
-    
+      logger.info('Clearing cache due to high memory usage')
+      await cache.flush()
+      global.gc?.() // Force garbage collection if available
+      return true
+    })
+
     // Reconnect database
     this.recoveryStrategies.set('database_connection_lost', async () => {
-      logger.info('Attempting database reconnection');
-      await prisma.$disconnect();
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      await prisma.$connect();
-      return true;
-    });
-    
+      logger.info('Attempting database reconnection')
+      await prisma.$disconnect()
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+      await prisma.$connect()
+      return true
+    })
+
     // Scale up on high load
     this.recoveryStrategies.set('high_load', async () => {
-      logger.info('Scaling up due to high load');
-      await exec('docker-compose up -d --scale app=3');
-      return true;
-    });
+      logger.info('Scaling up due to high load')
+      await exec('docker-compose up -d --scale app=3')
+      return true
+    })
   }
-  
+
   async attemptRecovery(issue: string): Promise<boolean> {
-    const strategy = this.recoveryStrategies.get(issue);
+    const strategy = this.recoveryStrategies.get(issue)
     if (!strategy) {
-      logger.warn(`No recovery strategy for: ${issue}`);
-      return false;
+      logger.warn(`No recovery strategy for: ${issue}`)
+      return false
     }
-    
+
     try {
-      const success = await strategy();
+      const success = await strategy()
       if (success) {
-        logger.info(`Recovery successful for: ${issue}`);
+        logger.info(`Recovery successful for: ${issue}`)
       }
-      return success;
+      return success
     } catch (error) {
-      logger.error(`Recovery failed for ${issue}:`, error);
-      return false;
+      logger.error(`Recovery failed for ${issue}:`, error)
+      return false
     }
   }
 }
 ```
 
 ## MONITORING DELIVERABLES:
+
 - [ ] 24/7 uptime monitoring active
 - [ ] Performance metrics dashboard
 - [ ] Alert system configured
@@ -1227,7 +1249,8 @@ export class AutoRecovery {
 - [ ] Error tracking enabled
 - [ ] User behavior analytics
 - [ ] Security monitoring active
-```
+
+````
 
 ---
 
@@ -1280,15 +1303,17 @@ See [Deployment Guide](docs/DEPLOYMENT.md)
 
 ## 🆘 Troubleshooting
 See [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
-```
+````
 
 ### 2. TROUBLESHOOTING.md
+
 ```markdown
 # Troubleshooting Guide
 
 ## Common Issues
 
 ### Data Not Showing
+
 **Symptom**: Database has data but UI shows nothing
 
 **Solution**:
@@ -1299,74 +1324,86 @@ docker-compose restart app
 \`\`\`
 
 ### Database Connection Failed
+
 **Symptom**: "Can't reach database server"
 
 **Solution**:
+
 1. Check DATABASE_URL uses 'postgres' not 'localhost'
 2. Verify postgres container is running
 3. Check network connectivity
 
 ### High Memory Usage
+
 **Symptom**: App consuming >1GB RAM
 
 **Solution**:
+
 1. Check for memory leaks in custom code
 2. Verify connection pooling settings
 3. Clear cache: \`npm run cache:clear\`
 
 ## Diagnostic Commands
+
 \`\`\`bash
+
 # Check system health
+
 npm run health:check
 
 # View logs
+
 npm run logs:app
 npm run logs:db
 
 # Run diagnostics
+
 npm run diagnose
 \`\`\`
 
 ## Recovery Procedures
+
 See [Recovery Playbook](docs/RECOVERY.md)
 ```
 
 ### 3. API DOCUMENTATION
+
 ```typescript
 // Generate OpenAPI documentation
-import { generateOpenApiDocument } from '@asteasolutions/zod-to-openapi';
+import { generateOpenApiDocument } from '@asteasolutions/zod-to-openapi'
 
 const apiDoc = generateOpenApiDocument({
   openapi: '3.0.0',
   info: {
     title: 'GangRun Printing API',
     version: '1.0.0',
-    description: 'Enterprise printing service API'
+    description: 'Enterprise printing service API',
   },
   servers: [
     { url: 'https://api.gangrunprinting.com', description: 'Production' },
-    { url: 'http://localhost:3000', description: 'Development' }
-  ]
-});
+    { url: 'http://localhost:3000', description: 'Development' },
+  ],
+})
 
 // Auto-generate from code
 export function generateAPIDocs() {
-  const routes = scanRoutes('./src/api');
-  routes.forEach(route => {
+  const routes = scanRoutes('./src/api')
+  routes.forEach((route) => {
     apiDoc.paths[route.path] = {
       [route.method]: {
         summary: route.summary,
         parameters: route.parameters,
-        responses: route.responses
-      }
-    };
-  });
-  
-  return apiDoc;
+        responses: route.responses,
+      },
+    }
+  })
+
+  return apiDoc
 }
 ```
 
 ## DOCUMENTATION DELIVERABLES:
+
 - [ ] Complete README with quick start
 - [ ] Architecture documentation
 - [ ] API documentation (OpenAPI)
@@ -1375,7 +1412,8 @@ export function generateAPIDocs() {
 - [ ] Development guide
 - [ ] Security guide
 - [ ] Performance tuning guide
-```
+
+````
 
 ---
 
@@ -1424,7 +1462,7 @@ Enterprise-grade system with:
 - Auto-recovery
 - Complete documentation
 - Zero critical issues
-```
+````
 
 ---
 
@@ -1437,6 +1475,7 @@ Enterprise-grade system with:
 5. **AUTOMATE RECOVERY** - Humans sleep, systems don't
 
 ## YOUR SYSTEM WILL BE:
+
 ✅ Enterprise-grade
 ✅ Self-healing
 ✅ Fully monitored

@@ -74,7 +74,8 @@ export const uploadProductImage = async (
     // Prepare upload metadata
     // HTTP headers must only contain ASCII characters and no spaces or special chars
     // Sanitize metadata values by replacing invalid characters with underscores
-    const sanitizeHeaderValue = (value: string) => value.replace(/[^\x20-\x7E]/g, '_').replace(/\s+/g, '_')
+    const sanitizeHeaderValue = (value: string) =>
+      value.replace(/[^\x20-\x7E]/g, '_').replace(/\s+/g, '_')
 
     const baseMetadata = {
       'x-amz-meta-original-name': sanitizeHeaderValue(fileName),

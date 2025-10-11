@@ -3,8 +3,8 @@ import {
   StandardModuleValue,
   ImageItem,
   ImageValue,
-  ImageModuleProps as StandardImageModuleProps,
-  ImageModuleValue as StandardImageModuleValue
+  type ImageModuleProps as StandardImageModuleProps,
+  type ImageModuleValue as StandardImageModuleValue,
 } from '../types/StandardModuleTypes'
 
 /**
@@ -12,13 +12,13 @@ import {
  * System MUST work without any uploads (always optional)
  */
 export enum ImageUploadState {
-  NONE = 'none',                    // No upload needed (system works fine)
-  PENDING = 'pending',              // Upload ready to start
-  UPLOADING = 'uploading',          // Upload in progress
-  PROCESSING = 'processing',        // File being processed
-  COMPLETED = 'completed',          // Upload successful
-  FAILED = 'failed',                // Upload failed (doesn't block system)
-  CANCELLED = 'cancelled'           // Upload cancelled by user
+  NONE = 'none', // No upload needed (system works fine)
+  PENDING = 'pending', // Upload ready to start
+  UPLOADING = 'uploading', // Upload in progress
+  PROCESSING = 'processing', // File being processed
+  COMPLETED = 'completed', // Upload successful
+  FAILED = 'failed', // Upload failed (doesn't block system)
+  CANCELLED = 'cancelled', // Upload cancelled by user
 }
 
 /**
@@ -29,12 +29,12 @@ export interface ImageFile {
   name: string
   size: number
   type: string
-  url?: string                      // URL after successful upload
-  thumbnailUrl?: string             // Thumbnail URL
+  url?: string // URL after successful upload
+  thumbnailUrl?: string // Thumbnail URL
   uploadState: ImageUploadState
-  uploadProgress?: number           // 0-100 for progress tracking
-  errorMessage?: string             // Error details if upload fails
-  uploadedAt?: Date                 // When upload completed
+  uploadProgress?: number // 0-100 for progress tracking
+  errorMessage?: string // Error details if upload fails
+  uploadedAt?: Date // When upload completed
   metadata?: {
     width?: number
     height?: number
@@ -46,13 +46,13 @@ export interface ImageFile {
  * Image upload configuration
  */
 export interface ImageUploadConfig {
-  maxFiles: number                  // Maximum files allowed
-  maxFileSize: number               // Maximum file size in bytes
-  acceptedTypes: string[]           // Accepted MIME types
-  requiresUpload: boolean           // Whether upload is required (should always be false)
-  allowMultiple: boolean            // Allow multiple file selection
-  enablePreview: boolean            // Show image previews
-  enableThumbnails: boolean         // Generate thumbnails
+  maxFiles: number // Maximum files allowed
+  maxFileSize: number // Maximum file size in bytes
+  acceptedTypes: string[] // Accepted MIME types
+  requiresUpload: boolean // Whether upload is required (should always be false)
+  allowMultiple: boolean // Allow multiple file selection
+  enablePreview: boolean // Show image previews
+  enableThumbnails: boolean // Generate thumbnails
 }
 
 /**
@@ -60,9 +60,9 @@ export interface ImageUploadConfig {
  */
 export interface ImageModuleState {
   files: ImageFile[]
-  selectedFiles: string[]           // IDs of selected files
+  selectedFiles: string[] // IDs of selected files
   isDragOver: boolean
-  uploadQueue: string[]             // Files waiting to upload
+  uploadQueue: string[] // Files waiting to upload
   config: ImageUploadConfig
 }
 
@@ -71,7 +71,7 @@ export interface ImageModuleState {
  * CRITICAL: Never required, never blocks pricing/checkout
  */
 export interface ImageModuleProps extends Omit<StandardImageModuleProps, 'onChange'> {
-  images: ImageFile[]               // Current images
+  images: ImageFile[] // Current images
   config?: Partial<ImageUploadConfig> // Upload configuration
   onChange: (images: ImageFile[]) => void
   onUploadStart?: (files: File[]) => void
@@ -81,8 +81,8 @@ export interface ImageModuleProps extends Omit<StandardImageModuleProps, 'onChan
   // Optional styling
   uploadAreaClassName?: string
   previewClassName?: string
-  showUploadArea?: boolean          // Whether to show upload UI
-  showPendingMessage?: boolean      // Show "pending upload" message
+  showUploadArea?: boolean // Whether to show upload UI
+  showPendingMessage?: boolean // Show "pending upload" message
 }
 
 /**
@@ -91,11 +91,11 @@ export interface ImageModuleProps extends Omit<StandardImageModuleProps, 'onChan
 export interface ImageModuleValue extends Omit<StandardImageModuleValue, 'value'> {
   images: ImageFile[]
   uploadState: ImageUploadState
-  hasUploads: boolean               // Whether any files are uploaded
-  isPending: boolean                // Whether uploads are pending
-  isUploading: boolean              // Whether actively uploading
-  errorCount: number                // Number of failed uploads
-  completedCount: number            // Number of successful uploads
+  hasUploads: boolean // Whether any files are uploaded
+  isPending: boolean // Whether uploads are pending
+  isUploading: boolean // Whether actively uploading
+  errorCount: number // Number of failed uploads
+  completedCount: number // Number of successful uploads
 }
 
 /**
@@ -115,12 +115,12 @@ export interface ImageUploadResult {
  */
 export const DEFAULT_IMAGE_CONFIG: ImageUploadConfig = {
   maxFiles: 10,
-  maxFileSize: 10 * 1024 * 1024,   // 10MB
+  maxFileSize: 10 * 1024 * 1024, // 10MB
   acceptedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'],
-  requiresUpload: false,            // CRITICAL: Always false
+  requiresUpload: false, // CRITICAL: Always false
   allowMultiple: true,
   enablePreview: true,
-  enableThumbnails: true
+  enableThumbnails: true,
 }
 
 /**
@@ -133,5 +133,5 @@ export enum ImageModuleError {
   UPLOAD_FAILED = 'upload_failed',
   PROCESSING_FAILED = 'processing_failed',
   NETWORK_ERROR = 'network_error',
-  STORAGE_ERROR = 'storage_error'
+  STORAGE_ERROR = 'storage_error',
 }

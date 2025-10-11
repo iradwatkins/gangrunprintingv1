@@ -312,8 +312,7 @@ export class ThemeManager {
 
       // Write updated globals.css
       await fs.writeFile(globalsPath, cssContent, 'utf-8')
-
-      } catch (error) {
+    } catch (error) {
       throw error
     }
   }

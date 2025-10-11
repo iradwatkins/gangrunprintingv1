@@ -24,25 +24,31 @@ This test suite automates the complete customer order flow on the GangRun Printi
 ## Available Test Scripts
 
 ### 1. Single Test Run (Recommended First)
+
 ```bash
 node test-single-order-flow.js
 ```
+
 - Runs one complete test iteration
 - Good for validation and debugging
 - Faster execution for quick checks
 
 ### 2. Complete 5-Iteration Test
+
 ```bash
 node test-complete-customer-order-flow-fixed.js
 ```
+
 - Runs 5 complete test iterations
 - Tests consistency and reliability
 - Generates comprehensive report
 
 ### 3. Original Test (For Reference)
+
 ```bash
 node test-complete-customer-order-flow.js
 ```
+
 - Original version (may have issues with multi-step checkout)
 - Kept for comparison
 
@@ -59,21 +65,23 @@ node test-complete-customer-order-flow.js
 You can modify these settings in the test files:
 
 ```javascript
-const HEADLESS = false; // Set to true for headless mode
-const SLOW_MO = 150;    // Milliseconds between actions
-const VIEWPORT = { width: 1920, height: 1080 };
+const HEADLESS = false // Set to true for headless mode
+const SLOW_MO = 150 // Milliseconds between actions
+const VIEWPORT = { width: 1920, height: 1080 }
 ```
 
 ## Output Files
 
 ### Screenshots
+
 - **Location:** `screenshots/order-flow-test-fixed/`
 - **Naming:** `test-{run}-{step}-{description}-{timestamp}.png`
 - **Types:** Each step + error screenshots
 
 ### Reports
+
 - **File:** `order-flow-test-report-fixed.json`
-- **Contains:** 
+- **Contains:**
   - Test metadata
   - Summary statistics
   - Detailed results for each test run
@@ -106,6 +114,7 @@ Set `HEADLESS = false` in the test file to watch the browser automation in real-
 ## Expected Results
 
 A successful test run should:
+
 - Complete all 9 steps successfully
 - Generate an order number or confirmation
 - Create screenshots for each step
@@ -114,6 +123,7 @@ A successful test run should:
 ## Report Analysis
 
 Check the JSON report for:
+
 - **Success Rate:** Should be close to 100% for a working checkout flow
 - **Failed Steps:** Identify which parts of checkout are problematic
 - **Error Messages:** Specific issues encountered during testing

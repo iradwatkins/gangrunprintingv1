@@ -11,7 +11,6 @@ console.log('SendGrid Key:', process.env.SENDGRID_API_KEY?.substring(0, 10) + '.
 import { SquareClient, SquareEnvironment } from 'square'
 
 async function testSquare() {
-
   try {
     const client = new SquareClient({
       squareVersion: '2024-08-21',
@@ -28,7 +27,6 @@ async function testSquare() {
       console.log('  First location:', locations[0].name, '(' + locations[0].id + ')')
     }
   } catch (error: any) {
-
     if (error.errors) {
       console.log('  Details:', JSON.stringify(error.errors, null, 2))
     }

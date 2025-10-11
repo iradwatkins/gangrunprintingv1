@@ -4,14 +4,13 @@ const prisma = new PrismaClient()
 
 async function configureAddonDisplayPositions() {
   try {
-
     // Get the Corner Rounding and Variable Data addons
     const cornerRounding = await prisma.addOn.findFirst({
-      where: { name: 'Corner Rounding' }
+      where: { name: 'Corner Rounding' },
     })
 
     const variableData = await prisma.addOn.findFirst({
-      where: { name: 'Variable Data Printing' }
+      where: { name: 'Variable Data Printing' },
     })
 
     if (!cornerRounding || !variableData) {
@@ -21,7 +20,7 @@ async function configureAddonDisplayPositions() {
 
     // Get the Premium Business Card Add-ons set
     const premiumSet = await prisma.addOnSet.findFirst({
-      where: { name: 'Premium Business Card Add-ons' }
+      where: { name: 'Premium Business Card Add-ons' },
     })
 
     if (!premiumSet) {
@@ -34,19 +33,19 @@ async function configureAddonDisplayPositions() {
       where: {
         addOnSetId_addOnId: {
           addOnSetId: premiumSet.id,
-          addOnId: cornerRounding.id
-        }
+          addOnId: cornerRounding.id,
+        },
       },
       update: {
         displayPosition: 'ABOVE_DROPDOWN',
-        sortOrder: 1
+        sortOrder: 1,
       },
       create: {
         addOnSetId: premiumSet.id,
         addOnId: cornerRounding.id,
         displayPosition: 'ABOVE_DROPDOWN',
-        sortOrder: 1
-      }
+        sortOrder: 1,
+      },
     })
 
     // Add Variable Data with BELOW_DROPDOWN position
@@ -54,24 +53,24 @@ async function configureAddonDisplayPositions() {
       where: {
         addOnSetId_addOnId: {
           addOnSetId: premiumSet.id,
-          addOnId: variableData.id
-        }
+          addOnId: variableData.id,
+        },
       },
       update: {
         displayPosition: 'BELOW_DROPDOWN',
-        sortOrder: 10
+        sortOrder: 10,
       },
       create: {
         addOnSetId: premiumSet.id,
         addOnId: variableData.id,
         displayPosition: 'BELOW_DROPDOWN',
-        sortOrder: 10
-      }
+        sortOrder: 10,
+      },
     })
 
     // Also add them to other relevant sets
     const marketingSet = await prisma.addOnSet.findFirst({
-      where: { name: 'Marketing Materials Add-ons' }
+      where: { name: 'Marketing Materials Add-ons' },
     })
 
     if (marketingSet) {
@@ -80,23 +79,21 @@ async function configureAddonDisplayPositions() {
         where: {
           addOnSetId_addOnId: {
             addOnSetId: marketingSet.id,
-            addOnId: variableData.id
-          }
+            addOnId: variableData.id,
+          },
         },
         update: {
           displayPosition: 'BELOW_DROPDOWN',
-          sortOrder: 10
+          sortOrder: 10,
         },
         create: {
           addOnSetId: marketingSet.id,
           addOnId: variableData.id,
           displayPosition: 'BELOW_DROPDOWN',
-          sortOrder: 10
-        }
+          sortOrder: 10,
+        },
       })
-
     }
-
   } catch (error) {
     console.error('Error configuring display positions:', error)
   } finally {

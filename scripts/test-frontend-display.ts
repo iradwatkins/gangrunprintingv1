@@ -38,14 +38,9 @@ async function testFrontendDisplay() {
         html.includes('Error loading configuration') ||
         html.includes('Failed to fetch configuration')
       if (hasError) {
-
       }
-
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
-
 }
 
 // Run the test

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedTurnaroundTimeSets() {
-
   try {
     // First, get existing turnaround times
     const turnaroundTimes = await prisma.turnaroundTime.findMany()
@@ -66,17 +65,15 @@ async function seedTurnaroundTimeSets() {
           timesToAdd = turnaroundTimes
         } else if (set.name.includes('Rush')) {
           // Rush service only includes fast options
-          timesToAdd = turnaroundTimes.filter(t =>
-            t.name === 'Fast' || t.name === 'Faster' || t.name === 'Fastest'
+          timesToAdd = turnaroundTimes.filter(
+            (t) => t.name === 'Fast' || t.name === 'Faster' || t.name === 'Fastest'
           )
         } else if (set.name.includes('Large Format')) {
           // Large format usually excludes same-day
-          timesToAdd = turnaroundTimes.filter(t => t.name !== 'Fastest')
+          timesToAdd = turnaroundTimes.filter((t) => t.name !== 'Fastest')
         } else if (set.name.includes('EDDM')) {
           // EDDM needs more time
-          timesToAdd = turnaroundTimes.filter(t =>
-            t.name === 'Economy' || t.name === 'Fast'
-          )
+          timesToAdd = turnaroundTimes.filter((t) => t.name === 'Economy' || t.name === 'Fast')
         } else {
           // Default: all options
           timesToAdd = turnaroundTimes
@@ -102,10 +99,8 @@ async function seedTurnaroundTimeSets() {
             },
           })
         }
-
       }
     }
-
   } catch (error) {
     console.error('❌ Error seeding Turnaround Time Sets:', error)
     throw error
@@ -116,7 +111,6 @@ async function seedTurnaroundTimeSets() {
 if (require.main === module) {
   seedTurnaroundTimeSets()
     .then(() => {
-
       process.exit(0)
     })
     .catch((error) => {

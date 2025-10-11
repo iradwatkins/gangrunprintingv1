@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function cleanAndReseed() {
-
   // First, delete all categories except our core 10
   const coreCategories = [
     'business-cards',
@@ -37,7 +36,6 @@ async function cleanAndReseed() {
     prisma.sidesOption.count(),
     prisma.coatingOption.count(),
   ])
-
 }
 
 cleanAndReseed()

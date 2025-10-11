@@ -10,7 +10,6 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function verifyImageFunctionality() {
-
   try {
     // Test 1: Check ProductImage schema
 
@@ -64,7 +63,6 @@ async function verifyImageFunctionality() {
       const hasMultipleSupport = componentContent.includes('multiple')
       const hasThumbnails = componentContent.includes('thumbnail')
       const hasDragDrop = componentContent.includes('drag')
-
     }
 
     // Test 5: Database relationships
@@ -77,13 +75,11 @@ async function verifyImageFunctionality() {
     })
 
     if (productWithRelations) {
-
     }
 
     // Summary
 
     console.log('   • Database storage with metadata (alt, caption, sort order)')
-
   } catch (error) {
     console.error(`❌ Verification failed: ${error.message}`)
   } finally {

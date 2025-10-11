@@ -14,7 +14,7 @@ import {
   Loader2,
   Eye,
   Download,
-  FileText
+  FileText,
 } from 'lucide-react'
 import type { ImageFile, ImageUploadState } from './types'
 
@@ -37,9 +37,8 @@ export function ImagePreview({
   onRetry,
   className = '',
   showProgress = true,
-  maxPreviewSize = 5
+  maxPreviewSize = 5,
 }: ImagePreviewProps) {
-
   // Get appropriate icon for upload state
   const getStateIcon = (state: ImageUploadState, size: number = 16) => {
     const iconProps = { size, className: 'transition-colors duration-200' }
@@ -121,9 +120,9 @@ export function ImagePreview({
           <div className="flex-shrink-0">
             {image.thumbnailUrl ? (
               <img
-                src={image.thumbnailUrl}
                 alt={image.name}
                 className="h-10 w-10 object-cover rounded"
+                src={image.thumbnailUrl}
               />
             ) : (
               getFileTypeIcon(image.type)
@@ -133,35 +132,26 @@ export function ImagePreview({
           {/* File Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {image.name}
-              </p>
+              <p className="text-sm font-medium text-gray-900 truncate">{image.name}</p>
               {getStateIcon(image.uploadState, 14)}
             </div>
 
             <div className="flex items-center space-x-2 mt-1">
-              <p className="text-xs text-gray-500">
-                {formatFileSize(image.size)}
-              </p>
+              <p className="text-xs text-gray-500">{formatFileSize(image.size)}</p>
 
-              <Badge variant="outline" className="text-xs">
+              <Badge className="text-xs" variant="outline">
                 {image.uploadState.replace('_', ' ').toUpperCase()}
               </Badge>
 
               {image.uploadedAt && (
-                <p className="text-xs text-gray-400">
-                  {image.uploadedAt.toLocaleTimeString()}
-                </p>
+                <p className="text-xs text-gray-400">{image.uploadedAt.toLocaleTimeString()}</p>
               )}
             </div>
 
             {/* Progress Bar */}
             {showProgress && image.uploadProgress !== undefined && (
               <div className="mt-2">
-                <Progress
-                  value={image.uploadProgress}
-                  className="h-1"
-                />
+                <Progress className="h-1" value={image.uploadProgress} />
                 <p className="text-xs text-gray-500 mt-1">
                   {Math.round(image.uploadProgress)}% complete
                 </p>
@@ -181,11 +171,11 @@ export function ImagePreview({
             {/* Preview Button */}
             {image.url && image.uploadState === ImageUploadState.COMPLETED && (
               <Button
-                size="sm"
-                variant="ghost"
                 className="h-6 w-6 p-0"
-                onClick={() => window.open(image.url, '_blank')}
+                size="sm"
                 title="Preview"
+                variant="ghost"
+                onClick={() => window.open(image.url, '_blank')}
               >
                 <Eye className="h-3 w-3" />
               </Button>
@@ -194,16 +184,16 @@ export function ImagePreview({
             {/* Download Button */}
             {image.url && image.uploadState === ImageUploadState.COMPLETED && (
               <Button
-                size="sm"
-                variant="ghost"
                 className="h-6 w-6 p-0"
+                size="sm"
+                title="Download"
+                variant="ghost"
                 onClick={() => {
                   const link = document.createElement('a')
                   link.href = image.url!
                   link.download = image.name
                   link.click()
                 }}
-                title="Download"
               >
                 <Download className="h-3 w-3" />
               </Button>
@@ -212,11 +202,11 @@ export function ImagePreview({
             {/* Retry Button */}
             {image.uploadState === ImageUploadState.FAILED && (
               <Button
-                size="sm"
-                variant="ghost"
                 className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700"
-                onClick={() => onRetry(image.id)}
+                size="sm"
                 title="Retry upload"
+                variant="ghost"
+                onClick={() => onRetry(image.id)}
               >
                 <RefreshCw className="h-3 w-3" />
               </Button>
@@ -224,11 +214,11 @@ export function ImagePreview({
 
             {/* Remove Button */}
             <Button
-              size="sm"
-              variant="ghost"
               className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
-              onClick={() => onRemove(image.id)}
+              size="sm"
               title="Remove"
+              variant="ghost"
+              onClick={() => onRemove(image.id)}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -250,21 +240,23 @@ export function ImagePreview({
         </span>
 
         <div className="flex space-x-3">
-          {images.filter(img => img.uploadState === ImageUploadState.COMPLETED).length > 0 && (
+          {images.filter((img) => img.uploadState === ImageUploadState.COMPLETED).length > 0 && (
             <span className="text-green-600">
-              ✅ {images.filter(img => img.uploadState === ImageUploadState.COMPLETED).length} uploaded
+              ✅ {images.filter((img) => img.uploadState === ImageUploadState.COMPLETED).length}{' '}
+              uploaded
             </span>
           )}
 
-          {images.filter(img => img.uploadState === ImageUploadState.UPLOADING).length > 0 && (
+          {images.filter((img) => img.uploadState === ImageUploadState.UPLOADING).length > 0 && (
             <span className="text-blue-600">
-              🔄 {images.filter(img => img.uploadState === ImageUploadState.UPLOADING).length} uploading
+              🔄 {images.filter((img) => img.uploadState === ImageUploadState.UPLOADING).length}{' '}
+              uploading
             </span>
           )}
 
-          {images.filter(img => img.uploadState === ImageUploadState.FAILED).length > 0 && (
+          {images.filter((img) => img.uploadState === ImageUploadState.FAILED).length > 0 && (
             <span className="text-red-600">
-              ❌ {images.filter(img => img.uploadState === ImageUploadState.FAILED).length} failed
+              ❌ {images.filter((img) => img.uploadState === ImageUploadState.FAILED).length} failed
             </span>
           )}
         </div>

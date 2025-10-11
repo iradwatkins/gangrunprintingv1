@@ -36,18 +36,18 @@ export function PaperStockSelector({
   className = '',
 }: PaperStockSelectorProps) {
   // Get available coatings and sides based on selected paper
-  const selectedPaper = paperStocks.find(p => p.id === paperValue)
+  const selectedPaper = paperStocks.find((p) => p.id === paperValue)
   const availableCoatings = selectedPaper?.coatings || []
-  const availableSides = selectedPaper?.sides.filter(s => s.isEnabled !== false) || []
+  const availableSides = selectedPaper?.sides.filter((s) => s.isEnabled !== false) || []
 
   const handlePaperChange = (paperId: string) => {
     onPaperChange(paperId)
 
     // Auto-select default coating and sides for new paper
-    const newPaper = paperStocks.find(p => p.id === paperId)
+    const newPaper = paperStocks.find((p) => p.id === paperId)
     if (newPaper) {
-      const defaultCoating = newPaper.coatings.find(c => c.isDefault) || newPaper.coatings[0]
-      const defaultSides = newPaper.sides.find(s => s.isDefault) || newPaper.sides[0]
+      const defaultCoating = newPaper.coatings.find((c) => c.isDefault) || newPaper.coatings[0]
+      const defaultSides = newPaper.sides.find((s) => s.isDefault) || newPaper.sides[0]
 
       if (defaultCoating) onCoatingChange(defaultCoating.id)
       if (defaultSides) onSidesChange(defaultSides.id)
@@ -75,11 +75,7 @@ export function PaperStockSelector({
               </TooltipContent>
             </Tooltip>
           </div>
-          <Select
-            value={paperValue}
-            onValueChange={handlePaperChange}
-            disabled={disabled}
-          >
+          <Select disabled={disabled} value={paperValue} onValueChange={handlePaperChange}>
             <SelectTrigger className="w-full h-11 bg-gray-100 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
               <SelectValue placeholder="Select paper" />
             </SelectTrigger>

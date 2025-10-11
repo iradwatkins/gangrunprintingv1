@@ -94,9 +94,12 @@ export async function POST(request: NextRequest) {
 
       // Enforce 5000 increment rule for custom quantities above 5000
       if (data.customQuantity > 5000 && data.customQuantity % 5000 !== 0) {
-        return NextResponse.json({
-          error: 'Custom quantities above 5000 must be in increments of 5000'
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: 'Custom quantities above 5000 must be in increments of 5000',
+          },
+          { status: 400 }
+        )
       }
 
       resolvedQuantity = data.customQuantity
@@ -110,7 +113,10 @@ export async function POST(request: NextRequest) {
         resolvedQuantity = standardQuantity.displayValue
       }
       // For quantities < 5000, check for adjustments
-      else if (standardQuantity.adjustmentValue !== null && standardQuantity.adjustmentValue !== undefined) {
+      else if (
+        standardQuantity.adjustmentValue !== null &&
+        standardQuantity.adjustmentValue !== undefined
+      ) {
         resolvedQuantity = standardQuantity.adjustmentValue
       } else {
         resolvedQuantity = standardQuantity.calculationValue

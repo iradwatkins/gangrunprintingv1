@@ -45,8 +45,8 @@ export function BrokerDiscountButton({
   return (
     <>
       <Button
-        variant={isBroker ? 'default' : 'outline'}
         size="sm"
+        variant={isBroker ? 'default' : 'outline'}
         onClick={() => setShowModal(true)}
       >
         <Percent className="h-4 w-4 mr-2" />
@@ -55,12 +55,12 @@ export function BrokerDiscountButton({
 
       {showModal && (
         <BrokerDiscountModal
-          open={showModal}
-          onOpenChange={setShowModal}
-          customerId={customerId}
-          customerName={customerName}
           categories={categories}
           currentDiscounts={(currentDiscounts as Record<string, number>) || {}}
+          customerId={customerId}
+          customerName={customerName}
+          open={showModal}
+          onOpenChange={setShowModal}
         />
       )}
     </>

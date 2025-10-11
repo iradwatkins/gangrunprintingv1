@@ -1,7 +1,6 @@
 import { prisma } from '../src/lib/prisma'
 
 async function migrateToAddOnSets() {
-
   try {
     // Get all products with their current addon associations
     const products = await prisma.product.findMany({
@@ -20,7 +19,6 @@ async function migrateToAddOnSets() {
     // Create a default addon set for each product
     for (const product of products) {
       if (product.productAddOns.length === 0) {
-
         continue
       }
 
@@ -39,7 +37,6 @@ async function migrateToAddOnSets() {
       let addOnSetId: string
 
       if (existingProductSet) {
-
         addOnSetId = existingProductSet.addOnSetId
       } else {
         // Create new addon set
@@ -63,7 +60,6 @@ async function migrateToAddOnSets() {
             sortOrder: 0,
           },
         })
-
       }
 
       // Create addon set items from existing product addons
@@ -77,7 +73,6 @@ async function migrateToAddOnSets() {
         })
 
         if (existingItem) {
-
           continue
         }
 
@@ -103,7 +98,6 @@ async function migrateToAddOnSets() {
             sortOrder: 0,
           },
         })
-
       }
     }
 
@@ -163,10 +157,8 @@ async function migrateToAddOnSets() {
               sortOrder: index,
             },
           })
-
         }
       } else {
-
       }
     }
 
@@ -174,7 +166,6 @@ async function migrateToAddOnSets() {
     const totalSets = await prisma.addOnSet.count()
     const totalItems = await prisma.addOnSetItem.count()
     const totalProductAssociations = await prisma.productAddOnSet.count()
-
   } catch (error) {
     console.error('❌ Error during migration:', error)
     throw error
@@ -184,7 +175,6 @@ async function migrateToAddOnSets() {
 // Run the migration
 migrateToAddOnSets()
   .then(() => {
-
     process.exit(0)
   })
   .catch((error) => {

@@ -1,18 +1,23 @@
 # Story 3.5: Payment Processing Integration
 
 ## Story Title
+
 Complete Square, CashApp, and PayPal Payment Integration
 
 ## Story Type
+
 Feature Completion
 
 ## Story Points
+
 8
 
 ## Priority
+
 P0 - Critical (Blocks Revenue)
 
 ## Epic
+
 Epic 3: Core Commerce & Checkout
 
 ## Story Description
@@ -22,6 +27,7 @@ As a **customer**, I want to securely pay for my order using Square, CashApp Pay
 ## Background
 
 The payment integration is currently 50% complete:
+
 - ✅ Square SDK integrated
 - ✅ Payment API endpoints created
 - ⚠️ Square payment flow incomplete
@@ -36,6 +42,7 @@ This is a critical blocker for production revenue generation.
 ## Acceptance Criteria
 
 ### Must Have (P0)
+
 - [ ] **Square Card Payment:**
   - [ ] Card input form renders using Square Web SDK
   - [ ] Card tokenization works correctly
@@ -70,6 +77,7 @@ This is a critical blocker for production revenue generation.
   - [ ] All errors logged to Sentry with context
 
 ### Should Have (P1)
+
 - [ ] **CashApp Pay Integration:**
   - [ ] CashApp button displays on checkout page
   - [ ] Clicking button opens CashApp payment flow
@@ -90,6 +98,7 @@ This is a critical blocker for production revenue generation.
   - [ ] Ability to remove saved cards
 
 ### Nice to Have (P2)
+
 - [ ] **3D Secure Support:**
   - [ ] 3DS challenge triggered for eligible cards
   - [ ] Customer completes 3DS verification flow
@@ -104,6 +113,7 @@ This is a critical blocker for production revenue generation.
 ## Technical Details
 
 ### Square Payment Flow
+
 ```typescript
 // 1. Initialize Square SDK
 const payments = Square.payments(applicationId, locationId)
@@ -121,8 +131,8 @@ if (tokenResult.status === 'OK') {
       sourceId: token,
       amount: totalAmount,
       currency: 'USD',
-      orderId: draftOrderId
-    })
+      orderId: draftOrderId,
+    }),
   })
 
   // 4. Handle response
@@ -138,6 +148,7 @@ if (tokenResult.status === 'OK') {
 ```
 
 ### API Endpoint Enhancement
+
 **File:** `src/app/api/checkout/process-square-payment/route.ts`
 
 ```typescript
@@ -150,9 +161,9 @@ export async function POST(request: NextRequest) {
     sourceId,
     amountMoney: {
       amount: BigInt(amount * 100), // Convert to cents
-      currency: 'USD'
+      currency: 'USD',
     },
-    idempotencyKey: uuidv4()
+    idempotencyKey: uuidv4(),
   })
 
   // 3. Create order in transaction
@@ -161,8 +172,8 @@ export async function POST(request: NextRequest) {
       data: {
         // ... order data
         paymentId: payment.result.payment.id,
-        paymentStatus: 'PAID'
-      }
+        paymentStatus: 'PAID',
+      },
     })
 
     // Clear cart
@@ -175,12 +186,13 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     success: true,
     orderId: order.id,
-    receiptUrl: payment.result.payment.receiptUrl
+    receiptUrl: payment.result.payment.receiptUrl,
   })
 }
 ```
 
 ### Environment Variables Required
+
 ```env
 # Square
 SQUARE_APPLICATION_ID=sq0idp-...
@@ -199,34 +211,40 @@ PAYPAL_SECRET=...
 ## Dependencies
 
 ### External Services
+
 - Square Web Payments SDK (already integrated)
 - CashApp Pay SDK (needs setup)
 - PayPal Checkout SDK (needs setup)
 
 ### Internal APIs
+
 - `/api/checkout/process-square-payment` (exists, needs completion)
 - `/api/checkout/process-cashapp-payment` (new)
 - `/api/checkout/process-paypal-payment` (new)
 
 ### Database
+
 - `Order` table needs `paymentId` field (already exists)
 - `PaymentMethod` table for saved cards (needs creation)
 
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Square tokenization
 - [ ] Payment processing logic
 - [ ] Error handling for each failure type
 - [ ] Order creation on payment success
 
 ### Integration Tests
+
 - [ ] End-to-end checkout with Square test card
 - [ ] Failed payment scenarios
 - [ ] Payment timeout handling
 - [ ] Order creation transaction
 
 ### Manual Testing Checklist
+
 - [ ] Test with Square test card: `4111 1111 1111 1111`
 - [ ] Test declined card: `4000 0000 0000 0002`
 - [ ] Test insufficient funds: `4000 0000 0000 9995`
@@ -239,29 +257,32 @@ PAYPAL_SECRET=...
 ## Files to Modify
 
 ### Frontend
+
 - `src/app/(customer)/checkout/page.tsx` - Add payment form
 - `src/components/checkout/PaymentForm.tsx` - Square card form (new)
 - `src/components/checkout/CashAppButton.tsx` - CashApp button (new)
 - `src/components/checkout/PayPalButton.tsx` - PayPal button (new)
 
 ### Backend
+
 - `src/app/api/checkout/process-square-payment/route.ts` - Complete implementation
 - `src/app/api/checkout/process-cashapp-payment/route.ts` - New endpoint
 - `src/app/api/checkout/process-paypal-payment/route.ts` - New endpoint
 - `src/lib/square-client.ts` - Square SDK initialization
 
 ### Configuration
+
 - `.env.production` - Add payment credentials
 - `package.json` - Add SDK dependencies
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| PCI compliance issues | CRITICAL | MEDIUM | Use tokenized payments only, never store raw card data |
-| Payment failures in production | HIGH | MEDIUM | Comprehensive error handling, monitoring with Sentry |
-| Double-charging customers | HIGH | LOW | Use idempotency keys, transaction-based order creation |
-| SDK breaking changes | MEDIUM | LOW | Pin SDK versions, test upgrades in staging |
+| Risk                           | Impact   | Likelihood | Mitigation                                             |
+| ------------------------------ | -------- | ---------- | ------------------------------------------------------ |
+| PCI compliance issues          | CRITICAL | MEDIUM     | Use tokenized payments only, never store raw card data |
+| Payment failures in production | HIGH     | MEDIUM     | Comprehensive error handling, monitoring with Sentry   |
+| Double-charging customers      | HIGH     | LOW        | Use idempotency keys, transaction-based order creation |
+| SDK breaking changes           | MEDIUM   | LOW        | Pin SDK versions, test upgrades in staging             |
 
 ## Success Metrics
 
@@ -280,11 +301,13 @@ PAYPAL_SECRET=...
 - Log all payment attempts (success and failure) for audit trail
 
 ## Related Stories
+
 - Story 3.6: Order Creation & Processing (dependency)
 - Story 3.7: Order Confirmation Page (blocks)
 - Story 3.8: Email Notifications (related)
 
 ## Definition of Done
+
 - [ ] All acceptance criteria met
 - [ ] Unit tests passing
 - [ ] Integration tests passing

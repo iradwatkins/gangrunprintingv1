@@ -35,7 +35,7 @@ export function CheckoutItemImages({ item }: CheckoutItemImagesProps) {
           }
         }
       } catch (error) {
-        } finally {
+      } finally {
         setIsLoading(false)
       }
     }

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStockSets() {
-
   try {
     // First, ensure we have paper stocks
     const paperStocks = await prisma.paperStock.findMany()
@@ -78,10 +77,8 @@ async function seedPaperStockSets() {
             },
           })
         }
-
       }
     }
-
   } catch (error) {
     console.error('❌ Error seeding Paper Stock Sets:', error)
     throw error
@@ -92,7 +89,6 @@ async function seedPaperStockSets() {
 if (require.main === module) {
   seedPaperStockSets()
     .then(() => {
-
       process.exit(0)
     })
     .catch((error) => {

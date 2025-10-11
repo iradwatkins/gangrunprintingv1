@@ -109,7 +109,11 @@ export class CrudRepository<T extends { id: string }> {
     })
   }
 
-  async update(id: string, data: Record<string, unknown>, include: Record<string, unknown> = {}): Promise<T> {
+  async update(
+    id: string,
+    data: Record<string, unknown>,
+    include: Record<string, unknown> = {}
+  ): Promise<T> {
     return await this.model.update({
       where: { id },
       data,

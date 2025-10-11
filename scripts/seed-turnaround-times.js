@@ -3,7 +3,6 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function seedTurnaroundTimes() {
-
   const turnaroundTimes = [
     {
       name: 'Economy',
@@ -69,16 +68,13 @@ async function seedTurnaroundTimes() {
     })
 
     if (existing) {
-
       continue
     }
 
     await prisma.turnaroundTime.create({
       data: turnaroundTime,
     })
-
   }
-
 }
 
 seedTurnaroundTimes()

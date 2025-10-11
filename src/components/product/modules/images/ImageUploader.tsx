@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, RefObject } from 'react'
+import React, { useCallback, type RefObject } from 'react'
 import { Button } from '@/components/ui/button'
 import { Upload, FileImage, Plus } from 'lucide-react'
 import type { ImageUploadConfig } from './types'
@@ -24,55 +24,66 @@ export function ImageUploader({
   onDragOver,
   onFileSelect,
   className = '',
-  fileInputRef
+  fileInputRef,
 }: ImageUploaderProps) {
-
   // Handle drag events
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onDragOver(true)
-  }, [onDragOver])
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onDragOver(true)
+    },
+    [onDragOver]
+  )
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
 
-    // Only set drag over to false if leaving the upload area entirely
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX
-    const y = e.clientY
+      // Only set drag over to false if leaving the upload area entirely
+      const rect = e.currentTarget.getBoundingClientRect()
+      const x = e.clientX
+      const y = e.clientY
 
-    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-      onDragOver(false)
-    }
-  }, [onDragOver])
+      if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+        onDragOver(false)
+      }
+    },
+    [onDragOver]
+  )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onDragOver(false)
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onDragOver(false)
 
-    const files = Array.from(e.dataTransfer.files)
-    if (files.length > 0) {
-      onFileSelect(files)
-    }
-  }, [onDragOver, onFileSelect])
+      const files = Array.from(e.dataTransfer.files)
+      if (files.length > 0) {
+        onFileSelect(files)
+      }
+    },
+    [onDragOver, onFileSelect]
+  )
 
   // Handle file input change
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      onFileSelect(Array.from(files))
-      // Clear input so same file can be selected again
-      e.target.value = ''
-    }
-  }, [onFileSelect])
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (files && files.length > 0) {
+        onFileSelect(Array.from(files))
+        // Clear input so same file can be selected again
+        e.target.value = ''
+      }
+    },
+    [onFileSelect]
+  )
 
   // Handle click to open file dialog
   const handleClick = useCallback(() => {
@@ -91,7 +102,7 @@ export function ImageUploader({
   // Get accepted file types for display
   const getAcceptedTypesDisplay = (): string => {
     return config.acceptedTypes
-      .map(type => {
+      .map((type) => {
         const extension = type.split('/')[1]?.toUpperCase() || type
         return extension
       })
@@ -103,34 +114,37 @@ export function ImageUploader({
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
-        type="file"
-        multiple={config.allowMultiple}
         accept={config.acceptedTypes.join(',')}
-        onChange={handleFileInputChange}
         className="hidden"
+        multiple={config.allowMultiple}
+        type="file"
+        onChange={handleFileInputChange}
       />
 
       {/* Upload Area */}
       <div
         className={`
           relative border-2 border-dashed rounded-lg p-6 transition-all duration-200
-          ${isDragOver
-            ? 'border-blue-500 bg-blue-50 scale-[1.02]'
-            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+          ${
+            isDragOver
+              ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+              : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
           }
         `}
+        onClick={handleClick}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        onClick={handleClick}
       >
         <div className="flex flex-col items-center justify-center space-y-3 cursor-pointer">
           {/* Upload Icon */}
-          <div className={`
+          <div
+            className={`
             p-3 rounded-full transition-colors duration-200
             ${isDragOver ? 'bg-blue-100' : 'bg-gray-100'}
-          `}>
+          `}
+          >
             {isDragOver ? (
               <Plus className="h-6 w-6 text-blue-600" />
             ) : (
@@ -143,17 +157,15 @@ export function ImageUploader({
             <p className="text-sm font-medium text-gray-900">
               {isDragOver ? 'Drop files here' : 'Upload images or PDFs'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Drag & drop or click to select files
-            </p>
+            <p className="text-xs text-gray-500 mt-1">Drag & drop or click to select files</p>
           </div>
 
           {/* Upload Button */}
           <Button
+            className="mt-2"
+            size="sm"
             type="button"
             variant="outline"
-            size="sm"
-            className="mt-2"
             onClick={(e) => {
               e.stopPropagation()
               handleClick()
@@ -165,7 +177,9 @@ export function ImageUploader({
 
           {/* File Restrictions */}
           <div className="text-xs text-gray-400 text-center space-y-1">
-            <p>Max {config.maxFiles} files, {formatFileSize(config.maxFileSize)} each</p>
+            <p>
+              Max {config.maxFiles} files, {formatFileSize(config.maxFileSize)} each
+            </p>
             <p>Supported: {getAcceptedTypesDisplay()}</p>
             <p className="font-medium text-green-600">📁 Optional - proceed without files</p>
           </div>

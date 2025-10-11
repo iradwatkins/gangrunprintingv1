@@ -38,16 +38,12 @@ export async function processPendingNotifications() {
           const validType = NotificationTypes[notificationType] || NotificationTypes.ORDER_CONFIRMED
 
           // Send the notification
-          await sendNotificationToUser(
-            notification.Order.userId,
-            validType,
-            {
-              orderId: notification.orderId,
-              orderNumber: notification.Order.referenceNumber,
-              email: notification.Order.email,
-              status: notification.Order.status,
-            }
-          )
+          await sendNotificationToUser(notification.Order.userId, validType, {
+            orderId: notification.orderId,
+            orderNumber: notification.Order.referenceNumber,
+            email: notification.Order.email,
+            status: notification.Order.status,
+          })
 
           // Mark as sent
           await prisma.notification.update({
@@ -76,9 +72,15 @@ export async function processPendingNotifications() {
     )
 
     // Count results
-    const sent = results.filter(r => r.status === 'fulfilled' && r.value?.status === 'sent').length
-    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && r.value?.status === 'failed')).length
-    const skipped = results.filter(r => r.status === 'fulfilled' && r.value?.status === 'skipped').length
+    const sent = results.filter(
+      (r) => r.status === 'fulfilled' && r.value?.status === 'sent'
+    ).length
+    const failed = results.filter(
+      (r) => r.status === 'rejected' || (r.status === 'fulfilled' && r.value?.status === 'failed')
+    ).length
+    const skipped = results.filter(
+      (r) => r.status === 'fulfilled' && r.value?.status === 'skipped'
+    ).length
 
     return {
       processed: pendingNotifications.length,

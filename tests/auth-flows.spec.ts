@@ -10,7 +10,6 @@ test.describe('Authentication Flows', () => {
   })
 
   test('API Products endpoint should not return 500 errors', async ({ page }) => {
-
     // Test the products API directly
     const response = await page.request.get(`${baseURL}/api/products`)
 
@@ -25,7 +24,6 @@ test.describe('Authentication Flows', () => {
 
       expect(Array.isArray(products)).toBe(true)
     } else {
-
       const errorResponse = await response.json()
       expect(errorResponse).toHaveProperty('error')
       expect(errorResponse).toHaveProperty('requestId')
@@ -34,12 +32,11 @@ test.describe('Authentication Flows', () => {
   })
 
   test('Authentication API (/api/auth/me) should respond without timeout', async ({ page }) => {
-
     const startTime = Date.now()
     const response = await page.request.get(`${baseURL}/api/auth/me`, {
       headers: {
-        'X-Request-Source': 'playwright-test'
-      }
+        'X-Request-Source': 'playwright-test',
+      },
     })
     const endTime = Date.now()
     const responseTime = endTime - startTime
@@ -59,10 +56,9 @@ test.describe('Authentication Flows', () => {
   })
 
   test('Admin page should not timeout on authentication check', async ({ page }) => {
-
     // Set up console logging to catch timeout messages
     const consoleLogs: string[] = []
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       consoleLogs.push(msg.text())
     })
 
@@ -83,39 +79,39 @@ test.describe('Authentication Flows', () => {
     expect(isSignInPage || isAdminPage).toBe(true)
 
     // Check for timeout messages in console
-    const timeoutLogs = consoleLogs.filter(log =>
-      log.includes('timed out') || log.includes('timeout')
+    const timeoutLogs = consoleLogs.filter(
+      (log) => log.includes('timed out') || log.includes('timeout')
     )
 
     if (timeoutLogs.length > 0) {
-
     }
 
     // Should not have the old 20-second timeout message
-    const oldTimeoutLogs = consoleLogs.filter(log =>
-      log.includes('timed out after 20 seconds')
-    )
+    const oldTimeoutLogs = consoleLogs.filter((log) => log.includes('timed out after 20 seconds'))
     expect(oldTimeoutLogs.length).toBe(0)
   })
 
   test('Magic link authentication flow works end-to-end', async ({ page }) => {
-
     // Navigate to sign in page
     await page.goto(`${baseURL}/auth/signin`)
 
     // Check that sign in page loads without errors
-    await expect(page.locator('h1, h2').filter({ hasText: /sign in|login/i })).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1, h2').filter({ hasText: /sign in|login/i })).toBeVisible({
+      timeout: 10000,
+    })
 
     // Look for email input field
     const emailInput = page.locator('input[type="email"], input[name="email"]').first()
 
     if (await emailInput.isVisible()) {
-
       // Test with a test email
       await emailInput.fill('test@example.com')
 
       // Find and click submit button
-      const submitButton = page.locator('button[type="submit"], button').filter({ hasText: /send|sign in|login/i }).first()
+      const submitButton = page
+        .locator('button[type="submit"], button')
+        .filter({ hasText: /send|sign in|login/i })
+        .first()
 
       if (await submitButton.isVisible()) {
         await submitButton.click()
@@ -124,26 +120,28 @@ test.describe('Authentication Flows', () => {
         await page.waitForTimeout(2000)
 
         // Check for success message or redirect
-        const hasSuccessMessage = await page.locator('text=/sent|check your email|magic link/i').isVisible()
+        const hasSuccessMessage = await page
+          .locator('text=/sent|check your email|magic link/i')
+          .isVisible()
         const hasErrorMessage = await page.locator('text=/error|failed|invalid/i').isVisible()
 
         // Should either show success or at least not crash
         expect(hasErrorMessage).toBe(false)
       }
     } else {
-
       // Look for Google OAuth button
-      const googleButton = page.locator('button, a').filter({ hasText: /google|oauth/i }).first()
+      const googleButton = page
+        .locator('button, a')
+        .filter({ hasText: /google|oauth/i })
+        .first()
 
       if (await googleButton.isVisible()) {
-
         expect(await googleButton.isVisible()).toBe(true)
       }
     }
   })
 
   test('API endpoints return proper error responses with tracking', async ({ page }) => {
-
     // Test products API
     const productsResponse = await page.request.get(`${baseURL}/api/products`)
     const productsHeaders = productsResponse.headers()
@@ -154,7 +152,6 @@ test.describe('Authentication Flows', () => {
       const errorBody = await productsResponse.json()
       expect(errorBody).toHaveProperty('requestId')
       expect(errorBody).toHaveProperty('timestamp')
-
     }
 
     // Test auth API
@@ -164,7 +161,6 @@ test.describe('Authentication Flows', () => {
     console.log('Auth API headers:', Object.keys(authHeaders))
 
     if (authHeaders['x-request-id']) {
-
     }
 
     if (authHeaders['x-response-time']) {
@@ -175,7 +171,6 @@ test.describe('Authentication Flows', () => {
   })
 
   test('Database health can be checked', async ({ page }) => {
-
     // Try to access any API that uses the database
     const response = await page.request.get(`${baseURL}/api/products`)
 
@@ -185,17 +180,14 @@ test.describe('Authentication Flows', () => {
     // 503 (service unavailable) or 504 (gateway timeout) might indicate DB issues
     if (response.status() === 503) {
       const errorBody = await response.json()
-
     }
 
     if (response.status() === 504) {
       const errorBody = await response.json()
-
     }
   })
 
   test('Page load performance within acceptable limits', async ({ page }) => {
-
     const pages = [
       { path: '/', name: 'Homepage' },
       { path: '/auth/signin', name: 'Sign In' },
@@ -203,11 +195,10 @@ test.describe('Authentication Flows', () => {
     ]
 
     for (const testPage of pages) {
-
       const startTime = Date.now()
       await page.goto(`${baseURL}${testPage.path}`, {
         waitUntil: 'domcontentloaded',
-        timeout: 30000
+        timeout: 30000,
       })
       const endTime = Date.now()
       const loadTime = endTime - startTime
@@ -224,7 +215,6 @@ test.describe('Authentication Flows', () => {
 
 test.describe('Stress Testing', () => {
   test('Multiple concurrent API requests should not cause 500 errors', async ({ browser }) => {
-
     const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3002'
     const concurrentRequests = 5
     const context = await browser.newContext()
@@ -233,23 +223,21 @@ test.describe('Stress Testing', () => {
       const page = await context.newPage()
 
       try {
-
         const response = await page.request.get(`${baseURL}/api/products`)
 
         await page.close()
         return {
           index: i + 1,
           status: response.status(),
-          success: response.status() !== 500
+          success: response.status() !== 500,
         }
       } catch (error) {
-
         await page.close()
         return {
           index: i + 1,
           status: 0,
           success: false,
-          error: error
+          error: error,
         }
       }
     })
@@ -258,7 +246,7 @@ test.describe('Stress Testing', () => {
     await context.close()
 
     // At least 80% of requests should succeed (not return 500)
-    const successfulRequests = results.filter(r => r.success).length
+    const successfulRequests = results.filter((r) => r.success).length
     const successRate = successfulRequests / concurrentRequests
 
     expect(successRate).toBeGreaterThanOrEqual(0.8)

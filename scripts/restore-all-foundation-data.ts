@@ -3,10 +3,9 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function restoreAllFoundationData() {
+  console.log('='.repeat(60))
 
-  console.log('=' .repeat(60))
-
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     // 1. Restore Paper Stocks
@@ -158,11 +157,27 @@ async function restoreAllFoundationData() {
       // Add paper stocks to sets
       let stocksToAdd = []
       if (set.name.includes('Standard Cardstock')) {
-        stocksToAdd = ['14pt Cardstock', '16pt Cardstock', '24pt Trifecta Green Triple-Layered', '32pt Uncoated Black EDGE']
+        stocksToAdd = [
+          '14pt Cardstock',
+          '16pt Cardstock',
+          '24pt Trifecta Green Triple-Layered',
+          '32pt Uncoated Black EDGE',
+        ]
       } else if (set.name.includes('Marketing Materials')) {
-        stocksToAdd = ['100lb Gloss Text', '100lb Matte Text', '80lb Gloss Text', '80lb Matte Text', '70lb Uncoated Text']
+        stocksToAdd = [
+          '100lb Gloss Text',
+          '100lb Matte Text',
+          '80lb Gloss Text',
+          '80lb Matte Text',
+          '70lb Uncoated Text',
+        ]
       } else if (set.name.includes('Premium Specialty')) {
-        stocksToAdd = ['Synthetic Waterproof', 'Pearl Metallic', 'Soft Touch Laminated', '32pt Uncoated Black EDGE']
+        stocksToAdd = [
+          'Synthetic Waterproof',
+          'Pearl Metallic',
+          'Soft Touch Laminated',
+          '32pt Uncoated Black EDGE',
+        ]
       } else if (set.name.includes('Eco-Friendly')) {
         stocksToAdd = ['Kraft Paper', '24pt Trifecta Green Triple-Layered', '70lb Uncoated Text']
       } else if (set.name.includes('Large Format')) {
@@ -171,7 +186,7 @@ async function restoreAllFoundationData() {
 
       for (let i = 0; i < stocksToAdd.length; i++) {
         const stock = await prisma.paperStock.findFirst({
-          where: { name: stocksToAdd[i] }
+          where: { name: stocksToAdd[i] },
         })
         if (stock) {
           await prisma.paperStockSetItem.upsert({
@@ -217,12 +232,12 @@ async function restoreAllFoundationData() {
                 'Bottom Left',
                 'Bottom Right',
                 'Top Left and Bottom Right',
-                'Top Right and Bottom Left'
+                'Top Right and Bottom Left',
               ],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Add rounded corners for a professional, modern look',
         isActive: true,
@@ -248,12 +263,12 @@ async function restoreAllFoundationData() {
                 'Bottom Left',
                 'Bottom Right',
                 'Top Left and Bottom Right',
-                'Top Right and Bottom Left'
+                'Top Right and Bottom Left',
               ],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Add rounded corners for a professional, modern look',
         isActive: true,
@@ -279,12 +294,12 @@ async function restoreAllFoundationData() {
                 'Unique QR Codes',
                 'Custom Addresses',
                 'Personalized Images',
-                'Variable Barcodes'
+                'Variable Barcodes',
               ],
               required: true,
-              displayType: 'checkboxes'
-            }
-          }
+              displayType: 'checkboxes',
+            },
+          },
         },
         tooltipText: 'Print unique information on each piece',
         isActive: true,
@@ -307,12 +322,12 @@ async function restoreAllFoundationData() {
                 'Unique QR Codes',
                 'Custom Addresses',
                 'Personalized Images',
-                'Variable Barcodes'
+                'Variable Barcodes',
               ],
               required: true,
-              displayType: 'checkboxes'
-            }
-          }
+              displayType: 'checkboxes',
+            },
+          },
         },
         tooltipText: 'Print unique information on each piece',
         isActive: true,
@@ -332,23 +347,18 @@ async function restoreAllFoundationData() {
             perforationType: {
               label: 'Perforation Type',
               type: 'select',
-              options: [
-                'Horizontal',
-                'Vertical',
-                'Both (Cross)',
-                'Custom Pattern'
-              ],
+              options: ['Horizontal', 'Vertical', 'Both (Cross)', 'Custom Pattern'],
               required: true,
-              displayType: 'dropdown'
+              displayType: 'dropdown',
             },
             perforationPosition: {
               label: 'Position from Edge',
               type: 'text',
               placeholder: 'e.g., 3.5 inches from top',
               required: true,
-              displayType: 'input'
-            }
-          }
+              displayType: 'input',
+            },
+          },
         },
         tooltipText: 'Add tear-away perforations for coupons or tickets',
         isActive: true,
@@ -364,23 +374,18 @@ async function restoreAllFoundationData() {
             perforationType: {
               label: 'Perforation Type',
               type: 'select',
-              options: [
-                'Horizontal',
-                'Vertical',
-                'Both (Cross)',
-                'Custom Pattern'
-              ],
+              options: ['Horizontal', 'Vertical', 'Both (Cross)', 'Custom Pattern'],
               required: true,
-              displayType: 'dropdown'
+              displayType: 'dropdown',
             },
             perforationPosition: {
               label: 'Position from Edge',
               type: 'text',
               placeholder: 'e.g., 3.5 inches from top',
               required: true,
-              displayType: 'input'
-            }
-          }
+              displayType: 'input',
+            },
+          },
         },
         tooltipText: 'Add tear-away perforations for coupons or tickets',
         isActive: true,
@@ -395,7 +400,7 @@ async function restoreAllFoundationData() {
         configuration: {
           type: 'banding',
           basePrice: 15,
-          pricePerBundle: 0.50,
+          pricePerBundle: 0.5,
           displayPrice: '$15.00 + $0.50/bundle',
           conditionalFields: {
             bundleSize: {
@@ -403,16 +408,16 @@ async function restoreAllFoundationData() {
               type: 'select',
               options: ['25', '50', '100', '250', '500'],
               required: true,
-              displayType: 'dropdown'
+              displayType: 'dropdown',
             },
             bandType: {
               label: 'Band Type',
               type: 'select',
               options: ['Paper Band', 'Elastic Band', 'Shrink Wrap'],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Bundle cards together for easy distribution',
         isActive: true,
@@ -423,7 +428,7 @@ async function restoreAllFoundationData() {
         configuration: {
           type: 'banding',
           basePrice: 15,
-          pricePerBundle: 0.50,
+          pricePerBundle: 0.5,
           displayPrice: '$15.00 + $0.50/bundle',
           conditionalFields: {
             bundleSize: {
@@ -431,16 +436,16 @@ async function restoreAllFoundationData() {
               type: 'select',
               options: ['25', '50', '100', '250', '500'],
               required: true,
-              displayType: 'dropdown'
+              displayType: 'dropdown',
             },
             bandType: {
               label: 'Band Type',
               type: 'select',
               options: ['Paper Band', 'Elastic Band', 'Shrink Wrap'],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Bundle cards together for easy distribution',
         isActive: true,
@@ -631,19 +636,19 @@ async function restoreAllFoundationData() {
           where: {
             addOnSetId_addOnId: {
               addOnSetId: set.id,
-              addOnId: cornerRounding.id
-            }
+              addOnId: cornerRounding.id,
+            },
           },
           update: {
             displayPosition: 'ABOVE_DROPDOWN',
-            sortOrder: 1
+            sortOrder: 1,
           },
           create: {
             addOnSetId: set.id,
             addOnId: cornerRounding.id,
             displayPosition: 'ABOVE_DROPDOWN',
-            sortOrder: 1
-          }
+            sortOrder: 1,
+          },
         })
 
         // Variable Data - BELOW_DROPDOWN
@@ -651,19 +656,19 @@ async function restoreAllFoundationData() {
           where: {
             addOnSetId_addOnId: {
               addOnSetId: set.id,
-              addOnId: variableData.id
-            }
+              addOnId: variableData.id,
+            },
           },
           update: {
             displayPosition: 'BELOW_DROPDOWN',
-            sortOrder: 10
+            sortOrder: 10,
           },
           create: {
             addOnSetId: set.id,
             addOnId: variableData.id,
             displayPosition: 'BELOW_DROPDOWN',
-            sortOrder: 10
-          }
+            sortOrder: 10,
+          },
         })
 
         // Add other relevant addons to dropdown
@@ -675,19 +680,19 @@ async function restoreAllFoundationData() {
               where: {
                 addOnSetId_addOnId: {
                   addOnSetId: set.id,
-                  addOnId: addon.id
-                }
+                  addOnId: addon.id,
+                },
               },
               update: {
                 displayPosition: 'IN_DROPDOWN',
-                sortOrder: i + 2
+                sortOrder: i + 2,
               },
               create: {
                 addOnSetId: set.id,
                 addOnId: addon.id,
                 displayPosition: 'IN_DROPDOWN',
-                sortOrder: i + 2
-              }
+                sortOrder: i + 2,
+              },
             })
           }
         }
@@ -700,19 +705,19 @@ async function restoreAllFoundationData() {
           where: {
             addOnSetId_addOnId: {
               addOnSetId: set.id,
-              addOnId: variableData.id
-            }
+              addOnId: variableData.id,
+            },
           },
           update: {
             displayPosition: 'BELOW_DROPDOWN',
-            sortOrder: 10
+            sortOrder: 10,
           },
           create: {
             addOnSetId: set.id,
             addOnId: variableData.id,
             displayPosition: 'BELOW_DROPDOWN',
-            sortOrder: 10
-          }
+            sortOrder: 10,
+          },
         })
 
         // Add Perforation with ABOVE_DROPDOWN
@@ -720,19 +725,19 @@ async function restoreAllFoundationData() {
           where: {
             addOnSetId_addOnId: {
               addOnSetId: set.id,
-              addOnId: perforation.id
-            }
+              addOnId: perforation.id,
+            },
           },
           update: {
             displayPosition: 'ABOVE_DROPDOWN',
-            sortOrder: 1
+            sortOrder: 1,
           },
           create: {
             addOnSetId: set.id,
             addOnId: perforation.id,
             displayPosition: 'ABOVE_DROPDOWN',
-            sortOrder: 1
-          }
+            sortOrder: 1,
+          },
         })
       }
     }
@@ -922,15 +927,13 @@ async function restoreAllFoundationData() {
       if (set.name.includes('Business Card')) {
         timesToAdd = allTurnaroundTimes
       } else if (set.name.includes('Rush')) {
-        timesToAdd = allTurnaroundTimes.filter(t =>
-          t.name === 'Fast' || t.name === 'Faster' || t.name === 'Fastest'
+        timesToAdd = allTurnaroundTimes.filter(
+          (t) => t.name === 'Fast' || t.name === 'Faster' || t.name === 'Fastest'
         )
       } else if (set.name.includes('Large Format')) {
-        timesToAdd = allTurnaroundTimes.filter(t => t.name !== 'Fastest')
+        timesToAdd = allTurnaroundTimes.filter((t) => t.name !== 'Fastest')
       } else if (set.name.includes('EDDM')) {
-        timesToAdd = allTurnaroundTimes.filter(t =>
-          t.name === 'Economy' || t.name === 'Fast'
-        )
+        timesToAdd = allTurnaroundTimes.filter((t) => t.name === 'Economy' || t.name === 'Fast')
       } else {
         timesToAdd = allTurnaroundTimes
       }
@@ -962,188 +965,187 @@ async function restoreAllFoundationData() {
     const products = await prisma.product.findMany()
 
     for (const product of products) {
-
       // Link Paper Stock Sets
       if (product.name.includes('Business Card')) {
         const standardSet = await prisma.paperStockSet.findFirst({
-          where: { name: 'Standard Cardstock Set' }
+          where: { name: 'Standard Cardstock Set' },
         })
         if (standardSet) {
           await prisma.productPaperStockSet.upsert({
             where: {
               productId_paperStockSetId: {
                 productId: product.id,
-                paperStockSetId: standardSet.id
-              }
+                paperStockSetId: standardSet.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              paperStockSetId: standardSet.id
-            }
+              paperStockSetId: standardSet.id,
+            },
           })
         }
 
         // Link to Premium Business Card Add-ons
         const premiumAddons = await prisma.addOnSet.findFirst({
-          where: { name: 'Premium Business Card Add-ons' }
+          where: { name: 'Premium Business Card Add-ons' },
         })
         if (premiumAddons) {
           await prisma.productAddOnSet.upsert({
             where: {
               productId_addOnSetId: {
                 productId: product.id,
-                addOnSetId: premiumAddons.id
-              }
+                addOnSetId: premiumAddons.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              addOnSetId: premiumAddons.id
-            }
+              addOnSetId: premiumAddons.id,
+            },
           })
         }
 
         // Link to Business Card Turnaround
         const bcTurnaround = await prisma.turnaroundTimeSet.findFirst({
-          where: { name: 'Business Card Turnaround' }
+          where: { name: 'Business Card Turnaround' },
         })
         if (bcTurnaround) {
           await prisma.productTurnaroundTimeSet.upsert({
             where: {
               productId_turnaroundTimeSetId: {
                 productId: product.id,
-                turnaroundTimeSetId: bcTurnaround.id
-              }
+                turnaroundTimeSetId: bcTurnaround.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              turnaroundTimeSetId: bcTurnaround.id
-            }
+              turnaroundTimeSetId: bcTurnaround.id,
+            },
           })
         }
       } else if (product.name.includes('Flyer')) {
         const marketingSet = await prisma.paperStockSet.findFirst({
-          where: { name: 'Marketing Materials Set' }
+          where: { name: 'Marketing Materials Set' },
         })
         if (marketingSet) {
           await prisma.productPaperStockSet.upsert({
             where: {
               productId_paperStockSetId: {
                 productId: product.id,
-                paperStockSetId: marketingSet.id
-              }
+                paperStockSetId: marketingSet.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              paperStockSetId: marketingSet.id
-            }
+              paperStockSetId: marketingSet.id,
+            },
           })
         }
 
         const marketingAddons = await prisma.addOnSet.findFirst({
-          where: { name: 'Marketing Materials Add-ons' }
+          where: { name: 'Marketing Materials Add-ons' },
         })
         if (marketingAddons) {
           await prisma.productAddOnSet.upsert({
             where: {
               productId_addOnSetId: {
                 productId: product.id,
-                addOnSetId: marketingAddons.id
-              }
+                addOnSetId: marketingAddons.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              addOnSetId: marketingAddons.id
-            }
+              addOnSetId: marketingAddons.id,
+            },
           })
         }
 
         const marketingTurnaround = await prisma.turnaroundTimeSet.findFirst({
-          where: { name: 'Marketing Materials Turnaround' }
+          where: { name: 'Marketing Materials Turnaround' },
         })
         if (marketingTurnaround) {
           await prisma.productTurnaroundTimeSet.upsert({
             where: {
               productId_turnaroundTimeSetId: {
                 productId: product.id,
-                turnaroundTimeSetId: marketingTurnaround.id
-              }
+                turnaroundTimeSetId: marketingTurnaround.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              turnaroundTimeSetId: marketingTurnaround.id
-            }
+              turnaroundTimeSetId: marketingTurnaround.id,
+            },
           })
         }
       } else if (product.name.includes('Poster')) {
         const largeFormatSet = await prisma.paperStockSet.findFirst({
-          where: { name: 'Large Format Set' }
+          where: { name: 'Large Format Set' },
         })
         if (largeFormatSet) {
           await prisma.productPaperStockSet.upsert({
             where: {
               productId_paperStockSetId: {
                 productId: product.id,
-                paperStockSetId: largeFormatSet.id
-              }
+                paperStockSetId: largeFormatSet.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              paperStockSetId: largeFormatSet.id
-            }
+              paperStockSetId: largeFormatSet.id,
+            },
           })
         }
 
         const largeAddons = await prisma.addOnSet.findFirst({
-          where: { name: 'Large Format Add-ons' }
+          where: { name: 'Large Format Add-ons' },
         })
         if (largeAddons) {
           await prisma.productAddOnSet.upsert({
             where: {
               productId_addOnSetId: {
                 productId: product.id,
-                addOnSetId: largeAddons.id
-              }
+                addOnSetId: largeAddons.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              addOnSetId: largeAddons.id
-            }
+              addOnSetId: largeAddons.id,
+            },
           })
         }
 
         const largeTurnaround = await prisma.turnaroundTimeSet.findFirst({
-          where: { name: 'Large Format Turnaround' }
+          where: { name: 'Large Format Turnaround' },
         })
         if (largeTurnaround) {
           await prisma.productTurnaroundTimeSet.upsert({
             where: {
               productId_turnaroundTimeSetId: {
                 productId: product.id,
-                turnaroundTimeSetId: largeTurnaround.id
-              }
+                turnaroundTimeSetId: largeTurnaround.id,
+              },
             },
             update: {},
             create: {
               productId: product.id,
-              turnaroundTimeSetId: largeTurnaround.id
-            }
+              turnaroundTimeSetId: largeTurnaround.id,
+            },
           })
         }
       }
     }
 
     // Final verification
-    console.log('\n' + '=' .repeat(60))
+    console.log('\n' + '='.repeat(60))
 
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     const finalCounts = {
       products: await prisma.product.count(),
@@ -1159,13 +1161,11 @@ async function restoreAllFoundationData() {
     }
 
     for (const [key, count] of Object.entries(finalCounts)) {
-
     }
 
-    console.log('\n' + '=' .repeat(60))
+    console.log('\n' + '='.repeat(60))
 
-    console.log('=' .repeat(60))
-
+    console.log('='.repeat(60))
   } catch (error) {
     console.error('❌ Error during restoration:', error)
     throw error
@@ -1177,7 +1177,6 @@ async function restoreAllFoundationData() {
 // Run the restoration
 restoreAllFoundationData()
   .then(() => {
-
     process.exit(0)
   })
   .catch((error) => {

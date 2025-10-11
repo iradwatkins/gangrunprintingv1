@@ -4,7 +4,13 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText } from 'lucide-react'
 
@@ -48,12 +54,7 @@ export function ProductBasicInfo({ formData, categories, onUpdate }: ProductBasi
           </div>
           <div>
             <Label htmlFor="sku">SKU (Auto-generated)</Label>
-            <Input
-              id="sku"
-              value={formData.sku}
-              readOnly
-              className="bg-gray-50"
-            />
+            <Input readOnly className="bg-gray-50" id="sku" value={formData.sku} />
           </div>
         </div>
 
@@ -80,8 +81,8 @@ export function ProductBasicInfo({ formData, categories, onUpdate }: ProductBasi
           <Label htmlFor="description">Product Description</Label>
           <Textarea
             id="description"
-            rows={4}
             placeholder="Describe your product..."
+            rows={4}
             value={formData.description}
             onChange={(e) => onUpdate({ description: e.target.value })}
           />
@@ -91,16 +92,16 @@ export function ProductBasicInfo({ formData, categories, onUpdate }: ProductBasi
           <div className="flex items-center justify-between">
             <Label htmlFor="isActive">Active Status</Label>
             <Switch
-              id="isActive"
               checked={formData.isActive}
+              id="isActive"
               onCheckedChange={(checked) => onUpdate({ isActive: checked })}
             />
           </div>
           <div className="flex items-center justify-between">
             <Label htmlFor="isFeatured">Featured Product</Label>
             <Switch
-              id="isFeatured"
               checked={formData.isFeatured}
+              id="isFeatured"
               onCheckedChange={(checked) => onUpdate({ isFeatured: checked })}
             />
           </div>

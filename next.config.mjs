@@ -95,6 +95,20 @@ const nextConfig = {
   // Headers for security and performance
   async headers() {
     return [
+      // Apple Pay domain association file
+      {
+        source: '/.well-known/apple-developer-merchantid-domain-association',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/octet-stream',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+        ],
+      },
       // CSS files with correct MIME type - MUST BE FIRST
       {
         source: '/_next/static/css/:path*',
@@ -141,22 +155,17 @@ const nextConfig = {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
+          // X-Frame-Options removed to allow Square payment iframes
+          // Nginx handles this with SAMEORIGIN
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
-          {
-            key: 'Content-Security-Policy',
-            // Note: 'unsafe-inline' is required for Google Analytics gtag initialization
-            // 'unsafe-eval' is required for Next.js development mode and some third-party scripts
-            // Consider implementing nonce-based CSP in the future for better security
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;",
-          },
+          // CSP is now handled in middleware.ts for better control
+          // {
+          //   key: 'Content-Security-Policy',
+          //   value: "...",
+          // },
         ],
       },
       {

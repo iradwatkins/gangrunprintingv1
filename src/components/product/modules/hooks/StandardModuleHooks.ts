@@ -6,47 +6,37 @@
 
 import { useMemo, useCallback, useEffect } from 'react'
 import {
-  ModulePricingContribution,
+  type ModulePricingContribution,
   StandardModuleValue,
-  ModuleError,
+  type ModuleError,
   ModuleType,
 
   // Specific module types
-  QuantityItem,
+  type QuantityItem,
   QuantityValue,
-  QuantityModuleValue,
-
-  SizeItem,
+  type QuantityModuleValue,
+  type SizeItem,
   SizeValue,
-  SizeModuleValue,
-
-  PaperStockItem,
+  type SizeModuleValue,
+  type PaperStockItem,
   PaperStockValue,
-  PaperStockModuleValue,
-
-  AddonItem,
+  type PaperStockModuleValue,
+  type AddonItem,
   AddonValue,
-  AddonsModuleValue,
-
-  TurnaroundItem,
+  type AddonsModuleValue,
+  type TurnaroundItem,
   TurnaroundValue,
-  TurnaroundModuleValue,
-
+  type TurnaroundModuleValue,
   ImageItem,
   ImageValue,
   ImageModuleValue,
-
-  VariableDataConfig,
-  PerforationConfig,
-  BandingConfig,
-  CornerRoundingConfig
+  type VariableDataConfig,
+  type PerforationConfig,
+  type BandingConfig,
+  type CornerRoundingConfig,
 } from '../types/StandardModuleTypes'
 
-import {
-  useModuleErrors,
-  ModuleErrorFactory,
-  ModuleErrorType
-} from '../errors/ModuleErrorSystem'
+import { useModuleErrors, ModuleErrorFactory, ModuleErrorType } from '../errors/ModuleErrorSystem'
 
 // =============================================================================
 // QUANTITY MODULE HOOK
@@ -61,21 +51,20 @@ export interface UseQuantityModuleProps {
 export function useQuantityModule({
   quantities,
   value,
-  customValue
+  customValue,
 }: UseQuantityModuleProps): QuantityModuleValue {
-
   // Ultra-independent error handling for this module instance
   const moduleErrors = useModuleErrors({
     moduleType: ModuleType.QUANTITY,
     onError: (error) => {
       // Could log errors, send to monitoring, etc.
       console.log(`Quantity Module Error:`, error)
-    }
+    },
   })
 
   // Find selected quantity
-  const selectedQuantity = useMemo(() =>
-    quantities.find(q => q.id === value),
+  const selectedQuantity = useMemo(
+    () => quantities.find((q) => q.id === value),
     [quantities, value]
   )
 
@@ -99,32 +88,32 @@ export function useQuantityModule({
 
     // Required field validation
     if (!selectedQuantity) {
-      moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(
-        ModuleType.QUANTITY,
-        'quantity'
-      ))
+      moduleErrors.addError(
+        ModuleErrorFactory.createRequiredFieldError(ModuleType.QUANTITY, 'quantity')
+      )
       valid = false
     } else {
       // Custom quantity validation
       if (selectedQuantity.isCustom) {
         if (customValue === undefined || customValue === null || customValue <= 0) {
-          moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(
-            ModuleType.QUANTITY,
-            'customQuantity'
-          ))
+          moduleErrors.addError(
+            ModuleErrorFactory.createRequiredFieldError(ModuleType.QUANTITY, 'customQuantity')
+          )
           valid = false
         } else {
           const min = selectedQuantity.customMin || 1
           const max = selectedQuantity.customMax || 999999
 
           if (customValue < min || customValue > max) {
-            moduleErrors.addError(ModuleErrorFactory.createRangeError(
-              ModuleType.QUANTITY,
-              'customQuantity',
-              customValue,
-              min,
-              max
-            ))
+            moduleErrors.addError(
+              ModuleErrorFactory.createRangeError(
+                ModuleType.QUANTITY,
+                'customQuantity',
+                customValue,
+                min,
+                max
+              )
+            )
             valid = false
           }
         }
@@ -140,7 +129,7 @@ export function useQuantityModule({
       return {
         basePrice: 0,
         multiplier: 1,
-        isValid: false
+        isValid: false,
       }
     }
 
@@ -155,23 +144,28 @@ export function useQuantityModule({
           {
             item: `${actualQuantity} units`,
             cost: priceMultiplier,
-            type: 'multiplier'
-          }
-        ]
-      }
+            type: 'multiplier',
+          },
+        ],
+      },
     }
   }, [isValid, selectedQuantity, actualQuantity])
 
   // Display information
-  const display = useMemo(() => ({
-    description: selectedQuantity?.label || 'No quantity selected',
-    summary: `${actualQuantity} units`,
-    showInSummary: true
-  }), [selectedQuantity, actualQuantity])
+  const display = useMemo(
+    () => ({
+      description: selectedQuantity?.label || 'No quantity selected',
+      summary: `${actualQuantity} units`,
+      showInSummary: true,
+    }),
+    [selectedQuantity, actualQuantity]
+  )
 
   // Primary error for backward compatibility (use first blocking error)
   const primaryError: ModuleError | null = useMemo(() => {
-    const blockingErrors = moduleErrors.errors.filter(e => e.severity === 'error' || e.severity === 'critical')
+    const blockingErrors = moduleErrors.errors.filter(
+      (e) => e.severity === 'error' || e.severity === 'critical'
+    )
     const firstError = blockingErrors[0]
 
     if (!firstError) return null
@@ -179,7 +173,7 @@ export function useQuantityModule({
     return {
       message: firstError.message,
       type: firstError.type || 'validation',
-      context: firstError.context
+      context: firstError.context,
     }
   }, [moduleErrors.errors])
 
@@ -193,7 +187,7 @@ export function useQuantityModule({
     value: {
       quantityId: value,
       customValue,
-      actualValue: actualQuantity
+      actualValue: actualQuantity,
     },
     pricing,
     display,
@@ -206,7 +200,7 @@ export function useQuantityModule({
     hasErrors: moduleErrors.hasErrors,
     hasBlockingErrors: moduleErrors.hasBlockingErrors,
     clearErrors: moduleErrors.clearErrors,
-    getErrorsByField: moduleErrors.getErrorsByField
+    getErrorsByField: moduleErrors.getErrorsByField,
   }
 }
 
@@ -225,22 +219,18 @@ export function useSizeModule({
   sizes,
   value,
   customWidth,
-  customHeight
+  customHeight,
 }: UseSizeModuleProps): SizeModuleValue {
-
   // Ultra-independent error handling for this module instance
   const moduleErrors = useModuleErrors({
     moduleType: ModuleType.SIZE,
     onError: (error) => {
       console.log(`Size Module Error:`, error)
-    }
+    },
   })
 
   // Find selected size
-  const selectedSize = useMemo(() =>
-    sizes.find(s => s.id === value),
-    [sizes, value]
-  )
+  const selectedSize = useMemo(() => sizes.find((s) => s.id === value), [sizes, value])
 
   // Calculate dimensions
   const dimensions = useMemo(() => {
@@ -252,14 +242,14 @@ export function useSizeModule({
       return {
         width: customWidth,
         height: customHeight,
-        squareInches: customWidth * customHeight
+        squareInches: customWidth * customHeight,
       }
     }
 
     return {
       width: selectedSize.width || 0,
       height: selectedSize.height || 0,
-      squareInches: selectedSize.squareInches || 0
+      squareInches: selectedSize.squareInches || 0,
     }
   }, [selectedSize, customWidth, customHeight])
 
@@ -272,27 +262,22 @@ export function useSizeModule({
 
     // Required field validation
     if (!selectedSize) {
-      moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(
-        ModuleType.SIZE,
-        'size'
-      ))
+      moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(ModuleType.SIZE, 'size'))
       valid = false
     } else {
       // Custom size validation
       if (selectedSize.isCustom) {
         if (!customWidth || customWidth <= 0) {
-          moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(
-            ModuleType.SIZE,
-            'customWidth'
-          ))
+          moduleErrors.addError(
+            ModuleErrorFactory.createRequiredFieldError(ModuleType.SIZE, 'customWidth')
+          )
           valid = false
         }
 
         if (!customHeight || customHeight <= 0) {
-          moduleErrors.addError(ModuleErrorFactory.createRequiredFieldError(
-            ModuleType.SIZE,
-            'customHeight'
-          ))
+          moduleErrors.addError(
+            ModuleErrorFactory.createRequiredFieldError(ModuleType.SIZE, 'customHeight')
+          )
           valid = false
         }
 
@@ -301,13 +286,15 @@ export function useSizeModule({
           const maxWidth = selectedSize.customMaxWidth || 96
 
           if (customWidth < minWidth || customWidth > maxWidth) {
-            moduleErrors.addError(ModuleErrorFactory.createRangeError(
-              ModuleType.SIZE,
-              'customWidth',
-              customWidth,
-              minWidth,
-              maxWidth
-            ))
+            moduleErrors.addError(
+              ModuleErrorFactory.createRangeError(
+                ModuleType.SIZE,
+                'customWidth',
+                customWidth,
+                minWidth,
+                maxWidth
+              )
+            )
             valid = false
           }
         }
@@ -317,13 +304,15 @@ export function useSizeModule({
           const maxHeight = selectedSize.customMaxHeight || 96
 
           if (customHeight < minHeight || customHeight > maxHeight) {
-            moduleErrors.addError(ModuleErrorFactory.createRangeError(
-              ModuleType.SIZE,
-              'customHeight',
-              customHeight,
-              minHeight,
-              maxHeight
-            ))
+            moduleErrors.addError(
+              ModuleErrorFactory.createRangeError(
+                ModuleType.SIZE,
+                'customHeight',
+                customHeight,
+                minHeight,
+                maxHeight
+              )
+            )
             valid = false
           }
         }
@@ -338,7 +327,7 @@ export function useSizeModule({
     if (!isValid || !selectedSize) {
       return {
         multiplier: 1,
-        isValid: false
+        isValid: false,
       }
     }
 
@@ -363,23 +352,28 @@ export function useSizeModule({
           {
             item: `${dimensions.squareInches} square inches`,
             cost: multiplier,
-            type: 'multiplier'
-          }
-        ]
-      }
+            type: 'multiplier',
+          },
+        ],
+      },
     }
   }, [isValid, selectedSize, dimensions, customWidth, customHeight])
 
   // Display information
-  const display = useMemo(() => ({
-    description: selectedSize?.displayName || 'No size selected',
-    summary: `${dimensions.width}" × ${dimensions.height}"`,
-    showInSummary: true
-  }), [selectedSize, dimensions])
+  const display = useMemo(
+    () => ({
+      description: selectedSize?.displayName || 'No size selected',
+      summary: `${dimensions.width}" × ${dimensions.height}"`,
+      showInSummary: true,
+    }),
+    [selectedSize, dimensions]
+  )
 
   // Primary error for backward compatibility (use first blocking error)
   const primaryError: ModuleError | null = useMemo(() => {
-    const blockingErrors = moduleErrors.errors.filter(e => e.severity === 'error' || e.severity === 'critical')
+    const blockingErrors = moduleErrors.errors.filter(
+      (e) => e.severity === 'error' || e.severity === 'critical'
+    )
     const firstError = blockingErrors[0]
 
     if (!firstError) return null
@@ -387,7 +381,7 @@ export function useSizeModule({
     return {
       message: firstError.message,
       type: firstError.type || 'validation',
-      context: firstError.context
+      context: firstError.context,
     }
   }, [moduleErrors.errors])
 
@@ -407,7 +401,7 @@ export function useSizeModule({
       customHeight,
       actualWidth: dimensions.width,
       actualHeight: dimensions.height,
-      squareInches: dimensions.squareInches
+      squareInches: dimensions.squareInches,
     },
     pricing,
     display,
@@ -420,7 +414,7 @@ export function useSizeModule({
     hasErrors: moduleErrors.hasErrors,
     hasBlockingErrors: moduleErrors.hasBlockingErrors,
     clearErrors: moduleErrors.clearErrors,
-    getErrorsByField: moduleErrors.getErrorsByField
+    getErrorsByField: moduleErrors.getErrorsByField,
   }
 }
 
@@ -439,35 +433,19 @@ export function usePaperStockModule({
   paperStocks,
   paperId,
   coatingId,
-  sidesId
+  sidesId,
 }: UsePaperStockModuleProps): PaperStockModuleValue {
-
   // Find selected items
-  const paper = useMemo(() =>
-    paperStocks.find(p => p.id === paperId),
-    [paperStocks, paperId]
-  )
+  const paper = useMemo(() => paperStocks.find((p) => p.id === paperId), [paperStocks, paperId])
 
-  const coating = useMemo(() =>
-    paper?.coatings.find(c => c.id === coatingId),
-    [paper, coatingId]
-  )
+  const coating = useMemo(() => paper?.coatings.find((c) => c.id === coatingId), [paper, coatingId])
 
-  const sides = useMemo(() =>
-    paper?.sides.find(s => s.id === sidesId),
-    [paper, sidesId]
-  )
+  const sides = useMemo(() => paper?.sides.find((s) => s.id === sidesId), [paper, sidesId])
 
   // Calculate available options
-  const availableCoatings = useMemo(() =>
-    paper?.coatings || [],
-    [paper]
-  )
+  const availableCoatings = useMemo(() => paper?.coatings || [], [paper])
 
-  const availableSides = useMemo(() =>
-    paper?.sides || [],
-    [paper]
-  )
+  const availableSides = useMemo(() => paper?.sides || [], [paper])
 
   // Calculate total multiplier
   const totalMultiplier = useMemo(() => {
@@ -487,7 +465,7 @@ export function usePaperStockModule({
       return {
         basePrice: 0,
         multiplier: 1,
-        isValid: false
+        isValid: false,
       }
     }
 
@@ -501,29 +479,34 @@ export function usePaperStockModule({
           {
             item: paper.name,
             cost: paper.pricePerUnit,
-            type: 'base_price'
+            type: 'base_price',
           },
           {
             item: coating.name,
             cost: coating.priceMultiplier,
-            type: 'multiplier'
+            type: 'multiplier',
           },
           {
             item: sides.name,
             cost: sides.priceMultiplier,
-            type: 'multiplier'
-          }
-        ]
-      }
+            type: 'multiplier',
+          },
+        ],
+      },
     }
   }, [isValid, paper, coating, sides, totalMultiplier])
 
   // Display information
-  const display = useMemo(() => ({
-    description: paper ? `${paper.name} - ${coating?.name} - ${sides?.name}` : 'No paper stock selected',
-    summary: paper?.name || '',
-    showInSummary: true
-  }), [paper, coating, sides])
+  const display = useMemo(
+    () => ({
+      description: paper
+        ? `${paper.name} - ${coating?.name} - ${sides?.name}`
+        : 'No paper stock selected',
+      summary: paper?.name || '',
+      showInSummary: true,
+    }),
+    [paper, coating, sides]
+  )
 
   // Error handling
   const error: ModuleError | null = useMemo(() => {
@@ -532,21 +515,21 @@ export function usePaperStockModule({
     if (!paper) {
       return {
         message: 'Please select a paper stock',
-        type: 'validation'
+        type: 'validation',
       }
     }
 
     if (!coating) {
       return {
         message: 'Please select a coating option',
-        type: 'validation'
+        type: 'validation',
       }
     }
 
     if (!sides) {
       return {
         message: 'Please select sides option',
-        type: 'validation'
+        type: 'validation',
       }
     }
 
@@ -569,7 +552,7 @@ export function usePaperStockModule({
       sidesId,
       paper,
       coating,
-      sides
+      sides,
     },
     pricing,
     display,
@@ -577,7 +560,7 @@ export function usePaperStockModule({
     availableSides,
     totalMultiplier,
     isValid,
-    error
+    error,
   }
 }
 
@@ -600,14 +583,12 @@ export interface UseAddonsModuleProps {
 export function useAddonsModule({
   addons,
   selectedAddonIds,
-  specialConfigs = {}
+  specialConfigs = {},
 }: UseAddonsModuleProps): AddonsModuleValue {
-
   // Find selected addons
-  const selectedAddons = useMemo(() =>
-    selectedAddonIds
-      .map(id => addons.find(a => a.id === id))
-      .filter(Boolean) as AddonItem[],
+  const selectedAddons = useMemo(
+    () =>
+      selectedAddonIds.map((id) => addons.find((a) => a.id === id)).filter(Boolean) as AddonItem[],
     [addons, selectedAddonIds]
   )
 
@@ -615,10 +596,12 @@ export function useAddonsModule({
   const totalAddonCost = useMemo(() => {
     return selectedAddons.reduce((total, addon) => {
       // Skip special addons - they're calculated separately
-      if (addon.configuration?.type === 'variable_data' ||
-          addon.configuration?.type === 'perforation' ||
-          addon.configuration?.type === 'banding' ||
-          addon.configuration?.type === 'corner_rounding') {
+      if (
+        addon.configuration?.type === 'variable_data' ||
+        addon.configuration?.type === 'perforation' ||
+        addon.configuration?.type === 'banding' ||
+        addon.configuration?.type === 'corner_rounding'
+      ) {
         return total
       }
 
@@ -665,9 +648,7 @@ export function useAddonsModule({
 
   // Calculate additional turnaround days
   const additionalTurnaroundDays = useMemo(() => {
-    return selectedAddons.reduce((total, addon) =>
-      total + (addon.additionalTurnaroundDays || 0), 0
-    )
+    return selectedAddons.reduce((total, addon) => total + (addon.additionalTurnaroundDays || 0), 0)
   }, [selectedAddons])
 
   // Validate selection
@@ -687,33 +668,38 @@ export function useAddonsModule({
         description: `${selectedAddons.length} add-ons selected`,
         breakdown: [
           ...selectedAddons
-            .filter(addon =>
-              addon.pricingModel === 'FIXED_FEE' ||
-              addon.pricingModel === 'FLAT'
-            )
-            .map(addon => ({
+            .filter((addon) => addon.pricingModel === 'FIXED_FEE' || addon.pricingModel === 'FLAT')
+            .map((addon) => ({
               item: addon.name,
               cost: addon.price,
-              type: 'addon'
+              type: 'addon',
             })),
-          ...(specialAddonCosts > 0 ? [{
-            item: 'Special add-ons base cost',
-            cost: specialAddonCosts,
-            type: 'special_addon'
-          }] : [])
-        ]
-      }
+          ...(specialAddonCosts > 0
+            ? [
+                {
+                  item: 'Special add-ons base cost',
+                  cost: specialAddonCosts,
+                  type: 'special_addon',
+                },
+              ]
+            : []),
+        ],
+      },
     }
   }, [selectedAddons, totalAddonCost, specialAddonCosts])
 
   // Display information
-  const display = useMemo(() => ({
-    description: selectedAddons.length > 0
-      ? `${selectedAddons.length} add-on${selectedAddons.length > 1 ? 's' : ''} selected`
-      : 'No add-ons selected',
-    summary: selectedAddons.map(a => a.name).join(', '),
-    showInSummary: selectedAddons.length > 0
-  }), [selectedAddons])
+  const display = useMemo(
+    () => ({
+      description:
+        selectedAddons.length > 0
+          ? `${selectedAddons.length} add-on${selectedAddons.length > 1 ? 's' : ''} selected`
+          : 'No add-ons selected',
+      summary: selectedAddons.map((a) => a.name).join(', '),
+      showInSummary: selectedAddons.length > 0,
+    }),
+    [selectedAddons]
+  )
 
   return {
     // Legacy compatibility
@@ -728,14 +714,14 @@ export function useAddonsModule({
     value: {
       selectedAddonIds,
       selectedAddons,
-      specialConfigs
+      specialConfigs,
     },
     pricing,
     display,
     totalAddonCost,
     specialAddonCosts,
     additionalTurnaroundDays,
-    isValid
+    isValid,
   }
 }
 
@@ -753,12 +739,11 @@ export interface UseTurnaroundModuleProps {
 export function useTurnaroundModule({
   turnaroundTimes,
   selectedTurnaroundId,
-  currentCoating
+  currentCoating,
 }: UseTurnaroundModuleProps): TurnaroundModuleValue {
-
   // Find selected turnaround
-  const turnaround = useMemo(() =>
-    turnaroundTimes.find(t => t.id === selectedTurnaroundId),
+  const turnaround = useMemo(
+    () => turnaroundTimes.find((t) => t.id === selectedTurnaroundId),
     [turnaroundTimes, selectedTurnaroundId]
   )
 
@@ -787,7 +772,7 @@ export function useTurnaroundModule({
 
     const startDate = new Date()
     let businessDays = turnaround.daysMin
-    let currentDate = new Date(startDate)
+    const currentDate = new Date(startDate)
 
     while (businessDays > 0) {
       currentDate.setDate(currentDate.getDate() + 1)
@@ -802,10 +787,13 @@ export function useTurnaroundModule({
   }, [turnaround])
 
   // Days range
-  const daysRange = useMemo(() => ({
-    min: turnaround?.daysMin || 0,
-    max: turnaround?.daysMax || turnaround?.daysMin || 0
-  }), [turnaround])
+  const daysRange = useMemo(
+    () => ({
+      min: turnaround?.daysMin || 0,
+      max: turnaround?.daysMax || turnaround?.daysMin || 0,
+    }),
+    [turnaround]
+  )
 
   // Validate selection
   const isValid = useMemo(() => {
@@ -817,7 +805,7 @@ export function useTurnaroundModule({
     if (!isValid || !turnaround) {
       return {
         multiplier: 1,
-        isValid: false
+        isValid: false,
       }
     }
 
@@ -833,10 +821,10 @@ export function useTurnaroundModule({
               {
                 item: turnaround.displayName,
                 cost: turnaround.basePrice,
-                type: 'flat_fee'
-              }
-            ]
-          }
+                type: 'flat_fee',
+              },
+            ],
+          },
         }
 
       case 'PERCENTAGE':
@@ -849,10 +837,10 @@ export function useTurnaroundModule({
               {
                 item: turnaround.displayName,
                 cost: turnaround.priceMultiplier,
-                type: 'multiplier'
-              }
-            ]
-          }
+                type: 'multiplier',
+              },
+            ],
+          },
         }
 
       case 'PER_UNIT':
@@ -867,26 +855,31 @@ export function useTurnaroundModule({
               {
                 item: `${turnaround.displayName} per unit`,
                 cost: turnaround.basePrice,
-                type: 'per_unit'
-              }
-            ]
-          }
+                type: 'per_unit',
+              },
+            ],
+          },
         }
 
       default:
         return {
           multiplier: 1,
-          isValid: true
+          isValid: true,
         }
     }
   }, [isValid, turnaround])
 
   // Display information
-  const display = useMemo(() => ({
-    description: turnaround?.displayName || 'No turnaround selected',
-    summary: turnaround ? `${turnaround.daysMin}-${turnaround.daysMax || turnaround.daysMin} days` : '',
-    showInSummary: true
-  }), [turnaround])
+  const display = useMemo(
+    () => ({
+      description: turnaround?.displayName || 'No turnaround selected',
+      summary: turnaround
+        ? `${turnaround.daysMin}-${turnaround.daysMax || turnaround.daysMin} days`
+        : '',
+      showInSummary: true,
+    }),
+    [turnaround]
+  )
 
   // Error handling
   const error: ModuleError | null = useMemo(() => {
@@ -895,14 +888,14 @@ export function useTurnaroundModule({
     if (!turnaround) {
       return {
         message: 'Please select a turnaround time',
-        type: 'validation'
+        type: 'validation',
       }
     }
 
     if (!isCompatible) {
       return {
         message: 'Selected turnaround is not compatible with current coating',
-        type: 'validation'
+        type: 'validation',
       }
     }
 
@@ -923,7 +916,7 @@ export function useTurnaroundModule({
       turnaroundId: selectedTurnaroundId,
       turnaround,
       estimatedDeliveryDate,
-      isValidWithCurrentCoating: isCompatible
+      isValidWithCurrentCoating: isCompatible,
     },
     pricing,
     display,
@@ -931,7 +924,7 @@ export function useTurnaroundModule({
     isCompatible,
     daysRange,
     isValid,
-    error
+    error,
   }
 }
 
@@ -940,7 +933,11 @@ export function useTurnaroundModule({
 // =============================================================================
 
 import { useState, useCallback } from 'react'
-import { useModuleLoading, ModuleLoadingType, ModuleLoadingPriority } from '../loading/ModuleLoadingSystem'
+import {
+  useModuleLoading,
+  ModuleLoadingType,
+  ModuleLoadingPriority,
+} from '../loading/ModuleLoadingSystem'
 
 export interface UseImageModuleOptions {
   moduleType: ModuleType
@@ -966,7 +963,7 @@ export function useImageModule(options: UseImageModuleOptions) {
     onChange,
     onUploadComplete,
     onError,
-    config = {}
+    config = {},
   } = options
 
   // Ultra-independent error handling for this module instance
@@ -975,7 +972,7 @@ export function useImageModule(options: UseImageModuleOptions) {
     onError: (error) => {
       console.log(`Image Module Error:`, error)
       onError?.(new Error(error.message))
-    }
+    },
   })
 
   // Ultra-independent loading state management
@@ -988,29 +985,35 @@ export function useImageModule(options: UseImageModuleOptions) {
       if (operation.type === ModuleLoadingType.FILE_UPLOAD) {
         onUploadComplete?.(operation.context)
       }
-    }
+    },
   })
 
   // Internal module state
   const [moduleState, setModuleState] = useState(initialState)
 
   // Update module state
-  const updateModuleState = useCallback((newState: any) => {
-    setModuleState(newState)
-    onChange?.(newState)
-  }, [onChange])
+  const updateModuleState = useCallback(
+    (newState: any) => {
+      setModuleState(newState)
+      onChange?.(newState)
+    },
+    [onChange]
+  )
 
   // Add error to module
-  const addModuleError = useCallback((type: string, message: string) => {
-    moduleErrors.addError({
-      id: `img_${Date.now()}`,
-      message,
-      type: 'validation',
-      moduleType: ModuleType.IMAGES,
-      field: type,
-      severity: 'warning' // Images are always optional
-    })
-  }, [moduleErrors])
+  const addModuleError = useCallback(
+    (type: string, message: string) => {
+      moduleErrors.addError({
+        id: `img_${Date.now()}`,
+        message,
+        type: 'validation',
+        moduleType: ModuleType.IMAGES,
+        field: type,
+        severity: 'warning', // Images are always optional
+      })
+    },
+    [moduleErrors]
+  )
 
   // Clear errors
   const clearModuleErrors = useCallback(() => {
@@ -1018,43 +1021,59 @@ export function useImageModule(options: UseImageModuleOptions) {
   }, [moduleErrors])
 
   // Start loading operation
-  const startModuleLoading = useCallback((
-    type: ModuleLoadingType,
-    label: string,
-    priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL,
-    estimatedDuration?: number
-  ): string => {
-    return moduleLoading.startLoading(type, label, priority, estimatedDuration)
-  }, [moduleLoading])
+  const startModuleLoading = useCallback(
+    (
+      type: ModuleLoadingType,
+      label: string,
+      priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL,
+      estimatedDuration?: number
+    ): string => {
+      return moduleLoading.startLoading(type, label, priority, estimatedDuration)
+    },
+    [moduleLoading]
+  )
 
   // Complete loading operation
-  const completeModuleLoading = useCallback((operationId: string, context?: any) => {
-    return moduleLoading.completeLoading(operationId, context)
-  }, [moduleLoading])
+  const completeModuleLoading = useCallback(
+    (operationId: string, context?: any) => {
+      return moduleLoading.completeLoading(operationId, context)
+    },
+    [moduleLoading]
+  )
 
   // Fail loading operation
-  const failModuleLoading = useCallback((operationId: string, reason?: string) => {
-    return moduleLoading.failLoading(operationId, reason)
-  }, [moduleLoading])
+  const failModuleLoading = useCallback(
+    (operationId: string, reason?: string) => {
+      return moduleLoading.failLoading(operationId, reason)
+    },
+    [moduleLoading]
+  )
 
   // Calculate pricing contribution - Images NEVER affect pricing
-  const pricing: ModulePricingContribution = useMemo(() => ({
-    isValid: true, // Always valid because always optional
-    calculation: {
-      description: 'Images (no pricing impact)',
-      breakdown: [{
-        type: 'info',
-        item: 'Image uploads are optional',
-        cost: 0
-      }]
-    }
-  }), [])
+  const pricing: ModulePricingContribution = useMemo(
+    () => ({
+      isValid: true, // Always valid because always optional
+      calculation: {
+        description: 'Images (no pricing impact)',
+        breakdown: [
+          {
+            type: 'info',
+            item: 'Image uploads are optional',
+            cost: 0,
+          },
+        ],
+      },
+    }),
+    []
+  )
 
   // Display information
   const display = useMemo(() => {
     const imageCount = moduleState.images?.length || 0
-    const uploadingCount = moduleState.images?.filter((img: any) => img.uploadState === 'uploading').length || 0
-    const completedCount = moduleState.images?.filter((img: any) => img.uploadState === 'completed').length || 0
+    const uploadingCount =
+      moduleState.images?.filter((img: any) => img.uploadState === 'uploading').length || 0
+    const completedCount =
+      moduleState.images?.filter((img: any) => img.uploadState === 'completed').length || 0
 
     let description = 'No images uploaded'
     if (uploadingCount > 0) {
@@ -1066,7 +1085,7 @@ export function useImageModule(options: UseImageModuleOptions) {
     return {
       description,
       summary: imageCount > 0 ? `${imageCount} files` : 'Optional',
-      showInSummary: false // Don't clutter summary - images are optional
+      showInSummary: false, // Don't clutter summary - images are optional
     }
   }, [moduleState])
 
@@ -1093,12 +1112,12 @@ export function useImageModule(options: UseImageModuleOptions) {
     value: {
       images: moduleState.images || [],
       hasUploads: (moduleState.images?.length || 0) > 0,
-      isOptional: true // Always true for images
+      isOptional: true, // Always true for images
     },
     pricing,
     display,
     isValid,
-    error: null // Images never have blocking errors
+    error: null, // Images never have blocking errors
 
     // Ultra-independent characteristics:
     // - Errors don't crash other modules
@@ -1118,7 +1137,7 @@ export function useImageModule(options: UseImageModuleOptions) {
 export function combineModulePricingContributions(
   contributions: ModulePricingContribution[]
 ): ModulePricingContribution {
-  const validContributions = contributions.filter(c => c.isValid)
+  const validContributions = contributions.filter((c) => c.isValid)
 
   if (validContributions.length === 0) {
     return { isValid: false }
@@ -1133,8 +1152,8 @@ export function combineModulePricingContributions(
     isValid: true,
     calculation: {
       description: 'Combined module contributions',
-      breakdown: validContributions.flatMap(c => c.calculation?.breakdown || [])
-    }
+      breakdown: validContributions.flatMap((c) => c.calculation?.breakdown || []),
+    },
   }
 }
 
@@ -1144,12 +1163,10 @@ export function combineModulePricingContributions(
 export function validateAllModules(
   moduleValues: Array<{ isValid: boolean; error: ModuleError | null }>
 ): { isValid: boolean; errors: ModuleError[] } {
-  const errors = moduleValues
-    .map(mv => mv.error)
-    .filter(Boolean) as ModuleError[]
+  const errors = moduleValues.map((mv) => mv.error).filter(Boolean) as ModuleError[]
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   }
 }

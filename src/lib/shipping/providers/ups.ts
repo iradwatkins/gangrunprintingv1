@@ -310,14 +310,16 @@ export class UPSProvider implements ShippingProvider {
       const shipment = response.data.trackResponse.shipment[0]
       const package_ = shipment.package[0]
 
-      const events: TrackingEvent[] = (package_.activity || []).map((activity: Record<string, unknown>) => ({
-        timestamp: new Date(`${activity.date} ${activity.time}`),
-        location: activity.location?.address
-          ? `${activity.location.address.city}, ${activity.location.address.stateProvince}`
-          : 'Unknown',
-        status: activity.status.type,
-        description: activity.status.description,
-      }))
+      const events: TrackingEvent[] = (package_.activity || []).map(
+        (activity: Record<string, unknown>) => ({
+          timestamp: new Date(`${activity.date} ${activity.time}`),
+          location: activity.location?.address
+            ? `${activity.location.address.city}, ${activity.location.address.stateProvince}`
+            : 'Unknown',
+          status: activity.status.type,
+          description: activity.status.description,
+        })
+      )
 
       const currentStatus = package_.currentStatus?.description
       const status = this.mapTrackingStatus(currentStatus)

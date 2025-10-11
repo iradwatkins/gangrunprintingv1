@@ -94,23 +94,20 @@ class CodeJanitor {
       const originalContent = content
 
       // Remove console statements except in development checks
-      content = content.replace(
-        /console\.(log|error|warn|info|debug)\([^)]*\);?\n?/g,
-        (match) => {
-          // Keep console.error for error handling
-          if (match.includes('console.error') && match.includes('error')) {
-            return match
-          }
-          return ''
+      content = content.replace(/console\.(log|error|warn|info|debug)\([^)]*\);?\n?/g, (match) => {
+        // Keep console.error for error handling
+        if (match.includes('console.error') && match.includes('error')) {
+          return match
         }
-      )
+        return ''
+      })
 
       if (content !== originalContent) {
         fs.writeFileSync(filePath, content)
         this.results.push({
           file: filePath,
           changes: ['Removed console statements'],
-          status: 'success'
+          status: 'success',
         })
       }
     }
@@ -151,7 +148,7 @@ class CodeJanitor {
           this.results.push({
             file: filePath,
             changes: [`Removed unused import: ${importLine}`],
-            status: 'success'
+            status: 'success',
           })
         }
       }
@@ -218,11 +215,13 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
     this.results.push({
       file: constantsFile,
       changes: ['Created constants file with extracted magic numbers'],
-      status: 'success'
+      status: 'success',
     })
 
     // Update files to use constants
-    const files = this.getAllFiles(this.srcPath, ['.ts', '.tsx']).filter(f => !f.includes('constants.ts'))
+    const files = this.getAllFiles(this.srcPath, ['.ts', '.tsx']).filter(
+      (f) => !f.includes('constants.ts')
+    )
 
     for (const file of files) {
       const filePath = path.join(this.srcPath, file)
@@ -233,7 +232,7 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
       const replacements = [
         { pattern: /10 \* 1024 \* 1024/g, replacement: 'MAX_FILE_SIZE', import: true },
         { pattern: /0\.0825/g, replacement: 'TAX_RATE', import: true },
-        { pattern: /['"]75001['"]/g, replacement: 'DEFAULT_WAREHOUSE_ZIP', import: true }
+        { pattern: /['"]75001['"]/g, replacement: 'DEFAULT_WAREHOUSE_ZIP', import: true },
       ]
 
       for (const { pattern, replacement } of replacements) {
@@ -253,7 +252,7 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
         this.results.push({
           file: filePath,
           changes: ['Replaced magic numbers with constants'],
-          status: 'success'
+          status: 'success',
         })
       }
     }
@@ -296,7 +295,7 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
         this.results.push({
           file: filePath,
           changes: ['Replaced any types with unknown', 'Added missing return types'],
-          status: 'success'
+          status: 'success',
         })
       }
     }
@@ -334,7 +333,7 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
     this.results.push({
       file: 'All files',
       changes: ['Fixed formatting issues'],
-      status: 'success'
+      status: 'success',
     })
   }
 
@@ -347,7 +346,7 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
     // Named imports: import { a, b, c } from 'module'
     const namedMatch = importLine.match(/import\s+{([^}]+)}/)
     if (namedMatch) {
-      const names = namedMatch[1].split(',').map(s => s.trim().split(' as ')[0])
+      const names = namedMatch[1].split(',').map((s) => s.trim().split(' as ')[0])
       items.push(...names)
     }
 
@@ -373,8 +372,8 @@ export const SESSION_TTL = 24 * 60 * 60 * 1000 // 24 hours
     console.log('\n📊 Code Janitor Report\n')
     console.log('=' * 50)
 
-    const successCount = this.results.filter(r => r.status === 'success').length
-    const errorCount = this.results.filter(r => r.status === 'error').length
+    const successCount = this.results.filter((r) => r.status === 'success').length
+    const errorCount = this.results.filter((r) => r.status === 'error').length
 
     console.log(`✅ Successful fixes: ${successCount}`)
     console.log(`❌ Errors: ${errorCount}`)

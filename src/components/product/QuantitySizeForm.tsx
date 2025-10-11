@@ -38,8 +38,8 @@ export default function QuantitySizeForm({
   useEffect(() => {
     // Direct fetch without complex loading manager
     fetch(`/api/products/${productId}/configuration`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.quantities && data.quantities.length > 0) {
           setQuantities(data.quantities)
           const defaultQty = data.defaults?.quantity || data.quantities[0]?.id
@@ -48,20 +48,17 @@ export default function QuantitySizeForm({
 
         if (data.sizes && data.sizes.length > 0) {
           setSizes(data.sizes)
-          const defaultSize = data.defaults?.size || data.sizes.find(s => s.isDefault)?.id || data.sizes[0]?.id
+          const defaultSize =
+            data.defaults?.size || data.sizes.find((s) => s.isDefault)?.id || data.sizes[0]?.id
           setSelectedSize(defaultSize)
         }
 
         // Set initial configuration
-        updateConfiguration(
-          defaultQty || '',
-          defaultSize || '',
-          false
-        )
+        updateConfiguration(defaultQty || '', defaultSize || '', false)
 
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to load configuration:', err)
         setLoading(false)
       })
@@ -86,7 +83,7 @@ export default function QuantitySizeForm({
     if (qtyId === 'qty_custom') {
       isComplete = isComplete && customQuantity && customQuantity > 0
     }
-    const selectedSizeObj = sizes.find(s => s.id === sizeId)
+    const selectedSizeObj = sizes.find((s) => s.id === sizeId)
     if (selectedSizeObj?.isCustom) {
       isComplete = isComplete && customWidth && customHeight && customWidth > 0 && customHeight > 0
     }
@@ -102,11 +99,11 @@ export default function QuantitySizeForm({
   }
 
   const calculatePrice = (qtyId: string, sizeId: string) => {
-    const selectedQty = quantities.find(q => q.id === qtyId)
-    const selectedSizeObj = sizes.find(s => s.id === sizeId)
+    const selectedQty = quantities.find((q) => q.id === qtyId)
+    const selectedSizeObj = sizes.find((s) => s.id === sizeId)
 
     if (selectedQty && selectedSizeObj) {
-      let qty = selectedQty.isCustom ? (customQuantity || 0) : selectedQty.value
+      const qty = selectedQty.isCustom ? customQuantity || 0 : selectedQty.value
       let sizeMultiplier = selectedSizeObj.priceMultiplier || 1
 
       // For custom sizes, calculate based on square inches
@@ -192,10 +189,12 @@ export default function QuantitySizeForm({
                 ENTER CUSTOM QUANTITY
               </Label>
               <input
-                type="number"
-                min={50000}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 max={100000}
+                min={50000}
+                placeholder="Enter quantity between 50,000 and 100,000"
                 step={5000}
+                type="number"
                 value={customQuantity || ''}
                 onChange={(e) => {
                   const value = parseInt(e.target.value)
@@ -203,8 +202,6 @@ export default function QuantitySizeForm({
                     handleCustomQuantityChange(value)
                   }
                 }}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Enter quantity between 50,000 and 100,000"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Custom quantities must be between 50,000 and 100,000 units
@@ -218,14 +215,14 @@ export default function QuantitySizeForm({
       {sizes.length > 0 && (
         <div>
           <SizeModule
+            customHeight={customHeight}
+            customWidth={customWidth}
+            exactSizeRequired={exactSize}
+            required={true}
             sizes={sizes}
             value={selectedSize}
-            customWidth={customWidth}
-            customHeight={customHeight}
             onChange={handleSizeChange}
-            exactSizeRequired={exactSize}
             onExactSizeChange={handleExactSizeChange}
-            required={true}
           />
         </div>
       )}
@@ -245,8 +242,8 @@ export default function QuantitySizeForm({
       <div className="bg-blue-50 p-3 rounded text-sm">
         <div className="font-medium text-blue-800 mb-1">Active Modules:</div>
         <div className="text-blue-600">
-          ✅ Quantity Module ({quantities.length} options) <br />
-          ✅ Size Module ({sizes.length} sizes)
+          ✅ Quantity Module ({quantities.length} options) <br />✅ Size Module ({sizes.length}{' '}
+          sizes)
         </div>
         <div className="text-xs text-blue-500 mt-1">
           This demonstrates modular architecture: Quantity + Size working together

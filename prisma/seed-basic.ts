@@ -23,14 +23,24 @@ async function main() {
 
   // Create basic categories
   const categoriesData = [
-    { name: 'Business Cards', slug: 'business-cards', description: 'Professional business cards', sortOrder: 1 },
+    {
+      name: 'Business Cards',
+      slug: 'business-cards',
+      description: 'Professional business cards',
+      sortOrder: 1,
+    },
     { name: 'Flyers', slug: 'flyers', description: 'Marketing flyers and handouts', sortOrder: 2 },
     { name: 'Brochures', slug: 'brochures', description: 'Folded brochures', sortOrder: 3 },
     { name: 'Posters', slug: 'posters', description: 'Large format posters', sortOrder: 4 },
     { name: 'Banners', slug: 'banners', description: 'Vinyl and fabric banners', sortOrder: 5 },
     { name: 'Stickers', slug: 'stickers', description: 'Custom stickers and labels', sortOrder: 6 },
     { name: 'T-Shirts', slug: 't-shirts', description: 'Custom printed apparel', sortOrder: 7 },
-    { name: 'Promotional Items', slug: 'promotional-items', description: 'Branded promotional products', sortOrder: 8 },
+    {
+      name: 'Promotional Items',
+      slug: 'promotional-items',
+      description: 'Branded promotional products',
+      sortOrder: 8,
+    },
   ]
 
   const categories = []
@@ -62,9 +72,9 @@ async function main() {
         street: '123 Print St',
         city: 'Houston',
         state: 'TX',
-        zip: '77001'
-      }
-    }
+        zip: '77001',
+      },
+    },
   })
   console.log('Created vendor:', vendor1.name)
 
@@ -85,9 +95,9 @@ async function main() {
         street: '456 Banner Ave',
         city: 'Dallas',
         state: 'TX',
-        zip: '75201'
-      }
-    }
+        zip: '75201',
+      },
+    },
   })
   console.log('Created vendor:', vendor2.name)
 
@@ -107,7 +117,7 @@ async function main() {
       metadata: {
         defaultQuantity: 500,
         defaultSize: '3.5" x 2"',
-      }
+      },
     },
     {
       name: 'Premium Flyers',
@@ -123,7 +133,7 @@ async function main() {
       metadata: {
         defaultQuantity: 1000,
         defaultSize: '8.5" x 11"',
-      }
+      },
     },
     {
       name: 'Tri-Fold Brochures',
@@ -138,7 +148,7 @@ async function main() {
       metadata: {
         defaultQuantity: 500,
         defaultSize: '8.5" x 11"',
-      }
+      },
     },
     {
       name: 'Custom Posters',
@@ -153,7 +163,7 @@ async function main() {
       metadata: {
         defaultQuantity: 10,
         defaultSize: '18" x 24"',
-      }
+      },
     },
     {
       name: 'Vinyl Banners',
@@ -171,7 +181,7 @@ async function main() {
       metadata: {
         defaultQuantity: 1,
         defaultSize: '3ft x 6ft',
-      }
+      },
     },
     {
       name: 'Die-Cut Stickers',
@@ -186,7 +196,7 @@ async function main() {
       metadata: {
         defaultQuantity: 250,
         defaultSize: '3" x 3"',
-      }
+      },
     },
   ]
 
@@ -203,8 +213,8 @@ async function main() {
       where: {
         vendorId_productId: {
           vendorId: productData.categoryId === categories[0].id ? vendor1.id : vendor2.id,
-          productId: product.id
-        }
+          productId: product.id,
+        },
       },
       update: {},
       create: {
@@ -213,7 +223,7 @@ async function main() {
         vendorPrice: productData.basePrice * 0.6, // Vendor gets 60% of base price
         isPreferred: true,
         vendorSku: `SKU-${product.slug.toUpperCase()}`,
-      }
+      },
     })
   }
 
@@ -225,7 +235,7 @@ async function main() {
       email: adminUser.email,
       status: 'PENDING_PAYMENT',
       subtotal: 29.99,
-      tax: 2.40,
+      tax: 2.4,
       shipping: 9.99,
       total: 42.38,
       shippingAddress: {
@@ -238,9 +248,9 @@ async function main() {
       },
       metadata: {
         source: 'seed-script',
-        notes: 'Test order created during seeding'
-      }
-    }
+        notes: 'Test order created during seeding',
+      },
+    },
   })
   console.log('Created test order:', testOrder.orderNumber)
 

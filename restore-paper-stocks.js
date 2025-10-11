@@ -31,8 +31,8 @@ async function restorePaperStocks() {
           update: {},
           create: {
             ...coating,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
       } catch (error) {
         // Skip if already exists
@@ -47,8 +47,8 @@ async function restorePaperStocks() {
           update: {},
           create: {
             ...sides,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
       } catch (error) {
         // Skip if already exists
@@ -62,13 +62,14 @@ async function restorePaperStocks() {
         id: 'paper_14pt_gloss_cover',
         name: '14pt Gloss Cover',
         pricePerSqInch: 0.0012,
-        tooltipText: 'Our most popular business card stock - thick and durable with a glossy finish',
+        tooltipText:
+          'Our most popular business card stock - thick and durable with a glossy finish',
         weight: 0.014,
         isActive: true,
         coatings: ['coating_gloss_coating'],
         defaultCoating: 'coating_gloss_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
       {
         id: 'paper_14pt_matte_cover',
@@ -80,7 +81,7 @@ async function restorePaperStocks() {
         coatings: ['coating_matte_coating'],
         defaultCoating: 'coating_matte_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
       {
         id: 'paper_16pt_premium_cover',
@@ -92,7 +93,7 @@ async function restorePaperStocks() {
         coatings: ['coating_uv_coating', 'coating_gloss_coating'],
         defaultCoating: 'coating_uv_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
       {
         id: 'paper_32pt_suede',
@@ -104,7 +105,7 @@ async function restorePaperStocks() {
         coatings: ['coating_soft_touch'],
         defaultCoating: 'coating_soft_touch',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
       {
         id: 'paper_32pt_ultrathick',
@@ -116,7 +117,7 @@ async function restorePaperStocks() {
         coatings: ['coating_matte_coating', 'coating_gloss_coating'],
         defaultCoating: 'coating_matte_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
 
       // Flyer/Brochure Stocks
@@ -130,7 +131,7 @@ async function restorePaperStocks() {
         coatings: ['coating_gloss_coating'],
         defaultCoating: 'coating_gloss_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.4 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.4 },
       },
       {
         id: 'paper_100lb_matte_text',
@@ -142,7 +143,7 @@ async function restorePaperStocks() {
         coatings: ['coating_matte_coating'],
         defaultCoating: 'coating_matte_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.4 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.4 },
       },
       {
         id: 'paper_80lb_gloss_cover',
@@ -154,7 +155,7 @@ async function restorePaperStocks() {
         coatings: ['coating_gloss_coating'],
         defaultCoating: 'coating_gloss_coating',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.45 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.45 },
       },
 
       // Poster/Large Format Stocks
@@ -168,7 +169,7 @@ async function restorePaperStocks() {
         coatings: ['coating_satin_coating'],
         defaultCoating: 'coating_satin_coating',
         sides: ['sides_1s'],
-        sidesMultipliers: { sides_1s: 1.0 }
+        sidesMultipliers: { sides_1s: 1.0 },
       },
 
       // Eco-Friendly Options
@@ -182,7 +183,7 @@ async function restorePaperStocks() {
         coatings: ['coating_aqueous'],
         defaultCoating: 'coating_aqueous',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
 
       // Specialty Stocks
@@ -196,7 +197,7 @@ async function restorePaperStocks() {
         coatings: ['coating_pearlescent'],
         defaultCoating: 'coating_pearlescent',
         sides: ['sides_1s', 'sides_2s'],
-        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 }
+        sidesMultipliers: { sides_1s: 1.0, sides_2s: 1.5 },
       },
     ]
 
@@ -215,19 +216,19 @@ async function restorePaperStocks() {
             isActive: stock.isActive,
             updatedAt: new Date(),
             paperStockCoatings: {
-              create: stock.coatings.map(coatingId => ({
+              create: stock.coatings.map((coatingId) => ({
                 coatingId: coatingId,
-                isDefault: coatingId === stock.defaultCoating
-              }))
+                isDefault: coatingId === stock.defaultCoating,
+              })),
             },
             paperStockSides: {
-              create: stock.sides.map(sidesId => ({
+              create: stock.sides.map((sidesId) => ({
                 sidesOptionId: sidesId,
                 priceMultiplier: stock.sidesMultipliers[sidesId] || 1.0,
-                isEnabled: true
-              }))
-            }
-          }
+                isEnabled: true,
+              })),
+            },
+          },
         })
 
         createdStocks.push(paperStock)
@@ -247,29 +248,34 @@ async function restorePaperStocks() {
         id: 'set_business_cards',
         name: 'Business Card Papers',
         description: 'Premium paper options for business cards',
-        paperStocks: ['paper_14pt_gloss_cover', 'paper_14pt_matte_cover', 'paper_16pt_premium_cover', 'paper_32pt_ultrathick'],
-        defaultStock: 'paper_14pt_gloss_cover'
+        paperStocks: [
+          'paper_14pt_gloss_cover',
+          'paper_14pt_matte_cover',
+          'paper_16pt_premium_cover',
+          'paper_32pt_ultrathick',
+        ],
+        defaultStock: 'paper_14pt_gloss_cover',
       },
       {
         id: 'set_flyers_brochures',
         name: 'Flyer & Brochure Papers',
         description: 'Quality options for marketing materials',
         paperStocks: ['paper_100lb_gloss_text', 'paper_100lb_matte_text', 'paper_80lb_gloss_cover'],
-        defaultStock: 'paper_100lb_gloss_text'
+        defaultStock: 'paper_100lb_gloss_text',
       },
       {
         id: 'set_premium_collection',
         name: 'Premium Collection',
         description: 'High-end paper stocks for luxury projects',
         paperStocks: ['paper_32pt_suede', 'paper_16pt_premium_cover', 'paper_metallic_pearl'],
-        defaultStock: 'paper_32pt_suede'
+        defaultStock: 'paper_32pt_suede',
       },
       {
         id: 'set_eco_friendly',
         name: 'Eco-Friendly Papers',
         description: 'Environmentally conscious paper options',
         paperStocks: ['paper_recycled_14pt'],
-        defaultStock: 'paper_recycled_14pt'
+        defaultStock: 'paper_recycled_14pt',
       },
     ]
 
@@ -290,10 +296,10 @@ async function restorePaperStocks() {
                 paperStockId: stockId,
                 isDefault: stockId === set.defaultStock,
                 sortOrder: stockIndex,
-                updatedAt: new Date()
-              }))
-            }
-          }
+                updatedAt: new Date(),
+              })),
+            },
+          },
         })
 
         console.log(`✓ Created paper stock set: ${set.name}`)
@@ -319,7 +325,6 @@ async function restorePaperStocks() {
     console.log(`Paper Stock Sets: ${setsCount}`)
     console.log(`Coating Options: ${coatingsCount}`)
     console.log(`Sides Options: ${sidesCount}`)
-
   } catch (error) {
     console.error('Error restoring paper stocks data:', error)
     throw error

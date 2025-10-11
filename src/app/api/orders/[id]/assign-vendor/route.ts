@@ -21,7 +21,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Get the order
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { OrderItem: true }
+      include: { OrderItem: true },
     })
 
     if (!order) {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       orderId: id,
       vendorId,
       productionDeadline: deadline,
-      notes
+      notes,
     })
 
     // Return updated order
@@ -53,15 +53,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         Vendor: true,
         StatusHistory: {
           orderBy: { createdAt: 'desc' },
-          take: 1
-        }
-      }
+          take: 1,
+        },
+      },
     })
 
     return NextResponse.json({
       success: true,
       order: updatedOrder,
-      message: 'Vendor assigned successfully'
+      message: 'Vendor assigned successfully',
     })
   } catch (error) {
     console.error('[Vendor Assignment] Error:', error)

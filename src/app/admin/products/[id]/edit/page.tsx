@@ -118,13 +118,26 @@ function EditProductClient({ id }: { id: string }) {
         images: data.productImages || data.ProductImages || [],
 
         // Map paper stock set
-        selectedPaperStockSet: data.productPaperStockSets?.[0]?.paperStockSetId || data.productPaperStockSets?.[0]?.PaperStockSet?.id || '',
+        selectedPaperStockSet:
+          data.productPaperStockSets?.[0]?.paperStockSetId ||
+          data.productPaperStockSets?.[0]?.PaperStockSet?.id ||
+          '',
 
         // Map quantity and size groups
-        selectedQuantityGroup: data.productQuantityGroups?.[0]?.quantityGroupId || data.productQuantityGroups?.[0]?.QuantityGroup?.id || '',
-        selectedSizeGroup: data.productSizeGroups?.[0]?.sizeGroupId || data.productSizeGroups?.[0]?.SizeGroup?.id || '',
-        selectedAddOnSet: data.productAddOnSets?.[0]?.addOnSetId || data.productAddOnSets?.[0]?.AddOnSet?.id || '',
-        selectedTurnaroundTimeSet: data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId || data.productTurnaroundTimeSets?.[0]?.TurnaroundTimeSet?.id || '',
+        selectedQuantityGroup:
+          data.productQuantityGroups?.[0]?.quantityGroupId ||
+          data.productQuantityGroups?.[0]?.QuantityGroup?.id ||
+          '',
+        selectedSizeGroup:
+          data.productSizeGroups?.[0]?.sizeGroupId ||
+          data.productSizeGroups?.[0]?.SizeGroup?.id ||
+          '',
+        selectedAddOnSet:
+          data.productAddOnSets?.[0]?.addOnSetId || data.productAddOnSets?.[0]?.AddOnSet?.id || '',
+        selectedTurnaroundTimeSet:
+          data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId ||
+          data.productTurnaroundTimeSets?.[0]?.TurnaroundTimeSet?.id ||
+          '',
 
         // Turnaround times
         productionTime: data.productionTime || data.ProductionTime || 3,
@@ -293,7 +306,9 @@ function EditProductClient({ id }: { id: string }) {
       }
     } catch (error) {
       console.error('[Edit Product] Error:', error)
-      toast.error('Failed to update product: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      toast.error(
+        'Failed to update product: ' + (error instanceof Error ? error.message : 'Unknown error')
+      )
     } finally {
       setLoading(false)
     }
@@ -396,8 +411,8 @@ function EditProductClient({ id }: { id: string }) {
           <div>
             <Label>Product Images</Label>
             <ProductImageUpload
-              productId={id}
               images={formData.images}
+              productId={id}
               onImagesChange={(images) => setFormData({ ...formData, images })}
             />
           </div>

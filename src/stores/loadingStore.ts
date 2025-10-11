@@ -69,7 +69,9 @@ export const useLoadingStore = create<LoadingStore>()(
         set(
           (state) => ({
             loadingStates: state.loadingStates.map((loading) =>
-              loading.id === id ? { ...loading, progress: Math.max(0, Math.min(100, progress)) } : loading
+              loading.id === id
+                ? { ...loading, progress: Math.max(0, Math.min(100, progress)) }
+                : loading
             ),
           }),
           false,

@@ -9,6 +9,7 @@
 ## 🚨 SYMPTOMS
 
 ### User Reports:
+
 - "Failed to load resource: the server responded with a status of 500"
 - "POST /api/products/upload-image 500 (Internal Server Error)"
 - "Image not uploading and storing to database"
@@ -16,6 +17,7 @@
 - Images fail to upload
 
 ### Server Logs Show:
+
 ```
 [WARN] MinIO operation retry 1/3 {
   "operation":"Upload file products/thumbnail/...",
@@ -34,12 +36,13 @@ When filenames contain spaces or special characters (like `"Screenshot 2025-09-2
 ```typescript
 // ❌ BROKEN CODE - Direct filename in header
 const baseMetadata = {
-  'x-amz-meta-original-name': fileName,  // Contains spaces!
-  'x-amz-meta-product-name': productName,  // May contain special chars
+  'x-amz-meta-original-name': fileName, // Contains spaces!
+  'x-amz-meta-product-name': productName, // May contain special chars
 }
 ```
 
 MinIO rejects these headers, causing:
+
 1. Image upload fails with 500 error
 2. Product creation fails (depends on image)
 3. Retry mechanism triggers 3x but still fails
@@ -72,6 +75,7 @@ const baseMetadata = {
 ```
 
 ### What `sanitizeHeaderValue` Does:
+
 1. **Removes non-ASCII chars:** `/[^\x20-\x7E]/g` → replaces with `_`
 2. **Removes all spaces:** `/\s+/g` → replaces with `_`
 3. **Example:** `"Screenshot 2025.jpg"` → `"Screenshot_2025.jpg"`
@@ -81,6 +85,7 @@ const baseMetadata = {
 ## 🔧 ADDITIONAL FIXES APPLIED
 
 ### 1. Prisma Relation Name Mismatch
+
 **File:** `/root/websites/gangrunprinting/src/app/api/products/upload-image/route.ts`
 
 ```typescript
@@ -96,6 +101,7 @@ productImages: { ... }
 **Why it matters:** Prisma schema defines relations in camelCase, but the code was using PascalCase (the TypeScript type names), causing Prisma validation errors.
 
 ### 2. Outdated Prisma Client
+
 - Schema was modified Oct 1, 2025
 - Client was generated Sep 28, 2025
 - **Solution:** Always run `npx prisma generate` after schema changes
@@ -133,15 +139,19 @@ pm2 logs gangrunprinting --lines 20
    - Should work without errors
 
 2. **Check PM2 logs:**
+
    ```bash
    pm2 logs gangrunprinting --lines 50 | grep -i "minio\|error"
    ```
+
    - Should see NO "Invalid character in header content" errors
 
 3. **Verify database:**
+
    ```sql
    SELECT * FROM "ProductImage" ORDER BY "createdAt" DESC LIMIT 5;
    ```
+
    - Should see newly uploaded images
 
 4. **Check MinIO storage:**
@@ -155,31 +165,40 @@ pm2 logs gangrunprinting --lines 20
 When you see upload 500 errors, check in this order:
 
 ### ✅ Step 1: Check MinIO Logs
+
 ```bash
 pm2 logs gangrunprinting --lines 100 | grep -i minio
 ```
+
 **Look for:** "Invalid character in header content"
 
 ### ✅ Step 2: Verify Sanitization Function
+
 ```bash
 cd /root/websites/gangrunprinting
 grep -A 2 "sanitizeHeaderValue" src/lib/minio-products.ts
 ```
+
 **Should see:** The `replace()` functions for spaces and special chars
 
 ### ✅ Step 3: Check Prisma Relations
+
 ```bash
 grep -E "productCategory|productImages" src/app/api/products/upload-image/route.ts
 ```
+
 **Should be:** camelCase, NOT PascalCase
 
 ### ✅ Step 4: Verify Build is Fresh
+
 ```bash
 stat -c %y .next/BUILD_ID prisma/schema.prisma src/lib/minio-products.ts
 ```
+
 **BUILD_ID should be NEWER than source files**
 
 ### ✅ Step 5: Rebuild if Needed
+
 ```bash
 npm run build && pm2 restart gangrunprinting
 ```
@@ -189,6 +208,7 @@ npm run build && pm2 restart gangrunprinting
 ## 🎯 PREVENTION STRATEGIES
 
 ### 1. Add Linting Rule
+
 Add ESLint rule to catch direct header assignments:
 
 ```javascript
@@ -205,6 +225,7 @@ rules: {
 ```
 
 ### 2. Add Unit Tests
+
 ```typescript
 // tests/minio-sanitization.test.ts
 describe('MinIO header sanitization', () => {
@@ -221,6 +242,7 @@ describe('MinIO header sanitization', () => {
 ```
 
 ### 3. Add Pre-commit Hook
+
 ```bash
 # .husky/pre-commit
 npm run lint
@@ -232,11 +254,13 @@ npm run typecheck
 ## 📚 RELATED ISSUES
 
 ### Similar Problems to Watch For:
+
 1. **Any MinIO upload operation** using custom metadata
 2. **File operations with user-provided filenames**
 3. **HTTP headers containing dynamic content**
 
 ### Other Upload Libraries That May Have Same Issue:
+
 - AWS S3 SDK (use `encodeURIComponent()`)
 - Azure Blob Storage
 - Google Cloud Storage
@@ -253,11 +277,11 @@ npm run typecheck
 
 ## 📝 CHANGE LOG
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                    | Author |
+| ---------- | ----------------------------------------- | ------ |
 | 2025-10-01 | Initial fix - Added sanitizeHeaderValue() | Claude |
-| 2025-10-01 | Fixed Prisma relation names | Claude |
-| 2025-10-01 | Created this documentation | Claude |
+| 2025-10-01 | Fixed Prisma relation names               | Claude |
+| 2025-10-01 | Created this documentation                | Claude |
 
 ---
 
@@ -266,6 +290,7 @@ npm run typecheck
 **THIS IS A RECURRING ISSUE.**
 
 When ANY upload error occurs:
+
 1. ✅ Check this document FIRST
 2. ✅ Look for MinIO header errors in logs
 3. ✅ Verify sanitization is in place

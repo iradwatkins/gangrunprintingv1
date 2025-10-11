@@ -21,7 +21,7 @@ export type {
   ValidationRule,
   ValidationContext,
   ModuleType,
-  ModuleMetadata
+  ModuleMetadata,
 } from './StandardModuleTypes'
 
 // =============================================================================
@@ -76,7 +76,7 @@ export type {
   AnyModuleItem,
   AnyModuleValue,
   ExtractModuleItem,
-  ExtractModuleValue
+  ExtractModuleValue,
 } from './StandardModuleTypes'
 
 // =============================================================================
@@ -93,43 +93,43 @@ export const MODULE_REGISTRY = {
     name: 'Quantity',
     description: 'Product quantity selection with custom quantity support',
     isRequired: true,
-    defaultEnabled: true
+    defaultEnabled: true,
   },
   size: {
     type: ModuleType.SIZE,
     name: 'Size',
     description: 'Product size selection with custom dimensions',
     isRequired: false,
-    defaultEnabled: true
+    defaultEnabled: true,
   },
   'paper-stock': {
     type: ModuleType.PAPER_STOCK,
     name: 'Paper Stock',
     description: 'Paper stock, coating, and sides selection',
     isRequired: false,
-    defaultEnabled: true
+    defaultEnabled: true,
   },
   addons: {
     type: ModuleType.ADDONS,
     name: 'Add-ons',
     description: 'Product add-ons and upgrades with special configurations',
     isRequired: false,
-    defaultEnabled: true
+    defaultEnabled: true,
   },
   turnaround: {
     type: ModuleType.TURNAROUND,
     name: 'Turnaround Time',
     description: 'Production turnaround time selection with coating restrictions',
     isRequired: false,
-    defaultEnabled: true
+    defaultEnabled: true,
   },
   images: {
     type: ModuleType.IMAGES,
     name: 'Images',
     description: 'Image upload and management with multi-format support',
     isRequired: false,
-    defaultEnabled: false
-  }
+    defaultEnabled: false,
+  },
 } as const
 
 export type ModuleRegistryKey = keyof typeof MODULE_REGISTRY
@@ -149,14 +149,14 @@ export function getModuleMetadata(moduleType: string) {
  * Get all enabled modules
  */
 export function getEnabledModules() {
-  return Object.values(MODULE_REGISTRY).filter(module => module.defaultEnabled)
+  return Object.values(MODULE_REGISTRY).filter((module) => module.defaultEnabled)
 }
 
 /**
  * Get all required modules
  */
 export function getRequiredModules() {
-  return Object.values(MODULE_REGISTRY).filter(module => module.isRequired)
+  return Object.values(MODULE_REGISTRY).filter((module) => module.isRequired)
 }
 
 /**
@@ -164,10 +164,10 @@ export function getRequiredModules() {
  */
 export function validateModuleConfiguration(config: Record<string, any>) {
   const requiredModules = getRequiredModules()
-  const missingRequired = requiredModules.filter(module => !config[module.type])
+  const missingRequired = requiredModules.filter((module) => !config[module.type])
 
   if (missingRequired.length > 0) {
-    throw new Error(`Missing required modules: ${missingRequired.map(m => m.name).join(', ')}`)
+    throw new Error(`Missing required modules: ${missingRequired.map((m) => m.name).join(', ')}`)
   }
 
   return true
@@ -180,10 +180,7 @@ export function validateModuleConfiguration(config: Record<string, any>) {
 /**
  * Development helper to validate module interface compliance
  */
-export function validateModuleInterface<T>(
-  moduleProps: T,
-  expectedInterface: string
-): boolean {
+export function validateModuleInterface<T>(moduleProps: T, expectedInterface: string): boolean {
   if (process.env.NODE_ENV !== 'development') {
     return true
   }

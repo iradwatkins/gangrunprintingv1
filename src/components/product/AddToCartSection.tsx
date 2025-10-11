@@ -33,7 +33,7 @@ export function AddToCartSection({
   isConfigurationComplete,
   calculatedPrice,
   getQuantityValue,
-  className = ''
+  className = '',
 }: AddToCartSectionProps) {
   const { addItem, openCart } = useCart()
 
@@ -77,9 +77,10 @@ export function AddToCartSection({
         coating: getSelectedOptionName(configuration.coating, 'coating'),
         turnaround: getSelectedOptionName(configuration.turnaround, 'turnaround'),
         addons: configuration.selectedAddons,
-        customDimensions: configuration.customWidth && configuration.customHeight
-          ? `${configuration.customWidth}" × ${configuration.customHeight}"`
-          : undefined,
+        customDimensions:
+          configuration.customWidth && configuration.customHeight
+            ? `${configuration.customWidth}" × ${configuration.customHeight}"`
+            : undefined,
       },
       fileUrl: uploadedFile?.thumbnailUrl || '',
       fileName: uploadedFile?.originalName || '',
@@ -102,7 +103,7 @@ export function AddToCartSection({
       productSlug,
       config.paper?.slice(0, 8) || 'paper',
       config.size?.slice(0, 8) || 'size',
-      quantity.toString()
+      quantity.toString(),
     ]
     return parts.join('-')
   }
@@ -114,7 +115,7 @@ export function AddToCartSection({
   }
 
   const getPrimaryImage = (images: ProductInfo['images']): string => {
-    const primary = images.find(img => img.isPrimary)
+    const primary = images.find((img) => img.isPrimary)
     if (primary?.thumbnailUrl) return primary.thumbnailUrl
     if (primary?.url) return primary.url
     if (images[0]?.thumbnailUrl) return images[0].thumbnailUrl
@@ -148,9 +149,7 @@ export function AddToCartSection({
           </p>
         )}
         {quantity <= 0 && (
-          <p className="text-sm text-destructive text-center">
-            Please select a valid quantity
-          </p>
+          <p className="text-sm text-destructive text-center">Please select a valid quantity</p>
         )}
       </div>
     </div>

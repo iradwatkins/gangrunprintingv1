@@ -4,7 +4,6 @@ import { createId } from '@paralleldrive/cuid2'
 const prisma = new PrismaClient()
 
 async function clearAndRestoreData() {
-
   try {
     // Phase 1: Clear existing data in correct order (respecting foreign key constraints)
 
@@ -77,8 +76,8 @@ async function clearAndRestoreData() {
           slug: 'business-cards',
           sortOrder: 1,
           isActive: true,
-          updatedAt: now
-        }
+          updatedAt: now,
+        },
       }),
       prisma.productCategory.create({
         data: {
@@ -88,8 +87,8 @@ async function clearAndRestoreData() {
           slug: 'flyers',
           sortOrder: 2,
           isActive: true,
-          updatedAt: now
-        }
+          updatedAt: now,
+        },
       }),
       prisma.productCategory.create({
         data: {
@@ -99,8 +98,8 @@ async function clearAndRestoreData() {
           slug: 'posters',
           sortOrder: 3,
           isActive: true,
-          updatedAt: now
-        }
+          updatedAt: now,
+        },
       }),
       prisma.productCategory.create({
         data: {
@@ -110,9 +109,9 @@ async function clearAndRestoreData() {
           slug: 'brochures',
           sortOrder: 4,
           isActive: true,
-          updatedAt: now
-        }
-      })
+          updatedAt: now,
+        },
+      }),
     ])
 
     // Create Paper Stocks
@@ -121,11 +120,11 @@ async function clearAndRestoreData() {
         data: {
           id: createId(),
           name: '14pt Card Stock',
-          weight: 0.0014,  // Weight in pounds per square inch
+          weight: 0.0014, // Weight in pounds per square inch
           pricePerSqInch: 0.001,
           tooltipText: 'Standard business card thickness',
-          isActive: true
-        }
+          isActive: true,
+        },
       }),
       prisma.paperStock.create({
         data: {
@@ -134,8 +133,8 @@ async function clearAndRestoreData() {
           weight: 0.0016,
           pricePerSqInch: 0.0011,
           tooltipText: 'Premium thickness for business cards',
-          isActive: true
-        }
+          isActive: true,
+        },
       }),
       prisma.paperStock.create({
         data: {
@@ -144,8 +143,8 @@ async function clearAndRestoreData() {
           weight: 0.0032,
           pricePerSqInch: 0.0015,
           tooltipText: 'Extra thick premium card stock',
-          isActive: true
-        }
+          isActive: true,
+        },
       }),
       prisma.paperStock.create({
         data: {
@@ -154,9 +153,9 @@ async function clearAndRestoreData() {
           weight: 0.001,
           pricePerSqInch: 0.0008,
           tooltipText: 'Standard flyer paper',
-          isActive: true
-        }
-      })
+          isActive: true,
+        },
+      }),
     ])
 
     // Create Paper Stock Sets
@@ -170,10 +169,10 @@ async function clearAndRestoreData() {
           create: paperStocks.map((ps, index) => ({
             paperStockId: ps.id,
             isDefault: index === 0,
-            sortOrder: index
-          }))
-        }
-      }
+            sortOrder: index,
+          })),
+        },
+      },
     })
 
     // Create Standard Quantities first
@@ -183,41 +182,41 @@ async function clearAndRestoreData() {
           value: 100,
           displayValue: 100,
           displayName: '100',
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       }),
       prisma.standardQuantity.create({
         data: {
           value: 250,
           displayValue: 250,
           displayName: '250',
-          sortOrder: 2
-        }
+          sortOrder: 2,
+        },
       }),
       prisma.standardQuantity.create({
         data: {
           value: 500,
           displayValue: 500,
           displayName: '500',
-          sortOrder: 3
-        }
+          sortOrder: 3,
+        },
       }),
       prisma.standardQuantity.create({
         data: {
           value: 1000,
           displayValue: 1000,
           displayName: '1000',
-          sortOrder: 4
-        }
+          sortOrder: 4,
+        },
       }),
       prisma.standardQuantity.create({
         data: {
           value: 2500,
           displayValue: 2500,
           displayName: '2500',
-          sortOrder: 5
-        }
-      })
+          sortOrder: 5,
+        },
+      }),
     ])
 
     // Create Quantity Groups
@@ -228,8 +227,8 @@ async function clearAndRestoreData() {
         values: '100,250,500,1000,2500',
         defaultValue: '500',
         sortOrder: 1,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     // Create Standard Sizes first
@@ -240,8 +239,8 @@ async function clearAndRestoreData() {
           displayName: '3.5" x 2" (Business Card)',
           widthInches: 3.5,
           heightInches: 2,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       }),
       prisma.standardSize.create({
         data: {
@@ -249,8 +248,8 @@ async function clearAndRestoreData() {
           displayName: '8.5" x 11" (Letter)',
           widthInches: 8.5,
           heightInches: 11,
-          sortOrder: 2
-        }
+          sortOrder: 2,
+        },
       }),
       prisma.standardSize.create({
         data: {
@@ -258,8 +257,8 @@ async function clearAndRestoreData() {
           displayName: '11" x 17" (Tabloid)',
           widthInches: 11,
           heightInches: 17,
-          sortOrder: 3
-        }
+          sortOrder: 3,
+        },
       }),
       prisma.standardSize.create({
         data: {
@@ -267,9 +266,9 @@ async function clearAndRestoreData() {
           displayName: '18" x 24" (Poster)',
           widthInches: 18,
           heightInches: 24,
-          sortOrder: 4
-        }
-      })
+          sortOrder: 4,
+        },
+      }),
     ])
 
     // Create Size Groups
@@ -277,11 +276,12 @@ async function clearAndRestoreData() {
       data: {
         name: 'Standard Print Sizes',
         description: 'Common print sizes',
-        values: '3.5" x 2" (Business Card),8.5" x 11" (Letter),11" x 17" (Tabloid),18" x 24" (Poster)',
+        values:
+          '3.5" x 2" (Business Card),8.5" x 11" (Letter),11" x 17" (Tabloid),18" x 24" (Poster)',
         defaultValue: '3.5" x 2" (Business Card)',
         sortOrder: 1,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     // Create Turnaround Times
@@ -301,11 +301,11 @@ async function clearAndRestoreData() {
                   priceMultiplier: 1.0,
                   isDefault: true,
                   sortOrder: 1,
-                  isActive: true
-                }
+                  isActive: true,
+                },
               },
               isDefault: true,
-              sortOrder: 1
+              sortOrder: 1,
             },
             {
               turnaroundTime: {
@@ -315,11 +315,11 @@ async function clearAndRestoreData() {
                   priceMultiplier: 1.25,
                   isDefault: false,
                   sortOrder: 2,
-                  isActive: true
-                }
+                  isActive: true,
+                },
               },
               isDefault: false,
-              sortOrder: 2
+              sortOrder: 2,
             },
             {
               turnaroundTime: {
@@ -329,17 +329,16 @@ async function clearAndRestoreData() {
                   priceMultiplier: 1.5,
                   isDefault: false,
                   sortOrder: 3,
-                  isActive: true
-                }
+                  isActive: true,
+                },
               },
               isDefault: false,
-              sortOrder: 3
-            }
-          ]
-        }
-      }
+              sortOrder: 3,
+            },
+          ],
+        },
+      },
     })
-
   } catch (error) {
     console.error('❌ Error during data restoration:', error)
     throw error
@@ -350,7 +349,6 @@ async function clearAndRestoreData() {
 
 clearAndRestoreData()
   .then(() => {
-
     process.exit(0)
   })
   .catch((error) => {

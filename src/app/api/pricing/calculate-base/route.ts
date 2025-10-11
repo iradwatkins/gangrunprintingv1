@@ -32,10 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!data.sidesOptionId) {
-      return NextResponse.json(
-        { error: 'Sides option ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Sides option ID is required' }, { status: 400 })
     }
 
     // Load paper stock data
@@ -58,9 +55,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!paperStockSides) {
-      return NextResponse.json({
-        error: 'Sides configuration not available for this paper stock'
-      }, { status: 404 })
+      return NextResponse.json(
+        {
+          error: 'Sides configuration not available for this paper stock',
+        },
+        { status: 404 }
+      )
     }
 
     let standardSize = null
@@ -195,9 +195,9 @@ export async function POST(request: NextRequest) {
                   validExamples: [10000, 15000, 20000, 55000, 60000],
                   nearestValid: {
                     lower: Math.floor(data.customQuantity / 5000) * 5000,
-                    upper: Math.ceil(data.customQuantity / 5000) * 5000
-                  }
-                }
+                    upper: Math.ceil(data.customQuantity / 5000) * 5000,
+                  },
+                },
               },
               { status: 400 }
             )

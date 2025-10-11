@@ -11,16 +11,19 @@ Users experienced `net::ERR_CONNECTION_CLOSED` errors when uploading images to `
 ## 🔍 ROOT CAUSE ANALYSIS (3 Core Issues)
 
 ### 1. **Next.js App Router Body Size Limit**
+
 - **Default Limit:** 1MB (hardcoded in Next.js 15)
 - **Issue:** Any upload > 1MB immediately closed connection
 - **Why:** App Router doesn't respect Pages Router config
 
 ### 2. **PM2 Process Memory Constraints**
+
 - **Default:** 1G max memory restart
 - **Issue:** Process killed during large uploads
 - **Why:** Image processing uses significant memory
 
 ### 3. **Timeout Cascade Failure**
+
 - **Multiple Layers:** Route (15s), PM2 (15s), Node.js (default)
 - **Issue:** Premature connection termination
 - **Why:** Timeouts not synchronized across stack
@@ -28,7 +31,9 @@ Users experienced `net::ERR_CONNECTION_CLOSED` errors when uploading images to `
 ## ✅ THE COMPLETE FIX
 
 ### Fix 1: Route Configuration
+
 **File:** `/src/app/api/products/upload-image/route.ts`
+
 ```typescript
 // CRITICAL FIXES APPLIED:
 export const maxDuration = 60 // Increased from 15s
@@ -49,7 +54,9 @@ setTimeout(() => reject(new Error('Form data parsing timeout')), 30000)
 ```
 
 ### Fix 2: Middleware Enhancement
+
 **File:** `/middleware.ts`
+
 ```typescript
 // CRITICAL: Prevent ERR_CONNECTION_CLOSED
 requestHeaders.set('Connection', 'keep-alive')
@@ -63,7 +70,9 @@ response.headers.set('Keep-Alive', 'timeout=60')
 ```
 
 ### Fix 3: PM2/Node.js Configuration
+
 **File:** `/ecosystem.config.js`
+
 ```javascript
 // CRITICAL UPLOAD FIXES:
 max_memory_restart: '2G', // Increased from 1G
@@ -83,12 +92,14 @@ wait_ready: true,       // Wait for app ready signal
 ## 🛡️ PREVENTION CHECKLIST
 
 ### Before Deployment
+
 - [ ] Check `ecosystem.config.js` has 2G memory limit
 - [ ] Verify `middleware.ts` has keep-alive headers
 - [ ] Confirm route has 60s timeout
 - [ ] Test with 8MB file upload
 
 ### After Updates
+
 - [ ] Run: `node test-upload.js`
 - [ ] Check PM2 logs for memory issues
 - [ ] Monitor for connection resets
@@ -112,6 +123,7 @@ pm2 logs gangrunprinting --err --lines 50 | grep -E "ERR_|CLOSED|timeout"
 ## ⚠️ WARNING SIGNS
 
 Watch for these indicators:
+
 1. **PM2 Logs:** "Script exited with code 137" (memory kill)
 2. **Browser:** "net::ERR_CONNECTION_CLOSED"
 3. **API Response:** Connection reset before response
@@ -141,6 +153,7 @@ curl -X POST http://localhost:3002/api/products/upload-image \
 ## 🚨 DO NOT REMOVE OR MODIFY
 
 These settings are CRITICAL for upload functionality:
+
 - `max_memory_restart: '2G'` in ecosystem.config.js
 - `Connection: 'keep-alive'` headers in middleware.ts
 - `maxDuration = 60` in upload route

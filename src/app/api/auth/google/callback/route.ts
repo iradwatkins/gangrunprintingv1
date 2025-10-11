@@ -217,13 +217,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       errorType: error instanceof Error ? error.constructor.name : typeof error,
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
 
     if (error instanceof OAuth2RequestError) {
       console.error('[Google OAuth] OAuth2RequestError details:', {
         code: error.code,
-        description: error.description
+        description: error.description,
       })
       return NextResponse.redirect(`${baseUrl}/auth/signin?error=oauth_error`)
     }

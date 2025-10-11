@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint to check if chat service is available
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     // Check if Ollama is running
     const response = await fetch(`${OLLAMA_URL}/api/tags`)

@@ -19,7 +19,7 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
     test('should load customers page without TypeScript errors', async () => {
       // Monitor console for TypeScript runtime errors
       const consoleErrors: string[] = []
-      adminPage.on('console', msg => {
+      adminPage.on('console', (msg) => {
         if (msg.type() === 'error') {
           consoleErrors.push(msg.text())
         }
@@ -30,11 +30,12 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table', { timeout: 10000 })
 
       // Check for any TypeScript errors in console
-      const tsErrors = consoleErrors.filter(err =>
-        err.includes('TypeError') ||
-        err.includes('Cannot read') ||
-        err.includes('undefined') ||
-        err.includes('type')
+      const tsErrors = consoleErrors.filter(
+        (err) =>
+          err.includes('TypeError') ||
+          err.includes('Cannot read') ||
+          err.includes('undefined') ||
+          err.includes('type')
       )
       expect(tsErrors).toHaveLength(0)
     })
@@ -75,13 +76,13 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
         const row = customerRows[i]
 
         // Check total orders column
-        const totalOrdersText = await row.$eval('td:nth-child(4)', el => el.textContent)
+        const totalOrdersText = await row.$eval('td:nth-child(4)', (el) => el.textContent)
         expect(totalOrdersText).toMatch(/^\d+$/)
         const totalOrders = parseInt(totalOrdersText || '0')
         expect(totalOrders).toBeGreaterThanOrEqual(0)
 
         // Check total spent column (should be formatted as currency)
-        const totalSpentText = await row.$eval('td:nth-child(5)', el => el.textContent)
+        const totalSpentText = await row.$eval('td:nth-child(5)', (el) => el.textContent)
         expect(totalSpentText).toMatch(/^\$[\d,]+\.?\d*$/)
       }
     })
@@ -112,7 +113,9 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table')
 
       // Check if filter dropdown exists
-      const filterDropdown = await adminPage.$('[data-testid="status-filter"], select[name*="status"]')
+      const filterDropdown = await adminPage.$(
+        '[data-testid="status-filter"], select[name*="status"]'
+      )
 
       if (filterDropdown) {
         // Test verified filter
@@ -145,7 +148,10 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
 
       if (searchInput) {
         // Get first customer email for testing
-        const firstEmail = await adminPage.$eval('tbody tr:first-child td:nth-child(3)', el => el.textContent)
+        const firstEmail = await adminPage.$eval(
+          'tbody tr:first-child td:nth-child(3)',
+          (el) => el.textContent
+        )
 
         if (firstEmail && firstEmail !== 'N/A') {
           await searchInput.fill(firstEmail)
@@ -155,7 +161,10 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
           expect(searchResults.length).toBeGreaterThan(0)
 
           // Verify search result contains the email
-          const resultEmail = await adminPage.$eval('tbody tr:first-child td:nth-child(3)', el => el.textContent)
+          const resultEmail = await adminPage.$eval(
+            'tbody tr:first-child td:nth-child(3)',
+            (el) => el.textContent
+          )
           expect(resultEmail).toBe(firstEmail)
         }
       }
@@ -168,7 +177,9 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table')
 
       // Click on first customer row or view button
-      const viewButton = await adminPage.$('tbody tr:first-child button:has-text("View"), tbody tr:first-child a[href*="/customers/"]')
+      const viewButton = await adminPage.$(
+        'tbody tr:first-child button:has-text("View"), tbody tr:first-child a[href*="/customers/"]'
+      )
 
       if (viewButton) {
         await viewButton.click()
@@ -189,10 +200,14 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table')
 
       // Get customer with orders
-      const customerWithOrders = await adminPage.$('tbody tr:has(td:nth-child(4):not(:has-text("0")))')
+      const customerWithOrders = await adminPage.$(
+        'tbody tr:has(td:nth-child(4):not(:has-text("0")))'
+      )
 
       if (customerWithOrders) {
-        const viewButton = await customerWithOrders.$('button:has-text("View"), a[href*="/customers/"]')
+        const viewButton = await customerWithOrders.$(
+          'button:has-text("View"), a[href*="/customers/"]'
+        )
         if (viewButton) {
           await viewButton.click()
           await adminPage.waitForURL(/\/admin\/customers\/[\w-]+/)
@@ -224,13 +239,13 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       const initialCount = initialRows.length
 
       // Get first customer data
-      const firstCustomerData = await adminPage.$eval('tbody tr:first-child', row => {
+      const firstCustomerData = await adminPage.$eval('tbody tr:first-child', (row) => {
         const cells = Array.from(row.querySelectorAll('td'))
         return {
           name: cells[1]?.textContent,
           email: cells[2]?.textContent,
           orders: cells[3]?.textContent,
-          spent: cells[4]?.textContent
+          spent: cells[4]?.textContent,
         }
       })
 
@@ -242,13 +257,13 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       const refreshedRows = await adminPage.$$('tbody tr')
       const refreshedCount = refreshedRows.length
 
-      const refreshedCustomerData = await adminPage.$eval('tbody tr:first-child', row => {
+      const refreshedCustomerData = await adminPage.$eval('tbody tr:first-child', (row) => {
         const cells = Array.from(row.querySelectorAll('td'))
         return {
           name: cells[1]?.textContent,
           email: cells[2]?.textContent,
           orders: cells[3]?.textContent,
-          spent: cells[4]?.textContent
+          spent: cells[4]?.textContent,
         }
       })
 
@@ -262,12 +277,14 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table')
 
       // Check for pagination controls
-      const pagination = await adminPage.$('[data-testid="pagination"], .pagination, nav[aria-label="pagination"]')
+      const pagination = await adminPage.$(
+        '[data-testid="pagination"], .pagination, nav[aria-label="pagination"]'
+      )
 
       if (pagination) {
         // Test next page
         const nextButton = await adminPage.$('button:has-text("Next"), a:has-text("Next")')
-        if (nextButton && await nextButton.isEnabled()) {
+        if (nextButton && (await nextButton.isEnabled())) {
           await nextButton.click()
           await adminPage.waitForTimeout(500)
 
@@ -276,7 +293,9 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
           expect(secondPageRows.length).toBeGreaterThan(0)
 
           // Go back to first page
-          const prevButton = await adminPage.$('button:has-text("Previous"), a:has-text("Previous")')
+          const prevButton = await adminPage.$(
+            'button:has-text("Previous"), a:has-text("Previous")'
+          )
           if (prevButton) {
             await prevButton.click()
             await adminPage.waitForTimeout(500)
@@ -330,7 +349,7 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
 
       if (zeroOrderCustomer) {
         // Verify spent shows $0
-        const spentCell = await zeroOrderCustomer.$eval('td:nth-child(5)', el => el.textContent)
+        const spentCell = await zeroOrderCustomer.$eval('td:nth-child(5)', (el) => el.textContent)
         expect(spentCell).toMatch(/^\$0(\.00)?$/)
 
         // Verify last order shows N/A or similar
@@ -347,12 +366,12 @@ test.describe('Customer Management System - Comprehensive Testing', () => {
       await adminPage.waitForSelector('[data-testid="customers-table"], table')
 
       // Check that special characters don't break rendering
-      const allNames = await adminPage.$$eval('tbody tr td:nth-child(2)', cells =>
-        cells.map(cell => cell.textContent)
+      const allNames = await adminPage.$$eval('tbody tr td:nth-child(2)', (cells) =>
+        cells.map((cell) => cell.textContent)
       )
 
       // Names should be properly escaped and displayed
-      allNames.forEach(name => {
+      allNames.forEach((name) => {
         expect(name).toBeDefined()
         expect(name?.length).toBeGreaterThan(0)
       })
@@ -382,7 +401,7 @@ test.describe('Second Test Run - Verify Consistency', () => {
 
     // Check console errors
     const consoleErrors: string[] = []
-    adminPage.on('console', msg => {
+    adminPage.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text())
       }
@@ -397,18 +416,16 @@ test.describe('Second Test Run - Verify Consistency', () => {
     const customerRows = await adminPage.$$('tbody tr')
     if (customerRows.length > 0) {
       const firstRow = customerRows[0]
-      const totalOrdersText = await firstRow.$eval('td:nth-child(4)', el => el.textContent)
+      const totalOrdersText = await firstRow.$eval('td:nth-child(4)', (el) => el.textContent)
       expect(totalOrdersText).toMatch(/^\d+$/)
 
-      const totalSpentText = await firstRow.$eval('td:nth-child(5)', el => el.textContent)
+      const totalSpentText = await firstRow.$eval('td:nth-child(5)', (el) => el.textContent)
       expect(totalSpentText).toMatch(/^\$[\d,]+\.?\d*$/)
     }
 
     // No TypeScript errors should occur
-    const tsErrors = consoleErrors.filter(err =>
-      err.includes('TypeError') ||
-      err.includes('Cannot read') ||
-      err.includes('undefined')
+    const tsErrors = consoleErrors.filter(
+      (err) => err.includes('TypeError') || err.includes('Cannot read') || err.includes('undefined')
     )
     expect(tsErrors).toHaveLength(0)
   })

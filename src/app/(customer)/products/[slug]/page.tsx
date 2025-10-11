@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import ProductDetailClient from '@/components/product/product-detail-client'
 // import { ComponentErrorBoundary } from '@/components/error-boundary'
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
+import { generateAllProductSchemas } from '@/lib/schema-generators'
+import { type PrismaProductImage } from '@/types/product'
 
 // Force dynamic rendering to prevent chunk loading issues
 export const dynamic = 'force-dynamic'
@@ -12,18 +14,19 @@ export const revalidate = 0
 // It fetches data on the server and avoids all JSON parsing issues
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
   const { slug } = await params
 
   try {
     // Look up by slug or SKU
     const product = await prisma.product.findFirst({
       where: {
-        OR: [
-          { slug: slug },
-          { sku: slug }
-        ],
-        isActive: true
+        OR: [{ slug: slug }, { sku: slug }],
+        isActive: true,
       },
       select: {
         name: true,
@@ -41,7 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     return {
       title: `${product.name} | GangRun Printing`,
-      description: product.shortDescription || product.description || `Order ${product.name} from GangRun Printing`,
+      description:
+        product.shortDescription ||
+        product.description ||
+        `Order ${product.name} from GangRun Printing`,
     }
   } catch (error) {
     console.error('Error generating metadata:', error)
@@ -54,9 +60,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 // Validate slug format
 function isValidSlug(slug: string): boolean {
-  // Basic slug validation: alphanumeric with hyphens
+  // Basic slug validation: alphanumeric with hyphens and underscores
   // Prevent excessively long slugs that might be attacks
-  const slugRegex = /^[a-z0-9-]{1,100}$/
+  const slugRegex = /^[a-z0-9-_]{1,100}$/
   return slugRegex.test(slug)
 }
 
@@ -74,21 +80,19 @@ async function getProduct(slug: string) {
     // Try to find by slug first, then by SKU (for backward compatibility)
     const product = await prisma.product.findFirst({
       where: {
-        OR: [
-          { slug: slug },
-          { sku: slug }
-        ],
+        OR: [{ slug: slug }, { sku: slug }],
         isActive: true,
       },
       include: {
-        productCategory: true,
-        productImages: {
+        ProductCategory: true,
+        City: true, // Include city data for location-specific products
+        ProductImage: {
           include: {
             Image: true,
           },
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -102,21 +106,21 @@ async function getProduct(slug: string) {
             },
           },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: true,
           },
         },
-        productSizeGroups: {
+        ProductSizeGroup: {
           include: {
             SizeGroup: true,
           },
         },
-        productAddOnSets: {
+        ProductAddOnSet: {
           include: {
             AddOnSet: {
               include: {
-                addOnSetItems: {
+                AddOnSetItem: {
                   include: {
                     AddOn: true,
                   },
@@ -125,7 +129,7 @@ async function getProduct(slug: string) {
             },
           },
         },
-        productTurnaroundTimeSets: {
+        ProductTurnaroundTimeSet: {
           include: {
             TurnaroundTimeSet: {
               include: {
@@ -193,7 +197,10 @@ async function getProductConfiguration(productId: string) {
     return configuration
   } catch (error) {
     console.error('[Product Page Server] Error fetching configuration:', error)
-    console.error('[Product Page Server] Error details:', error instanceof Error ? error.message : String(error))
+    console.error(
+      '[Product Page Server] Error details:',
+      error instanceof Error ? error.message : String(error)
+    )
     return null
   }
 }
@@ -201,7 +208,6 @@ async function getProductConfiguration(productId: string) {
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   // Await params to fix Next.js 15 warning
   const { slug } = await params
-
 
   // Validate slug before processing
   if (!slug || typeof slug !== 'string') {
@@ -219,7 +225,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Fetch product configuration on the server (CRITICAL FIX for hydration issue)
   console.log('[Product Page] About to fetch configuration for product ID:', product.id)
   const configuration = await getProductConfiguration(product.id)
-  console.log('[Product Page] Configuration fetch complete. Result:', configuration ? 'HAS DATA' : 'NULL')
+  console.log(
+    '[Product Page] Configuration fetch complete. Result:',
+    configuration ? 'HAS DATA' : 'NULL'
+  )
 
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data
@@ -228,7 +237,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     id: product.id, // Explicitly include ID
     ProductCategory: product.productCategory || { id: '', name: 'Uncategorized' },
     // Transform productImages to flatten the nested Image data
-    ProductImage: (product.productImages || []).map((pi: any) => ({
+    ProductImage: (product.productImages || []).map((pi: PrismaProductImage) => ({
       id: pi.Image?.id || pi.id,
       url: pi.Image?.url || '',
       thumbnailUrl: pi.Image?.thumbnailUrl || pi.Image?.url || '',
@@ -259,7 +268,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (serializedConfiguration) {
     try {
       const fs = require('fs')
-      fs.writeFileSync('/tmp/product-config-debug.json', JSON.stringify(serializedConfiguration, null, 2))
+      fs.writeFileSync(
+        '/tmp/product-config-debug.json',
+        JSON.stringify(serializedConfiguration, null, 2)
+      )
     } catch (e) {
       console.error('[Product Page] Could not write debug file:', e)
     }
@@ -273,12 +285,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     quantitiesCount: serializedConfiguration?.quantities?.length || 0,
   })
 
+  // Generate JSON-LD structured data for SEO and AI
+  const schemas = generateAllProductSchemas(transformedProduct as any)
+
   // Pass the server-fetched data to the client component with error boundary
   return (
-    // Error boundary temporarily disabled for build
-    <ProductDetailClient
-      product={transformedProduct as any}
-      configuration={serializedConfiguration}
-    />
+    <>
+      {/* JSON-LD Schema Markup for SEO and AI Search */}
+      {schemas.map((schema, index) => (
+        <script
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          key={index}
+          type="application/ld+json"
+        />
+      ))}
+
+      {/* Error boundary temporarily disabled for build */}
+      <ProductDetailClient
+        configuration={serializedConfiguration}
+        product={transformedProduct as any}
+      />
+    </>
   )
 }

@@ -22,14 +22,14 @@ async function testCRUD() {
         tooltipText: 'Test paper stock',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', paperStock.name)
 
     const updatedPaperStock = await prisma.paperStock.update({
       where: { id: paperStock.id },
-      data: { name: `Updated ${paperStock.name}` }
+      data: { name: `Updated ${paperStock.name}` },
     })
     console.log('   ✅ Updated:', updatedPaperStock.name)
 
@@ -47,14 +47,14 @@ async function testCRUD() {
         isActive: true,
         sortOrder: 0,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', quantity.displayName)
 
     const updatedQuantity = await prisma.standardQuantity.update({
       where: { id: quantity.id },
-      data: { displayName: `Updated ${quantity.displayName}` }
+      data: { displayName: `Updated ${quantity.displayName}` },
     })
     console.log('   ✅ Updated:', updatedQuantity.displayName)
 
@@ -73,14 +73,14 @@ async function testCRUD() {
         groupName: 'Standard',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', size.name)
 
     const updatedSize = await prisma.size.update({
       where: { id: size.id },
-      data: { name: `Updated ${size.name}` }
+      data: { name: `Updated ${size.name}` },
     })
     console.log('   ✅ Updated:', updatedSize.name)
 
@@ -95,17 +95,17 @@ async function testCRUD() {
         name: `Test Add-on ${timestamp}`,
         category: 'COATING',
         pricingType: 'FLAT',
-        flatPrice: 25.00,
+        flatPrice: 25.0,
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', addon.name)
 
     const updatedAddon = await prisma.addOn.update({
       where: { id: addon.id },
-      data: { name: `Updated ${addon.name}`, flatPrice: 30.00 }
+      data: { name: `Updated ${addon.name}`, flatPrice: 30.0 },
     })
     console.log('   ✅ Updated:', updatedAddon.name, '($' + updatedAddon.flatPrice + ')')
 
@@ -121,14 +121,14 @@ async function testCRUD() {
         description: 'Test Description',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', addonSet.name)
 
     const updatedAddonSet = await prisma.addOnSet.update({
       where: { id: addonSet.id },
-      data: { description: 'Updated Description' }
+      data: { description: 'Updated Description' },
     })
     console.log('   ✅ Updated description')
 
@@ -142,18 +142,18 @@ async function testCRUD() {
         id: uuidv4(),
         name: `Test Turnaround ${timestamp}`,
         businessDays: 5,
-        price: 100.00,
+        price: 100.0,
         isDefault: false,
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', turnaround.name)
 
     const updatedTurnaround = await prisma.turnaroundTime.update({
       where: { id: turnaround.id },
-      data: { businessDays: 7 }
+      data: { businessDays: 7 },
     })
     console.log('   ✅ Updated: Business days changed to', updatedTurnaround.businessDays)
 
@@ -169,14 +169,14 @@ async function testCRUD() {
         description: 'Test Description',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', turnaroundSet.name)
 
     const updatedTurnaroundSet = await prisma.turnaroundTimeSet.update({
       where: { id: turnaroundSet.id },
-      data: { description: 'Updated Description' }
+      data: { description: 'Updated Description' },
     })
     console.log('   ✅ Updated description')
 
@@ -193,14 +193,14 @@ async function testCRUD() {
         description: 'Test Description',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', category.name)
 
     const updatedCategory = await prisma.productCategory.update({
       where: { id: category.id },
-      data: { description: 'Updated Description' }
+      data: { description: 'Updated Description' },
     })
     console.log('   ✅ Updated description')
 
@@ -221,14 +221,14 @@ async function testCRUD() {
         category: 'business-cards',
         productType: 'SIMPLE',
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', product.name)
 
     const updatedProduct = await prisma.product.update({
       where: { id: product.id },
-      data: { basePrice: 149.99 }
+      data: { basePrice: 149.99 },
     })
     console.log('   ✅ Updated: Price changed to $' + updatedProduct.basePrice)
 
@@ -244,20 +244,19 @@ async function testCRUD() {
         description: 'Test Description',
         isActive: true,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     console.log('   ✅ Created:', paperStockSet.name)
 
     const updatedPaperStockSet = await prisma.paperStockSet.update({
       where: { id: paperStockSet.id },
-      data: { description: 'Updated Description' }
+      data: { description: 'Updated Description' },
     })
     console.log('   ✅ Updated description')
 
     await prisma.paperStockSet.delete({ where: { id: paperStockSet.id } })
     console.log('   ✅ Deleted successfully')
-
   } catch (error) {
     console.error('\n❌ Test failed:', error.message)
     allTestsPassed = false

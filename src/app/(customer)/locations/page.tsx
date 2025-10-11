@@ -437,9 +437,7 @@ export default function LocationsPage() {
               .map(([day, hours]) => (
                 <div key={day} className="text-sm grid grid-cols-2 gap-2">
                   <span className="text-muted-foreground">{day}:</span>
-                  <span className={hours === 'Closed' ? 'text-muted-foreground' : ''}>
-                    {hours}
-                  </span>
+                  <span className={hours === 'Closed' ? 'text-muted-foreground' : ''}>{hours}</span>
                 </div>
               ))}
           </div>

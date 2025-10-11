@@ -198,11 +198,7 @@ export function recordHttpRequest(
 /**
  * Record a database query
  */
-export function recordDbQuery(
-  operation: string,
-  table: string,
-  duration: number
-): void {
+export function recordDbQuery(operation: string, table: string, duration: number): void {
   dbQueryDuration.observe({ operation, table }, duration)
 }
 
@@ -217,7 +213,10 @@ export function recordOrder(
 ): void {
   ordersTotal.inc({ status, payment_method: paymentMethod, product_type: productType })
   orderValue.observe({ product_type: productType, customer_type: 'standard' }, value)
-  revenueTotal.inc({ product_type: productType, payment_method: paymentMethod }, Math.round(value * 100))
+  revenueTotal.inc(
+    { product_type: productType, payment_method: paymentMethod },
+    Math.round(value * 100)
+  )
 }
 
 /**
@@ -261,7 +260,6 @@ export async function updateActiveMetrics(): Promise<void> {
     dbConnectionPool.set({ state: 'active' }, 10)
     dbConnectionPool.set({ state: 'idle' }, 5)
     dbConnectionPool.set({ state: 'waiting' }, 0)
-
   } catch (error) {
     logger.error('Failed to update active metrics:', error)
   }

@@ -3,15 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { getErrorCode } from '@/lib/error-utils'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const coatingOptions = await prisma.coatingOption.findMany({
       orderBy: { name: 'asc' },
-      include: {
-        _count: {
-          select: { paperStockCoatings: true },
-        },
-      },
     })
 
     return NextResponse.json(coatingOptions)

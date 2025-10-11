@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { type PrismaClient } from '@prisma/client'
 
 export interface CartItem {
   productId: string
@@ -59,7 +59,7 @@ export class CartService {
 
   // Calculate order summary with taxes and shipping
   calculateOrderSummary(items: CartItem[], shippingAddress?: any): OrderSummary {
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
     // Business logic for tax calculation (simplified)
     const taxRate = this.getTaxRate(shippingAddress)
@@ -94,7 +94,7 @@ export class CartService {
         total: orderSummary.total,
         shippingAddress: JSON.stringify(shippingAddress),
         orderItems: {
-          create: items.map(item => ({
+          create: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.price,
@@ -196,16 +196,16 @@ export class CartService {
 
   private calculateShipping(items: CartItem[], shippingAddress?: any): number {
     // Simplified shipping calculation
-    const totalWeight = items.reduce((weight, item) => weight + (item.quantity * 0.1), 0) // Assume 0.1 lb per item
+    const totalWeight = items.reduce((weight, item) => weight + item.quantity * 0.1, 0) // Assume 0.1 lb per item
     const baseShipping = 5.99
     const weightShipping = totalWeight * 0.5
 
     // Express shipping for rush orders
-    const hasRushOrder = items.some(item =>
-      item.turnaround.includes('rush') || item.turnaround.includes('1 day')
+    const hasRushOrder = items.some(
+      (item) => item.turnaround.includes('rush') || item.turnaround.includes('1 day')
     )
 
-    return baseShipping + weightShipping + (hasRushOrder ? 15.00 : 0)
+    return baseShipping + weightShipping + (hasRushOrder ? 15.0 : 0)
   }
 
   // Generate unique SKU for cart item

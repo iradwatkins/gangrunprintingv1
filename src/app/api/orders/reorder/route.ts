@@ -76,7 +76,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
+    if (
+      (error as any)?.name === 'AuthenticationError' ||
+      (error as any)?.name === 'AuthorizationError'
+    ) {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to prepare re-order' }, { status: 500 })
@@ -122,7 +125,10 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     // Handle auth errors
-    if ((error as any)?.name === 'AuthenticationError' || (error as any)?.name === 'AuthorizationError') {
+    if (
+      (error as any)?.name === 'AuthenticationError' ||
+      (error as any)?.name === 'AuthorizationError'
+    ) {
       return handleAuthError(error)
     }
     return NextResponse.json({ error: 'Failed to fetch re-orderable orders' }, { status: 500 })

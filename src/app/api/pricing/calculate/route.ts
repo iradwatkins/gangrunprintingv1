@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { unifiedPricingEngine, type UnifiedPricingRequest } from '@/lib/pricing/unified-pricing-engine'
+import {
+  unifiedPricingEngine,
+  type UnifiedPricingRequest,
+} from '@/lib/pricing/unified-pricing-engine'
 import { pricingCalculationRequestSchema } from '@/lib/validation'
 import { z } from 'zod'
 
@@ -49,7 +52,7 @@ export async function POST(request: NextRequest) {
 
       // Customer type
       isBroker: validatedRequest.isBroker || false,
-      brokerCategoryDiscounts: validatedRequest.brokerCategoryDiscounts || []
+      brokerCategoryDiscounts: validatedRequest.brokerCategoryDiscounts || [],
     }
 
     // Calculate price using UnifiedPricingEngine
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Pricing calculation validation failed',
-          validation: result.validation
+          validation: result.validation,
         },
         { status: 400 }
       )
@@ -83,40 +86,45 @@ export async function POST(request: NextRequest) {
         addonCosts: result.totalAddonsCost,
         turnaroundMarkup: result.turnaround.markupAmount,
         adjustments: {
-          brokerDiscount: result.adjustments.brokerDiscount.applied ? {
-            percentage: result.adjustments.brokerDiscount.percentage,
-            amount: result.adjustments.brokerDiscount.amount
-          } : undefined,
-          taglineDiscount: result.adjustments.taglineDiscount.applied ? {
-            percentage: result.adjustments.taglineDiscount.percentage,
-            amount: result.adjustments.taglineDiscount.amount
-          } : undefined,
-          exactSizeMarkup: result.adjustments.exactSizeMarkup.applied ? {
-            percentage: result.adjustments.exactSizeMarkup.percentage,
-            amount: result.adjustments.exactSizeMarkup.amount
-          } : undefined
-        }
+          brokerDiscount: result.adjustments.brokerDiscount.applied
+            ? {
+                percentage: result.adjustments.brokerDiscount.percentage,
+                amount: result.adjustments.brokerDiscount.amount,
+              }
+            : undefined,
+          taglineDiscount: result.adjustments.taglineDiscount.applied
+            ? {
+                percentage: result.adjustments.taglineDiscount.percentage,
+                amount: result.adjustments.taglineDiscount.amount,
+              }
+            : undefined,
+          exactSizeMarkup: result.adjustments.exactSizeMarkup.applied
+            ? {
+                percentage: result.adjustments.exactSizeMarkup.percentage,
+                amount: result.adjustments.exactSizeMarkup.amount,
+              }
+            : undefined,
+        },
       },
       calculation: {
         formula: result.baseCalculation.formula,
         size: result.baseCalculation.size,
         quantity: result.baseCalculation.quantity,
         paperPrice: result.baseCalculation.paperPrice,
-        sidesMultiplier: result.baseCalculation.sidesMultiplier
+        sidesMultiplier: result.baseCalculation.sidesMultiplier,
       },
       turnaround: {
         name: result.turnaround.name,
         days: result.turnaround.days,
-        markupPercent: result.turnaround.markupPercent
+        markupPercent: result.turnaround.markupPercent,
       },
       addons: result.addons,
       validation: result.validation,
       displayBreakdown: result.displayBreakdown,
       meta: {
-        responseTimeMs: Math.round(responseTime)
-      }
+        responseTimeMs: Math.round(responseTime),
+      },
     })
-
   } catch (error) {
     // Handle validation errors from Zod
     if (error instanceof z.ZodError) {
@@ -126,9 +134,9 @@ export async function POST(request: NextRequest) {
           error: 'Invalid request data',
           validation: {
             isValid: false,
-            errors: error.issues.map(e => `${e.path.join('.')}: ${e.message}`),
-            warnings: []
-          }
+            errors: error.issues.map((e) => `${e.path.join('.')}: ${e.message}`),
+            warnings: [],
+          },
         },
         { status: 400 }
       )
@@ -144,8 +152,8 @@ export async function POST(request: NextRequest) {
         validation: {
           isValid: false,
           errors: ['Failed to calculate price'],
-          warnings: []
-        }
+          warnings: [],
+        },
       },
       { status: 500 }
     )
@@ -157,53 +165,62 @@ export async function POST(request: NextRequest) {
  */
 async function fetchCatalogData(request: z.infer<typeof pricingCalculationRequestSchema>) {
   // Fetch sizes
-  const sizes = request.standardSizeId ? await prisma.sizeGroup.findMany({
-    where: { isActive: true }
-  }) : []
-
-  // Fetch quantities
-  const quantities = request.standardQuantityId ? await prisma.quantityGroup.findMany({
-    where: { isActive: true }
-  }) : []
-
-  // Fetch paper stocks
-  const paperStocks = request.paperStockId ? await prisma.paperStock.findMany({
-    where: { isActive: true },
-    include: {
-      paperStockCoatings: {
-        include: {
-          CoatingOption: true
-        }
-      },
-      paperStockSides: {
-        include: {
-          SidesOption: true
-        }
-      }
-    }
-  }) : []
-
-  // Fetch turnaround times
-  const turnarounds = request.turnaroundId ? await prisma.turnaroundTime.findMany({
-    where: { isActive: true }
-  }) : []
-
-  // Fetch add-ons
-  const addons = request.selectedAddons && request.selectedAddons.length > 0
-    ? await prisma.addOn.findMany({
-        where: {
-          id: { in: request.selectedAddons.map(a => a.addonId) },
-          isActive: true
-        },
-        include: {
-          addOnSubOptions: true
-        }
+  const sizes = request.standardSizeId
+    ? await prisma.sizeGroup.findMany({
+        where: { isActive: true },
       })
     : []
 
+  // Fetch quantities
+  const quantities = request.standardQuantityId
+    ? await prisma.quantityGroup.findMany({
+        where: { isActive: true },
+      })
+    : []
+
+  // Fetch paper stocks
+  const paperStocks = request.paperStockId
+    ? await prisma.paperStock.findMany({
+        where: { isActive: true },
+        include: {
+          paperStockCoatings: {
+            include: {
+              CoatingOption: true,
+            },
+          },
+          paperStockSides: {
+            include: {
+              SidesOption: true,
+            },
+          },
+        },
+      })
+    : []
+
+  // Fetch turnaround times
+  const turnarounds = request.turnaroundId
+    ? await prisma.turnaroundTime.findMany({
+        where: { isActive: true },
+      })
+    : []
+
+  // Fetch add-ons
+  const addons =
+    request.selectedAddons && request.selectedAddons.length > 0
+      ? await prisma.addOn.findMany({
+          where: {
+            id: { in: request.selectedAddons.map((a) => a.addonId) },
+            isActive: true,
+          },
+          include: {
+            addOnSubOptions: true,
+          },
+        })
+      : []
+
   // Transform database data to pricing engine format
   return {
-    sizes: sizes.map(s => ({
+    sizes: sizes.map((s) => ({
       id: s.id,
       name: s.name,
       displayName: s.name,
@@ -212,18 +229,18 @@ async function fetchCatalogData(request: z.infer<typeof pricingCalculationReques
       preCalculatedValue: 1, // Default, should be calculated from values
       isCustom: false,
       sortOrder: s.sortOrder,
-      isActive: s.isActive
+      isActive: s.isActive,
     })),
-    quantities: quantities.map(q => ({
+    quantities: quantities.map((q) => ({
       id: q.id,
       displayValue: 0, // Parse from values
       calculationValue: 0,
       adjustmentValue: undefined,
       isCustom: false,
       sortOrder: q.sortOrder,
-      isActive: q.isActive
+      isActive: q.isActive,
     })),
-    paperStocks: paperStocks.map(ps => ({
+    paperStocks: paperStocks.map((ps) => ({
       id: ps.id,
       name: ps.name,
       pricePerSqInch: ps.pricePerSqInch,
@@ -231,19 +248,20 @@ async function fetchCatalogData(request: z.infer<typeof pricingCalculationReques
       doubleSidedMultiplier: 1.0,
       paperType: 'cardstock' as const,
       thickness: undefined,
-      coating: undefined
+      coating: undefined,
     })),
-    turnarounds: turnarounds.map(t => ({
+    turnarounds: turnarounds.map((t) => ({
       id: t.id,
       name: t.name,
       businessDays: t.daysMin,
       priceMarkupPercent: (t.priceMultiplier - 1.0) * 100, // Convert multiplier to percentage
       isStandard: t.basePrice === 0, // Standard if no base price
-      sortOrder: t.sortOrder
+      sortOrder: t.sortOrder,
     })),
-    addons: addons.map(a => {
+    addons: addons.map((a) => {
       // Parse configuration from JSON
-      const config = typeof a.configuration === 'object' ? a.configuration as Record<string, any> : {}
+      const config =
+        typeof a.configuration === 'object' ? (a.configuration as Record<string, any>) : {}
 
       return {
         id: a.id,
@@ -256,14 +274,14 @@ async function fetchCatalogData(request: z.infer<typeof pricingCalculationReques
           appliesTo: 'base_price' as const,
           setupFee: config.setupFee || undefined,
           pricePerUnit: config.pricePerUnit || undefined,
-          unitType: 'piece' as const
+          unitType: 'piece' as const,
         },
         isActive: a.isActive,
         sortOrder: a.sortOrder || 0,
         requiresConfiguration: false,
         conflictsWith: [],
-        requiredFor: []
+        requiredFor: [],
       }
-    })
+    }),
   }
 }

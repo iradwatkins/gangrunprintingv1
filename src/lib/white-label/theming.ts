@@ -1,4 +1,3 @@
-
 export interface ThemeConfig {
   // Colors
   primaryColor: string

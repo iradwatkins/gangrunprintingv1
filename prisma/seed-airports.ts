@@ -1194,7 +1194,6 @@ const airports = [
 ]
 
 async function seedAirports() {
-
   for (const airport of airports) {
     try {
       await prisma.airport.upsert({
@@ -1202,12 +1201,10 @@ async function seedAirports() {
         update: airport,
         create: airport,
       })
-
     } catch (error) {
       console.error(`❌ Failed to seed ${airport.name} (${airport.code}):`, error)
     }
   }
-
 }
 
 async function main() {

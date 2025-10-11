@@ -6,7 +6,7 @@ const productTests = [
   { name: 'Product one', sku: 'SKU001', price: 99.99 },
   { name: 'Product two', sku: 'SKU002', price: 109.99 },
   { name: 'Product three', sku: 'SKU003', price: 119.99 },
-  { name: 'Product four', sku: 'SKU004', price: 129.99 }
+  { name: 'Product four', sku: 'SKU004', price: 129.99 },
 ]
 
 async function testProductCRUD() {
@@ -32,8 +32,8 @@ async function testProductCRUD() {
           description: 'For product testing',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
       console.log('✅ Created test add-on set')
     }
@@ -48,8 +48,8 @@ async function testProductCRUD() {
           description: 'For product testing',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
       console.log('✅ Created test turnaround time set')
     }
@@ -72,8 +72,8 @@ async function testProductCRUD() {
               description: 'Professional business cards',
               isActive: true,
               createdAt: new Date(),
-              updatedAt: new Date()
-            }
+              updatedAt: new Date(),
+            },
           })
         }
 
@@ -94,11 +94,11 @@ async function testProductCRUD() {
             metadata: {
               testProduct: true,
               createdBy: 'Playwright Test',
-              testIndex: index + 1
+              testIndex: index + 1,
             },
             createdAt: new Date(),
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
         console.log(`  ✅ Created: ${product.name} (${product.sku})`)
         createdProducts.push(product.id)
@@ -112,8 +112,8 @@ async function testProductCRUD() {
               addOnSetId: addonSet.id,
               sortOrder: 0,
               createdAt: new Date(),
-              updatedAt: new Date()
-            }
+              updatedAt: new Date(),
+            },
           })
           console.log('  ✅ Added add-on set to product')
         }
@@ -126,8 +126,8 @@ async function testProductCRUD() {
               turnaroundTimeSetId: turnaroundSet.id,
               isDefault: true,
               createdAt: new Date(),
-              updatedAt: new Date()
-            }
+              updatedAt: new Date(),
+            },
           })
           console.log('  ✅ Added turnaround time set to product')
         }
@@ -138,8 +138,8 @@ async function testProductCRUD() {
           where: { id: product.id },
           include: {
             productAddOnSets: true,
-            productTurnaroundTimeSets: true
-          }
+            productTurnaroundTimeSets: true,
+          },
         })
         console.log(`  ✅ Verified: ${readProduct.name}`)
         console.log(`     - Add-on Sets: ${readProduct.productAddOnSets.length}`)
@@ -153,8 +153,8 @@ async function testProductCRUD() {
             name: `${product.name} - Edited`,
             basePrice: product.basePrice + 50,
             description: `${product.description} [UPDATED]`,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
         console.log(`  ✅ Updated: ${updatedProduct.name} ($${updatedProduct.basePrice})`)
 
@@ -174,11 +174,11 @@ async function testProductCRUD() {
             metadata: {
               ...product.metadata,
               duplicatedFrom: product.id,
-              duplicatedAt: new Date().toISOString()
+              duplicatedAt: new Date().toISOString(),
             },
             createdAt: new Date(),
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
         console.log(`  ✅ Duplicated: ${duplicatedProduct.name} (${duplicatedProduct.sku})`)
         createdProducts.push(duplicatedProduct.id)
@@ -192,19 +192,16 @@ async function testProductCRUD() {
               addOnSetId: addonSet.id,
               sortOrder: 0,
               createdAt: new Date(),
-              updatedAt: new Date()
-            }
+              updatedAt: new Date(),
+            },
           })
         }
 
         // 6. LIST ALL VERSIONS
         const allVersions = await prisma.product.findMany({
           where: {
-            OR: [
-              { id: product.id },
-              { id: duplicatedProduct.id }
-            ]
-          }
+            OR: [{ id: product.id }, { id: duplicatedProduct.id }],
+          },
         })
         console.log(`  ✅ Total versions: ${allVersions.length}`)
 
@@ -224,7 +221,6 @@ async function testProductCRUD() {
         }
 
         console.log(`\n✅ ${productData.name} - ALL TESTS PASSED`)
-
       } catch (error) {
         console.error(`\n❌ ${productData.name} - TEST FAILED:`, error.message)
         allTestsPassed = false
@@ -238,16 +234,16 @@ async function testProductCRUD() {
 
     const remainingProducts = await prisma.product.findMany({
       where: {
-        id: { in: createdProducts }
+        id: { in: createdProducts },
       },
       include: {
         productAddOnSets: true,
-        productTurnaroundTimeSets: true
-      }
+        productTurnaroundTimeSets: true,
+      },
     })
 
     console.log(`\n📊 Products remaining in database: ${remainingProducts.length}`)
-    remainingProducts.forEach(p => {
+    remainingProducts.forEach((p) => {
       console.log(`  - ${p.name} (${p.sku})`)
       console.log(`    • Price: $${p.basePrice}`)
       console.log(`    • Add-on Sets: ${p.productAddOnSets.length}`)
@@ -264,13 +260,12 @@ async function testProductCRUD() {
             ...remainingProducts[0].metadata,
             images: ['test-image-1.png', 'test-image-2.jpg'],
             primaryImage: 'test-image-1.png',
-            thumbnailImage: 'test-image-thumb.png'
-          }
-        }
+            thumbnailImage: 'test-image-thumb.png',
+          },
+        },
       })
       console.log('  ✅ Image metadata added successfully')
     }
-
   } catch (error) {
     console.error('\n❌ Test suite failed:', error.message)
     allTestsPassed = false

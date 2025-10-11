@@ -178,7 +178,7 @@ export default function OrderHistory() {
     const matchesSearch =
       order.referenceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-(order.OrderItem || []).some((item) =>
+      (order.OrderItem || []).some((item) =>
         item.productName.toLowerCase().includes(searchTerm.toLowerCase())
       )
 

@@ -69,7 +69,7 @@ export enum AddonPricingModel {
   PERCENTAGE = 'PERCENTAGE', // % of base or total
   PER_UNIT = 'PER_UNIT', // Price per piece/bundle
   CUSTOM = 'CUSTOM', // Complex calculation
-  TIERED = 'TIERED' // Different prices at different quantities
+  TIERED = 'TIERED', // Different prices at different quantities
 }
 
 export interface UnifiedAddon {
@@ -264,8 +264,8 @@ export class UnifiedPricingEngine {
     }
 
     // Get catalog items
-    const paperStock = catalog.paperStocks.find(p => p.id === request.paperStockId)!
-    const turnaround = catalog.turnarounds.find(t => t.id === request.turnaroundId)!
+    const paperStock = catalog.paperStocks.find((p) => p.id === request.paperStockId)!
+    const turnaround = catalog.turnarounds.find((t) => t.id === request.turnaroundId)!
 
     // Calculate size
     const size = this.calculateSize(request, catalog)
@@ -291,7 +291,7 @@ export class UnifiedPricingEngine {
       paperPrice: paperStock.pricePerSqInch,
       sidesMultiplier,
       formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
-      basePrice
+      basePrice,
     }
 
     // Apply adjustments
@@ -300,7 +300,7 @@ export class UnifiedPricingEngine {
     // Broker discount
     if (request.isBroker && request.brokerCategoryDiscounts) {
       const discount = request.brokerCategoryDiscounts.find(
-        d => d.categoryId === request.categoryId
+        (d) => d.categoryId === request.categoryId
       )
       if (discount) {
         const discountAmount = this.decimal(basePrice)
@@ -312,44 +312,38 @@ export class UnifiedPricingEngine {
         result.adjustments.brokerDiscount = {
           applied: true,
           percentage: discount.discountPercent,
-          amount: discountAmount
+          amount: discountAmount,
         }
       }
     }
 
     // Check for "Our Tagline" addon (5% discount)
-    const taglineAddon = request.selectedAddons.find(
-      a => catalog.addons.find(ad => ad.id === a.addonId)?.name.includes('Our Tagline')
+    const taglineAddon = request.selectedAddons.find((a) =>
+      catalog.addons.find((ad) => ad.id === a.addonId)?.name.includes('Our Tagline')
     )
     if (taglineAddon && !result.adjustments.brokerDiscount.applied) {
-      const discountAmount = this.decimal(basePrice)
-        .times(5)
-        .div(100)
-        .toNumber()
+      const discountAmount = this.decimal(basePrice).times(5).div(100).toNumber()
 
       adjustedPrice -= discountAmount
       result.adjustments.taglineDiscount = {
         applied: true,
         percentage: 5,
-        amount: discountAmount
+        amount: discountAmount,
       }
     }
 
     // Check for "Exact Size" addon (12.5% markup)
-    const exactSizeAddon = request.selectedAddons.find(
-      a => catalog.addons.find(ad => ad.id === a.addonId)?.name.includes('Exact Size')
+    const exactSizeAddon = request.selectedAddons.find((a) =>
+      catalog.addons.find((ad) => ad.id === a.addonId)?.name.includes('Exact Size')
     )
     if (exactSizeAddon) {
-      const markupAmount = this.decimal(adjustedPrice)
-        .times(12.5)
-        .div(100)
-        .toNumber()
+      const markupAmount = this.decimal(adjustedPrice).times(12.5).div(100).toNumber()
 
       adjustedPrice += markupAmount
       result.adjustments.exactSizeMarkup = {
         applied: true,
         percentage: 12.5,
-        amount: markupAmount
+        amount: markupAmount,
       }
     }
 
@@ -367,7 +361,7 @@ export class UnifiedPricingEngine {
       name: turnaround.name,
       days: turnaround.businessDays,
       markupPercent: turnaround.priceMarkupPercent,
-      markupAmount: turnaroundMarkup
+      markupAmount: turnaroundMarkup,
     }
     result.totals.afterTurnaround = priceAfterTurnaround
 
@@ -401,10 +395,7 @@ export class UnifiedPricingEngine {
   /**
    * Calculate size based on selection
    */
-  private calculateSize(
-    request: UnifiedPricingRequest,
-    catalog: { sizes: UnifiedSize[] }
-  ): number {
+  private calculateSize(request: UnifiedPricingRequest, catalog: { sizes: UnifiedSize[] }): number {
     if (request.sizeSelection === 'custom') {
       if (!request.customWidth || !request.customHeight) {
         throw new Error('Custom size requires width and height')
@@ -420,7 +411,7 @@ export class UnifiedPricingEngine {
 
       return request.customWidth * request.customHeight
     } else {
-      const size = catalog.sizes.find(s => s.id === request.standardSizeId)
+      const size = catalog.sizes.find((s) => s.id === request.standardSizeId)
       if (!size) {
         throw new Error('Standard size not found')
       }
@@ -447,14 +438,14 @@ export class UnifiedPricingEngine {
         const upper = Math.ceil(request.customQuantity / 5000) * 5000
         throw new Error(
           `Custom quantities above 5000 must be in increments of 5000. ` +
-          `Received: ${request.customQuantity}. ` +
-          `Try ${lower.toLocaleString()} or ${upper.toLocaleString()}`
+            `Received: ${request.customQuantity}. ` +
+            `Try ${lower.toLocaleString()} or ${upper.toLocaleString()}`
         )
       }
 
       return request.customQuantity
     } else {
-      const quantity = catalog.quantities.find(q => q.id === request.standardQuantityId)
+      const quantity = catalog.quantities.find((q) => q.id === request.standardQuantityId)
       if (!quantity) {
         throw new Error('Standard quantity not found')
       }
@@ -496,12 +487,15 @@ export class UnifiedPricingEngine {
     paperStock: UnifiedPaperStock,
     adjustedBasePrice: number,
     priceAfterTurnaround: number
-  ): { addons: Array<{ id: string; name: string; cost: number; calculation: string }>; total: number } {
+  ): {
+    addons: Array<{ id: string; name: string; cost: number; calculation: string }>
+    total: number
+  } {
     const addonCosts: Array<{ id: string; name: string; cost: number; calculation: string }> = []
     let totalCost = 0
 
     for (const selectedAddon of request.selectedAddons) {
-      const addon = catalog.addons.find(a => a.id === selectedAddon.addonId)
+      const addon = catalog.addons.find((a) => a.id === selectedAddon.addonId)
       if (!addon) continue
 
       // Skip pricing modifiers (handled in adjustments)
@@ -526,10 +520,7 @@ export class UnifiedPricingEngine {
             baseAmount = priceAfterTurnaround
           }
 
-          cost = this.decimal(baseAmount)
-            .times(percentage)
-            .div(100)
-            .toNumber()
+          cost = this.decimal(baseAmount).times(percentage).div(100).toNumber()
           calculation = `${percentage}% of ${addon.configuration.appliesTo}: $${cost.toFixed(2)}`
           break
 
@@ -538,7 +529,7 @@ export class UnifiedPricingEngine {
           const pricePerUnit = addon.configuration.pricePerUnit || 0
           const units = selectedAddon.quantity || quantity
 
-          cost = setupFee + (pricePerUnit * units)
+          cost = setupFee + pricePerUnit * units
 
           if (setupFee > 0) {
             calculation = `$${setupFee} setup + $${pricePerUnit} × ${units} ${addon.configuration.unitType}s`
@@ -555,12 +546,12 @@ export class UnifiedPricingEngine {
             if (paperStock.paperType === 'text') {
               const setup = calc.textPaperPrice || 0
               const perPiece = calc.textPaperPerPiece || 0
-              cost = setup + (perPiece * quantity)
+              cost = setup + perPiece * quantity
               calculation = `Text paper: $${setup} + $${perPiece}/pc × ${quantity}`
             } else if (paperStock.paperType === 'cardstock') {
               const setup = calc.cardStockPrice || 0
               const perPiece = calc.cardStockPerPiece || 0
-              cost = setup + (perPiece * quantity)
+              cost = setup + perPiece * quantity
               calculation = `Card stock: $${setup} + $${perPiece}/pc × ${quantity}`
             }
           }
@@ -576,7 +567,7 @@ export class UnifiedPricingEngine {
         case AddonPricingModel.TIERED:
           // Find applicable tier
           if (addon.configuration.tiers) {
-            const tier = addon.configuration.tiers.find(t => {
+            const tier = addon.configuration.tiers.find((t) => {
               const min = t.minQuantity
               const max = t.maxQuantity || Infinity
               return quantity >= min && quantity <= max
@@ -584,7 +575,7 @@ export class UnifiedPricingEngine {
 
             if (tier) {
               if (tier.pricePerUnit) {
-                cost = tier.price + (tier.pricePerUnit * quantity)
+                cost = tier.price + tier.pricePerUnit * quantity
                 calculation = `Tier ${tier.minQuantity}+: $${tier.price} + $${tier.pricePerUnit}/pc`
               } else {
                 cost = tier.price
@@ -600,7 +591,7 @@ export class UnifiedPricingEngine {
           id: addon.id,
           name: addon.name,
           cost,
-          calculation
+          calculation,
         })
         totalCost += cost
       }
@@ -668,8 +659,8 @@ export class UnifiedPricingEngine {
           const upper = Math.ceil(request.customQuantity / 5000) * 5000
           errors.push(
             `Custom quantities above 5000 must be in increments of 5000. ` +
-            `Received: ${request.customQuantity}. ` +
-            `Try ${lower.toLocaleString()} or ${upper.toLocaleString()}`
+              `Received: ${request.customQuantity}. ` +
+              `Try ${lower.toLocaleString()} or ${upper.toLocaleString()}`
           )
         }
 
@@ -701,15 +692,15 @@ export class UnifiedPricingEngine {
     }
 
     // Check for conflicting addons
-    const selectedAddonIds = request.selectedAddons.map(a => a.addonId)
+    const selectedAddonIds = request.selectedAddons.map((a) => a.addonId)
     for (const selectedId of selectedAddonIds) {
       const addon = catalog.addons.find((a: any) => a.id === selectedId)
       if (addon?.conflictsWith) {
         const conflicts = addon.conflictsWith.filter((id: string) => selectedAddonIds.includes(id))
         if (conflicts.length > 0) {
-          const conflictNames = conflicts.map((id: string) =>
-            catalog.addons.find((a: any) => a.id === id)?.name
-          ).join(', ')
+          const conflictNames = conflicts
+            .map((id: string) => catalog.addons.find((a: any) => a.id === id)?.name)
+            .join(', ')
           warnings.push(`${addon.name} conflicts with: ${conflictNames}`)
         }
       }
@@ -718,7 +709,7 @@ export class UnifiedPricingEngine {
     return {
       isValid: errors.length === 0,
       warnings,
-      errors
+      errors,
     }
   }
 
@@ -733,18 +724,18 @@ export class UnifiedPricingEngine {
         paperPrice: 0,
         sidesMultiplier: 1,
         formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
-        basePrice: 0
+        basePrice: 0,
       },
       adjustments: {
         brokerDiscount: { applied: false, percentage: 0, amount: 0 },
         taglineDiscount: { applied: false, percentage: 0, amount: 0 },
-        exactSizeMarkup: { applied: false, percentage: 0, amount: 0 }
+        exactSizeMarkup: { applied: false, percentage: 0, amount: 0 },
       },
       turnaround: {
         name: '',
         days: 0,
         markupPercent: 0,
-        markupAmount: 0
+        markupAmount: 0,
       },
       addons: [],
       totalAddonsCost: 0,
@@ -753,14 +744,14 @@ export class UnifiedPricingEngine {
         afterAdjustments: 0,
         afterTurnaround: 0,
         beforeTax: 0,
-        unitPrice: 0
+        unitPrice: 0,
       },
       validation: {
         isValid: true,
         warnings: [],
-        errors: []
+        errors: [],
       },
-      displayBreakdown: []
+      displayBreakdown: [],
     }
   }
 
@@ -781,19 +772,27 @@ export class UnifiedPricingEngine {
     lines.push(`  Base Price: $${result.baseCalculation.basePrice.toFixed(2)}`)
     lines.push('')
 
-    if (result.adjustments.brokerDiscount.applied ||
-        result.adjustments.taglineDiscount.applied ||
-        result.adjustments.exactSizeMarkup.applied) {
+    if (
+      result.adjustments.brokerDiscount.applied ||
+      result.adjustments.taglineDiscount.applied ||
+      result.adjustments.exactSizeMarkup.applied
+    ) {
       lines.push('ADJUSTMENTS:')
 
       if (result.adjustments.brokerDiscount.applied) {
-        lines.push(`  Broker Discount (-${result.adjustments.brokerDiscount.percentage}%): -$${result.adjustments.brokerDiscount.amount.toFixed(2)}`)
+        lines.push(
+          `  Broker Discount (-${result.adjustments.brokerDiscount.percentage}%): -$${result.adjustments.brokerDiscount.amount.toFixed(2)}`
+        )
       }
       if (result.adjustments.taglineDiscount.applied) {
-        lines.push(`  Our Tagline Discount (-${result.adjustments.taglineDiscount.percentage}%): -$${result.adjustments.taglineDiscount.amount.toFixed(2)}`)
+        lines.push(
+          `  Our Tagline Discount (-${result.adjustments.taglineDiscount.percentage}%): -$${result.adjustments.taglineDiscount.amount.toFixed(2)}`
+        )
       }
       if (result.adjustments.exactSizeMarkup.applied) {
-        lines.push(`  Exact Size Markup (+${result.adjustments.exactSizeMarkup.percentage}%): +$${result.adjustments.exactSizeMarkup.amount.toFixed(2)}`)
+        lines.push(
+          `  Exact Size Markup (+${result.adjustments.exactSizeMarkup.percentage}%): +$${result.adjustments.exactSizeMarkup.amount.toFixed(2)}`
+        )
       }
 
       lines.push(`  After Adjustments: $${result.totals.afterAdjustments.toFixed(2)}`)
@@ -802,7 +801,9 @@ export class UnifiedPricingEngine {
 
     lines.push('TURNAROUND:')
     lines.push(`  ${result.turnaround.name} (${result.turnaround.days} days)`)
-    lines.push(`  Markup (+${result.turnaround.markupPercent}%): +$${result.turnaround.markupAmount.toFixed(2)}`)
+    lines.push(
+      `  Markup (+${result.turnaround.markupPercent}%): +$${result.turnaround.markupAmount.toFixed(2)}`
+    )
     lines.push(`  After Turnaround: $${result.totals.afterTurnaround.toFixed(2)}`)
     lines.push('')
 
@@ -823,13 +824,13 @@ export class UnifiedPricingEngine {
     if (result.validation.warnings.length > 0) {
       lines.push('')
       lines.push('WARNINGS:')
-      result.validation.warnings.forEach(w => lines.push(`  ⚠️ ${w}`))
+      result.validation.warnings.forEach((w) => lines.push(`  ⚠️ ${w}`))
     }
 
     if (result.validation.errors.length > 0) {
       lines.push('')
       lines.push('ERRORS:')
-      result.validation.errors.forEach(e => lines.push(`  ❌ ${e}`))
+      result.validation.errors.forEach((e) => lines.push(`  ❌ ${e}`))
     }
 
     return lines
@@ -845,7 +846,7 @@ export class UnifiedPricingEngine {
     isDoubleSided: boolean = false,
     isExceptionPaper: boolean = false
   ): number {
-    const sidesMultiplier = (isDoubleSided && isExceptionPaper) ? 1.75 : 1.0
+    const sidesMultiplier = isDoubleSided && isExceptionPaper ? 1.75 : 1.0
     return this.decimal(paperPricePerSqIn)
       .times(sidesMultiplier)
       .times(size)
@@ -856,7 +857,11 @@ export class UnifiedPricingEngine {
   /**
    * Validate custom quantity for 5000 increment rule
    */
-  public validateCustomQuantity(value: number): { isValid: boolean; error?: string; suggestion?: { lower: number; upper: number } } {
+  public validateCustomQuantity(value: number): {
+    isValid: boolean
+    error?: string
+    suggestion?: { lower: number; upper: number }
+  } {
     if (value <= 0) {
       return { isValid: false, error: 'Quantity must be greater than 0' }
     }
@@ -867,7 +872,7 @@ export class UnifiedPricingEngine {
       return {
         isValid: false,
         error: `Quantities above 5000 must be in increments of 5000`,
-        suggestion: { lower, upper }
+        suggestion: { lower, upper },
       }
     }
 
@@ -898,7 +903,7 @@ export class UnifiedPricingEngine {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     }
   }
 }

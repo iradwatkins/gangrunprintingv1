@@ -101,9 +101,8 @@ export default function AccountSidebar({
       if (response.ok) {
         window.location.href = '/auth/signin'
       } else {
-        }
-    } catch (error) {
       }
+    } catch (error) {}
   }
 
   const handleInstallApp = async () => {

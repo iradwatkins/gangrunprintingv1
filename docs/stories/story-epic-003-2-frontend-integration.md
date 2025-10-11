@@ -20,6 +20,7 @@
 ## Context
 
 **What Already Exists:**
+
 - ✅ `usePriceCalculation.ts` hook (exists but may need updates)
 - ✅ `useProductConfiguration.ts` hook (manages form state)
 - ✅ `ProductConfigurationForm.tsx` (collects user selections)
@@ -27,12 +28,14 @@
 - ✅ Product configuration module components (Quantity, Size, Paper, etc.)
 
 **What's Missing:**
+
 - ❌ Connection between form state changes → API call
 - ❌ Real-time price display component
 - ❌ Loading/error states for pricing calculation
 - ❌ Debounced API calls to prevent spam
 
 **What Story 1 Provides:**
+
 - ✅ API endpoint `/api/pricing/calculate` (created in Story 1)
 
 ---
@@ -110,7 +113,7 @@ interface PriceResult {
 
 export function usePriceCalculation({
   configuration,
-  enabled = true
+  enabled = true,
 }: UsePriceCalculationProps): PriceResult {
   const [price, setPrice] = useState<number | null>(null)
   const [breakdown, setBreakdown] = useState<PriceBreakdown | null>(null)
@@ -129,7 +132,7 @@ export function usePriceCalculation({
         const response = await fetch('/api/pricing/calculate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(config)
+          body: JSON.stringify(config),
         })
 
         if (!response.ok) {
@@ -297,14 +300,17 @@ export function ProductConfigurationForm({ product }) {
 ## Files to Create/Modify
 
 ### Files to CREATE:
+
 - `/src/components/product/PriceDisplay.tsx` - Real-time price display component
 
 ### Files to UPDATE:
+
 - `/src/hooks/usePriceCalculation.ts` - Add API integration
 - `/src/components/product/ProductConfigurationForm.tsx` - Wire up pricing display
 - `/src/components/product/AddToCartSection.tsx` - Accept price from hook (minor update)
 
 ### Dependencies to ADD:
+
 - `use-debounce` package (if not already installed)
 
 ---
@@ -312,6 +318,7 @@ export function ProductConfigurationForm({ product }) {
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Test `usePriceCalculation` hook with mock API
 - [ ] Test debouncing behavior
 - [ ] Test loading states
@@ -319,6 +326,7 @@ export function ProductConfigurationForm({ product }) {
 - [ ] Test `PriceDisplay` component rendering
 
 ### Integration Tests
+
 - [ ] Test configuration change → API call → price update
 - [ ] Test rapid changes → only last call executes
 - [ ] Test error from API → error displayed
@@ -326,6 +334,7 @@ export function ProductConfigurationForm({ product }) {
 - [ ] Test all module combinations update price
 
 ### E2E Tests (defer to Story 3)
+
 - Covered in Story 3
 
 ---
@@ -350,10 +359,12 @@ export function ProductConfigurationForm({ product }) {
 ## Dependencies
 
 **Required Before Starting:**
+
 - Story 1 must be complete (API endpoint available)
 - Access to existing hooks and components
 
 **Blocks:**
+
 - Story 3 (Cart Integration) - Needs price data from this story
 
 ---
@@ -372,16 +383,19 @@ export function ProductConfigurationForm({ product }) {
 ## UX Considerations
 
 **Loading State:**
+
 - Show subtle spinner
 - Don't block form interaction
 - Keep previous price visible during recalculation
 
 **Error State:**
+
 - Display friendly message: "Unable to calculate price. Please try again."
 - Disable "Add to Cart" button
 - Provide way to retry
 
 **Success State:**
+
 - Highlight price change with subtle animation
 - Make breakdown optional (collapsed by default)
 - Show "per unit" price if quantity > 1

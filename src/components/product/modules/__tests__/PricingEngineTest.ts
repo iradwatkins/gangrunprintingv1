@@ -37,12 +37,14 @@ describe('ModulePricingEngine', () => {
         isValid: true,
         calculation: {
           description: '1000 business cards',
-          breakdown: [{
-            type: 'quantity',
-            item: '1000 units',
-            cost: 1000
-          }]
-        }
+          breakdown: [
+            {
+              type: 'quantity',
+              item: '1000 units',
+              cost: 1000,
+            },
+          ],
+        },
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -55,7 +57,7 @@ describe('ModulePricingEngine', () => {
       const quantityContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -73,12 +75,14 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
-          breakdown: [{
-            type: 'quantity',
-            item: '2000 units',
-            cost: 2000
-          }]
-        }
+          breakdown: [
+            {
+              type: 'quantity',
+              item: '2000 units',
+              cost: 2000,
+            },
+          ],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
@@ -88,15 +92,15 @@ describe('ModulePricingEngine', () => {
         calculation: {
           breakdown: [
             { type: 'coating', cost: 1.2 }, // 20% coating upcharge
-            { type: 'sides', cost: 1.1 }    // 10% sides upcharge
-          ]
-        }
+            { type: 'sides', cost: 1.1 }, // 10% sides upcharge
+          ],
+        },
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1.5, // 50% size upcharge
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -114,7 +118,7 @@ describe('ModulePricingEngine', () => {
       const quantityContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -133,20 +137,20 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }]
-        }
+          breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
-        basePrice: 0.10, // $0.10 per unit
+        basePrice: 0.1, // $0.10 per unit
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -161,7 +165,7 @@ describe('ModulePricingEngine', () => {
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
         perUnitCost: 0.03, // $0.03 per unit
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.ADDONS, addonContrib)
@@ -175,8 +179,8 @@ describe('ModulePricingEngine', () => {
     test('PERCENTAGE addons use base price correctly', () => {
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
-        percentageCost: 0.20, // 20% of base price
-        isValid: true
+        percentageCost: 0.2, // 20% of base price
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.ADDONS, addonContrib)
@@ -190,10 +194,10 @@ describe('ModulePricingEngine', () => {
     test('Combined addon types work together', () => {
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
-        addonCost: 25,        // $25 flat fee
-        perUnitCost: 0.02,    // $0.02 per unit
+        addonCost: 25, // $25 flat fee
+        perUnitCost: 0.02, // $0.02 per unit
         percentageCost: 0.15, // 15% of base price
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.ADDONS, addonContrib)
@@ -218,26 +222,26 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '500 units', cost: 500 }]
-        }
+          breakdown: [{ type: 'quantity', item: '500 units', cost: 500 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
-        basePrice: 0.20, // $0.20 per unit
+        basePrice: 0.2, // $0.20 per unit
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
         addonCost: 50, // $50 flat addon cost
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -253,7 +257,7 @@ describe('ModulePricingEngine', () => {
       const turnaroundContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1.3, // 30% rush charge
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.TURNAROUND, turnaroundContrib)
@@ -268,7 +272,7 @@ describe('ModulePricingEngine', () => {
       const turnaroundContrib: ModulePricingContribution = {
         basePrice: 0,
         addonCost: 35, // $35 rush fee
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.TURNAROUND, turnaroundContrib)
@@ -282,8 +286,8 @@ describe('ModulePricingEngine', () => {
     test('Turnaround per-unit cost uses quantity', () => {
       const turnaroundContrib: ModulePricingContribution = {
         basePrice: 0,
-        perUnitCost: 0.10, // $0.10 per unit rush charge
-        isValid: true
+        perUnitCost: 0.1, // $0.10 per unit rush charge
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.TURNAROUND, turnaroundContrib)
@@ -301,19 +305,19 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '750 units', cost: 750 }]
-        }
+          breakdown: [{ type: 'quantity', item: '750 units', cost: 750 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
         basePrice: 0.08,
-        isValid: true
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1.2,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -332,25 +336,25 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '300 units', cost: 300 }]
-        }
+          breakdown: [{ type: 'quantity', item: '300 units', cost: 300 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
         basePrice: 0.15,
-        isValid: true
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
         addonCost: 20,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -361,7 +365,7 @@ describe('ModulePricingEngine', () => {
       const turnaroundContext = engine.getContextForModule(ModuleType.TURNAROUND)
 
       expect(turnaroundContext.quantity).toBe(300)
-      expect(turnaroundContext.basePrice).toBe(45)  // 300 × 0.15
+      expect(turnaroundContext.basePrice).toBe(45) // 300 × 0.15
       expect(turnaroundContext.productPrice).toBe(65) // 45 + 20
       expect(turnaroundContext.isValid).toBe(true)
     })
@@ -387,32 +391,32 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }]
-        }
+          breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
         basePrice: 0.12,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1.1,
-        isValid: true
+        isValid: true,
       }
 
       const addonContrib: ModulePricingContribution = {
         basePrice: 0,
         addonCost: 30,
-        isValid: true
+        isValid: true,
       }
 
       const turnaroundContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1.25,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -439,19 +443,19 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
-          breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }]
-        }
+          breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }],
+        },
       }
 
       const paperContrib: ModulePricingContribution = {
-        basePrice: 0.50,
-        isValid: true
+        basePrice: 0.5,
+        isValid: true,
       }
 
       const sizeContrib: ModulePricingContribution = {
         basePrice: 0,
         multiplier: 1,
-        isValid: true
+        isValid: true,
       }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -470,8 +474,12 @@ describe('ModulePricingEngine', () => {
   describe('CRITICAL: Images Never Affect Pricing', () => {
     test('Adding images does not change any pricing', () => {
       // Set up pricing without images
-      const quantityContrib: ModulePricingContribution = { basePrice: 0, isValid: true, calculation: { breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }] } }
-      const paperContrib: ModulePricingContribution = { basePrice: 1.00, isValid: true }
+      const quantityContrib: ModulePricingContribution = {
+        basePrice: 0,
+        isValid: true,
+        calculation: { breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }] },
+      }
+      const paperContrib: ModulePricingContribution = { basePrice: 1.0, isValid: true }
       const sizeContrib: ModulePricingContribution = { basePrice: 0, multiplier: 1, isValid: true }
 
       engine.updateModuleContribution(ModuleType.QUANTITY, quantityContrib)
@@ -486,8 +494,8 @@ describe('ModulePricingEngine', () => {
         isValid: true,
         calculation: {
           description: 'Images (no pricing impact)',
-          breakdown: [{ type: 'info', item: 'Image uploads are optional', cost: 0 }]
-        }
+          breakdown: [{ type: 'info', item: 'Image uploads are optional', cost: 0 }],
+        },
       }
 
       engine.updateModuleContribution(ModuleType.IMAGES, imageContrib)
@@ -500,7 +508,7 @@ describe('ModulePricingEngine', () => {
 
     test('Images are not included in required modules', () => {
       const quantityContrib: ModulePricingContribution = { basePrice: 0, isValid: true }
-      const paperContrib: ModulePricingContribution = { basePrice: 0.50, isValid: true }
+      const paperContrib: ModulePricingContribution = { basePrice: 0.5, isValid: true }
       const sizeContrib: ModulePricingContribution = { basePrice: 0, multiplier: 1, isValid: true }
       const imageContrib: ModulePricingContribution = { basePrice: 0, isValid: true }
 
@@ -516,4 +524,4 @@ describe('ModulePricingEngine', () => {
   })
 })
 
-export { }
+export {}

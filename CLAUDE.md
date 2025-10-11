@@ -8,6 +8,64 @@
 
 ### **USE NATIVE TECH STACK: Next.js + Lucia Auth + Prisma + PostgreSQL**
 
+---
+
+## 💰 CRITICAL MEMORY NOTE - PRICING SYSTEM (October 5, 2025)
+
+### 🚨 MANDATORY REFERENCE BEFORE ANY PRICING CHANGES
+
+**IF PRICING STRUCTURE IS GOING BAD OR YOU NEED TO MODIFY PRICING LOGIC:**
+
+**YOU MUST READ THIS DOCUMENT FIRST:**
+📄 **[PRICING-REFERENCE.md](/root/websites/gangrunprinting/docs/PRICING-REFERENCE.md)**
+
+### The Golden Formula (DO NOT CHANGE):
+
+```
+FINAL PRICE = (Base Product × Turnaround Multiplier) + All Addons
+
+WHERE:
+- piece = quantity (ALWAYS)
+- Turnaround multiplier applies to BASE ONLY
+- Addons calculated AFTER turnaround
+- Percentage addons apply to (Base × Turnaround)
+```
+
+### Critical Rules (NEVER VIOLATE):
+
+1. **Order of Calculation:**
+   - Step 1: Calculate Base Product Price
+   - Step 2: Apply Turnaround Multiplier to BASE
+   - Step 3: Calculate Addon Costs
+   - Step 4: Add Addons to (Base × Turnaround)
+
+2. **Turnaround Multipliers (Database):**
+   - Economy: 1.1 (10% markup)
+   - Fast: 1.3 (30% markup)
+   - Faster: 1.5 (50% markup)
+   - Crazy Fast: 2.0 (100% markup)
+
+3. **Frontend Display:**
+   - Each turnaround option MUST show: `(Base × Turnaround) + Addons`
+   - Prices MUST update when addons selected/deselected
+   - "Add to Cart" button MUST match selected turnaround price
+
+### If You Break Pricing:
+
+1. **Stop immediately**
+2. **Read [PRICING-REFERENCE.md](/root/websites/gangrunprinting/docs/PRICING-REFERENCE.md)**
+3. **Compare your changes against documented formulas**
+4. **Run test script:** `npx tsx scripts/test-addon-pricing.ts`
+5. **Verify in browser, not just backend**
+
+### Related Documentation:
+
+- 📄 [PRICING-REFERENCE.md](/root/websites/gangrunprinting/docs/PRICING-REFERENCE.md) - Complete pricing bible
+- 📄 [PRODUCT-OPTIONS-SAFE-LIST.md](/root/websites/gangrunprinting/docs/PRODUCT-OPTIONS-SAFE-LIST.md) - All 18 addons
+- 🧪 [test-addon-pricing.ts](/root/websites/gangrunprinting/scripts/test-addon-pricing.ts) - Automated tests
+
+---
+
 ## 🚫 ABSOLUTELY FORBIDDEN TECHNOLOGIES
 
 - **Dokploy** - Use Docker Compose instead
@@ -122,6 +180,7 @@
 ### **How GangRun Printing Actually Operates:**
 
 **Customer-Facing (What Customers See):**
+
 - We present as a **real, professional printing company** to ALL customers
 - 95% retail customers: Regular consumers ordering business cards, flyers, etc.
 - 5% broker customers: Print resellers who get category-specific % discounts (because they order in volume)
@@ -129,6 +188,7 @@
 - **NO customer ever knows we use vendor partners** - they see us as their printer
 
 **Behind the Scenes (What We Actually Do):**
+
 - We **coordinate with vendor print shops** for physical production
 - Vendors handle: actual printing, quality control, bindery, packaging, and shipping
 - We handle: customer service, order management, payment processing, file review, and status tracking
@@ -136,17 +196,20 @@
 - We focus on the customer experience and logistics, not manufacturing
 
 **Important Terminology:**
+
 - ✅ Use: "printing company", "print shop", "customer orders"
 - ❌ Avoid: "print broker workflow" (confusing - makes it sound like we're brokers ourselves)
 - ✅ "Broker customers" or "reseller customers" = The 5% who get discounts
 - ❌ "Broker workflow" = Wrong - implies we're a broker, not a printing company
 
 **Order Status Workflow:**
+
 - Order statuses reflect the printing process (CONFIRMATION → PRODUCTION → SHIPPED → DELIVERED)
 - Even though vendors do the physical work, customers see seamless status updates as if we're printing
 - Status: PRODUCTION = "Your order is being printed" (customer doesn't know it's at a vendor)
 
 **Broker Discount System:**
+
 - Database: User.isBroker (boolean flag)
 - Database: User.brokerDiscounts (JSONB with category-specific percentages)
 - Example: `{"Business Cards": 15, "Flyers": 20, "Brochures": 18}`
@@ -167,11 +230,13 @@
 ### **DO NOT MODIFY THESE FILES WITHOUT READING DOCS**
 
 **CRITICAL FILES FOR UPLOADS:**
+
 1. `/middleware.ts` - Contains keep-alive headers (MANDATORY)
 2. `/ecosystem.config.js` - 2G memory limit + Node options (MANDATORY)
 3. `/src/app/api/products/upload-image/route.ts` - 60s timeout (MANDATORY)
 
 **IF UPLOADS FAIL WITH ERR_CONNECTION_CLOSED:**
+
 ```bash
 # Quick fix sequence
 pm2 delete gangrunprinting
@@ -181,6 +246,7 @@ node test-upload.js  # Test uploads
 ```
 
 **Root Causes Fixed:**
+
 - Next.js App Router 1MB limit → Fixed via middleware headers
 - PM2 memory kills → Fixed via 2G limit + node args
 - Timeout cascade → Fixed via synchronized 60s timeouts
@@ -211,6 +277,7 @@ node test-upload.js  # Test uploads
 ### **Health Score: 82/100 - PRODUCTION READY ✅**
 
 **Status Summary**:
+
 - ✅ All critical bugs fixed
 - ✅ Authentication fully functional
 - ✅ Database optimized with proper indexes
@@ -223,6 +290,7 @@ node test-upload.js  # Test uploads
 ### Key Architectural Patterns to Follow
 
 **1. Server Components for Data Fetching**
+
 ```typescript
 // ✅ CORRECT - Server component fetches data
 export default async function Page() {
@@ -238,6 +306,7 @@ export default function Page() {
 ```
 
 **2. Authentication Pattern**
+
 ```typescript
 // Use this pattern in ALL protected routes
 const { user, session } = await validateRequest()
@@ -246,6 +315,7 @@ if (user.role !== 'ADMIN') return forbidden()
 ```
 
 **3. Error Handling**
+
 ```typescript
 // Server: Detailed logs, client: Generic messages
 try {
@@ -257,6 +327,7 @@ try {
 ```
 
 ### Remaining Work (Priority Order)
+
 1. **Complete service layers** (OrderService, UserService)
 2. **Set up Sentry monitoring**
 3. **Remove .bmad-backup files**
@@ -264,30 +335,61 @@ try {
 5. **Implement comprehensive tests**
 
 ### Performance Benchmarks
+
 - API Response: <150ms ✅
 - Database Query: <85ms ✅
 - Build Time: 1:45 ✅
 - Page Load: 2.1s (target: <1.5s)
 
 ### Critical Files for Reference
+
 - [Post-Fix Completion Checklist](/docs/POST-FIX-COMPLETION-CHECKLIST.md)
 - [Architecture Decisions](/docs/architecture/decisions.md)
 - [Remaining Work Stories](/docs/stories/remaining-work.md)
 
+## 🚫 CRITICAL PRIORITY RULES (October 10, 2025)
+
+### **200 CITY PRODUCTS - FORBIDDEN TO DISCUSS UNTIL ALL ELSE COMPLETE**
+
+**RULE:** It is **ABSOLUTELY FORBIDDEN** to ask about, mention, suggest, or work on the 200 City Products feature until **EVERYTHING ELSE** is complete.
+
+**Prohibited Actions:**
+
+- ❌ Asking "should I work on city products?"
+- ❌ Mentioning city products in priority lists
+- ❌ Suggesting city products as next task
+- ❌ Building city product generation scripts
+- ❌ ANY discussion of 200 Cities feature
+
+**Required Behavior:**
+
+- ✅ Work on ALL other tasks first (ChatGPT feed, schema markup, E-E-A-T, FunnelKit, etc.)
+- ✅ Only mention 200 Cities when user explicitly brings it up
+- ✅ Treat 200 Cities as lowest priority until user says otherwise
+
+**Reference:** See [BMAD-EXECUTION-REPORT-2025-10-10.md](docs/BMAD-EXECUTION-REPORT-2025-10-10.md) for full context
+
+**Enforcement:** This is a **HARD RULE** - violating it wastes user's time.
+
+---
+
 ## 🎓 LESSONS LEARNED (October 3, 2025) - CRITICAL
 
 ### ⚠️ Issue: Product Configuration Not Loading
+
 **Discovery Date:** October 3, 2025
 **Severity:** P0 - Blocked 100% of customer purchases
 **Status:** Root cause identified, partial fix implemented, requires completion
 
 #### What Happened
+
 - Automated E2E testing revealed customers could not add products to cart
 - Product detail page showed "Loading quantities..." indefinitely
 - No "Add to Cart" button appeared
 - Complete sales funnel blockage
 
 #### Root Cause
+
 - **Primary:** React client-side hydration failure
 - **Secondary:** useEffect hook not executing on client
 - **Why:** Next.js 15 App Router SSR/hydration complexity
@@ -296,12 +398,14 @@ try {
 - **Issue Location:** Frontend React component hydration only
 
 #### Documentation Created
+
 1. **[ROOT-CAUSE-ANALYSIS-PRODUCT-CONFIGURATION.md](./ROOT-CAUSE-ANALYSIS-PRODUCT-CONFIGURATION.md)** - Complete technical analysis
 2. **[WEBSITE-AUDIT-REPORT-2025-10-03.md](./WEBSITE-AUDIT-REPORT-2025-10-03.md)** - Full audit with 5 customer personas
 3. **[DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md](./DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md)** - Comprehensive pre-deploy checklist
 4. **[test-e2e-customer-journey.js](./test-e2e-customer-journey.js)** - Automated E2E test suite
 
 #### Prevention Measures Implemented
+
 - ✅ E2E test suite with Puppeteer (5 customer personas)
 - ✅ Deployment prevention checklist (BMAD Method™)
 - ✅ Enhanced error logging for React hydration
@@ -309,6 +413,7 @@ try {
 - ✅ Comprehensive root cause documentation
 
 #### Key Takeaways (CRITICAL - READ BEFORE EVERY DEPLOYMENT)
+
 1. **Test in browser, not just curl** - API working ≠ frontend working
 2. **Verify React hydration** - Open DevTools, check for hydration errors
 3. **Check useEffect executes** - Add console.logs, verify in browser console
@@ -317,7 +422,9 @@ try {
 6. **Run E2E tests** - Before every production deployment
 
 #### Action Required
+
 **Before Next Deployment:**
+
 - [ ] Complete server-side configuration fetch debugging
 - [ ] Verify initialConfiguration prop passes correctly
 - [ ] Test complete customer journey in browser
@@ -329,6 +436,7 @@ try {
 
 - **NEVER** touch SteppersLife.com or any of its resources
 - **NEVER** use Dokploy, Clerk, Convex, or Supabase
+- **NEVER** ask about or suggest 200 City Products until all else complete (see Critical Priority Rules)
 - **ALWAYS** use Docker Compose for deployments
 - **ALWAYS** use the existing Lucia Auth implementation
 - **ALWAYS** ensure isolation from existing applications
@@ -337,6 +445,7 @@ try {
 - **ALWAYS** test in real browser before deploying (see [Deployment Checklist](./DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md))
 - **ALWAYS** verify React hydration with Chrome DevTools
 - **ALWAYS** run E2E test suite before production deployments ([test-e2e-customer-journey.js](./test-e2e-customer-journey.js))
+- **ALWAYS** check [CRITICAL-SEED-DATA-PROTECTION-BMAD-AUDIT.md](docs/CRITICAL-SEED-DATA-PROTECTION-BMAD-AUDIT.md) before deleting any seed data
 
 ## 🔍 TROUBLESHOOTING CHECKLIST - CHECK THIS FIRST!
 

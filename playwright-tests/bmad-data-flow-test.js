@@ -160,7 +160,6 @@ test.describe('BMAD Data Flow Validation', () => {
       const imageSrc = await uploadedImage.getAttribute('src')
       const imageResponse = await page.request.get(`http://localhost:3002${imageSrc}`)
       expect(imageResponse.status()).toBe(200)
-
     }
 
     // Phase 6: Performance Validation
@@ -174,7 +173,6 @@ test.describe('BMAD Data Flow Validation', () => {
       await page.waitForSelector('h1')
       const duration = Date.now() - start
       performanceResults.push(duration)
-
     }
 
     // Subsequent loads should be faster due to caching
@@ -184,11 +182,9 @@ test.describe('BMAD Data Flow Validation', () => {
 
     // Cleanup
     await adminContext.close()
-
   })
 
   test('API Error Handling and Recovery', async ({ page }) => {
-
     // Test admin page error handling with network issues
     await page.goto('http://localhost:3002/admin/products/new')
 
@@ -210,11 +206,9 @@ test.describe('BMAD Data Flow Validation', () => {
 
     // Should recover
     await expect(page.locator('text=Create Product')).toBeVisible({ timeout: 10000 })
-
   })
 
   test('Rate Limiting Prevention', async ({ page }) => {
-
     // Make multiple rapid requests to test deduplication
     const promises = []
     for (let i = 0; i < 10; i++) {
@@ -226,8 +220,6 @@ test.describe('BMAD Data Flow Validation', () => {
     // All requests should succeed (no 429 errors)
     responses.forEach((response, index) => {
       expect(response.status()).not.toBe(429)
-
     })
-
   })
 })

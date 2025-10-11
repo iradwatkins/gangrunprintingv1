@@ -491,9 +491,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <CardContent className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Method</span>
-                <span className="text-sm font-medium">
-                  {'Credit Card'}
-                </span>
+                <span className="text-sm font-medium">{'Credit Card'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Status</span>
@@ -506,9 +504,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <Separator />
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Paid Date</span>
-                    <span className="text-xs">
-                      {new Date(order.paidAt).toLocaleDateString()}
-                    </span>
+                    <span className="text-xs">{new Date(order.paidAt).toLocaleDateString()}</span>
                   </div>
                 </>
               )}

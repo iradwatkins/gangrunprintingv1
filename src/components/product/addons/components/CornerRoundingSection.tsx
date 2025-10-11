@@ -4,7 +4,13 @@
 
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { calculateCornerRoundingPrice, formatPrice } from '../utils/pricing'
@@ -33,12 +39,12 @@ export function CornerRoundingSection({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Checkbox
-            id="corner-rounding"
             checked={enabled}
-            onCheckedChange={onToggle}
             disabled={disabled}
+            id="corner-rounding"
+            onCheckedChange={onToggle}
           />
-          <Label htmlFor="corner-rounding" className="font-medium">
+          <Label className="font-medium" htmlFor="corner-rounding">
             Corner Rounding
           </Label>
           <TooltipProvider>
@@ -47,9 +53,7 @@ export function CornerRoundingSection({
                 <HelpCircle className="h-4 w-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs">
-                  Round the corners for a smoother, professional look
-                </p>
+                <p className="max-w-xs">Round the corners for a smoother, professional look</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -61,11 +65,7 @@ export function CornerRoundingSection({
         <div className="space-y-3 pl-6">
           <div className="space-y-2">
             <Label className="text-sm">Corner Selection</Label>
-            <Select
-              value={cornerType}
-              onValueChange={onCornerTypeChange}
-              disabled={disabled}
-            >
+            <Select disabled={disabled} value={cornerType} onValueChange={onCornerTypeChange}>
               <SelectTrigger className="max-w-xs">
                 <SelectValue />
               </SelectTrigger>
@@ -81,9 +81,7 @@ export function CornerRoundingSection({
             </Select>
           </div>
 
-          <div className="text-sm text-muted-foreground">
-            Standard radius: 1/8&quot; (3.2mm)
-          </div>
+          <div className="text-sm text-muted-foreground">Standard radius: 1/8&quot; (3.2mm)</div>
         </div>
       )}
     </div>

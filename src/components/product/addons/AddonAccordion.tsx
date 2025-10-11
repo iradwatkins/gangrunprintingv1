@@ -5,8 +5,13 @@
 
 'use client'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { AddonAccordionProps } from './types/addon.types'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { type AddonAccordionProps } from './types/addon.types'
 import { useVariableData } from './hooks/useVariableData'
 import { usePerforation } from './hooks/usePerforation'
 import { useBanding } from './hooks/useBanding'
@@ -58,10 +63,9 @@ export function AddonAccordion({
         ...designConfig,
         selectedOption: optionId,
         selectedSide: side,
-        uploadedFiles: files || []
+        uploadedFiles: files || [],
       }),
-    onFilesUploaded: (files: any[]) =>
-      onDesignChange?.({ ...designConfig, uploadedFiles: files })
+    onFilesUploaded: (files: any[]) => onDesignChange?.({ ...designConfig, uploadedFiles: files }),
   }
 
   // Image Upload state
@@ -69,15 +73,16 @@ export function AddonAccordion({
     enabled: imageUploadConfig?.enabled || false,
     selectedOption: imageUploadConfig?.selectedOption || null,
     uploadedFiles: imageUploadConfig?.uploadedFiles || [],
-    onToggle: (checked: boolean) => onImageUploadChange?.({ ...imageUploadConfig, enabled: checked }),
+    onToggle: (checked: boolean) =>
+      onImageUploadChange?.({ ...imageUploadConfig, enabled: checked }),
     onOptionChange: (optionId: string | null, files?: any[]) =>
       onImageUploadChange?.({
         ...imageUploadConfig,
         selectedOption: optionId,
-        uploadedFiles: files || []
+        uploadedFiles: files || [],
       }),
     onFilesUploaded: (files: any[]) =>
-      onImageUploadChange?.({ ...imageUploadConfig, uploadedFiles: files })
+      onImageUploadChange?.({ ...imageUploadConfig, uploadedFiles: files }),
   }
 
   const handleAddonToggle = (addonId: string, checked: boolean) => {
@@ -115,48 +120,28 @@ export function AddonAccordion({
       )}
 
       {/* Main Accordion for IN dropdown items and special features */}
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion collapsible className="w-full" type="single">
         <AccordionItem value="addons">
-          <AccordionTrigger className="text-lg font-semibold">
-            Additional Options
-          </AccordionTrigger>
+          <AccordionTrigger className="text-lg font-semibold">Additional Options</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-6">
               {/* Special Feature Sections */}
               <div className="space-y-4">
-                <DesignSection
-                  {...design}
-                  disabled={disabled}
-                />
+                <DesignSection {...design} disabled={disabled} />
 
-                <VariableDataSection
-                  {...variableData}
-                  quantity={quantity}
-                  disabled={disabled}
-                />
+                <VariableDataSection {...variableData} disabled={disabled} quantity={quantity} />
 
-                <PerforationSection
-                  {...perforation}
-                  quantity={quantity}
-                  disabled={disabled}
-                />
+                <PerforationSection {...perforation} disabled={disabled} quantity={quantity} />
 
-                <BandingSection
-                  {...banding}
-                  quantity={quantity}
-                  disabled={disabled}
-                />
+                <BandingSection {...banding} disabled={disabled} quantity={quantity} />
 
                 <CornerRoundingSection
                   {...cornerRounding}
-                  quantity={quantity}
                   disabled={disabled}
+                  quantity={quantity}
                 />
 
-                <ImageUploadSection
-                  {...imageUpload}
-                  disabled={disabled}
-                />
+                <ImageUploadSection {...imageUpload} disabled={disabled} />
               </div>
 
               {/* Standard Addons IN Dropdown */}
@@ -178,8 +163,8 @@ export function AddonAccordion({
               {turnaroundTimes.length > 0 && (
                 <div className="mt-4 p-3 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground">
-                    Note: Some options may affect production time.
-                    Current turnaround: {turnaroundTimes[0]?.displayName || 'Standard'}
+                    Note: Some options may affect production time. Current turnaround:{' '}
+                    {turnaroundTimes[0]?.displayName || 'Standard'}
                   </p>
                 </div>
               )}

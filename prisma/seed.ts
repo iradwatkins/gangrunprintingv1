@@ -227,9 +227,7 @@ async function main() {
         create: content,
       })
     }
-
   }
-
 }
 
 function getDefaultHeadline(type: string): string {
@@ -295,50 +293,53 @@ function getDefaultBadge(type: string): string {
   }
 }
 
-function getDefaultFeatures(type: string): Array<{title: string, description: string}> {
+function getDefaultFeatures(type: string): Array<{ title: string; description: string }> {
   const baseFeatures = [
-    { title: 'Quality Guarantee', description: '100% satisfaction or we\'ll reprint for free' },
+    { title: 'Quality Guarantee', description: "100% satisfaction or we'll reprint for free" },
     { title: 'Expert Support', description: 'Free design consultation and file review' },
   ]
 
   const typeSpecificFeatures = {
-    'LIMITED_TIME_OFFER': [
+    LIMITED_TIME_OFFER: [
       { title: 'Limited Time Pricing', description: 'Exclusive discounts for a short time only' },
       { title: 'All Products Included', description: 'Savings apply to our entire product range' },
     ],
-    'FEATURED_PRODUCT': [
+    FEATURED_PRODUCT: [
       { title: 'Premium Quality', description: 'Our highest quality materials and finishes' },
       { title: 'Fast Production', description: 'Quick turnaround for featured items' },
     ],
-    'NEW_CUSTOMER_WELCOME': [
+    NEW_CUSTOMER_WELCOME: [
       { title: 'New Customer Discount', description: 'Special pricing for first-time customers' },
       { title: 'Design Assistance', description: 'Free design help to get you started' },
     ],
-    'SEASONAL_HOLIDAY': [
+    SEASONAL_HOLIDAY: [
       { title: 'Holiday Themes', description: 'Seasonal templates and design options' },
       { title: 'Gift Options', description: 'Perfect for holiday promotions and gifts' },
     ],
-    'BULK_VOLUME_DISCOUNTS': [
+    BULK_VOLUME_DISCOUNTS: [
       { title: 'Volume Pricing', description: 'Bigger orders mean bigger savings' },
       { title: 'Business Solutions', description: 'Perfect for corporate and event needs' },
     ],
-    'FAST_TURNAROUND': [
+    FAST_TURNAROUND: [
       { title: 'Rush Options', description: 'Same-day and next-day printing available' },
       { title: 'Priority Production', description: 'Your order gets fast-track processing' },
     ],
-    'LOCAL_COMMUNITY': [
+    LOCAL_COMMUNITY: [
       { title: 'Local Delivery', description: 'Free delivery within our service area' },
       { title: 'Community Support', description: 'Supporting local businesses and events' },
     ],
   }
 
-  return [...baseFeatures, ...(typeSpecificFeatures[type] || typeSpecificFeatures['LIMITED_TIME_OFFER'])]
+  return [
+    ...baseFeatures,
+    ...(typeSpecificFeatures[type] || typeSpecificFeatures['LIMITED_TIME_OFFER']),
+  ]
 }
 
 function getDefaultCTADescription(type: string): string {
   switch (type) {
     case 'LIMITED_TIME_OFFER':
-      return 'Don\'t miss out on these limited-time savings. Start your order today!'
+      return "Don't miss out on these limited-time savings. Start your order today!"
     case 'FEATURED_PRODUCT':
       return 'Experience our premium quality and fast service. Order your featured products now!'
     case 'NEW_CUSTOMER_WELCOME':
@@ -348,7 +349,7 @@ function getDefaultCTADescription(type: string): string {
     case 'BULK_VOLUME_DISCOUNTS':
       return 'Ready for your bulk order? Get a quote and discover your savings potential.'
     case 'FAST_TURNAROUND':
-      return 'Need it fast? Upload your files and we\'ll get your order in production immediately.'
+      return "Need it fast? Upload your files and we'll get your order in production immediately."
     case 'LOCAL_COMMUNITY':
       return 'Support local and get exceptional service. Contact us for community pricing.'
     default:

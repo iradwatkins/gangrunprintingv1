@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   // Get references to existing data
   const categories = await prisma.productCategory.findMany()
   const paperStocks = await prisma.paperStock.findMany()
@@ -500,12 +499,10 @@ async function main() {
       }
 
       createdCount++
-
     } catch (error) {
       console.error(`✗ Error creating product ${productData.name}:`, error)
     }
   }
-
 }
 
 main()

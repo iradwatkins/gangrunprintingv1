@@ -46,7 +46,7 @@ test.describe('Admin Entities CRUD Operations', () => {
         expect(result.data).toBeTruthy()
 
         // Verify required fields are saved
-        config.requiredFields.forEach(field => {
+        config.requiredFields.forEach((field) => {
           expect(result.data[field]).toBeTruthy()
         })
 
@@ -68,7 +68,7 @@ test.describe('Admin Entities CRUD Operations', () => {
         expect(retrieved.id).toBe(created.id)
 
         // Verify all created fields are retrieved
-        config.requiredFields.forEach(field => {
+        config.requiredFields.forEach((field) => {
           expect(retrieved[field]).toBeTruthy()
         })
 
@@ -95,7 +95,7 @@ test.describe('Admin Entities CRUD Operations', () => {
         expect(updated.id).toBe(created.id)
 
         // Verify updated fields
-        Object.keys(updateData).forEach(field => {
+        Object.keys(updateData).forEach((field) => {
           if (updateData[field] !== undefined) {
             expect(updated[field]).toBe(updateData[field])
           }
@@ -164,9 +164,11 @@ test.describe('Admin Entities CRUD Operations', () => {
         await waitForEntityList(page)
 
         // Look for "New", "Add", or "Create" button
-        const createButton = page.locator(
-          'button:has-text("New"), button:has-text("Add"), button:has-text("Create"), [data-testid="create-button"]'
-        ).first()
+        const createButton = page
+          .locator(
+            'button:has-text("New"), button:has-text("Add"), button:has-text("Create"), [data-testid="create-button"]'
+          )
+          .first()
 
         if (await createButton.isVisible()) {
           await createButton.click()
@@ -208,7 +210,9 @@ test.describe('Admin Entities CRUD Operations', () => {
       })
 
       if (config.uniqueFields.length > 0) {
-        test(`should enforce unique constraints for ${config.name.toLowerCase()}`, async ({ page }) => {
+        test(`should enforce unique constraints for ${config.name.toLowerCase()}`, async ({
+          page,
+        }) => {
           const testData = generateTestData(entityKey)
           if (testData.name) {
             testData.name = `${testData.name}-${testIdentifier}-unique`
@@ -280,7 +284,6 @@ test.describe('Admin Entities CRUD Operations', () => {
 
         // Should complete within reasonable time (5 seconds for 5 entities)
         expect(endTime - startTime).toBeLessThan(5000)
-
       } finally {
         // Clean up created entities
         for (const id of createdEntities) {

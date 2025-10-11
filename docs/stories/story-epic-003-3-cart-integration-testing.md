@@ -20,17 +20,20 @@
 ## Context
 
 **What Already Exists:**
+
 - ✅ `CartService.ts` - Cart management logic
 - ✅ `AddToCartSection.tsx` - Add to cart button component
 - ✅ Cart storage (localStorage or database)
 - ✅ Checkout flow
 
 **What's Missing:**
+
 - ❌ Passing calculated price to cart
 - ❌ Storing price breakdown with cart item
 - ❌ E2E tests for complete pricing flow
 
 **What Stories 1 & 2 Provide:**
+
 - ✅ API endpoint that calculates price (Story 1)
 - ✅ Real-time price display in product form (Story 2)
 
@@ -178,7 +181,7 @@ export class CartService {
     const cartItem: CartItem = {
       id: generateId(),
       ...item,
-      addedAt: new Date()
+      addedAt: new Date(),
     }
 
     // Existing cart storage logic
@@ -186,10 +189,18 @@ export class CartService {
   }
 
   // Existing methods remain unchanged
-  async getItems(): Promise<CartItem[]> { /* ... */ }
-  async removeItem(id: string): Promise<void> { /* ... */ }
-  async updateQuantity(id: string, quantity: number): Promise<void> { /* ... */ }
-  async clearCart(): Promise<void> { /* ... */ }
+  async getItems(): Promise<CartItem[]> {
+    /* ... */
+  }
+  async removeItem(id: string): Promise<void> {
+    /* ... */
+  }
+  async updateQuantity(id: string, quantity: number): Promise<void> {
+    /* ... */
+  }
+  async clearCart(): Promise<void> {
+    /* ... */
+  }
 }
 ```
 
@@ -316,13 +327,16 @@ test.describe('Product Pricing Calculation Flow', () => {
 ## Files to Create/Modify
 
 ### Files to UPDATE:
+
 - `/src/components/product/AddToCartSection.tsx` - Accept calculated price
 - `/src/services/CartService.ts` - Store calculated price with cart item
 
 ### Files to CREATE:
+
 - `/tests/e2e/pricing-calculation-flow.test.ts` - E2E tests
 
 ### Files to REFERENCE (no changes):
+
 - `/src/hooks/usePriceCalculation.ts` - Get price from this hook
 - Cart display components - Should automatically show new price field
 
@@ -331,16 +345,19 @@ test.describe('Product Pricing Calculation Flow', () => {
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Test `CartService.addItem()` with calculated price
 - [ ] Test `CartService.addItem()` validation (rejects invalid price)
 - [ ] Test cart item includes all required fields
 
 ### Integration Tests
+
 - [ ] Test adding item to cart with calculated price
 - [ ] Test cart retrieval includes calculated price
 - [ ] Test cart total calculation uses calculated prices
 
 ### E2E Tests (Primary Focus)
+
 - [ ] Complete flow: Product → Cart → Checkout
 - [ ] Price updates on configuration changes
 - [ ] Add-ons affect price correctly
@@ -349,6 +366,7 @@ test.describe('Product Pricing Calculation Flow', () => {
 - [ ] All module combinations work
 
 ### Regression Tests
+
 - [ ] Existing cart functionality works
 - [ ] Quantity updates in cart work
 - [ ] Item removal works
@@ -374,10 +392,12 @@ test.describe('Product Pricing Calculation Flow', () => {
 ## Dependencies
 
 **Required Before Starting:**
+
 - Story 1 complete (API endpoint)
 - Story 2 complete (Frontend price display)
 
 **Blocks:**
+
 - Nothing (final story in epic)
 
 ---

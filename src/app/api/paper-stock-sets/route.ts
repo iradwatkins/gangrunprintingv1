@@ -21,7 +21,7 @@ const paperStockSetSchema = z.object({
 })
 
 // GET - List all paper stock sets
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const groups = await prisma.paperStockSet.findMany({
       include: {
@@ -29,12 +29,12 @@ export async function GET() : Promise<unknown> {
           include: {
             PaperStock: {
               include: {
-                paperStockCoatings: {
+                PaperStockCoating: {
                   include: {
                     CoatingOption: true,
                   },
                 },
-                paperStockSides: {
+                PaperStockSides: {
                   include: {
                     SidesOption: true,
                   },
@@ -124,12 +124,12 @@ export async function POST(request: NextRequest) {
           include: {
             PaperStock: {
               include: {
-                paperStockCoatings: {
+                PaperStockCoating: {
                   include: {
                     CoatingOption: true,
                   },
                 },
-                paperStockSides: {
+                PaperStockSides: {
                   include: {
                     SidesOption: true,
                   },

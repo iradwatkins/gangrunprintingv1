@@ -30,7 +30,7 @@ async function main() {
       marketingOptIn: true,
       smsOptIn: true,
       isBroker: false,
-    }
+    },
   })
 
   console.log(`✅ Created customer: ${bobbyUser.email}`)
@@ -49,7 +49,7 @@ async function main() {
       marketingOptIn: false,
       smsOptIn: false,
       isBroker: false,
-    }
+    },
   })
 
   console.log(`✅ Created admin user: ${adminUser.email}`)
@@ -65,8 +65,8 @@ async function main() {
         slug: 'business-cards',
         description: 'Professional business cards with various paper options',
         sortOrder: 1,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.productCategory.upsert({
       where: { slug: 'flyers' },
@@ -76,8 +76,8 @@ async function main() {
         slug: 'flyers',
         description: 'High-quality flyers for marketing and promotions',
         sortOrder: 2,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.productCategory.upsert({
       where: { slug: 'brochures' },
@@ -87,9 +87,9 @@ async function main() {
         slug: 'brochures',
         description: 'Folded brochures for detailed product information',
         sortOrder: 3,
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ])
 
   // 3. Create Coating Options
@@ -98,23 +98,23 @@ async function main() {
     prisma.coatingOption.upsert({
       where: { name: 'Gloss' },
       update: {},
-      create: { name: 'Gloss', description: 'High-gloss finish' }
+      create: { name: 'Gloss', description: 'High-gloss finish' },
     }),
     prisma.coatingOption.upsert({
       where: { name: 'Matte' },
       update: {},
-      create: { name: 'Matte', description: 'Non-reflective matte finish' }
+      create: { name: 'Matte', description: 'Non-reflective matte finish' },
     }),
     prisma.coatingOption.upsert({
       where: { name: 'UV Coating' },
       update: {},
-      create: { name: 'UV Coating', description: 'Ultra-violet protective coating' }
+      create: { name: 'UV Coating', description: 'Ultra-violet protective coating' },
     }),
     prisma.coatingOption.upsert({
       where: { name: 'Soft Touch' },
       update: {},
-      create: { name: 'Soft Touch', description: 'Velvety soft-touch lamination' }
-    })
+      create: { name: 'Soft Touch', description: 'Velvety soft-touch lamination' },
+    }),
   ])
 
   // 4. Create Sides Options
@@ -126,8 +126,8 @@ async function main() {
       create: {
         name: 'Front Only (4/0)',
         code: '4-0',
-        description: 'Full color front, blank back'
-      }
+        description: 'Full color front, blank back',
+      },
     }),
     prisma.sidesOption.upsert({
       where: { code: '4-4' },
@@ -135,9 +135,9 @@ async function main() {
       create: {
         name: 'Double Sided (4/4)',
         code: '4-4',
-        description: 'Full color both sides'
-      }
-    })
+        description: 'Full color both sides',
+      },
+    }),
   ])
 
   // 5. Create Real Paper Stocks with Actual Pricing
@@ -151,8 +151,8 @@ async function main() {
         pricePerSqInch: 0.0015,
         weight: 0.014,
         tooltipText: 'Thick, durable cardstock with natural feel',
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.paperStock.upsert({
       where: { name: '16pt Coated Gloss' },
@@ -162,8 +162,8 @@ async function main() {
         pricePerSqInch: 0.0018,
         weight: 0.016,
         tooltipText: 'Premium glossy finish for vibrant colors',
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.paperStock.upsert({
       where: { name: '16pt Matte Finish' },
@@ -173,8 +173,8 @@ async function main() {
         pricePerSqInch: 0.0018,
         weight: 0.016,
         tooltipText: 'Elegant matte finish, easy to write on',
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.paperStock.upsert({
       where: { name: '32pt Triple Layer' },
@@ -184,8 +184,8 @@ async function main() {
         pricePerSqInch: 0.0045,
         weight: 0.032,
         tooltipText: 'Ultra-thick luxury cardstock',
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.paperStock.upsert({
       where: { name: '100lb Text Weight' },
@@ -195,8 +195,8 @@ async function main() {
         pricePerSqInch: 0.0008,
         weight: 0.008,
         tooltipText: 'Standard text weight for flyers',
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.paperStock.upsert({
       where: { name: 'Premium Silk Laminated' },
@@ -206,15 +206,15 @@ async function main() {
         pricePerSqInch: 0.0035,
         weight: 0.018,
         tooltipText: 'Silk laminated with premium feel',
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ])
 
   // 6. Create Paper Stock Sets
   console.log('Creating paper stock sets...')
   let paperStockSet = await prisma.paperStockSet.findUnique({
-    where: { name: 'Business Card Papers' }
+    where: { name: 'Business Card Papers' },
   })
 
   if (!paperStockSet) {
@@ -230,10 +230,10 @@ async function main() {
             { paperStockId: paperStocks[1].id, isDefault: true, sortOrder: 2 },
             { paperStockId: paperStocks[2].id, isDefault: false, sortOrder: 3 },
             { paperStockId: paperStocks[3].id, isDefault: false, sortOrder: 4 },
-            { paperStockId: paperStocks[5].id, isDefault: false, sortOrder: 5 }
-          ]
-        }
-      }
+            { paperStockId: paperStocks[5].id, isDefault: false, sortOrder: 5 },
+          ],
+        },
+      },
     })
   }
 
@@ -250,8 +250,8 @@ async function main() {
         height: 2,
         preCalculatedValue: 7,
         sortOrder: 1,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.standardSize.upsert({
       where: { name: 'flyer-full' },
@@ -263,8 +263,8 @@ async function main() {
         height: 11,
         preCalculatedValue: 93.5,
         sortOrder: 2,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.standardSize.upsert({
       where: { name: 'flyer-half' },
@@ -276,8 +276,8 @@ async function main() {
         height: 8.5,
         preCalculatedValue: 46.75,
         sortOrder: 3,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.standardSize.upsert({
       where: { name: 'postcard' },
@@ -289,9 +289,9 @@ async function main() {
         height: 6,
         preCalculatedValue: 24,
         sortOrder: 4,
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ])
 
   // 8. Create Size Groups
@@ -300,19 +300,19 @@ async function main() {
     where: { name: 'Standard Print Sizes' },
     update: {
       description: 'Common print sizes',
-      values: JSON.stringify(sizes.map(s => s.id)),
+      values: JSON.stringify(sizes.map((s) => s.id)),
       defaultValue: sizes[0].id,
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     create: {
       name: 'Standard Print Sizes',
       description: 'Common print sizes',
-      values: JSON.stringify(sizes.map(s => s.id)),
+      values: JSON.stringify(sizes.map((s) => s.id)),
       defaultValue: sizes[0].id,
       sortOrder: 1,
-      isActive: true
-    }
+      isActive: true,
+    },
   })
 
   // 9. Create Standard Quantities
@@ -321,33 +321,33 @@ async function main() {
     prisma.standardQuantity.upsert({
       where: { displayValue: 100 },
       update: {},
-      create: { displayValue: 100, calculationValue: 100, sortOrder: 1, isActive: true }
+      create: { displayValue: 100, calculationValue: 100, sortOrder: 1, isActive: true },
     }),
     prisma.standardQuantity.upsert({
       where: { displayValue: 250 },
       update: {},
-      create: { displayValue: 250, calculationValue: 250, sortOrder: 2, isActive: true }
+      create: { displayValue: 250, calculationValue: 250, sortOrder: 2, isActive: true },
     }),
     prisma.standardQuantity.upsert({
       where: { displayValue: 500 },
       update: {},
-      create: { displayValue: 500, calculationValue: 500, sortOrder: 3, isActive: true }
+      create: { displayValue: 500, calculationValue: 500, sortOrder: 3, isActive: true },
     }),
     prisma.standardQuantity.upsert({
       where: { displayValue: 1000 },
       update: {},
-      create: { displayValue: 1000, calculationValue: 1000, sortOrder: 4, isActive: true }
+      create: { displayValue: 1000, calculationValue: 1000, sortOrder: 4, isActive: true },
     }),
     prisma.standardQuantity.upsert({
       where: { displayValue: 2500 },
       update: {},
-      create: { displayValue: 2500, calculationValue: 2500, sortOrder: 5, isActive: true }
+      create: { displayValue: 2500, calculationValue: 2500, sortOrder: 5, isActive: true },
     }),
     prisma.standardQuantity.upsert({
       where: { displayValue: 5000 },
       update: {},
-      create: { displayValue: 5000, calculationValue: 5000, sortOrder: 6, isActive: true }
-    })
+      create: { displayValue: 5000, calculationValue: 5000, sortOrder: 6, isActive: true },
+    }),
   ])
 
   // 10. Create Quantity Groups
@@ -355,19 +355,19 @@ async function main() {
     where: { name: 'Standard Quantities' },
     update: {
       description: 'Common order quantities',
-      values: JSON.stringify(quantities.map(q => q.id)),
+      values: JSON.stringify(quantities.map((q) => q.id)),
       defaultValue: quantities[2].id, // 500 as default
       sortOrder: 1,
-      isActive: true
+      isActive: true,
     },
     create: {
       name: 'Standard Quantities',
       description: 'Common order quantities',
-      values: JSON.stringify(quantities.map(q => q.id)),
+      values: JSON.stringify(quantities.map((q) => q.id)),
       defaultValue: quantities[2].id, // 500 as default
       sortOrder: 1,
-      isActive: true
-    }
+      isActive: true,
+    },
   })
 
   // 11. Create Add-Ons with ABOVE/IN/BELOW Positions
@@ -384,8 +384,8 @@ async function main() {
       additionalTurnaroundDays: -3,
       sortOrder: 1,
       isActive: true,
-      adminNotes: 'Shows ABOVE dropdown'
-    }
+      adminNotes: 'Shows ABOVE dropdown',
+    },
   })
 
   // IN DROPDOWN ADD-ONS with SUB-OPTIONS
@@ -404,26 +404,26 @@ async function main() {
           {
             name: 'Coverage Area',
             optionType: 'SELECT',
-            options: ["Full Coverage", "Logo Only", "Text Only", "Custom"],
-            defaultValue: "Logo Only",
+            options: ['Full Coverage', 'Logo Only', 'Text Only', 'Custom'],
+            defaultValue: 'Logo Only',
             isRequired: true,
             affectsPricing: true,
             tooltipText: 'Select which areas to apply UV coating',
-            displayOrder: 1
+            displayOrder: 1,
           },
           {
             name: 'Coating Thickness',
             optionType: 'RADIO',
-            options: ["Standard (1 mil)", "Thick (2 mil)", "Extra Thick (3 mil)"],
-            defaultValue: "Standard (1 mil)",
+            options: ['Standard (1 mil)', 'Thick (2 mil)', 'Extra Thick (3 mil)'],
+            defaultValue: 'Standard (1 mil)',
             isRequired: false,
             affectsPricing: true,
             tooltipText: 'Choose coating thickness',
-            displayOrder: 2
-          }
-        ]
-      }
-    }
+            displayOrder: 2,
+          },
+        ],
+      },
+    },
   })
 
   const foilStampingAddOn = await prisma.addOn.create({
@@ -440,15 +440,15 @@ async function main() {
         create: {
           name: 'Foil Color',
           optionType: 'SELECT',
-          options: ["Gold", "Silver", "Rose Gold", "Holographic", "Copper", "Black"],
-          defaultValue: "Gold",
+          options: ['Gold', 'Silver', 'Rose Gold', 'Holographic', 'Copper', 'Black'],
+          defaultValue: 'Gold',
           isRequired: true,
           affectsPricing: false,
           tooltipText: 'Choose your foil color',
-          displayOrder: 1
-        }
-      }
-    }
+          displayOrder: 1,
+        },
+      },
+    },
   })
 
   // BELOW DROPDOWN ADD-ONS
@@ -461,8 +461,8 @@ async function main() {
       configuration: { flatFee: 15 },
       sortOrder: 4,
       isActive: true,
-      adminNotes: 'Shows BELOW dropdown'
-    }
+      adminNotes: 'Shows BELOW dropdown',
+    },
   })
 
   const dieCuttingAddOn = await prisma.addOn.create({
@@ -476,8 +476,8 @@ async function main() {
         complexityMultiplier: {
           circle: 1,
           oval: 1.2,
-          custom: 1.5
-        }
+          custom: 1.5,
+        },
       },
       sortOrder: 5,
       isActive: true,
@@ -487,12 +487,12 @@ async function main() {
           {
             name: 'Shape Type',
             optionType: 'SELECT',
-            options: ["Circle", "Oval", "Square with Rounded Corners", "Custom Shape"],
-            defaultValue: "Circle",
+            options: ['Circle', 'Oval', 'Square with Rounded Corners', 'Custom Shape'],
+            defaultValue: 'Circle',
             isRequired: true,
             affectsPricing: true,
             tooltipText: 'Select the die cut shape',
-            displayOrder: 1
+            displayOrder: 1,
           },
           {
             name: 'Upload Die Line',
@@ -500,11 +500,11 @@ async function main() {
             isRequired: false,
             affectsPricing: false,
             tooltipText: 'Upload your custom die line file (PDF or AI)',
-            displayOrder: 2
-          }
-        ]
-      }
-    }
+            displayOrder: 2,
+          },
+        ],
+      },
+    },
   })
 
   // 12. Create Add-On Sets with Display Positions
@@ -521,35 +521,35 @@ async function main() {
             addOnId: rushProductionAddOn.id,
             displayPosition: DisplayPosition.ABOVE_DROPDOWN,
             isDefault: false,
-            sortOrder: 1
+            sortOrder: 1,
           },
           {
             addOnId: uvCoatingAddOn.id,
             displayPosition: DisplayPosition.IN_DROPDOWN,
             isDefault: false,
-            sortOrder: 2
+            sortOrder: 2,
           },
           {
             addOnId: foilStampingAddOn.id,
             displayPosition: DisplayPosition.IN_DROPDOWN,
             isDefault: false,
-            sortOrder: 3
+            sortOrder: 3,
           },
           {
             addOnId: roundedCornersAddOn.id,
             displayPosition: DisplayPosition.BELOW_DROPDOWN,
             isDefault: false,
-            sortOrder: 4
+            sortOrder: 4,
           },
           {
             addOnId: dieCuttingAddOn.id,
             displayPosition: DisplayPosition.BELOW_DROPDOWN,
             isDefault: false,
-            sortOrder: 5
-          }
-        ]
-      }
-    }
+            sortOrder: 5,
+          },
+        ],
+      },
+    },
   })
 
   // 13. Create Turnaround Times
@@ -566,8 +566,8 @@ async function main() {
         basePrice: 0,
         priceMultiplier: 1.0,
         isActive: true,
-        sortOrder: 1
-      }
+        sortOrder: 1,
+      },
     }),
     prisma.turnaroundTime.create({
       data: {
@@ -580,8 +580,8 @@ async function main() {
         basePrice: 0,
         priceMultiplier: 1.5,
         isActive: true,
-        sortOrder: 2
-      }
+        sortOrder: 2,
+      },
     }),
     prisma.turnaroundTime.create({
       data: {
@@ -594,9 +594,9 @@ async function main() {
         basePrice: 0,
         priceMultiplier: 2.0,
         isActive: true,
-        sortOrder: 3
-      }
-    })
+        sortOrder: 3,
+      },
+    }),
   ])
 
   const turnaroundTimeSet = await prisma.turnaroundTimeSet.create({
@@ -609,10 +609,10 @@ async function main() {
         create: turnaroundTimes.map((tt, index) => ({
           turnaroundTimeId: tt.id,
           isDefault: index === 0,
-          sortOrder: index + 1
-        }))
-      }
-    }
+          sortOrder: index + 1,
+        })),
+      },
+    },
   })
 
   // 14. Create Real Products
@@ -642,43 +642,43 @@ async function main() {
         create: {
           paperStockSetId: paperStockSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productSizeGroups: {
         create: {
-          sizeGroupId: sizeGroup.id
-        }
+          sizeGroupId: sizeGroup.id,
+        },
       },
       productQuantityGroups: {
         create: {
-          quantityGroupId: quantityGroup.id
-        }
+          quantityGroupId: quantityGroup.id,
+        },
       },
       productAddOnSets: {
         create: {
           addOnSetId: businessCardAddOnSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productTurnaroundTimeSets: {
         create: {
           turnaroundTimeSetId: turnaroundTimeSet.id,
-          isDefault: true
-        }
+          isDefault: true,
+        },
       },
       pricingTiers: {
         create: [
-          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.50, setupFee: 0 },
-          { minQuantity: 250, maxQuantity: 499, unitPrice: 0.40, setupFee: 0 },
-          { minQuantity: 500, maxQuantity: 999, unitPrice: 0.30, setupFee: 0 },
+          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.5, setupFee: 0 },
+          { minQuantity: 250, maxQuantity: 499, unitPrice: 0.4, setupFee: 0 },
+          { minQuantity: 500, maxQuantity: 999, unitPrice: 0.3, setupFee: 0 },
           { minQuantity: 1000, maxQuantity: 2499, unitPrice: 0.25, setupFee: 0 },
-          { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.20, setupFee: 0 },
-          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.15, setupFee: 0 }
-        ]
-      }
-    }
+          { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.2, setupFee: 0 },
+          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.15, setupFee: 0 },
+        ],
+      },
+    },
   })
 
   const premiumBusinessCard = await prisma.product.create({
@@ -704,43 +704,43 @@ async function main() {
         create: {
           paperStockSetId: paperStockSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productSizeGroups: {
         create: {
-          sizeGroupId: sizeGroup.id
-        }
+          sizeGroupId: sizeGroup.id,
+        },
       },
       productQuantityGroups: {
         create: {
-          quantityGroupId: quantityGroup.id
-        }
+          quantityGroupId: quantityGroup.id,
+        },
       },
       productAddOnSets: {
         create: {
           addOnSetId: businessCardAddOnSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productTurnaroundTimeSets: {
         create: {
           turnaroundTimeSetId: turnaroundTimeSet.id,
-          isDefault: true
-        }
+          isDefault: true,
+        },
       },
       pricingTiers: {
         create: [
-          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.70, setupFee: 0 },
+          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.7, setupFee: 0 },
           { minQuantity: 250, maxQuantity: 499, unitPrice: 0.56, setupFee: 0 },
           { minQuantity: 500, maxQuantity: 999, unitPrice: 0.42, setupFee: 0 },
           { minQuantity: 1000, maxQuantity: 2499, unitPrice: 0.35, setupFee: 0 },
           { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.28, setupFee: 0 },
-          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.21, setupFee: 0 }
-        ]
-      }
-    }
+          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.21, setupFee: 0 },
+        ],
+      },
+    },
   })
 
   const luxuryBusinessCard = await prisma.product.create({
@@ -764,43 +764,43 @@ async function main() {
         create: {
           paperStockSetId: paperStockSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productSizeGroups: {
         create: {
-          sizeGroupId: sizeGroup.id
-        }
+          sizeGroupId: sizeGroup.id,
+        },
       },
       productQuantityGroups: {
         create: {
-          quantityGroupId: quantityGroup.id
-        }
+          quantityGroupId: quantityGroup.id,
+        },
       },
       productAddOnSets: {
         create: {
           addOnSetId: businessCardAddOnSet.id,
           isDefault: true,
-          sortOrder: 1
-        }
+          sortOrder: 1,
+        },
       },
       productTurnaroundTimeSets: {
         create: {
           turnaroundTimeSetId: turnaroundTimeSet.id,
-          isDefault: true
-        }
+          isDefault: true,
+        },
       },
       pricingTiers: {
         create: [
-          { minQuantity: 100, maxQuantity: 249, unitPrice: 1.50, setupFee: 25 },
-          { minQuantity: 250, maxQuantity: 499, unitPrice: 1.20, setupFee: 25 },
-          { minQuantity: 500, maxQuantity: 999, unitPrice: 0.90, setupFee: 25 },
+          { minQuantity: 100, maxQuantity: 249, unitPrice: 1.5, setupFee: 25 },
+          { minQuantity: 250, maxQuantity: 499, unitPrice: 1.2, setupFee: 25 },
+          { minQuantity: 500, maxQuantity: 999, unitPrice: 0.9, setupFee: 25 },
           { minQuantity: 1000, maxQuantity: 2499, unitPrice: 0.75, setupFee: 25 },
-          { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.60, setupFee: 25 },
-          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.45, setupFee: 25 }
-        ]
-      }
-    }
+          { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.6, setupFee: 25 },
+          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.45, setupFee: 25 },
+        ],
+      },
+    },
   })
 
   // Flyers
@@ -825,15 +825,15 @@ async function main() {
       rushFee: 45,
       pricingTiers: {
         create: [
-          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.90, setupFee: 0 },
+          { minQuantity: 100, maxQuantity: 249, unitPrice: 0.9, setupFee: 0 },
           { minQuantity: 250, maxQuantity: 499, unitPrice: 0.72, setupFee: 0 },
           { minQuantity: 500, maxQuantity: 999, unitPrice: 0.54, setupFee: 0 },
           { minQuantity: 1000, maxQuantity: 2499, unitPrice: 0.45, setupFee: 0 },
           { minQuantity: 2500, maxQuantity: 4999, unitPrice: 0.36, setupFee: 0 },
-          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.27, setupFee: 0 }
-        ]
-      }
-    }
+          { minQuantity: 5000, maxQuantity: null, unitPrice: 0.27, setupFee: 0 },
+        ],
+      },
+    },
   })
 
   console.log('✅ Production data seeding complete!')
@@ -859,8 +859,8 @@ async function main() {
       emailVerified: true,
       phoneNumber: '312-555-0100',
       marketingOptIn: true,
-      smsOptIn: false
-    }
+      smsOptIn: false,
+    },
   })
 
   console.log(`✅ Test customer created: ${testCustomer.email}`)

@@ -5,11 +5,13 @@
 You now have a **fully functional print broker order management system** with:
 
 ### 1. **Database Schema** (`prisma/schema.prisma`)
+
 - ✅ 13 broker-specific order statuses
 - ✅ 18 new tracking fields (deadlines, notes, pickup info, etc.)
 - ✅ Ready for migration
 
 ### 2. **Core Business Logic** (`src/lib/services/order-service.ts`)
+
 - ✅ `OrderService.processPayment()` - Square webhook integration
 - ✅ `OrderService.assignVendor()` - Print partner assignment
 - ✅ `OrderService.updateStatus()` - Status management with validation
@@ -18,11 +20,13 @@ You now have a **fully functional print broker order management system** with:
 - ✅ `OrderService.putOnHold()` - Quality control
 
 ### 3. **Payment System**
+
 - ✅ Square webhook handler (`/api/webhooks/square/payment`)
 - ✅ Manual payment capture (`/api/admin/orders/[id]/capture-payment`)
 - ✅ Invoice generation & sending (`/api/admin/orders/[id]/send-invoice`)
 
 ### 4. **Admin UI Components**
+
 - ✅ `OrderQuickActions` - One-click actions from orders list:
   - Update status
   - Capture payment
@@ -30,6 +34,7 @@ You now have a **fully functional print broker order management system** with:
   - Add shipping info
 
 ### 5. **Email System** (`src/lib/email/`)
+
 - ✅ React Email templates
 - ✅ Order confirmation
 - ✅ Production notification
@@ -38,6 +43,7 @@ You now have a **fully functional print broker order management system** with:
 - ✅ Ready for pickup
 
 ### 6. **API Endpoints**
+
 - ✅ `PATCH /api/orders/[id]/status` - Update order status
 - ✅ `POST /api/orders/[id]/assign-vendor` - Assign print vendor
 - ✅ `POST /api/admin/orders/[id]/capture-payment` - Manual payment
@@ -61,6 +67,7 @@ chmod +x run-migration.sh
 ```
 
 **What it does:**
+
 - Creates backup of current database
 - Adds new columns to Order table
 - Updates OrderStatus enum to broker-specific statuses
@@ -98,12 +105,14 @@ curl https://gangrunprinting.com/api/webhooks/square/payment
 From the orders list (`/admin/orders`), click the **⋮** menu on any order:
 
 **Quick Status Update:**
+
 - Click "Update Status"
 - Select new status from dropdown
 - Add optional notes
 - Click "Update Status"
 
 **Valid Status Transitions:**
+
 - PENDING_PAYMENT → CONFIRMATION, PAYMENT_DECLINED, CANCELLED
 - CONFIRMATION → PRODUCTION, ON_HOLD, CANCELLED
 - PRODUCTION → SHIPPED, READY_FOR_PICKUP, ON_THE_WAY
@@ -125,6 +134,7 @@ For phone orders or in-person payments:
 4. Click "Capture Payment"
 
 **What happens:**
+
 - Order status changes: PENDING_PAYMENT → CONFIRMATION
 - Confirmation email sent to customer
 - Payment recorded in order history
@@ -138,6 +148,7 @@ Create an invoice with payment link:
 3. Click "Send Invoice"
 
 **What happens:**
+
 - Professional invoice PDF generated
 - Email sent with "Pay Now" button
 - Payment link opens in new tab
@@ -153,6 +164,7 @@ When order ships from vendor:
 4. Click "Update Shipping"
 
 **What happens:**
+
 - Order status changes to SHIPPED
 - Tracking email sent to customer
 - Customer receives tracking link
@@ -168,6 +180,7 @@ When files are approved:
 5. Click "Assign Vendor"
 
 **What happens:**
+
 - Order status changes to PRODUCTION
 - Vendor notified via N8N
 - Production notification sent to customer
@@ -179,14 +192,14 @@ When files are approved:
 
 Customers automatically receive emails when:
 
-| Trigger | Email Sent | Content |
-|---------|-----------|---------|
-| Payment received | Order Confirmation | Order summary, tracking link, next steps |
-| Vendor assigned | In Production | Production timeline, expected completion |
-| Order ships | Shipping Notification | Tracking number, carrier, delivery estimate |
-| Ready for pickup | Pickup Ready | Location, hours, what to bring |
-| Files need revision | On Hold | Issue description, upload link |
-| Delivered | Delivery Confirmation | Satisfaction survey, reorder link |
+| Trigger             | Email Sent            | Content                                     |
+| ------------------- | --------------------- | ------------------------------------------- |
+| Payment received    | Order Confirmation    | Order summary, tracking link, next steps    |
+| Vendor assigned     | In Production         | Production timeline, expected completion    |
+| Order ships         | Shipping Notification | Tracking number, carrier, delivery estimate |
+| Ready for pickup    | Pickup Ready          | Location, hours, what to bring              |
+| Files need revision | On Hold               | Issue description, upload link              |
+| Delivered           | Delivery Confirmation | Satisfaction survey, reorder link           |
 
 ---
 
@@ -200,7 +213,7 @@ Edit `/root/websites/gangrunprinting/src/app/admin/orders/page.tsx`:
 import { OrderQuickActions } from '@/components/admin/orders/order-quick-actions'
 
 // In the table row:
-<TableCell>
+;<TableCell>
   <OrderQuickActions order={order} onUpdate={() => window.location.reload()} />
 </TableCell>
 ```
@@ -208,6 +221,7 @@ import { OrderQuickActions } from '@/components/admin/orders/order-quick-actions
 ### Add Bulk Actions
 
 Create `/src/components/admin/orders/bulk-actions.tsx` to:
+
 - Update multiple orders at once
 - Send bulk emails
 - Generate batch shipping labels
@@ -227,17 +241,20 @@ Create `/src/components/admin/orders/bulk-actions.tsx` to:
 ### 2. Configure Webhooks
 
 **Webhook URL:**
+
 ```
 https://gangrunprinting.com/api/webhooks/square/payment
 ```
 
 **Events to Subscribe:**
+
 - `payment.created`
 - `payment.updated`
 
 ### 3. Update Environment Variables
 
 Edit `.env`:
+
 ```bash
 SQUARE_WEBHOOK_SIGNATURE_KEY=your_signature_key_here
 SQUARE_WEBHOOK_URL=https://gangrunprinting.com/api/webhooks/square/payment
@@ -347,24 +364,28 @@ curl -X PATCH https://gangrunprinting.com/api/orders/ORDER_ID/status \
 ## 🎯 NEXT STEPS
 
 ### Immediate (Do This Now):
+
 1. ✅ Run database migration
 2. ✅ Test order status updates
 3. ✅ Test manual payment capture
 4. ✅ Send test invoice
 
 ### Short-term (This Week):
+
 1. Configure Square webhooks
 2. Test payment webhook with real payment
 3. Add OrderQuickActions to orders list
 4. Train team on admin dashboard
 
 ### Medium-term (Next Week):
+
 1. Connect N8N for automation
 2. Customize email templates with logo
 3. Add bulk actions for orders
 4. Set up vendor notification system
 
 ### Long-term (This Month):
+
 1. Build customer portal for order tracking
 2. Integrate FedEx API for automatic label generation
 3. Add analytics dashboard
@@ -375,24 +396,28 @@ curl -X PATCH https://gangrunprinting.com/api/orders/ORDER_ID/status \
 ## 🆘 TROUBLESHOOTING
 
 ### Order status won't update
+
 - Check order's current status
 - Verify valid status transition
 - Check browser console for errors
 - View PM2 logs: `pm2 logs gangrunprinting`
 
 ### Email not sending
+
 - Verify Resend API key in `.env`
 - Check email service logs
 - Confirm customer email is valid
 - Test with your own email first
 
 ### Payment not processing
+
 - Verify Square credentials
 - Check webhook signature key
 - View Square Dashboard → Webhooks → Logs
 - Test with Square sandbox first
 
 ### Database migration failed
+
 - Restore from backup in `/root/backups/`
 - Check PostgreSQL logs
 - Verify database connection
@@ -403,6 +428,7 @@ curl -X PATCH https://gangrunprinting.com/api/orders/ORDER_ID/status \
 ## 📞 SUPPORT
 
 Questions? Need help?
+
 - Email: iradwatkins@gmail.com
 - Check PM2 logs: `pm2 logs gangrunprinting`
 - View database: `psql -h 172.22.0.1 -U gangrun_user -d gangrun_db`

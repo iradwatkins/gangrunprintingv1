@@ -64,7 +64,9 @@ test.describe('Admin CRUD Operations', () => {
     console.log('✅ Paper Stock updated successfully')
 
     // Test delete
-    const deleteButton = page.locator(`tr:has-text("Updated ${testName}") button[title="Delete"]`).first()
+    const deleteButton = page
+      .locator(`tr:has-text("Updated ${testName}") button[title="Delete"]`)
+      .first()
     await deleteButton.click()
 
     // Confirm delete in dialog

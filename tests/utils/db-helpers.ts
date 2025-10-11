@@ -105,9 +105,7 @@ export const cleanupDatabase = async () => {
 
   try {
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`)
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 
 export const disconnectDatabase = async () => {

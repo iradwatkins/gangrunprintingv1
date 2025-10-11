@@ -13,14 +13,15 @@ const reorderSchema = z.object({
 })
 
 // PUT - Reorder paper stocks within a set
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const body = await request.json()
     const validatedData = reorderSchema.parse(body)
 
     // Check if set exists
     const group = await prisma.paperStockSet.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!group) {
@@ -33,7 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         prisma.paperStockSetItem.update({
           where: {
             paperStockSetId_paperStockId: {
-              paperStockSetId: params.id,
+              paperStockSetId: id,
               paperStockId: item.paperStockId,
             },
           },
@@ -46,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     // Return the updated set
     const updatedGroup = await prisma.paperStockSet.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         PaperStockSetItem: {
           include: {

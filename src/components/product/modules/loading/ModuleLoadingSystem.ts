@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { ModuleType } from '../types/StandardModuleTypes'
+import { type ModuleType } from '../types/StandardModuleTypes'
 
 // =============================================================================
 // LOADING STATE TYPES
@@ -16,50 +16,50 @@ import { ModuleType } from '../types/StandardModuleTypes'
  */
 export enum ModuleLoadingType {
   // Data loading
-  INITIAL_LOAD = 'initial_load',           // Loading initial configuration data
-  DATA_REFRESH = 'data_refresh',           // Refreshing/reloading data
-  VALIDATION = 'validation',               // Processing validation
+  INITIAL_LOAD = 'initial_load', // Loading initial configuration data
+  DATA_REFRESH = 'data_refresh', // Refreshing/reloading data
+  VALIDATION = 'validation', // Processing validation
 
   // Calculations
   PRICE_CALCULATION = 'price_calculation', // Calculating pricing
   COMPATIBILITY_CHECK = 'compatibility_check', // Checking compatibility rules
 
   // Network operations
-  API_REQUEST = 'api_request',            // Generic API calls
-  SAVE = 'save',                          // Saving configuration
+  API_REQUEST = 'api_request', // Generic API calls
+  SAVE = 'save', // Saving configuration
 
   // File operations (for image module)
-  FILE_UPLOAD = 'file_upload',            // Uploading files
-  FILE_PROCESSING = 'file_processing',    // Processing uploaded files
+  FILE_UPLOAD = 'file_upload', // Uploading files
+  FILE_PROCESSING = 'file_processing', // Processing uploaded files
 
   // User interactions
   USER_INPUT_PROCESSING = 'user_input_processing', // Processing user input
-  RECOVERY = 'recovery'                   // Recovery operations
+  RECOVERY = 'recovery', // Recovery operations
 }
 
 /**
  * Loading operation priorities for UI feedback
  */
 export enum ModuleLoadingPriority {
-  LOW = 'low',           // Background operations
-  NORMAL = 'normal',     // Standard operations
-  HIGH = 'high',         // Important operations that should show progress
-  CRITICAL = 'critical'  // Blocking operations that must complete
+  LOW = 'low', // Background operations
+  NORMAL = 'normal', // Standard operations
+  HIGH = 'high', // Important operations that should show progress
+  CRITICAL = 'critical', // Blocking operations that must complete
 }
 
 /**
  * Comprehensive loading state for each operation
  */
 export interface ModuleLoadingOperation {
-  id: string                            // Unique operation identifier
-  type: ModuleLoadingType              // Type of loading operation
-  priority: ModuleLoadingPriority      // Priority level
-  startTime: Date                      // When operation started
-  label: string                        // Human-readable description
-  progress?: number                    // Progress percentage (0-100)
-  estimatedDuration?: number           // Estimated duration in ms
-  context?: any                        // Additional context data
-  metadata?: Record<string, any>       // Extra metadata
+  id: string // Unique operation identifier
+  type: ModuleLoadingType // Type of loading operation
+  priority: ModuleLoadingPriority // Priority level
+  startTime: Date // When operation started
+  label: string // Human-readable description
+  progress?: number // Progress percentage (0-100)
+  estimatedDuration?: number // Estimated duration in ms
+  context?: any // Additional context data
+  metadata?: Record<string, any> // Extra metadata
 }
 
 /**
@@ -70,13 +70,13 @@ export interface ModuleLoadingState {
   operations: Map<string, ModuleLoadingOperation>
 
   // State flags
-  isLoading: boolean                   // Any operations running
-  hasHighPriorityLoading: boolean      // High/critical operations running
-  hasCriticalLoading: boolean          // Critical operations running
+  isLoading: boolean // Any operations running
+  hasHighPriorityLoading: boolean // High/critical operations running
+  hasCriticalLoading: boolean // Critical operations running
 
   // Progress information
-  overallProgress?: number             // Combined progress of all operations
-  estimatedTimeRemaining?: number      // Estimated time for all operations
+  overallProgress?: number // Combined progress of all operations
+  estimatedTimeRemaining?: number // Estimated time for all operations
 
   // Operation counts
   totalOperations: number
@@ -122,8 +122,8 @@ export class ModuleLoadingManager {
       estimatedDuration,
       context,
       metadata: {
-        moduleType: this.moduleType
-      }
+        moduleType: this.moduleType,
+      },
     }
 
     this.operations.set(id, operation)
@@ -179,7 +179,7 @@ export class ModuleLoadingManager {
     operation.context = {
       ...operation.context,
       failed: true,
-      failureReason: reason
+      failureReason: reason,
     }
 
     // Remove after a delay
@@ -219,12 +219,12 @@ export class ModuleLoadingManager {
     const operations = Array.from(this.operations.values())
 
     const isLoading = operations.length > 0
-    const hasHighPriorityLoading = operations.some(op =>
-      op.priority === ModuleLoadingPriority.HIGH ||
-      op.priority === ModuleLoadingPriority.CRITICAL
+    const hasHighPriorityLoading = operations.some(
+      (op) =>
+        op.priority === ModuleLoadingPriority.HIGH || op.priority === ModuleLoadingPriority.CRITICAL
     )
-    const hasCriticalLoading = operations.some(op =>
-      op.priority === ModuleLoadingPriority.CRITICAL
+    const hasCriticalLoading = operations.some(
+      (op) => op.priority === ModuleLoadingPriority.CRITICAL
     )
 
     // Calculate overall progress
@@ -239,7 +239,7 @@ export class ModuleLoadingManager {
     if (operations.length > 0) {
       const now = new Date().getTime()
       const estimates = operations
-        .map(op => {
+        .map((op) => {
           if (!op.estimatedDuration || !op.progress) return null
 
           const elapsed = now - op.startTime.getTime()
@@ -266,7 +266,7 @@ export class ModuleLoadingManager {
       estimatedTimeRemaining,
       totalOperations: operations.length,
       completedOperations: 0, // Completed operations are removed
-      failedOperations: operations.filter(op => op.context?.failed).length
+      failedOperations: operations.filter((op) => op.context?.failed).length,
     }
   }
 
@@ -274,14 +274,14 @@ export class ModuleLoadingManager {
    * Get operations by type
    */
   getOperationsByType(type: ModuleLoadingType): ModuleLoadingOperation[] {
-    return Array.from(this.operations.values()).filter(op => op.type === type)
+    return Array.from(this.operations.values()).filter((op) => op.type === type)
   }
 
   /**
    * Get operations by priority
    */
   getOperationsByPriority(priority: ModuleLoadingPriority): ModuleLoadingOperation[] {
-    return Array.from(this.operations.values()).filter(op => op.priority === priority)
+    return Array.from(this.operations.values()).filter((op) => op.priority === priority)
   }
 
   /**
@@ -303,7 +303,7 @@ export class ModuleLoadingManager {
    * Notify all listeners
    */
   private notifyListeners(): void {
-    this.listeners.forEach(callback => callback())
+    this.listeners.forEach((callback) => callback())
   }
 }
 
@@ -313,8 +313,8 @@ export class ModuleLoadingManager {
 
 export interface UseModuleLoadingOptions {
   moduleType: ModuleType
-  autoCleanup?: boolean          // Auto-cleanup completed operations
-  maxOperations?: number         // Max concurrent operations
+  autoCleanup?: boolean // Auto-cleanup completed operations
+  maxOperations?: number // Max concurrent operations
   onLoadingChange?: (isLoading: boolean, state: ModuleLoadingState) => void
   onOperationComplete?: (operation: ModuleLoadingOperation) => void
   onOperationFail?: (operation: ModuleLoadingOperation, reason?: string) => void
@@ -330,7 +330,7 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
     maxOperations = 10,
     onLoadingChange,
     onOperationComplete,
-    onOperationFail
+    onOperationFail,
   } = options
 
   // Create manager instance (stable across re-renders)
@@ -341,7 +341,7 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
 
   // Force update trigger
   const [updateTrigger, setUpdateTrigger] = useState(0)
-  const forceUpdate = useCallback(() => setUpdateTrigger(prev => prev + 1), [])
+  const forceUpdate = useCallback(() => setUpdateTrigger((prev) => prev + 1), [])
 
   // Cleanup timer ref
   const cleanupTimer = useRef<NodeJS.Timeout>()
@@ -384,56 +384,62 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
   }, [manager, autoCleanup, maxOperations, updateTrigger])
 
   // Start loading operation
-  const startLoading = useCallback((
-    type: ModuleLoadingType,
-    label: string,
-    priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL,
-    estimatedDuration?: number,
-    context?: any
-  ): string => {
-    return manager.startOperation(type, label, priority, estimatedDuration, context)
-  }, [manager])
+  const startLoading = useCallback(
+    (
+      type: ModuleLoadingType,
+      label: string,
+      priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL,
+      estimatedDuration?: number,
+      context?: any
+    ): string => {
+      return manager.startOperation(type, label, priority, estimatedDuration, context)
+    },
+    [manager]
+  )
 
   // Update progress
-  const updateProgress = useCallback((
-    operationId: string,
-    progress: number,
-    context?: any
-  ): boolean => {
-    return manager.updateProgress(operationId, progress, context)
-  }, [manager])
+  const updateProgress = useCallback(
+    (operationId: string, progress: number, context?: any): boolean => {
+      return manager.updateProgress(operationId, progress, context)
+    },
+    [manager]
+  )
 
   // Complete operation
-  const completeLoading = useCallback((
-    operationId: string,
-    context?: any
-  ): boolean => {
-    const success = manager.completeOperation(operationId, context)
-    if (success) {
-      // Find operation for callback
-      const operation = Array.from(manager.getState().operations.values()).find(op => op.id === operationId)
-      if (operation) {
-        onOperationComplete?.(operation)
+  const completeLoading = useCallback(
+    (operationId: string, context?: any): boolean => {
+      const success = manager.completeOperation(operationId, context)
+      if (success) {
+        // Find operation for callback
+        const operation = Array.from(manager.getState().operations.values()).find(
+          (op) => op.id === operationId
+        )
+        if (operation) {
+          onOperationComplete?.(operation)
+        }
       }
-    }
-    return success
-  }, [manager, onOperationComplete])
+      return success
+    },
+    [manager, onOperationComplete]
+  )
 
   // Fail operation
-  const failLoading = useCallback((
-    operationId: string,
-    reason?: string
-  ): boolean => {
-    const success = manager.failOperation(operationId, reason)
-    if (success) {
-      // Find operation for callback
-      const operation = Array.from(manager.getState().operations.values()).find(op => op.id === operationId)
-      if (operation) {
-        onOperationFail?.(operation, reason)
+  const failLoading = useCallback(
+    (operationId: string, reason?: string): boolean => {
+      const success = manager.failOperation(operationId, reason)
+      if (success) {
+        // Find operation for callback
+        const operation = Array.from(manager.getState().operations.values()).find(
+          (op) => op.id === operationId
+        )
+        if (operation) {
+          onOperationFail?.(operation, reason)
+        }
       }
-    }
-    return success
-  }, [manager, onOperationFail])
+      return success
+    },
+    [manager, onOperationFail]
+  )
 
   // Clear all loading
   const clearLoading = useCallback(() => {
@@ -441,33 +447,42 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
   }, [manager])
 
   // Clear by type
-  const clearLoadingByType = useCallback((type: ModuleLoadingType) => {
-    manager.clearByType(type)
-  }, [manager])
+  const clearLoadingByType = useCallback(
+    (type: ModuleLoadingType) => {
+      manager.clearByType(type)
+    },
+    [manager]
+  )
 
   // Convenience methods for common operations
-  const withLoading = useCallback(async <T>(
-    operation: () => Promise<T>,
-    type: ModuleLoadingType,
-    label: string,
-    priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL
-  ): Promise<T> => {
-    const operationId = startLoading(type, label, priority)
+  const withLoading = useCallback(
+    async <T>(
+      operation: () => Promise<T>,
+      type: ModuleLoadingType,
+      label: string,
+      priority: ModuleLoadingPriority = ModuleLoadingPriority.NORMAL
+    ): Promise<T> => {
+      const operationId = startLoading(type, label, priority)
 
-    try {
-      const result = await operation()
-      completeLoading(operationId)
-      return result
-    } catch (error) {
-      failLoading(operationId, error instanceof Error ? error.message : 'Unknown error')
-      throw error
-    }
-  }, [startLoading, completeLoading, failLoading])
+      try {
+        const result = await operation()
+        completeLoading(operationId)
+        return result
+      } catch (error) {
+        failLoading(operationId, error instanceof Error ? error.message : 'Unknown error')
+        throw error
+      }
+    },
+    [startLoading, completeLoading, failLoading]
+  )
 
   // Check specific loading states
-  const isLoadingType = useCallback((type: ModuleLoadingType): boolean => {
-    return manager.isOperationRunning(type)
-  }, [manager, updateTrigger]) // Include updateTrigger to force re-computation
+  const isLoadingType = useCallback(
+    (type: ModuleLoadingType): boolean => {
+      return manager.isOperationRunning(type)
+    },
+    [manager, updateTrigger]
+  ) // Include updateTrigger to force re-computation
 
   return {
     // Loading state
@@ -497,8 +512,14 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
     isUploading: isLoadingType(ModuleLoadingType.FILE_UPLOAD),
 
     // Advanced state
-    getOperationsByType: useCallback((type: ModuleLoadingType) => manager.getOperationsByType(type), [manager, updateTrigger]),
-    getOperationsByPriority: useCallback((priority: ModuleLoadingPriority) => manager.getOperationsByPriority(priority), [manager, updateTrigger])
+    getOperationsByType: useCallback(
+      (type: ModuleLoadingType) => manager.getOperationsByType(type),
+      [manager, updateTrigger]
+    ),
+    getOperationsByPriority: useCallback(
+      (priority: ModuleLoadingPriority) => manager.getOperationsByPriority(priority),
+      [manager, updateTrigger]
+    ),
   }
 }
 
@@ -512,7 +533,7 @@ export function useModuleLoading(options: UseModuleLoadingOptions) {
 export function combineModuleLoadingStates(states: ModuleLoadingState[]): ModuleLoadingState {
   const allOperations = new Map<string, ModuleLoadingOperation>()
 
-  states.forEach(state => {
+  states.forEach((state) => {
     state.operations.forEach((operation, id) => {
       allOperations.set(id, operation)
     })
@@ -521,13 +542,11 @@ export function combineModuleLoadingStates(states: ModuleLoadingState[]): Module
   const operations = Array.from(allOperations.values())
 
   const isLoading = operations.length > 0
-  const hasHighPriorityLoading = operations.some(op =>
-    op.priority === ModuleLoadingPriority.HIGH ||
-    op.priority === ModuleLoadingPriority.CRITICAL
+  const hasHighPriorityLoading = operations.some(
+    (op) =>
+      op.priority === ModuleLoadingPriority.HIGH || op.priority === ModuleLoadingPriority.CRITICAL
   )
-  const hasCriticalLoading = operations.some(op =>
-    op.priority === ModuleLoadingPriority.CRITICAL
-  )
+  const hasCriticalLoading = operations.some((op) => op.priority === ModuleLoadingPriority.CRITICAL)
 
   // Calculate combined progress
   let overallProgress: number | undefined
@@ -544,7 +563,7 @@ export function combineModuleLoadingStates(states: ModuleLoadingState[]): Module
     overallProgress,
     totalOperations: operations.length,
     completedOperations: 0,
-    failedOperations: operations.filter(op => op.context?.failed).length
+    failedOperations: operations.filter((op) => op.context?.failed).length,
   }
 }
 
@@ -564,7 +583,7 @@ export function createModuleDisabledState(
     return {
       isDisabled: true,
       disabledReason: 'Module is disabled',
-      canInteract: false
+      canInteract: false,
     }
   }
 
@@ -572,7 +591,7 @@ export function createModuleDisabledState(
     return {
       isDisabled: true,
       disabledReason: 'Please fix errors first',
-      canInteract: false
+      canInteract: false,
     }
   }
 
@@ -580,7 +599,7 @@ export function createModuleDisabledState(
     return {
       isDisabled: true,
       disabledReason: 'Processing...',
-      canInteract: false
+      canInteract: false,
     }
   }
 
@@ -588,13 +607,13 @@ export function createModuleDisabledState(
     return {
       isDisabled: false,
       disabledReason: 'Loading...',
-      canInteract: true // Can interact but with loading feedback
+      canInteract: true, // Can interact but with loading feedback
     }
   }
 
   return {
     isDisabled: false,
     disabledReason: '',
-    canInteract: true
+    canInteract: true,
   }
 }

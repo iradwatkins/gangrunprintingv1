@@ -5,9 +5,7 @@
   "results": {
     "scenario1": {
       "passed": false,
-      "errors": [
-        "Could not find \"ira watkins\" product or Edit button"
-      ],
+      "errors": ["Could not find \"ira watkins\" product or Edit button"],
       "screenshots": [
         "2025-10-04T21-14-59-055Z_scenario1_01-initial-page.png",
         "2025-10-04T21-15-19-388Z_scenario1_01b-after-loading.png",
@@ -17,9 +15,7 @@
     },
     "scenario2": {
       "passed": false,
-      "errors": [
-        "Waiting for selector `select[name=\"category\"], select#category` failed"
-      ],
+      "errors": ["Waiting for selector `select[name=\"category\"], select#category` failed"],
       "screenshots": [
         "2025-10-04T21-16-14-538Z_scenario2_10-new-product-page.png",
         "2025-10-04T21-16-14-648Z_scenario2_10b-form-state.png",
@@ -28,9 +24,7 @@
     },
     "scenario3": {
       "passed": false,
-      "errors": [
-        "Unexpected end of JSON input"
-      ],
+      "errors": ["Unexpected end of JSON input"],
       "screenshots": []
     }
   }

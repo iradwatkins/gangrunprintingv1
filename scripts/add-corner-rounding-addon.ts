@@ -5,8 +5,8 @@ async function addCornerRoundingAddOn() {
     // Check if Corner Rounding add-on already exists
     const existingAddOn = await prisma.addOn.findFirst({
       where: {
-        name: 'Corner Rounding'
-      }
+        name: 'Corner Rounding',
+      },
     })
 
     if (existingAddOn) {
@@ -15,7 +15,8 @@ async function addCornerRoundingAddOn() {
         where: { id: existingAddOn.id },
         data: {
           description: 'Remove sharp corners on your print job with rounded corners',
-          tooltipText: 'Corner Rounding is an option that will remove the sharp corners on your print job and add a 1/4 inch radius to business cards and a 3/16 inch radius to all other products.',
+          tooltipText:
+            'Corner Rounding is an option that will remove the sharp corners on your print job and add a 1/4 inch radius to business cards and a 3/16 inch radius to all other products.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'corner_rounding',
@@ -37,29 +38,29 @@ async function addCornerRoundingAddOn() {
                   { value: 'Bottom Left', label: 'Bottom Left' },
                   { value: 'Bottom Right', label: 'Bottom Right' },
                   { value: 'Top Left & Bottom Right', label: 'Top Left & Bottom Right' },
-                  { value: 'Top Right & Bottom Left', label: 'Top Right & Bottom Left' }
+                  { value: 'Top Right & Bottom Left', label: 'Top Right & Bottom Left' },
                 ],
                 defaultValue: 'All Four',
                 helpText: 'Select the type of corner rounding for your order.',
-                required: true
-              }
+                required: true,
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           sortOrder: 15,
           isActive: true,
-          adminNotes: 'Corner Rounding service with multiple corner configuration options'
-        }
+          adminNotes: 'Corner Rounding service with multiple corner configuration options',
+        },
       })
-
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
         data: {
           name: 'Corner Rounding',
           description: 'Remove sharp corners on your print job with rounded corners',
-          tooltipText: 'Corner Rounding is an option that will remove the sharp corners on your print job and add a 1/4 inch radius to business cards and a 3/16 inch radius to all other products.',
+          tooltipText:
+            'Corner Rounding is an option that will remove the sharp corners on your print job and add a 1/4 inch radius to business cards and a 3/16 inch radius to all other products.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'corner_rounding',
@@ -81,23 +82,22 @@ async function addCornerRoundingAddOn() {
                   { value: 'Bottom Left', label: 'Bottom Left' },
                   { value: 'Bottom Right', label: 'Bottom Right' },
                   { value: 'Top Left & Bottom Right', label: 'Top Left & Bottom Right' },
-                  { value: 'Top Right & Bottom Left', label: 'Top Right & Bottom Left' }
+                  { value: 'Top Right & Bottom Left', label: 'Top Right & Bottom Left' },
                 ],
                 defaultValue: 'All Four',
                 helpText: 'Select the type of corner rounding for your order.',
-                required: true
-              }
+                required: true,
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           additionalTurnaroundDays: 1,
           sortOrder: 15,
           isActive: true,
-          adminNotes: 'Corner Rounding service with multiple corner configuration options'
-        }
+          adminNotes: 'Corner Rounding service with multiple corner configuration options',
+        },
       })
-
     }
 
     process.exit(0)

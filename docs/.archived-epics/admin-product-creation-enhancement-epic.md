@@ -1,14 +1,17 @@
 # Admin Product Creation & Checkout Enhancement - Brownfield Enhancement Epic
 
 ## Epic Title
+
 Admin Product Creation & Checkout Enhancement - Brownfield Enhancement
 
 ## Epic Goal
+
 Fix critical bugs and enhance the admin product creation system from 90% functional to 100% reliable, ensuring image uploads work consistently, add-on options display properly, shipping provider selection works at checkout, and all product data flows correctly to customer-facing pages.
 
 ## Epic Description
 
 ### Existing System Context:
+
 - **Current relevant functionality**:
   - Product creation form at `/admin/products/new` is mostly working
   - Image upload to MinIO with multiple size variants
@@ -25,6 +28,7 @@ Fix critical bugs and enhance the admin product creation system from 90% functio
   - Checkout API for order processing and shipping calculations
 
 ### Enhancement Details:
+
 - **What's being fixed/added**:
   - Fix broken code in products API route (line 127 syntax error)
   - Add preview of add-on sets contents when selecting
@@ -53,15 +57,19 @@ Fix critical bugs and enhance the admin product creation system from 90% functio
 ## Stories
 
 ### Story 1: Fix Critical Bugs and Data Consistency
+
 Repair the syntax error in `/api/products/route.ts` line 127, standardize API response format to use consistent property naming (PascalCase for frontend compatibility), and ensure MAX_FILE_SIZE constant is properly defined before use in error messages. Add proper error boundaries around image URL handling to prevent display breaks.
 
 ### Story 2: Enhance Add-On Selection Interface
+
 Modify the ProductAdditionalOptions component to show a preview of what's included in each add-on set when hovering or selecting. Display individual add-ons with their prices, allow admins to see the impact on final pricing, and ensure selected add-ons properly display on customer product pages.
 
 ### Story 3: Improve Image Upload Experience
+
 Add image preview before upload in ProductImageUpload component, show upload progress percentage, display all image variants after successful upload (thumbnail, medium, large), and implement retry mechanism for failed uploads. Ensure image URLs are properly formatted and accessible from customer pages.
 
 ### Story 4: Implement Shipping Provider Selection at Checkout
+
 Add shipping provider selection interface to checkout page allowing customers to choose between FedEx and Southwest Cargo/DASH shipping. Implement radio button selection with provider logos, display estimated delivery times for each provider, calculate and show real-time shipping rates based on order weight and destination, and integrate selected shipping method into order submission. Ensure shipping cost updates the order total dynamically.
 
 ## Compatibility Requirements
@@ -100,18 +108,21 @@ Add shipping provider selection interface to checkout page allowing customers to
 ## Validation Checklist
 
 ### Scope Validation:
+
 - [x] Epic can be completed in 4 stories maximum
 - [x] No architectural documentation is required
 - [x] Enhancement follows existing patterns
 - [x] Integration complexity is manageable
 
 ### Risk Assessment:
+
 - [x] Risk to existing system is low
 - [x] Rollback plan is feasible
 - [x] Testing approach covers existing functionality
 - [x] Team has sufficient knowledge of integration points
 
 ### Completeness Check:
+
 - [x] Epic goal is clear and achievable
 - [x] Stories are properly scoped
 - [x] Success criteria are measurable
@@ -122,6 +133,7 @@ Add shipping provider selection interface to checkout page allowing customers to
 ### Critical Fixes Required:
 
 1. **API Route Bug** (`/api/products/route.ts`):
+
 ```typescript
 // Line 127 - BROKEN:
 :`, error)
@@ -131,12 +143,14 @@ console.error(`[${requestId}] Database error:`, error)
 ```
 
 2. **Image Upload Constants** (`/api/products/upload-image/route.ts`):
+
 ```typescript
 // Move MAX_FILE_SIZE definition to top of function
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 ```
 
 3. **Data Transformation Standardization**:
+
 - Use PascalCase consistently for frontend
 - Remove duplicate properties in API responses
 - Ensure customer pages receive expected format
@@ -144,6 +158,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 ### UI Enhancements:
 
 1. **Add-On Preview Component**:
+
 ```typescript
 // Show add-on details on hover/selection
 <HoverCard>
@@ -159,17 +174,20 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 ```
 
 2. **Live Price Preview**:
+
 - Integrate price calculation into form state
 - Update price display on any option change
 - Show price breakdown (base + add-ons + quantity)
 
 3. **Image Upload Improvements**:
+
 - Show image preview before upload
 - Display upload progress bar
 - Show all generated variants after upload
 - Add retry button for failures
 
 4. **Shipping Provider Selection**:
+
 ```typescript
 // Shipping provider selection component
 <RadioGroup value={shippingProvider} onValueChange={setShippingProvider}>
@@ -191,6 +209,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 ```
 
 ### Testing Checklist:
+
 - [ ] Create product with all option combinations
 - [ ] Upload images of various sizes and formats
 - [ ] Verify add-on prices calculate correctly

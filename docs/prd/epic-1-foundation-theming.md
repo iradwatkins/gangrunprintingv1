@@ -1,6 +1,7 @@
 # Epic 1: Foundational Setup & Theming
 
 ## Epic Status
+
 **STATUS: ✅ COMPLETE**
 **Completion Date:** 2025-09-14
 **Implementation Score:** 100/100
@@ -8,6 +9,7 @@
 ---
 
 ## Epic Goal
+
 Establish the core frontend and backend architecture, including the database schema, CI/CD pipeline, and the admin-facing "Theme Editor" to manage the site's branding (logos, colors, fonts), providing a white-label-ready foundation for the printing e-commerce platform.
 
 ---
@@ -15,16 +17,20 @@ Establish the core frontend and backend architecture, including the database sch
 ## Epic Description
 
 ### User Goal
+
 **As an Administrator**, I need to set up my website's core brand identity so that it reflects my business and provides a professional, customized appearance to my customers.
 
 ### Business Value
+
 - Enables white-label deployment for multiple brands
 - Provides professional, customizable branding
 - Establishes technical foundation for all future features
 - Reduces onboarding time for new deployments
 
 ### Technical Summary
+
 This epic establishes the complete technical foundation including:
+
 - **Next.js 15.5.2** fullstack application with App Router
 - **PostgreSQL** database with comprehensive schema
 - **Prisma ORM** for type-safe database operations
@@ -57,6 +63,7 @@ This epic establishes the complete technical foundation including:
 ### ✅ Completed Components
 
 #### 1. **Database Architecture**
+
 - PostgreSQL 15 database configured
 - Complete Prisma schema with 80+ models
 - Database migrations established
@@ -64,6 +71,7 @@ This epic establishes the complete technical foundation including:
 - Transaction support implemented
 
 **Key Models:**
+
 - User (with Lucia Auth integration)
 - Product, ProductCategory
 - Order, OrderItem
@@ -73,6 +81,7 @@ This epic establishes the complete technical foundation including:
 - Session, Account
 
 #### 2. **Authentication System**
+
 - NextAuth.js 5.0.0-beta.29 configured
 - Google OAuth integration
 - Email magic link authentication
@@ -81,6 +90,7 @@ This epic establishes the complete technical foundation including:
 - Secure session management
 
 #### 3. **Application Infrastructure**
+
 - Next.js 15 with App Router
 - TypeScript strict mode enabled
 - API route structure established
@@ -89,6 +99,7 @@ This epic establishes the complete technical foundation including:
 - Loading states implemented
 
 #### 4. **Styling & Theme System**
+
 - Tailwind CSS 4 configuration
 - Dark/light mode support
 - Custom color palette
@@ -97,6 +108,7 @@ This epic establishes the complete technical foundation including:
 - shadcn/ui component library integrated
 
 #### 5. **PWA Configuration**
+
 - Service worker implemented
 - Web manifest configured
 - Offline capabilities
@@ -104,6 +116,7 @@ This epic establishes the complete technical foundation including:
 - Push notification infrastructure
 
 #### 6. **Development Infrastructure**
+
 - PM2 process management
 - Docker deployment setup
 - Environment configuration
@@ -111,6 +124,7 @@ This epic establishes the complete technical foundation including:
 - Hot reload development server
 
 #### 7. **Code Quality Standards**
+
 - ESLint configuration
 - Prettier formatting
 - TypeScript strict mode
@@ -122,10 +136,12 @@ This epic establishes the complete technical foundation including:
 ## User Stories
 
 ### Story 1.1: Database Schema & ORM Setup ✅
+
 **Status:** COMPLETE
 **Description:** Design and implement the complete database schema using Prisma ORM, including all entities for products, orders, users, and configurations.
 
 **Acceptance Criteria:**
+
 - ✅ Prisma schema designed with all required models
 - ✅ Database migrations created and applied
 - ✅ Prisma Client generated and configured
@@ -136,10 +152,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.2: Authentication System Implementation ✅
+
 **Status:** COMPLETE
 **Description:** Implement NextAuth.js with Google OAuth and magic link authentication, including role-based access control.
 
 **Acceptance Criteria:**
+
 - ✅ NextAuth.js configured with Prisma adapter
 - ✅ Google OAuth provider working
 - ✅ Magic link email authentication functional
@@ -150,10 +168,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.3: Next.js Application Foundation ✅
+
 **Status:** COMPLETE
 **Description:** Set up Next.js 15 application with App Router, TypeScript configuration, and project structure.
 
 **Acceptance Criteria:**
+
 - ✅ Next.js 15.5.2 with App Router configured
 - ✅ TypeScript 5.9.2 with strict mode
 - ✅ Project folder structure established
@@ -164,10 +184,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.4: Styling & Component System ✅
+
 **Status:** COMPLETE
 **Description:** Implement Tailwind CSS 4 with shadcn/ui component library, including theme system for light/dark modes.
 
 **Acceptance Criteria:**
+
 - ✅ Tailwind CSS 4.1.13 configured
 - ✅ Custom color palette defined
 - ✅ Typography system established
@@ -178,10 +200,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.5: Admin Theme Editor ✅
+
 **Status:** COMPLETE
 **Description:** Create admin interface for customizing site branding including logos, colors, and fonts.
 
 **Acceptance Criteria:**
+
 - ✅ Theme editor accessible in admin panel
 - ✅ Logo upload functionality
 - ✅ Color palette customization
@@ -192,10 +216,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.6: PWA Configuration ✅
+
 **Status:** COMPLETE
 **Description:** Configure Progressive Web App capabilities including service worker, manifest, and offline support.
 
 **Acceptance Criteria:**
+
 - ✅ Service worker implemented
 - ✅ Web manifest configured
 - ✅ Install prompts working
@@ -206,10 +232,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.7: Deployment Infrastructure ✅
+
 **Status:** COMPLETE
 **Description:** Set up Docker deployment with PM2 process management on VPS.
 
 **Acceptance Criteria:**
+
 - ✅ Docker Compose configuration
 - ✅ PM2 ecosystem config
 - ✅ Environment variables management
@@ -220,10 +248,12 @@ This epic establishes the complete technical foundation including:
 ---
 
 ### Story 1.8: Localization Foundation ✅
+
 **Status:** COMPLETE
 **Description:** Implement i18n infrastructure for English and Spanish support.
 
 **Acceptance Criteria:**
+
 - ✅ i18n library configured
 - ✅ Language detection working
 - ✅ Manual language switcher
@@ -236,18 +266,21 @@ This epic establishes the complete technical foundation including:
 ## Technical Achievements
 
 ### Performance Metrics
+
 - **First Contentful Paint:** < 1.5s ✅
 - **Time to Interactive:** < 3s ✅
 - **API Response Time:** < 150ms avg ✅
 - **Database Query Time:** < 85ms avg ✅
 
 ### Code Quality
+
 - **TypeScript Coverage:** 100% ✅
 - **ESLint Errors:** 0 ✅
 - **Test Coverage:** Basic infrastructure ✅
 - **Build Success:** Clean builds ✅
 
 ### Infrastructure
+
 - **Uptime:** 99.9%+ ✅
 - **Deployment:** Automated via PM2 ✅
 - **Monitoring:** Health checks active ✅
@@ -258,6 +291,7 @@ This epic establishes the complete technical foundation including:
 ## Dependencies
 
 ### External Services
+
 - PostgreSQL database (172.22.0.1:5432)
 - Redis cache (for sessions)
 - MinIO (file storage)
@@ -265,6 +299,7 @@ This epic establishes the complete technical foundation including:
 - N8N (automation platform)
 
 ### Technology Stack
+
 - Next.js 15.5.2
 - React 19.1.1
 - TypeScript 5.9.2
@@ -276,18 +311,19 @@ This epic establishes the complete technical foundation including:
 
 ## Risks & Mitigation
 
-| Risk | Impact | Mitigation | Status |
-|------|--------|------------|--------|
-| Database schema changes | HIGH | Prisma migrations | ✅ Resolved |
-| Auth configuration errors | HIGH | Comprehensive testing | ✅ Resolved |
-| Performance bottlenecks | MEDIUM | Query optimization | ✅ Resolved |
-| Deployment complexity | MEDIUM | PM2 automation | ✅ Resolved |
+| Risk                      | Impact | Mitigation            | Status      |
+| ------------------------- | ------ | --------------------- | ----------- |
+| Database schema changes   | HIGH   | Prisma migrations     | ✅ Resolved |
+| Auth configuration errors | HIGH   | Comprehensive testing | ✅ Resolved |
+| Performance bottlenecks   | MEDIUM | Query optimization    | ✅ Resolved |
+| Deployment complexity     | MEDIUM | PM2 automation        | ✅ Resolved |
 
 ---
 
 ## Success Metrics
 
 ### ✅ Achievement Summary
+
 - [x] All stories completed
 - [x] All acceptance criteria met
 - [x] Production deployment successful
@@ -310,11 +346,11 @@ This epic establishes the complete technical foundation including:
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-09-14 | 1.0 | Epic completed and deployed | Development Team |
-| 2025-09-28 | 1.1 | Documentation updated with completion status | BMAD PM |
-| 2025-09-30 | 2.0 | Sharded from monolithic PRD | BMAD Agent |
+| Date       | Version | Description                                  | Author           |
+| ---------- | ------- | -------------------------------------------- | ---------------- |
+| 2025-09-14 | 1.0     | Epic completed and deployed                  | Development Team |
+| 2025-09-28 | 1.1     | Documentation updated with completion status | BMAD PM          |
+| 2025-09-30 | 2.0     | Sharded from monolithic PRD                  | BMAD Agent       |
 
 ---
 

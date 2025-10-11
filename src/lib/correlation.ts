@@ -93,9 +93,7 @@ export async function withCorrelation<T>(
   fn: () => T | Promise<T>
 ): Promise<T> {
   const correlationContext =
-    typeof context === 'string'
-      ? createCorrelationContext(context)
-      : context
+    typeof context === 'string' ? createCorrelationContext(context) : context
 
   return correlationStorage.run(correlationContext, fn)
 }
@@ -152,18 +150,21 @@ export function getCorrelationHeaders(): Record<string, string> {
 /**
  * Extract correlation ID from headers
  */
-export function extractCorrelationId(headers: Headers | Record<string, string>): string | undefined {
+export function extractCorrelationId(
+  headers: Headers | Record<string, string>
+): string | undefined {
   if (headers instanceof Headers) {
-    return headers.get('x-correlation-id') ||
-           headers.get('x-request-id') ||
-           headers.get('x-trace-id') ||
-           undefined
+    return (
+      headers.get('x-correlation-id') ||
+      headers.get('x-request-id') ||
+      headers.get('x-trace-id') ||
+      undefined
+    )
   }
 
-  return headers['x-correlation-id'] ||
-         headers['x-request-id'] ||
-         headers['x-trace-id'] ||
-         undefined
+  return (
+    headers['x-correlation-id'] || headers['x-request-id'] || headers['x-trace-id'] || undefined
+  )
 }
 
 /**

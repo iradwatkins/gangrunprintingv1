@@ -14,9 +14,9 @@ async function main() {
         { id: 'addon_design_changes_minor' },
         { id: 'addon_design_changes_major' },
         { id: 'addon_upload_later' },
-        { name: 'Design Services' }
-      ]
-    }
+        { name: 'Design Services' },
+      ],
+    },
   })
 
   // Create the single Design add-on with comprehensive configuration
@@ -24,7 +24,8 @@ async function main() {
     data: {
       id: 'addon_design',
       name: 'Design',
-      description: 'Design service options including artwork upload, custom design, and design changes',
+      description:
+        'Design service options including artwork upload, custom design, and design changes',
       tooltipText: 'Choose from various design service options for your project',
       pricingModel: 'CUSTOM',
       configuration: {
@@ -34,12 +35,19 @@ async function main() {
             id: 'upload_artwork',
             name: 'Upload My Artwork',
             description: 'Upload your own design files',
-            tooltipText: 'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
+            tooltipText:
+              'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
             basePrice: 0,
             requiresFileUpload: true,
             fileUploadOptional: true,
             allowDeferredUpload: true,
-            acceptedFileTypes: ['image/jpeg', 'image/png', 'application/pdf', 'application/postscript', 'application/illustrator']
+            acceptedFileTypes: [
+              'image/jpeg',
+              'image/png',
+              'application/pdf',
+              'application/postscript',
+              'application/illustrator',
+            ],
           },
           standard_design: {
             id: 'standard_design',
@@ -50,14 +58,14 @@ async function main() {
             sideOptions: {
               oneSide: {
                 label: 'One Side',
-                price: 90
+                price: 90,
               },
               twoSides: {
                 label: 'Two Sides',
-                price: 135
-              }
+                price: 135,
+              },
             },
-            additionalTurnaroundDays: 2
+            additionalTurnaroundDays: 2,
           },
           rush_design: {
             id: 'rush_design',
@@ -68,14 +76,14 @@ async function main() {
             sideOptions: {
               oneSide: {
                 label: 'One Side',
-                price: 160
+                price: 160,
               },
               twoSides: {
                 label: 'Two Sides',
-                price: 240
-              }
+                price: 240,
+              },
             },
-            additionalTurnaroundDays: 1
+            additionalTurnaroundDays: 1,
           },
           minor_changes: {
             id: 'minor_changes',
@@ -83,7 +91,7 @@ async function main() {
             description: 'Small adjustments to existing design',
             tooltipText: 'Minor text changes, color adjustments, or small layout tweaks',
             basePrice: 22.5,
-            additionalTurnaroundDays: 1
+            additionalTurnaroundDays: 1,
           },
           major_changes: {
             id: 'major_changes',
@@ -91,7 +99,7 @@ async function main() {
             description: 'Significant modifications to existing design',
             tooltipText: 'Major redesign elements, layout changes, or extensive revisions',
             basePrice: 45,
-            additionalTurnaroundDays: 2
+            additionalTurnaroundDays: 2,
           },
           upload_later: {
             id: 'upload_later',
@@ -100,28 +108,28 @@ async function main() {
             tooltipText: 'You can email us your files after placing the order',
             basePrice: 0,
             sendReminder: true,
-            allowDeferredUpload: true
-          }
-        }
+            allowDeferredUpload: true,
+          },
+        },
       },
       additionalTurnaroundDays: 0,
       sortOrder: 0,
       isActive: true,
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   })
 
   console.log('Created Design add-on:', designAddon.id)
 
   // Add the Design add-on to the Design Services addon set
   const designServiceSet = await prisma.addOnSet.findFirst({
-    where: { name: 'Design Services' }
+    where: { name: 'Design Services' },
   })
 
   if (designServiceSet) {
     // First, remove any existing items from the set
     await prisma.addOnSetItem.deleteMany({
-      where: { addOnSetId: designServiceSet.id }
+      where: { addOnSetId: designServiceSet.id },
     })
 
     // Add the new Design add-on to the set
@@ -133,8 +141,8 @@ async function main() {
         displayPosition: 'IN_DROPDOWN',
         sortOrder: 1,
         isDefault: false,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     console.log('Added Design add-on to Design Services set:', addOnSetItem.id)

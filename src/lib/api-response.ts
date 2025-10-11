@@ -110,12 +110,7 @@ export function createValidationErrorResponse(
     code: err.code || 'VALIDATION_ERROR',
   }))
 
-  return createErrorResponse(
-    'Validation failed',
-    400,
-    { validationErrors: details },
-    requestId
-  )
+  return createErrorResponse('Validation failed', 400, { validationErrors: details }, requestId)
 }
 
 /**
@@ -146,7 +141,7 @@ export function createDatabaseErrorResponse(
       {
         databaseError: true,
         originalError: errorCode,
-        meta: error.meta
+        meta: error.meta,
       },
       requestId
     )
@@ -163,12 +158,7 @@ export function createDatabaseErrorResponse(
   }
 
   // Generic database error
-  return createErrorResponse(
-    'Database operation failed',
-    500,
-    { databaseError: true },
-    requestId
-  )
+  return createErrorResponse('Database operation failed', 500, { databaseError: true }, requestId)
 }
 
 /**
@@ -198,12 +188,7 @@ export function createNotFoundErrorResponse(
   resource: string = 'Resource',
   requestId?: string
 ): NextResponse<ApiError> {
-  return createErrorResponse(
-    `${resource} not found`,
-    404,
-    { notFound: true },
-    requestId
-  )
+  return createErrorResponse(`${resource} not found`, 404, { notFound: true }, requestId)
 }
 
 /**
@@ -240,7 +225,7 @@ export function createUploadErrorResponse(
     413,
     {
       uploadError: true,
-      fileSizeLimit: fileSizeLimit ? `${fileSizeLimit / (1024 * 1024)}MB` : undefined
+      fileSizeLimit: fileSizeLimit ? `${fileSizeLimit / (1024 * 1024)}MB` : undefined,
     },
     requestId
   )
@@ -254,12 +239,7 @@ export function createTimeoutErrorResponse(
   timeoutMs?: number,
   requestId?: string
 ): NextResponse<ApiError> {
-  return createErrorResponse(
-    `${operation} timed out`,
-    408,
-    { timeout: true, timeoutMs },
-    requestId
-  )
+  return createErrorResponse(`${operation} timed out`, 408, { timeout: true, timeoutMs }, requestId)
 }
 
 /**

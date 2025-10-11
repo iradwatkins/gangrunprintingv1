@@ -7,12 +7,14 @@
 ## 🎯 **Architecture Overview**
 
 ### **Ultra-Clear Requirements** ✅
+
 - **Modules work TOGETHER for pricing** (quantity × paper × size = base price)
 - **Dependencies are REQUIRED and CORRECT** (addons need quantity, turnaround needs base price)
 - **Modules are independent for ERROR HANDLING and MAINTENANCE** only
 - **Images are ALWAYS optional** and NEVER block pricing/checkout
 
 ### **What We Built**
+
 ```
 ✅ Error Independence    - Module crashes don't affect others
 ✅ UI Independence       - Each module renders independently
@@ -27,14 +29,14 @@
 
 ## 📦 **Available Modules**
 
-| Module | Status | Required | Pricing Impact | Dependencies |
-|--------|--------|----------|----------------|--------------|
-| **Quantity** | ✅ Complete | ✅ Yes | Base calculation | None |
-| **Size** | ✅ Complete | ✅ Yes | Size multiplier | None |
-| **Paper Stock** | ✅ Complete | ✅ Yes | Base price/unit | None |
-| **Add-ons** | ✅ Complete | ❌ Optional | Addon costs | quantity, basePrice |
-| **Turnaround** | ✅ Complete | ❌ Optional | Time multiplier | quantity, productPrice |
-| **Images** | ✅ Complete | ❌ **Always Optional** | **Never affects pricing** | None |
+| Module          | Status      | Required               | Pricing Impact            | Dependencies           |
+| --------------- | ----------- | ---------------------- | ------------------------- | ---------------------- |
+| **Quantity**    | ✅ Complete | ✅ Yes                 | Base calculation          | None                   |
+| **Size**        | ✅ Complete | ✅ Yes                 | Size multiplier           | None                   |
+| **Paper Stock** | ✅ Complete | ✅ Yes                 | Base price/unit           | None                   |
+| **Add-ons**     | ✅ Complete | ❌ Optional            | Addon costs               | quantity, basePrice    |
+| **Turnaround**  | ✅ Complete | ❌ Optional            | Time multiplier           | quantity, productPrice |
+| **Images**      | ✅ Complete | ❌ **Always Optional** | **Never affects pricing** | None                   |
 
 ---
 
@@ -90,22 +92,18 @@ src/components/product/modules/
 ## 🚀 **Quick Start**
 
 ### **Basic Product Configuration**
+
 ```tsx
 import {
   QuantityModule,
   SizeModule,
   PaperStockModule,
   ModulePricingEngine,
-  useModulePricingEngine
+  useModulePricingEngine,
 } from '@/components/product/modules'
 
 function ProductConfiguration() {
-  const {
-    pricingContext,
-    updateModuleContribution,
-    finalPrice,
-    isValid
-  } = useModulePricingEngine()
+  const { pricingContext, updateModuleContribution, finalPrice, isValid } = useModulePricingEngine()
 
   return (
     <div className="space-y-6">
@@ -119,24 +117,12 @@ function ProductConfiguration() {
         }}
       />
 
-      <SizeModule
-        sizes={sizes}
-        value={sizeValue}
-        onChange={handleSizeChange}
-      />
+      <SizeModule sizes={sizes} value={sizeValue} onChange={handleSizeChange} />
 
-      <PaperStockModule
-        paperStocks={paperStocks}
-        value={paperValue}
-        onChange={handlePaperChange}
-      />
+      <PaperStockModule paperStocks={paperStocks} value={paperValue} onChange={handlePaperChange} />
 
       {/* Optional Enhancement Modules */}
-      <AddonsModule
-        addons={addons}
-        value={addonsValue}
-        onChange={handleAddonsChange}
-      />
+      <AddonsModule addons={addons} value={addonsValue} onChange={handleAddonsChange} />
 
       {/* Always Optional - Never Required */}
       <ImagesModule
@@ -157,19 +143,21 @@ function ProductConfiguration() {
 ```
 
 ### **Advanced Usage with Performance Optimization**
+
 ```tsx
 import {
   ModulePricingEngine,
   PricingConstants,
-  debounce
+  debounce,
 } from '@/components/product/modules/pricing'
 
 function OptimizedProductForm() {
-  const [pricingEngine] = useState(() =>
-    new ModulePricingEngine({
-      maxCacheSize: PricingConstants.DEFAULT_CACHE_SIZE,
-      maxAge: PricingConstants.DEFAULT_CACHE_TTL_MS
-    })
+  const [pricingEngine] = useState(
+    () =>
+      new ModulePricingEngine({
+        maxCacheSize: PricingConstants.DEFAULT_CACHE_SIZE,
+        maxAge: PricingConstants.DEFAULT_CACHE_TTL_MS,
+      })
   )
 
   // Debounce expensive price updates
@@ -189,11 +177,13 @@ function OptimizedProductForm() {
 ## 🧪 **Testing**
 
 ### **Run All Tests**
+
 ```bash
 npm test src/components/product/modules/__tests__/
 ```
 
 ### **Test Categories**
+
 - **Architecture Tests**: Core pricing flow and module combinations
 - **Independence Tests**: Error and loading isolation
 - **Pricing Engine Tests**: Calculation accuracy and caching
@@ -203,23 +193,25 @@ npm test src/components/product/modules/__tests__/
 
 ## 📚 **Documentation**
 
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** | Complete development guide | Developers |
+| Document                                                     | Purpose                         | Audience   |
+| ------------------------------------------------------------ | ------------------------------- | ---------- |
+| **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)**               | Complete development guide      | Developers |
 | **[ARCHITECTURE_DECISIONS.md](./ARCHITECTURE_DECISIONS.md)** | Technical decisions & rationale | Tech Leads |
-| **[README.md](./README.md)** | Overview & quick start | Everyone |
+| **[README.md](./README.md)**                                 | Overview & quick start          | Everyone   |
 
 ---
 
 ## ⚡ **Performance Features**
 
 ### **High-Performance Caching**
+
 - ✅ **Pricing Results**: Cache expensive calculations
 - ✅ **Module Context**: Cache dependency lookups
 - ✅ **Smart Invalidation**: Clear cache when modules change
 - ✅ **Performance Monitoring**: Track hit rates and calculation times
 
 ### **Optimization Utilities**
+
 - ✅ **Debouncing**: Reduce frequent calculations
 - ✅ **Throttling**: Limit expensive operations
 - ✅ **Memory Management**: Automatic cleanup
@@ -230,24 +222,28 @@ npm test src/components/product/modules/__tests__/
 ## 🎯 **Success Metrics**
 
 ### **Independence Achieved** ✅
+
 - Module errors don't crash other modules
 - Each module can be fixed individually
 - Loading states don't block other modules
 - Adding/removing modules doesn't break others
 
 ### **Integration Preserved** ✅
+
 - Add-ons get quantity for PER_UNIT pricing
 - Add-ons get base price for PERCENTAGE pricing
 - Turnaround gets product price for multiplier pricing
 - All pricing calculations are accurate
 
 ### **Images Always Optional** ✅
+
 - System works without uploads
 - Orders can be placed without files
 - Clear "pending file" messaging
 - Upload failures don't block system
 
 ### **Performance Optimized** ⚡
+
 - Cache hit rates > 80%
 - Calculation times < 50ms average
 - Memory usage stays stable
@@ -258,6 +254,7 @@ npm test src/components/product/modules/__tests__/
 ## 🚫 **Critical Rules**
 
 ### **DO ✅**
+
 - Keep pricing dependencies (addons → quantity, turnaround → basePrice)
 - Use ultra-independent error handling per module
 - Make images always optional and never required
@@ -265,6 +262,7 @@ npm test src/components/product/modules/__tests__/
 - Follow standardized interface patterns
 
 ### **DON'T ❌**
+
 - Remove pricing dependencies (breaks calculations)
 - Make modules directly access each other (breaks independence)
 - Make images required (breaks business process)

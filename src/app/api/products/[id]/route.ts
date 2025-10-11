@@ -3,7 +3,11 @@ import { prisma } from '@/lib/prisma'
 import { deleteProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 import { transformProductForFrontend } from '@/lib/data-transformers'
-import { createSuccessResponse, createNotFoundErrorResponse, createDatabaseErrorResponse } from '@/lib/api-response'
+import {
+  createSuccessResponse,
+  createNotFoundErrorResponse,
+  createDatabaseErrorResponse,
+} from '@/lib/api-response'
 
 // GET /api/products/[id] - Get single product
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -93,10 +97,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     console.log('[PUT Product] Starting update for product:', id)
 
     const { user, session } = await validateRequest()
-    console.log('[PUT Product] Auth check:', { hasSession: !!session, hasUser: !!user, role: user?.role })
+    console.log('[PUT Product] Auth check:', {
+      hasSession: !!session,
+      hasUser: !!user,
+      role: user?.role,
+    })
 
     if (!session || !user || user.role !== 'ADMIN') {
-      console.error('[PUT Product] Unauthorized:', { session: !!session, user: !!user, role: user?.role })
+      console.error('[PUT Product] Unauthorized:', {
+        session: !!session,
+        user: !!user,
+        role: user?.role,
+      })
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -112,7 +124,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       sku: data.sku,
     })
 
-    const { images, paperStockSetId, quantityGroupId, sizeGroupId, turnaroundTimeSetId, addOnSetId, options, pricingTiers, ...productData } = data
+    const {
+      images,
+      paperStockSetId,
+      quantityGroupId,
+      sizeGroupId,
+      turnaroundTimeSetId,
+      addOnSetId,
+      options,
+      pricingTiers,
+      ...productData
+    } = data
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({
@@ -274,13 +296,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     required: opt.required,
                     sortOrder: index,
                     OptionValue: {
-                      create: (opt.values as any[] || []).map((val: Record<string, unknown>, valIndex: number) => ({
-                        value: val.value,
-                        label: val.label,
-                        additionalPrice: val.additionalPrice,
-                        isDefault: val.isDefault,
-                        sortOrder: valIndex,
-                      })),
+                      create: ((opt.values as any[]) || []).map(
+                        (val: Record<string, unknown>, valIndex: number) => ({
+                          value: val.value,
+                          label: val.label,
+                          additionalPrice: val.additionalPrice,
+                          isDefault: val.isDefault,
+                          sortOrder: valIndex,
+                        })
+                      ),
                     },
                   })),
                 }
@@ -385,11 +409,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     // Return error response
     const errorMessage = error instanceof Error ? error.message : 'Failed to update product'
-    return NextResponse.json({
-      error: 'Failed to update product',
-      details: errorMessage,
-      debug: process.env.NODE_ENV === 'development' ? error : undefined
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to update product',
+        details: errorMessage,
+        debug: process.env.NODE_ENV === 'development' ? error : undefined,
+      },
+      { status: 500 }
+    )
   }
 }
 
@@ -429,10 +456,18 @@ export async function DELETE(
     console.log('[DELETE Product] Attempting to delete product:', id)
 
     const { user, session } = await validateRequest()
-    console.log('[DELETE Product] Auth check:', { hasSession: !!session, hasUser: !!user, role: user?.role })
+    console.log('[DELETE Product] Auth check:', {
+      hasSession: !!session,
+      hasUser: !!user,
+      role: user?.role,
+    })
 
     if (!session || !user || user.role !== 'ADMIN') {
-      console.error('[DELETE Product] Unauthorized attempt:', { session: !!session, user: !!user, role: user?.role })
+      console.error('[DELETE Product] Unauthorized attempt:', {
+        session: !!session,
+        user: !!user,
+        role: user?.role,
+      })
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
 
@@ -470,9 +505,12 @@ export async function DELETE(
   } catch (error) {
     console.error('[DELETE Product] Error deleting product:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({
-      error: 'Failed to delete product',
-      details: errorMessage
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to delete product',
+        details: errorMessage,
+      },
+      { status: 500 }
+    )
   }
 }

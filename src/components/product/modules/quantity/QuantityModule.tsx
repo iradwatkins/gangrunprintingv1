@@ -21,7 +21,7 @@ export function QuantityModule({
   const getActualValue = (): number | null => {
     if (!value) return null
 
-    const selectedQuantity = quantities.find(q => q.id === value)
+    const selectedQuantity = quantities.find((q) => q.id === value)
     if (!selectedQuantity) return null
 
     if (selectedQuantity.isCustom && customValue) {
@@ -35,14 +35,14 @@ export function QuantityModule({
 
   // Handle quantity change
   const handleChange = (newValue: number) => {
-    const selectedQuantity = quantities.find(q => q.value === newValue)
+    const selectedQuantity = quantities.find((q) => q.value === newValue)
 
     if (selectedQuantity && !selectedQuantity.isCustom) {
       // Standard quantity selected
       onChange(selectedQuantity.id, undefined)
     } else {
       // Custom quantity
-      const customOption = quantities.find(q => q.isCustom)
+      const customOption = quantities.find((q) => q.isCustom)
       if (customOption) {
         onChange(customOption.id, newValue)
       }
@@ -52,11 +52,11 @@ export function QuantityModule({
   return (
     <div className={`quantity-module ${className}`}>
       <QuantitySelector
+        className={disabled ? 'opacity-50 pointer-events-none' : ''}
         quantities={quantities}
+        required={required}
         value={actualValue}
         onChange={handleChange}
-        required={required}
-        className={disabled ? 'opacity-50 pointer-events-none' : ''}
       />
     </div>
   )

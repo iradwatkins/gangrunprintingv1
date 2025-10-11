@@ -97,11 +97,36 @@ async function seedConfiguration() {
     // Link turnaround times to sets
     await prisma.turnaroundTimeSetItem.createMany({
       data: [
-        { turnaroundTimeSetId: standardTurnaround.id, turnaroundTimeId: turnaroundTimes[2].id, isDefault: true, sortOrder: 1 },
-        { turnaroundTimeSetId: standardTurnaround.id, turnaroundTimeId: turnaroundTimes[3].id, isDefault: false, sortOrder: 2 },
-        { turnaroundTimeSetId: rushTurnaround.id, turnaroundTimeId: turnaroundTimes[0].id, isDefault: false, sortOrder: 1 },
-        { turnaroundTimeSetId: rushTurnaround.id, turnaroundTimeId: turnaroundTimes[1].id, isDefault: true, sortOrder: 2 },
-        { turnaroundTimeSetId: rushTurnaround.id, turnaroundTimeId: turnaroundTimes[2].id, isDefault: false, sortOrder: 3 },
+        {
+          turnaroundTimeSetId: standardTurnaround.id,
+          turnaroundTimeId: turnaroundTimes[2].id,
+          isDefault: true,
+          sortOrder: 1,
+        },
+        {
+          turnaroundTimeSetId: standardTurnaround.id,
+          turnaroundTimeId: turnaroundTimes[3].id,
+          isDefault: false,
+          sortOrder: 2,
+        },
+        {
+          turnaroundTimeSetId: rushTurnaround.id,
+          turnaroundTimeId: turnaroundTimes[0].id,
+          isDefault: false,
+          sortOrder: 1,
+        },
+        {
+          turnaroundTimeSetId: rushTurnaround.id,
+          turnaroundTimeId: turnaroundTimes[1].id,
+          isDefault: true,
+          sortOrder: 2,
+        },
+        {
+          turnaroundTimeSetId: rushTurnaround.id,
+          turnaroundTimeId: turnaroundTimes[2].id,
+          isDefault: false,
+          sortOrder: 3,
+        },
       ],
       skipDuplicates: true,
     })
@@ -272,48 +297,52 @@ async function seedConfiguration() {
     if (paperStocks.length > 0) {
       // Standard Papers set
       const standardStockIds = paperStocks
-        .filter(ps => ps.finish === 'Matte' || ps.finish === 'Gloss')
+        .filter((ps) => ps.finish === 'Matte' || ps.finish === 'Gloss')
         .slice(0, 3)
 
       for (let i = 0; i < standardStockIds.length; i++) {
-        await prisma.paperStockSetItem.create({
-          data: {
-            paperStockSetId: standardPapers.id,
-            paperStockId: standardStockIds[i].id,
-            isDefault: i === 0,
-            sortOrder: i + 1,
-          },
-        }).catch(() => {}) // Ignore duplicates
+        await prisma.paperStockSetItem
+          .create({
+            data: {
+              paperStockSetId: standardPapers.id,
+              paperStockId: standardStockIds[i].id,
+              isDefault: i === 0,
+              sortOrder: i + 1,
+            },
+          })
+          .catch(() => {}) // Ignore duplicates
       }
 
       // Premium Papers set
-      const premiumStockIds = paperStocks
-        .filter(ps => ps.weight >= 110)
-        .slice(0, 3)
+      const premiumStockIds = paperStocks.filter((ps) => ps.weight >= 110).slice(0, 3)
 
       for (let i = 0; i < premiumStockIds.length; i++) {
-        await prisma.paperStockSetItem.create({
-          data: {
-            paperStockSetId: premiumPapers.id,
-            paperStockId: premiumStockIds[i].id,
-            isDefault: i === 0,
-            sortOrder: i + 1,
-          },
-        }).catch(() => {}) // Ignore duplicates
+        await prisma.paperStockSetItem
+          .create({
+            data: {
+              paperStockSetId: premiumPapers.id,
+              paperStockId: premiumStockIds[i].id,
+              isDefault: i === 0,
+              sortOrder: i + 1,
+            },
+          })
+          .catch(() => {}) // Ignore duplicates
       }
 
       // Sticker Materials set - use any available stocks for now
       const stickerStockIds = paperStocks.slice(0, 2)
 
       for (let i = 0; i < stickerStockIds.length; i++) {
-        await prisma.paperStockSetItem.create({
-          data: {
-            paperStockSetId: stickerMaterials.id,
-            paperStockId: stickerStockIds[i].id,
-            isDefault: i === 0,
-            sortOrder: i + 1,
-          },
-        }).catch(() => {}) // Ignore duplicates
+        await prisma.paperStockSetItem
+          .create({
+            data: {
+              paperStockSetId: stickerMaterials.id,
+              paperStockId: stickerStockIds[i].id,
+              isDefault: i === 0,
+              sortOrder: i + 1,
+            },
+          })
+          .catch(() => {}) // Ignore duplicates
       }
     }
 
@@ -344,37 +373,45 @@ async function seedConfiguration() {
 
     // Link addons to sets
     if (addOns.length > 0) {
-      const designAddons = addOns.filter(a =>
-        a.name.toLowerCase().includes('design') ||
-        a.name.toLowerCase().includes('proof')
-      ).slice(0, 3)
+      const designAddons = addOns
+        .filter(
+          (a) => a.name.toLowerCase().includes('design') || a.name.toLowerCase().includes('proof')
+        )
+        .slice(0, 3)
 
       for (let i = 0; i < designAddons.length; i++) {
-        await prisma.addOnSetItem.create({
-          data: {
-            addOnSetId: designServices.id,
-            addOnId: designAddons[i].id,
-            isDefault: false,
-            sortOrder: i + 1,
-          },
-        }).catch(() => {}) // Ignore duplicates
+        await prisma.addOnSetItem
+          .create({
+            data: {
+              addOnSetId: designServices.id,
+              addOnId: designAddons[i].id,
+              isDefault: false,
+              sortOrder: i + 1,
+            },
+          })
+          .catch(() => {}) // Ignore duplicates
       }
 
-      const finishingAddons = addOns.filter(a =>
-        a.name.toLowerCase().includes('coating') ||
-        a.name.toLowerCase().includes('laminate') ||
-        a.name.toLowerCase().includes('foil')
-      ).slice(0, 3)
+      const finishingAddons = addOns
+        .filter(
+          (a) =>
+            a.name.toLowerCase().includes('coating') ||
+            a.name.toLowerCase().includes('laminate') ||
+            a.name.toLowerCase().includes('foil')
+        )
+        .slice(0, 3)
 
       for (let i = 0; i < finishingAddons.length; i++) {
-        await prisma.addOnSetItem.create({
-          data: {
-            addOnSetId: finishingOptions.id,
-            addOnId: finishingAddons[i].id,
-            isDefault: false,
-            sortOrder: i + 1,
-          },
-        }).catch(() => {}) // Ignore duplicates
+        await prisma.addOnSetItem
+          .create({
+            data: {
+              addOnSetId: finishingOptions.id,
+              addOnId: finishingAddons[i].id,
+              isDefault: false,
+              sortOrder: i + 1,
+            },
+          })
+          .catch(() => {}) // Ignore duplicates
       }
     }
 
@@ -413,43 +450,53 @@ async function seedConfiguration() {
       const addOnSetId = name.includes('premium') ? finishingOptions.id : designServices.id
 
       // Create associations
-      await prisma.productSizeGroup.create({
-        data: {
-          productId: product.id,
-          sizeGroupId: sizeGroupId,
-        },
-      }).catch(() => {}) // Ignore if already exists
+      await prisma.productSizeGroup
+        .create({
+          data: {
+            productId: product.id,
+            sizeGroupId: sizeGroupId,
+          },
+        })
+        .catch(() => {}) // Ignore if already exists
 
-      await prisma.productQuantityGroup.create({
-        data: {
-          productId: product.id,
-          quantityGroupId: quantityGroupId,
-        },
-      }).catch(() => {}) // Ignore if already exists
+      await prisma.productQuantityGroup
+        .create({
+          data: {
+            productId: product.id,
+            quantityGroupId: quantityGroupId,
+          },
+        })
+        .catch(() => {}) // Ignore if already exists
 
-      await prisma.productPaperStockSet.create({
-        data: {
-          productId: product.id,
-          paperStockSetId: paperStockSetId,
-          isDefault: true,
-        },
-      }).catch(() => {}) // Ignore if already exists
+      await prisma.productPaperStockSet
+        .create({
+          data: {
+            productId: product.id,
+            paperStockSetId: paperStockSetId,
+            isDefault: true,
+          },
+        })
+        .catch(() => {}) // Ignore if already exists
 
-      await prisma.productTurnaroundTimeSet.create({
-        data: {
-          productId: product.id,
-          turnaroundTimeSetId: turnaroundSetId,
-          isDefault: true,
-        },
-      }).catch(() => {}) // Ignore if already exists
+      await prisma.productTurnaroundTimeSet
+        .create({
+          data: {
+            productId: product.id,
+            turnaroundTimeSetId: turnaroundSetId,
+            isDefault: true,
+          },
+        })
+        .catch(() => {}) // Ignore if already exists
 
-      await prisma.productAddOnSet.create({
-        data: {
-          productId: product.id,
-          addOnSetId: addOnSetId,
-          isDefault: false,
-        },
-      }).catch(() => {}) // Ignore if already exists
+      await prisma.productAddOnSet
+        .create({
+          data: {
+            productId: product.id,
+            addOnSetId: addOnSetId,
+            isDefault: false,
+          },
+        })
+        .catch(() => {}) // Ignore if already exists
 
       console.log(`✅ Configured product: ${product.name}`)
     }
@@ -473,7 +520,7 @@ async function seedConfiguration() {
     })
 
     console.log('\n📊 Configuration Summary:')
-    summary.forEach(p => {
+    summary.forEach((p) => {
       console.log(`\n${p.name}:`)
       console.log(`  Size Groups: ${p._count.productSizeGroups}`)
       console.log(`  Quantity Groups: ${p._count.productQuantityGroups}`)
@@ -481,7 +528,6 @@ async function seedConfiguration() {
       console.log(`  Turnaround Sets: ${p._count.productTurnaroundTimeSets}`)
       console.log(`  AddOn Sets: ${p._count.productAddOnSets}`)
     })
-
   } catch (error) {
     console.error('❌ Configuration seed failed:', error)
     throw error

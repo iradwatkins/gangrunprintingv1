@@ -255,4 +255,3 @@ export function errorHandler(error: unknown) {
   return NextResponse.json({ error: { message: 'Internal server error' } }, { status: 500 })
 }
 ```
-

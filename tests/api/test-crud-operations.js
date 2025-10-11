@@ -59,16 +59,13 @@ async function runTests() {
   let results = {
     passed: 0,
     failed: 0,
-    tests: []
+    tests: [],
   }
 
   // Test Paper Stocks
   log('\n📝 Testing Paper Stocks', 'yellow')
 
-  const paperStockGet = await testEndpoint(
-    'Paper Stock GET',
-    `${API_BASE}/paper-stocks`
-  )
+  const paperStockGet = await testEndpoint('Paper Stock GET', `${API_BASE}/paper-stocks`)
   results.tests.push(paperStockGet)
   if (paperStockGet.success) results.passed++
   else results.failed++
@@ -81,7 +78,7 @@ async function runTests() {
     tooltipText: 'Test paper stock for CRUD testing',
     isActive: true,
     coatings: [],
-    sidesOptions: []
+    sidesOptions: [],
   }
 
   const paperStockPost = await testEndpoint(
@@ -99,7 +96,7 @@ async function runTests() {
     const updateData = {
       ...testPaperStock,
       name: `Updated ${testPaperStock.name}`,
-      pricePerSqInch: 0.003
+      pricePerSqInch: 0.003,
     }
 
     const paperStockPut = await testEndpoint(
@@ -126,10 +123,7 @@ async function runTests() {
   // Test Add-ons
   log('\n🎯 Testing Add-ons', 'yellow')
 
-  const addOnGet = await testEndpoint(
-    'Add-on GET',
-    `${API_BASE}/add-ons`
-  )
+  const addOnGet = await testEndpoint('Add-on GET', `${API_BASE}/add-ons`)
   results.tests.push(addOnGet)
   if (addOnGet.success) results.passed++
   else results.failed++
@@ -140,18 +134,13 @@ async function runTests() {
     description: 'Test add-on for CRUD testing',
     tooltipText: 'Test tooltip',
     pricingModel: 'FLAT',
-    configuration: { price: 10.00 },
+    configuration: { price: 10.0 },
     additionalTurnaroundDays: 0,
     sortOrder: 999,
-    isActive: true
+    isActive: true,
   }
 
-  const addOnPost = await testEndpoint(
-    'Add-on POST',
-    `${API_BASE}/add-ons`,
-    'POST',
-    testAddOn
-  )
+  const addOnPost = await testEndpoint('Add-on POST', `${API_BASE}/add-ons`, 'POST', testAddOn)
   results.tests.push(addOnPost)
   if (addOnPost.success) results.passed++
   else results.failed++
@@ -161,7 +150,7 @@ async function runTests() {
     const updateData = {
       ...testAddOn,
       name: `Updated ${testAddOn.name}`,
-      description: 'Updated description'
+      description: 'Updated description',
     }
 
     const addOnPut = await testEndpoint(
@@ -188,10 +177,7 @@ async function runTests() {
   // Test Addon Sets
   log('\n📦 Testing Addon Sets', 'yellow')
 
-  const addonSetGet = await testEndpoint(
-    'Addon Set GET',
-    `${API_BASE}/addon-sets`
-  )
+  const addonSetGet = await testEndpoint('Addon Set GET', `${API_BASE}/addon-sets`)
   results.tests.push(addonSetGet)
   if (addonSetGet.success) results.passed++
   else results.failed++
@@ -200,7 +186,7 @@ async function runTests() {
   const testAddonSet = {
     name: `Test Addon Set ${Date.now()}`,
     description: 'Test addon set for CRUD testing',
-    addOnIds: []
+    addOnIds: [],
   }
 
   const addonSetPost = await testEndpoint(
@@ -219,7 +205,7 @@ async function runTests() {
       name: `Updated ${testAddonSet.name}`,
       description: 'Updated description',
       isActive: true,
-      addOnItems: []
+      addOnItems: [],
     }
 
     const addonSetPut = await testEndpoint(
@@ -261,7 +247,7 @@ async function runTests() {
 }
 
 // Run the tests
-runTests().catch(error => {
+runTests().catch((error) => {
   log(`\n❌ Fatal error: ${error.message}`, 'red')
   process.exit(1)
 })

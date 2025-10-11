@@ -75,14 +75,11 @@ FEDEX_TEST_MODE=true  // Use sandbox for testing
    - FedEx Standard Overnight
 
 3. **Rate Calculation**
+
    ```typescript
    // Example usage
    const fedexProvider = new FedExProvider()
-   const rates = await fedexProvider.getRates(
-     fromAddress,
-     toAddress,
-     packages
-   )
+   const rates = await fedexProvider.getRates(fromAddress, toAddress, packages)
    ```
 
 4. **Label Generation**
@@ -127,9 +124,9 @@ class FedExProvider implements ShippingProvider {
 
 ```typescript
 // Environment Variables (Optional - uses hardcoded rates)
-SOUTHWEST_CARGO_API_KEY=optional-api-key
-SOUTHWEST_CARGO_RATE_PER_POUND=2.50
-SOUTHWEST_CARGO_MINIMUM_CHARGE=25.00
+SOUTHWEST_CARGO_API_KEY = optional - api - key
+SOUTHWEST_CARGO_RATE_PER_POUND = 2.5
+SOUTHWEST_CARGO_MINIMUM_CHARGE = 25.0
 ```
 
 ### Key Features
@@ -146,29 +143,49 @@ SOUTHWEST_CARGO_MINIMUM_CHARGE=25.00
 2. **Pricing Structure**
 
    **Pickup Service Rates:**
+
    ```typescript
    const PICKUP_TIERS = [
-     { maxWeight: 50, baseRate: 85.00, handlingFee: 10.00 },
-     { maxWeight: 100, baseRate: 133.00, handlingFee: 10.00 },
-     { maxWeight: Infinity, baseRate: 133.00, additionalPerPound: 1.75, handlingFee: 10.00 }
+     { maxWeight: 50, baseRate: 85.0, handlingFee: 10.0 },
+     { maxWeight: 100, baseRate: 133.0, handlingFee: 10.0 },
+     { maxWeight: Infinity, baseRate: 133.0, additionalPerPound: 1.75, handlingFee: 10.0 },
    ]
    ```
 
    **Dash Service Rates:**
+
    ```typescript
    const DASH_TIERS = [
-     { maxWeight: 50, baseRate: 80.00, additionalPerPound: 1.75 },
-     { maxWeight: Infinity, baseRate: 102.00, additionalPerPound: 1.75 }
+     { maxWeight: 50, baseRate: 80.0, additionalPerPound: 1.75 },
+     { maxWeight: Infinity, baseRate: 102.0, additionalPerPound: 1.75 },
    ]
    ```
 
 3. **Service Area Coverage**
+
    ```typescript
    // States where Southwest Cargo is available
    const SERVICE_AREA = [
-     'TX', 'OK', 'NM', 'AR', 'LA', 'AZ', 'CA', 'NV',
-     'CO', 'UT', 'FL', 'GA', 'AL', 'TN', 'MS', 'SC',
-     'NC', 'KY', 'MO', 'KS'
+     'TX',
+     'OK',
+     'NM',
+     'AR',
+     'LA',
+     'AZ',
+     'CA',
+     'NV',
+     'CO',
+     'UT',
+     'FL',
+     'GA',
+     'AL',
+     'TN',
+     'MS',
+     'SC',
+     'NC',
+     'KY',
+     'MO',
+     'KS',
    ]
    ```
 
@@ -187,6 +204,7 @@ SOUTHWEST_CARGO_MINIMUM_CHARGE=25.00
 ### Manual Process Integration
 
 Southwest Cargo typically uses a manual booking process. The implementation:
+
 - Generates mock tracking numbers (format: `SWC[timestamp][random]`)
 - Returns placeholder label URLs
 - Provides basic tracking information
@@ -221,8 +239,8 @@ export class ShippingCalculator {
     const cacheKey = this.getCacheKey(fromAddress, toAddress, packages)
 
     // Parallel rate fetching from all providers
-    const ratePromises = Array.from(this.providers.values()).map(
-      provider => provider.getRates(fromAddress, toAddress, packages)
+    const ratePromises = Array.from(this.providers.values()).map((provider) =>
+      provider.getRates(fromAddress, toAddress, packages)
     )
 
     const rates = await Promise.all(ratePromises)
@@ -234,6 +252,7 @@ export class ShippingCalculator {
 ## API Endpoints
 
 ### 1. Calculate Shipping Rates
+
 **Endpoint:** `POST /api/shipping/calculate`
 
 ```typescript
@@ -285,6 +304,7 @@ export class ShippingCalculator {
 ```
 
 ### 2. Create Shipping Label
+
 **Endpoint:** `POST /api/shipping/label`
 
 ```typescript
@@ -307,6 +327,7 @@ export class ShippingCalculator {
 ```
 
 ### 3. Track Shipment
+
 **Endpoint:** `GET /api/shipping/track/[tracking]`
 
 ```typescript
@@ -336,12 +357,13 @@ export class ShippingCalculator {
 <ShippingSelection
   onSelect={(provider) => handleShippingSelect(provider)}
   selectedId="fedex"
-  rates={dynamicRates}  // Optional: Use API rates
+  rates={dynamicRates} // Optional: Use API rates
   loading={isCalculating}
 />
 ```
 
 Features:
+
 - Visual shipping method selection
 - Dynamic rate display
 - Loading states
@@ -351,6 +373,7 @@ Features:
 ## Weight Calculation
 
 The system automatically calculates package weight based on:
+
 - Paper stock weight (per square inch)
 - Product dimensions (width × height)
 - Quantity
@@ -380,6 +403,7 @@ export function calculateWeight(params: WeightCalculationParams): number {
 ## Error Handling
 
 All providers implement graceful error handling:
+
 - Network failures return empty rate arrays
 - Authentication failures trigger retry logic
 - Invalid addresses return validation errors
@@ -388,6 +412,7 @@ All providers implement graceful error handling:
 ## Configuration Management
 
 ### Default Configuration
+
 ```typescript
 export const DEFAULT_SENDER_ADDRESS = {
   street: '1234 Print Shop Way',
@@ -395,25 +420,27 @@ export const DEFAULT_SENDER_ADDRESS = {
   state: 'TX',
   zipCode: '77001',
   country: 'US',
-  isResidential: false
+  isResidential: false,
 }
 
 // Markup percentages by carrier
 const CARRIER_MARKUPS = {
-  FEDEX: 10,           // 10% markup
-  UPS: 10,             // 10% markup
-  SOUTHWEST_CARGO: 5   // 5% markup (lower for freight)
+  FEDEX: 10, // 10% markup
+  UPS: 10, // 10% markup
+  SOUTHWEST_CARGO: 5, // 5% markup (lower for freight)
 }
 ```
 
 ## Testing
 
 ### Test Mode Configuration
+
 - FedEx: Use sandbox environment (`FEDEX_TEST_MODE=true`)
 - UPS: Use test environment (`UPS_TEST_MODE=true`)
 - Southwest Cargo: Always uses calculated rates (no external API)
 
 ### Sample Test Request
+
 ```bash
 curl -X POST http://localhost:3002/api/shipping/calculate \
   -H "Content-Type: application/json" \
@@ -491,21 +518,22 @@ The system includes a comprehensive database of Southwest Cargo airport location
 
 ```typescript
 interface Airport {
-  code: string           // IATA airport code (e.g., 'DAL', 'HOU')
-  name: string          // City/location name
-  carrier: string       // 'Southwest Airlines Cargo'
-  operator?: string     // Third-party operator if applicable
-  address: string       // Street address
+  code: string // IATA airport code (e.g., 'DAL', 'HOU')
+  name: string // City/location name
+  carrier: string // 'Southwest Airlines Cargo'
+  operator?: string // Third-party operator if applicable
+  address: string // Street address
   city: string
   state: string
   zip: string
-  hours: Record<string, string>  // Operating hours by day
+  hours: Record<string, string> // Operating hours by day
 }
 ```
 
 ### Major Hub Locations
 
 #### Texas Hubs (Primary Service Area)
+
 - **DAL - Dallas Love Field**
   - Address: 7510 Aviation Place Ste 110, Dallas, TX 75235
   - Hours: Mon-Fri 4:30am-1:30am, Sat 4:30am-12:00am, Sun 4:30am-1:30am
@@ -528,6 +556,7 @@ interface Airport {
   - Hours: Mon-Fri 4:15am-12:00am, Sat-Sun 4:15am-11:00pm
 
 #### Regional Hubs
+
 - **PHX - Phoenix**: 1251 S 25th Place Ste 16, Phoenix, AZ 85034
 - **LAS - Las Vegas**: 6055 Surrey St Ste 121, Las Vegas, NV 89119
 - **DEN - Denver**: 7640 N Undergrove St (Suite E), Denver, CO 80249
@@ -537,6 +566,7 @@ interface Airport {
 ### API Endpoints for Airport Data
 
 #### Get All Airports
+
 **Endpoint:** `GET /api/airports`
 
 ```typescript
@@ -544,25 +574,26 @@ interface Airport {
 {
   airports: [
     {
-      id: "airport_123",
-      code: "DAL",
-      name: "Dallas",
-      carrier: "Southwest Airlines Cargo",
-      address: "7510 Aviation Place Ste 110",
-      city: "Dallas",
-      state: "TX",
-      zip: "75235",
+      id: 'airport_123',
+      code: 'DAL',
+      name: 'Dallas',
+      carrier: 'Southwest Airlines Cargo',
+      address: '7510 Aviation Place Ste 110',
+      city: 'Dallas',
+      state: 'TX',
+      zip: '75235',
       hours: {
-        "Mon-Fri": "4:30am-1:30am",
-        "Sat": "4:30am-12:00am",
-        "Sun": "4:30am-1:30am"
-      }
-    }
+        'Mon-Fri': '4:30am-1:30am',
+        Sat: '4:30am-12:00am',
+        Sun: '4:30am-1:30am',
+      },
+    },
   ]
 }
 ```
 
 #### Get Nearest Airport
+
 **Endpoint:** `GET /api/airports/nearest?zip=75201`
 
 ```typescript
@@ -613,6 +644,7 @@ model Airport {
 ### Airport Coverage Map
 
 The Southwest Cargo network covers **119 airports** across the United States, including:
+
 - **Complete Coverage States**: Texas, Oklahoma, New Mexico, Arizona, Louisiana
 - **Major Cities**: All major US metropolitan areas
 - **Hawaii Locations**: Honolulu, Maui, Kona, Lihue, Hilo
@@ -621,6 +653,7 @@ The Southwest Cargo network covers **119 airports** across the United States, in
 ### Operating Hours Patterns
 
 Most Southwest Cargo locations follow these patterns:
+
 - **Major Hubs**: Often 24-hour or near 24-hour operation
 - **Regional Airports**: Typically Mon-Fri 5:00am-10:00pm
 - **Smaller Locations**: May have limited weekend hours or be closed Sundays
@@ -629,6 +662,7 @@ Most Southwest Cargo locations follow these patterns:
 ### Integration with Shipping Calculator
 
 The shipping calculator automatically:
+
 1. Identifies nearest Southwest Cargo airport to destination
 2. Validates service availability based on airport operating hours
 3. Adjusts delivery estimates based on airport cutoff times

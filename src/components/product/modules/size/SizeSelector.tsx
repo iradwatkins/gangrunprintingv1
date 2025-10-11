@@ -259,7 +259,10 @@ export function SizeSelector({
                     <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Dimensions must be in 0.25" increments for production efficiency (e.g., 4.25", 5.5", 8.75")</p>
+                    <p className="max-w-xs">
+                      Dimensions must be in 0.25" increments for production efficiency (e.g., 4.25",
+                      5.5", 8.75")
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

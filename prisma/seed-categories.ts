@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedCategories() {
-
   const categoriesData = [
     'Banner',
     'Booklet',
@@ -86,7 +85,6 @@ async function seedCategories() {
 
     sortOrder++
   }
-
 }
 
 seedCategories()

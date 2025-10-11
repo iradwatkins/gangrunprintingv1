@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   // Create Paper Stocks
   const paperStocks = [
     {
@@ -112,7 +111,6 @@ async function main() {
       update: stock,
       create: stock,
     })
-
   }
 
   // Create Coating Options
@@ -145,7 +143,6 @@ async function main() {
       update: coating,
       create: coating,
     })
-
   }
 
   // Create Sides Options
@@ -182,7 +179,6 @@ async function main() {
       update: side,
       create: side,
     })
-
   }
 
   // Create Add-ons
@@ -300,9 +296,7 @@ async function main() {
       update: addOn,
       create: addOn,
     })
-
   }
-
 }
 
 main()

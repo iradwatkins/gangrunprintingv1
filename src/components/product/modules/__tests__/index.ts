@@ -17,10 +17,9 @@ import './ModularArchitectureTest'
 import './ModuleIndependenceTest'
 import './PricingEngineTest'
 
-export {
-  // Test utilities for external use
-  // (Could export mock data generators, test helpers, etc.)
-}
+export // Test utilities for external use
+// (Could export mock data generators, test helpers, etc.)
+ {}
 
 /**
  * Test Suite Organization:

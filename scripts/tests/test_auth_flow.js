@@ -1,7 +1,6 @@
 const { chromium } = require('playwright')
 
 async function testAuthFlow() {
-
   const browser = await chromium.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -17,7 +16,6 @@ async function testAuthFlow() {
   // Capture all logs
   const logs = []
   const log = (message) => {
-
     logs.push(`[${new Date().toISOString()}] ${message}`)
   }
 

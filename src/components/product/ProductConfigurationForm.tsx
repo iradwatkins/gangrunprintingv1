@@ -154,48 +154,42 @@ export default function ProductConfigurationForm({
   onPriceChange,
 }: ProductConfigurationFormProps) {
   // Use the refactored hooks for state management
-  const {
-    configData,
-    configuration,
-    loading,
-    error,
-    updateConfiguration,
-    getQuantityValue,
-  } = useProductConfiguration({
-    productId,
-    onConfigurationChange: (config) => {
-      const isComplete = Boolean(
-        config.quantity &&
-        config.size &&
-        config.sides &&
-        config.paper &&
-        config.coating &&
-        config.turnaround
-      )
+  const { configData, configuration, loading, error, updateConfiguration, getQuantityValue } =
+    useProductConfiguration({
+      productId,
+      onConfigurationChange: (config) => {
+        const isComplete = Boolean(
+          config.quantity &&
+            config.size &&
+            config.sides &&
+            config.paper &&
+            config.coating &&
+            config.turnaround
+        )
 
-      // Convert to legacy format for backward compatibility
-      const legacyConfig: ProductConfiguration = {
-        quantity: config.quantity,
-        size: config.size,
-        exactSize: false, // TODO: Add exact size to new hook
-        sides: config.sides,
-        paperStock: config.paper, // Map from new 'paper' to legacy 'paperStock'
-        coating: config.coating,
-        turnaround: config.turnaround,
-        selectedAddons: config.selectedAddons,
-        variableDataConfig: config.variableDataConfig,
-        perforationConfig: config.perforationConfig,
-        bandingConfig: config.bandingConfig,
-        cornerRoundingConfig: config.cornerRoundingConfig,
-      }
+        // Convert to legacy format for backward compatibility
+        const legacyConfig: ProductConfiguration = {
+          quantity: config.quantity,
+          size: config.size,
+          exactSize: false, // TODO: Add exact size to new hook
+          sides: config.sides,
+          paperStock: config.paper, // Map from new 'paper' to legacy 'paperStock'
+          coating: config.coating,
+          turnaround: config.turnaround,
+          selectedAddons: config.selectedAddons,
+          variableDataConfig: config.variableDataConfig,
+          perforationConfig: config.perforationConfig,
+          bandingConfig: config.bandingConfig,
+          cornerRoundingConfig: config.cornerRoundingConfig,
+        }
 
-      onConfigurationChange?.(legacyConfig, isComplete)
+        onConfigurationChange?.(legacyConfig, isComplete)
 
-      // Calculate price and trigger price change
-      const price = calculateFinalPrice(config)
-      onPriceChange?.(price)
-    },
-  })
+        // Calculate price and trigger price change
+        const price = calculateFinalPrice(config)
+        onPriceChange?.(price)
+      },
+    })
 
   // Price calculation using the new hook
   const { calculateFinalPrice } = usePriceCalculation({
@@ -210,55 +204,59 @@ export default function ProductConfigurationForm({
     return {
       quantities: data.quantities || [],
       sizes: data.sizes || [],
-      paperStocks: data.paperStocks?.map((paper: any) => ({
-        ...paper,
-        paperStockCoatings: paper.coatings?.map((coating: any) => ({
-          coatingId: coating.id,
-          isDefault: coating.isDefault,
-          coating: {
-            id: coating.id,
-            name: coating.name,
-          },
+      paperStocks:
+        data.paperStocks?.map((paper: any) => ({
+          ...paper,
+          paperStockCoatings:
+            paper.coatings?.map((coating: any) => ({
+              coatingId: coating.id,
+              isDefault: coating.isDefault,
+              coating: {
+                id: coating.id,
+                name: coating.name,
+              },
+            })) || [],
+          paperStockSides:
+            paper.sides?.map((side: any) => ({
+              sidesOptionId: side.id,
+              priceMultiplier: side.priceMultiplier,
+              isEnabled: true,
+              sidesOption: {
+                id: side.id,
+                name: side.name,
+              },
+            })) || [],
         })) || [],
-        paperStockSides: paper.sides?.map((side: any) => ({
-          sidesOptionId: side.id,
-          priceMultiplier: side.priceMultiplier,
-          isEnabled: true,
-          sidesOption: {
-            id: side.id,
-            name: side.name,
-          },
-        })) || [],
-      })) || [],
       turnaroundTimes: data.turnaroundTimes || [],
       addons: data.addons || [],
       addonsGrouped: data.addonsGrouped || {
         aboveDropdown: [],
         inDropdown: [],
-        belowDropdown: []
+        belowDropdown: [],
       },
       defaults: data.defaults || {},
     }
   }
 
   // Get available coatings and sides based on selected paper
-  const availableCoatings = legacyConfigData?.paperStocks
-    .find((p) => p.id === configuration.paper)
-    ?.paperStockCoatings.map((psc) => ({
-      id: psc.coatingId,
-      name: psc.coating.name,
-      isDefault: psc.isDefault,
-    })) || []
+  const availableCoatings =
+    legacyConfigData?.paperStocks
+      .find((p) => p.id === configuration.paper)
+      ?.paperStockCoatings.map((psc) => ({
+        id: psc.coatingId,
+        name: psc.coating.name,
+        isDefault: psc.isDefault,
+      })) || []
 
-  const availableSides = legacyConfigData?.paperStocks
-    .find((p) => p.id === configuration.paper)
-    ?.paperStockSides
-    .filter((pss) => pss.isEnabled)
-    .map((pss) => ({
-      id: pss.sidesOptionId,
-      name: pss.sidesOption.name,
-      multiplier: pss.priceMultiplier,
-    })) || []
+  const availableSides =
+    legacyConfigData?.paperStocks
+      .find((p) => p.id === configuration.paper)
+      ?.paperStockSides.filter((pss) => pss.isEnabled)
+      .map((pss) => ({
+        id: pss.sidesOptionId,
+        name: pss.sidesOption.name,
+        multiplier: pss.priceMultiplier,
+      })) || []
 
   // Handle paper stock change (uses the new hook's automatic cascade logic)
   const handlePaperStockChange = (paperId: string) => {

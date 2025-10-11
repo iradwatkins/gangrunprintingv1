@@ -30,9 +30,7 @@ export const OrderInProductionEmail = ({
         <Text style={subtext}>Order #{orderNumber}</Text>
       </Section>
 
-      <Text style={paragraph}>
-        Great news{customerName ? `, ${customerName}` : ''}!
-      </Text>
+      <Text style={paragraph}>Great news{customerName ? `, ${customerName}` : ''}!</Text>
 
       <Text style={paragraph}>
         Your order has been approved and sent to our print partner. They're working on it right now!

@@ -63,8 +63,7 @@ export function ProductBasicInfoStep({
         const data = await res.json()
         setCategories(data)
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const generateSlug = (name: string) => {

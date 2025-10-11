@@ -9,12 +9,14 @@
 ## 🔧 **Module Independence (What We're Building)**
 
 ### **Error Independence**:
+
 - ✅ Quantity module error **doesn't crash** Size module
 - ✅ Size module error **doesn't crash** Add-ons module
 - ✅ Each module **validates independently**
 - ✅ Each module **can be fixed individually**
 
 ### **UI Independence**:
+
 - ✅ Each module **renders independently**
 - ✅ Each module **handles its own loading states**
 - ✅ Each module **manages its own disabled state**
@@ -42,6 +44,7 @@ PRODUCT_PRICE × turnaround_multiplier (OR + turnaround_flat_fee) = FINAL_PRICE
 ```
 
 ### **REQUIRED Dependencies**:
+
 - ❗ **Add-ons Module NEEDS quantity** (for PER_UNIT pricing)
 - ❗ **Add-ons Module NEEDS base price** (for PERCENTAGE pricing)
 - ❗ **Turnaround Module NEEDS base product price** (for PERCENTAGE pricing)
@@ -54,11 +57,13 @@ PRODUCT_PRICE × turnaround_multiplier (OR + turnaround_flat_fee) = FINAL_PRICE
 ## 📁 **Image Module Special Rules**
 
 ### **Always Optional**:
+
 - ✅ **Never required** for pricing calculations
 - ✅ **Never blocks** checkout process
 - ✅ **System works completely** without any uploads
 
 ### **Upload States**:
+
 - **No Upload**: Order shows "Waiting on customer file" or "Pending file upload"
 - **Upload in Progress**: Shows upload progress
 - **Upload Complete**: Shows uploaded files
@@ -69,17 +74,20 @@ PRODUCT_PRICE × turnaround_multiplier (OR + turnaround_flat_fee) = FINAL_PRICE
 ## 🏗️ **Implementation Strategy**
 
 ### **Phase 1: Module Independence** ✅
+
 - [x] Error handling independence
 - [x] UI rendering independence
 - [ ] Loading state independence
 - [ ] Testing independence
 
 ### **Phase 2: Clean Pricing Integration**
+
 - [ ] Create `ModulePricingEngine` that handles dependencies cleanly
 - [ ] Keep ALL pricing dependencies (quantity → addons, base price → turnaround)
 - [ ] Organize dependencies in clean, maintainable way
 
 ### **Phase 3: Image Module**
+
 - [ ] Build completely optional image upload system
 - [ ] Handle "pending file" states in orders
 - [ ] Never block pricing or checkout
@@ -89,18 +97,21 @@ PRODUCT_PRICE × turnaround_multiplier (OR + turnaround_flat_fee) = FINAL_PRICE
 ## 🎯 **Success Criteria**
 
 ### **Independence**:
+
 - ✅ Module A error doesn't crash Module B
 - ✅ Can fix each module individually
 - ✅ Can add/remove modules without breaking others
 - ✅ Each module has own error handling
 
 ### **Integration**:
+
 - ✅ **Addons get quantity for PER_UNIT pricing**
 - ✅ **Addons get base price for PERCENTAGE pricing**
 - ✅ **Turnaround gets base price for multiplier pricing**
 - ✅ **All pricing calculations are accurate**
 
 ### **Image Handling**:
+
 - ✅ **System works without uploads**
 - ✅ **Orders can be placed without files**
 - ✅ **Clear "pending file" messaging**

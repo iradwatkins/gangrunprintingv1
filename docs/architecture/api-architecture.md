@@ -396,4 +396,3 @@ sequenceDiagram
     API-->>Frontend: Order created
     Frontend-->>User: Order confirmation
 ```
-

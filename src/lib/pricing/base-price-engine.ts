@@ -30,7 +30,6 @@ export interface StandardQuantity {
   isActive: boolean
 }
 
-
 export interface PricingInput {
   // Size selection
   sizeSelection: 'standard' | 'custom'
@@ -156,8 +155,8 @@ export class BasePriceEngine {
       if (input.customQuantity > 5000 && input.customQuantity % 5000 !== 0) {
         throw new Error(
           `Custom quantities above 5000 must be in increments of 5000. ` +
-          `Received: ${input.customQuantity}. ` +
-          `Valid examples: 10000, 15000, 20000, 55000, 60000, etc.`
+            `Received: ${input.customQuantity}. ` +
+            `Valid examples: 10000, 15000, 20000, 55000, 60000, etc.`
         )
       }
 
@@ -182,7 +181,6 @@ export class BasePriceEngine {
       }
     }
   }
-
 
   /**
    * Validate input data

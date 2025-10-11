@@ -1,4 +1,3 @@
-
 /**
  * Calculate the weight of printed materials in pounds
  * Formula: Paper Stock Weight × Size (sq inches) × Quantity = Weight (lbs)

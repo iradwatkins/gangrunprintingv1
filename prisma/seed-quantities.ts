@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedQuantities() {
-
   const quantitiesData = [
     {
       name: '250',
@@ -65,12 +64,10 @@ async function seedQuantities() {
         update: quantity,
         create: quantity,
       })
-
     } catch (error) {
       console.error(`Error seeding quantity ${quantity.name}:`, error)
     }
   }
-
 }
 
 seedQuantities()

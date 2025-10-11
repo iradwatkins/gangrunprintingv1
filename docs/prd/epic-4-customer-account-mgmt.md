@@ -1,6 +1,7 @@
 # Epic 4: Customer Account Management
 
 ## Epic Status
+
 **STATUS: ⚠️ IN PROGRESS (80% Complete - Corrected)**
 **Started:** 2025-09-18
 **Target Completion:** 2025-10-10 (Extended due to Story 4.3 discovery)
@@ -10,6 +11,7 @@
 ---
 
 ## Epic Goal
+
 Develop the complete "My Account" section where customers can view their order history with filtering, see order details, manage their profile information, and use the "Re-Order" functionality to quickly place repeat orders.
 
 ---
@@ -17,9 +19,11 @@ Develop the complete "My Account" section where customers can view their order h
 ## Epic Description
 
 ### User Goal
+
 **As a Customer**, I want to be able to track my past orders, manage my account information, and easily place a new order for a product I've purchased before, so that I have full control over my account and can quickly reorder favorite products.
 
 ### Business Value
+
 - Increases customer retention through easy account management
 - Boosts repeat purchases with re-order functionality
 - Reduces support inquiries with self-service tools
@@ -27,7 +31,9 @@ Develop the complete "My Account" section where customers can view their order h
 - Enables targeted marketing through order history insights
 
 ### Technical Summary
+
 This epic implements a comprehensive customer account portal with:
+
 - **Account Dashboard:** Overview of recent activity
 - **Order History:** Searchable, filterable order list
 - **Order Details:** Detailed view of each order
@@ -51,6 +57,7 @@ This epic implements a comprehensive customer account portal with:
 ### ✅ Completed Components
 
 #### 1. **Account Layout & Navigation**
+
 - Account section layout at `/account`
 - Side navigation menu
 - Mobile-responsive navigation
@@ -60,6 +67,7 @@ This epic implements a comprehensive customer account portal with:
 - Breadcrumb navigation
 
 #### 2. **Account Dashboard** (`/account/dashboard`)
+
 - Welcome message with user name
 - Recent orders summary (last 5)
 - Quick stats:
@@ -74,6 +82,7 @@ This epic implements a comprehensive customer account portal with:
 - Account status indicators
 
 #### 3. **Order History Page** (`/account/orders`)
+
 - Paginated order list
 - Order cards with key information:
   - Order number
@@ -96,6 +105,7 @@ This epic implements a comprehensive customer account portal with:
 - Loading states
 
 #### 4. **Order Detail Page** (`/account/orders/[id]`)
+
 - Detailed order information:
   - Order number & date
   - Current status with timeline
@@ -122,6 +132,7 @@ This epic implements a comprehensive customer account portal with:
   - Cancel order (if eligible)
 
 #### 5. **Profile Management** (`/account/details`)
+
 - Personal information form:
   - Full name
   - Email (display only)
@@ -134,6 +145,7 @@ This epic implements a comprehensive customer account portal with:
 - Account creation date
 
 #### 6. **Address Management** (`/account/addresses`)
+
 - List of saved addresses
 - Default shipping address indicator
 - Default billing address indicator
@@ -149,6 +161,7 @@ This epic implements a comprehensive customer account portal with:
 - Address form validation
 
 #### 7. **Payment Methods** (`/account/payment-methods`)
+
 - List of saved payment methods
 - **Card Display:**
   - Last 4 digits
@@ -161,6 +174,7 @@ This epic implements a comprehensive customer account portal with:
 - PCI compliant card storage
 
 #### 8. **Downloads Section** (`/account/downloads`)
+
 - Digital proof downloads
 - Invoice downloads
 - Artwork file downloads (if uploaded)
@@ -178,9 +192,11 @@ This epic implements a comprehensive customer account portal with:
 ### ⚠️ Partially Complete Components
 
 #### 1. **Re-Order Functionality** (0%)
+
 **Status:** NOT STARTED ❌
 
 **Required Implementation:**
+
 - "Re-Order" button on order history cards
 - "Re-Order" button on order detail page
 - Re-order confirmation modal
@@ -195,6 +211,7 @@ This epic implements a comprehensive customer account portal with:
 ### 📋 Enhancement Opportunities
 
 #### 1. **Order Tracking**
+
 - Real-time shipping tracking integration
 - Carrier tracking number display
 - Estimated delivery date
@@ -202,18 +219,21 @@ This epic implements a comprehensive customer account portal with:
 - Tracking map visualization
 
 #### 2. **Quote Management**
+
 - Quote request history
 - Quote approval/rejection
 - Convert quote to order
 - Quote expiration tracking
 
 #### 3. **Wish Lists**
+
 - Save products for later
 - Share wish lists
 - Convert wish list to order
 - Price drop notifications
 
 #### 4. **Subscription Management**
+
 - View active subscriptions
 - Pause/resume subscriptions
 - Update subscription details
@@ -224,10 +244,12 @@ This epic implements a comprehensive customer account portal with:
 ## User Stories
 
 ### Story 4.1: Account Layout & Navigation ✅
+
 **Status:** COMPLETE
 **Description:** Create account section layout with navigation and user profile display.
 
 **Acceptance Criteria:**
+
 - ✅ Account layout at `/account`
 - ✅ Side navigation menu
 - ✅ Mobile-responsive design
@@ -239,10 +261,12 @@ This epic implements a comprehensive customer account portal with:
 ---
 
 ### Story 4.2: Account Dashboard ✅
+
 **Status:** COMPLETE
 **Description:** Build dashboard showing recent orders and account overview.
 
 **Acceptance Criteria:**
+
 - ✅ Dashboard at `/account/dashboard`
 - ✅ Recent orders display
 - ✅ Account statistics
@@ -253,12 +277,14 @@ This epic implements a comprehensive customer account portal with:
 ---
 
 ### Story 4.3: Order History with Filtering ❌
+
 **Status:** NOT IMPLEMENTED (Documentation Error - Marked complete but only stub exists)
 **Description:** Create order history page with search, filter, and sort capabilities.
 
 **Current State:** Page exists at `/account/orders` but only shows hardcoded "no orders" message. Does NOT fetch or display actual orders from database.
 
 **Acceptance Criteria:**
+
 - ⚠️ Order history at `/account/orders` (page exists but non-functional)
 - ❌ Paginated order list
 - ❌ Filter by status
@@ -271,10 +297,12 @@ This epic implements a comprehensive customer account portal with:
 ---
 
 ### Story 4.4: Order Detail View ✅
+
 **Status:** COMPLETE
 **Description:** Create detailed order view page with all order information.
 
 **Acceptance Criteria:**
+
 - ✅ Order detail at `/account/orders/[id]`
 - ✅ Complete order information
 - ✅ Order status timeline
@@ -287,10 +315,12 @@ This epic implements a comprehensive customer account portal with:
 ---
 
 ### Story 4.5: Re-Order Functionality ❌
+
 **Status:** NOT STARTED
 **Description:** Implement one-click re-order functionality from order history.
 
 **Acceptance Criteria:**
+
 - ❌ "Re-Order" button on order cards
 - ❌ "Re-Order" button on order detail
 - ❌ Re-order confirmation modal
@@ -308,6 +338,7 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
    - Location 2: Order detail page (`/account/orders/[id]`) - prominent button
 
 2. **Create Re-Order Logic:**
+
    ```typescript
    async function handleReOrder(orderId: string) {
      // 1. Fetch original order with items
@@ -355,10 +386,12 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ---
 
 ### Story 4.6: Profile Management ✅
+
 **Status:** COMPLETE
 **Description:** Allow customers to update their profile information.
 
 **Acceptance Criteria:**
+
 - ✅ Profile page at `/account/details`
 - ✅ Personal information form
 - ✅ Form validation
@@ -370,10 +403,12 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ---
 
 ### Story 4.7: Address Book ✅
+
 **Status:** COMPLETE
 **Description:** Manage shipping and billing addresses.
 
 **Acceptance Criteria:**
+
 - ✅ Address management at `/account/addresses`
 - ✅ List of saved addresses
 - ✅ Add new address
@@ -386,10 +421,12 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ---
 
 ### Story 4.8: Payment Methods Management ✅
+
 **Status:** COMPLETE
 **Description:** Manage saved payment methods securely.
 
 **Acceptance Criteria:**
+
 - ✅ Payment methods at `/account/payment-methods`
 - ✅ List saved cards (tokenized)
 - ✅ Add new payment method
@@ -401,10 +438,12 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ---
 
 ### Story 4.9: Downloads Section ✅
+
 **Status:** COMPLETE
 **Description:** Provide access to downloadable files (invoices, proofs, artwork).
 
 **Acceptance Criteria:**
+
 - ✅ Downloads at `/account/downloads`
 - ✅ File list display
 - ✅ Download individual files
@@ -418,6 +457,7 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ## Technical Architecture
 
 ### Account Pages Structure
+
 ```
 /account (Layout)
 ├── /dashboard (Overview)
@@ -430,6 +470,7 @@ This is the ONLY missing piece (FR11 requirement). Implementation needed:
 ```
 
 ### Re-Order Workflow (TO BE IMPLEMENTED)
+
 ```
 Order History/Detail Page
   ↓
@@ -452,6 +493,7 @@ Navigate to Cart or Checkout
 ## API Endpoints
 
 ### Account APIs
+
 - `GET /api/account/profile` - Get user profile ✅
 - `PUT /api/account/profile` - Update profile ✅
 - `GET /api/account/orders` - List user orders ✅
@@ -459,17 +501,20 @@ Navigate to Cart or Checkout
 - `POST /api/account/orders/[id]/reorder` - Re-order ❌ **NEEDS IMPLEMENTATION**
 
 ### Address APIs
+
 - `GET /api/account/addresses` - List addresses ✅
 - `POST /api/account/addresses` - Create address ✅
 - `PUT /api/account/addresses/[id]` - Update address ✅
 - `DELETE /api/account/addresses/[id]` - Delete address ✅
 
 ### Payment APIs
+
 - `GET /api/account/payment-methods` - List payment methods ✅
 - `POST /api/account/payment-methods` - Add payment method ✅
 - `DELETE /api/account/payment-methods/[id]` - Remove payment method ✅
 
 ### Downloads APIs
+
 - `GET /api/account/downloads` - List downloadable files ✅
 - `GET /api/account/downloads/[id]` - Download file ✅
 
@@ -478,15 +523,18 @@ Navigate to Cart or Checkout
 ## Dependencies
 
 ### Internal
+
 - Epic 1: Foundation (auth, database)
 - Epic 3: Commerce (order data)
 
 ### External Services
+
 - Square (payment tokenization)
 - Resend (email notifications)
 - MinIO (file storage for downloads)
 
 ### Libraries
+
 - React Hook Form (forms)
 - Zod (validation)
 - date-fns (date formatting)
@@ -497,7 +545,9 @@ Navigate to Cart or Checkout
 ## Remaining Work
 
 ### High Priority
+
 **1. Re-Order Functionality (Story 4.5)** - 8 hours
+
 - Add re-order buttons to UI
 - Create re-order API endpoint
 - Build confirmation modal
@@ -511,18 +561,19 @@ Navigate to Cart or Checkout
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation | Status |
-|------|--------|------------|------------|--------|
-| Re-order price changes | MEDIUM | HIGH | Show price comparison before confirm | 📋 Planned |
-| Product discontinuation | MEDIUM | MEDIUM | Suggest alternatives | 📋 Planned |
-| Out-of-stock items | MEDIUM | MEDIUM | Show availability before cart add | 📋 Planned |
-| Performance with large order history | MEDIUM | LOW | Pagination + caching | ✅ Resolved |
+| Risk                                 | Impact | Likelihood | Mitigation                           | Status      |
+| ------------------------------------ | ------ | ---------- | ------------------------------------ | ----------- |
+| Re-order price changes               | MEDIUM | HIGH       | Show price comparison before confirm | 📋 Planned  |
+| Product discontinuation              | MEDIUM | MEDIUM     | Suggest alternatives                 | 📋 Planned  |
+| Out-of-stock items                   | MEDIUM | MEDIUM     | Show availability before cart add    | 📋 Planned  |
+| Performance with large order history | MEDIUM | LOW        | Pagination + caching                 | ✅ Resolved |
 
 ---
 
 ## Success Metrics
 
 ### Current Achievement
+
 - [x] Account navigation: 100%
 - [x] Dashboard: 100%
 - [x] Order history: 100%
@@ -536,6 +587,7 @@ Navigate to Cart or Checkout
 **Overall Completion:** 90%
 
 ### Target Metrics (When Complete)
+
 - Account page views: > 30% of customers
 - Order history usage: > 60% of returning customers
 - Re-order rate: > 15% of orders
@@ -547,12 +599,14 @@ Navigate to Cart or Checkout
 ## Testing Requirements
 
 ### ✅ Completed Tests
+
 - Account page navigation tests
 - Order history filtering tests
 - Order detail display tests
 - Address CRUD tests
 
 ### 📋 Remaining Tests
+
 - Re-order functionality tests
 - Re-order price change scenarios
 - Re-order out-of-stock handling
@@ -564,18 +618,18 @@ Navigate to Cart or Checkout
 
 - [Customer Account Flow](/docs/architecture/customer-account-flow.md)
 - [Order Management](/docs/architecture/order-management.md)
-- [Re-Order Specification](/docs/stories/story-4.5-reorder-functionality.md) *(To be created)*
+- [Re-Order Specification](/docs/stories/story-4.5-reorder-functionality.md) _(To be created)_
 
 ---
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-09-18 | 1.0 | Account pages implemented | Development Team |
-| 2025-09-22 | 1.1 | Order history completed | Development Team |
-| 2025-09-25 | 1.2 | Address and payment management added | Development Team |
-| 2025-09-30 | 2.0 | Sharded from monolithic PRD | BMAD Agent |
+| Date       | Version | Description                          | Author           |
+| ---------- | ------- | ------------------------------------ | ---------------- |
+| 2025-09-18 | 1.0     | Account pages implemented            | Development Team |
+| 2025-09-22 | 1.1     | Order history completed              | Development Team |
+| 2025-09-25 | 1.2     | Address and payment management added | Development Team |
+| 2025-09-30 | 2.0     | Sharded from monolithic PRD          | BMAD Agent       |
 
 ---
 

@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 
 async function createTestAdmin() {
   try {
-
     // Generate session ID
     const sessionId = crypto.randomBytes(20).toString('hex')
     const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
@@ -16,7 +15,6 @@ async function createTestAdmin() {
     })
 
     if (existingUser) {
-
       // Update user to admin
       const updatedUser = await prisma.user.update({
         where: { id: existingUser.id },

@@ -9,7 +9,7 @@ async function debugAPI() {
     // Try a simple query first
     console.log('1. Simple query without includes:')
     const simpleStocks = await prisma.paperStock.findMany({
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
     console.log(`Found ${simpleStocks.length} paper stocks`)
 
@@ -18,8 +18,8 @@ async function debugAPI() {
     const stocksWithCoatings = await prisma.paperStock.findMany({
       orderBy: { name: 'asc' },
       include: {
-        paperStockCoatings: true
-      }
+        paperStockCoatings: true,
+      },
     })
     console.log(`Found ${stocksWithCoatings.length} paper stocks with coatings`)
 
@@ -31,8 +31,8 @@ async function debugAPI() {
           include: {
             CoatingOption: true,
           },
-        }
-      }
+        },
+      },
     })
     console.log(`Found ${stocksWithCoatingsFull.length} paper stocks with coating details`)
 
@@ -44,8 +44,8 @@ async function debugAPI() {
           include: {
             SidesOption: true,
           },
-        }
-      }
+        },
+      },
     })
     console.log(`Found ${stocksWithSides.length} paper stocks with sides`)
 
@@ -67,7 +67,6 @@ async function debugAPI() {
       },
     })
     console.log(`Found ${fullQuery.length} paper stocks with full query`)
-
   } catch (error) {
     console.error('Error in query:', error)
   } finally {

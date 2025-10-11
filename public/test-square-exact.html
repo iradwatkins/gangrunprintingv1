@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Square Test - Exact Copy</title>
+    <script src="https://web.squarecdn.com/v1/square.js"></script>
+    <style>
+        #card-container {
+            min-height: 100px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button { padding: 15px 30px; font-size: 16px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Square Payment Test - Production</h1>
+    <div id="card-container"></div>
+    <button id="card-button">Pay $10.00</button>
+    <div id="debug" style="background: #f0f0f0; padding: 10px; margin-top: 20px; font-family: monospace;"></div>
+
+    <script>
+        const appId = 'sq0idp-AJF8fI5VayKCq9veQRAw5g';
+        const locationId = 'LWMA9R9E2ENXP';
+        
+        function log(msg) {
+            console.log(msg);
+            document.getElementById('debug').innerHTML += msg + '<br>';
+        }
+
+        async function init() {
+            log('Waiting for Square SDK...');
+            
+            let attempts = 0;
+            const maxAttempts = 50;
+            
+            const waitForSquare = setInterval(async () => {
+                attempts++;
+                
+                if (typeof Square !== 'undefined') {
+                    clearInterval(waitForSquare);
+                    log('Square SDK detected after ' + (attempts * 100) + 'ms');
+                    
+                    try {
+                        log('Creating payments instance...');
+                        const payments = Square.payments(appId, locationId);
+                        log('Payments instance created');
+                        
+                        log('Creating card instance...');
+                        const card = await payments.card();
+                        log('Card instance created');
+                        
+                        log('Attaching card to #card-container...');
+                        await card.attach('#card-container');
+                        log('✅ SUCCESS! Card attached successfully!');
+                        
+                        document.getElementById('card-button').onclick = async () => {
+                            log('Tokenizing...');
+                            const result = await card.tokenize();
+                            log('Token result: ' + JSON.stringify(result));
+                        };
+                        
+                    } catch (error) {
+                        log('❌ ERROR: ' + error.message);
+                        console.error(error);
+                    }
+                    
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(waitForSquare);
+                    log('❌ ERROR: Square SDK failed to load after 5 seconds');
+                }
+            }, 100);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>

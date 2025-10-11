@@ -14,7 +14,6 @@ const FormData = require('form-data')
 const prisma = new PrismaClient()
 
 async function testMultiFileAPI() {
-
   try {
     // Create admin authentication
 
@@ -69,7 +68,6 @@ async function testMultiFileAPI() {
     const uploadResults = []
 
     for (const [index, image] of testImages.entries()) {
-
       const formData = new FormData()
       formData.append('file', fs.createReadStream(image.filePath), {
         filename: image.fileName,
@@ -90,16 +88,13 @@ async function testMultiFileAPI() {
         if (response.ok) {
           const data = await response.json()
           uploadResults.push(data)
-
         } else {
           const errorData = await response.json().catch(() => ({}))
           console.log(
             `      ❌ Upload failed (${response.status}): ${errorData.error || 'Unknown error'}`
           )
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
     }
 
     // Verify database storage
@@ -110,33 +105,24 @@ async function testMultiFileAPI() {
     })
 
     if (productWithImages && productWithImages.ProductImage.length > 0) {
-
       // Check primary image
       const primaryImage = productWithImages.ProductImage.find((img) => img.isPrimary)
       if (primaryImage) {
-
       } else {
-
       }
 
       // Check sort order
       const sortedImages = productWithImages.ProductImage.sort((a, b) => a.sortOrder - b.sortOrder)
 
-      sortedImages.forEach((img, idx) => {
-
-      })
+      sortedImages.forEach((img, idx) => {})
 
       // Check URLs and metadata
-      productWithImages.ProductImage.forEach((img, idx) => {
-
-      })
+      productWithImages.ProductImage.forEach((img, idx) => {})
     } else {
-
     }
 
     // Test image management API
     if (productWithImages && productWithImages.ProductImage.length > 1) {
-
       // Test GET images API
       const getResponse = await fetch(
         `https://gangrunprinting.com/api/products/images?productId=${testProduct.id}`,
@@ -149,9 +135,7 @@ async function testMultiFileAPI() {
 
       if (getResponse.ok) {
         const getResult = await getResponse.json()
-
       } else {
-
       }
 
       // Test updating image metadata
@@ -171,9 +155,7 @@ async function testMultiFileAPI() {
       })
 
       if (updateResponse.ok) {
-
       } else {
-
       }
 
       // Test deletion
@@ -190,7 +172,6 @@ async function testMultiFileAPI() {
         )
 
         if (deleteResponse.ok) {
-
           // Verify deletion
           const verifyProduct = await prisma.product.findUnique({
             where: { id: testProduct.id },
@@ -198,9 +179,7 @@ async function testMultiFileAPI() {
           })
 
           const remainingCount = verifyProduct?.ProductImage.length || 0
-
         } else {
-
         }
       }
     }
@@ -213,15 +192,12 @@ async function testMultiFileAPI() {
     })
 
     if (finalProduct) {
-
       console.log(
         `✅ Primary image: ${finalProduct.ProductImage.some((img) => img.isPrimary) ? 'Set' : 'Missing'}`
       )
 
       const totalSize = finalProduct.ProductImage.reduce((sum, img) => sum + (img.fileSize || 0), 0)
-
     }
-
   } catch (error) {
     console.error(`❌ Test failed: ${error.message}`)
     console.error(error.stack)

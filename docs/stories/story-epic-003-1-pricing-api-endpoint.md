@@ -19,6 +19,7 @@
 ## Context
 
 **What Already Exists:**
+
 - ✅ `UnifiedPricingEngine` class in `/src/lib/pricing/unified-pricing-engine.ts`
 - ✅ `BasePriceEngine` class in `/src/lib/pricing/base-price-engine.ts`
 - ✅ `ModulePricingEngine` class in `/src/components/product/modules/pricing/ModulePricingEngine.ts`
@@ -26,6 +27,7 @@
 - ✅ All pricing formulas implemented and tested
 
 **What's Missing:**
+
 - ❌ API endpoint to receive configuration and return calculated price
 - ❌ Request validation schema
 - ❌ Response formatting for frontend consumption
@@ -130,9 +132,9 @@ interface PricingCalculationResponse {
     addonCosts: number
     turnaroundCosts: number
     adjustments: {
-      brokerDiscount?: { percentage: number, amount: number }
-      taglineDiscount?: { percentage: number, amount: number }
-      exactSizeMarkup?: { percentage: number, amount: number }
+      brokerDiscount?: { percentage: number; amount: number }
+      taglineDiscount?: { percentage: number; amount: number }
+      exactSizeMarkup?: { percentage: number; amount: number }
     }
   }
   validation: {
@@ -147,12 +149,14 @@ interface PricingCalculationResponse {
 ### Connection Points
 
 **Existing Code to Use:**
+
 1. Import `UnifiedPricingEngine` from `/src/lib/pricing/unified-pricing-engine.ts`
 2. Fetch catalog data from Prisma (sizes, quantities, paper stocks, add-ons, turnarounds)
 3. Call `engine.calculatePrice(request, catalog)`
 4. Return formatted result
 
 **API Route Structure:**
+
 ```typescript
 // /src/app/api/pricing/calculate/route.ts
 
@@ -177,7 +181,7 @@ export async function POST(request: NextRequest) {
       success: true,
       price: result.totals.beforeTax,
       breakdown: result,
-      validation: result.validation
+      validation: result.validation,
     })
   } catch (error) {
     // Error handling
@@ -190,12 +194,15 @@ export async function POST(request: NextRequest) {
 ## Files to Create/Modify
 
 ### Files to CREATE:
+
 - `/src/app/api/pricing/calculate/route.ts` - Main API endpoint
 
 ### Files to UPDATE:
+
 - `/src/lib/validation.ts` - Add Zod schema for pricing request validation
 
 ### Files to REFERENCE (no changes):
+
 - `/src/lib/pricing/unified-pricing-engine.ts` - Existing pricing logic
 - `/src/lib/prisma.ts` - Database client
 
@@ -204,6 +211,7 @@ export async function POST(request: NextRequest) {
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Test valid configuration → returns correct price
 - [ ] Test missing required fields → returns 400
 - [ ] Test invalid custom quantity → returns validation error
@@ -211,6 +219,7 @@ export async function POST(request: NextRequest) {
 - [ ] Test calculation error → returns 500
 
 ### Integration Tests
+
 - [ ] Test with real database catalog data
 - [ ] Test all module combinations (quantity only, quantity+size, full config)
 - [ ] Test broker discount calculation
@@ -218,6 +227,7 @@ export async function POST(request: NextRequest) {
 - [ ] Test turnaround markup
 
 ### Performance Tests
+
 - [ ] Measure response time for typical configuration
 - [ ] Verify caching is working
 - [ ] Test concurrent requests
@@ -242,11 +252,13 @@ export async function POST(request: NextRequest) {
 ## Dependencies
 
 **Required Before Starting:**
+
 - Access to existing pricing engines
 - Database access (Prisma client)
 - Understanding of product module structure
 
 **Blocks:**
+
 - Story 2 (Frontend Integration) - Cannot display prices without API
 
 ---

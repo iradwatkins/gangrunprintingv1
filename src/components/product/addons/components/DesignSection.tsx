@@ -5,7 +5,13 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import FileUploadZone from '../../FileUploadZone'
@@ -39,10 +45,11 @@ export function DesignSection({
     upload_artwork: {
       id: 'upload_artwork',
       name: 'Upload My Artwork',
-      tooltipText: 'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
+      tooltipText:
+        'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
       basePrice: 0,
       requiresFileUpload: true,
-      fileUploadOptional: true
+      fileUploadOptional: true,
     },
     standard_design: {
       id: 'standard_design',
@@ -51,8 +58,8 @@ export function DesignSection({
       requiresSideSelection: true,
       sideOptions: {
         oneSide: { label: 'One Side', price: 90 },
-        twoSides: { label: 'Two Sides', price: 135 }
-      }
+        twoSides: { label: 'Two Sides', price: 135 },
+      },
     },
     rush_design: {
       id: 'rush_design',
@@ -61,27 +68,27 @@ export function DesignSection({
       requiresSideSelection: true,
       sideOptions: {
         oneSide: { label: 'One Side', price: 160 },
-        twoSides: { label: 'Two Sides', price: 240 }
-      }
+        twoSides: { label: 'Two Sides', price: 240 },
+      },
     },
     minor_changes: {
       id: 'minor_changes',
       name: 'Design Changes - Minor',
       tooltipText: 'Minor text changes, color adjustments, or small layout tweaks',
-      basePrice: 22.5
+      basePrice: 22.5,
     },
     major_changes: {
       id: 'major_changes',
       name: 'Design Changes - Major',
       tooltipText: 'Major redesign elements, layout changes, or extensive revisions',
-      basePrice: 45
+      basePrice: 45,
     },
     upload_later: {
       id: 'upload_later',
       name: 'Will Upload Images Later',
       tooltipText: 'You can email us your files after placing the order',
-      basePrice: 0
-    }
+      basePrice: 0,
+    },
   }
 
   const selectedDesignOption = designOptions[primarySelection as keyof typeof designOptions]
@@ -120,7 +127,7 @@ export function DesignSection({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(price)
   }
 
@@ -147,7 +154,8 @@ export function DesignSection({
 
   const shouldShowFileUpload = primarySelection === 'upload_artwork'
   const shouldShowSecondaryDropdown = selectedDesignOption?.requiresSideSelection === true
-  const shouldShowPrice = primarySelection === 'minor_changes' || primarySelection === 'major_changes'
+  const shouldShowPrice =
+    primarySelection === 'minor_changes' || primarySelection === 'major_changes'
 
   return (
     <TooltipProvider>
@@ -155,12 +163,12 @@ export function DesignSection({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="design"
               checked={enabled}
-              onCheckedChange={onToggle}
               disabled={disabled}
+              id="design"
+              onCheckedChange={onToggle}
             />
-            <Label htmlFor="design" className="font-medium">
+            <Label className="font-medium" htmlFor="design">
               Design
             </Label>
             <Tooltip>
@@ -174,9 +182,7 @@ export function DesignSection({
               </TooltipContent>
             </Tooltip>
           </div>
-          {getDisplayPrice() && (
-            <span className="text-sm font-medium">{getDisplayPrice()}</span>
-          )}
+          {getDisplayPrice() && <span className="text-sm font-medium">{getDisplayPrice()}</span>}
         </div>
 
         {enabled && (
@@ -196,9 +202,9 @@ export function DesignSection({
               </div>
 
               <Select
+                disabled={disabled}
                 value={primarySelection}
                 onValueChange={handlePrimaryChange}
-                disabled={disabled}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Options" />
@@ -219,9 +225,9 @@ export function DesignSection({
               <div className="ml-6 space-y-2">
                 <Label>Select Sides *</Label>
                 <Select
+                  disabled={disabled}
                   value={secondarySelection}
                   onValueChange={handleSecondaryChange}
-                  disabled={disabled}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Choose number of sides..." />
@@ -259,14 +265,15 @@ export function DesignSection({
                 </div>
 
                 <FileUploadZone
-                  onFilesUploaded={handleFilesUploaded}
+                  disabled={disabled}
                   maxFiles={5}
                   maxFileSize={25}
-                  disabled={disabled}
+                  onFilesUploaded={handleFilesUploaded}
                 />
 
                 <p className="text-sm text-muted-foreground">
-                  Note: File upload is optional. You can email your files to us after placing your order.
+                  Note: File upload is optional. You can email your files to us after placing your
+                  order.
                 </p>
               </div>
             )}
@@ -274,9 +281,7 @@ export function DesignSection({
             {/* Static Price Display for Minor/Major Changes */}
             {shouldShowPrice && (
               <div className="ml-6 p-3 bg-muted/50 rounded-lg">
-                <p className="text-sm font-medium">
-                  Price: {getDisplayPrice()}
-                </p>
+                <p className="text-sm font-medium">Price: {getDisplayPrice()}</p>
               </div>
             )}
 
@@ -295,9 +300,7 @@ export function DesignSection({
 
                   {/* Show price if available */}
                   {getDisplayPrice() && (
-                    <div className="font-medium text-primary">
-                      Total: {getDisplayPrice()}
-                    </div>
+                    <div className="font-medium text-primary">Total: {getDisplayPrice()}</div>
                   )}
 
                   {/* Show uploaded files count */}

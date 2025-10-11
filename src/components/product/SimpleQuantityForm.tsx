@@ -40,8 +40,8 @@ export default function SimpleQuantityForm({
   useEffect(() => {
     // Direct fetch without complex loading manager
     fetch(`/api/products/${productId}/configuration`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.quantities && data.quantities.length > 0) {
           setQuantities(data.quantities)
           // Set default quantity
@@ -64,7 +64,7 @@ export default function SimpleQuantityForm({
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to load quantities:', err)
         setLoading(false)
       })
@@ -90,9 +90,9 @@ export default function SimpleQuantityForm({
     }
 
     // Calculate price (simplified for quantity-only)
-    const selectedQty = quantities.find(q => q.id === value)
+    const selectedQty = quantities.find((q) => q.id === value)
     if (selectedQty && onPriceChangeRef.current) {
-      const qty = selectedQty.isCustom ? (customQuantity || 0) : selectedQty.value
+      const qty = selectedQty.isCustom ? customQuantity || 0 : selectedQty.value
       // Simple price calculation: base price * quantity / 100
       const calculatedPrice = (basePrice * qty) / 100
       onPriceChangeRef.current(calculatedPrice)
@@ -152,10 +152,12 @@ export default function SimpleQuantityForm({
             ENTER CUSTOM QUANTITY
           </Label>
           <input
-            type="number"
-            min={50000}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             max={100000}
+            min={50000}
+            placeholder="Enter quantity between 50,000 and 100,000"
             step={5000}
+            type="number"
             value={customQuantity || ''}
             onChange={(e) => {
               const value = parseInt(e.target.value)
@@ -163,8 +165,6 @@ export default function SimpleQuantityForm({
                 handleCustomQuantityChange(value)
               }
             }}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Enter quantity between 50,000 and 100,000"
           />
           <p className="text-xs text-gray-500 mt-1">
             Custom quantities must be between 50,000 and 100,000 units

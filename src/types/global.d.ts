@@ -7,7 +7,7 @@ import type {
   PaperStock,
   AddOn,
   OrderItem,
-  Notification as PrismaNotification
+  Notification as PrismaNotification,
 } from '@prisma/client'
 
 declare global {
@@ -308,8 +308,11 @@ declare global {
 
   type Nullable<T> = T | null | undefined
 
-  type AsyncReturnType<T extends (...args: any) => Promise<any>> =
-    T extends (...args: any) => Promise<infer R> ? R : never
+  type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (
+    ...args: any
+  ) => Promise<infer R>
+    ? R
+    : never
 
   // Google Analytics gtag
   interface Window {

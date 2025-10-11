@@ -30,6 +30,7 @@
 ## 🎯 EXECUTIVE SUMMARY
 
 ### What's Working
+
 ✅ **Admin Operations:** Fully functional order management, customer management, product catalog
 ✅ **Product System:** Complete modular product architecture with real-time pricing
 ✅ **Checkout Flow:** Shopping cart, checkout, Square payments, FedEx shipping
@@ -37,12 +38,14 @@
 ✅ **Authentication:** Lucia Auth with Google OAuth and Magic Links
 
 ### Critical Blocker
+
 ❌ **Customer Order History (Story 4.3):** Stub page exists but customers cannot view their orders
 **Impact:** BLOCKS customer-facing launch
 **Effort:** 12-16 hours
 **Priority:** CRITICAL
 
 ### System Health
+
 - **Core E-Commerce:** 78/100 (one critical blocker)
 - **Admin Tools:** 100/100 (fully operational)
 - **Customer Features:** 60/100 (missing order history)
@@ -53,6 +56,7 @@
 ## 🏗️ SYSTEM ARCHITECTURE
 
 ### Tech Stack
+
 - **Frontend:** Next.js 15.5.2 with App Router, TypeScript 5.9.2
 - **Backend:** Next.js API routes (serverless)
 - **Database:** PostgreSQL 15 (172.22.0.1:5432)
@@ -66,6 +70,7 @@
 - **Deployment:** Docker Compose (port 3002)
 
 ### Architecture Pattern
+
 - **Server Components First:** Data fetching in server components
 - **API Routes:** For mutations and complex operations
 - **Service Layer:** Business logic in `/src/services/`
@@ -79,12 +84,14 @@
 ### How GangRun Printing Operates
 
 **Customer-Facing (What Customers See):**
+
 - Professional printing company offering business cards, flyers, brochures, etc.
 - 95% retail customers (regular consumers)
 - 5% broker customers (resellers who get category-specific % discounts)
 - Seamless ordering, payment, tracking, and delivery experience
 
 **Behind the Scenes (How We Operate):**
+
 - We coordinate with vendor print shops for physical production
 - Vendors handle: printing, quality control, bindery, packaging, shipping
 - We handle: customer service, order management, payments, file review, status tracking
@@ -93,12 +100,14 @@
 **Key Point:** Customers never know we use vendors - they see us as their printer.
 
 ### Broker Discount System
+
 - Database: `User.isBroker` (boolean), `User.brokerDiscounts` (JSONB)
 - Example: `{"Business Cards": 15, "Flyers": 20, "Brochures": 18}` (percentages)
 - Pricing engine automatically applies discounts at checkout
 - Backend complete, admin UI needed (Story 5.7)
 
 ### Terminology Guide
+
 - ✅ **Use:** "printing company", "print shop", "customer orders"
 - ❌ **Avoid:** "broker workflow" (confusing - sounds like we're brokers)
 - ✅ **Broker customers** = The 5% who get discounts (resellers)
@@ -111,6 +120,7 @@
 ## 🚨 CRITICAL NEXT STEPS
 
 ### Priority 1: Fix Customer Order History (CRITICAL)
+
 **BMAD Agent:** `/BMad:agents:dev` (Developer Agent)
 
 **Task:** Implement Story 4.3 - Customer Order History
@@ -119,11 +129,13 @@
 **Assignee:** Lead Developer
 
 **Current State:**
+
 - File: [src/app/account/orders/page.tsx](src/app/account/orders/page.tsx) (31 lines, stub)
 - Shows hardcoded "You haven't placed any orders yet" to ALL customers
 - No database query, no filtering, no pagination
 
 **Required Implementation:**
+
 - Fetch orders from database for logged-in user
 - Display order cards with status badges, dates, totals
 - Filter by status (All, Active, Completed, Cancelled)
@@ -137,6 +149,7 @@
 **Implementation Guide:** [docs/stories/story-4.3-customer-order-history.md](docs/stories/story-4.3-customer-order-history.md) (600+ lines)
 
 **Acceptance Criteria (20 items):**
+
 1. Fetch user's orders: `prisma.order.findMany({ where: { userId: user.id } })`
 2. Display order cards with: number, date, status badge, total, items
 3. Implement filters (status, date range)
@@ -159,6 +172,7 @@
 20. Test with real customer account
 
 **Testing:**
+
 1. Create test orders in database
 2. Log in as customer
 3. Visit `/account/orders`
@@ -170,6 +184,7 @@
 ---
 
 ### Priority 2: Complete Epic 4 (OPTIONAL)
+
 **BMAD Agent:** `/BMad:agents:dev` (Developer Agent)
 
 **Task:** Implement Story 4.5 - Re-Order Functionality
@@ -178,6 +193,7 @@
 **Priority:** MEDIUM
 
 **Implementation:**
+
 - Add "Re-Order" button to order cards
 - Add "Re-Order" button to order detail page
 - Create re-order modal component
@@ -188,6 +204,7 @@
 ---
 
 ### Priority 3: Complete Epic 5 (OPTIONAL)
+
 **BMAD Agent:** `/BMad:agents:dev` (Developer Agent)
 
 **Task:** Implement Story 5.7 - Broker Discount Management UI
@@ -196,6 +213,7 @@
 **Priority:** MEDIUM
 
 **Implementation:**
+
 - Create admin page: `/admin/customers/[id]/broker-discounts`
 - Display customer's broker status
 - Show current broker discounts by category
@@ -206,6 +224,7 @@
 ---
 
 ### Priority 4: Additional Payment Options (OPTIONAL)
+
 **BMAD Agent:** `/BMad:agents:dev` (Developer Agent)
 
 **Task:** Integrate CashApp and PayPal
@@ -216,6 +235,7 @@
 ---
 
 ### Priority 5: Marketing Suite (FUTURE)
+
 **BMAD Agent:** `/BMad:agents:architect` then `/BMad:agents:dev`
 
 **Task:** Complete Epic 6 - Marketing & CRM
@@ -228,12 +248,15 @@
 ## 🤖 BMAD AGENT GUIDE
 
 ### What is BMAD?
+
 BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology using specialized agents for different tasks.
 
 ### Available BMAD Agents
 
 #### `/BMad:agents:dev` - Developer Agent
+
 **Use For:**
+
 - Writing code (features, bug fixes, refactoring)
 - Implementing stories and tasks
 - Code reviews
@@ -242,6 +265,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - API development
 
 **Examples:**
+
 - Implementing Story 4.3 (customer order history)
 - Fixing bugs in checkout flow
 - Adding new API endpoints
@@ -250,7 +274,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:qa` - QA Agent (Quinn)
+
 **Use For:**
+
 - Testing features
 - Finding bugs
 - Verifying acceptance criteria
@@ -259,6 +285,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - Regression testing
 
 **Examples:**
+
 - Testing customer order history after implementation
 - Verifying all 20 acceptance criteria for Story 4.3
 - Running comprehensive system audit
@@ -267,7 +294,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:pm` - Project Manager Agent (John)
+
 **Use For:**
+
 - Creating epics and stories
 - Task breakdown
 - Documentation updates
@@ -276,6 +305,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - Sprint planning
 
 **Examples:**
+
 - Creating Story 4.3 documentation
 - Breaking down Epic 6 into stories
 - Updating epic completion status
@@ -284,7 +314,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:po` - Product Owner Agent
+
 **Use For:**
+
 - Business requirements
 - Feature prioritization
 - User story creation
@@ -292,6 +324,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - Stakeholder communication
 
 **Examples:**
+
 - Defining broker discount requirements
 - Prioritizing Epic 6 features
 - Writing user stories
@@ -300,7 +333,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:architect` - Architect Agent
+
 **Use For:**
+
 - System design
 - Architecture decisions
 - Database schema design
@@ -309,6 +344,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - Scalability planning
 
 **Examples:**
+
 - Designing Marketing CRM architecture
 - Database optimization
 - API versioning strategy
@@ -317,7 +353,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:ux-expert` - UX Expert Agent
+
 **Use For:**
+
 - UI/UX design
 - User experience audits
 - Accessibility
@@ -325,6 +363,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - User flow optimization
 
 **Examples:**
+
 - Improving checkout UX
 - Designing broker discount UI
 - Accessibility audit
@@ -333,7 +372,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:analyst` - Business Analyst Agent
+
 **Use For:**
+
 - Business metrics
 - Analytics reports
 - Data analysis
@@ -341,6 +382,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - ROI calculations
 
 **Examples:**
+
 - Sales analytics
 - Customer behavior analysis
 - Conversion rate optimization
@@ -349,7 +391,9 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ---
 
 #### `/BMad:agents:sm` - Scrum Master Agent
+
 **Use For:**
+
 - Sprint management
 - Daily standups
 - Retrospectives
@@ -357,6 +401,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - Team coordination
 
 **Examples:**
+
 - Planning sprints
 - Tracking velocity
 - Facilitating retrospectives
@@ -367,6 +412,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ### BMAD Agent Usage Examples
 
 #### Scenario 1: Implementing Story 4.3
+
 ```bash
 # Step 1: Use PM agent to review story
 /BMad:agents:pm
@@ -382,6 +428,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ```
 
 #### Scenario 2: Bug Fix
+
 ```bash
 # Step 1: Use QA agent to identify bug
 /BMad:agents:qa
@@ -397,6 +444,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ```
 
 #### Scenario 3: New Feature Planning
+
 ```bash
 # Step 1: Use PO agent to define requirements
 /BMad:agents:po
@@ -420,6 +468,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 ## 🔐 SYSTEM ACCESS
 
 ### Production Server
+
 - **Host:** 72.60.28.175
 - **SSH:** `ssh root@72.60.28.175`
 - **Password:** `Bobby321&Gloria321Watkins?`
@@ -427,6 +476,7 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - **Application URL:** http://gangrunprinting.com (http://72.60.28.175:3002)
 
 ### Database
+
 - **Host:** 172.22.0.1
 - **Port:** 5432
 - **Database:** gangrun_db
@@ -434,11 +484,13 @@ BMAD (Build, Monitor, Analyze, Deploy) is an AI-driven development methodology u
 - **Password:** GangRun2024Secure
 
 **Connect:**
+
 ```bash
 PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
 ```
 
 ### MinIO (File Storage)
+
 - **Host:** 172.22.0.1
 - **Port:** 9000
 - **Console:** 9001
@@ -447,22 +499,26 @@ PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
 - **Bucket:** gangrun-uploads
 
 ### N8N (Workflow Automation)
+
 - **URL:** http://72.60.28.175:5678
 - **Port:** 5678
 - **Status:** Pre-installed, ready to use
 
 ### Ollama (AI Services)
+
 - **URL:** http://72.60.28.175:11434
 - **Port:** 11434
 - **Status:** Pre-installed, ready to use
 
 ### Admin Account
+
 - **Email:** iradwatkins@gmail.com
 - **Name:** Ira Watkins
 - **Password:** Iw2006js!
 - **Role:** ADMIN
 
 ### GitHub Repository
+
 - **URL:** https://github.com/iradwatkins/gangrunprinting.git
 - **Branch:** main
 - **Deployment:** PM2 on port 3002
@@ -472,6 +528,7 @@ PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
 ## 📦 DEPLOYMENT STATUS
 
 ### Current Deployment
+
 - **Status:** ✅ RUNNING
 - **Process Manager:** PM2
 - **Process Name:** gangrunprinting
@@ -482,6 +539,7 @@ PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
 - **Restart Count:** 152
 
 ### PM2 Commands
+
 ```bash
 # Check status
 pm2 status
@@ -503,6 +561,7 @@ pm2 save
 ```
 
 ### Build & Deploy
+
 ```bash
 # Navigate to project
 cd /root/websites/gangrunprinting
@@ -527,9 +586,11 @@ pm2 logs gangrunprinting --lines 50
 ```
 
 ### Environment Variables
+
 Located in: `/root/websites/gangrunprinting/.env`
 
 **Critical Variables:**
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `NEXTAUTH_SECRET` - Auth secret key
 - `SQUARE_ACCESS_TOKEN` - Square payment API
@@ -542,6 +603,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ## 📊 EPIC COMPLETION STATUS
 
 ### Epic 1: Foundational Setup & Theming ✅
+
 **Status:** COMPLETE (100%)
 **File:** [docs/prd/epic-1-foundation-theming.md](docs/prd/epic-1-foundation-theming.md)
 
@@ -554,6 +616,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ---
 
 ### Epic 2: Product Catalog & Configuration ✅
+
 **Status:** COMPLETE (100%)
 **File:** [docs/prd/epic-2-product-catalog-config.md](docs/prd/epic-2-product-catalog-config.md)
 
@@ -565,10 +628,12 @@ Located in: `/root/websites/gangrunprinting/.env`
 ---
 
 ### Epic 3: Core Commerce & Checkout ⚠️
+
 **Status:** IN PROGRESS (80%)
 **File:** [docs/prd/epic-3-commerce-checkout.md](docs/prd/epic-3-commerce-checkout.md)
 
 **Completed:**
+
 - ✅ Shopping cart
 - ✅ Checkout flow
 - ✅ Square payments
@@ -576,16 +641,19 @@ Located in: `/root/websites/gangrunprinting/.env`
 - ✅ Order creation
 
 **Remaining:**
+
 - ❌ CashApp integration
 - ❌ PayPal integration
 
 ---
 
 ### Epic 4: Customer Account Management ⚠️
+
 **Status:** IN PROGRESS (80% - CRITICAL BLOCKER)
 **File:** [docs/prd/epic-4-customer-account-mgmt.md](docs/prd/epic-4-customer-account-mgmt.md)
 
 **Completed:**
+
 - ✅ Story 4.1: Account layout
 - ✅ Story 4.2: Dashboard
 - ✅ Story 4.4: Order detail view
@@ -595,16 +663,19 @@ Located in: `/root/websites/gangrunprinting/.env`
 - ✅ Story 4.9: Downloads
 
 **Remaining:**
+
 - ❌ **Story 4.3: Order History** (CRITICAL BLOCKER)
 - ❌ Story 4.5: Re-order functionality
 
 ---
 
 ### Epic 5: Admin Order & User Management ⚠️
+
 **Status:** IN PROGRESS (90%)
 **File:** [docs/prd/epic-5-admin-order-user-mgmt.md](docs/prd/epic-5-admin-order-user-mgmt.md)
 
 **Completed (7 of 8 stories):**
+
 - ✅ Story 5.1: Admin layout
 - ✅ Story 5.2: Admin dashboard
 - ✅ Story 5.3: Order list & filtering
@@ -614,19 +685,23 @@ Located in: `/root/websites/gangrunprinting/.env`
 - ✅ Story 5.8: Order processing system (NEW - Oct 2, 2025)
 
 **Remaining:**
+
 - ❌ Story 5.7: Broker discount management UI
 
 ---
 
 ### Epic 6: Marketing & CRM Platform ❌
+
 **Status:** MINIMAL (25%)
 **File:** [docs/prd/epic-6-marketing-crm-platform.md](docs/prd/epic-6-marketing-crm-platform.md)
 
 **Completed:**
+
 - ⚠️ Basic structure (routes only)
 - ⚠️ UI skeletons (no functionality)
 
 **Remaining (ALL):**
+
 - ❌ CRM/Contacts hub
 - ❌ Email builder (drag-and-drop)
 - ❌ Email campaigns
@@ -642,6 +717,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ### Critical (BLOCKING)
 
 #### 1. Customer Order History Not Implemented
+
 **Issue:** Story 4.3 - Customers cannot view their orders
 **File:** [src/app/account/orders/page.tsx](src/app/account/orders/page.tsx)
 **Status:** ❌ CRITICAL - Blocks customer launch
@@ -649,16 +725,19 @@ Located in: `/root/websites/gangrunprinting/.env`
 **BMAD Agent:** `/BMad:agents:dev`
 
 **Problem:**
+
 - Page exists but shows hardcoded "You haven't placed any orders yet"
 - No database query implemented
 - No filtering, search, or pagination
 
 **Impact:**
+
 - Customers cannot see their order history
 - Breaks customer experience
 - Must fix before customer launch
 
 **Solution:**
+
 - Implement full order history page per Story 4.3
 - See [docs/stories/story-4.3-customer-order-history.md](docs/stories/story-4.3-customer-order-history.md)
 
@@ -667,6 +746,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ### Non-Critical (Can Launch Without)
 
 #### 2. Re-Order Functionality Missing
+
 **Issue:** Story 4.5 - No re-order button
 **Status:** ⚠️ MEDIUM priority
 **Assigned:** Unassigned
@@ -677,6 +757,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ---
 
 #### 3. Broker Discount Management UI Missing
+
 **Issue:** Story 5.7 - Admin cannot manage broker discounts via UI
 **Status:** ⚠️ MEDIUM priority
 **Assigned:** Unassigned
@@ -687,6 +768,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ---
 
 #### 4. CashApp/PayPal Integration Missing
+
 **Issue:** Epic 3 - Only Square payment available
 **Status:** ⚠️ MEDIUM priority
 **Assigned:** Unassigned
@@ -697,6 +779,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ---
 
 #### 5. Marketing/CRM Suite Incomplete
+
 **Issue:** Epic 6 - Only 25% complete
 **Status:** ⚠️ LOW priority
 **Assigned:** Unassigned
@@ -709,6 +792,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ## 📁 CODE STRUCTURE
 
 ### Directory Layout
+
 ```
 /root/websites/gangrunprinting/
 ├── src/
@@ -773,6 +857,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 ### Key Models (80+ total)
 
 #### User Management
+
 - `User` - Customer/admin accounts
   - `id`, `email`, `name`, `role` (ADMIN/USER/CUSTOMER)
   - `isBroker` (boolean) - Identifies broker customers
@@ -781,6 +866,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 - `Account` - OAuth accounts
 
 #### Product Catalog
+
 - `ProductCategory` - Product categories
 - `Product` - Products with modular architecture
 - `ProductQuantityGroup` - Quantity tiers
@@ -791,6 +877,7 @@ Located in: `/root/websites/gangrunprinting/.env`
 - `TurnaroundTime` - Delivery options
 
 #### Orders
+
 - `Order` - Customer orders
   - 13 order statuses (PENDING_PAYMENT, CONFIRMATION, PRODUCTION, etc.)
   - 18 tracking fields (filesApprovedAt, vendorNotifiedAt, rushOrder, etc.)
@@ -801,16 +888,19 @@ Located in: `/root/websites/gangrunprinting/.env`
 - `StatusHistory` - Order status changes (toStatus, fromStatus)
 
 #### Shopping Cart
+
 - `Cart` - Customer shopping carts
 - `CartItem` - Cart line items
 
 #### Vendors
+
 - `Vendor` - Print shop vendors
 - `VendorProduct` - Vendor-product relationships
 
 ### Database Access Patterns
 
 **✅ CORRECT - Server Components:**
+
 ```typescript
 // app/account/orders/page.tsx (NEEDS TO BE IMPLEMENTED)
 import { prisma } from '@/lib/prisma'
@@ -834,6 +924,7 @@ export default async function OrdersPage() {
 ```
 
 **❌ WRONG - Client Components:**
+
 ```typescript
 // Don't do this!
 'use client'
@@ -853,6 +944,7 @@ export default function OrdersPage() {
 ## 🔌 API ENDPOINTS
 
 ### Order Management
+
 - `GET /api/orders` - List orders (admin)
 - `GET /api/orders/[id]` - Get order details
 - `POST /api/orders` - Create order
@@ -862,21 +954,25 @@ export default function OrdersPage() {
 - `POST /api/orders/[id]/notify-vendor` - Notify vendor
 
 ### Products
+
 - `GET /api/products` - List products
 - `GET /api/products/[id]` - Get product details
 - `GET /api/products/[id]/configuration` - Get product configuration
 - `POST /api/products/[id]/calculate-price` - Calculate price
 
 ### Checkout
+
 - `POST /api/checkout/create-payment` - Create Square payment
 - `POST /api/checkout/confirm` - Confirm order
 
 ### Shipping
+
 - `POST /api/shipping/calculate` - Calculate shipping rates
 - `POST /api/shipping/label` - Create shipping label
 - `GET /api/shipping/track/[tracking]` - Track shipment
 
 ### Authentication
+
 - `POST /api/auth/signin` - Sign in
 - `POST /api/auth/signout` - Sign out
 - `GET /api/auth/verify` - Verify magic link
@@ -888,15 +984,18 @@ export default function OrdersPage() {
 ### Manual Testing Checklist
 
 #### Customer Order History (Story 4.3)
+
 After implementing, test:
 
 1. **Login as Customer**
+
    ```
    Email: (create test customer)
    Password: (set password)
    ```
 
 2. **Navigate to Order History**
+
    ```
    URL: http://gangrunprinting.com/account/orders
    ```
@@ -958,6 +1057,7 @@ After implementing, test:
 ### Automated Testing
 
 **Unit Tests:**
+
 ```typescript
 // tests/orders/page.test.tsx
 describe('OrdersPage', () => {
@@ -976,6 +1076,7 @@ describe('OrdersPage', () => {
 ```
 
 **Integration Tests:**
+
 ```typescript
 // tests/api/orders.test.ts
 describe('Orders API', () => {
@@ -992,9 +1093,11 @@ describe('Orders API', () => {
 ### Common Issues
 
 #### 1. Application Not Starting
+
 **Symptoms:** PM2 shows "error" status
 
 **Troubleshooting:**
+
 ```bash
 # Check logs
 pm2 logs gangrunprinting --lines 100
@@ -1019,9 +1122,11 @@ pm2 restart gangrunprinting
 ---
 
 #### 2. Database Connection Issues
+
 **Symptoms:** "Can't reach database server"
 
 **Troubleshooting:**
+
 ```bash
 # Test database connection
 PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
@@ -1039,9 +1144,11 @@ ping 172.22.0.1
 ---
 
 #### 3. Build Failures
+
 **Symptoms:** "npm run build" fails
 
 **Troubleshooting:**
+
 ```bash
 # Clear Next.js cache
 rm -rf .next
@@ -1066,9 +1173,11 @@ npm run build
 ---
 
 #### 4. PM2 Memory Issues
+
 **Symptoms:** Application crashes frequently
 
 **Troubleshooting:**
+
 ```bash
 # Check memory usage
 pm2 show gangrunprinting
@@ -1088,9 +1197,11 @@ pm2 save
 ---
 
 #### 5. Upload Errors (ERR_CONNECTION_CLOSED)
+
 **Symptoms:** File uploads fail immediately
 
 **Troubleshooting:**
+
 ```bash
 # Check PM2 memory configuration
 pm2 show gangrunprinting | grep max_memory
@@ -1112,15 +1223,18 @@ node test-upload.js
 ---
 
 #### 6. Order History Page Showing "No Orders"
+
 **Symptoms:** Customer has orders but page shows "no orders"
 
 **This is the CURRENT ISSUE - Story 4.3 needs implementation**
 
 **Temporary Workaround:**
+
 - Check order detail page directly: `/account/orders/[orderId]`
 - Use admin dashboard to view customer orders
 
 **Permanent Fix:**
+
 - Implement Story 4.3 as documented above
 
 ---
@@ -1130,25 +1244,33 @@ node test-upload.js
 ### Getting Help
 
 #### For Development Questions
+
 **BMAD Agent:** `/BMad:agents:dev`
+
 ```
 Ask: "How do I implement [feature]?"
 ```
 
 #### For Testing Questions
+
 **BMAD Agent:** `/BMad:agents:qa`
+
 ```
 Ask: "How do I test [feature]?"
 ```
 
 #### For Architecture Questions
+
 **BMAD Agent:** `/BMad:agents:architect`
+
 ```
 Ask: "What's the best way to design [system]?"
 ```
 
 #### For Business Questions
+
 **BMAD Agent:** `/BMad:agents:po`
+
 ```
 Ask: "What are the requirements for [feature]?"
 ```
@@ -1247,12 +1369,14 @@ Ask: "What are the requirements for [feature]?"
 ### Key Metrics to Track
 
 **Performance:**
+
 - Page load time (<2 seconds)
 - API response time (<150ms)
 - Database query time (<85ms)
 - Build time (<2 minutes)
 
 **Usage:**
+
 - Orders per day
 - Customer registrations
 - Product views
@@ -1260,6 +1384,7 @@ Ask: "What are the requirements for [feature]?"
 - Checkout completion rate
 
 **Errors:**
+
 - Application errors (0 critical)
 - Payment failures (<1%)
 - Email delivery failures (<0.1%)
@@ -1285,37 +1410,44 @@ curl http://localhost:3002/api/health/payments
 ### Standard Deployment Process
 
 1. **Pull Latest Code**
+
    ```bash
    cd /root/websites/gangrunprinting
    git pull origin main
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Run Migrations** (if needed)
+
    ```bash
    npx prisma migrate deploy
    ```
 
 4. **Generate Prisma Client**
+
    ```bash
    npx prisma generate
    ```
 
 5. **Build Application**
+
    ```bash
    npm run build
    ```
 
 6. **Restart PM2**
+
    ```bash
    pm2 restart gangrunprinting
    ```
 
 7. **Verify Deployment**
+
    ```bash
    pm2 logs gangrunprinting --lines 50
    curl http://localhost:3002
@@ -1331,6 +1463,7 @@ curl http://localhost:3002/api/health/payments
 ## 🎓 LEARNING RESOURCES
 
 ### Documentation
+
 - **Next.js 15:** https://nextjs.org/docs
 - **Prisma:** https://www.prisma.io/docs
 - **Lucia Auth:** https://lucia-auth.com
@@ -1338,12 +1471,14 @@ curl http://localhost:3002/api/health/payments
 - **shadcn/ui:** https://ui.shadcn.com
 
 ### Internal Docs
+
 - [CLAUDE.md](CLAUDE.md) - Business model & AI instructions
 - [docs/prd/](docs/prd/) - Product requirements
 - [docs/stories/](docs/stories/) - Story documentation
 - [docs/architecture/](docs/architecture/) - Architecture decisions
 
 ### BMAD Method
+
 - Epic-driven development
 - Agent-based task assignment
 - Story-based implementation
@@ -1354,6 +1489,7 @@ curl http://localhost:3002/api/health/payments
 ## 📋 FINAL NOTES
 
 ### Remember
+
 - ✅ Use BMAD agents for all tasks
 - ✅ Follow server component pattern for data fetching
 - ✅ Always use `validateRequest()` for authentication
@@ -1364,6 +1500,7 @@ curl http://localhost:3002/api/health/payments
 - ✅ Follow existing code patterns
 
 ### Priority Order
+
 1. **CRITICAL:** Fix Story 4.3 (customer order history) - 12-16 hours
 2. **MEDIUM:** Implement Story 4.5 (re-order) - 6-8 hours
 3. **MEDIUM:** Implement Story 5.7 (broker discount UI) - 8-10 hours
@@ -1371,6 +1508,7 @@ curl http://localhost:3002/api/health/payments
 5. **LOW:** Build Marketing/CRM suite - 120-150 hours
 
 ### Contact
+
 - **Owner:** Ira Watkins
 - **Email:** iradwatkins@gmail.com
 - **GitHub:** https://github.com/iradwatkins

@@ -2,6 +2,33 @@
  * Product type definitions for Gang Run Printing
  */
 
+/**
+ * Prisma ProductImage structure with nested Image relation
+ * Used when querying products with included Image data
+ */
+export interface PrismaProductImage {
+  id: string
+  productId: string
+  imageId: string
+  isPrimary: boolean
+  sortOrder: number
+  /** Nested Image relation from Prisma query */
+  Image?: {
+    id: string
+    url: string
+    thumbnailUrl?: string
+    largeUrl?: string
+    mediumUrl?: string
+    webpUrl?: string
+    blurDataUrl?: string
+    alt?: string
+    width?: number
+    height?: number
+    fileSize?: number
+    mimeType?: string
+  }
+}
+
 export interface ProductCategory {
   id: string
   name: string

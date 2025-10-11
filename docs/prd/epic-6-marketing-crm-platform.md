@@ -1,6 +1,7 @@
 # Epic 6: Integrated Marketing & CRM Platform
 
 ## Epic Status
+
 **STATUS: ❌ MINIMAL PROGRESS (25% Complete)**
 **Started:** 2025-09-15
 **Target Completion:** 2025-10-20 (15 days remaining)
@@ -9,6 +10,7 @@
 ---
 
 ## Epic Goal
+
 Build a comprehensive marketing suite including a central CRM/Contacts hub, visual email builder, email broadcast functionality, rule-based automation engine, and detailed analytics to drive customer engagement and retention.
 
 ---
@@ -16,9 +18,11 @@ Build a comprehensive marketing suite including a central CRM/Contacts hub, visu
 ## Epic Description
 
 ### User Goal
+
 **As an Administrator**, I want to manage my customer list, create professional marketing emails, send targeted campaigns, automate marketing workflows, and track performance, so that I can drive sales and engagement without relying on external marketing platforms.
 
 ### Business Value
+
 - **Revenue Growth:** Targeted campaigns increase repeat purchases
 - **Customer Retention:** Automated engagement reduces churn
 - **Cost Savings:** Eliminates need for external email marketing services ($99-299/month)
@@ -26,7 +30,9 @@ Build a comprehensive marketing suite including a central CRM/Contacts hub, visu
 - **Competitive Advantage:** Integrated platform reduces tool fragmentation
 
 ### Technical Summary
+
 This epic represents the most complex and feature-rich component:
+
 - **CRM/Contacts:** Central hub for customer management with tagging and segmentation
 - **Email Builder:** Drag-and-drop visual email editor with responsive templates
 - **Email Broadcasts:** One-time campaign creation and scheduling
@@ -48,6 +54,7 @@ This epic represents the most complex and feature-rich component:
 ### ✅ Completed Components (25%)
 
 #### 1. **Marketing Section Structure**
+
 - Marketing navigation in admin (`/admin/marketing`)
 - Route structure established:
   - `/admin/marketing/campaigns`
@@ -60,6 +67,7 @@ This epic represents the most complex and feature-rich component:
 - UI framework in place
 
 #### 2. **Email Builder Skeleton** (10%)
+
 - Email builder page exists
 - Basic EmailBuilder component structure
 - Template loading framework
@@ -70,6 +78,7 @@ This epic represents the most complex and feature-rich component:
 - **Missing:** Send functionality
 
 #### 3. **Campaigns List Skeleton** (10%)
+
 - Campaigns list page exists
 - Table structure for campaign display
 - Filter/search UI scaffolding
@@ -79,6 +88,7 @@ This epic represents the most complex and feature-rich component:
 - **Missing:** Campaign management
 
 #### 4. **Basic UI Components** (5%)
+
 - React components for marketing pages
 - Shadcn/UI integration
 - Layout consistency with admin
@@ -89,7 +99,9 @@ This epic represents the most complex and feature-rich component:
 ### ❌ Not Started Components (75%)
 
 #### 1. **CRM/Contacts Hub** (0%)
+
 **Requirements:**
+
 - Central contacts database
 - Contact profiles with detailed information:
   - Personal info (name, email, phone, company)
@@ -121,6 +133,7 @@ This epic represents the most complex and feature-rich component:
   - Segment size tracking
 
 **Database Models Needed:**
+
 ```prisma
 model Contact {
   id              String
@@ -159,10 +172,12 @@ model Segment {
 ---
 
 #### 2. **Email Builder - Complete Implementation** (10% → 100%)
+
 **Current State:** Skeleton only
 **Required Features:**
 
 **Drag-and-Drop Editor:**
+
 - Block-based email construction
 - Pre-built blocks:
   - Text
@@ -180,6 +195,7 @@ model Segment {
 - Mobile responsive preview
 
 **Template System:**
+
 - Pre-designed templates:
   - Welcome email
   - Newsletter
@@ -201,6 +217,7 @@ model Segment {
   - Custom variables
 
 **Editor Features:**
+
 - Visual editing mode
 - HTML code mode toggle
 - Preview mode (desktop/mobile)
@@ -212,6 +229,7 @@ model Segment {
 - Auto-save drafts
 
 **Brand Customization:**
+
 - Logo upload
 - Brand colors
 - Font selection
@@ -222,10 +240,12 @@ model Segment {
 ---
 
 #### 3. **Email Broadcasts/Campaigns** (10% → 100%)
+
 **Current State:** UI skeleton only
 **Required Features:**
 
 **Campaign Creation:**
+
 - Campaign wizard:
   - Step 1: Campaign details (name, subject, from)
   - Step 2: Audience selection (segments, contacts)
@@ -241,6 +261,7 @@ model Segment {
   - Time zone optimization
 
 **Campaign Management:**
+
 - Campaign list with filters:
   - Draft
   - Scheduled
@@ -257,6 +278,7 @@ model Segment {
 - Test sending
 
 **Sending Infrastructure:**
+
 - Email queue system
 - Batch sending (rate limiting)
 - Retry failed sends
@@ -267,9 +289,11 @@ model Segment {
 ---
 
 #### 4. **Automation Engine** (0%)
+
 **Requirements:**
 
 **Workflow Builder:**
+
 - Visual workflow designer
 - Trigger types:
   - Customer signs up
@@ -297,6 +321,7 @@ model Segment {
   - Goal tracking
 
 **Automation Templates:**
+
 - Welcome series (3-5 emails)
 - Abandoned cart recovery
 - Post-purchase follow-up
@@ -306,6 +331,7 @@ model Segment {
 - Win-back campaign
 
 **Automation Management:**
+
 - Automation list
 - Enable/disable automations
 - Test automations
@@ -314,6 +340,7 @@ model Segment {
 - Duplicate automation
 
 **Database Models Needed:**
+
 ```prisma
 model Automation {
   id          String
@@ -340,9 +367,11 @@ model AutomationRun {
 ---
 
 #### 5. **Analytics & Reporting** (0%)
+
 **Requirements:**
 
 **Campaign Analytics:**
+
 - Per-campaign metrics:
   - Sent count
   - Delivery rate
@@ -356,6 +385,7 @@ model AutomationRun {
 - Best performing campaigns
 
 **Email Performance:**
+
 - Overall email metrics
 - Engagement trends
 - Device/client breakdown
@@ -363,6 +393,7 @@ model AutomationRun {
 - Time-of-day analysis
 
 **Contact Insights:**
+
 - Most engaged contacts
 - Inactive contacts
 - Segmentation performance
@@ -370,6 +401,7 @@ model AutomationRun {
 - Engagement score
 
 **Automation Analytics:**
+
 - Automation performance
 - Completion rates
 - Drop-off points
@@ -377,6 +409,7 @@ model AutomationRun {
 - Revenue attribution
 
 **Database Models Needed:**
+
 ```prisma
 model CampaignStats {
   id              String
@@ -403,9 +436,11 @@ model EmailEvent {
 ---
 
 #### 6. **Email Service Integration** (0%)
+
 **Requirements:**
 
 **Resend Integration:**
+
 - Configure Resend API
 - Domain verification
 - SPF/DKIM setup
@@ -420,6 +455,7 @@ model EmailEvent {
 - Bounce management
 
 **Email Deliverability:**
+
 - Spam score checking
 - List hygiene
 - Suppression list
@@ -432,6 +468,7 @@ model EmailEvent {
 ## User Stories
 
 ### Story 6.1: CRM/Contacts Hub ❌
+
 **Status:** NOT STARTED
 **Priority:** CRITICAL
 **Estimated Effort:** 40 hours
@@ -439,6 +476,7 @@ model EmailEvent {
 **Description:** Build central CRM hub for managing all customer contacts with profiles, tagging, and segmentation.
 
 **Acceptance Criteria:**
+
 - ❌ Contacts page at `/admin/marketing/contacts`
 - ❌ Contact list with search/filter
 - ❌ Contact detail page with full profile
@@ -455,6 +493,7 @@ model EmailEvent {
 ---
 
 ### Story 6.2: Email Builder - Full Implementation ⚠️
+
 **Status:** SKELETON EXISTS (10% complete)
 **Priority:** CRITICAL
 **Estimated Effort:** 50 hours
@@ -462,6 +501,7 @@ model EmailEvent {
 **Description:** Complete the email builder with full drag-and-drop functionality, templates, and preview.
 
 **Acceptance Criteria:**
+
 - ⚠️ Email builder page exists (skeleton)
 - ❌ Drag-and-drop block system
 - ❌ Pre-built email blocks
@@ -477,6 +517,7 @@ model EmailEvent {
 ---
 
 ### Story 6.3: Campaign Management System ⚠️
+
 **Status:** SKELETON EXISTS (10% complete)
 **Priority:** HIGH
 **Estimated Effort:** 35 hours
@@ -484,6 +525,7 @@ model EmailEvent {
 **Description:** Build complete campaign creation, management, and sending system.
 
 **Acceptance Criteria:**
+
 - ⚠️ Campaign list page exists (skeleton)
 - ❌ Campaign creation wizard
 - ❌ Audience selection (segments/contacts)
@@ -499,6 +541,7 @@ model EmailEvent {
 ---
 
 ### Story 6.4: Automation Workflow Engine ❌
+
 **Status:** NOT STARTED
 **Priority:** HIGH
 **Estimated Effort:** 60 hours
@@ -506,6 +549,7 @@ model EmailEvent {
 **Description:** Build visual automation builder with triggers, actions, and conditions.
 
 **Acceptance Criteria:**
+
 - ❌ Automation list at `/admin/marketing/automation`
 - ❌ Visual workflow builder
 - ❌ Trigger configuration
@@ -520,6 +564,7 @@ model EmailEvent {
 ---
 
 ### Story 6.5: Email Analytics & Reporting ⚠️
+
 **Status:** SKELETON EXISTS (5% complete)
 **Priority:** MEDIUM
 **Estimated Effort:** 25 hours
@@ -527,6 +572,7 @@ model EmailEvent {
 **Description:** Build comprehensive analytics dashboard for email and automation performance.
 
 **Acceptance Criteria:**
+
 - ⚠️ Analytics page exists (skeleton)
 - ❌ Campaign performance metrics
 - ❌ Email engagement charts
@@ -540,6 +586,7 @@ model EmailEvent {
 ---
 
 ### Story 6.6: Email Service Integration ❌
+
 **Status:** NOT STARTED
 **Priority:** CRITICAL (BLOCKING)
 **Estimated Effort:** 20 hours
@@ -547,6 +594,7 @@ model EmailEvent {
 **Description:** Integrate Resend email service with webhook handling and deliverability management.
 
 **Acceptance Criteria:**
+
 - ❌ Resend API integration
 - ❌ Domain verification
 - ❌ Webhook configuration
@@ -560,6 +608,7 @@ model EmailEvent {
 ---
 
 ### Story 6.7: Segmentation Engine ❌
+
 **Status:** NOT STARTED
 **Priority:** HIGH
 **Estimated Effort:** 30 hours
@@ -567,6 +616,7 @@ model EmailEvent {
 **Description:** Build dynamic and static segmentation with rule-based criteria.
 
 **Acceptance Criteria:**
+
 - ❌ Segment list at `/admin/marketing/segments`
 - ❌ Segment creation wizard
 - ❌ Rule builder interface
@@ -580,6 +630,7 @@ model EmailEvent {
 ---
 
 ### Story 6.8: Contact Activity Tracking ❌
+
 **Status:** NOT STARTED
 **Priority:** MEDIUM
 **Estimated Effort:** 15 hours
@@ -587,6 +638,7 @@ model EmailEvent {
 **Description:** Track and display all contact activities and interactions.
 
 **Acceptance Criteria:**
+
 - ❌ Activity timeline component
 - ❌ Track email opens
 - ❌ Track email clicks
@@ -601,6 +653,7 @@ model EmailEvent {
 ## Technical Architecture
 
 ### Required Database Schema
+
 ```prisma
 // Contacts & CRM
 model Contact
@@ -626,6 +679,7 @@ model ContactEngagement
 ```
 
 ### Email Sending Flow
+
 ```
 Campaign Created
   ↓
@@ -647,6 +701,7 @@ Update Analytics
 ```
 
 ### Automation Flow
+
 ```
 Trigger Event Occurs
   ↓
@@ -670,6 +725,7 @@ Update Analytics
 ## API Endpoints (All Need Building)
 
 ### CRM/Contacts
+
 - `GET /api/marketing/contacts` ❌
 - `POST /api/marketing/contacts` ❌
 - `GET /api/marketing/contacts/[id]` ❌
@@ -679,11 +735,13 @@ Update Analytics
 - `POST /api/marketing/contacts/[id]/tags` ❌
 
 ### Segments
+
 - `GET /api/marketing/segments` ❌
 - `POST /api/marketing/segments` ❌
 - `GET /api/marketing/segments/[id]/contacts` ❌
 
 ### Campaigns
+
 - `GET /api/marketing/campaigns` ❌
 - `POST /api/marketing/campaigns` ❌
 - `PUT /api/marketing/campaigns/[id]` ❌
@@ -691,17 +749,20 @@ Update Analytics
 - `POST /api/marketing/campaigns/[id]/test` ❌
 
 ### Automations
+
 - `GET /api/marketing/automations` ❌
 - `POST /api/marketing/automations` ❌
 - `PUT /api/marketing/automations/[id]` ❌
 - `PUT /api/marketing/automations/[id]/toggle` ❌
 
 ### Analytics
+
 - `GET /api/marketing/analytics/campaigns` ❌
 - `GET /api/marketing/analytics/contacts` ❌
 - `GET /api/marketing/analytics/automations` ❌
 
 ### Webhooks
+
 - `POST /api/webhooks/resend` ❌
 
 ---
@@ -709,14 +770,17 @@ Update Analytics
 ## Dependencies
 
 ### Internal
+
 - Epic 1: Foundation (database, auth)
 - Epic 5: Admin (customer data integration)
 
 ### External Services
+
 - **Resend** (email sending) - CRITICAL
 - **React Email** (email templates) - NICE TO HAVE
 
 ### Libraries
+
 - React DnD or similar (drag-and-drop)
 - Chart library (analytics)
 - Date picker (scheduling)
@@ -727,19 +791,23 @@ Update Analytics
 ## Remaining Work Breakdown
 
 ### Phase 1: Foundation (Week 1) - 50 hours
+
 1. **CRM Database Models** - 8 hours
 2. **Email Service Integration** - 20 hours ⚠️ BLOCKING
 3. **Contact Management** - 22 hours
 
 ### Phase 2: Email System (Week 2) - 85 hours
+
 4. **Email Builder Complete** - 50 hours
 5. **Campaign System** - 35 hours
 
 ### Phase 3: Automation (Week 3) - 75 hours
+
 6. **Segmentation Engine** - 30 hours
 7. **Automation Builder** - 45 hours
 
 ### Phase 4: Analytics & Polish (Week 4) - 40 hours
+
 8. **Analytics Dashboard** - 25 hours
 9. **Activity Tracking** - 15 hours
 
@@ -749,19 +817,20 @@ Update Analytics
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation | Status |
-|------|--------|------------|------------|--------|
-| Email deliverability issues | CRITICAL | MEDIUM | Proper SPF/DKIM, list hygiene | 📋 Planned |
-| Resend API rate limits | HIGH | MEDIUM | Queue system, batch sending | 📋 Planned |
-| Complex automation logic | HIGH | HIGH | Start simple, iterate | 📋 Planned |
-| Database performance with large contact lists | MEDIUM | MEDIUM | Indexing, pagination | 📋 Planned |
-| Email builder complexity | HIGH | HIGH | Use proven library/framework | 📋 Planned |
+| Risk                                          | Impact   | Likelihood | Mitigation                    | Status     |
+| --------------------------------------------- | -------- | ---------- | ----------------------------- | ---------- |
+| Email deliverability issues                   | CRITICAL | MEDIUM     | Proper SPF/DKIM, list hygiene | 📋 Planned |
+| Resend API rate limits                        | HIGH     | MEDIUM     | Queue system, batch sending   | 📋 Planned |
+| Complex automation logic                      | HIGH     | HIGH       | Start simple, iterate         | 📋 Planned |
+| Database performance with large contact lists | MEDIUM   | MEDIUM     | Indexing, pagination          | 📋 Planned |
+| Email builder complexity                      | HIGH     | HIGH       | Use proven library/framework  | 📋 Planned |
 
 ---
 
 ## Success Metrics
 
 ### Current Achievement
+
 - [x] Marketing section structure: 100%
 - [~] Email builder: 10%
 - [~] Campaign management: 10%
@@ -774,6 +843,7 @@ Update Analytics
 **Overall Completion:** 25%
 
 ### Target Metrics (When Complete)
+
 - Email deliverability: > 95%
 - Email open rate: > 20%
 - Email click rate: > 3%
@@ -786,6 +856,7 @@ Update Analytics
 ## Testing Requirements
 
 ### 📋 All Testing Needed
+
 - Email sending tests
 - Email template rendering tests
 - Automation workflow tests
@@ -800,18 +871,18 @@ Update Analytics
 
 ## Documentation References
 
-- [Email Marketing Best Practices](/docs/email-marketing-guide.md) *(To be created)*
-- [Automation Workflow Guide](/docs/automation-guide.md) *(To be created)*
-- [CRM User Manual](/docs/crm-manual.md) *(To be created)*
+- [Email Marketing Best Practices](/docs/email-marketing-guide.md) _(To be created)_
+- [Automation Workflow Guide](/docs/automation-guide.md) _(To be created)_
+- [CRM User Manual](/docs/crm-manual.md) _(To be created)_
 
 ---
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-09-15 | 0.1 | Marketing section structure created | Development Team |
-| 2025-09-30 | 1.0 | Sharded from monolithic PRD, detailed planning | BMAD Agent |
+| Date       | Version | Description                                    | Author           |
+| ---------- | ------- | ---------------------------------------------- | ---------------- |
+| 2025-09-15 | 0.1     | Marketing section structure created            | Development Team |
+| 2025-09-30 | 1.0     | Sharded from monolithic PRD, detailed planning | BMAD Agent       |
 
 ---
 
@@ -826,6 +897,7 @@ Update Analytics
 **This epic represents 250 hours of remaining work (6 weeks full-time)**
 
 **Recommended Approach:**
+
 1. **Phase 1 (Week 1):** Email integration + basic contacts ← START HERE
 2. **Phase 2 (Week 2-3):** Complete email builder + campaigns
 3. **Phase 3 (Week 4-5):** Segmentation + automation

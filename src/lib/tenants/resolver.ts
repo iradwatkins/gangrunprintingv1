@@ -168,7 +168,7 @@ export async function getCurrentTenant(): Promise<TenantContext | null> {
 }
 
 // Clear tenant cache (useful for development)
-export function clearTenantCache() : unknown {
+export function clearTenantCache(): unknown {
   tenantCache.clear()
 }
 

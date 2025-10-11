@@ -31,10 +31,7 @@
       "endpoint": "Auth - Session Check",
       "status": "FAIL",
       "httpStatus": 404,
-      "expected": [
-        200,
-        401
-      ],
+      "expected": [200, 401],
       "responseTime": 89,
       "error": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, user-scalable=yes\"/><link rel=\"styl"
     },

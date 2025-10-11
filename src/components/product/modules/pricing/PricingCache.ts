@@ -33,7 +33,7 @@ export function generatePricingCacheKey(
       contribution.multiplier || 1,
       contribution.addonCost || 0,
       contribution.perUnitCost || 0,
-      contribution.percentageCost || 0
+      contribution.percentageCost || 0,
     ].join(':')
 
     keyParts.push(moduleKey)
@@ -97,7 +97,7 @@ export class PricingCacheManager {
     totalRequests: 0,
     cacheHits: 0,
     cacheMisses: 0,
-    calculationTimes: [] as number[]
+    calculationTimes: [] as number[],
   }
 
   // Cache configuration
@@ -105,11 +105,13 @@ export class PricingCacheManager {
   private readonly maxAge: number // milliseconds
   private readonly cleanupInterval: number
 
-  constructor(options: {
-    maxCacheSize?: number
-    maxAge?: number
-    cleanupInterval?: number
-  } = {}) {
+  constructor(
+    options: {
+      maxCacheSize?: number
+      maxAge?: number
+      cleanupInterval?: number
+    } = {}
+  ) {
     this.maxCacheSize = options.maxCacheSize || 1000
     this.maxAge = options.maxAge || 5 * 60 * 1000 // 5 minutes
     this.cleanupInterval = options.cleanupInterval || 60 * 1000 // 1 minute
@@ -156,7 +158,7 @@ export class PricingCacheManager {
     this.pricingCache.set(cacheKey, {
       context: { ...context }, // Deep copy to prevent mutations
       timestamp: Date.now(),
-      hitCount: 0
+      hitCount: 0,
     })
   }
 
@@ -189,7 +191,7 @@ export class PricingCacheManager {
     this.contextCache.set(cacheKey, {
       context: { ...context },
       timestamp: Date.now(),
-      hitCount: 0
+      hitCount: 0,
     })
   }
 
@@ -209,20 +211,21 @@ export class PricingCacheManager {
    * Get performance statistics
    */
   getStats(): PricingCacheStats {
-    const avgTime = this.stats.calculationTimes.length > 0
-      ? this.stats.calculationTimes.reduce((a, b) => a + b, 0) / this.stats.calculationTimes.length
-      : 0
+    const avgTime =
+      this.stats.calculationTimes.length > 0
+        ? this.stats.calculationTimes.reduce((a, b) => a + b, 0) /
+          this.stats.calculationTimes.length
+        : 0
 
     return {
       totalRequests: this.stats.totalRequests,
       cacheHits: this.stats.cacheHits,
       cacheMisses: this.stats.cacheMisses,
-      hitRate: this.stats.totalRequests > 0
-        ? (this.stats.cacheHits / this.stats.totalRequests) * 100
-        : 0,
+      hitRate:
+        this.stats.totalRequests > 0 ? (this.stats.cacheHits / this.stats.totalRequests) * 100 : 0,
       totalCachedResults: this.pricingCache.size,
       averageCalculationTime: avgTime,
-      cacheSize: this.pricingCache.size + this.contextCache.size
+      cacheSize: this.pricingCache.size + this.contextCache.size,
     }
   }
 
@@ -260,7 +263,11 @@ export class PricingCacheManager {
     this.clearModuleCache(moduleType)
 
     // Also clear dependent modules
-    if (moduleType === ModuleType.QUANTITY || moduleType === ModuleType.PAPER_STOCK || moduleType === ModuleType.SIZE) {
+    if (
+      moduleType === ModuleType.QUANTITY ||
+      moduleType === ModuleType.PAPER_STOCK ||
+      moduleType === ModuleType.SIZE
+    ) {
       // Base price changed - invalidate everything
       this.clearCache()
     } else if (moduleType === ModuleType.ADDONS) {
@@ -278,8 +285,10 @@ export class PricingCacheManager {
     let oldestTime = Infinity
 
     for (const [key, cached] of this.pricingCache.entries()) {
-      if (cached.hitCount < leastHitCount ||
-          (cached.hitCount === leastHitCount && cached.timestamp < oldestTime)) {
+      if (
+        cached.hitCount < leastHitCount ||
+        (cached.hitCount === leastHitCount && cached.timestamp < oldestTime)
+      ) {
         leastUsedKey = key
         leastHitCount = cached.hitCount
         oldestTime = cached.timestamp
@@ -300,8 +309,10 @@ export class PricingCacheManager {
     let oldestTime = Infinity
 
     for (const [key, cached] of this.contextCache.entries()) {
-      if (cached.hitCount < leastHitCount ||
-          (cached.hitCount === leastHitCount && cached.timestamp < oldestTime)) {
+      if (
+        cached.hitCount < leastHitCount ||
+        (cached.hitCount === leastHitCount && cached.timestamp < oldestTime)
+      ) {
         leastUsedKey = key
         leastHitCount = cached.hitCount
         oldestTime = cached.timestamp
@@ -367,17 +378,14 @@ export async function measureExecutionTime<T>(
 
   return {
     result,
-    timeMs: endTime - startTime
+    timeMs: endTime - startTime,
   }
 }
 
 /**
  * Debounce function for expensive calculations
  */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  delay: number
-): T {
+export function debounce<T extends (...args: any[]) => any>(func: T, delay: number): T {
   let timeoutId: NodeJS.Timeout | null = null
 
   return ((...args: Parameters<T>) => {
@@ -394,17 +402,14 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function for frequent calculations
  */
-export function throttle<T extends (...args: any[]) => any>(
-  func: T,
-  limit: number
-): T {
+export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
   let inThrottle: boolean
 
   return ((...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args)
       inThrottle = true
-      setTimeout(() => inThrottle = false, limit)
+      setTimeout(() => (inThrottle = false), limit)
     }
   }) as T
 }

@@ -71,7 +71,7 @@ export default function ProductsPage() {
       if (response.ok) {
         const result = await response.json()
         // Handle both {data: [...]} and direct array responses
-        const productsData = Array.isArray(result) ? result : (result.data || [])
+        const productsData = Array.isArray(result) ? result : result.data || []
         // Ensure it's always an array
         setProducts(Array.isArray(productsData) ? productsData : [])
       } else {
@@ -107,7 +107,9 @@ export default function ProductsPage() {
       }
     } catch (error) {
       console.error('[Admin] Delete error:', error)
-      toast.error('Failed to delete product: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      toast.error(
+        'Failed to delete product: ' + (error instanceof Error ? error.message : 'Unknown error')
+      )
     }
   }
 
@@ -234,7 +236,11 @@ export default function ProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter((p) => (p._count?.productImages || 0) > 0 || (p.ProductImages?.length || 0) > 0).length}
+              {
+                products.filter(
+                  (p) => (p._count?.productImages || 0) > 0 || (p.ProductImages?.length || 0) > 0
+                ).length
+              }
             </div>
             <p className="text-xs text-muted-foreground">Have product images</p>
           </CardContent>
@@ -280,9 +286,11 @@ export default function ProductsPage() {
                       <div className="flex items-center gap-3">
                         {(product.ProductImages?.length || 0) > 0 ? (
                           <img
-                            src={product.ProductImages[0].ThumbnailUrl || product.ProductImages[0].Url}
                             alt={product.ProductImages[0].AltText || product.Name}
                             className="w-10 h-10 rounded object-cover bg-gray-100"
+                            src={
+                              product.ProductImages[0].ThumbnailUrl || product.ProductImages[0].Url
+                            }
                             onError={(e) => {
                               e.currentTarget.src = '/images/product-placeholder.jpg'
                             }}
@@ -303,7 +311,10 @@ export default function ProductsPage() {
                     <TableCell>
                       <div className="flex flex-col gap-1">
                         <span className="text-sm">
-                          {product._count?.productPaperStocks || product.ProductPaperStocks?.length || 0} stocks
+                          {product._count?.productPaperStocks ||
+                            product.ProductPaperStocks?.length ||
+                            0}{' '}
+                          stocks
                         </span>
                         {product.ProductPaperStocks?.[0] && (
                           <span className="text-xs text-muted-foreground">

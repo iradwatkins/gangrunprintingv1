@@ -5,20 +5,17 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
     // Enable console logging
     page.on('console', (msg) => {
       if (msg.type() === 'log' || msg.type() === 'error') {
-
       }
     })
 
     // Track network requests
     page.on('request', (request) => {
       if (request.url().includes('/api/')) {
-
       }
     })
 
     page.on('response', (response) => {
       if (response.url().includes('/api/')) {
-
       }
     })
 
@@ -42,7 +39,6 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
     await page.waitForTimeout(2000)
 
     if (await verifyingText.isVisible()) {
-
       // Wait for auth to complete or redirect
       try {
         await page.waitForFunction(
@@ -56,9 +52,7 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
           },
           { timeout: 12000 }
         )
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
 
     // Check final state
@@ -79,7 +73,6 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
     }
 
     if (finalStates.hasSkeletons) {
-
       console.log('📊 Number of skeleton elements:', await skeletonElements.count())
 
       // Wait for skeletons to disappear or timeout
@@ -88,21 +81,15 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
           () => document.querySelectorAll('[class*="animate-pulse"]').length === 0,
           { timeout: 15000 }
         )
-
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
 
     if (finalStates.hasErrorAlert) {
-
       const errorTitle = await page.locator('[role="alert"] h5').textContent()
       const errorDescription = await page.locator('[role="alert"] div').first().textContent()
-
     }
 
     if (finalStates.hasForm) {
-
       // Verify form sections are present
       const formSections = {
         basicInfo: await page.locator('text=Basic Info & Images').isVisible(),
@@ -115,7 +102,6 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
 
       // Count dropdown/select elements
       const selectElements = await page.locator('select, [role="combobox"]').count()
-
     }
 
     // Take screenshot of final state
@@ -134,7 +120,6 @@ test.describe('Admin Products New Page Enhanced Tests', () => {
   })
 
   test('test direct API calls from browser context', async ({ page }) => {
-
     await page.goto('https://gangrunprinting.com/admin/products/new')
 
     // Test API calls using page.evaluate to run in browser context

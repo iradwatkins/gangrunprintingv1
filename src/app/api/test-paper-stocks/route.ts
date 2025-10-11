@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     // Return mock data in the format the frontend expects
     const mockData = [

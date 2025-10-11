@@ -5,8 +5,8 @@ async function addVariableDataAddOn() {
     // Check if Variable Data add-on already exists
     const existingAddOn = await prisma.addOn.findFirst({
       where: {
-        name: 'Variable Data Printing'
-      }
+        name: 'Variable Data Printing',
+      },
     })
 
     if (existingAddOn) {
@@ -15,7 +15,8 @@ async function addVariableDataAddOn() {
         where: { id: existingAddOn.id },
         data: {
           description: 'Personalized printing with unique names, numbers, or text on each piece',
-          tooltipText: 'Select this option if you need your order to have a unique name, number, or word on each card.',
+          tooltipText:
+            'Select this option if you need your order to have a unique name, number, or word on each card.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'variable_data',
@@ -28,33 +29,35 @@ async function addVariableDataAddOn() {
                 type: 'number',
                 min: 1,
                 max: 10,
-                helpText: 'Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.',
-                required: true
+                helpText:
+                  'Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.',
+                required: true,
               },
               locationsInput: {
                 label: 'Where are the locations for the variables?',
                 type: 'dynamic_text',
-                helpText: 'Enter the location(s) or word(s) that will be replaced with variable words.',
+                helpText:
+                  'Enter the location(s) or word(s) that will be replaced with variable words.',
                 placeholder: '[FirstName], [Number], [CustomText]',
-                required: true
-              }
+                required: true,
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           sortOrder: 13,
           isActive: true,
-          adminNotes: 'Variable data printing with conditional fields and dynamic pricing'
-        }
+          adminNotes: 'Variable data printing with conditional fields and dynamic pricing',
+        },
       })
-
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
         data: {
           name: 'Variable Data Printing',
           description: 'Personalized printing with unique names, numbers, or text on each piece',
-          tooltipText: 'Select this option if you need your order to have a unique name, number, or word on each card.',
+          tooltipText:
+            'Select this option if you need your order to have a unique name, number, or word on each card.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'variable_data',
@@ -67,27 +70,28 @@ async function addVariableDataAddOn() {
                 type: 'number',
                 min: 1,
                 max: 10,
-                helpText: 'Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.',
-                required: true
+                helpText:
+                  'Enter the number of variables you are going to have on each piece. If only a first name for example, this number should be 1.',
+                required: true,
               },
               locationsInput: {
                 label: 'Where are the locations for the variables?',
                 type: 'dynamic_text',
-                helpText: 'Enter the location(s) or word(s) that will be replaced with variable words.',
+                helpText:
+                  'Enter the location(s) or word(s) that will be replaced with variable words.',
                 placeholder: '[FirstName], [Number], [CustomText]',
-                required: true
-              }
+                required: true,
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           additionalTurnaroundDays: 1,
           sortOrder: 13,
           isActive: true,
-          adminNotes: 'Variable data printing with conditional fields and dynamic pricing'
-        }
+          adminNotes: 'Variable data printing with conditional fields and dynamic pricing',
+        },
       })
-
     }
 
     process.exit(0)

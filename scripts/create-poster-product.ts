@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function createPosterProduct() {
-
   try {
     // Get existing data IDs
     const categories = await prisma.productCategory.findMany()
@@ -46,7 +45,6 @@ async function createPosterProduct() {
     })
 
     if (existing) {
-
       return
     }
 
@@ -64,7 +62,6 @@ async function createPosterProduct() {
           isDefault: true,
         },
       })
-
     }
 
     // Add size group association
@@ -75,7 +72,6 @@ async function createPosterProduct() {
           sizeGroupId: sizeGroupMap['Poster Sizes'],
         },
       })
-
     }
 
     // Add quantity group association
@@ -86,7 +82,6 @@ async function createPosterProduct() {
           quantityGroupId: quantityGroupMap['Basic Gangrun Price'],
         },
       })
-
     }
 
     // Verify the product was created with all associations
@@ -111,7 +106,6 @@ async function createPosterProduct() {
         },
       },
     })
-
   } catch (error) {
     console.error('❌ Error creating poster product:', error)
   } finally {

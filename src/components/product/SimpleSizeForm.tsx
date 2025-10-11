@@ -59,12 +59,13 @@ export default function SimpleSizeForm({
   useEffect(() => {
     // Direct fetch without complex loading manager
     fetch(`/api/products/${productId}/configuration`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.sizes && data.sizes.length > 0) {
           setSizes(data.sizes)
           // Set default size
-          const defaultSize = data.defaults?.size || data.sizes.find(s => s.isDefault)?.id || data.sizes[0]?.id
+          const defaultSize =
+            data.defaults?.size || data.sizes.find((s) => s.isDefault)?.id || data.sizes[0]?.id
           setSelectedSize(defaultSize)
 
           // Notify parent of initial configuration
@@ -84,7 +85,7 @@ export default function SimpleSizeForm({
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to load sizes:', err)
         setLoading(false)
       })
@@ -93,7 +94,7 @@ export default function SimpleSizeForm({
   const handleSizeChange = (value: string) => {
     setSelectedSize(value)
 
-    const selectedSizeObj = sizes.find(s => s.id === value)
+    const selectedSizeObj = sizes.find((s) => s.id === value)
 
     // Reset custom dimensions if not custom size
     if (!selectedSizeObj?.isCustom) {
@@ -117,7 +118,8 @@ export default function SimpleSizeForm({
     // Check if configuration is complete
     let isComplete = Boolean(value)
     if (selectedSizeObj?.isCustom) {
-      isComplete = isComplete && Boolean(customWidth && customHeight && customWidth > 0 && customHeight > 0)
+      isComplete =
+        isComplete && Boolean(customWidth && customHeight && customWidth > 0 && customHeight > 0)
     }
 
     if (onConfigurationChangeRef.current) {
@@ -192,7 +194,7 @@ export default function SimpleSizeForm({
     )
   }
 
-  const selectedSizeObj = sizes.find(s => s.id === selectedSize)
+  const selectedSizeObj = sizes.find((s) => s.id === selectedSize)
 
   return (
     <div className="space-y-4">
@@ -209,7 +211,8 @@ export default function SimpleSizeForm({
           <SelectContent className="max-h-[300px]">
             {sizes.map((size) => (
               <SelectItem key={size.id} value={size.id}>
-                {size.displayName || `${size.name}${size.width && size.height ? ` (${size.width}" × ${size.height}")` : ''}`}
+                {size.displayName ||
+                  `${size.name}${size.width && size.height ? ` (${size.width}" × ${size.height}")` : ''}`}
               </SelectItem>
             ))}
           </SelectContent>
@@ -218,12 +221,18 @@ export default function SimpleSizeForm({
         {/* Size Info */}
         {selectedSizeObj && (
           <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
-            <div><strong>Selected:</strong> {getSizeDimensions(selectedSizeObj)}</div>
+            <div>
+              <strong>Selected:</strong> {getSizeDimensions(selectedSizeObj)}
+            </div>
             {selectedSizeObj.squareInches && (
-              <div><strong>Area:</strong> {selectedSizeObj.squareInches} sq in</div>
+              <div>
+                <strong>Area:</strong> {selectedSizeObj.squareInches} sq in
+              </div>
             )}
             {selectedSizeObj.priceMultiplier !== 1 && (
-              <div><strong>Price multiplier:</strong> {selectedSizeObj.priceMultiplier}x</div>
+              <div>
+                <strong>Price multiplier:</strong> {selectedSizeObj.priceMultiplier}x
+              </div>
             )}
           </div>
         )}
@@ -237,10 +246,12 @@ export default function SimpleSizeForm({
               WIDTH (inches)
             </Label>
             <input
-              type="number"
-              min={selectedSizeObj.customMinWidth || 1}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               max={selectedSizeObj.customMaxWidth || 96}
+              min={selectedSizeObj.customMinWidth || 1}
+              placeholder="Enter width"
               step={0.25}
+              type="number"
               value={customWidth || ''}
               onChange={(e) => {
                 const value = parseFloat(e.target.value)
@@ -248,8 +259,6 @@ export default function SimpleSizeForm({
                   handleCustomSizeChange(value, customHeight)
                 }
               }}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Enter width"
             />
           </div>
           <div>
@@ -257,10 +266,12 @@ export default function SimpleSizeForm({
               HEIGHT (inches)
             </Label>
             <input
-              type="number"
-              min={selectedSizeObj.customMinHeight || 1}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               max={selectedSizeObj.customMaxHeight || 96}
+              min={selectedSizeObj.customMinHeight || 1}
+              placeholder="Enter height"
               step={0.25}
+              type="number"
               value={customHeight || ''}
               onChange={(e) => {
                 const value = parseFloat(e.target.value)
@@ -268,23 +279,19 @@ export default function SimpleSizeForm({
                   handleCustomSizeChange(customWidth, value)
                 }
               }}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Enter height"
             />
           </div>
           <div className="col-span-2 text-xs text-gray-500">
-            Size range: {selectedSizeObj.customMinWidth || 1}" × {selectedSizeObj.customMinHeight || 1}" to {selectedSizeObj.customMaxWidth || 96}" × {selectedSizeObj.customMaxHeight || 96}"
+            Size range: {selectedSizeObj.customMinWidth || 1}" ×{' '}
+            {selectedSizeObj.customMinHeight || 1}" to {selectedSizeObj.customMaxWidth || 96}" ×{' '}
+            {selectedSizeObj.customMaxHeight || 96}"
           </div>
         </div>
       )}
 
       {/* Exact Size Checkbox */}
       <div className="flex items-center space-x-2">
-        <Checkbox
-          checked={exactSize}
-          id="exactSize"
-          onCheckedChange={handleExactSizeChange}
-        />
+        <Checkbox checked={exactSize} id="exactSize" onCheckedChange={handleExactSizeChange} />
         <Label
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           htmlFor="exactSize"
@@ -307,9 +314,7 @@ export default function SimpleSizeForm({
       {/* Module Status */}
       <div className="bg-green-50 p-3 rounded text-sm">
         <div className="font-medium text-green-800 mb-1">Active Module:</div>
-        <div className="text-green-600">
-          ✅ Size Module ({sizes.length} size options)
-        </div>
+        <div className="text-green-600">✅ Size Module ({sizes.length} size options)</div>
         <div className="text-xs text-green-500 mt-1">
           This demonstrates Size module working independently
         </div>

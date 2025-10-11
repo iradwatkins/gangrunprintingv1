@@ -61,9 +61,7 @@ export default function ProductError({
                   {error.message}
                 </pre>
                 {error.digest && (
-                  <p className="text-xs mt-2 text-muted-foreground">
-                    Error ID: {error.digest}
-                  </p>
+                  <p className="text-xs mt-2 text-muted-foreground">Error ID: {error.digest}</p>
                 )}
               </AlertDescription>
             </Alert>
@@ -79,10 +77,7 @@ export default function ProductError({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={reset}
-              className="flex items-center gap-2"
-            >
+            <Button className="flex items-center gap-2" onClick={reset}>
               <RefreshCw className="h-4 w-4" />
               Try Again
             </Button>
@@ -97,7 +92,7 @@ export default function ProductError({
           <div className="pt-4 border-t text-sm text-muted-foreground">
             <p>
               If this problem persists, please{' '}
-              <Link href="/contact" className="text-primary hover:underline">
+              <Link className="text-primary hover:underline" href="/contact">
                 contact our support team
               </Link>{' '}
               and we'll be happy to help.

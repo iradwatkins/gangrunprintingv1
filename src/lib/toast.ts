@@ -4,8 +4,7 @@ export const toast = {
     // Using console.warn to avoid ESLint warning while keeping output visible
     // You can implement a simple toast UI component later
   },
-  error: (message: string) => {
-    },
+  error: (message: string) => {},
   loading: (message: string) => {
     // Using console.warn to avoid ESLint warning while keeping output visible
     return message

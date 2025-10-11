@@ -1,16 +1,19 @@
 # BMAD EPIC: GANGRUN PRINTING ENTERPRISE TRANSFORMATION
+
 ## Following 100% BMAD Methodology
 
 ---
 
 ## 📋 EPIC OVERVIEW
+
 **Epic Number:** EPIC-001  
 **Epic Title:** GangRun Printing Critical Recovery & Enterprise Transformation  
 **Priority:** P0 - CRITICAL  
 **Sprint Duration:** 3 Sprints (6 weeks)  
-**Epic Owner:** PM Agent  
+**Epic Owner:** PM Agent
 
 ### EPIC ACCEPTANCE CRITERIA:
+
 - [ ] Website data display issue resolved permanently
 - [ ] Zero downtime deployment achieved
 - [ ] 99.99% uptime SLA met
@@ -23,15 +26,18 @@
 ---
 
 ## 🏃 SPRINT 1: EMERGENCY RECOVERY & STABILIZATION
+
 **Duration:** 2 weeks  
 **Goal:** Fix critical issues and stabilize system
 
 ### 📖 STORY 1.1: CRITICAL DATA DISPLAY FIX
+
 **Story Points:** 13  
 **Agent:** Backend Agent  
-**Priority:** P0 - BLOCKER  
+**Priority:** P0 - BLOCKER
 
 #### USER STORY:
+
 ```
 AS A user of GangRun Printing
 I WANT to see all my data and orders
@@ -39,6 +45,7 @@ SO THAT I can use the website normally
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Data displays correctly on all pages
 - [ ] Prisma client synchronized with database
 - [ ] Database connections stable
@@ -46,14 +53,17 @@ SO THAT I can use the website normally
 - [ ] Performance acceptable (<500ms)
 
 #### DEVELOPER NOTES:
+
 ```markdown
 CRITICAL CONTEXT:
+
 - Next.js 15.5.2 with Prisma ORM
 - PostgreSQL database
 - Data EXISTS in DB but not showing
 - Most likely cause: Prisma client desync
 
 TECHNICAL APPROACH:
+
 1. Prisma client regeneration required
 2. DATABASE_URL must use 'postgres' not 'localhost' in Docker
 3. Connection pooling may need adjustment
@@ -61,6 +71,7 @@ TECHNICAL APPROACH:
 ```
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.1.1
@@ -75,7 +86,7 @@ tasks:
       - Verify backup integrity
     command: |
       docker exec $(docker-compose ps -q postgres) pg_dump -U postgres gangrunprinting > backup_$(date +%Y%m%d).sql
-      
+
   - task_id: T1.1.2
     title: Verify Data Existence
     assigned_to: Database Agent
@@ -88,7 +99,7 @@ tasks:
       - Document findings
     command: |
       docker exec -it $(docker-compose ps -q postgres) psql -U postgres -d gangrunprinting -c "SELECT tablename, n_live_tup FROM pg_stat_user_tables;"
-      
+
   - task_id: T1.1.3
     title: Fix Prisma Client Sync
     assigned_to: Backend Agent
@@ -105,7 +116,7 @@ tasks:
       npx prisma db pull
       npx prisma generate
       npx prisma validate
-      
+
   - task_id: T1.1.4
     title: Fix Environment Variables
     assigned_to: DevOps Agent
@@ -119,7 +130,7 @@ tasks:
     validation: |
       DATABASE_URL must be: postgresql://user:pass@postgres:5432/gangrunprinting
       NOT: postgresql://user:pass@localhost:5432/gangrunprinting
-      
+
   - task_id: T1.1.5
     title: Rebuild and Deploy
     assigned_to: DevOps Agent
@@ -134,7 +145,7 @@ tasks:
       npm run build
       docker-compose build
       docker-compose up -d --no-deps app
-      
+
   - task_id: T1.1.6
     title: Verify Fix Success
     assigned_to: QA Agent
@@ -151,11 +162,13 @@ tasks:
 ---
 
 ### 📖 STORY 1.2: IMPLEMENT EMERGENCY MONITORING
+
 **Story Points:** 8  
 **Agent:** SRE Agent  
-**Priority:** P0  
+**Priority:** P0
 
 #### USER STORY:
+
 ```
 AS A system administrator
 I WANT real-time monitoring and alerts
@@ -163,6 +176,7 @@ SO THAT I can prevent future outages
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Health check endpoint operational
 - [ ] Uptime monitoring active
 - [ ] Database monitoring configured
@@ -170,6 +184,7 @@ SO THAT I can prevent future outages
 - [ ] Grafana dashboards created
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.2.1
@@ -181,7 +196,7 @@ tasks:
     code: |
       import { NextResponse } from 'next/server';
       import { prisma } from '@/lib/prisma';
-      
+
       export async function GET() {
         try {
           await prisma.$queryRaw`SELECT 1`;
@@ -208,7 +223,7 @@ tasks:
           }, { status: 503 });
         }
       }
-      
+
   - task_id: T1.2.2
     title: Deploy Monitoring Stack
     assigned_to: DevOps Agent
@@ -221,7 +236,7 @@ tasks:
       - Import dashboards
       - Set up alerts
     file: docker-compose.monitoring.yml
-    
+
   - task_id: T1.2.3
     title: Configure Alerts
     assigned_to: SRE Agent
@@ -238,11 +253,13 @@ tasks:
 ---
 
 ### 📖 STORY 1.3: COMPREHENSIVE SYSTEM AUDIT
+
 **Story Points:** 13  
 **Agent:** Architect Agent  
-**Priority:** P1  
+**Priority:** P1
 
 #### USER STORY:
+
 ```
 AS A technical lead
 I WANT a complete system audit
@@ -250,6 +267,7 @@ SO THAT I can identify and fix all issues
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Complete code quality report generated
 - [ ] Security vulnerabilities identified
 - [ ] Performance bottlenecks documented
@@ -257,6 +275,7 @@ SO THAT I can identify and fix all issues
 - [ ] Prioritized fix list created
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.3.1
@@ -270,7 +289,7 @@ tasks:
       - SonarQube
       - Depcheck
     output: audit-report-code.json
-    
+
   - task_id: T1.3.2
     title: Security Audit
     assigned_to: Security Agent
@@ -285,7 +304,7 @@ tasks:
     command: |
       npm audit --json > security-audit.json
       docker scan gangrunprinting:latest
-      
+
   - task_id: T1.3.3
     title: Performance Audit
     assigned_to: Performance Agent
@@ -301,7 +320,7 @@ tasks:
       - Lighthouse
       - K6 load testing
       - New Relic
-      
+
   - task_id: T1.3.4
     title: Architecture Review
     assigned_to: Architect Agent
@@ -318,15 +337,18 @@ tasks:
 ---
 
 ## 🏃 SPRINT 2: REFACTORING & HARDENING
+
 **Duration:** 2 weeks  
 **Goal:** Clean code and harden infrastructure
 
 ### 📖 STORY 2.1: CODE REFACTORING
+
 **Story Points:** 21  
 **Agent:** Senior Backend Agent  
-**Priority:** P1  
+**Priority:** P1
 
 #### USER STORY:
+
 ```
 AS A developer
 I WANT clean, maintainable code
@@ -334,6 +356,7 @@ SO THAT I can easily fix issues and add features
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] No console.log statements in production
 - [ ] All 'any' types replaced
 - [ ] Error handling implemented everywhere
@@ -342,6 +365,7 @@ SO THAT I can easily fix issues and add features
 - [ ] 100% TypeScript strict mode
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T2.1.1
@@ -352,7 +376,7 @@ tasks:
     file: src/lib/logger.ts
     pattern: Singleton
     replace_all: console.log -> logger.info
-    
+
   - task_id: T2.1.2
     title: Fix TypeScript Types
     assigned_to: Frontend Agent
@@ -372,7 +396,7 @@ tasks:
           "strictFunctionTypes": true
         }
       }
-      
+
   - task_id: T2.1.3
     title: Implement Repository Pattern
     assigned_to: Backend Agent
@@ -393,7 +417,7 @@ tasks:
         services/
           user.service.ts
           order.service.ts
-          
+
   - task_id: T2.1.4
     title: Add Error Boundaries
     assigned_to: Frontend Agent
@@ -409,11 +433,13 @@ tasks:
 ---
 
 ### 📖 STORY 2.2: INFRASTRUCTURE HARDENING
+
 **Story Points:** 13  
 **Agent:** DevOps Agent  
-**Priority:** P1  
+**Priority:** P1
 
 #### USER STORY:
+
 ```
 AS A system administrator
 I WANT production-grade infrastructure
@@ -421,6 +447,7 @@ SO THAT the system is reliable and scalable
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Multi-stage Docker builds
 - [ ] Health checks on all services
 - [ ] Auto-scaling configured
@@ -429,6 +456,7 @@ SO THAT the system is reliable and scalable
 - [ ] Rate limiting active
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T2.2.1
@@ -442,7 +470,7 @@ tasks:
       - Layer caching
       - Security scanning
     target_size: <100MB
-    
+
   - task_id: T2.2.2
     title: Implement Auto-scaling
     assigned_to: DevOps Agent
@@ -455,7 +483,7 @@ tasks:
       - CPU < 30% -> scale down
     min_instances: 2
     max_instances: 10
-    
+
   - task_id: T2.2.3
     title: Configure Load Balancer
     assigned_to: DevOps Agent
@@ -472,15 +500,18 @@ tasks:
 ---
 
 ## 🏃 SPRINT 3: TESTING & DOCUMENTATION
+
 **Duration:** 2 weeks  
 **Goal:** Complete testing and documentation
 
 ### 📖 STORY 3.1: COMPREHENSIVE TESTING
+
 **Story Points:** 21  
 **Agent:** QA Lead Agent  
-**Priority:** P1  
+**Priority:** P1
 
 #### USER STORY:
+
 ```
 AS A QA engineer
 I WANT comprehensive test coverage
@@ -488,6 +519,7 @@ SO THAT we catch bugs before production
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Unit test coverage > 80%
 - [ ] Integration tests for all APIs
 - [ ] E2E tests for critical flows
@@ -496,6 +528,7 @@ SO THAT we catch bugs before production
 - [ ] CI/CD pipeline with tests
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T3.1.1
@@ -506,7 +539,7 @@ tasks:
     coverage_target: 80%
     test_framework: Jest
     mock_strategy: Repository mocks
-    
+
   - task_id: T3.1.2
     title: Integration Tests
     assigned_to: QA Agent
@@ -518,7 +551,7 @@ tasks:
       - Authentication flows
       - Payment processing
     framework: Supertest
-    
+
   - task_id: T3.1.3
     title: E2E Test Suite
     assigned_to: QA Agent
@@ -530,7 +563,7 @@ tasks:
       - Payment processing
       - Admin operations
     framework: Playwright
-    
+
   - task_id: T3.1.4
     title: Performance Tests
     assigned_to: Performance Agent
@@ -549,11 +582,13 @@ tasks:
 ---
 
 ### 📖 STORY 3.2: DOCUMENTATION & KNOWLEDGE BASE
+
 **Story Points:** 13  
 **Agent:** Documentation Agent  
-**Priority:** P2  
+**Priority:** P2
 
 #### USER STORY:
+
 ```
 AS A developer or operator
 I WANT complete documentation
@@ -561,6 +596,7 @@ SO THAT I can maintain and troubleshoot the system
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] README with quick start
 - [ ] Architecture documentation
 - [ ] API documentation (OpenAPI)
@@ -569,6 +605,7 @@ SO THAT I can maintain and troubleshoot the system
 - [ ] Video tutorials recorded
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T3.2.1
@@ -581,7 +618,7 @@ tasks:
       - CONTRIBUTING.md
       - ARCHITECTURE.md
       - TROUBLESHOOTING.md
-      
+
   - task_id: T3.2.2
     title: Generate API Documentation
     assigned_to: Backend Agent
@@ -590,7 +627,7 @@ tasks:
     format: OpenAPI 3.0
     tool: Swagger
     auto_generate: true
-    
+
   - task_id: T3.2.3
     title: Create Runbooks
     assigned_to: SRE Agent
@@ -609,6 +646,7 @@ tasks:
 ## 🎯 EPIC COMPLETION CRITERIA
 
 ### DEFINITION OF DONE:
+
 ```yaml
 epic_done_criteria:
   code_quality:
@@ -616,25 +654,25 @@ epic_done_criteria:
     - TypeScript strict mode
     - No console.log statements
     - No 'any' types
-    
+
   testing:
     - Unit coverage > 80%
     - All integration tests passing
     - E2E tests automated
     - Performance benchmarks met
-    
+
   infrastructure:
     - Multi-stage Docker builds
     - Health checks active
     - Monitoring operational
     - Auto-scaling working
-    
+
   documentation:
     - README complete
     - API documented
     - Runbooks created
     - Architecture documented
-    
+
   operations:
     - Zero downtime deployment
     - <200ms p95 response time
@@ -647,28 +685,29 @@ epic_done_criteria:
 ## 📊 EPIC METRICS & TRACKING
 
 ### KEY PERFORMANCE INDICATORS (KPIs):
+
 ```yaml
 kpis:
   - metric: Uptime
     target: 99.99%
     current: To be measured
     owner: SRE Agent
-    
+
   - metric: Response Time (p95)
     target: <200ms
     current: To be measured
     owner: Performance Agent
-    
+
   - metric: Error Rate
     target: <0.1%
     current: To be measured
     owner: QA Agent
-    
+
   - metric: Code Coverage
-    target: >80%
+    target: >80
     current: To be measured
     owner: QA Agent
-    
+
   - metric: Deployment Frequency
     target: Daily
     current: To be measured
@@ -676,6 +715,7 @@ kpis:
 ```
 
 ### RISK REGISTER:
+
 ```yaml
 risks:
   - risk: Data loss during migration
@@ -683,13 +723,13 @@ risks:
     impact: Critical
     mitigation: Multiple backups before any change
     owner: Database Agent
-    
+
   - risk: Downtime during deployment
     probability: Medium
     impact: High
     mitigation: Blue-green deployment strategy
     owner: DevOps Agent
-    
+
   - risk: Performance degradation
     probability: Medium
     impact: Medium
@@ -702,6 +742,7 @@ risks:
 ## 🤝 AGENT RESPONSIBILITIES
 
 ### AGENT ASSIGNMENT MATRIX:
+
 ```yaml
 agents:
   pm_agent:
@@ -711,7 +752,7 @@ agents:
       - Daily standups
       - Blocker resolution
       - Progress tracking
-      
+
   architect_agent:
     role: Technical Lead
     responsibilities:
@@ -719,7 +760,7 @@ agents:
       - Code review
       - Pattern implementation
       - Technical debt management
-      
+
   backend_agent:
     role: Core Developer
     responsibilities:
@@ -727,7 +768,7 @@ agents:
       - Database operations
       - Business logic
       - Prisma management
-      
+
   frontend_agent:
     role: UI Developer
     responsibilities:
@@ -735,7 +776,7 @@ agents:
       - User experience
       - Client-side logic
       - Performance optimization
-      
+
   devops_agent:
     role: Infrastructure
     responsibilities:
@@ -743,7 +784,7 @@ agents:
       - CI/CD pipeline
       - Deployment automation
       - Environment management
-      
+
   qa_agent:
     role: Quality Assurance
     responsibilities:
@@ -751,7 +792,7 @@ agents:
       - Test automation
       - Bug tracking
       - Quality metrics
-      
+
   sre_agent:
     role: Site Reliability
     responsibilities:
@@ -759,7 +800,7 @@ agents:
       - Alert configuration
       - Incident response
       - Performance tuning
-      
+
   security_agent:
     role: Security
     responsibilities:
@@ -767,7 +808,7 @@ agents:
       - Security patches
       - Access control
       - Compliance
-      
+
   database_agent:
     role: Data Management
     responsibilities:
@@ -775,7 +816,7 @@ agents:
       - Backup management
       - Query optimization
       - Data integrity
-      
+
   documentation_agent:
     role: Technical Writer
     responsibilities:
@@ -790,6 +831,7 @@ agents:
 ## 🚀 EXECUTION COMMANDS FOR PM AGENT
 
 ### SPRINT 1 KICKOFF:
+
 ```bash
 # PM Agent: Initialize Sprint 1
 echo "Starting EPIC-001 Sprint 1: Emergency Recovery"
@@ -808,24 +850,29 @@ echo "This is the most likely fix - 90% success rate"
 ```
 
 ### DAILY STANDUP TEMPLATE:
+
 ```markdown
 ## Daily Standup - [DATE]
 
 ### Yesterday's Progress:
+
 - [ ] Story 1.1: [Status]
 - [ ] Story 1.2: [Status]
 - [ ] Story 1.3: [Status]
 
 ### Today's Focus:
+
 - [ ] Complete tasks: [List]
 - [ ] Review and test: [List]
 - [ ] Deploy: [List]
 
 ### Blockers:
+
 - [ ] [Blocker description]
 - [ ] [Resolution plan]
 
 ### System Health:
+
 - Uptime: [%]
 - Response Time: [ms]
 - Error Rate: [%]
@@ -833,6 +880,7 @@ echo "This is the most likely fix - 90% success rate"
 ```
 
 ### COMPLETION VERIFICATION:
+
 ```bash
 # PM Agent: Verify Epic Completion
 npm run epic:verify
@@ -852,6 +900,7 @@ npm run epic:report > EPIC-001-COMPLETE.md
 ## ✅ EPIC SUCCESS CRITERIA MET
 
 When all stories are complete:
+
 1. **Immediate Issue**: Data display fixed permanently
 2. **Code Quality**: Enterprise-grade, clean, maintainable
 3. **Infrastructure**: Production-hardened, auto-scaling
@@ -867,11 +916,13 @@ ATTENTION ALL AGENTS:
 EPIC-001 is now active. This is a P0 CRITICAL operation.
 
 IMMEDIATE ACTIONS:
+
 1. Backend Agent: Begin Story 1.1 immediately - Fix Prisma sync
 2. DevOps Agent: Create emergency backup NOW
 3. All Agents: Report status every 2 hours
 
 SUCCESS CRITERIA:
+
 - Data must display within 4 hours
 - Zero data loss
 - System stability achieved

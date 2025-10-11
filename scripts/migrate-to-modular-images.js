@@ -39,7 +39,6 @@ async function migrateToModularImages() {
     } else {
       console.log('✅ No duplicate images found')
     }
-
   } catch (error) {
     console.error('❌ Error during analysis:', error.message)
   } finally {

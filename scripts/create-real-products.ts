@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function createRealProducts() {
-
   try {
     // Get existing data IDs
     const categories = await prisma.productCategory.findMany()
@@ -100,7 +99,6 @@ async function createRealProducts() {
         })
 
         if (existing) {
-
           continue
         }
 
@@ -118,7 +116,6 @@ async function createRealProducts() {
               isDefault: true,
             },
           })
-
         }
 
         // Add size group association
@@ -138,7 +135,6 @@ async function createRealProducts() {
               sizeGroupId: sizeGroupId,
             },
           })
-
         }
 
         // Add quantity group association
@@ -159,9 +155,7 @@ async function createRealProducts() {
               quantityGroupId: quantityGroupId,
             },
           })
-
         }
-
       } catch (error) {
         console.error(`❌ Error creating product ${productData.name}:`, error)
       }
@@ -182,9 +176,7 @@ async function createRealProducts() {
       },
     })
 
-    createdProducts.forEach((product) => {
-
-    })
+    createdProducts.forEach((product) => {})
   } catch (error) {
     console.error('Fatal error:', error)
   } finally {

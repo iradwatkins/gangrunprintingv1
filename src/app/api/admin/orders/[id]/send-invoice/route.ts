@@ -9,10 +9,7 @@ import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/resend'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -24,7 +21,7 @@ export async function POST(
 
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { OrderItem: true }
+      include: { OrderItem: true },
     })
 
     if (!order) {
@@ -142,9 +139,6 @@ export async function POST(
     })
   } catch (error) {
     console.error('[Send Invoice] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to send invoice' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to send invoice' }, { status: 500 })
   }
 }

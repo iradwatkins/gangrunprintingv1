@@ -177,61 +177,47 @@ async function sendWebhook(event: TestEvent): Promise<boolean> {
       if (result) {
         try {
           const json = JSON.parse(result)
-
-        } catch {
-
-        }
+        } catch {}
       }
       return true
     } else {
-
       const error = await response.text()
       if (error) {
-
       }
       return false
     }
   } catch (error: any) {
-
     return false
   }
 }
 
 // Test connection
 async function testConnection(): Promise<boolean> {
-
   try {
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'GET',
     })
 
     if (response.status === 404) {
-
       return true
     } else if (response.status === 405) {
-
       return true
     } else if (response.ok) {
-
       return true
     } else {
-
       return false
     }
   } catch (error: any) {
-
     return false
   }
 }
 
 // Main execution
 async function main() {
-
   // Test connection first
   const connected = await testConnection()
 
   if (!connected) {
-
     process.exit(1)
   }
 
@@ -251,21 +237,13 @@ async function main() {
   const failed = results.filter((r) => !r.success).length
 
   if (failed > 0) {
-
-    results
-      .filter((r) => !r.success)
-      .forEach((r) => {
-
-      })
-
+    results.filter((r) => !r.success).forEach((r) => {})
   } else {
-
   }
 
   // Test payload example
 
   if (N8N_API_KEY) {
-
   }
   console.log(
     `  -d '${JSON.stringify(

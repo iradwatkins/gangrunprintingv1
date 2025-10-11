@@ -505,8 +505,8 @@ export default function SizesPage() {
                     </Select>
                   ) : (
                     <Input
-                      className="w-full"
                       disabled
+                      className="w-full"
                       placeholder="Enter size values first to select a default"
                       value=""
                     />

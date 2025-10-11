@@ -2,10 +2,10 @@
 
 /**
  * Simplified End-to-End Order Flow Test for GangRun Printing
- * 
+ *
  * Tests what currently works and provides a realistic demonstration
  * of the order flow using cash payment option
- * 
+ *
  * Customer: Cos Coke (ira@irawatkins.com)
  * Address: 2740 W 83rd Place, Chicago, IL 60652
  * Phone: (773) 555-1234
@@ -18,7 +18,7 @@ const CUSTOMER_INFO = {
   firstName: 'Cos',
   lastName: 'Coke',
   email: 'ira@irawatkins.com',
-  phone: '(773) 555-1234'
+  phone: '(773) 555-1234',
 }
 
 const SHIPPING_ADDRESS = {
@@ -28,7 +28,7 @@ const SHIPPING_ADDRESS = {
   city: 'Chicago',
   state: 'IL',
   zipCode: '60652',
-  country: 'US'
+  country: 'US',
 }
 
 // Test configuration for a realistic business card order
@@ -44,8 +44,8 @@ const TEST_PRODUCT = {
     sides: 'Both Sides (4/4)',
     turnaround: 'Standard (3-5 Business Days)',
     corners: 'Standard Square',
-    printing: 'Full Color Both Sides'
-  }
+    printing: 'Full Color Both Sides',
+  },
 }
 
 class SimpleOrderFlowTest {
@@ -56,7 +56,7 @@ class SimpleOrderFlowTest {
       errors: [],
       success: false,
       orderId: null,
-      orderNumber: null
+      orderNumber: null,
     }
   }
 
@@ -82,13 +82,13 @@ class SimpleOrderFlowTest {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'GangRun-E2E-Test/1.0',
-          ...options.headers
+          ...options.headers,
         },
-        ...options
+        ...options,
       })
 
       const data = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${data.error || data.message || 'Unknown error'}`)
       }
@@ -104,15 +104,15 @@ class SimpleOrderFlowTest {
 
   async testStep1_ServerHealth() {
     await this.log('Step 1: Server Health Check')
-    
+
     try {
       const { data } = await this.makeRequest(`${BASE_URL}/api/health`)
-      await this.log('Server Health Check', { 
-        status: 'PASS', 
-        data: { 
+      await this.log('Server Health Check', {
+        status: 'PASS',
+        data: {
           status: data.status,
-          timestamp: data.timestamp 
-        }
+          timestamp: data.timestamp,
+        },
       })
       return true
     } catch (error) {
@@ -123,45 +123,49 @@ class SimpleOrderFlowTest {
 
   async testStep2_CreateDirectOrder() {
     await this.log('Step 2: Create Order via Direct API')
-    
+
     // Calculate totals (using same logic as checkout API)
     const subtotal = TEST_PRODUCT.price / 100 // Convert cents to dollars
     const taxRate = 0.0825 // 8.25% for Chicago
     const tax = subtotal * taxRate
-    const shipping = 10.00 // $10.00 standard shipping
+    const shipping = 10.0 // $10.00 standard shipping
     const total = subtotal + tax + shipping
 
     // Create order using test order endpoint that works in production
     const orderRequest = {
-      cartItems: [{
-        id: `item-${Date.now()}`,
-        productName: TEST_PRODUCT.name,
-        productId: 'prod-001',
-        sku: TEST_PRODUCT.sku,
-        quantity: TEST_PRODUCT.quantity,
-        price: subtotal,
-        options: TEST_PRODUCT.options,
-        dimensions: { width: 3.5, height: 2 },
-        paperStockWeight: 0.0009,
-        fileName: 'business-cards.pdf',
-        fileSize: 1024000,
-        fileUrl: '/uploads/business-cards.pdf'
-      }],
-      uploadedImages: [{
-        id: `img-${Date.now()}`,
-        url: '/uploads/business-cards.pdf',
-        thumbnailUrl: '/uploads/business-cards-thumb.jpg',
-        fileName: 'business-cards.pdf',
-        fileSize: 1024000,
-        uploadedAt: new Date().toISOString()
-      }],
+      cartItems: [
+        {
+          id: `item-${Date.now()}`,
+          productName: TEST_PRODUCT.name,
+          productId: 'prod-001',
+          sku: TEST_PRODUCT.sku,
+          quantity: TEST_PRODUCT.quantity,
+          price: subtotal,
+          options: TEST_PRODUCT.options,
+          dimensions: { width: 3.5, height: 2 },
+          paperStockWeight: 0.0009,
+          fileName: 'business-cards.pdf',
+          fileSize: 1024000,
+          fileUrl: '/uploads/business-cards.pdf',
+        },
+      ],
+      uploadedImages: [
+        {
+          id: `img-${Date.now()}`,
+          url: '/uploads/business-cards.pdf',
+          thumbnailUrl: '/uploads/business-cards-thumb.jpg',
+          fileName: 'business-cards.pdf',
+          fileSize: 1024000,
+          uploadedAt: new Date().toISOString(),
+        },
+      ],
       customerInfo: CUSTOMER_INFO,
       shippingAddress: {
         street: SHIPPING_ADDRESS.address,
         city: SHIPPING_ADDRESS.city,
         state: SHIPPING_ADDRESS.state,
         zipCode: SHIPPING_ADDRESS.zipCode,
-        country: SHIPPING_ADDRESS.country
+        country: SHIPPING_ADDRESS.country,
       },
       billingAddress: null,
       shippingRate: {
@@ -169,35 +173,35 @@ class SimpleOrderFlowTest {
         serviceName: 'Priority Mail',
         rateAmount: shipping,
         estimatedDays: 3,
-        transitDays: 3
+        transitDays: 3,
       },
       selectedAirportId: null,
       subtotal: subtotal,
       tax: tax,
       shipping: shipping,
-      total: total
+      total: total,
     }
 
     try {
       const { data } = await this.makeRequest(`${BASE_URL}/api/checkout/create-test-order`, {
         method: 'POST',
-        body: JSON.stringify(orderRequest)
+        body: JSON.stringify(orderRequest),
       })
 
       if (data.success) {
         this.results.success = true
         this.results.orderId = data.orderId
         this.results.orderNumber = data.orderNumber
-        
-        await this.log('Order Creation', { 
+
+        await this.log('Order Creation', {
           status: 'PASS',
           data: {
             orderId: data.orderId,
             orderNumber: data.orderNumber,
             total: `$${total.toFixed(2)}`,
             paymentMethod: 'Cash (TEST ORDER)',
-            customer: CUSTOMER_INFO.email
-          }
+            customer: CUSTOMER_INFO.email,
+          },
         })
         return true
       } else {
@@ -212,9 +216,9 @@ class SimpleOrderFlowTest {
 
   async testStep3_VerifyOrderCreated() {
     if (!this.results.orderId) {
-      await this.log('Step 3: Order Verification', { 
-        status: 'SKIP', 
-        message: 'No order ID to verify' 
+      await this.log('Step 3: Order Verification', {
+        status: 'SKIP',
+        message: 'No order ID to verify',
       })
       return false
     }
@@ -224,23 +228,23 @@ class SimpleOrderFlowTest {
     try {
       // Note: This may fail due to API permissions, but we'll try
       const { data } = await this.makeRequest(`${BASE_URL}/api/orders/${this.results.orderId}`)
-      
-      await this.log('Order Verification', { 
+
+      await this.log('Order Verification', {
         status: 'PASS',
         data: {
           orderNumber: data.orderNumber,
           status: data.status,
           email: data.email,
           total: `$${(data.total / 100).toFixed(2)}`,
-          itemCount: data.OrderItem?.length || 0
-        }
+          itemCount: data.OrderItem?.length || 0,
+        },
       })
       return true
     } catch (error) {
       // Don't fail the overall test if verification fails - order was still created
-      await this.log('Order Verification', { 
-        status: 'INFO', 
-        message: 'Order created but verification API unavailable (normal for customer-facing flow)'
+      await this.log('Order Verification', {
+        status: 'INFO',
+        message: 'Order created but verification API unavailable (normal for customer-facing flow)',
       })
       return true // Consider this a success since order was created
     }
@@ -249,7 +253,7 @@ class SimpleOrderFlowTest {
   async generateReport() {
     const endTime = new Date()
     const duration = endTime - this.results.startTime
-    
+
     console.log('\n' + '='.repeat(80))
     console.log('GANGRUN PRINTING - END-TO-END ORDER FLOW TEST REPORT')
     console.log('='.repeat(80))
@@ -257,32 +261,43 @@ class SimpleOrderFlowTest {
     console.log(`Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName}`)
     console.log(`Email: ${CUSTOMER_INFO.email}`)
     console.log(`Phone: ${CUSTOMER_INFO.phone}`)
-    console.log(`Address: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state} ${SHIPPING_ADDRESS.zipCode}`)
+    console.log(
+      `Address: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state} ${SHIPPING_ADDRESS.zipCode}`
+    )
     console.log(`Test Duration: ${duration}ms`)
     console.log(`Overall Result: ${this.results.success ? '✅ PASS' : '❌ FAIL'}`)
-    
+
     if (this.results.orderNumber) {
       console.log(`\n📋 ORDER DETAILS:`)
       console.log(`Order Number: ${this.results.orderNumber}`)
       console.log(`Product: ${TEST_PRODUCT.name}`)
       console.log(`Quantity: ${TEST_PRODUCT.quantity} units`)
       console.log(`Price: $${(TEST_PRODUCT.price / 100).toFixed(2)}`)
-      console.log(`Configuration: ${Object.entries(TEST_PRODUCT.options).map(([k,v]) => `${k}: ${v}`).join(', ')}`)
+      console.log(
+        `Configuration: ${Object.entries(TEST_PRODUCT.options)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ')}`
+      )
     }
-    
+
     console.log('\n--- TEST STEPS ---')
-    this.results.steps.forEach(step => {
+    this.results.steps.forEach((step) => {
       const status = step.status || 'COMPLETED'
-      const statusIcon = status.includes('PASS') ? '✅' : 
-                        status.includes('FAIL') ? '❌' : 
-                        status.includes('SKIP') ? '⏭️ ' :
-                        status.includes('INFO') ? 'ℹ️ ' : '🔄'
+      const statusIcon = status.includes('PASS')
+        ? '✅'
+        : status.includes('FAIL')
+          ? '❌'
+          : status.includes('SKIP')
+            ? '⏭️ '
+            : status.includes('INFO')
+              ? 'ℹ️ '
+              : '🔄'
       console.log(`${statusIcon} ${step.step} - ${status}`)
     })
 
     if (this.results.errors.length > 0) {
       console.log('\n--- ERRORS ---')
-      this.results.errors.forEach(error => {
+      this.results.errors.forEach((error) => {
         console.log(`❌ ${error.step}: ${error.error}`)
       })
     }
@@ -290,13 +305,17 @@ class SimpleOrderFlowTest {
     console.log('\n--- SUMMARY ---')
     console.log(`Steps Completed: ${this.results.steps.length}`)
     console.log(`Errors: ${this.results.errors.length}`)
-    console.log(`Success Rate: ${((this.results.steps.length - this.results.errors.length) / this.results.steps.length * 100).toFixed(1)}%`)
-    
+    console.log(
+      `Success Rate: ${(((this.results.steps.length - this.results.errors.length) / this.results.steps.length) * 100).toFixed(1)}%`
+    )
+
     if (this.results.success) {
       console.log('\n✅ END-TO-END TEST PASSED')
       console.log('🎉 CUSTOMER CAN SUCCESSFULLY PLACE ORDERS')
       console.log(`📧 Order confirmation will be sent to: ${CUSTOMER_INFO.email}`)
-      console.log(`🚚 Products will be shipped to: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state}`)
+      console.log(
+        `🚚 Products will be shipped to: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state}`
+      )
       console.log('')
       console.log('💰 PAYMENT OPTIONS AVAILABLE:')
       console.log('   • Cash Payment (as requested)')
@@ -310,14 +329,16 @@ class SimpleOrderFlowTest {
       console.log('⚠️  Customers may experience issues placing orders.')
       console.log('🔧 Review error details above for troubleshooting.')
     }
-    
+
     console.log('='.repeat(80))
     return this.results
   }
 
   async run() {
     console.log('🚀 Starting End-to-End Order Flow Test for GangRun Printing')
-    console.log(`👤 Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName} (${CUSTOMER_INFO.email})`)
+    console.log(
+      `👤 Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName} (${CUSTOMER_INFO.email})`
+    )
     console.log(`🌐 Testing against: ${BASE_URL}`)
     console.log(`📦 Product: ${TEST_PRODUCT.name} (${TEST_PRODUCT.quantity} units)`)
     console.log(`💳 Payment Method: Cash (as requested)`)
@@ -332,7 +353,6 @@ class SimpleOrderFlowTest {
 
       // Step 3: Verify order
       await this.testStep3_VerifyOrderCreated()
-
     } catch (error) {
       await this.error('Test Execution', error)
     }
@@ -344,12 +364,15 @@ class SimpleOrderFlowTest {
 // Run the test
 if (require.main === module) {
   const test = new SimpleOrderFlowTest()
-  test.run().then(results => {
-    process.exit(results.success ? 0 : 1)
-  }).catch(error => {
-    console.error('Test runner error:', error)
-    process.exit(1)
-  })
+  test
+    .run()
+    .then((results) => {
+      process.exit(results.success ? 0 : 1)
+    })
+    .catch((error) => {
+      console.error('Test runner error:', error)
+      process.exit(1)
+    })
 }
 
 module.exports = SimpleOrderFlowTest

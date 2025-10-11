@@ -11,16 +11,16 @@ This directory contains the complete architecture documentation for GangRun Prin
 
 ### Quick Navigation
 
-| File | Description | Lines | Topics Covered |
-|------|-------------|-------|----------------|
-| **[overview.md](./overview.md)** | System Overview | 121 | Introduction, High-Level Architecture, Tech Stack, Diagrams |
-| **[data-architecture.md](./data-architecture.md)** | Data Layer | 633 | Data Models, Prisma Schema, Database Design, Relationships |
-| **[api-architecture.md](./api-architecture.md)** | API Layer | 399 | API Specification, Endpoints, External APIs, Core Workflows |
-| **[frontend-architecture.md](./frontend-architecture.md)** | Frontend Layer | 200 | React Architecture, Components, State Management, UI Patterns |
-| **[backend-architecture.md](./backend-architecture.md)** | Backend Layer | 160 | API Routes, Services, Business Logic, Server-Side Patterns |
-| **[deployment-infrastructure.md](./deployment-infrastructure.md)** | Infrastructure | 207 | Project Structure, Deployment Process, Docker, CI/CD |
-| **[development-practices.md](./development-practices.md)** | Development | 258 | Dev Workflow, Testing, Standards, Error Handling |
-| **[monitoring-observability.md](./monitoring-observability.md)** | Operations | 30 | Monitoring, Logging, Observability, Health Checks |
+| File                                                               | Description     | Lines | Topics Covered                                                |
+| ------------------------------------------------------------------ | --------------- | ----- | ------------------------------------------------------------- |
+| **[overview.md](./overview.md)**                                   | System Overview | 121   | Introduction, High-Level Architecture, Tech Stack, Diagrams   |
+| **[data-architecture.md](./data-architecture.md)**                 | Data Layer      | 633   | Data Models, Prisma Schema, Database Design, Relationships    |
+| **[api-architecture.md](./api-architecture.md)**                   | API Layer       | 399   | API Specification, Endpoints, External APIs, Core Workflows   |
+| **[frontend-architecture.md](./frontend-architecture.md)**         | Frontend Layer  | 200   | React Architecture, Components, State Management, UI Patterns |
+| **[backend-architecture.md](./backend-architecture.md)**           | Backend Layer   | 160   | API Routes, Services, Business Logic, Server-Side Patterns    |
+| **[deployment-infrastructure.md](./deployment-infrastructure.md)** | Infrastructure  | 207   | Project Structure, Deployment Process, Docker, CI/CD          |
+| **[development-practices.md](./development-practices.md)**         | Development     | 258   | Dev Workflow, Testing, Standards, Error Handling              |
+| **[monitoring-observability.md](./monitoring-observability.md)**   | Operations      | 30    | Monitoring, Logging, Observability, Health Checks             |
 
 **Total Documentation:** ~2,000 lines across 8 focused files
 
@@ -29,21 +29,27 @@ This directory contains the complete architecture documentation for GangRun Prin
 ## 🚀 Getting Started
 
 ### For New Developers
+
 **Recommended Reading Order:**
+
 1. Start with **[overview.md](./overview.md)** - Understand the system at a high level
 2. Review **[data-architecture.md](./data-architecture.md)** - Learn the data models
 3. Read **[api-architecture.md](./api-architecture.md)** - Understand API structure
 4. Study **[frontend-architecture.md](./frontend-architecture.md)** OR **[backend-architecture.md](./backend-architecture.md)** - Based on your role
 
 ### For System Architects
+
 **Recommended Reading Order:**
+
 1. **[overview.md](./overview.md)** - System design and patterns
 2. **[deployment-infrastructure.md](./deployment-infrastructure.md)** - Infrastructure decisions
 3. **[development-practices.md](./development-practices.md)** - Standards and practices
 4. **[monitoring-observability.md](./monitoring-observability.md)** - Operations strategy
 
 ### For DevOps Engineers
+
 **Recommended Reading Order:**
+
 1. **[deployment-infrastructure.md](./deployment-infrastructure.md)** - Infrastructure setup
 2. **[monitoring-observability.md](./monitoring-observability.md)** - Monitoring implementation
 3. **[overview.md](./overview.md)** - System context
@@ -54,9 +60,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ## 📚 Documentation Files
 
 ### 1. [overview.md](./overview.md)
+
 **Purpose:** High-level system overview and architectural decisions
 
 **Contents:**
+
 - Introduction and project context
 - High-level architecture diagram
 - Technical summary
@@ -66,10 +74,12 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Complete technology stack table
 
 **Key Diagrams:**
+
 - System architecture (Mermaid)
 - Client → Application → Data → External Services flow
 
 **When to Reference:**
+
 - Starting a new feature
 - Making technology decisions
 - Onboarding new team members
@@ -78,9 +88,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 2. [data-architecture.md](./data-architecture.md)
+
 **Purpose:** Complete data layer documentation
 
 **Contents:**
+
 - All Prisma data models with TypeScript interfaces
 - Database relationships and foreign keys
 - Data model purpose and key attributes
@@ -88,6 +100,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Database schema design decisions
 
 **Key Models:**
+
 - User, Session, Product, Order
 - ProductCategory, QuantityGroup, SizeGroup
 - PaperStock, AddOnSet, TurnaroundTime
@@ -95,6 +108,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Plus 20+ more models
 
 **When to Reference:**
+
 - Creating new API endpoints
 - Implementing new features
 - Database migrations
@@ -104,9 +118,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 3. [api-architecture.md](./api-architecture.md)
+
 **Purpose:** Complete API specification and integration points
 
 **Contents:**
+
 - RESTful API endpoint documentation
 - Request/response formats
 - Authentication requirements
@@ -116,6 +132,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - API component architecture
 
 **Key Sections:**
+
 - Product APIs (CRUD, configuration, pricing)
 - Order APIs (creation, status, tracking)
 - User APIs (authentication, profile, addresses)
@@ -124,6 +141,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - External service integrations
 
 **When to Reference:**
+
 - Building API clients
 - Implementing new endpoints
 - Integrating external services
@@ -133,9 +151,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 4. [frontend-architecture.md](./frontend-architecture.md)
+
 **Purpose:** React/Next.js frontend architecture
 
 **Contents:**
+
 - React architecture patterns
 - Component hierarchy
 - State management strategy (Zustand)
@@ -146,6 +166,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Routing structure
 
 **Key Patterns:**
+
 - Server-side rendering (SSR)
 - Static site generation (SSG)
 - Client-side rendering (CSR)
@@ -154,6 +175,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Loading states
 
 **When to Reference:**
+
 - Creating new pages
 - Building UI components
 - State management decisions
@@ -163,9 +185,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 5. [backend-architecture.md](./backend-architecture.md)
+
 **Purpose:** Server-side architecture and business logic
 
 **Contents:**
+
 - Next.js API Routes structure
 - Service layer pattern
 - Business logic organization
@@ -175,6 +199,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Caching strategy (Redis)
 
 **Key Services:**
+
 - ProductService (product operations)
 - OrderService (order processing)
 - UserService (user management)
@@ -182,6 +207,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - EmailService (notifications)
 
 **When to Reference:**
+
 - Implementing business logic
 - Creating new services
 - Database transaction handling
@@ -191,9 +217,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 6. [deployment-infrastructure.md](./deployment-infrastructure.md)
+
 **Purpose:** Infrastructure and deployment documentation
 
 **Contents:**
+
 - Project structure and file organization
 - Development workflow
 - Docker containerization
@@ -204,6 +232,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - File storage (MinIO)
 
 **Key Sections:**
+
 - Directory structure explanation
 - Docker Compose setup
 - Environment variables
@@ -211,6 +240,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Rollback procedures
 
 **When to Reference:**
+
 - Setting up development environment
 - Deploying to production
 - Infrastructure changes
@@ -220,9 +250,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 7. [development-practices.md](./development-practices.md)
+
 **Purpose:** Development standards and best practices
 
 **Contents:**
+
 - Development workflow and Git flow
 - Testing strategy (unit, integration, E2E)
 - Code review process
@@ -233,6 +265,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Performance optimization
 
 **Key Standards:**
+
 - Naming conventions
 - File organization
 - Component patterns
@@ -240,6 +273,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Documentation requirements
 
 **When to Reference:**
+
 - Code reviews
 - Writing new code
 - Setting up testing
@@ -249,9 +283,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 ---
 
 ### 8. [monitoring-observability.md](./monitoring-observability.md)
+
 **Purpose:** Operations, monitoring, and observability
 
 **Contents:**
+
 - Application monitoring
 - Error tracking (Sentry integration)
 - Performance monitoring
@@ -261,6 +297,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - Metrics collection
 
 **Key Metrics:**
+
 - Application health score
 - API response times
 - Error rates
@@ -268,6 +305,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 - User analytics
 
 **When to Reference:**
+
 - Setting up monitoring
 - Debugging production issues
 - Performance analysis
@@ -281,17 +319,20 @@ This directory contains the complete architecture documentation for GangRun Prin
 ### Version History
 
 **Version 2.0 (2025-09-30) - Sharded Architecture**
+
 - Split monolithic architecture.md into 8 focused files
 - Improved navigability and maintainability
 - Added comprehensive index and navigation
 - Enhanced documentation for BMAD compliance
 
 **Version 1.1 (2025-09-15) - BMAD Compliance**
+
 - Updated with remaining implementation details
 - Added BMad Method compliance sections
 - Enhanced workflow documentation
 
 **Version 1.0 (2025-09-14) - Initial Documentation**
+
 - Created unified architecture document
 - Documented deployed implementation
 - Established architectural patterns
@@ -301,6 +342,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 ## 🎯 Architecture Principles
 
 ### Core Principles
+
 1. **Simplicity First:** Choose simpler solutions that solve 80% of needs
 2. **Type Safety:** TypeScript everywhere for compile-time safety
 3. **Progressive Enhancement:** Start with server-rendered, enhance with client features
@@ -310,6 +352,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 7. **Testability:** Write testable code with clear separation of concerns
 
 ### Technology Decisions
+
 - **Next.js 15:** Unified fullstack framework with App Router
 - **PostgreSQL:** ACID compliance, JSON flexibility
 - **Prisma:** Type-safe ORM with migrations
@@ -322,6 +365,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 ## 📖 Related Documentation
 
 ### PRD (Product Requirements)
+
 - [Epic 1: Foundation & Theming](../prd/epic-1-foundation-theming.md)
 - [Epic 2: Product Catalog & Configuration](../prd/epic-2-product-catalog-config.md)
 - [Epic 3: Commerce & Checkout](../prd/epic-3-commerce-checkout.md)
@@ -330,9 +374,11 @@ This directory contains the complete architecture documentation for GangRun Prin
 - [Epic 6: Marketing & CRM Platform](../prd/epic-6-marketing-crm-platform.md)
 
 ### Stories (Development Tasks)
+
 - [Stories Directory](../stories/) - All user stories for development
 
 ### Other Documentation
+
 - [BMAD Method](../bmad/) - Development methodology
 - [QA Gates](../qa/gates/) - Quality assurance checklists
 
@@ -341,6 +387,7 @@ This directory contains the complete architecture documentation for GangRun Prin
 ## 🛠️ Maintenance
 
 ### Updating Architecture Documentation
+
 When making significant architectural changes:
 
 1. **Identify the Affected File:**
@@ -370,6 +417,7 @@ When making significant architectural changes:
    ```
 
 ### Documentation Standards
+
 - Use Mermaid for diagrams
 - Include code examples in TypeScript
 - Provide rationale for decisions
@@ -405,6 +453,7 @@ When making significant architectural changes:
 ## 📞 Support
 
 For questions about architecture decisions or clarifications on any documentation:
+
 - Review the specific architecture file
 - Check related PRD epic documents
 - Consult the BMAD documentation

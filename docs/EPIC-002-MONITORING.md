@@ -1,9 +1,11 @@
 # EPIC-002: PRODUCTION MONITORING & OBSERVABILITY
+
 ## Following BMAD Methodology
 
 ---
 
 ## 📋 EPIC OVERVIEW
+
 **Epic Number:** EPIC-002
 **Epic Title:** Production Monitoring & Observability Implementation
 **Priority:** P0 - CRITICAL
@@ -12,7 +14,9 @@
 **Start Date:** 2025-09-28
 
 ### BUSINESS JUSTIFICATION:
+
 The GangRun Printing system is **LIVE IN PRODUCTION** processing customer orders with **ZERO MONITORING**. This creates unacceptable business risk:
+
 - ❌ No error tracking - issues go undetected
 - ❌ No performance monitoring - degradation invisible
 - ❌ No alerting - manual discovery of problems
@@ -22,6 +26,7 @@ The GangRun Printing system is **LIVE IN PRODUCTION** processing customer orders
 **Every hour without monitoring risks revenue loss and reputation damage.**
 
 ### EPIC ACCEPTANCE CRITERIA:
+
 - [ ] Real-time error tracking with alerts
 - [ ] Performance monitoring < 5 min latency
 - [ ] 99.9% uptime measurement capability
@@ -34,15 +39,18 @@ The GangRun Printing system is **LIVE IN PRODUCTION** processing customer orders
 ---
 
 ## 🏃 SPRINT 1: FOUNDATION & ERROR TRACKING
+
 **Duration:** 2 weeks
 **Goal:** Establish error tracking and structured logging
 
 ### 📖 STORY 1.1: SENTRY ERROR TRACKING
+
 **Story Points:** 8
 **Agent:** Backend Agent
 **Priority:** P0 - CRITICAL
 
 #### USER STORY:
+
 ```
 AS A system administrator
 I WANT real-time error tracking
@@ -50,6 +58,7 @@ SO THAT I can fix issues before customers are affected
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Sentry SDK integrated
 - [ ] All errors captured with context
 - [ ] Source maps configured
@@ -58,6 +67,7 @@ SO THAT I can fix issues before customers are affected
 - [ ] Alert rules configured
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.1.1
@@ -109,11 +119,13 @@ tasks:
 ---
 
 ### 📖 STORY 1.2: STRUCTURED LOGGING
+
 **Story Points:** 5
 **Agent:** Backend Agent
 **Priority:** P0
 
 #### USER STORY:
+
 ```
 AS A developer
 I WANT structured logs with correlation IDs
@@ -121,6 +133,7 @@ SO THAT I can trace requests across services
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Winston logger configured
 - [ ] Correlation IDs on all requests
 - [ ] Log levels properly set
@@ -129,6 +142,7 @@ SO THAT I can trace requests across services
 - [ ] No sensitive data logged
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.2.1
@@ -199,11 +213,13 @@ tasks:
 ---
 
 ### 📖 STORY 1.3: APPLICATION METRICS
+
 **Story Points:** 8
 **Agent:** SRE Agent
 **Priority:** P0
 
 #### USER STORY:
+
 ```
 AS A business owner
 I WANT to see real-time business metrics
@@ -211,6 +227,7 @@ SO THAT I can make data-driven decisions
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Custom metrics exported
 - [ ] Business KPIs tracked
 - [ ] Performance metrics collected
@@ -219,6 +236,7 @@ SO THAT I can make data-driven decisions
 - [ ] Resource usage tracked
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T1.3.1
@@ -289,15 +307,18 @@ tasks:
 ---
 
 ## 🏃 SPRINT 2: VISUALIZATION & ALERTING
+
 **Duration:** 2 weeks
 **Goal:** Deploy monitoring stack and alerting
 
 ### 📖 STORY 2.1: MONITORING INFRASTRUCTURE
+
 **Story Points:** 13
 **Agent:** DevOps Agent
 **Priority:** P0
 
 #### USER STORY:
+
 ```
 AS A operations team
 I WANT monitoring infrastructure
@@ -305,6 +326,7 @@ SO THAT we have visibility into system health
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Prometheus deployed
 - [ ] Grafana deployed
 - [ ] Loki for logs
@@ -313,6 +335,7 @@ SO THAT we have visibility into system health
 - [ ] Docker compose ready
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T2.1.1
@@ -394,11 +417,13 @@ tasks:
 ---
 
 ### 📖 STORY 2.2: DASHBOARDS & ALERTS
+
 **Story Points:** 8
 **Agent:** SRE Agent
 **Priority:** P0
 
 #### USER STORY:
+
 ```
 AS A business stakeholder
 I WANT dashboards and alerts
@@ -406,6 +431,7 @@ SO THAT I can monitor business KPIs
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] Business dashboard created
 - [ ] Technical dashboard created
 - [ ] Alert rules defined
@@ -414,6 +440,7 @@ SO THAT I can monitor business KPIs
 - [ ] Runbook linked
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T2.2.1
@@ -485,11 +512,13 @@ tasks:
 ---
 
 ### 📖 STORY 2.3: DISTRIBUTED TRACING
+
 **Story Points:** 8
 **Agent:** Backend Agent
 **Priority:** P1
 
 #### USER STORY:
+
 ```
 AS A developer
 I WANT distributed tracing
@@ -497,6 +526,7 @@ SO THAT I can debug complex issues
 ```
 
 #### ACCEPTANCE CRITERIA:
+
 - [ ] OpenTelemetry configured
 - [ ] Tempo integration
 - [ ] Trace context propagation
@@ -505,6 +535,7 @@ SO THAT I can debug complex issues
 - [ ] Trace sampling configured
 
 #### TASKS:
+
 ```yaml
 tasks:
   - task_id: T2.3.1
@@ -542,6 +573,7 @@ tasks:
 ## 🎯 EPIC COMPLETION CRITERIA
 
 ### DEFINITION OF DONE:
+
 ```yaml
 monitoring_complete:
   error_tracking:
@@ -580,6 +612,7 @@ monitoring_complete:
 ## 📊 SUCCESS METRICS
 
 ### KEY PERFORMANCE INDICATORS:
+
 ```yaml
 kpis:
   - metric: Mean Time To Detection (MTTD)
@@ -608,6 +641,7 @@ kpis:
 ## 🚨 RISK REGISTER
 
 ### RISKS:
+
 ```yaml
 risks:
   - risk: Performance impact from monitoring
@@ -654,6 +688,7 @@ open http://localhost:3003
 ## ✅ EPIC SUCCESS CRITERIA
 
 When complete, GangRun Printing will have:
+
 1. **100% error visibility** - No silent failures
 2. **< 5 min detection time** - Fast issue discovery
 3. **Business KPI dashboards** - Real-time insights
@@ -671,6 +706,7 @@ EPIC-002 is now ACTIVE. Priority: CRITICAL.
 The system is LIVE without monitoring - this is unacceptable.
 
 IMMEDIATE ACTIONS:
+
 1. Backend Agent: Install Sentry TODAY
 2. DevOps Agent: Deploy monitoring stack
 3. SRE Agent: Create dashboards and alerts

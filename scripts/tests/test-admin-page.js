@@ -12,7 +12,6 @@ const { PrismaAdapter } = require('@lucia-auth/adapter-prisma')
 const prisma = new PrismaClient()
 
 async function testAdminPage() {
-
   let browser
   try {
     // Create fresh session
@@ -38,7 +37,6 @@ async function testAdminPage() {
     })
 
     if (!adminUser) {
-
       return
     }
 
@@ -82,9 +80,7 @@ async function testAdminPage() {
       }
     })
 
-    page.on('pageerror', (error) => {
-
-    })
+    page.on('pageerror', (error) => {})
 
     // Navigate to admin page
 
@@ -110,7 +106,6 @@ async function testAdminPage() {
     })
 
     // Complete the test
-
   } catch (error) {
     console.error(`❌ Test failed: ${error.message}`)
   } finally {

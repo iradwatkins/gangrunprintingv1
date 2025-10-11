@@ -28,15 +28,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import {
-  DollarSign,
-  FileText,
-  Mail,
-  MoreVertical,
-  RefreshCw,
-  Send,
-  Truck,
-} from 'lucide-react'
+import { DollarSign, FileText, Mail, MoreVertical, RefreshCw, Send, Truck } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +54,7 @@ interface OrderQuickActionsProps {
 export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
-  
+
   // Default to page reload if no onUpdate provided
   const handleUpdate = onUpdate || (() => window.location.reload())
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false)
@@ -240,9 +232,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Update Order Status</DialogTitle>
-            <DialogDescription>
-              Change the status for order {order.orderNumber}
-            </DialogDescription>
+            <DialogDescription>Change the status for order {order.orderNumber}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -281,7 +271,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
             <Button variant="outline" onClick={() => setStatusDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleStatusUpdate} disabled={updating}>
+            <Button disabled={updating} onClick={handleStatusUpdate}>
               {updating ? 'Updating...' : 'Update Status'}
             </Button>
           </DialogFooter>
@@ -301,8 +291,8 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
               <Label htmlFor="amount">Amount</Label>
               <Input
                 id="amount"
-                type="number"
                 step="0.01"
+                type="number"
                 value={paymentAmount}
                 onChange={(e) => setPaymentAmount(parseFloat(e.target.value))}
               />
@@ -328,7 +318,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
             <Button variant="outline" onClick={() => setPaymentDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handlePaymentCapture} disabled={updating}>
+            <Button disabled={updating} onClick={handlePaymentCapture}>
               {updating ? 'Processing...' : 'Capture Payment'}
             </Button>
           </DialogFooter>
@@ -340,9 +330,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Send Invoice</DialogTitle>
-            <DialogDescription>
-              Send a payment invoice to {order.email}
-            </DialogDescription>
+            <DialogDescription>Send a payment invoice to {order.email}</DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
@@ -366,7 +354,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
             <Button variant="outline" onClick={() => setInvoiceDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSendInvoice} disabled={updating}>
+            <Button disabled={updating} onClick={handleSendInvoice}>
               <Send className="mr-2 h-4 w-4" />
               {updating ? 'Sending...' : 'Send Invoice'}
             </Button>
@@ -414,7 +402,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
             <Button variant="outline" onClick={() => setShippingDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleShippingUpdate} disabled={updating}>
+            <Button disabled={updating} onClick={handleShippingUpdate}>
               {updating ? 'Updating...' : 'Update Shipping'}
             </Button>
           </DialogFooter>

@@ -33,10 +33,8 @@ async function runTest(name: string, testFn: () => Promise<void>): Promise<void>
   try {
     await testFn()
     tests.push({ name, success: true, message: 'Passed' })
-
   } catch (error: any) {
     tests.push({ name, success: false, message: error.message, details: error })
-
   }
 }
 
@@ -69,9 +67,7 @@ async function testSquare() {
 
     if (locations && locations.length > 0) {
       const location = locations[0]
-
     } else {
-
     }
   } catch (error: any) {
     if (error.errors) {
@@ -107,7 +103,6 @@ async function testSendGrid() {
   }
 
   await sgMail.send(msg as any)
-
 }
 
 // 4. Test MinIO
@@ -128,10 +123,8 @@ async function testMinIO() {
   const exists = await minioClient.bucketExists(bucketName)
 
   if (!exists) {
-
     await minioClient.makeBucket(bucketName, 'us-east-1')
   } else {
-
   }
 }
 
@@ -161,7 +154,6 @@ async function testN8N() {
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
-
 }
 
 // 6. Test Auth Configuration
@@ -173,12 +165,10 @@ async function testAuth() {
   if (process.env.AUTH_SECRET.length < 32) {
     throw new Error('AUTH_SECRET should be at least 32 characters')
   }
-
 }
 
 // Main execution
 async function main() {
-
   // Run all tests
   await runTest('Database Connection', testDatabase)
   await runTest('Square API', testSquare)
@@ -193,15 +183,9 @@ async function main() {
   const failed = tests.filter((t) => !t.success).length
 
   if (failed > 0) {
-
-    tests
-      .filter((t) => !t.success)
-      .forEach((t) => {
-
-      })
+    tests.filter((t) => !t.success).forEach((t) => {})
     process.exit(1)
   } else {
-
   }
 }
 

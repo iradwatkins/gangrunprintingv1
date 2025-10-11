@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
-import { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { withRateLimit, RateLimitPresets } from '@/lib/rate-limit'
 import { ProductService } from '@/services/ProductService'
 import {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   // Apply rate limiting for API endpoints
   const rateLimitResponse = await withRateLimit(request, {
     ...RateLimitPresets.api,
-    prefix: 'products-get'
+    prefix: 'products-get',
   })
   if (rateLimitResponse) return rateLimitResponse
 
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       {
         ...result.pagination,
         count: transformedProducts.length,
-        responseTime
+        responseTime,
       },
       requestId
     )
@@ -222,7 +222,7 @@ export async function GET_OLD(request: NextRequest) {
         totalPages,
         hasNextPage,
         hasPreviousPage,
-        responseTime
+        responseTime,
       },
       requestId
     )
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
   // Apply rate limiting for admin endpoints (using api preset instead of sensitive)
   const rateLimitResponse = await withRateLimit(request, {
     ...RateLimitPresets.api,
-    prefix: 'products-create'
+    prefix: 'products-create',
   })
   if (rateLimitResponse) return rateLimitResponse
 
@@ -264,10 +264,17 @@ export async function POST(request: NextRequest) {
       data = createProductSchema.parse(rawData)
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
-        console.error(`[${requestId}] Validation failed:`, JSON.stringify({
-          errors: validationError.issues,
-          receivedData: rawData
-        }, null, 2))
+        console.error(
+          `[${requestId}] Validation failed:`,
+          JSON.stringify(
+            {
+              errors: validationError.issues,
+              receivedData: rawData,
+            },
+            null,
+            2
+          )
+        )
         return createValidationErrorResponse(validationError.issues, requestId)
       }
       return createErrorResponse('Data validation failed', 400, undefined, requestId)
@@ -302,13 +309,18 @@ export async function POST(request: NextRequest) {
     while (true) {
       const existingSku = await prisma.product.findUnique({
         where: { sku: uniqueSku },
-        select: { id: true }
+        select: { id: true },
       })
       if (!existingSku) break
       uniqueSku = `${sku}-${skuCounter}`
       skuCounter++
       if (skuCounter > 100) {
-        return createErrorResponse('Unable to generate unique SKU after 100 attempts', 400, undefined, requestId)
+        return createErrorResponse(
+          'Unable to generate unique SKU after 100 attempts',
+          400,
+          undefined,
+          requestId
+        )
       }
     }
 
@@ -323,13 +335,18 @@ export async function POST(request: NextRequest) {
     while (true) {
       const existingSlug = await prisma.product.findUnique({
         where: { slug: uniqueSlug },
-        select: { id: true }
+        select: { id: true },
       })
       if (!existingSlug) break
       uniqueSlug = `${baseSlug}-${slugCounter}`
       slugCounter++
       if (slugCounter > 100) {
-        return createErrorResponse('Unable to generate unique slug after 100 attempts', 400, undefined, requestId)
+        return createErrorResponse(
+          'Unable to generate unique slug after 100 attempts',
+          400,
+          undefined,
+          requestId
+        )
       }
     }
 
@@ -348,10 +365,20 @@ export async function POST(request: NextRequest) {
         return createErrorResponse(`Category not found: ${categoryId}`, 400, null, requestId)
       }
       if (!paperStockSet) {
-        return createErrorResponse(`Paper stock set not found: ${paperStockSetId}`, 400, null, requestId)
+        return createErrorResponse(
+          `Paper stock set not found: ${paperStockSetId}`,
+          400,
+          null,
+          requestId
+        )
       }
       if (!quantityGroup) {
-        return createErrorResponse(`Quantity group not found: ${quantityGroupId}`, 400, null, requestId)
+        return createErrorResponse(
+          `Quantity group not found: ${quantityGroupId}`,
+          400,
+          null,
+          requestId
+        )
       }
       if (!sizeGroup) {
         return createErrorResponse(`Size group not found: ${sizeGroupId}`, 400, null, requestId)

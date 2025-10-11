@@ -7,7 +7,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { OrderStatus, Carrier } from '@prisma/client'
+import { type OrderStatus, type Carrier } from '@prisma/client'
 import { N8NIntegration } from '@/lib/n8n/integration'
 import { OrderEmailService } from '@/lib/email/order-email-service'
 
@@ -60,7 +60,6 @@ export interface PickupUpdate {
  */
 
 export class OrderService {
-
   /**
    * Process successful payment from Square webhook
    */
@@ -71,7 +70,7 @@ export class OrderService {
   ): Promise<void> {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { OrderItem: true, User: true }
+      include: { OrderItem: true, User: true },
     })
 
     if (!order) {
@@ -94,10 +93,10 @@ export class OrderService {
             fromStatus: 'PENDING_PAYMENT',
             toStatus: 'CONFIRMATION',
             notes: 'Payment received via Square',
-            changedBy: 'System'
-          }
-        }
-      }
+            changedBy: 'System',
+          },
+        },
+      },
     })
 
     // Send confirmation email
@@ -110,7 +109,7 @@ export class OrderService {
       total: order.total,
       customerEmail: order.email,
       paidAt: new Date().toISOString(),
-      items: order.OrderItem
+      items: order.OrderItem,
     })
 
     console.log(`[OrderService] Payment processed for order ${order.orderNumber}`)
@@ -124,7 +123,7 @@ export class OrderService {
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { Vendor: true, User: true }
+      include: { Vendor: true, User: true },
     })
 
     if (!order) {
@@ -133,15 +132,11 @@ export class OrderService {
 
     // Validate transition
     if (order.status !== fromStatus) {
-      throw new Error(
-        `Status mismatch: Expected ${fromStatus}, got ${order.status}`
-      )
+      throw new Error(`Status mismatch: Expected ${fromStatus}, got ${order.status}`)
     }
 
     if (!this.isValidTransition(fromStatus, toStatus)) {
-      throw new Error(
-        `Invalid transition: ${fromStatus} → ${toStatus}`
-      )
+      throw new Error(`Invalid transition: ${fromStatus} → ${toStatus}`)
     }
 
     // Update order
@@ -152,9 +147,9 @@ export class OrderService {
           fromStatus,
           toStatus,
           notes: notes || `Status changed to ${toStatus}`,
-          changedBy: changedBy || 'System'
-        }
-      }
+          changedBy: changedBy || 'System',
+        },
+      },
     }
 
     // Set timestamps based on status
@@ -177,7 +172,7 @@ export class OrderService {
 
     await prisma.order.update({
       where: { id: orderId },
-      data: updateData
+      data: updateData,
     })
 
     // Send status-specific notifications
@@ -190,12 +185,10 @@ export class OrderService {
       previousStatus: fromStatus,
       newStatus: toStatus,
       changedBy: changedBy || 'System',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
 
-    console.log(
-      `[OrderService] Status updated: ${order.orderNumber} ${fromStatus} → ${toStatus}`
-    )
+    console.log(`[OrderService] Status updated: ${order.orderNumber} ${fromStatus} → ${toStatus}`)
   }
 
   /**
@@ -206,7 +199,7 @@ export class OrderService {
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { Vendor: true, OrderItem: true }
+      include: { Vendor: true, OrderItem: true },
     })
 
     if (!order) {
@@ -218,7 +211,7 @@ export class OrderService {
     }
 
     const vendor = await prisma.vendor.findUnique({
-      where: { id: vendorId }
+      where: { id: vendorId },
     })
 
     if (!vendor || !vendor.isActive) {
@@ -239,10 +232,10 @@ export class OrderService {
             fromStatus: order.status,
             toStatus: 'PRODUCTION',
             notes: `Vendor assigned: ${vendor.name}`,
-            changedBy: 'Admin'
-          }
-        }
-      }
+            changedBy: 'Admin',
+          },
+        },
+      },
     })
 
     // Notify vendor via N8N webhook
@@ -256,24 +249,29 @@ export class OrderService {
       orderData: {
         items: order.OrderItem,
         total: order.total,
-        customerEmail: order.email
-      }
+        customerEmail: order.email,
+      },
     })
 
-    console.log(
-      `[OrderService] Vendor assigned: ${order.orderNumber} → ${vendor.name}`
-    )
+    console.log(`[OrderService] Vendor assigned: ${order.orderNumber} → ${vendor.name}`)
   }
 
   /**
    * Update shipping info and mark as SHIPPED
    */
   static async updateShipping(update: ShippingUpdate): Promise<void> {
-    const { orderId, trackingNumber, carrier, shippingServiceCode, shippingLabelUrl, estimatedDelivery } = update
+    const {
+      orderId,
+      trackingNumber,
+      carrier,
+      shippingServiceCode,
+      shippingLabelUrl,
+      estimatedDelivery,
+    } = update
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { User: true }
+      include: { User: true },
     })
 
     if (!order) {
@@ -298,10 +296,10 @@ export class OrderService {
             fromStatus: 'PRODUCTION',
             toStatus: 'SHIPPED',
             notes: `Shipped via ${carrier}`,
-            changedBy: 'System'
-          }
-        }
-      }
+            changedBy: 'System',
+          },
+        },
+      },
     })
 
     // Send shipping notification email
@@ -315,7 +313,7 @@ export class OrderService {
       carrier,
       estimatedDelivery: estimatedDelivery?.toISOString(),
       customerEmail: order.email,
-      shippingAddress: order.shippingAddress
+      shippingAddress: order.shippingAddress,
     })
 
     console.log(
@@ -330,7 +328,7 @@ export class OrderService {
     const { orderId, pickedUpAt, pickedUpBy, notes } = update
 
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order) {
@@ -352,10 +350,10 @@ export class OrderService {
             fromStatus: order.status,
             toStatus: 'PICKED_UP',
             notes: notes || `Picked up by ${pickedUpBy}`,
-            changedBy: 'Admin'
-          }
-        }
-      }
+            changedBy: 'Admin',
+          },
+        },
+      },
     })
 
     // Send pickup confirmation
@@ -367,7 +365,7 @@ export class OrderService {
       orderNumber: order.orderNumber,
       pickedUpAt: pickedUpAt.toISOString(),
       pickedUpBy,
-      customerEmail: order.email
+      customerEmail: order.email,
     })
 
     console.log(`[OrderService] Order picked up: ${order.orderNumber} by ${pickedUpBy}`)
@@ -378,7 +376,7 @@ export class OrderService {
    */
   static async putOnHold(orderId: string, reason: string, adminNotes?: string): Promise<void> {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order) {
@@ -402,10 +400,10 @@ export class OrderService {
             fromStatus: order.status,
             toStatus: 'ON_HOLD',
             notes: `Order held: ${reason}`,
-            changedBy: 'Admin'
-          }
-        }
-      }
+            changedBy: 'Admin',
+          },
+        },
+      },
     })
 
     // Send on-hold notification
@@ -419,7 +417,7 @@ export class OrderService {
    */
   static async resumeFromHold(orderId: string, resumeStatus: OrderStatus): Promise<void> {
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
     })
 
     if (!order) {
@@ -445,10 +443,10 @@ export class OrderService {
             fromStatus: 'ON_HOLD',
             toStatus: resumeStatus,
             notes: 'Order resumed',
-            changedBy: 'Admin'
-          }
-        }
-      }
+            changedBy: 'Admin',
+          },
+        },
+      },
     })
 
     console.log(`[OrderService] Order resumed: ${order.orderNumber} → ${resumeStatus}`)
@@ -471,7 +469,7 @@ export class OrderService {
       DELIVERED: ['REPRINT'],
       REPRINT: ['PRODUCTION'],
       CANCELLED: [],
-      REFUNDED: []
+      REFUNDED: [],
     }
 
     return validTransitions[from]?.includes(to) || false
@@ -536,7 +534,11 @@ export class OrderService {
         order,
         trackingNumber,
         carrier,
-        estimatedDelivery?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+        estimatedDelivery?.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        })
       )
     } catch (error) {
       console.error(`[OrderService] Failed to send shipping notification:`, error)
@@ -577,7 +579,11 @@ export class OrderService {
         order,
         order.trackingNumber || 'Delivery in progress',
         order.carrier || 'Local Delivery',
-        order.estimatedDelivery?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+        order.estimatedDelivery?.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        })
       )
     } catch (error) {
       console.error(`[OrderService] Failed to send on-the-way notification:`, error)
@@ -587,11 +593,7 @@ export class OrderService {
   private static async sendReprintNotification(order: any, reason?: string): Promise<void> {
     try {
       const actionRequired = reason || 'Your order is being reprinted to ensure quality.'
-      await OrderEmailService.sendOnHoldNotification(
-        order,
-        'Reprint in Progress',
-        actionRequired
-      )
+      await OrderEmailService.sendOnHoldNotification(order, 'Reprint in Progress', actionRequired)
     } catch (error) {
       console.error(`[OrderService] Failed to send reprint notification:`, error)
     }

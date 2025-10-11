@@ -5,12 +5,12 @@
  * OPTIMIZED with high-performance caching system
  */
 
-import { ModuleType, ModulePricingContribution } from '../types/StandardModuleTypes'
+import { ModuleType, type ModulePricingContribution } from '../types/StandardModuleTypes'
 import {
   PricingCacheManager,
   generatePricingCacheKey,
   generateModuleContextKey,
-  measureExecutionTime
+  measureExecutionTime,
 } from './PricingCache'
 
 // =============================================================================
@@ -44,9 +44,9 @@ export interface ModulePricingContext {
   sidesMultiplier: number
 
   // Calculated values
-  basePrice: number           // quantity × paper × size × coating × sides
-  productPrice: number        // basePrice + addon costs
-  finalPrice: number          // productPrice × turnaround
+  basePrice: number // quantity × paper × size × coating × sides
+  productPrice: number // basePrice + addon costs
+  finalPrice: number // productPrice × turnaround
 
   // Validation
   isValid: boolean
@@ -59,9 +59,9 @@ export interface ModulePricingContext {
  */
 export interface ModulePricingRequirements {
   moduleType: ModuleType
-  requiredInputs: string[]    // What this module needs from other modules
-  provides: string[]          // What this module provides to others
-  calculationOrder: number    // Order in pricing calculation chain
+  requiredInputs: string[] // What this module needs from other modules
+  provides: string[] // What this module provides to others
+  calculationOrder: number // Order in pricing calculation chain
 }
 
 // =============================================================================
@@ -76,22 +76,18 @@ export class ModulePricingEngine {
   private context: ModulePricingContext
   private moduleContributions: Map<ModuleType, ModulePricingContribution> = new Map()
   private calculationOrder: ModuleType[] = [
-    ModuleType.QUANTITY,      // 1st: Provides quantity
-    ModuleType.PAPER_STOCK,   // 2nd: Provides base price per unit
-    ModuleType.SIZE,          // 3rd: Provides size multiplier
-    ModuleType.ADDONS,        // 4th: Uses quantity + base price
-    ModuleType.TURNAROUND,    // 5th: Uses product price
-    ModuleType.IMAGES         // 6th: Always optional
+    ModuleType.QUANTITY, // 1st: Provides quantity
+    ModuleType.PAPER_STOCK, // 2nd: Provides base price per unit
+    ModuleType.SIZE, // 3rd: Provides size multiplier
+    ModuleType.ADDONS, // 4th: Uses quantity + base price
+    ModuleType.TURNAROUND, // 5th: Uses product price
+    ModuleType.IMAGES, // 6th: Always optional
   ]
 
   // High-performance caching system
   private cache: PricingCacheManager
 
-  constructor(cacheOptions?: {
-    maxCacheSize?: number
-    maxAge?: number
-    enableCaching?: boolean
-  }) {
+  constructor(cacheOptions?: { maxCacheSize?: number; maxAge?: number; enableCaching?: boolean }) {
     this.context = this.createEmptyContext()
     this.cache = new PricingCacheManager({
       maxCacheSize: cacheOptions?.maxCacheSize || 1000,
@@ -115,7 +111,7 @@ export class ModulePricingEngine {
       productPrice: 0,
       finalPrice: 0,
       isValid: false,
-      hasAllRequiredModules: false
+      hasAllRequiredModules: false,
     }
   }
 
@@ -349,8 +345,8 @@ export class ModulePricingEngine {
       // Note: coating and sides multipliers are handled within paper stock calculation
       // Extract them if available in calculation breakdown
       const breakdown = paperContrib.calculation?.breakdown || []
-      const coatingItem = breakdown.find(item => item.type === 'coating')
-      const sidesItem = breakdown.find(item => item.type === 'sides')
+      const coatingItem = breakdown.find((item) => item.type === 'coating')
+      const sidesItem = breakdown.find((item) => item.type === 'sides')
 
       this.context.coatingMultiplier = coatingItem?.cost || 1
       this.context.sidesMultiplier = sidesItem?.cost || 1
@@ -363,7 +359,7 @@ export class ModulePricingEngine {
   private extractQuantityFromContribution(contribution: ModulePricingContribution): number {
     // Look in calculation breakdown for actual quantity value
     const breakdown = contribution.calculation?.breakdown || []
-    const quantityItem = breakdown.find(item => item.type === 'quantity')
+    const quantityItem = breakdown.find((item) => item.type === 'quantity')
 
     if (quantityItem) {
       // Extract number from description like "5000 units"
@@ -379,7 +375,7 @@ export class ModulePricingEngine {
    */
   private extractSquareInchesFromContribution(contribution: ModulePricingContribution): number {
     const breakdown = contribution.calculation?.breakdown || []
-    const sizeItem = breakdown.find(item => item.type === 'size')
+    const sizeItem = breakdown.find((item) => item.type === 'size')
 
     if (sizeItem) {
       // Extract number from description like "187 square inches"
@@ -406,15 +402,9 @@ export class ModulePricingEngine {
    */
   private hasRequiredModules(): boolean {
     // Required modules: Quantity, Paper Stock, Size
-    const requiredModules = [
-      ModuleType.QUANTITY,
-      ModuleType.PAPER_STOCK,
-      ModuleType.SIZE
-    ]
+    const requiredModules = [ModuleType.QUANTITY, ModuleType.PAPER_STOCK, ModuleType.SIZE]
 
-    return requiredModules.every(moduleType =>
-      this.hasModuleContribution(moduleType)
-    )
+    return requiredModules.every((moduleType) => this.hasModuleContribution(moduleType))
   }
 
   /**
@@ -440,7 +430,7 @@ export class ModulePricingEngine {
         module: ModuleType.QUANTITY,
         description: 'Base Product',
         cost: this.context.basePrice,
-        details: `${this.context.quantity} × $${this.context.paperPricePerUnit} × ${this.context.sizeMultiplier}`
+        details: `${this.context.quantity} × $${this.context.paperPricePerUnit} × ${this.context.sizeMultiplier}`,
       })
     }
 
@@ -450,7 +440,7 @@ export class ModulePricingEngine {
       breakdown.push({
         module: ModuleType.ADDONS,
         description: 'Add-ons',
-        cost: addonCosts
+        cost: addonCosts,
       })
     }
 
@@ -460,7 +450,7 @@ export class ModulePricingEngine {
       breakdown.push({
         module: ModuleType.TURNAROUND,
         description: 'Turnaround',
-        cost: turnaroundCosts
+        cost: turnaroundCosts,
       })
     }
 
@@ -469,7 +459,7 @@ export class ModulePricingEngine {
       addonCosts,
       turnaroundCosts,
       finalPrice: this.context.finalPrice,
-      breakdown
+      breakdown,
     }
   }
 
@@ -512,7 +502,7 @@ export class ModulePricingEngine {
         context = {
           quantity: this.context.quantity,
           basePrice: this.context.basePrice,
-          isValid: this.context.isValid
+          isValid: this.context.isValid,
         }
         break
 
@@ -522,7 +512,7 @@ export class ModulePricingEngine {
           quantity: this.context.quantity,
           basePrice: this.context.basePrice,
           productPrice: this.context.productPrice,
-          isValid: this.context.isValid
+          isValid: this.context.isValid,
         }
         break
 
@@ -591,40 +581,46 @@ export function useModulePricingEngine(options: UseModulePricingEngineOptions = 
   )
 
   // Update module contribution
-  const updateModuleContribution = useCallback((
-    moduleType: ModuleType,
-    contribution: ModulePricingContribution
-  ) => {
-    try {
-      const newContext = engine.updateModuleContribution(moduleType, contribution)
-      setPricingContext(newContext)
+  const updateModuleContribution = useCallback(
+    (moduleType: ModuleType, contribution: ModulePricingContribution) => {
+      try {
+        const newContext = engine.updateModuleContribution(moduleType, contribution)
+        setPricingContext(newContext)
 
-      if (autoCalculate) {
-        onPriceChange?.(newContext)
+        if (autoCalculate) {
+          onPriceChange?.(newContext)
+        }
+      } catch (error) {
+        onError?.(error instanceof Error ? error : new Error('Pricing calculation failed'))
       }
-    } catch (error) {
-      onError?.(error instanceof Error ? error : new Error('Pricing calculation failed'))
-    }
-  }, [engine, autoCalculate, onPriceChange, onError])
+    },
+    [engine, autoCalculate, onPriceChange, onError]
+  )
 
   // Remove module contribution
-  const removeModuleContribution = useCallback((moduleType: ModuleType) => {
-    try {
-      const newContext = engine.removeModuleContribution(moduleType)
-      setPricingContext(newContext)
+  const removeModuleContribution = useCallback(
+    (moduleType: ModuleType) => {
+      try {
+        const newContext = engine.removeModuleContribution(moduleType)
+        setPricingContext(newContext)
 
-      if (autoCalculate) {
-        onPriceChange?.(newContext)
+        if (autoCalculate) {
+          onPriceChange?.(newContext)
+        }
+      } catch (error) {
+        onError?.(error instanceof Error ? error : new Error('Pricing update failed'))
       }
-    } catch (error) {
-      onError?.(error instanceof Error ? error : new Error('Pricing update failed'))
-    }
-  }, [engine, autoCalculate, onPriceChange, onError])
+    },
+    [engine, autoCalculate, onPriceChange, onError]
+  )
 
   // Get context for specific module
-  const getContextForModule = useCallback((moduleType: ModuleType) => {
-    return engine.getContextForModule(moduleType)
-  }, [engine])
+  const getContextForModule = useCallback(
+    (moduleType: ModuleType) => {
+      return engine.getContextForModule(moduleType)
+    },
+    [engine]
+  )
 
   // Get pricing breakdown
   const pricingBreakdown = useMemo(() => {
@@ -648,6 +644,6 @@ export function useModulePricingEngine(options: UseModulePricingEngineOptions = 
     basePrice: pricingContext.basePrice,
     finalPrice: pricingContext.finalPrice,
     isValid: pricingContext.isValid,
-    hasAllRequiredModules: pricingContext.hasAllRequiredModules
+    hasAllRequiredModules: pricingContext.hasAllRequiredModules,
   }
 }

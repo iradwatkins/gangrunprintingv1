@@ -1,10 +1,10 @@
 import {
   StandardModuleProps,
   StandardModuleValue,
-  QuantityItem,
+  type QuantityItem,
   QuantityValue,
-  QuantityModuleProps as StandardQuantityModuleProps,
-  QuantityModuleValue as StandardQuantityModuleValue
+  type QuantityModuleProps as StandardQuantityModuleProps,
+  type QuantityModuleValue as StandardQuantityModuleValue,
 } from '../types/StandardModuleTypes'
 
 // Legacy interface for backward compatibility

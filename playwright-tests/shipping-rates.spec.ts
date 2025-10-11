@@ -18,14 +18,14 @@ test.describe('Shipping Rate Calculation Tests', () => {
       state: 'TX',
       zipCode: '75201',
       country: 'US',
-      isResidential: true
+      isResidential: true,
     }
 
     // Define our test packages: 1x45lb box + 2x30lb boxes = 105lb total
     const testItems = [
       {
         quantity: 1,
-        width: 12,  // Standard box dimensions
+        width: 12, // Standard box dimensions
         height: 12,
         paperStockWeight: 45 / (12 * 12), // Weight per square inch to equal 45 lbs
       },
@@ -40,15 +40,15 @@ test.describe('Shipping Rate Calculation Tests', () => {
         width: 10,
         height: 10,
         paperStockWeight: 30 / (10 * 10), // Second 30 lb box
-      }
+      },
     ]
 
     // Call the shipping calculation API directly
     const response = await page.request.post('http://localhost:3002/api/shipping/calculate', {
       data: {
         toAddress: shippingAddress,
-        items: testItems
-      }
+        items: testItems,
+      },
     })
 
     expect(response.ok()).toBeTruthy()
@@ -58,12 +58,9 @@ test.describe('Shipping Rate Calculation Tests', () => {
     const fedexRates = data.rates.filter((rate: any) => rate.carrier === 'FEDEX')
 
     fedexRates.forEach((rate: any) => {
-
       if (rate.deliveryDate) {
-
       }
       if (rate.isGuaranteed) {
-
       }
     })
 
@@ -78,7 +75,7 @@ test.describe('Shipping Rate Calculation Tests', () => {
     // Return the rates for reference
     return {
       totalWeight: data.totalWeight,
-      rates: fedexRates
+      rates: fedexRates,
     }
   })
 
@@ -106,7 +103,6 @@ test.describe('Shipping Rate Calculation Tests', () => {
     for (let i = 0; i < count; i++) {
       const option = shippingOptions.nth(i)
       const text = await option.textContent()
-
     }
   })
 })

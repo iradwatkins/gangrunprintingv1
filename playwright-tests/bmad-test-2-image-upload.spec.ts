@@ -17,7 +17,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // If we're redirected to signin, we need to authenticate
     if (page.url().includes('/auth/signin')) {
-
     }
   })
 
@@ -25,7 +24,7 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     // Create a simple test image using Canvas API
     const imageDataUrl = await page.evaluate(() => {
       const canvas = document.createElement('canvas')
-      canvas.width = 350  // 3.5" at 100 DPI
+      canvas.width = 350 // 3.5" at 100 DPI
       canvas.height = 200 // 2" at 100 DPI
       const ctx = canvas.getContext('2d')!
 
@@ -74,7 +73,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     }, imageDataUrl)
-
   })
 
   test('Step 2: Upload Image and Create Product', async ({ page }) => {
@@ -91,29 +89,37 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     await page.fill('input[name="basePrice"]', testProduct.basePrice.toString())
 
     // Select category
-    const categorySelect = page.locator('select[name="categoryId"], button:has-text("Select category")')
-    if (await categorySelect.count() > 0) {
+    const categorySelect = page.locator(
+      'select[name="categoryId"], button:has-text("Select category")'
+    )
+    if ((await categorySelect.count()) > 0) {
       await categorySelect.click()
       await page.click('text=Business Cards')
     }
 
     // Select paper stock set
-    const paperStockSelect = page.locator('select[name="selectedPaperStockSet"], button:has-text("Select paper stock set")')
-    if (await paperStockSelect.count() > 0) {
+    const paperStockSelect = page.locator(
+      'select[name="selectedPaperStockSet"], button:has-text("Select paper stock set")'
+    )
+    if ((await paperStockSelect.count()) > 0) {
       await paperStockSelect.click()
       await page.click('text=Standard Cardstock Set')
     }
 
     // Select quantity group
-    const quantitySelect = page.locator('select[name="selectedQuantityGroup"], button:has-text("Select quantity group")')
-    if (await quantitySelect.count() > 0) {
+    const quantitySelect = page.locator(
+      'select[name="selectedQuantityGroup"], button:has-text("Select quantity group")'
+    )
+    if ((await quantitySelect.count()) > 0) {
       await quantitySelect.click()
       await page.click('text=Business Card Quantities')
     }
 
     // Select size group
-    const sizeSelect = page.locator('select[name="selectedSizeGroup"], button:has-text("Select size group")')
-    if (await sizeSelect.count() > 0) {
+    const sizeSelect = page.locator(
+      'select[name="selectedSizeGroup"], button:has-text("Select size group")'
+    )
+    if ((await sizeSelect.count()) > 0) {
       await sizeSelect.click()
       await page.click('text=Business Card Sizes')
     }
@@ -140,7 +146,7 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
       ctx.textAlign = 'center'
       ctx.fillText('TEST PRODUCT', canvas.width / 2, canvas.height / 2)
 
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         canvas.toBlob(resolve, 'image/png')
       })
     })
@@ -235,15 +241,14 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
     // Test MinIO connectivity (if available)
     try {
-      const minioHealth = await page.request.get('https://gangrunprinting.com/api/test/minio-health')
+      const minioHealth = await page.request.get(
+        'https://gangrunprinting.com/api/test/minio-health'
+      )
       if (minioHealth.status() === 200) {
-
       } else {
         console.log('⚠️  MinIO health check returned:', minioHealth.status())
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   })
 
   test('Step 4: Create Multiple Products with Images', async ({ page }) => {
@@ -256,15 +261,15 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
         paperStock: 'Marketing Materials Set',
         quantity: 'Flyer Quantities',
         size: 'Flyer Sizes',
-        price: '19.99'
+        price: '19.99',
       },
       {
         name: 'Large Format Poster',
         sku: 'LFP-IMG-001',
         description: 'High-resolution large format poster for events',
         category: 'Large Format Posters',
-        price: '49.99'
-      }
+        price: '49.99',
+      },
     ]
 
     for (const product of products) {
@@ -280,14 +285,14 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
       // Select category if available
       try {
-        const categorySelect = page.locator('select[name="categoryId"], button:has-text("Select category")')
-        if (await categorySelect.count() > 0) {
+        const categorySelect = page.locator(
+          'select[name="categoryId"], button:has-text("Select category")'
+        )
+        if ((await categorySelect.count()) > 0) {
           await categorySelect.click()
           await page.click(`text=${product.category}`)
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
 
       // Upload a different test image for each product
       await page.evaluate((productName) => {
@@ -309,7 +314,9 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
 
         canvas.toBlob(async (blob) => {
           if (blob) {
-            const file = new File([blob], `${productName.replace(/\s+/g, '-')}.png`, { type: 'image/png' })
+            const file = new File([blob], `${productName.replace(/\s+/g, '-')}.png`, {
+              type: 'image/png',
+            })
             const fileInput = document.querySelector('#product-image') as HTMLInputElement
             if (fileInput) {
               const dataTransfer = new DataTransfer()
@@ -327,7 +334,6 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
       // Save product
       await page.click('button:has-text("Create Product")')
       await page.waitForSelector('text=success', { timeout: 10000 })
-
     }
   })
 
@@ -340,13 +346,12 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     const testProducts = [
       'Premium Business Cards with Image',
       'Marketing Flyer with Design',
-      'Large Format Poster'
+      'Large Format Poster',
     ]
 
     for (const productName of testProducts) {
       const productRow = page.locator(`text=${productName}`)
       await expect(productRow).toBeVisible()
-
     }
 
     // Test API to ensure products are stored correctly
@@ -358,7 +363,8 @@ test.describe('BMAD Test 2: Image Upload & Visual Product Creation', () => {
     expect(products.length).toBeGreaterThan(0)
 
     // Check if our test products have images
-    const productsWithImages = products.filter(p => p.imageUrl || (p.ProductImage && p.ProductImage.length > 0))
-
+    const productsWithImages = products.filter(
+      (p) => p.imageUrl || (p.ProductImage && p.ProductImage.length > 0)
+    )
   })
 })

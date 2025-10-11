@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest, lucia } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { authLogger } from '@/lib/logger-safe'
@@ -19,10 +19,7 @@ export async function GET(request: NextRequest) {
         userId: user?.id,
         userRole: user?.role,
       })
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
     // Get pagination parameters
@@ -35,33 +32,33 @@ export async function GET(request: NextRequest) {
     const [totalCount, sessions] = await Promise.all([
       prisma.session.count(),
       prisma.session.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true,
-            emailVerified: true,
-            createdAt: true,
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              emailVerified: true,
+              createdAt: true,
+            },
           },
         },
-      },
         orderBy: {
           expiresAt: 'desc',
         },
         skip,
         take: limit,
-      })
+      }),
     ])
 
     const now = new Date()
 
     // Process sessions to add computed fields
-    const processedSessions = sessions.map(session => {
+    const processedSessions = sessions.map((session) => {
       const timeUntilExpiry = session.expiresAt.getTime() - now.getTime()
       const isExpired = session.expiresAt <= now
-      const isExpiringSoon = timeUntilExpiry < (7 * 24 * 60 * 60 * 1000) // 7 days
+      const isExpiringSoon = timeUntilExpiry < 7 * 24 * 60 * 60 * 1000 // 7 days
       const daysUntilExpiry = Math.ceil(timeUntilExpiry / (1000 * 60 * 60 * 24))
 
       return {
@@ -81,22 +78,25 @@ export async function GET(request: NextRequest) {
     const stats = {
       pageTotal: sessions.length,
       totalCount,
-      active: processedSessions.filter(s => !s.isExpired).length,
-      expired: processedSessions.filter(s => s.isExpired).length,
-      expiringSoon: processedSessions.filter(s => s.isExpiringSoon && !s.isExpired).length,
-      byUser: processedSessions.reduce((acc, session) => {
-        const email = session.user.email
-        if (!acc[email]) {
-          acc[email] = { active: 0, expired: 0, total: 0 }
-        }
-        acc[email].total++
-        if (session.isExpired) {
-          acc[email].expired++
-        } else {
-          acc[email].active++
-        }
-        return acc
-      }, {} as Record<string, { active: number; expired: number; total: number }>),
+      active: processedSessions.filter((s) => !s.isExpired).length,
+      expired: processedSessions.filter((s) => s.isExpired).length,
+      expiringSoon: processedSessions.filter((s) => s.isExpiringSoon && !s.isExpired).length,
+      byUser: processedSessions.reduce(
+        (acc, session) => {
+          const email = session.user.email
+          if (!acc[email]) {
+            acc[email] = { active: 0, expired: 0, total: 0 }
+          }
+          acc[email].total++
+          if (session.isExpired) {
+            acc[email].expired++
+          } else {
+            acc[email].active++
+          }
+          return acc
+        },
+        {} as Record<string, { active: number; expired: number; total: number }>
+      ),
     }
 
     authLogger.debug(`Admin ${user.email} viewed sessions`, {
@@ -116,16 +116,13 @@ export async function GET(request: NextRequest) {
         limit,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1
+        hasPreviousPage: page > 1,
       },
       timestamp: now.toISOString(),
     })
   } catch (error) {
     authLogger.error('Error fetching sessions:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -140,10 +137,7 @@ export async function DELETE(request: NextRequest) {
     const { user } = await validateRequest()
 
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
     const url = new URL(request.url)
@@ -187,15 +181,9 @@ export async function DELETE(request: NextRequest) {
       })
     }
 
-    return NextResponse.json(
-      { error: 'Invalid action or missing parameters' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Invalid action or missing parameters' }, { status: 400 })
   } catch (error) {
     authLogger.error('Error in session management:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

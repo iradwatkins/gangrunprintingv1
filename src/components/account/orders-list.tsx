@@ -121,10 +121,7 @@ export function OrdersList({
         if (order.referenceNumber?.toLowerCase().includes(query)) return true
 
         // Search in product names
-        return order.OrderItem.some(
-          (item) =>
-            item.productName.toLowerCase().includes(query)
-        )
+        return order.OrderItem.some((item) => item.productName.toLowerCase().includes(query))
       })
     }
 
@@ -198,11 +195,7 @@ export function OrdersList({
   }
 
   // Check if any filters are active
-  const hasActiveFilters =
-    statusFilter !== 'all' ||
-    initialSearchQuery ||
-    startDate ||
-    endDate
+  const hasActiveFilters = statusFilter !== 'all' || initialSearchQuery || startDate || endDate
 
   // Empty state
   if (orders.length === 0) {
@@ -230,15 +223,15 @@ export function OrdersList({
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              className="pl-9 pr-9"
               placeholder="Search by order number or product..."
               value={searchInput}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9 pr-9"
             />
             {searchInput && (
               <button
-                onClick={() => handleSearch('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
+                onClick={() => handleSearch('')}
               >
                 <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
               </button>
@@ -291,15 +284,15 @@ export function OrdersList({
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
+            className="pl-9 pr-9"
             placeholder="Search by order number or product..."
             value={searchInput}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 pr-9"
           />
           {searchInput && (
             <button
-              onClick={() => handleSearch('')}
               className="absolute right-3 top-1/2 -translate-y-1/2"
+              onClick={() => handleSearch('')}
             >
               <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
@@ -340,7 +333,7 @@ export function OrdersList({
       {/* Order Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {paginatedOrders.map((order) => (
-          <OrderCard key={order.id} order={order} isBroker={isBroker} />
+          <OrderCard key={order.id} isBroker={isBroker} order={order} />
         ))}
       </div>
 
@@ -348,10 +341,10 @@ export function OrdersList({
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
+            size="sm"
+            variant="outline"
+            onClick={() => handlePageChange(currentPage - 1)}
           >
             Previous
           </Button>
@@ -366,8 +359,8 @@ export function OrdersList({
               return (
                 <Button
                   key={page}
-                  variant={page === currentPage ? 'default' : 'outline'}
                   size="sm"
+                  variant={page === currentPage ? 'default' : 'outline'}
                   onClick={() => handlePageChange(page)}
                 >
                   {page}
@@ -380,10 +373,10 @@ export function OrdersList({
           })}
 
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
+            size="sm"
+            variant="outline"
+            onClick={() => handlePageChange(currentPage + 1)}
           >
             Next
           </Button>

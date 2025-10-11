@@ -2,10 +2,10 @@
 
 /**
  * End-to-End Order Flow Test for GangRun Printing
- * 
+ *
  * Tests the complete customer journey from product discovery to order placement
  * Uses real API endpoints and customer data
- * 
+ *
  * Customer: Cos Coke (ira@irawatkins.com)
  * Address: 2740 W 83rd Place, Chicago, IL 60652
  * Phone: (773) 555-1234
@@ -18,7 +18,7 @@ const CUSTOMER_INFO = {
   firstName: 'Cos',
   lastName: 'Coke',
   email: 'ira@irawatkins.com',
-  phone: '(773) 555-1234'
+  phone: '(773) 555-1234',
 }
 
 const SHIPPING_ADDRESS = {
@@ -28,7 +28,7 @@ const SHIPPING_ADDRESS = {
   city: 'Chicago',
   state: 'IL',
   zipCode: '60652',
-  country: 'US'
+  country: 'US',
 }
 
 // Test configuration for a realistic order
@@ -42,8 +42,8 @@ const TEST_PRODUCT = {
     paperStock: '14pt C2S',
     coating: 'High Gloss UV',
     sides: 'Both Sides',
-    turnaround: 'Standard (3-5 Days)'
-  }
+    turnaround: 'Standard (3-5 Days)',
+  },
 }
 
 class OrderFlowTest {
@@ -54,7 +54,7 @@ class OrderFlowTest {
       errors: [],
       success: false,
       orderId: null,
-      orderNumber: null
+      orderNumber: null,
     }
   }
 
@@ -80,13 +80,13 @@ class OrderFlowTest {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'GangRun-E2E-Test/1.0',
-          ...options.headers
+          ...options.headers,
         },
-        ...options
+        ...options,
       })
 
       const data = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${data.error || 'Unknown error'}`)
       }
@@ -102,16 +102,16 @@ class OrderFlowTest {
 
   async testStep1_CheckServerHealth() {
     await this.log('Step 1: Check Server Health')
-    
+
     try {
       const { data } = await this.makeRequest(`${BASE_URL}/api/health`)
-      await this.log('Server Health Check', { 
-        status: 'PASS', 
-        data: { 
+      await this.log('Server Health Check', {
+        status: 'PASS',
+        data: {
           status: data.status,
           database: data.database,
-          timestamp: data.timestamp 
-        }
+          timestamp: data.timestamp,
+        },
       })
       return true
     } catch (error) {
@@ -122,22 +122,22 @@ class OrderFlowTest {
 
   async testStep2_CheckProductsAPI() {
     await this.log('Step 2: Check Products API')
-    
+
     try {
       // Try to fetch products (may fail due to database issues, but test the endpoint)
       const { data } = await this.makeRequest(`${BASE_URL}/api/products?limit=1`)
-      
+
       if (data.error) {
-        await this.log('Products API Check', { 
-          status: 'ENDPOINT_EXISTS_DB_ERROR', 
+        await this.log('Products API Check', {
+          status: 'ENDPOINT_EXISTS_DB_ERROR',
           message: 'API endpoint exists but database has issues',
-          error: data.error
+          error: data.error,
         })
         return true // Endpoint exists, that's what we're testing
       } else {
-        await this.log('Products API Check', { 
-          status: 'PASS', 
-          data: { productCount: data.data?.length || 0 }
+        await this.log('Products API Check', {
+          status: 'PASS',
+          data: { productCount: data.data?.length || 0 },
         })
         return true
       }
@@ -149,7 +149,7 @@ class OrderFlowTest {
 
   async testStep3_CalculatePricing() {
     await this.log('Step 3: Test Pricing Calculation')
-    
+
     try {
       const pricingRequest = {
         productId: 'test-product',
@@ -163,37 +163,37 @@ class OrderFlowTest {
         sides: 'double',
         turnaroundId: 'turnaround_1',
         selectedAddons: [],
-        isBroker: false
+        isBroker: false,
       }
 
       const { data } = await this.makeRequest(`${BASE_URL}/api/pricing/calculate`, {
         method: 'POST',
-        body: JSON.stringify(pricingRequest)
+        body: JSON.stringify(pricingRequest),
       })
 
       if (data.success) {
-        await this.log('Pricing Calculation', { 
+        await this.log('Pricing Calculation', {
           status: 'PASS',
           data: {
             price: data.price,
             unitPrice: data.unitPrice,
-            basePrice: data.breakdown?.basePrice
-          }
+            basePrice: data.breakdown?.basePrice,
+          },
         })
         return data.price || TEST_PRODUCT.price
       } else {
-        await this.log('Pricing Calculation', { 
+        await this.log('Pricing Calculation', {
           status: 'FALLBACK_TO_STATIC',
           message: 'Using static test price',
-          error: data.error
+          error: data.error,
         })
         return TEST_PRODUCT.price
       }
     } catch (error) {
       await this.error('Pricing Calculation', error)
-      await this.log('Pricing Calculation', { 
+      await this.log('Pricing Calculation', {
         status: 'FALLBACK_TO_STATIC',
-        message: 'Using static test price due to error'
+        message: 'Using static test price due to error',
       })
       return TEST_PRODUCT.price
     }
@@ -201,9 +201,9 @@ class OrderFlowTest {
 
   async testStep4_CreateTestOrder() {
     await this.log('Step 4: Create Test Order')
-    
+
     const calculatedPrice = await this.testStep3_CalculatePricing()
-    
+
     // Calculate totals (using same logic as checkout API)
     const subtotal = calculatedPrice
     const taxRate = 0.0825 // 8.25% for Chicago
@@ -212,16 +212,18 @@ class OrderFlowTest {
     const total = subtotal + tax + shipping
 
     const orderRequest = {
-      cartItems: [{
-        id: 'item_1',
-        productName: TEST_PRODUCT.name,
-        sku: TEST_PRODUCT.sku,
-        quantity: TEST_PRODUCT.quantity,
-        price: calculatedPrice,
-        options: TEST_PRODUCT.options,
-        fileName: null,
-        fileSize: null
-      }],
+      cartItems: [
+        {
+          id: 'item_1',
+          productName: TEST_PRODUCT.name,
+          sku: TEST_PRODUCT.sku,
+          quantity: TEST_PRODUCT.quantity,
+          price: calculatedPrice,
+          options: TEST_PRODUCT.options,
+          fileName: null,
+          fileSize: null,
+        },
+      ],
       uploadedImages: null,
       customerInfo: CUSTOMER_INFO,
       shippingAddress: SHIPPING_ADDRESS,
@@ -229,27 +231,27 @@ class OrderFlowTest {
       shippingRate: {
         carrier: 'USPS',
         serviceName: 'Ground Advantage',
-        rate: shipping
+        rate: shipping,
       },
       selectedAirportId: null,
       subtotal,
       tax,
       shipping,
-      total
+      total,
     }
 
     try {
       const { data } = await this.makeRequest(`${BASE_URL}/api/checkout/create-test-order`, {
         method: 'POST',
-        body: JSON.stringify(orderRequest)
+        body: JSON.stringify(orderRequest),
       })
 
       if (data.success) {
         this.results.success = true
         this.results.orderId = data.orderId
         this.results.orderNumber = data.orderNumber
-        
-        await this.log('Test Order Creation', { 
+
+        await this.log('Test Order Creation', {
           status: 'PASS',
           data: {
             orderId: data.orderId,
@@ -257,8 +259,8 @@ class OrderFlowTest {
             subtotal: `$${(subtotal / 100).toFixed(2)}`,
             tax: `$${(tax / 100).toFixed(2)}`,
             shipping: `$${(shipping / 100).toFixed(2)}`,
-            total: `$${(total / 100).toFixed(2)}`
-          }
+            total: `$${(total / 100).toFixed(2)}`,
+          },
         })
         return true
       } else {
@@ -273,9 +275,9 @@ class OrderFlowTest {
 
   async testStep5_VerifyOrderInDatabase() {
     if (!this.results.orderId) {
-      await this.log('Step 5: Order Verification', { 
-        status: 'SKIP', 
-        message: 'No order ID to verify' 
+      await this.log('Step 5: Order Verification', {
+        status: 'SKIP',
+        message: 'No order ID to verify',
       })
       return false
     }
@@ -284,21 +286,21 @@ class OrderFlowTest {
 
     try {
       const { data } = await this.makeRequest(`${BASE_URL}/api/orders/${this.results.orderId}`)
-      
+
       if (data.error) {
         await this.error('Order Verification', new Error(data.error))
         return false
       }
 
-      await this.log('Order Verification', { 
+      await this.log('Order Verification', {
         status: 'PASS',
         data: {
           orderNumber: data.orderNumber,
           status: data.status,
           customerEmail: data.email,
           total: data.total,
-          itemCount: data.OrderItem?.length || 0
-        }
+          itemCount: data.OrderItem?.length || 0,
+        },
       })
       return true
     } catch (error) {
@@ -310,33 +312,39 @@ class OrderFlowTest {
   async generateReport() {
     const endTime = new Date()
     const duration = endTime - this.results.startTime
-    
+
     console.log('\n' + '='.repeat(80))
     console.log('END-TO-END ORDER FLOW TEST REPORT')
     console.log('='.repeat(80))
     console.log(`Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName}`)
     console.log(`Email: ${CUSTOMER_INFO.email}`)
     console.log(`Phone: ${CUSTOMER_INFO.phone}`)
-    console.log(`Address: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state} ${SHIPPING_ADDRESS.zipCode}`)
+    console.log(
+      `Address: ${SHIPPING_ADDRESS.address}, ${SHIPPING_ADDRESS.city}, ${SHIPPING_ADDRESS.state} ${SHIPPING_ADDRESS.zipCode}`
+    )
     console.log(`Test Duration: ${duration}ms`)
     console.log(`Overall Result: ${this.results.success ? '✅ PASS' : '❌ FAIL'}`)
-    
+
     if (this.results.orderNumber) {
       console.log(`Order Created: ${this.results.orderNumber}`)
     }
-    
+
     console.log('\n--- TEST STEPS ---')
-    this.results.steps.forEach(step => {
+    this.results.steps.forEach((step) => {
       const status = step.status || 'COMPLETED'
-      const statusIcon = status.includes('PASS') ? '✅' : 
-                        status.includes('FAIL') ? '❌' : 
-                        status.includes('SKIP') ? '⏭️' : '🔄'
+      const statusIcon = status.includes('PASS')
+        ? '✅'
+        : status.includes('FAIL')
+          ? '❌'
+          : status.includes('SKIP')
+            ? '⏭️'
+            : '🔄'
       console.log(`${statusIcon} ${step.step} - ${status}`)
     })
 
     if (this.results.errors.length > 0) {
       console.log('\n--- ERRORS ---')
-      this.results.errors.forEach(error => {
+      this.results.errors.forEach((error) => {
         console.log(`❌ ${error.step}: ${error.error}`)
       })
     }
@@ -344,8 +352,10 @@ class OrderFlowTest {
     console.log('\n--- SUMMARY ---')
     console.log(`Steps Completed: ${this.results.steps.length}`)
     console.log(`Errors: ${this.results.errors.length}`)
-    console.log(`Success Rate: ${((this.results.steps.length - this.results.errors.length) / this.results.steps.length * 100).toFixed(1)}%`)
-    
+    console.log(
+      `Success Rate: ${(((this.results.steps.length - this.results.errors.length) / this.results.steps.length) * 100).toFixed(1)}%`
+    )
+
     if (this.results.success) {
       console.log('\n✅ END-TO-END TEST PASSED')
       console.log('The customer would be able to successfully place an order on the website.')
@@ -354,14 +364,16 @@ class OrderFlowTest {
       console.log('\n❌ END-TO-END TEST FAILED')
       console.log('Customers may experience issues placing orders on the website.')
     }
-    
+
     console.log('='.repeat(80))
     return this.results
   }
 
   async run() {
     console.log('Starting End-to-End Order Flow Test for GangRun Printing')
-    console.log(`Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName} (${CUSTOMER_INFO.email})`)
+    console.log(
+      `Customer: ${CUSTOMER_INFO.firstName} ${CUSTOMER_INFO.lastName} (${CUSTOMER_INFO.email})`
+    )
     console.log(`Testing against: ${BASE_URL}`)
     console.log('')
 
@@ -380,7 +392,6 @@ class OrderFlowTest {
 
       // Step 5: Verify order was created
       await this.testStep5_VerifyOrderInDatabase()
-
     } catch (error) {
       await this.error('Test Execution', error)
     }
@@ -392,12 +403,15 @@ class OrderFlowTest {
 // Run the test
 if (require.main === module) {
   const test = new OrderFlowTest()
-  test.run().then(results => {
-    process.exit(results.success ? 0 : 1)
-  }).catch(error => {
-    console.error('Test runner error:', error)
-    process.exit(1)
-  })
+  test
+    .run()
+    .then((results) => {
+      process.exit(results.success ? 0 : 1)
+    })
+    .catch((error) => {
+      console.error('Test runner error:', error)
+      process.exit(1)
+    })
 }
 
 module.exports = OrderFlowTest

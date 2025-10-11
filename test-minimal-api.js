@@ -67,10 +67,7 @@ async function testMinimalAPI() {
       ''
     console.log(`✓ Default coating: ${defaultCoating}`)
 
-    const defaultSides =
-      sidesOptions.find((s) => s.enabled)?.id ||
-      allSides[0]?.id ||
-      ''
+    const defaultSides = sidesOptions.find((s) => s.enabled)?.id || allSides[0]?.id || ''
     console.log(`✓ Default sides: ${defaultSides}`)
 
     const transformed = {
@@ -80,13 +77,13 @@ async function testMinimalAPI() {
       pricePerSqInch: stock.pricePerSqInch,
       tooltipText: stock.tooltipText,
       isActive: stock.isActive,
-      paperStockCoatings: stock.paperStockCoatings.map(pc => ({
+      paperStockCoatings: stock.paperStockCoatings.map((pc) => ({
         ...pc,
-        coating: pc.CoatingOption
+        coating: pc.CoatingOption,
       })),
-      paperStockSides: stock.paperStockSides.map(ps => ({
+      paperStockSides: stock.paperStockSides.map((ps) => ({
         ...ps,
-        sidesOption: ps.SidesOption
+        sidesOption: ps.SidesOption,
       })),
       productsCount: stock.paperStockSetItems.length,
     }
@@ -97,9 +94,8 @@ async function testMinimalAPI() {
       name: transformed.name,
       coatingsCount: transformed.paperStockCoatings.length,
       sidesCount: transformed.paperStockSides.length,
-      productsCount: transformed.productsCount
+      productsCount: transformed.productsCount,
     })
-
   } catch (error) {
     console.error('Error in minimal API test:', error)
     console.error('Stack trace:', error.stack)

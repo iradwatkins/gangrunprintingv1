@@ -1,18 +1,23 @@
 # Story 5.7: Broker Discount Management
 
 ## Story Title
+
 Build Broker Discount Configuration and Management System
 
 ## Story Type
+
 Feature Development
 
 ## Story Points
+
 8
 
 ## Priority
+
 P1 - High (Business Model Critical)
 
 ## Epic
+
 Epic 5: Admin Order & User Management
 
 ## Story Description
@@ -22,6 +27,7 @@ As an **administrator**, I need to configure and manage category-specific discou
 ## Background
 
 Gang Run Printing operates a broker/reseller business model where certain customers (brokers) receive category-specific discounts. Currently:
+
 - ✅ Database schema supports broker discounts (`User.isBroker`, `User.brokerDiscounts`)
 - ✅ Broker status can be set on user accounts
 - ❌ No UI to configure broker discounts
@@ -33,6 +39,7 @@ This story implements the missing UI layer for the broker system, which is criti
 ## Acceptance Criteria
 
 ### Must Have (P0)
+
 - [ ] **Broker List Page** (`/admin/brokers`)
   - [ ] Table showing all broker accounts
   - [ ] Columns: Name, Company, Email, Active Discounts, Total Orders, Total Revenue
@@ -74,6 +81,7 @@ This story implements the missing UI layer for the broker system, which is criti
   - [ ] Discount visible in order confirmation
 
 ### Should Have (P1)
+
 - [ ] **Advanced Discount Rules:**
   - [ ] Minimum order amount for discount to apply
   - [ ] Maximum order amount cap
@@ -102,6 +110,7 @@ This story implements the missing UI layer for the broker system, which is criti
   - [ ] Export broker discount configuration
 
 ### Nice to Have (P2)
+
 - [ ] **Tiered Discounts:**
   - [ ] Different discount % based on order volume
   - [ ] Tier 1: Orders under $1,000 → 5% discount
@@ -121,6 +130,7 @@ This story implements the missing UI layer for the broker system, which is criti
 ## Technical Details
 
 ### Database Schema (Already Exists)
+
 ```prisma
 model User {
   id              String   @id @default(cuid())
@@ -133,6 +143,7 @@ model User {
 ```
 
 ### Broker Discounts JSON Structure
+
 ```typescript
 interface BrokerDiscountConfig {
   discounts: {
@@ -152,6 +163,7 @@ interface BrokerDiscountConfig {
 ```
 
 ### Broker List API Endpoint
+
 **File:** `src/app/api/admin/brokers/route.ts` (new)
 
 ```typescript
@@ -169,18 +181,18 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           total: true,
-          status: true
-        }
-      }
-    }
+          status: true,
+        },
+      },
+    },
   })
 
   // Calculate metrics for each broker
-  const brokersWithMetrics = brokers.map(broker => {
+  const brokersWithMetrics = brokers.map((broker) => {
     const totalOrders = broker.orders.length
     const totalRevenue = broker.orders.reduce((sum, order) => sum + order.total, 0)
     const activeDiscounts = broker.brokerDiscounts
-      ? (broker.brokerDiscounts as BrokerDiscountConfig).discounts.filter(d => d.isActive).length
+      ? (broker.brokerDiscounts as BrokerDiscountConfig).discounts.filter((d) => d.isActive).length
       : 0
 
     return {
@@ -191,7 +203,7 @@ export async function GET(request: NextRequest) {
       totalOrders,
       totalRevenue,
       activeDiscounts,
-      brokerDiscounts: broker.brokerDiscounts
+      brokerDiscounts: broker.brokerDiscounts,
     }
   })
 
@@ -200,13 +212,11 @@ export async function GET(request: NextRequest) {
 ```
 
 ### Update Broker Discounts API
+
 **File:** `src/app/api/admin/users/[id]/broker-discounts/route.ts` (new)
 
 ```typescript
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user } = await validateRequest()
   if (!user || user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -217,7 +227,7 @@ export async function PUT(
 
   // Validate broker exists
   const broker = await prisma.user.findUnique({
-    where: { id }
+    where: { id },
   })
 
   if (!broker || !broker.isBroker) {
@@ -226,7 +236,7 @@ export async function PUT(
 
   // Build discount configuration
   const discountConfig: BrokerDiscountConfig = {
-    discounts: discounts.map(d => ({
+    discounts: discounts.map((d) => ({
       categoryId: d.categoryId,
       categoryName: d.categoryName,
       discountPercent: d.discountPercent,
@@ -234,19 +244,19 @@ export async function PUT(
       maxOrderAmount: d.maxOrderAmount,
       effectiveDate: d.effectiveDate,
       expiryDate: d.expiryDate,
-      isActive: d.isActive ?? true
+      isActive: d.isActive ?? true,
     })),
     globalDiscount: globalDiscount || null,
     lastUpdated: new Date().toISOString(),
-    updatedBy: user.id
+    updatedBy: user.id,
   }
 
   // Update broker discounts
   await prisma.user.update({
     where: { id },
     data: {
-      brokerDiscounts: discountConfig as any
-    }
+      brokerDiscounts: discountConfig as any,
+    },
   })
 
   // Log discount change
@@ -256,18 +266,19 @@ export async function PUT(
       action: 'UPDATE_BROKER_DISCOUNTS',
       entityType: 'User',
       entityId: id,
-      changes: discountConfig as any
-    }
+      changes: discountConfig as any,
+    },
   })
 
   return NextResponse.json({
     success: true,
-    message: 'Broker discounts updated successfully'
+    message: 'Broker discounts updated successfully',
   })
 }
 ```
 
 ### Apply Broker Discount in Pricing
+
 **File:** `src/services/PricingService.ts` (modify existing)
 
 ```typescript
@@ -277,7 +288,7 @@ async function calculatePrice(params: PriceCalculationParams): Promise<number> {
   // Get product
   const product = await prisma.product.findUnique({
     where: { id: productId },
-    include: { productCategory: true }
+    include: { productCategory: true },
   })
 
   if (!product) throw new Error('Product not found')
@@ -288,7 +299,7 @@ async function calculatePrice(params: PriceCalculationParams): Promise<number> {
   // Apply broker discount if applicable
   if (userId) {
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (user?.isBroker && user.brokerDiscounts) {
@@ -296,18 +307,22 @@ async function calculatePrice(params: PriceCalculationParams): Promise<number> {
 
       // Find category-specific discount
       const categoryDiscount = discountConfig.discounts.find(
-        d => d.categoryId === product.categoryId && d.isActive
+        (d) => d.categoryId === product.categoryId && d.isActive
       )
 
       if (categoryDiscount) {
         // Check if discount is within date range
         const now = new Date()
-        const isEffective = !categoryDiscount.effectiveDate || new Date(categoryDiscount.effectiveDate) <= now
-        const notExpired = !categoryDiscount.expiryDate || new Date(categoryDiscount.expiryDate) >= now
+        const isEffective =
+          !categoryDiscount.effectiveDate || new Date(categoryDiscount.effectiveDate) <= now
+        const notExpired =
+          !categoryDiscount.expiryDate || new Date(categoryDiscount.expiryDate) >= now
 
         // Check if order meets min/max amount requirements
-        const meetsMin = !categoryDiscount.minOrderAmount || basePrice >= categoryDiscount.minOrderAmount
-        const meetsMax = !categoryDiscount.maxOrderAmount || basePrice <= categoryDiscount.maxOrderAmount
+        const meetsMin =
+          !categoryDiscount.minOrderAmount || basePrice >= categoryDiscount.minOrderAmount
+        const meetsMax =
+          !categoryDiscount.maxOrderAmount || basePrice <= categoryDiscount.maxOrderAmount
 
         if (isEffective && notExpired && meetsMin && meetsMax) {
           const discountAmount = basePrice * (categoryDiscount.discountPercent / 100)
@@ -322,6 +337,7 @@ async function calculatePrice(params: PriceCalculationParams): Promise<number> {
 ```
 
 ### Broker Configuration Component
+
 **File:** `src/components/admin/BrokerDiscountModal.tsx` (new)
 
 ```typescript
@@ -507,39 +523,46 @@ export function BrokerDiscountModal({
 ## Files to Create/Modify
 
 ### Backend (New Files)
+
 - `src/app/api/admin/brokers/route.ts` - List all brokers with metrics
 - `src/app/api/admin/users/[id]/broker-discounts/route.ts` - CRUD for broker discounts
 - `src/app/api/admin/brokers/[id]/performance/route.ts` - Broker performance metrics
 
 ### Frontend (New Files)
+
 - `src/app/admin/brokers/page.tsx` - Broker list page
 - `src/components/admin/BrokerDiscountModal.tsx` - Discount configuration modal
 - `src/components/admin/BrokerList.tsx` - Broker table component
 - `src/components/admin/BrokerPerformance.tsx` - Performance metrics display
 
 ### Frontend (Modifications)
+
 - `src/app/admin/customers/[id]/page.tsx` - Add "Configure Broker Discounts" button
 - `src/services/PricingService.ts` - Apply broker discounts during pricing
 
 ### Database (Modifications - Optional)
+
 - Consider adding `AuditLog` table for discount change tracking
 - Consider adding `BrokerPerformance` table for metrics caching
 
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Broker discount API returns correct data
 - [ ] Discount application logic works correctly
 - [ ] Discount validation (min/max, dates) functions properly
 - [ ] Global discount overrides category discounts
 
 ### Integration Tests
+
 - [ ] End-to-end broker discount configuration
 - [ ] Discount application in pricing calculation
 - [ ] Discount display in cart and checkout
 - [ ] Discount saved and persisted correctly
 
 ### Manual Testing Checklist
+
 - [ ] Navigate to `/admin/brokers`
 - [ ] View list of all brokers
 - [ ] Click "Configure Discounts"
@@ -555,22 +578,24 @@ export function BrokerDiscountModal({
 ## Dependencies
 
 ### Database
+
 - `User` model with `isBroker` and `brokerDiscounts` (exists)
 - `ProductCategory` model (exists)
 - `Order` model (exists)
 
 ### APIs
+
 - `/api/product-categories` (exists)
 - `/api/pricing/calculate` (exists, needs modification)
 
 ## Risks & Mitigation
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Discount calculation errors | HIGH | MEDIUM | Comprehensive unit tests, preview calculations |
-| Performance with many categories | MEDIUM | LOW | Cache category list, efficient queries |
-| Unauthorized discount access | CRITICAL | LOW | Strict admin authentication, audit logging |
-| Discount not applied correctly | HIGH | MEDIUM | Integration tests, staging environment testing |
+| Risk                             | Impact   | Likelihood | Mitigation                                     |
+| -------------------------------- | -------- | ---------- | ---------------------------------------------- |
+| Discount calculation errors      | HIGH     | MEDIUM     | Comprehensive unit tests, preview calculations |
+| Performance with many categories | MEDIUM   | LOW        | Cache category list, efficient queries         |
+| Unauthorized discount access     | CRITICAL | LOW        | Strict admin authentication, audit logging     |
+| Discount not applied correctly   | HIGH     | MEDIUM     | Integration tests, staging environment testing |
 
 ## Success Metrics
 
@@ -581,6 +606,7 @@ export function BrokerDiscountModal({
 - [ ] Broker performance metrics accurate
 
 ## Definition of Done
+
 - [ ] All acceptance criteria met
 - [ ] Unit tests passing
 - [ ] Integration tests passing
@@ -592,6 +618,7 @@ export function BrokerDiscountModal({
 - [ ] Ready for production deployment
 
 ## Related Stories
+
 - Story 5.5: Customer Management Interface (dependency)
 - Story 5.6: Customer Detail View (dependency)
 - Story 3.5: Payment Processing (related - discounts affect final price)

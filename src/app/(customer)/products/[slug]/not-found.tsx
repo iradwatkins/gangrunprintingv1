@@ -13,7 +13,8 @@ export default function ProductNotFound() {
           </div>
           <CardTitle className="text-3xl font-bold">Product Not Found</CardTitle>
           <CardDescription className="text-lg mt-2">
-            Sorry, we couldn't find the product you're looking for. It may have been removed or the link might be incorrect.
+            Sorry, we couldn't find the product you're looking for. It may have been removed or the
+            link might be incorrect.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -35,16 +36,16 @@ export default function ProductNotFound() {
           <div className="pt-6 border-t">
             <h3 className="font-semibold mb-3 text-center">Popular Categories</h3>
             <div className="grid grid-cols-2 gap-3">
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/products?category=business-cards">Business Cards</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/products?category=flyers">Flyers</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/products?category=posters">Posters</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/products?category=banners">Banners</Link>
               </Button>
             </div>

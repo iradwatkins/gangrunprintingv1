@@ -1,12 +1,13 @@
 # PAPER STOCK MODULE - Testing & Validation Documentation
 
 ## Module Overview
+
 **Module Name:** Paper Stock Selector  
 **Priority Level:** 5 (Fifth Module)  
 **Status:** [ ] Not Started [ ] In Progress [ ] Complete  
-**BMAD Agent Assigned:** _______________  
-**Date Started:** _______________  
-**Date Completed:** _______________  
+**BMAD Agent Assigned:** ******\_\_\_******  
+**Date Started:** ******\_\_\_******  
+**Date Completed:** ******\_\_\_******  
 **Prerequisites:** ALL previous 4 modules MUST be 100% complete
 
 ---
@@ -18,11 +19,13 @@ The Paper Stock Module must function as a completely independent component. A pr
 ## Strict Requirements
 
 ### Data Requirements
+
 - **FORBIDDEN:** Mock data, test data, simulated paper types
 - **REQUIRED:** Only real production system paper stock data
 - **Testing Environment:** Production or staging with real inventory data
 
 ### Testing Tools
+
 - Chrome DevTools (Primary browser)
 - MCP (System interaction)
 - Puppeteer (Automated testing)
@@ -33,6 +36,7 @@ The Paper Stock Module must function as a completely independent component. A pr
 ## Pre-Testing Checklist
 
 ### System Preparation
+
 - [ ] All 4 previous modules certified complete
 - [ ] Access to production/staging environment
 - [ ] Paper inventory system connected
@@ -41,6 +45,7 @@ The Paper Stock Module must function as a completely independent component. A pr
 - [ ] Paper sample images available
 
 ### Module Location
+
 - [ ] Paper stock module code identified
 - [ ] Frontend components located: `_______________`
 - [ ] Backend handlers located: `_______________`
@@ -49,12 +54,14 @@ The Paper Stock Module must function as a completely independent component. A pr
 - [ ] API endpoints documented: `_______________`
 
 ### Paper Stock Inventory
+
 Document available stock types:
-- [ ] Paper types count: _______________
-- [ ] Weight options count: _______________
-- [ ] Finish options count: _______________
-- [ ] Coating options count: _______________
-- [ ] Color options count: _______________
+
+- [ ] Paper types count: ******\_\_\_******
+- [ ] Weight options count: ******\_\_\_******
+- [ ] Finish options count: ******\_\_\_******
+- [ ] Coating options count: ******\_\_\_******
+- [ ] Color options count: ******\_\_\_******
 
 ---
 
@@ -63,6 +70,7 @@ Document available stock types:
 ### PHASE 1: Isolation Setup
 
 #### Step 1.1: Create Test Product
+
 ```
 Product Name: TEST_PAPER_ONLY_[TIMESTAMP]
 Enabled Modules: Paper Stock ONLY
@@ -70,6 +78,7 @@ All other modules: DISABLED (No quantity, size, turnaround, images)
 ```
 
 #### Step 1.2: Initial State Documentation
+
 - [ ] Screenshot of product with paper stock only
 - [ ] Paper selector interface visible
 - [ ] Default paper option shown
@@ -77,6 +86,7 @@ All other modules: DISABLED (No quantity, size, turnaround, images)
 - [ ] No dependency errors
 
 #### Step 1.3: Paper Categories Mapping
+
 ```
 Main Categories:
 [ ] Standard Papers
@@ -91,6 +101,7 @@ Main Categories:
 ### PHASE 2: Frontend Testing
 
 #### Display Validation
+
 - [ ] Paper selector visible on product page
 - [ ] All paper categories display
 - [ ] Weight options show correctly
@@ -99,6 +110,7 @@ Main Categories:
 - [ ] Sample/preview images load
 
 #### Selection Interface
+
 - [ ] Dropdown/radio button selection
 - [ ] Paper category filtering
 - [ ] Weight selector functional
@@ -107,6 +119,7 @@ Main Categories:
 - [ ] Color selection (if applicable)
 
 #### Visual Presentation
+
 - [ ] Selected paper highlighted
 - [ ] Paper specifications shown
 - [ ] Sample image displays
@@ -119,21 +132,25 @@ Main Categories:
 ### PHASE 3: Paper Type Testing
 
 #### Standard Papers
+
 Test each real paper type:
-- [ ] 20# Bond: _______________
-- [ ] 70# Text: _______________
-- [ ] 80# Cover: _______________
-- [ ] 100# Cover: _______________
-- [ ] 14pt Cardstock: _______________
+
+- [ ] 20# Bond: ******\_\_\_******
+- [ ] 70# Text: ******\_\_\_******
+- [ ] 80# Cover: ******\_\_\_******
+- [ ] 100# Cover: ******\_\_\_******
+- [ ] 14pt Cardstock: ******\_\_\_******
 
 #### Premium Papers
-- [ ] Pearl Metallic: _______________
-- [ ] Linen Textured: _______________
-- [ ] Cotton Paper: _______________
-- [ ] Kraft Paper: _______________
-- [ ] Recycled Stock: _______________
+
+- [ ] Pearl Metallic: ******\_\_\_******
+- [ ] Linen Textured: ******\_\_\_******
+- [ ] Cotton Paper: ******\_\_\_******
+- [ ] Kraft Paper: ******\_\_\_******
+- [ ] Recycled Stock: ******\_\_\_******
 
 #### Weight Testing
+
 - [ ] Lightest weight option
 - [ ] Standard weights
 - [ ] Heavy cardstock
@@ -141,6 +158,7 @@ Test each real paper type:
 - [ ] Metric/Imperial conversion
 
 #### Finish Options
+
 - [ ] Matte finish
 - [ ] Gloss finish
 - [ ] Satin/Silk finish
@@ -152,6 +170,7 @@ Test each real paper type:
 ### PHASE 4: Backend Testing
 
 #### Data Persistence
+
 - [ ] Selected paper saves to database
 - [ ] Paper ID stored correctly
 - [ ] Weight value saved
@@ -160,6 +179,7 @@ Test each real paper type:
 - [ ] Color choice saved
 
 #### Inventory Integration
+
 ```
 Inventory Checks:
 - [ ] Stock levels verified
@@ -170,6 +190,7 @@ Inventory Checks:
 ```
 
 #### API Testing
+
 ```
 GET /api/papers - Retrieve all paper options
 GET /api/paper/{id}/availability - Check stock
@@ -184,9 +205,10 @@ Response Validation:
 ```
 
 #### Database Verification
+
 ```sql
 -- Paper Stock Verification
-SELECT * FROM product_paper_stock 
+SELECT * FROM product_paper_stock
 WHERE product_id = [test_product_id];
 
 Expected fields:
@@ -203,6 +225,7 @@ Expected fields:
 ### PHASE 5: Advanced Testing
 
 #### Compatibility Matrix
+
 ```
 Paper-Product Compatibility:
 - [ ] Business cards limited to cardstock
@@ -212,6 +235,7 @@ Paper-Product Compatibility:
 ```
 
 #### Stock Availability Testing
+
 - [ ] In-stock papers selectable
 - [ ] Out-of-stock papers marked
 - [ ] Limited stock warnings show
@@ -219,6 +243,7 @@ Paper-Product Compatibility:
 - [ ] Backorder options (if available)
 
 #### Pricing Integration
+
 - [ ] Base paper price displays
 - [ ] Premium paper upcharge
 - [ ] Coating additional cost
@@ -230,6 +255,7 @@ Paper-Product Compatibility:
 ## Edge Case Testing
 
 ### Boundary Conditions
+
 - [ ] Minimum weight (20#)
 - [ ] Maximum weight (32pt)
 - [ ] Rare paper types
@@ -237,6 +263,7 @@ Paper-Product Compatibility:
 - [ ] Special order papers
 
 ### Inventory Edge Cases
+
 - [ ] Last unit in stock
 - [ ] Stock depleted during selection
 - [ ] Multiple users selecting same stock
@@ -244,6 +271,7 @@ Paper-Product Compatibility:
 - [ ] Inventory sync delays
 
 ### Display Edge Cases
+
 - [ ] Long paper names
 - [ ] Missing sample images
 - [ ] Unavailable specifications
@@ -255,25 +283,19 @@ Paper-Product Compatibility:
 ## Automated Testing Script
 
 ### Puppeteer Test Suite
+
 ```javascript
 // Paper Stock Module - Isolated Test
 const testPaperStockModule = async () => {
-    // Test 1: Module Renders in Isolation
-    
-    // Test 2: Paper Type Selection
-    
-    // Test 3: Weight Options
-    
-    // Test 4: Finish Selection
-    
-    // Test 5: Coating Options
-    
-    // Test 6: Stock Availability
-    
-    // Test 7: Data Persistence
-    
-    // Test 8: Inventory Updates
-};
+  // Test 1: Module Renders in Isolation
+  // Test 2: Paper Type Selection
+  // Test 3: Weight Options
+  // Test 4: Finish Selection
+  // Test 5: Coating Options
+  // Test 6: Stock Availability
+  // Test 7: Data Persistence
+  // Test 8: Inventory Updates
+}
 ```
 
 Test file location: `_______________`
@@ -285,6 +307,7 @@ Pass/Fail status: `_______________`
 ## Paper Specification Matrix
 
 ### Standard Specifications
+
 ```
 Paper Type    | Weight | Finish   | Coating  | Stock
 -------------|--------|----------|----------|-------
@@ -301,6 +324,7 @@ All specifications verified: [ ] Yes [ ] No
 ## Environmental Compliance
 
 ### Eco-Friendly Options
+
 - [ ] FSC certified papers identified
 - [ ] Recycled content percentage shown
 - [ ] Carbon footprint data (if available)
@@ -308,6 +332,7 @@ All specifications verified: [ ] Yes [ ] No
 - [ ] Environmental badges display
 
 ### Compliance Documentation
+
 - [ ] Material safety sheets available
 - [ ] Certification documents linked
 - [ ] Compliance standards met
@@ -318,6 +343,7 @@ All specifications verified: [ ] Yes [ ] No
 ## Issues & Fixes Log
 
 ### Issue #1
+
 ```
 Date: _______________
 Description: _______________
@@ -327,6 +353,7 @@ Verified By: _______________
 ```
 
 ### Issue #2
+
 ```
 Date: _______________
 Description: _______________
@@ -340,6 +367,7 @@ Verified By: _______________
 ## Final Validation Checklist
 
 ### Frontend Validation
+
 - [ ] Displays independently without ANY other modules
 - [ ] All paper types selectable
 - [ ] Weight options functional
@@ -348,6 +376,7 @@ Verified By: _______________
 - [ ] Sample previews load
 
 ### Backend Validation
+
 - [ ] Paper selection saves correctly
 - [ ] Inventory integration working
 - [ ] Stock levels accurate
@@ -355,6 +384,7 @@ Verified By: _______________
 - [ ] Database integrity maintained
 
 ### Business Logic Validation
+
 - [ ] Stock availability accurate
 - [ ] Pricing calculations correct
 - [ ] Compatibility rules enforced
@@ -362,6 +392,7 @@ Verified By: _______________
 - [ ] Environmental data shown
 
 ### Integration Ready
+
 - [ ] Can be added to any product type
 - [ ] Functions without other modules
 - [ ] No dependencies on size/quantity
@@ -373,6 +404,7 @@ Verified By: _______________
 ## Performance Metrics
 
 ### Load Performance
+
 ```
 Paper list load time: _____ ms
 Sample images load: _____ ms
@@ -382,6 +414,7 @@ Full render time: _____ ms
 ```
 
 ### Selection Performance
+
 ```
 Paper type change: _____ ms
 Weight update: _____ ms
@@ -394,8 +427,9 @@ Database save: _____ ms
 ## Sign-Off
 
 ### BMAD Agent Certification
+
 ```
-I certify that the Paper Stock Module has been tested in complete 
+I certify that the Paper Stock Module has been tested in complete
 isolation and functions at 100% capacity independently.
 
 Agent Name: _______________
@@ -404,6 +438,7 @@ Signature: _______________
 ```
 
 ### Technical Review
+
 ```
 Reviewed By: _______________
 Date: _______________
@@ -412,6 +447,7 @@ Comments: _______________
 ```
 
 ### Inventory Manager Approval
+
 ```
 Stock Data Verified By: _______________
 Date: _______________
@@ -424,6 +460,7 @@ Comments: _______________
 ## Module Integration Readiness
 
 ### All Modules Status Check
+
 - [ ] Quantity Module: COMPLETE
 - [ ] Size Module: COMPLETE
 - [ ] Turnaround Module: COMPLETE
@@ -431,6 +468,7 @@ Comments: _______________
 - [ ] Paper Stock Module: COMPLETE
 
 ### System Integration Authorization
+
 ```
 All five modules have been independently tested and verified.
 Authorization to begin integration testing: [ ] GRANTED
@@ -445,6 +483,7 @@ Integration Test Plan: _______________
 ## Appendix
 
 ### Screenshots
+
 1. Isolated Paper Stock Display: [Attach]
 2. Paper Type Selection: [Attach]
 3. Weight Options Test: [Attach]
@@ -453,12 +492,14 @@ Integration Test Plan: _______________
 6. Database Verification: [Attach]
 
 ### Paper Inventory Report
-- Total paper types: _______________
-- In-stock items: _______________
-- Low stock alerts: _______________
-- Special order items: _______________
+
+- Total paper types: ******\_\_\_******
+- In-stock items: ******\_\_\_******
+- Low stock alerts: ******\_\_\_******
+- Special order items: ******\_\_\_******
 
 ### Related Files
+
 - Frontend Component: `_______________`
 - Inventory Service: `_______________`
 - Paper Database Schema: `_______________`

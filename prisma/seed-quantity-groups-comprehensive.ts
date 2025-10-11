@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   const quantityGroups = [
     {
       name: 'Business Card Quantities',
@@ -196,12 +195,10 @@ async function main() {
         create: quantityGroup,
       })
       createdCount++
-
     } catch (error) {
       console.error(`✗ Error creating quantity group ${quantityGroup.name}:`, error)
     }
   }
-
 }
 
 main()

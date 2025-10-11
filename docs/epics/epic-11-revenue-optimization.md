@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-011 |
-| **Phase** | Phase 2 |
-| **Priority** | MEDIUM |
-| **Status** | Not Started |
-| **Story Points** | 55 |
-| **Estimated Duration** | 5-6 weeks |
-| **Dependencies** | Epic 3 (Core Commerce), Epic 6 (Marketing & CRM) |
+| Field                  | Value                                            |
+| ---------------------- | ------------------------------------------------ |
+| **Epic ID**            | EPIC-011                                         |
+| **Phase**              | Phase 2                                          |
+| **Priority**           | MEDIUM                                           |
+| **Status**             | Not Started                                      |
+| **Story Points**       | 55                                               |
+| **Estimated Duration** | 5-6 weeks                                        |
+| **Dependencies**       | Epic 3 (Core Commerce), Epic 6 (Marketing & CRM) |
 
 ---
 
@@ -25,6 +25,7 @@ Implement advanced revenue optimization features including dynamic pricing, upse
 **Problem:** Missing opportunities to increase revenue and customer retention
 **Solution:** Intelligent pricing, incentives, and engagement systems
 **Impact:**
+
 - Increase average order value by 35%
 - Increase customer lifetime value by 50%
 - Recover 30% of abandoned carts ($15K/month)
@@ -41,6 +42,7 @@ Implement advanced revenue optimization features including dynamic pricing, upse
 **So that** I can maximize revenue and competitiveness
 
 **Acceptance Criteria:**
+
 - [ ] Volume discounts automatically applied
 - [ ] Broker customer discounts by category
 - [ ] Rush order pricing (+25% for 1-day turnaround)
@@ -50,6 +52,7 @@ Implement advanced revenue optimization features including dynamic pricing, upse
 - [ ] Price change audit log
 
 **Pricing Rules:**
+
 ```typescript
 interface PricingRule {
   // Volume Discounts
@@ -87,6 +90,7 @@ interface PricingRule {
 ```
 
 **Implementation:**
+
 ```typescript
 // src/lib/pricing/pricing-engine.ts
 export class PricingEngine {
@@ -94,18 +98,12 @@ export class PricingEngine {
     let basePrice = params.product.basePrice
 
     // Apply volume discounts
-    const volumeDiscount = this.getVolumeDiscount(
-      params.quantity,
-      params.product.volumeDiscounts
-    )
+    const volumeDiscount = this.getVolumeDiscount(params.quantity, params.product.volumeDiscounts)
     basePrice *= 1 - volumeDiscount / 100
 
     // Apply broker discounts (if applicable)
     if (params.customer?.isBroker) {
-      const brokerDiscount = this.getBrokerDiscount(
-        params.customer,
-        params.product.categoryId
-      )
+      const brokerDiscount = this.getBrokerDiscount(params.customer, params.product.categoryId)
       basePrice *= 1 - brokerDiscount / 100
     }
 
@@ -136,9 +134,7 @@ export class PricingEngine {
         { type: 'broker', amount: brokerDiscount },
         { type: 'seasonal', amount: seasonalAdjustment },
       ],
-      markups: [
-        { type: 'rush', amount: params.turnaroundTime <= 2 ? 15 : 0 },
-      ],
+      markups: [{ type: 'rush', amount: params.turnaroundTime <= 2 ? 15 : 0 }],
     }
   }
 
@@ -161,6 +157,7 @@ export class PricingEngine {
 ```
 
 **Tasks:**
+
 1. Build pricing engine core logic
 2. Implement volume discount calculator
 3. Add broker discount system
@@ -179,6 +176,7 @@ export class PricingEngine {
 **So that** I can increase average order value
 
 **Acceptance Criteria:**
+
 - [ ] Related products shown on product pages
 - [ ] Add-ons suggested at cart
 - [ ] "Frequently bought together" recommendations
@@ -188,17 +186,13 @@ export class PricingEngine {
 - [ ] Upsell performance analytics
 
 **Recommendation Engine:**
+
 ```typescript
 // src/lib/recommendations/recommendation-engine.ts
 export class RecommendationEngine {
-  async getProductRecommendations(
-    productId: string,
-    userId?: string
-  ): Promise<Product[]> {
+  async getProductRecommendations(productId: string, userId?: string): Promise<Product[]> {
     // Get products frequently bought together
-    const frequentlyBoughtTogether = await this.getFrequentlyBoughtTogether(
-      productId
-    )
+    const frequentlyBoughtTogether = await this.getFrequentlyBoughtTogether(productId)
 
     // Get similar products (same category)
     const similarProducts = await this.getSimilarProducts(productId)
@@ -217,9 +211,7 @@ export class RecommendationEngine {
     ])
   }
 
-  private async getFrequentlyBoughtTogether(
-    productId: string
-  ): Promise<Product[]> {
+  private async getFrequentlyBoughtTogether(productId: string): Promise<Product[]> {
     // Query orders containing this product
     // Find other products commonly in same orders
     const result = await prisma.$queryRaw`
@@ -239,9 +231,7 @@ export class RecommendationEngine {
     return result
   }
 
-  private async getPersonalizedRecommendations(
-    userId: string
-  ): Promise<Product[]> {
+  private async getPersonalizedRecommendations(userId: string): Promise<Product[]> {
     // Get user's order history
     const orderHistory = await prisma.order.findMany({
       where: { userId },
@@ -274,6 +264,7 @@ export class RecommendationEngine {
 ```
 
 **Tasks:**
+
 1. Build recommendation engine
 2. Create "frequently bought together" query
 3. Implement similar products logic
@@ -292,6 +283,7 @@ export class RecommendationEngine {
 **So that** I can capture lost revenue
 
 **Acceptance Criteria:**
+
 - [ ] System detects abandoned carts (30+ minutes)
 - [ ] Email sequence sent automatically
 - [ ] Discount incentive offered (10% off)
@@ -301,6 +293,7 @@ export class RecommendationEngine {
 - [ ] Exclude completed purchases
 
 **Recovery Sequence:**
+
 ```
 Email 1 (1 hour after abandonment):
 - Subject: "You left something behind!"
@@ -319,6 +312,7 @@ Email 3 (72 hours after abandonment):
 ```
 
 **Implementation:**
+
 ```typescript
 // src/services/cart-recovery-service.ts
 export class CartRecoveryService {
@@ -350,8 +344,7 @@ export class CartRecoveryService {
   }
 
   private async sendRecoveryEmail(cart: Cart, sequenceNumber: number) {
-    const discountCode =
-      sequenceNumber === 2 ? await this.generateDiscountCode(cart) : null
+    const discountCode = sequenceNumber === 2 ? await this.generateDiscountCode(cart) : null
 
     await emailService.send({
       to: cart.user.email,
@@ -385,6 +378,7 @@ export class CartRecoveryService {
 ```
 
 **Tasks:**
+
 1. Create abandoned cart detection
 2. Build email sequence templates
 3. Implement discount code generation
@@ -403,6 +397,7 @@ export class CartRecoveryService {
 **So that** I'm incentivized to order again
 
 **Acceptance Criteria:**
+
 - [ ] Customers earn points on every purchase
 - [ ] Points redeemable for discounts
 - [ ] Tiered loyalty levels (Bronze, Silver, Gold)
@@ -412,6 +407,7 @@ export class CartRecoveryService {
 - [ ] Birthday rewards
 
 **Loyalty Tiers:**
+
 ```typescript
 interface LoyaltyTier {
   name: string
@@ -425,10 +421,7 @@ const LOYALTY_TIERS: LoyaltyTier[] = [
     name: 'Bronze',
     minLifetimeSpend: 0,
     pointsMultiplier: 1,
-    perks: [
-      'Earn 1 point per $1 spent',
-      'Birthday discount (10% off)',
-    ],
+    perks: ['Earn 1 point per $1 spent', 'Birthday discount (10% off)'],
   },
   {
     name: 'Silver',
@@ -457,6 +450,7 @@ const LOYALTY_TIERS: LoyaltyTier[] = [
 ```
 
 **Database Schema:**
+
 ```prisma
 model LoyaltyAccount {
   id              String   @id @default(cuid())
@@ -497,6 +491,7 @@ model LoyaltyTransaction {
 ```
 
 **Tasks:**
+
 1. Create loyalty database schema
 2. Build points earning logic
 3. Implement tier calculation
@@ -515,6 +510,7 @@ model LoyaltyTransaction {
 **So that** I don't have to reorder manually
 
 **Acceptance Criteria:**
+
 - [ ] Can subscribe to products (monthly, quarterly)
 - [ ] Subscription discount (15% off)
 - [ ] Auto-charging and auto-fulfillment
@@ -524,6 +520,7 @@ model LoyaltyTransaction {
 - [ ] Manage subscriptions in account
 
 **Subscription Plans:**
+
 ```typescript
 interface SubscriptionPlan {
   interval: 'weekly' | 'monthly' | 'quarterly'
@@ -537,27 +534,19 @@ const SUBSCRIPTION_PLANS = {
     interval: 'monthly',
     discount: 15,
     minCommitment: 0,
-    benefits: [
-      '15% off every order',
-      'Free standard shipping',
-      'Cancel anytime',
-    ],
+    benefits: ['15% off every order', 'Free standard shipping', 'Cancel anytime'],
   },
   quarterly: {
     interval: 'quarterly',
     discount: 20,
     minCommitment: 0,
-    benefits: [
-      '20% off every order',
-      'Free rush shipping',
-      'Priority support',
-      'Cancel anytime',
-    ],
+    benefits: ['20% off every order', 'Free rush shipping', 'Priority support', 'Cancel anytime'],
   },
 }
 ```
 
 **Implementation:**
+
 ```typescript
 // src/services/subscription-service.ts
 export class SubscriptionService {
@@ -631,6 +620,7 @@ export class SubscriptionService {
 ```
 
 **Tasks:**
+
 1. Create subscription database schema
 2. Build subscription creation flow
 3. Implement auto-charging system
@@ -715,6 +705,7 @@ DELETE /api/account/subscriptions/:id
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] Dynamic pricing working for all products
 - [ ] Recommendations showing on product pages
 - [ ] Abandoned cart emails sending
@@ -722,12 +713,14 @@ DELETE /api/account/subscriptions/:id
 - [ ] Subscriptions processing automatically
 
 ### Performance Targets
+
 - Pricing calculation: <100ms
 - Recommendation generation: <500ms
 - Cart recovery email: <5 minutes after abandonment
 - Subscription processing: 100% success rate
 
 ### Business Metrics (90 days post-launch)
+
 - Average order value increase: >30%
 - Abandoned cart recovery rate: >25%
 - Loyalty program enrollment: >60% of customers

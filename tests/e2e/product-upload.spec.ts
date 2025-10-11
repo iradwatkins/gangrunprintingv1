@@ -73,7 +73,7 @@ test.describe('Product Upload Functionality', () => {
           route.fulfill({
             status: 500,
             contentType: 'application/json',
-            body: JSON.stringify({ error: 'Temporary server error' })
+            body: JSON.stringify({ error: 'Temporary server error' }),
           })
         } else {
           // Succeed on the third attempt
@@ -84,9 +84,9 @@ test.describe('Product Upload Functionality', () => {
               success: true,
               data: {
                 url: 'https://example.com/test-image.jpg',
-                id: 'test-image-id'
-              }
-            })
+                id: 'test-image-id',
+              },
+            }),
           })
         }
       })
@@ -109,7 +109,7 @@ test.describe('Product Upload Functionality', () => {
           route.fulfill({
             status: 408,
             contentType: 'application/json',
-            body: JSON.stringify({ error: 'Upload timeout' })
+            body: JSON.stringify({ error: 'Upload timeout' }),
           })
         }, 35000) // Longer than the 30s timeout
       })
@@ -170,11 +170,9 @@ test.describe('Product Upload Functionality', () => {
           body: JSON.stringify({
             error: 'Validation failed',
             details: {
-              validationErrors: [
-                { field: 'sku', message: 'SKU already exists' }
-              ]
-            }
-          })
+              validationErrors: [{ field: 'sku', message: 'SKU already exists' }],
+            },
+          }),
         })
       })
 
@@ -203,7 +201,7 @@ test.describe('Product Upload Functionality', () => {
     test('should handle slow network connections', async ({ page }) => {
       // Simulate slow network
       await page.route('/api/products/upload-image', async (route) => {
-        await new Promise(resolve => setTimeout(resolve, 10000)) // 10 second delay
+        await new Promise((resolve) => setTimeout(resolve, 10000)) // 10 second delay
         route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -211,9 +209,9 @@ test.describe('Product Upload Functionality', () => {
             success: true,
             data: {
               url: 'https://example.com/test-image.jpg',
-              id: 'test-image-id'
-            }
-          })
+              id: 'test-image-id',
+            },
+          }),
         })
       })
 
@@ -246,9 +244,9 @@ test.describe('Product Upload Functionality', () => {
               success: true,
               data: {
                 url: 'https://example.com/test-image.jpg',
-                id: 'test-image-id'
-              }
-            })
+                id: 'test-image-id',
+              },
+            }),
           })
         }
       })
@@ -267,8 +265,8 @@ test.describe('Product Upload Functionality', () => {
           status: 503,
           contentType: 'application/json',
           body: JSON.stringify({
-            error: 'Storage service temporarily unavailable. Please try again.'
-          })
+            error: 'Storage service temporarily unavailable. Please try again.',
+          }),
         })
       })
 

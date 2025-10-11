@@ -16,7 +16,7 @@ const fromAddress: ShippingAddress = {
   state: 'TX',
   zipCode: '77001',
   country: 'US',
-  isResidential: false
+  isResidential: false,
 }
 
 const toAddress: ShippingAddress = {
@@ -25,7 +25,7 @@ const toAddress: ShippingAddress = {
   state: 'TX',
   zipCode: '75201',
   country: 'US',
-  isResidential: true
+  isResidential: true,
 }
 
 // Test different package weights
@@ -33,22 +33,24 @@ const testCases = [
   { weight: 25, description: '25 lbs (under 50)' },
   { weight: 75, description: '75 lbs (50-100)' },
   { weight: 150, description: '150 lbs (over 100)' },
-  { weight: 500, description: '500 lbs (heavy)' }
+  { weight: 500, description: '500 lbs (heavy)' },
 ]
 
 async function testRates() {
   console.log('🚚 Testing Southwest Cargo Rate Calculations')
-  console.log('=' .repeat(50))
+  console.log('='.repeat(50))
 
   for (const testCase of testCases) {
-    const packages: ShippingPackage[] = [{
-      weight: testCase.weight,
-      dimensions: {
-        length: 12,
-        width: 12,
-        height: 12
-      }
-    }]
+    const packages: ShippingPackage[] = [
+      {
+        weight: testCase.weight,
+        dimensions: {
+          length: 12,
+          width: 12,
+          height: 12,
+        },
+      },
+    ]
 
     console.log(`\n📦 Package: ${testCase.description}`)
     console.log(`Weight: ${testCase.weight} lbs`)
@@ -64,8 +66,8 @@ async function testRates() {
       }
 
       // Verify rates are correct (pickup should be less than dash for same weight)
-      const pickupRate = rates.find(r => r.serviceCode === 'SOUTHWEST_CARGO_PICKUP')
-      const dashRate = rates.find(r => r.serviceCode === 'SOUTHWEST_CARGO_DASH')
+      const pickupRate = rates.find((r) => r.serviceCode === 'SOUTHWEST_CARGO_PICKUP')
+      const dashRate = rates.find((r) => r.serviceCode === 'SOUTHWEST_CARGO_DASH')
 
       if (pickupRate && dashRate) {
         if (pickupRate.rateAmount > dashRate.rateAmount) {
@@ -79,7 +81,7 @@ async function testRates() {
     }
   }
 
-  console.log('\n' + '=' .repeat(50))
+  console.log('\n' + '='.repeat(50))
   console.log('✅ Test complete!')
 }
 

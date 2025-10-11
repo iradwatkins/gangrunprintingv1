@@ -37,12 +37,12 @@ export function VariableDataSection({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Checkbox
-            id="variable-data"
             checked={enabled}
-            onCheckedChange={onToggle}
             disabled={disabled}
+            id="variable-data"
+            onCheckedChange={onToggle}
           />
-          <Label htmlFor="variable-data" className="font-medium">
+          <Label className="font-medium" htmlFor="variable-data">
             Variable Data
           </Label>
           <TooltipProvider>
@@ -52,7 +52,8 @@ export function VariableDataSection({
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs">
-                  Print different versions with personalized information like names, addresses, or codes
+                  Print different versions with personalized information like names, addresses, or
+                  codes
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -64,32 +65,32 @@ export function VariableDataSection({
       {enabled && (
         <div className="space-y-3 pl-6">
           <div className="space-y-2">
-            <Label htmlFor="locations-count" className="text-sm">
+            <Label className="text-sm" htmlFor="locations-count">
               Number of Locations
             </Label>
             <Input
+              className="max-w-xs"
+              disabled={disabled}
               id="locations-count"
+              placeholder="Enter number of locations"
               type="text"
               value={locationsCount}
               onChange={(e) => onLocationsCountChange(e.target.value)}
-              placeholder="Enter number of locations"
-              disabled={disabled}
-              className="max-w-xs"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="locations" className="text-sm">
+            <Label className="text-sm" htmlFor="locations">
               Location Details
             </Label>
             <Input
+              className="max-w-xs"
+              disabled={disabled}
               id="locations"
+              placeholder="Enter location details"
               type="text"
               value={locations}
               onChange={(e) => onLocationsChange(e.target.value)}
-              placeholder="Enter location details"
-              disabled={disabled}
-              className="max-w-xs"
             />
           </div>
         </div>

@@ -7,7 +7,7 @@ import { validateRequest } from '@/lib/auth'
 
 // Mock auth module
 jest.mock('@/lib/auth', () => ({
-  validateRequest: jest.fn()
+  validateRequest: jest.fn(),
 }))
 
 // Mock prisma
@@ -33,7 +33,7 @@ jest.mock('@/lib/prisma', () => ({
       findMany: jest.fn(),
     },
     $transaction: jest.fn(),
-  }
+  },
 }))
 
 describe('Product API Routes', () => {
@@ -69,9 +69,9 @@ describe('Product API Routes', () => {
               url: '/images/bc.jpg',
               isPrimary: true,
               sortOrder: 1,
-            }
+            },
           ],
-        }
+        },
       ]
 
       ;(prisma.product.findMany as jest.Mock).mockResolvedValue(mockProducts)
@@ -108,7 +108,9 @@ describe('Product API Routes', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      ;(prisma.product.findMany as jest.Mock).mockRejectedValue(new Error('Database connection failed'))
+      ;(prisma.product.findMany as jest.Mock).mockRejectedValue(
+        new Error('Database connection failed')
+      )
 
       const request = new NextRequest('http://localhost:3002/api/products')
       const response = await GET(request)
@@ -149,16 +151,16 @@ describe('Product API Routes', () => {
       productionTime: 5,
       rushAvailable: true,
       rushDays: 2,
-      rushFee: 50.00,
+      rushFee: 50.0,
       basePrice: 99.99,
-      setupFee: 25.00,
+      setupFee: 25.0,
     }
 
     beforeEach(() => {
       // Mock successful auth
       ;(validateRequest as jest.Mock).mockResolvedValue({
         user: { id: 'user-1', role: 'ADMIN' },
-        session: { id: 'session-1' }
+        session: { id: 'session-1' },
       })
 
       // Mock successful lookups
@@ -181,16 +183,16 @@ describe('Product API Routes', () => {
       ;(prisma.$transaction as jest.Mock).mockImplementation(async (callback) => {
         return callback({
           product: {
-            create: jest.fn().mockResolvedValue(mockCreatedProduct)
+            create: jest.fn().mockResolvedValue(mockCreatedProduct),
           },
           productPaperStockSet: {
-            create: jest.fn()
+            create: jest.fn(),
           },
           productQuantityGroup: {
-            create: jest.fn()
+            create: jest.fn(),
           },
           productSizeGroup: {
-            create: jest.fn()
+            create: jest.fn(),
           },
         })
       })
@@ -215,7 +217,7 @@ describe('Product API Routes', () => {
     it('should reject non-admin users', async () => {
       ;(validateRequest as jest.Mock).mockResolvedValue({
         user: { id: 'user-1', role: 'USER' },
-        session: { id: 'session-1' }
+        session: { id: 'session-1' },
       })
 
       const request = new NextRequest('http://localhost:3002/api/products', {
@@ -311,7 +313,7 @@ describe('Product API Routes', () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
               })
-            })
+            }),
           },
           productPaperStockSet: { create: jest.fn() },
           productQuantityGroup: { create: jest.fn() },
@@ -337,7 +339,7 @@ describe('Product API Routes', () => {
     beforeEach(() => {
       ;(validateRequest as jest.Mock).mockResolvedValue({
         user: { id: 'user-1', role: 'ADMIN' },
-        session: { id: 'session-1' }
+        session: { id: 'session-1' },
       })
     })
 
@@ -355,7 +357,7 @@ describe('Product API Routes', () => {
       const request = new NextRequest('http://localhost:3002/api/products/upload-image', {
         method: 'POST',
         headers: {
-          'Content-Length': String(11 * 1024 * 1024)
+          'Content-Length': String(11 * 1024 * 1024),
         },
         body: formData as any,
       })
@@ -369,11 +371,7 @@ describe('Product API Routes', () => {
     })
 
     it('should validate file type', async () => {
-      const invalidFile = new File(
-        ['test content'],
-        'test.txt',
-        { type: 'text/plain' }
-      )
+      const invalidFile = new File(['test content'], 'test.txt', { type: 'text/plain' })
 
       const formData = new FormData()
       formData.append('file', invalidFile)
@@ -395,7 +393,7 @@ describe('Product API Routes', () => {
     it('should require admin authentication', async () => {
       ;(validateRequest as jest.Mock).mockResolvedValue({
         user: { id: 'user-1', role: 'USER' },
-        session: { id: 'session-1' }
+        session: { id: 'session-1' },
       })
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' })
@@ -427,22 +425,26 @@ describe('Product API Routes', () => {
         // Auth error
         async () => {
           ;(validateRequest as jest.Mock).mockResolvedValue({ user: null, session: null })
-          return POST(new NextRequest('http://localhost:3002/api/products', {
-            method: 'POST',
-            body: JSON.stringify({}),
-          }))
+          return POST(
+            new NextRequest('http://localhost:3002/api/products', {
+              method: 'POST',
+              body: JSON.stringify({}),
+            })
+          )
         },
         // Validation error
         async () => {
           ;(validateRequest as jest.Mock).mockResolvedValue({
             user: { id: 'user-1', role: 'ADMIN' },
-            session: { id: 'session-1' }
+            session: { id: 'session-1' },
           })
-          return POST(new NextRequest('http://localhost:3002/api/products', {
-            method: 'POST',
-            body: JSON.stringify({ name: '' }), // Invalid data
-          }))
-        }
+          return POST(
+            new NextRequest('http://localhost:3002/api/products', {
+              method: 'POST',
+              body: JSON.stringify({ name: '' }), // Invalid data
+            })
+          )
+        },
       ]
 
       for (const testCase of testCases) {
@@ -464,7 +466,7 @@ describe('Product API Routes', () => {
         name: 'Complex Product',
         slug: 'complex-product',
         description: 'Description',
-        basePrice: 100.00,
+        basePrice: 100.0,
         isActive: true,
         isFeatured: false,
         createdAt: new Date(),
@@ -480,7 +482,7 @@ describe('Product API Routes', () => {
             url: '/img1.jpg',
             isPrimary: true,
             sortOrder: 1,
-          }
+          },
         ],
         productSizes: [
           {
@@ -491,16 +493,16 @@ describe('Product API Routes', () => {
             height: 11,
             unit: 'inches',
             isActive: true,
-          }
+          },
         ],
         productQuantities: [
           {
             id: 'qty-1',
             productId: 'prod-complex',
             quantity: 100,
-            price: 50.00,
+            price: 50.0,
             isActive: true,
-          }
+          },
         ],
         productPaperStocks: [
           {
@@ -510,17 +512,17 @@ describe('Product API Routes', () => {
             thickness: 14,
             finish: 'glossy',
             isActive: true,
-          }
+          },
         ],
         productAddOns: [
           {
             id: 'addon-1',
             productId: 'prod-complex',
             name: 'Rush Service',
-            price: 25.00,
+            price: 25.0,
             isActive: true,
-          }
-        ]
+          },
+        ],
       }
 
       ;(prisma.product.findMany as jest.Mock).mockResolvedValue([complexProduct])

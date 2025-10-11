@@ -1,14 +1,14 @@
-import { Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { logger, logBusinessEvent, logError } from '@/lib/logger-safe'
 import {
-  CreateVendorInput,
-  UpdateVendorInput,
-  VendorSearchFilters,
-  PaginationOptions,
-  PaginatedResult,
-  ServiceContext,
-  ServiceResult
+  type CreateVendorInput,
+  type UpdateVendorInput,
+  type VendorSearchFilters,
+  type PaginationOptions,
+  type PaginatedResult,
+  type ServiceContext,
+  type ServiceResult,
 } from '@/types/service'
 import {
   AppError,
@@ -16,7 +16,7 @@ import {
   NotFoundError,
   ConflictError,
   ForbiddenError,
-  normalizeError
+  normalizeError,
 } from '@/exceptions/AppError'
 
 export class VendorService {
@@ -40,15 +40,14 @@ export class VendorService {
       // Check for existing vendor with same name or email
       const existingVendor = await prisma.vendor.findFirst({
         where: {
-          OR: [
-            { name: input.name },
-            { contactEmail: input.contactEmail }
-          ]
-        }
+          OR: [{ name: input.name }, { contactEmail: input.contactEmail }],
+        },
       })
 
       if (existingVendor) {
-        throw new ConflictError(`Vendor with name '${input.name}' or email '${input.contactEmail}' already exists`)
+        throw new ConflictError(
+          `Vendor with name '${input.name}' or email '${input.contactEmail}' already exists`
+        )
       }
 
       const vendor = await prisma.vendor.create({
@@ -83,8 +82,8 @@ export class VendorService {
           shippingCostFormula: true,
           notes: true,
           createdAt: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       })
 
       logBusinessEvent('vendor_created', {
@@ -92,25 +91,24 @@ export class VendorService {
         vendorName: vendor.name,
         contactEmail: vendor.contactEmail,
         createdBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: vendor
+        data: vendor,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to create vendor')
       logError(normalizedError, {
         operation: 'create_vendor',
         input: { name: input.name, contactEmail: input.contactEmail },
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -118,42 +116,47 @@ export class VendorService {
   /**
    * Get vendor by ID with optional products
    */
-  async getVendorById(vendorId: string, includeProducts: boolean = false): Promise<ServiceResult<any>> {
+  async getVendorById(
+    vendorId: string,
+    includeProducts: boolean = false
+  ): Promise<ServiceResult<any>> {
     try {
       const vendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
         include: {
-          VendorProduct: includeProducts ? {
-            include: {
-              Product: {
-                select: {
-                  id: true,
-                  name: true,
-                  sku: true,
-                  basePrice: true,
-                  isActive: true
-                }
+          VendorProduct: includeProducts
+            ? {
+                include: {
+                  Product: {
+                    select: {
+                      id: true,
+                      name: true,
+                      sku: true,
+                      basePrice: true,
+                      isActive: true,
+                    },
+                  },
+                },
               }
-            }
-          } : false,
+            : false,
           Order: {
             select: {
               id: true,
               orderNumber: true,
               status: true,
               total: true,
-              createdAt: true
+              createdAt: true,
             },
             orderBy: { createdAt: 'desc' },
-            take: 5
+            take: 5,
           },
           _count: {
             select: {
               VendorProduct: true,
-              Order: true
-            }
-          }
-        }
+              Order: true,
+            },
+          },
+        },
       })
 
       if (!vendor) {
@@ -168,20 +171,19 @@ export class VendorService {
 
       return {
         success: true,
-        data: vendor
+        data: vendor,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to get vendor')
       logError(normalizedError, {
         operation: 'get_vendor_by_id',
         vendorId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -197,7 +199,7 @@ export class VendorService {
       // Check if vendor exists
       const existingVendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
-        select: { id: true, name: true, contactEmail: true }
+        select: { id: true, name: true, contactEmail: true },
       })
 
       if (!existingVendor) {
@@ -212,14 +214,14 @@ export class VendorService {
             {
               OR: [
                 ...(input.name ? [{ name: input.name }] : []),
-                ...(input.contactEmail ? [{ contactEmail: input.contactEmail }] : [])
-              ]
-            }
-          ]
+                ...(input.contactEmail ? [{ contactEmail: input.contactEmail }] : []),
+              ],
+            },
+          ],
         }
 
         const conflictingVendor = await prisma.vendor.findFirst({
-          where: conflictWhere
+          where: conflictWhere,
         })
 
         if (conflictingVendor) {
@@ -233,7 +235,7 @@ export class VendorService {
           ...input,
           address: input.address as any,
           apiCredentials: input.apiCredentials as any,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         select: {
           id: true,
@@ -250,8 +252,8 @@ export class VendorService {
           shippingCostFormula: true,
           notes: true,
           createdAt: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       })
 
       logBusinessEvent('vendor_updated', {
@@ -259,26 +261,25 @@ export class VendorService {
         vendorName: existingVendor.name,
         changes: input,
         updatedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: updatedVendor
+        data: updatedVendor,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to update vendor')
       logError(normalizedError, {
         operation: 'update_vendor',
         vendorId,
         input,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -312,15 +313,15 @@ export class VendorService {
             _count: {
               select: {
                 VendorProduct: true,
-                Order: true
-              }
-            }
+                Order: true,
+              },
+            },
           },
           orderBy,
           skip: (pagination.page - 1) * pagination.limit,
           take: pagination.limit,
         }),
-        prisma.vendor.count({ where })
+        prisma.vendor.count({ where }),
       ])
 
       const totalPages = Math.ceil(total / pagination.limit)
@@ -334,26 +335,25 @@ export class VendorService {
           totalPages,
           hasNext: pagination.page < totalPages,
           hasPrev: pagination.page > 1,
-        }
+        },
       }
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to search vendors')
       logError(normalizedError, {
         operation: 'search_vendors',
         filters,
         pagination,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -368,7 +368,7 @@ export class VendorService {
 
       const vendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
-        select: { id: true, name: true, isActive: true }
+        select: { id: true, name: true, isActive: true },
       })
 
       if (!vendor) {
@@ -379,13 +379,13 @@ export class VendorService {
         where: { id: vendorId },
         data: {
           isActive,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         select: {
           id: true,
           name: true,
-          isActive: true
-        }
+          isActive: true,
+        },
       })
 
       logBusinessEvent('vendor_status_changed', {
@@ -394,26 +394,25 @@ export class VendorService {
         oldStatus: vendor.isActive,
         newStatus: isActive,
         changedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: updatedVendor
+        data: updatedVendor,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to toggle vendor status')
       logError(normalizedError, {
         operation: 'toggle_vendor_status',
         vendorId,
         isActive,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -435,7 +434,7 @@ export class VendorService {
       // Verify vendor exists
       const vendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
-        select: { id: true, name: true }
+        select: { id: true, name: true },
       })
 
       if (!vendor) {
@@ -445,7 +444,7 @@ export class VendorService {
       // Verify product exists
       const product = await prisma.product.findUnique({
         where: { id: productId },
-        select: { id: true, name: true, sku: true }
+        select: { id: true, name: true, sku: true },
       })
 
       if (!product) {
@@ -457,9 +456,9 @@ export class VendorService {
         where: {
           vendorId_productId: {
             vendorId,
-            productId
-          }
-        }
+            productId,
+          },
+        },
       })
 
       if (existingRelation) {
@@ -472,16 +471,16 @@ export class VendorService {
           productId,
           vendorSku,
           vendorPrice,
-          isPreferred
+          isPreferred,
         },
         include: {
           Vendor: {
-            select: { id: true, name: true }
+            select: { id: true, name: true },
           },
           Product: {
-            select: { id: true, name: true, sku: true }
-          }
-        }
+            select: { id: true, name: true, sku: true },
+          },
+        },
       })
 
       logBusinessEvent('vendor_product_added', {
@@ -491,26 +490,25 @@ export class VendorService {
         productName: product.name,
         vendorSku,
         addedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: vendorProduct
+        data: vendorProduct,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to add vendor product')
       logError(normalizedError, {
         operation: 'add_vendor_product',
         vendorId,
         productId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -527,13 +525,13 @@ export class VendorService {
         where: {
           vendorId_productId: {
             vendorId,
-            productId
-          }
+            productId,
+          },
         },
         include: {
           Vendor: { select: { name: true } },
-          Product: { select: { name: true } }
-        }
+          Product: { select: { name: true } },
+        },
       })
 
       if (!vendorProduct) {
@@ -544,9 +542,9 @@ export class VendorService {
         where: {
           vendorId_productId: {
             vendorId,
-            productId
-          }
-        }
+            productId,
+          },
+        },
       })
 
       logBusinessEvent('vendor_product_removed', {
@@ -555,26 +553,25 @@ export class VendorService {
         productId,
         productName: vendorProduct.Product.name,
         removedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: { vendorId, productId }
+        data: { vendorId, productId },
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to remove vendor product')
       logError(normalizedError, {
         operation: 'remove_vendor_product',
         vendorId,
         productId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -589,7 +586,7 @@ export class VendorService {
 
       const vendor = await prisma.vendor.findUnique({
         where: { id: vendorId },
-        select: { id: true, name: true }
+        select: { id: true, name: true },
       })
 
       if (!vendor) {
@@ -602,11 +599,11 @@ export class VendorService {
           by: ['status'],
           where: { vendorId },
           _count: true,
-          _sum: { total: true }
+          _sum: { total: true },
         }),
         // Product count
         prisma.vendorProduct.count({
-          where: { vendorId }
+          where: { vendorId },
         }),
         // Average turnaround time (simplified calculation)
         prisma.order.aggregate({
@@ -614,12 +611,12 @@ export class VendorService {
             vendorId,
             status: 'DELIVERED',
             paidAt: { not: null },
-            createdAt: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) } // Last 90 days
+            createdAt: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) }, // Last 90 days
           },
           _avg: {
             // This would need a computed field or additional logic to calculate actual turnaround
-          }
-        })
+          },
+        }),
       ])
 
       const totalOrders = orderStats.reduce((sum, stat) => sum + stat._count, 0)
@@ -631,31 +628,35 @@ export class VendorService {
         totalOrders,
         totalRevenue,
         productCount,
-        ordersByStatus: orderStats.reduce((acc, stat) => {
-          acc[stat.status] = stat._count
-          return acc
-        }, {} as Record<string, number>),
+        ordersByStatus: orderStats.reduce(
+          (acc, stat) => {
+            acc[stat.status] = stat._count
+            return acc
+          },
+          {} as Record<string, number>
+        ),
         averageOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
-        completionRate: totalOrders > 0 ?
-          (orderStats.find(s => s.status === 'DELIVERED')?._count || 0) / totalOrders : 0
+        completionRate:
+          totalOrders > 0
+            ? (orderStats.find((s) => s.status === 'DELIVERED')?._count || 0) / totalOrders
+            : 0,
       }
 
       return {
         success: true,
-        data: performance
+        data: performance,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to get vendor performance')
       logError(normalizedError, {
         operation: 'get_vendor_performance',
         vendorId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -705,7 +706,7 @@ export class VendorService {
 
     if (filters.supportedCarrier) {
       where.supportedCarriers = {
-        has: filters.supportedCarrier
+        has: filters.supportedCarrier,
       }
     }
 
@@ -722,12 +723,14 @@ export class VendorService {
     return where
   }
 
-  private buildVendorOrderByClause(pagination: PaginationOptions): Prisma.VendorOrderByWithRelationInput {
+  private buildVendorOrderByClause(
+    pagination: PaginationOptions
+  ): Prisma.VendorOrderByWithRelationInput {
     const sortBy = pagination.sortBy || 'createdAt'
     const sortOrder = pagination.sortOrder || 'desc'
 
     return {
-      [sortBy]: sortOrder
+      [sortBy]: sortOrder,
     }
   }
 }

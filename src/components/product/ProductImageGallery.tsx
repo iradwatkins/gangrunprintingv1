@@ -111,59 +111,59 @@ export function ProductImageGallery({
                 )}
                 placeholder={currentImage.blurDataUrl ? 'blur' : 'empty'}
                 priority={selectedIndex === 0}
+                productName={productName}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 src={currentImage.largeUrl || currentImage.url}
-                productName={productName}
                 onMouseEnter={() => enableZoom && setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
               />
 
-            {/* Primary Badge */}
-            {currentImage.isPrimary && (
-              <Badge className="absolute top-2 left-2 z-10">Primary</Badge>
-            )}
+              {/* Primary Badge */}
+              {currentImage.isPrimary && (
+                <Badge className="absolute top-2 left-2 z-10">Primary</Badge>
+              )}
 
-            {/* Navigation Arrows (for multiple images) */}
-            {sortedImages.length > 1 && (
-              <>
-                <button
-                  aria-label="Previous image"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handlePrevious()
-                  }}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  aria-label="Next image"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleNext()
-                  }}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
+              {/* Navigation Arrows (for multiple images) */}
+              {sortedImages.length > 1 && (
+                <>
+                  <button
+                    aria-label="Previous image"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handlePrevious()
+                    }}
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    aria-label="Next image"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleNext()
+                    }}
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
 
-            {/* Zoom Indicator */}
-            {enableLightbox && (
-              <div className="absolute bottom-2 right-2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Expand className="h-4 w-4" />
-              </div>
-            )}
+              {/* Zoom Indicator */}
+              {enableLightbox && (
+                <div className="absolute bottom-2 right-2 bg-white/80 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Expand className="h-4 w-4" />
+                </div>
+              )}
 
-            {/* Image Counter */}
-            {sortedImages.length > 1 && (
-              <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
-                {selectedIndex + 1} / {sortedImages.length}
-              </div>
-            )}
+              {/* Image Counter */}
+              {sortedImages.length > 1 && (
+                <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                  {selectedIndex + 1} / {sortedImages.length}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         </ProductImageErrorBoundary>
 
         {/* Thumbnail Gallery */}
@@ -201,7 +201,9 @@ export function ProductImageGallery({
         <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
           <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
             <DialogTitle className="sr-only">{productName} - Full size image view</DialogTitle>
-            <DialogDescription className="sr-only">Full size view of {productName} product image</DialogDescription>
+            <DialogDescription className="sr-only">
+              Full size view of {productName} product image
+            </DialogDescription>
             <div className="relative">
               <Image
                 priority

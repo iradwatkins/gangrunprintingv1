@@ -51,10 +51,7 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     if (!verifySquareSignature(rawBody, signature)) {
       console.error('[Square Webhook] Invalid signature')
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
     // Parse webhook event
@@ -79,10 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[Square Webhook] Error:', error)
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }
 
@@ -114,7 +108,7 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
 
   // Find order by orderNumber
   const order = await prisma.order.findUnique({
-    where: { orderNumber: reference_id }
+    where: { orderNumber: reference_id },
   })
 
   if (!order) {
@@ -124,18 +118,14 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
 
   // Prevent duplicate processing
   if (order.status !== 'PENDING_PAYMENT') {
-    console.log(
-      `[Square Webhook] Order ${reference_id} already processed (${order.status})`
-    )
+    console.log(`[Square Webhook] Order ${reference_id} already processed (${order.status})`)
     return
   }
 
   // Verify amount matches
   const paidAmount = amount_money.amount / 100 // Convert cents to dollars
   if (Math.abs(paidAmount - order.total) > 0.01) {
-    console.error(
-      `[Square Webhook] Amount mismatch: Paid ${paidAmount}, Expected ${order.total}`
-    )
+    console.error(`[Square Webhook] Amount mismatch: Paid ${paidAmount}, Expected ${order.total}`)
     // Still process but log the discrepancy
   }
 
@@ -168,7 +158,7 @@ async function handlePaymentUpdated(event: SquareWebhookEvent): Promise<void> {
   }
 
   const order = await prisma.order.findUnique({
-    where: { orderNumber: reference_id }
+    where: { orderNumber: reference_id },
   })
 
   if (!order) {
@@ -200,10 +190,10 @@ async function handlePaymentFailed(orderId: string, reason: string): Promise<voi
           fromStatus: 'PENDING_PAYMENT',
           toStatus: 'PAYMENT_DECLINED',
           notes: `Payment failed: ${reason}`,
-          changedBy: 'Square'
-        }
-      }
-    }
+          changedBy: 'Square',
+        },
+      },
+    },
   })
 
   // TODO: Send payment failed email
@@ -233,10 +223,7 @@ function verifySquareSignature(body: string, signature: string): boolean {
       .digest('base64')
 
     // Compare signatures (timing-safe)
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(hmac)
-    )
+    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(hmac))
   } catch (error) {
     console.error('[Square Webhook] Signature verification error:', error)
     return false
@@ -252,6 +239,6 @@ export async function GET() {
   return NextResponse.json({
     service: 'Square Payment Webhook',
     status: 'active',
-    configured: !!SQUARE_WEBHOOK_SIGNATURE_KEY
+    configured: !!SQUARE_WEBHOOK_SIGNATURE_KEY,
   })
 }

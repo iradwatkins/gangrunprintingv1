@@ -8,7 +8,19 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Edit, Trash2, Search, ArrowUpDown, Save, Package, Eye, EyeOff } from 'lucide-react'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  ArrowUpDown,
+  Save,
+  Package,
+  Eye,
+  EyeOff,
+  Folder,
+  FolderTree,
+} from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -25,6 +37,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import toast from '@/lib/toast'
 
 interface Category {
@@ -34,11 +53,19 @@ interface Category {
   description: string | null
   sortOrder: number
   isActive: boolean
+  isHidden: boolean
+  parentCategoryId: string | null
   createdAt: string
   updatedAt: string
   _count?: {
     Product: number
+    Subcategories: number
   }
+  ParentCategory?: {
+    id: string
+    name: string
+    slug: string
+  } | null
 }
 
 export default function CategoriesPage() {
@@ -58,6 +85,8 @@ export default function CategoriesPage() {
     description: '',
     sortOrder: 0,
     isActive: true,
+    isHidden: false,
+    parentCategoryId: '',
   })
 
   useEffect(() => {
@@ -148,6 +177,8 @@ export default function CategoriesPage() {
       description: '',
       sortOrder: 0,
       isActive: true,
+      isHidden: false,
+      parentCategoryId: '',
     })
     setEditingCategory(null)
   }
@@ -160,6 +191,8 @@ export default function CategoriesPage() {
       description: category.description || '',
       sortOrder: category.sortOrder,
       isActive: category.isActive,
+      isHidden: category.isHidden,
+      parentCategoryId: category.parentCategoryId || '',
     })
     setDialogOpen(true)
   }
@@ -189,6 +222,9 @@ export default function CategoriesPage() {
       category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       category.slug.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  // Get parent categories for dropdown
+  const parentCategories = categories.filter((cat) => !cat.parentCategoryId)
 
   return (
     <div className="container mx-auto py-6">
@@ -242,10 +278,15 @@ export default function CategoriesPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Slug</TableHead>
+                    <TableHead>Parent</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead className="text-center">
                       <Package className="h-4 w-4 inline mr-1" />
                       Products
+                    </TableHead>
+                    <TableHead className="text-center">
+                      <FolderTree className="h-4 w-4 inline mr-1" />
+                      Subs
                     </TableHead>
                     <TableHead className="text-center">
                       <ArrowUpDown className="h-4 w-4 inline" />
@@ -258,9 +299,27 @@ export default function CategoriesPage() {
                 <TableBody>
                   {filteredCategories.map((category) => (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {category.parentCategoryId ? (
+                            <span className="text-muted-foreground">↳</span>
+                          ) : (
+                            <Folder className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          {category.name}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <code className="text-sm bg-muted px-2 py-1 rounded">{category.slug}</code>
+                      </TableCell>
+                      <TableCell>
+                        {category.ParentCategory ? (
+                          <Badge className="text-xs" variant="outline">
+                            {category.ParentCategory.name}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">-</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground line-clamp-2">
@@ -273,20 +332,32 @@ export default function CategoriesPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
+                        <Badge variant={category._count?.Subcategories ? 'default' : 'secondary'}>
+                          {category._count?.Subcategories || 0}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
                         <span className="text-sm text-muted-foreground">{category.sortOrder}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className="flex items-center gap-1 w-fit"
-                          variant={category.isActive ? 'default' : 'secondary'}
-                        >
-                          {category.isActive ? (
-                            <Eye className="h-3 w-3" />
-                          ) : (
-                            <EyeOff className="h-3 w-3" />
+                        <div className="flex flex-col gap-1">
+                          <Badge
+                            className="flex items-center gap-1 w-fit"
+                            variant={category.isActive ? 'default' : 'secondary'}
+                          >
+                            {category.isActive ? (
+                              <Eye className="h-3 w-3" />
+                            ) : (
+                              <EyeOff className="h-3 w-3" />
+                            )}
+                            {category.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {category.isHidden && (
+                            <Badge className="text-xs" variant="outline">
+                              Hidden from Nav
+                            </Badge>
                           )}
-                          {category.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
@@ -358,6 +429,32 @@ export default function CategoriesPage() {
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="parentCategoryId">
+                Parent Category
+              </Label>
+              <Select
+                value={formData.parentCategoryId || 'none'}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, parentCategoryId: value === 'none' ? '' : value })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="None (top-level category)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None (top-level category)</SelectItem>
+                  {parentCategories
+                    .filter((cat) => !editingCategory || cat.id !== editingCategory.id)
+                    .map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right" htmlFor="description">
                 Description
               </Label>
@@ -391,12 +488,31 @@ export default function CategoriesPage() {
               <Label className="text-right" htmlFor="isActive">
                 Active
               </Label>
-              <div className="col-span-3">
+              <div className="col-span-3 flex items-center gap-2">
                 <Switch
                   checked={formData.isActive}
                   id="isActive"
                   onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                 />
+                <span className="text-sm text-muted-foreground">
+                  {formData.isActive ? 'Visible to customers' : 'Hidden from customers'}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="isHidden">
+                Hide from Navigation
+              </Label>
+              <div className="col-span-3 flex items-center gap-2">
+                <Switch
+                  checked={formData.isHidden}
+                  id="isHidden"
+                  onCheckedChange={(checked) => setFormData({ ...formData, isHidden: checked })}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {formData.isHidden ? 'Hidden from nav (SEO only)' : 'Shown in navigation'}
+                </span>
               </div>
             </div>
           </div>

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedAddOnSets() {
-
   try {
     // First, get existing add-ons
     const addOns = await prisma.addOn.findMany()
@@ -74,36 +73,42 @@ async function seedAddOnSets() {
         let addOnsToAdd = []
 
         if (set.name.includes('Business Card')) {
-          addOnsToAdd = addOns.filter(a =>
-            a.name.includes('Rounded') ||
-            a.name.includes('Foil') ||
-            a.name.includes('Spot UV') ||
-            a.name.includes('Lamination')
-          ).slice(0, 4)
+          addOnsToAdd = addOns
+            .filter(
+              (a) =>
+                a.name.includes('Rounded') ||
+                a.name.includes('Foil') ||
+                a.name.includes('Spot UV') ||
+                a.name.includes('Lamination')
+            )
+            .slice(0, 4)
         } else if (set.name.includes('Finishing')) {
-          addOnsToAdd = addOns.filter(a =>
-            a.name.includes('Folding') ||
-            a.name.includes('Score') ||
-            a.name.includes('Perforation') ||
-            a.name.includes('Hole')
-          ).slice(0, 4)
+          addOnsToAdd = addOns
+            .filter(
+              (a) =>
+                a.name.includes('Folding') ||
+                a.name.includes('Score') ||
+                a.name.includes('Perforation') ||
+                a.name.includes('Hole')
+            )
+            .slice(0, 4)
         } else if (set.name.includes('Packaging')) {
-          addOnsToAdd = addOns.filter(a =>
-            a.name.includes('Banding') ||
-            a.name.includes('Shrink') ||
-            a.name.includes('Postal')
-          ).slice(0, 3)
+          addOnsToAdd = addOns
+            .filter(
+              (a) =>
+                a.name.includes('Banding') || a.name.includes('Shrink') || a.name.includes('Postal')
+            )
+            .slice(0, 3)
         } else if (set.name.includes('Design')) {
-          addOnsToAdd = addOns.filter(a =>
-            a.name.includes('Design') ||
-            a.name.includes('Proof') ||
-            a.name.includes('QR')
-          ).slice(0, 3)
+          addOnsToAdd = addOns
+            .filter(
+              (a) => a.name.includes('Design') || a.name.includes('Proof') || a.name.includes('QR')
+            )
+            .slice(0, 3)
         } else if (set.name.includes('EDDM')) {
-          addOnsToAdd = addOns.filter(a =>
-            a.name.includes('EDDM') ||
-            a.name.includes('Postal')
-          ).slice(0, 2)
+          addOnsToAdd = addOns
+            .filter((a) => a.name.includes('EDDM') || a.name.includes('Postal'))
+            .slice(0, 2)
         } else {
           // Default: add first 3 add-ons
           addOnsToAdd = addOns.slice(0, 3)
@@ -127,10 +132,8 @@ async function seedAddOnSets() {
             },
           })
         }
-
       }
     }
-
   } catch (error) {
     console.error('❌ Error seeding AddOn Sets:', error)
     throw error
@@ -141,7 +144,6 @@ async function seedAddOnSets() {
 if (require.main === module) {
   seedAddOnSets()
     .then(() => {
-
       process.exit(0)
     })
     .catch((error) => {

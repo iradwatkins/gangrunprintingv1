@@ -10,7 +10,7 @@ import {
   SizeModule,
   PaperStockModule,
   AddonsModule,
-  TurnaroundModule
+  TurnaroundModule,
 } from './modules'
 
 interface ProductConfiguration {
@@ -60,11 +60,11 @@ export default function ModularProductConfigurationForm({
     onConfigurationChange: (config) => {
       const isComplete = Boolean(
         config.quantity &&
-        config.size &&
-        config.sides &&
-        config.paper &&
-        config.coating &&
-        config.turnaround
+          config.size &&
+          config.sides &&
+          config.paper &&
+          config.coating &&
+          config.turnaround
       )
 
       // Convert to legacy format for backward compatibility
@@ -129,83 +129,83 @@ export default function ModularProductConfigurationForm({
     <div className="space-y-6">
       {/* Quantity Module */}
       <QuantityModule
+        required
+        customValue={configuration.customQuantity}
         quantities={configData.quantities || []}
         value={configuration.quantity}
-        customValue={configuration.customQuantity}
         onChange={updateQuantity}
-        required
       />
 
       {/* Size Module */}
       <SizeModule
+        required
+        customHeight={configuration.customHeight}
+        customWidth={configuration.customWidth}
+        exactSizeRequired={false}
         sizes={configData.sizes || []}
         value={configuration.size}
-        customWidth={configuration.customWidth}
-        customHeight={configuration.customHeight}
         onChange={updateSize}
-        exactSizeRequired={false}
         onExactSizeChange={(exactSize) => {
           // Handle exact size change if needed
           console.log('Exact size:', exactSize)
         }}
-        required
       />
 
       {/* Paper Stock Module */}
       <PaperStockModule
+        required
+        coatingValue={configuration.coating}
         paperStocks={configData.paperStocks || []}
         paperValue={configuration.paper}
-        coatingValue={configuration.coating}
         sidesValue={configuration.sides}
-        onPaperChange={(paperId) => {
-          updateConfiguration({ paper: paperId })
-        }}
         onCoatingChange={(coatingId) => {
           updateConfiguration({ coating: coatingId })
+        }}
+        onPaperChange={(paperId) => {
+          updateConfiguration({ paper: paperId })
         }}
         onSidesChange={(sidesId) => {
           updateConfiguration({ sides: sidesId })
         }}
-        required
       />
 
       {/* Addons Module */}
       <AddonsModule
         addons={configData.addons || []}
         addonsGrouped={configData.addonsGrouped}
+        bandingConfig={configuration.bandingConfig}
+        cornerRoundingConfig={configuration.cornerRoundingConfig}
+        perforationConfig={configuration.perforationConfig}
+        quantity={getQuantityValue(configuration)}
         selectedAddons={configuration.selectedAddons}
+        turnaroundTimes={configData.turnaroundTimes}
+        variableDataConfig={configuration.variableDataConfig}
         onAddonChange={(selectedAddonIds) => {
           updateConfiguration({ selectedAddons: selectedAddonIds })
         }}
-        variableDataConfig={configuration.variableDataConfig}
-        onVariableDataChange={(config) => {
-          updateConfiguration({ variableDataConfig: config })
-        }}
-        perforationConfig={configuration.perforationConfig}
-        onPerforationChange={(config) => {
-          updateConfiguration({ perforationConfig: config })
-        }}
-        bandingConfig={configuration.bandingConfig}
         onBandingChange={(config) => {
           updateConfiguration({ bandingConfig: config })
         }}
-        cornerRoundingConfig={configuration.cornerRoundingConfig}
         onCornerRoundingChange={(config) => {
           updateConfiguration({ cornerRoundingConfig: config })
         }}
-        turnaroundTimes={configData.turnaroundTimes}
-        quantity={getQuantityValue(configuration)}
+        onPerforationChange={(config) => {
+          updateConfiguration({ perforationConfig: config })
+        }}
+        onVariableDataChange={(config) => {
+          updateConfiguration({ variableDataConfig: config })
+        }}
       />
 
       {/* Turnaround Module */}
       <TurnaroundModule
-        turnaroundTimes={configData.turnaroundTimes || []}
-        selectedTurnaroundId={configuration.turnaround}
-        onTurnaroundChange={updateTurnaround}
-        baseProductPrice={currentPrice}
-        quantity={getQuantityValue(configuration)}
-        currentCoating={configuration.coating}
         required
+        baseProductPrice={currentPrice}
+        currentCoating={configuration.coating}
+        quantity={getQuantityValue(configuration)}
+        selectedTurnaroundId={configuration.turnaround}
+        turnaroundTimes={configData.turnaroundTimes || []}
+        onTurnaroundChange={updateTurnaround}
       />
     </div>
   )

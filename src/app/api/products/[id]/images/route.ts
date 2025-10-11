@@ -12,10 +12,7 @@ import { randomUUID } from 'crypto'
 export const dynamic = 'force-dynamic'
 
 // GET /api/products/[id]/images - Get all images for a product
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user) {
@@ -24,7 +21,7 @@ export async function GET(
 
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!product) {
@@ -35,17 +32,17 @@ export async function GET(
     const productImages = await prisma.productImage.findMany({
       where: { productId: params.id },
       include: {
-        Image: true
+        Image: true,
       },
       orderBy: [
         { isPrimary: 'desc' }, // Primary images first
-        { sortOrder: 'asc' },  // Then by sort order
-        { createdAt: 'asc' }   // Then by creation date
-      ]
+        { sortOrder: 'asc' }, // Then by sort order
+        { createdAt: 'asc' }, // Then by creation date
+      ],
     })
 
     // Transform to include both relationship data and image data
-    const imagesWithDetails = productImages.map(pi => ({
+    const imagesWithDetails = productImages.map((pi) => ({
       // Product-Image relationship fields
       id: pi.id,
       productId: pi.productId,
@@ -55,23 +52,17 @@ export async function GET(
       createdAt: pi.createdAt,
       updatedAt: pi.updatedAt,
       // Image details
-      image: pi.Image
+      image: pi.Image,
     }))
 
     return NextResponse.json(imagesWithDetails)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch product images' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch product images' }, { status: 500 })
   }
 }
 
 // POST /api/products/[id]/images - Attach an image to a product
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const requestId = generateRequestId()
 
   try {
@@ -89,7 +80,7 @@ export async function POST(
 
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!product) {
@@ -98,7 +89,7 @@ export async function POST(
 
     // Check if image exists
     const image = await prisma.image.findUnique({
-      where: { id: imageId }
+      where: { id: imageId },
     })
 
     if (!image) {
@@ -109,8 +100,8 @@ export async function POST(
     const existingRelation = await prisma.productImage.findFirst({
       where: {
         productId: params.id,
-        imageId: imageId
-      }
+        imageId: imageId,
+      },
     })
 
     if (existingRelation) {
@@ -124,7 +115,7 @@ export async function POST(
 
     // Check image limit (maximum 4 images per product)
     const currentImageCount = await prisma.productImage.count({
-      where: { productId: params.id }
+      where: { productId: params.id },
     })
 
     if (currentImageCount >= 4) {
@@ -140,7 +131,7 @@ export async function POST(
     if (isPrimary) {
       await prisma.productImage.updateMany({
         where: { productId: params.id, isPrimary: true },
-        data: { isPrimary: false }
+        data: { isPrimary: false },
       })
     }
 
@@ -155,8 +146,8 @@ export async function POST(
         updatedAt: new Date(),
       },
       include: {
-        Image: true
-      }
+        Image: true,
+      },
     })
 
     return createSuccessResponse(
@@ -168,7 +159,7 @@ export async function POST(
         sortOrder: productImage.sortOrder,
         createdAt: productImage.createdAt,
         updatedAt: productImage.updatedAt,
-        image: productImage.Image
+        image: productImage.Image,
       },
       201,
       undefined,
@@ -194,10 +185,7 @@ export async function POST(
 }
 
 // DELETE /api/products/[id]/images - Detach an image from a product
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const requestId = generateRequestId()
 
   try {
@@ -217,35 +205,30 @@ export async function DELETE(
     const productImage = await prisma.productImage.findFirst({
       where: {
         productId: params.id,
-        imageId: imageId
-      }
+        imageId: imageId,
+      },
     })
 
     if (!productImage) {
-      return createErrorResponse(
-        'Image is not attached to this product',
-        404,
-        undefined,
-        requestId
-      )
+      return createErrorResponse('Image is not attached to this product', 404, undefined, requestId)
     }
 
     // Delete the relationship
     await prisma.productImage.delete({
-      where: { id: productImage.id }
+      where: { id: productImage.id },
     })
 
     // If we deleted the primary image, make the first remaining image primary
     if (productImage.isPrimary) {
       const firstRemainingImage = await prisma.productImage.findFirst({
         where: { productId: params.id },
-        orderBy: { sortOrder: 'asc' }
+        orderBy: { sortOrder: 'asc' },
       })
 
       if (firstRemainingImage) {
         await prisma.productImage.update({
           where: { id: firstRemainingImage.id },
-          data: { isPrimary: true }
+          data: { isPrimary: true },
         })
       }
     }
@@ -254,7 +237,7 @@ export async function DELETE(
       {
         message: 'Image detached from product successfully',
         productId: params.id,
-        imageId: imageId
+        imageId: imageId,
       },
       200,
       null,

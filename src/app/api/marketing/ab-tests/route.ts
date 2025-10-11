@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { ABTestingService } from '@/lib/marketing/ab-testing'
-import { ABTestType } from '@prisma/client'
+import { type ABTestType } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {

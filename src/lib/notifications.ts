@@ -14,8 +14,7 @@ const configureWebPush = () => {
   if (vapidKeys.publicKey && vapidKeys.privateKey && typeof window === 'undefined') {
     try {
       webpush.setVapidDetails(vapidKeys.subject, vapidKeys.publicKey, vapidKeys.privateKey)
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 }
 
@@ -132,7 +131,11 @@ export const getNotificationContent = (
 }
 
 // Send notification to a specific user
-export async function sendNotificationToUser(userId: string, type: NotificationType, data: Record<string, unknown>) {
+export async function sendNotificationToUser(
+  userId: string,
+  type: NotificationType,
+  data: Record<string, unknown>
+) {
   try {
     // Get user's push subscriptions
     const subscriptions = await prisma.pushSubscription.findMany({
@@ -226,7 +229,7 @@ export async function sendNotificationToAll(type: NotificationType, data: Record
 }
 
 // Generate VAPID keys (run once during setup)
-export function generateVAPIDKeys() : unknown {
+export function generateVAPIDKeys(): unknown {
   const keys = webpush.generateVAPIDKeys()
 
   return keys

@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   const sizeGroups = [
     {
       name: 'Business Card Sizes',
@@ -196,12 +195,10 @@ async function main() {
         create: sizeGroup,
       })
       createdCount++
-
     } catch (error) {
       console.error(`✗ Error creating size group ${sizeGroup.name}:`, error)
     }
   }
-
 }
 
 main()

@@ -11,13 +11,13 @@ async function createFourProducts() {
     { name: 'Product one', sku: 'PROD001', price: 99.99, slug: 'product-one' },
     { name: 'Product two', sku: 'PROD002', price: 149.99, slug: 'product-two' },
     { name: 'Product three', sku: 'PROD003', price: 199.99, slug: 'product-three' },
-    { name: 'Product four', sku: 'PROD004', price: 249.99, slug: 'product-four' }
+    { name: 'Product four', sku: 'PROD004', price: 249.99, slug: 'product-four' },
   ]
 
   try {
     // First ensure we have a category
     let category = await prisma.productCategory.findFirst({
-      where: { slug: 'business-cards' }
+      where: { slug: 'business-cards' },
     })
 
     if (!category) {
@@ -29,15 +29,15 @@ async function createFourProducts() {
           description: 'Professional business cards for your business',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
       console.log('✅ Created category: Business Cards')
     }
 
     // Get or create an addon set
     let addonSet = await prisma.addOnSet.findFirst({
-      where: { isActive: true }
+      where: { isActive: true },
     })
 
     if (!addonSet) {
@@ -48,12 +48,12 @@ async function createFourProducts() {
           name: 'UV Coating',
           category: 'COATING',
           pricingType: 'FLAT',
-          flatPrice: 25.00,
+          flatPrice: 25.0,
           description: 'Premium UV coating for extra shine and protection',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Create addon set
@@ -64,8 +64,8 @@ async function createFourProducts() {
           description: 'Standard add-on options for products',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Link addon to set
@@ -78,8 +78,8 @@ async function createFourProducts() {
           isDefault: false,
           sortOrder: 0,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       console.log('✅ Created add-on set with UV coating')
@@ -87,7 +87,7 @@ async function createFourProducts() {
 
     // Get or create turnaround time set
     let turnaroundSet = await prisma.turnaroundTimeSet.findFirst({
-      where: { isActive: true }
+      where: { isActive: true },
     })
 
     if (!turnaroundSet) {
@@ -101,8 +101,8 @@ async function createFourProducts() {
           isDefault: true,
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Create turnaround set
@@ -113,8 +113,8 @@ async function createFourProducts() {
           description: 'Standard production times',
           isActive: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Link turnaround to set
@@ -126,8 +126,8 @@ async function createFourProducts() {
           isDefault: true,
           sortOrder: 0,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       console.log('✅ Created turnaround time set')
@@ -140,11 +140,8 @@ async function createFourProducts() {
       // Check if product already exists
       const existing = await prisma.product.findFirst({
         where: {
-          OR: [
-            { slug: productData.slug },
-            { sku: productData.sku }
-          ]
-        }
+          OR: [{ slug: productData.slug }, { sku: productData.sku }],
+        },
       })
 
       if (existing) {
@@ -172,7 +169,7 @@ async function createFourProducts() {
           maxGangQuantity: 5000,
           rushAvailable: true,
           rushDays: 2,
-          rushFee: 50.00,
+          rushFee: 50.0,
           metadata: {
             createdBy: 'System',
             createdAt: new Date().toISOString(),
@@ -181,12 +178,12 @@ async function createFourProducts() {
               'Full color printing',
               'Premium paper stock',
               'UV coating available',
-              'Rush production available'
-            ]
+              'Rush production available',
+            ],
           },
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       console.log(`✅ Created: ${product.name}`)
@@ -205,8 +202,8 @@ async function createFourProducts() {
           isDefault: true,
           sortOrder: 0,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
       console.log(`   - Added add-on options`)
 
@@ -218,8 +215,8 @@ async function createFourProducts() {
           turnaroundTimeSetId: turnaroundSet.id,
           isDefault: true,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
       console.log(`   - Added turnaround options`)
       console.log('')
@@ -233,16 +230,16 @@ async function createFourProducts() {
     const allProducts = await prisma.product.findMany({
       where: {
         name: {
-          in: products.map(p => p.name)
-        }
+          in: products.map((p) => p.name),
+        },
       },
       include: {
         productAddOnSets: true,
-        productTurnaroundTimeSets: true
+        productTurnaroundTimeSets: true,
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: 'asc',
+      },
     })
 
     console.log(`\n📊 Total products created: ${allProducts.length}`)
@@ -268,7 +265,6 @@ async function createFourProducts() {
     console.log('📍 Access them at:')
     console.log('   - Admin: https://gangrunprinting.com/admin/products')
     console.log('   - API: https://gangrunprinting.com/api/products')
-
   } catch (error) {
     console.error('❌ Error creating products:', error)
   } finally {

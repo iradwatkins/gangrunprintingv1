@@ -14,7 +14,7 @@ export {
 
   // Utility functions
   combineModulePricingContributions,
-  validateAllModules
+  validateAllModules,
 } from './StandardModuleHooks'
 
 // Export hook prop types for easy importing
@@ -24,14 +24,14 @@ export type {
   UsePaperStockModuleProps,
   UseAddonsModuleProps,
   UseTurnaroundModuleProps,
-  UseImageModuleProps
+  UseImageModuleProps,
 } from './StandardModuleHooks'
 
 // Re-export related types for convenience
 export type {
   ModulePricingContribution,
   StandardModuleValue,
-  ModuleError
+  ModuleError,
 } from '../types/StandardModuleTypes'
 
 /**
@@ -43,7 +43,7 @@ export const HOOK_REGISTRY = {
   'paper-stock': 'usePaperStockModule',
   addons: 'useAddonsModule',
   turnaround: 'useTurnaroundModule',
-  images: 'useImageModule'
+  images: 'useImageModule',
 } as const
 
 export type HookRegistryKey = keyof typeof HOOK_REGISTRY

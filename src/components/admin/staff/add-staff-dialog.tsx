@@ -229,8 +229,21 @@ export function AddStaffDialog() {
     setLoading(true)
 
     try {
-      // TODO: Implement staff creation API
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
+      const response = await fetch('/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to create staff member')
+        return
+      }
 
       // Reset form and close dialog
       setFormData({
@@ -241,8 +254,12 @@ export function AddStaffDialog() {
         sendInvitation: true,
       })
       setOpen(false)
+
+      // Reload the page to show new staff member
+      window.location.reload()
     } catch (error) {
-      } finally {
+      alert('Failed to create staff member')
+    } finally {
       setLoading(false)
     }
   }

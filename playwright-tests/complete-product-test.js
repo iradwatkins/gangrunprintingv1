@@ -74,9 +74,7 @@ const colors = {
   cyan: '\x1b[36m',
 }
 
-function log(message, color = colors.reset) {
-
-}
+function log(message, color = colors.reset) {}
 
 async function createAdminAccount() {
   log('\n🔧 Creating admin account...', colors.cyan)

@@ -62,7 +62,7 @@ export function NotificationSettingsForm() {
       // TODO: Implement notification settings update API
       await new Promise((resolve) => setTimeout(resolve, 1000)) // Mock delay
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -70,8 +70,7 @@ export function NotificationSettingsForm() {
   const handleTestNotification = async (type: string) => {
     try {
       // TODO: Implement test notification API
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   return (

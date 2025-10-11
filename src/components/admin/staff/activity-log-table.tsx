@@ -35,7 +35,10 @@ interface ActivityLogTableProps {
   activities: ActivityLogItem[]
 }
 
-const ACTION_CONFIG: Record<string, { icon: Record<string, unknown>; color: string; label: string }> = {
+const ACTION_CONFIG: Record<
+  string,
+  { icon: Record<string, unknown>; color: string; label: string }
+> = {
   LOGIN: {
     icon: LogIn,
     color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',

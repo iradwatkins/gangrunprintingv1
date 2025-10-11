@@ -118,4 +118,3 @@ graph TB
 | Monitoring           | Custom logging               | -          | Application logs           | Simple file-based logging                        |
 | Logging              | File-based                   | -          | Log storage                | Local file system                                |
 | CSS Framework        | Tailwind CSS                 | 4.1.13     | Utility-first CSS          | Rapid development, consistent design             |
-

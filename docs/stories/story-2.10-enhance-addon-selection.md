@@ -1,15 +1,19 @@
 # Story 2: Enhance Add-On Selection Interface
 
 ## Story Title
+
 Add Preview and Price Impact Display for Add-On Sets
 
 ## Story Type
+
 Feature Enhancement
 
 ## Story Points
+
 3
 
 ## Priority
+
 P1 - High (UX Enhancement)
 
 ## Story Description
@@ -19,6 +23,7 @@ As an **admin user**, I want to see what's included in each add-on set before se
 ## Background
 
 The current add-on selection interface shows only the names of add-on sets without revealing their contents or pricing details. Admins must remember what each set contains or reference external documentation. This leads to:
+
 - Configuration errors due to selecting wrong add-on sets
 - Time wasted checking what's included in each set
 - Uncertainty about pricing impact on final product cost
@@ -26,6 +31,7 @@ The current add-on selection interface shows only the names of add-on sets witho
 ## Acceptance Criteria
 
 ### Must Have
+
 - [ ] Hovering over an add-on set displays its contents in a tooltip/card
 - [ ] Each add-on item shows its individual price
 - [ ] Total price impact of the add-on set is clearly displayed
@@ -34,12 +40,14 @@ The current add-on selection interface shows only the names of add-on sets witho
 - [ ] Selected add-ons display correctly on customer product pages
 
 ### Should Have
+
 - [ ] Live price preview updates when add-ons are selected/deselected
 - [ ] Visual icons for different add-on types (finishing, printing, etc.)
 - [ ] Ability to expand/collapse add-on set details inline
 - [ ] Search/filter functionality for add-on sets
 
 ### Could Have
+
 - [ ] Drag-and-drop to reorder selected add-ons
 - [ ] Bulk selection/deselection of add-on sets
 - [ ] Add-on compatibility warnings (e.g., "UV coating not compatible with matte finish")
@@ -49,27 +57,31 @@ The current add-on selection interface shows only the names of add-on sets witho
 ### Component Updates
 
 1. **Update ProductAdditionalOptions Component**:
+
 ```tsx
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { Badge } from '@/components/ui/badge';
-import { Check, Info } from 'lucide-react';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { Badge } from '@/components/ui/badge'
+import { Check, Info } from 'lucide-react'
 
 function ProductAdditionalOptions({ addOnSets, selected, onChange }) {
   const calculateSetPrice = (set) => {
-    return set.addOns.reduce((sum, addon) => sum + addon.price, 0);
-  };
+    return set.addOns.reduce((sum, addon) => sum + addon.price, 0)
+  }
 
   return (
     <div className="space-y-4">
       {addOnSets.map((set) => {
-        const isSelected = selected.includes(set.id);
-        const totalPrice = calculateSetPrice(set);
+        const isSelected = selected.includes(set.id)
+        const totalPrice = calculateSetPrice(set)
 
         return (
-          <div key={set.id} className={`
+          <div
+            key={set.id}
+            className={`
             border rounded-lg p-4 cursor-pointer transition-all
             ${isSelected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}
-          `}>
+          `}
+          >
             <HoverCard>
               <div className="flex items-center justify-between">
                 <HoverCardTrigger asChild>
@@ -86,7 +98,7 @@ function ProductAdditionalOptions({ addOnSets, selected, onChange }) {
                   </div>
                 </HoverCardTrigger>
 
-                <Badge variant={isSelected ? "default" : "secondary"}>
+                <Badge variant={isSelected ? 'default' : 'secondary'}>
                   +${totalPrice.toFixed(2)}
                 </Badge>
               </div>
@@ -115,19 +127,20 @@ function ProductAdditionalOptions({ addOnSets, selected, onChange }) {
               </HoverCardContent>
             </HoverCard>
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 ```
 
 2. **Add Price Impact Display**:
+
 ```tsx
 function PriceImpactSummary({ basePrice, selectedAddOns }) {
   const addOnsTotal = selectedAddOns.reduce((sum, set) => {
-    return sum + set.addOns.reduce((setSum, addon) => setSum + addon.price, 0);
-  }, 0);
+    return sum + set.addOns.reduce((setSum, addon) => setSum + addon.price, 0)
+  }, 0)
 
   return (
     <Card className="p-4 bg-gray-50">
@@ -149,15 +162,16 @@ function PriceImpactSummary({ basePrice, selectedAddOns }) {
         </div>
       </div>
     </Card>
-  );
+  )
 }
 ```
 
 3. **Ensure Customer Page Display**:
+
 ```tsx
 // In customer product page component
 function ProductAddOnsDisplay({ product }) {
-  if (!product.addOnSets?.length) return null;
+  if (!product.addOnSets?.length) return null
 
   return (
     <div className="mt-6">
@@ -166,33 +180,34 @@ function ProductAddOnsDisplay({ product }) {
         {product.addOnSets.map((set) => (
           <Card key={set.id} className="p-3">
             <h4 className="font-medium">{set.name}</h4>
-            <p className="text-sm text-gray-600 mt-1">
-              {set.addOns.length} options available
-            </p>
+            <p className="text-sm text-gray-600 mt-1">{set.addOns.length} options available</p>
             <p className="text-sm font-semibold mt-2">
-              Starting at +${Math.min(...set.addOns.map(a => a.price)).toFixed(2)}
+              Starting at +${Math.min(...set.addOns.map((a) => a.price)).toFixed(2)}
             </p>
           </Card>
         ))}
       </div>
     </div>
-  );
+  )
 }
 ```
 
 ## Testing Requirements
 
 ### Unit Tests
+
 - [ ] Test add-on set price calculation
 - [ ] Test selection state management
 - [ ] Test hover card display logic
 
 ### Integration Tests
+
 - [ ] Verify add-on data loads from API
 - [ ] Test add-on selection persistence
 - [ ] Verify price updates propagate correctly
 
 ### Manual Testing Checklist
+
 - [ ] Hover over each add-on set to see contents
 - [ ] Select/deselect add-ons and verify price updates
 - [ ] Test keyboard navigation (Tab, Enter, Space)
@@ -202,12 +217,14 @@ function ProductAddOnsDisplay({ product }) {
 - [ ] Verify accessibility with screen reader
 
 ## Dependencies
+
 - shadcn/ui HoverCard component
 - Add-on sets data structure from database
 - Price calculation service
 - Existing ProductAdditionalOptions component
 
 ## Definition of Done
+
 - [ ] Add-on contents display on hover/focus
 - [ ] Individual prices shown for each add-on
 - [ ] Total price impact clearly visible
@@ -219,12 +236,14 @@ function ProductAddOnsDisplay({ product }) {
 - [ ] Feature tested across browsers
 
 ## Notes
+
 - Consider mobile UX where hover isn't available - use tap to show details
 - Ensure price calculations match backend logic exactly
 - Add-on preview should load quickly - consider pre-fetching
 - Keep existing add-on functionality intact while enhancing UX
 
 ## Estimation Breakdown
+
 - Update component with HoverCard: 2 hours
 - Implement price calculation display: 1.5 hours
 - Add selection visual feedback: 1 hour

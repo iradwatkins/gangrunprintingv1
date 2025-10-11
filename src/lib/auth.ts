@@ -3,7 +3,12 @@ import { Lucia, TimeSpan } from 'lucia'
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { generateRandomString } from 'oslo/crypto'
 
-import { MAGIC_LINK_EXPIRY, SERVICE_ENDPOINTS, STRING_GENERATION, SESSION_CONFIG } from '@/config/constants'
+import {
+  MAGIC_LINK_EXPIRY,
+  SERVICE_ENDPOINTS,
+  STRING_GENERATION,
+  SESSION_CONFIG,
+} from '@/config/constants'
 import { authLogger } from '@/lib/logger-safe'
 import { prisma } from '@/lib/prisma'
 import resend from '@/lib/resend'
@@ -81,7 +86,7 @@ export const validateRequest = async (): Promise<
       hasSessionId: !!sessionId,
       sessionIdLength: sessionId?.length,
       totalCookies: allCookies.length,
-      cookieNames: allCookies.map(c => c.name),
+      cookieNames: allCookies.map((c) => c.name),
       timestamp: new Date().toISOString(),
     })
 
@@ -89,7 +94,7 @@ export const validateRequest = async (): Promise<
       authLogger.warn(`[${requestId}] No session ID found in cookies`, {
         requestId,
         expectedCookieName: sessionCookieName,
-        availableCookies: allCookies.map(c => ({ name: c.name, hasValue: !!c.value })),
+        availableCookies: allCookies.map((c) => ({ name: c.name, hasValue: !!c.value })),
         userAgent: process.env.NODE_ENV === 'development' ? 'dev-mode' : 'production',
       })
       return {
@@ -291,7 +296,6 @@ export async function verifyMagicLink(token: string, email: string) {
       },
     },
   })
-
 
   if (!verificationToken) {
     throw new MagicLinkError(

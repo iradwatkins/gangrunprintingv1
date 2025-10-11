@@ -4,7 +4,10 @@
 class SafeLogger {
   debug(message: string, meta?: any) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[DEBUG] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
+      console.log(
+        `[DEBUG] ${new Date().toISOString()} ${message}`,
+        meta ? JSON.stringify(meta) : ''
+      )
     }
   }
 
@@ -17,7 +20,10 @@ class SafeLogger {
   }
 
   error(message: string, meta?: any) {
-    console.error(`[ERROR] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
+    console.error(
+      `[ERROR] ${new Date().toISOString()} ${message}`,
+      meta ? JSON.stringify(meta) : ''
+    )
   }
 
   http(message: string, meta?: any) {
@@ -27,7 +33,10 @@ class SafeLogger {
   }
 
   log(level: string, message: string, meta?: any) {
-    console.log(`[${level.toUpperCase()}] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
+    console.log(
+      `[${level.toUpperCase()}] ${new Date().toISOString()} ${message}`,
+      meta ? JSON.stringify(meta) : ''
+    )
   }
 
   child(meta?: any) {
@@ -55,7 +64,7 @@ export function logDatabaseQuery(query: string, duration: number, requestId?: st
   safeLogger.debug('Database query executed', {
     requestId,
     query: query.substring(0, 100) + (query.length > 100 ? '...' : ''),
-    duration: `${duration}ms`
+    duration: `${duration}ms`,
   })
 }
 

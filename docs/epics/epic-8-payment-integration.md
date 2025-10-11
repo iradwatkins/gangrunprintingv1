@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-008 |
-| **Phase** | Phase 2 |
-| **Priority** | HIGH |
-| **Status** | Not Started |
-| **Story Points** | 34 |
-| **Estimated Duration** | 3-4 weeks |
-| **Dependencies** | Epic 3 (Core Commerce - Square working) |
+| Field                  | Value                                   |
+| ---------------------- | --------------------------------------- |
+| **Epic ID**            | EPIC-008                                |
+| **Phase**              | Phase 2                                 |
+| **Priority**           | HIGH                                    |
+| **Status**             | Not Started                             |
+| **Story Points**       | 34                                      |
+| **Estimated Duration** | 3-4 weeks                               |
+| **Dependencies**       | Epic 3 (Core Commerce - Square working) |
 
 ---
 
@@ -25,6 +25,7 @@ Expand payment options beyond Square to include PayPal, CashApp, and ACH bank tr
 **Problem:** Limited payment options causing cart abandonment (12% drop-off rate)
 **Solution:** Multiple payment methods with saved cards and flexible payment options
 **Impact:**
+
 - Reduce cart abandonment by 40% (from 12% to 7%)
 - Increase conversion rate by 25%
 - Reduce payment processing fees by 15% (by offering ACH)
@@ -35,12 +36,14 @@ Expand payment options beyond Square to include PayPal, CashApp, and ACH bank tr
 ## Current State
 
 ### ✅ What's Already Built:
+
 - Square payment integration (working)
 - Basic checkout flow
 - Order payment tracking
 - Payment confirmation emails
 
 ### ❌ What's Missing:
+
 - PayPal integration
 - CashApp Pay integration
 - ACH bank transfers
@@ -60,6 +63,7 @@ Expand payment options beyond Square to include PayPal, CashApp, and ACH bank tr
 **So that** I can use my preferred payment method
 
 **Acceptance Criteria:**
+
 - [ ] PayPal button appears at checkout
 - [ ] Customer can pay with PayPal balance or linked card
 - [ ] Order status updates correctly after PayPal payment
@@ -69,6 +73,7 @@ Expand payment options beyond Square to include PayPal, CashApp, and ACH bank tr
 - [ ] Test mode for development
 
 **Tasks:**
+
 1. Set up PayPal Business account
 2. Install PayPal SDK
 3. Create PayPal payment route handler
@@ -79,6 +84,7 @@ Expand payment options beyond Square to include PayPal, CashApp, and ACH bank tr
 8. Test with PayPal sandbox
 
 **Technical Notes:**
+
 ```typescript
 // PayPal SDK integration
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
@@ -111,6 +117,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 **So that** I can use my Cash App balance
 
 **Acceptance Criteria:**
+
 - [ ] CashApp button appears at checkout
 - [ ] Customer redirected to Cash App for payment
 - [ ] Payment confirmation redirects back to site
@@ -119,6 +126,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 - [ ] CashApp transactions in admin dashboard
 
 **Tasks:**
+
 1. Set up Cash App business account
 2. Integrate Cash App Pay API
 3. Create payment initiation route
@@ -137,6 +145,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 **So that** I can avoid credit card fees and pay directly from my bank
 
 **Acceptance Criteria:**
+
 - [ ] Customer can link bank account
 - [ ] Plaid integration for bank verification
 - [ ] ACH payment initiated for orders
@@ -146,6 +155,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 - [ ] Bank accounts can be saved for future orders
 
 **Tasks:**
+
 1. Set up Plaid account
 2. Integrate Plaid Link for bank connection
 3. Create ACH payment processing route
@@ -156,6 +166,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 8. Test with Plaid sandbox
 
 **Important Considerations:**
+
 - ACH takes 3-5 business days to clear
 - Orders should not be sent to vendor until ACH clears
 - Customer should be clearly informed of timeline
@@ -170,6 +181,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 **So that** I can checkout faster next time
 
 **Acceptance Criteria:**
+
 - [ ] Customers can save credit cards
 - [ ] Customers can save PayPal accounts
 - [ ] Customers can save bank accounts
@@ -179,6 +191,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 - [ ] CVV still required for saved cards
 
 **Tasks:**
+
 1. Create payment methods database table
 2. Implement card tokenization (via Square)
 3. Build saved payment methods UI
@@ -189,6 +202,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 8. Test security and PCI compliance
 
 **Database Schema:**
+
 ```prisma
 model PaymentMethod {
   id              String   @id @default(cuid())
@@ -226,6 +240,7 @@ model PaymentMethod {
 **So that** I can use a gift card plus my credit card
 
 **Acceptance Criteria:**
+
 - [ ] Customer can select "Split Payment" option
 - [ ] Can choose two payment methods
 - [ ] Can specify amount for each method
@@ -235,6 +250,7 @@ model PaymentMethod {
 - [ ] Clear receipt showing split
 
 **Tasks:**
+
 1. Design split payment UI
 2. Build payment amount allocation logic
 3. Implement dual payment processing
@@ -321,11 +337,7 @@ export class PaymentService {
     try {
       // Process all payments
       for (const payment of payments) {
-        const result = await this.processPayment(
-          payment.provider,
-          payment.amount,
-          payment.metadata
-        )
+        const result = await this.processPayment(payment.provider, payment.amount, payment.metadata)
         results.push(result)
         completed.push(result)
       }
@@ -556,18 +568,21 @@ GET    /api/admin/payments/analytics
 ## Testing Strategy
 
 ### Unit Tests
+
 - Payment provider abstraction
 - Split payment logic (atomic transactions)
 - Refund calculations
 - Webhook signature verification
 
 ### Integration Tests
+
 - PayPal sandbox transactions
 - Cash App test environment
 - Plaid sandbox bank connections
 - Saved payment method creation
 
 ### E2E Tests
+
 1. Complete purchase with each payment method
 2. Save payment method and reuse it
 3. Split payment between card and PayPal
@@ -580,6 +595,7 @@ GET    /api/admin/payments/analytics
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] All 4 payment methods working (Square, PayPal, CashApp, ACH)
 - [ ] Saved payment methods functional
 - [ ] Split payments tested
@@ -588,12 +604,14 @@ GET    /api/admin/payments/analytics
 - [ ] Refunds working for all methods
 
 ### Performance Targets
+
 - Payment processing time: <3 seconds
 - Webhook processing: <2 seconds
 - Checkout conversion rate increase: >20%
 - Cart abandonment reduction: >30%
 
 ### Business Metrics (60 days post-launch)
+
 - PayPal adoption: >30% of transactions
 - ACH adoption: >10% of transactions (from $0 to $10K+/month)
 - Saved payment method usage: >40% of returning customers
@@ -605,6 +623,7 @@ GET    /api/admin/payments/analytics
 ## Security & Compliance
 
 ### PCI Compliance
+
 - Never store raw card numbers
 - Use tokenization for all card data
 - Implement CVV verification
@@ -612,12 +631,14 @@ GET    /api/admin/payments/analytics
 - Regular security audits
 
 ### ACH Compliance (NACHA Rules)
+
 - Customer authorization required
 - Clear processing timeline communication
 - NSF handling procedures
 - Record keeping (7 years)
 
 ### Data Protection
+
 - Encrypt payment tokens at rest
 - Use secure webhook signatures
 - Implement rate limiting on payment endpoints
@@ -628,18 +649,22 @@ GET    /api/admin/payments/analytics
 ## Risks & Mitigation
 
 ### Risk 1: Payment Provider Downtime
+
 **Impact:** High
 **Probability:** Low
 **Mitigation:**
+
 - Multiple payment providers available
 - Graceful degradation (disable unavailable methods)
 - Real-time status monitoring
 - Clear customer communication
 
 ### Risk 2: Fraud
+
 **Impact:** High
 **Probability:** Medium
 **Mitigation:**
+
 - Implement address verification (AVS)
 - CVV verification required
 - Monitor for suspicious patterns
@@ -647,9 +672,11 @@ GET    /api/admin/payments/analytics
 - Integration with fraud detection services
 
 ### Risk 3: ACH Failures (NSF)
+
 **Impact:** Medium
 **Probability:** Medium
 **Mitigation:**
+
 - Clear timeline communication
 - Don't ship until ACH clears
 - Automated retry for failed ACH
@@ -661,24 +688,28 @@ GET    /api/admin/payments/analytics
 ## Timeline
 
 ### Week 1: PayPal Integration
+
 - PayPal setup and SDK integration
 - Create order and capture flows
 - Webhook handling
 - Admin dashboard updates
 
 ### Week 2: CashApp & ACH
+
 - Cash App Pay integration
 - Plaid setup and bank linking
 - ACH payment processing
 - Testing in sandbox environments
 
 ### Week 3: Saved Methods & Split Payments
+
 - Payment methods database and UI
 - Tokenization implementation
 - Split payment logic
 - Security audit
 
 ### Week 4: Testing & Polish
+
 - End-to-end testing
 - PCI compliance review
 - Performance optimization
@@ -689,6 +720,7 @@ GET    /api/admin/payments/analytics
 ## Dependencies
 
 **Required:**
+
 - Epic 3: Core Commerce (Square integration working) ✅
 - PayPal Business account approval
 - Cash App Business account approval
@@ -696,6 +728,7 @@ GET    /api/admin/payments/analytics
 - PCI compliance certification
 
 **Optional:**
+
 - Fraud detection service (e.g., Stripe Radar, Sift)
 - Payment analytics dashboard
 

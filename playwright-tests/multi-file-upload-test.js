@@ -23,9 +23,7 @@ const colors = {
   reset: '\x1b[0m',
 }
 
-function log(message, color = colors.reset) {
-
-}
+function log(message, color = colors.reset) {}
 
 // Create test images with different colors/content
 async function createTestImages() {

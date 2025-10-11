@@ -42,10 +42,9 @@ async function debugPaperStockSetsAPI() {
       console.log('First set:', {
         id: groups[0].id,
         name: groups[0].name,
-        itemsCount: groups[0].PaperStockSetItem ? groups[0].PaperStockSetItem.length : 0
+        itemsCount: groups[0].PaperStockSetItem ? groups[0].PaperStockSetItem.length : 0,
       })
     }
-
   } catch (error) {
     console.error('Error in paper stock sets query:', error)
   } finally {

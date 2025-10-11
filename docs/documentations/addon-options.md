@@ -7,18 +7,22 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ## Pricing Models
 
 ### 1. **FLAT** - Fixed Fee
+
 - Single fixed price regardless of quantity or configuration
 - Applied as a one-time charge
 
 ### 2. **PERCENTAGE** - Percentage-Based
+
 - Calculated as a percentage of base price or total
 - Can apply to different price points (base, adjusted, or total)
 
 ### 3. **PER_UNIT** - Per Unit/Piece Pricing
+
 - Cost multiplied by quantity
 - May include setup fees
 
 ### 4. **CUSTOM** - Complex Pricing Logic
+
 - Combination of setup fees, per-piece costs, and conditional pricing
 - May vary based on product specifications
 
@@ -27,6 +31,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ## Complete Addon List
 
 ### 1. **Our Tagline** 📢
+
 - **Type**: Discount Addon
 - **Pricing Model**: PERCENTAGE
 - **Calculation**: 5% discount on Base Paper Print Price
@@ -39,6 +44,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 2. **Exact Size** 📐
+
 - **Type**: Precision Cutting
 - **Pricing Model**: PERCENTAGE
 - **Calculation**: 12.5% markup on Adjusted Base Price
@@ -51,6 +57,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 3. **Digital Proof** 🖼️
+
 - **Type**: Proofing Service
 - **Pricing Model**: FLAT
 - **Price**: $5.00
@@ -61,6 +68,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 4. **Perforation** ✂️
+
 - **Type**: Finishing Option
 - **Pricing Model**: CUSTOM
 - **Base Price**: $20.00 (setup fee) OR $25.00 (new pricing)
@@ -79,6 +87,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 5. **Score Only** 📏
+
 - **Type**: Finishing Option
 - **Pricing Model**: CUSTOM
 - **Base Price**: $17.00 (setup fee)
@@ -93,6 +102,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 6. **Folding** 📄
+
 - **Type**: Finishing Option
 - **Pricing Model**: CUSTOM
 - **Pricing Structure**:
@@ -119,6 +129,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 7. **Design Services** 🎨
+
 - **Type**: Professional Service
 - **Pricing Model**: CUSTOM/FLAT
 - **Service Options**:
@@ -147,6 +158,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 8. **Banding** 🎀
+
 - **Type**: Bundling Service
 - **Pricing Model**: CUSTOM
 - **Base Price**: $15.00
@@ -163,6 +175,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 9. **Shrink Wrapping** 📦
+
 - **Type**: Packaging Service
 - **Pricing Model**: CUSTOM
 - **Per-Bundle Cost**: $0.30
@@ -175,6 +188,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 10. **QR Code** 📱
+
 - **Type**: Digital Integration
 - **Pricing Model**: FLAT
 - **Price**: $5.00
@@ -187,6 +201,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 11. **Postal Delivery (DDU)** 📮
+
 - **Type**: Shipping Service
 - **Pricing Model**: CUSTOM
 - **Price Per Box**: $30.00
@@ -198,6 +213,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 12. **EDDM Process & Postage** 📬
+
 - **Type**: Mail Service
 - **Pricing Model**: CUSTOM
 - **Setup Fee**: $50.00
@@ -215,6 +231,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 13. **Hole Drilling** 🔲
+
 - **Type**: Finishing Option
 - **Pricing Model**: CUSTOM
 - **Base Setup Fee**: $20.00
@@ -242,6 +259,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 14. **Variable Data Printing** 🔢
+
 - **Type**: Personalization Service
 - **Pricing Model**: CUSTOM
 - **Base Price**: $60.00
@@ -261,6 +279,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 15. **Corner Rounding** ⭕
+
 - **Type**: Finishing Option
 - **Pricing Model**: CUSTOM
 - **Base Price**: $20.00 OR $25.00 (varies by configuration)
@@ -277,6 +296,7 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ---
 
 ### 16. **Numbering** 🔢
+
 - **Type**: Sequential Identification
 - **Pricing Model**: PER_UNIT
 - **Price Structure**: Variable based on quantity and complexity
@@ -294,12 +314,14 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 ### Order of Operations:
 
 1. **Base Paper Print Price**
+
    ```
    Base_Price = Quantity × Area × Paper_Price_Per_SqInch × Sides_Factor
    ```
 
 2. **Adjusted Base Price**
    - Apply Broker Discount OR "Our Tagline" discount (mutually exclusive)
+
    ```
    If Broker: Adjusted = Base × (1 - Broker_Discount%)
    Else If Our Tagline: Adjusted = Base - (Base × 5%)
@@ -307,17 +329,20 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 
 3. **Base Percentage Modifiers**
    - Apply "Exact Size" markup if selected
+
    ```
    If Exact Size: Modified = Adjusted + (Adjusted × 12.5%)
    ```
 
 4. **Turnaround Markup**
+
    ```
    After_Turnaround = Modified × (1 + Turnaround_Markup%)
    ```
 
 5. **Discrete Add-ons**
    - Sum all selected discrete addon costs
+
    ```
    Total_Addons = Sum of all addon calculations
    ```
@@ -334,16 +359,19 @@ The GangRun Printing system offers a comprehensive set of addon options that enh
 Addons can be displayed in three positions on the product configuration page:
 
 ### **ABOVE_DROPDOWN**
+
 - Priority addons shown prominently above the main dropdown
 - Typically includes most commonly selected options
 - Examples: Digital Proof, Corner Rounding
 
 ### **IN_DROPDOWN**
+
 - Standard addons shown in the main dropdown selector
 - Bulk of available options
 - User expands to see and select
 
 ### **BELOW_DROPDOWN**
+
 - Special addons shown below the main selection area
 - Often includes complex configurational addons
 - Examples: Variable Data, EDDM Services
@@ -398,24 +426,29 @@ Different products can have different addon sets assigned to them:
 ## Special Conditions & Business Rules
 
 ### Mutual Exclusivity
+
 - **Broker Discount** and **"Our Tagline"** discount cannot be applied together
 - If broker has discount, "Our Tagline" option is hidden
 
 ### Mandatory Combinations
+
 - **EDDM Service** automatically includes banding
 - **Card Stock Folding** includes mandatory basic score
 
 ### Progressive Pricing
+
 - Many addons use base + per-unit pricing
 - Economies of scale for bulk quantities
 
 ### Turnaround Impact
+
 - Some addons add additional production days:
   - Digital Proof: +1 day
   - Design Services: +1-3 days
   - Complex finishing: Variable
 
 ### Configuration Dependencies
+
 - Some addons reveal additional options when selected
 - Example: Corner Rounding reveals corner selection dropdown
 - Example: Variable Data reveals field configuration options
@@ -425,12 +458,14 @@ Different products can have different addon sets assigned to them:
 ## Implementation Details
 
 ### Database Schema
+
 - **AddOn** table stores base addon information
 - **AddOnSet** groups addons for different product types
 - **AddOnSetItem** links addons to sets with display positions
 - **AddOnSubOption** stores configurable options for complex addons
 
 ### Frontend Components
+
 - `AddonAccordion.tsx` - Main addon selection interface
 - `SimpleAddonSelector.tsx` - Simplified addon picker
 - Specialized components for complex addons:
@@ -440,6 +475,7 @@ Different products can have different addon sets assigned to them:
   - `BandingSection.tsx`
 
 ### Pricing Engine
+
 - `pricing-engine.ts` - Core pricing calculations
 - `pricing-calculator.ts` - Helper functions for addon pricing
 - `pricing.ts` (utils) - Specific addon price calculators
@@ -468,5 +504,5 @@ Different products can have different addon sets assigned to them:
 
 ---
 
-*Last Updated: 2025*
-*Version: 1.0*
+_Last Updated: 2025_
+_Version: 1.0_

@@ -44,26 +44,27 @@ export async function POST(request: NextRequest) {
 
     // Normalize email to lowercase for consistent lookup
     const normalizedEmail = customerInfo.email.toLowerCase()
-    
+
     // Find or create customer
     let customer = await prisma.user.findFirst({
       where: {
         email: {
           equals: normalizedEmail,
-          mode: 'insensitive'
-        }
-      }
+          mode: 'insensitive',
+        },
+      },
     })
-    
+
     if (!customer) {
       // Create new customer
       customer = await prisma.user.create({
         data: {
           email: normalizedEmail,
-          name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
+          name:
+            `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
           role: 'CUSTOMER',
-          emailVerified: false
-        }
+          emailVerified: false,
+        },
       })
     }
 
@@ -123,7 +124,9 @@ export async function POST(request: NextRequest) {
     // Send confirmation email for test orders
     try {
       await OrderEmailService.sendOrderConfirmation(order)
-      console.log(`[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`)
+      console.log(
+        `[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`
+      )
     } catch (emailError) {
       console.error('[Test Order] Failed to send confirmation email:', emailError)
       // Don't fail the order creation if email fails
@@ -139,7 +142,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create test order'
+        error: error instanceof Error ? error.message : 'Failed to create test order',
       },
       { status: 500 }
     )

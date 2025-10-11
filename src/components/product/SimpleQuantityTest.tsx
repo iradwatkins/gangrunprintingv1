@@ -3,7 +3,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/cart-context'
@@ -31,7 +37,11 @@ interface SimpleQuantityTestProps {
   initialConfiguration?: any // Pre-fetched configuration from server
 }
 
-export default function SimpleQuantityTest({ productId, product, initialConfiguration }: SimpleQuantityTestProps) {
+export default function SimpleQuantityTest({
+  productId,
+  product,
+  initialConfiguration,
+}: SimpleQuantityTestProps) {
   // Cart and routing hooks
   const { addItem, openCart, clearCart } = useCart()
   const router = useRouter()
@@ -54,12 +64,18 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
   const [error, setError] = useState('')
 
   useEffect(() => {
-    console.log('[SimpleQuantityTest] useEffect triggered. initialConfiguration:', !!initialConfiguration)
+    console.log(
+      '[SimpleQuantityTest] useEffect triggered. initialConfiguration:',
+      !!initialConfiguration
+    )
 
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {
       console.log('[SimpleQuantityTest] Using server-fetched configuration')
-      console.log('[SimpleQuantityTest] Quantities count:', initialConfiguration.quantities?.length || 0)
+      console.log(
+        '[SimpleQuantityTest] Quantities count:',
+        initialConfiguration.quantities?.length || 0
+      )
       const data = initialConfiguration
 
       setQuantities(data.quantities || [])
@@ -74,7 +90,10 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
 
       setLoading(false)
-      console.log('[SimpleQuantityTest] Configuration applied. Quantities state:', data.quantities?.length || 0)
+      console.log(
+        '[SimpleQuantityTest] Configuration applied. Quantities state:',
+        data.quantities?.length || 0
+      )
       return // Don't fetch from API if we have server data
     } else {
       console.log('[SimpleQuantityTest] No initialConfiguration, will fetch from API')
@@ -177,31 +196,33 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
   }
 
   // Check if custom quantity is selected
-  const selectedQtyObj = memoizedQuantities.find(q => q.id === selectedQuantity)
+  const selectedQtyObj = memoizedQuantities.find((q) => q.id === selectedQuantity)
   const isCustomQuantity = selectedQtyObj?.isCustom || false
 
   // Check if custom size is selected
-  const selectedSizeObj = memoizedSizes.find(s => s.id === selectedSize)
+  const selectedSizeObj = memoizedSizes.find((s) => s.id === selectedSize)
   const isCustomSize = selectedSizeObj?.isCustom || false
 
   // Get selected paper stock and its options
-  const selectedPaperObj = memoizedPaperStocks.find(p => p.id === selectedPaper)
+  const selectedPaperObj = memoizedPaperStocks.find((p) => p.id === selectedPaper)
   const availableCoatings = selectedPaperObj?.coatings || []
   const availableSides = selectedPaperObj?.sides || []
 
   // Get final quantity value
-  const finalQuantity = isCustomQuantity && customQuantity ? parseInt(customQuantity) : selectedQtyObj?.value
+  const finalQuantity =
+    isCustomQuantity && customQuantity ? parseInt(customQuantity) : selectedQtyObj?.value
 
   // Get final size dimensions
-  const finalSize = isCustomSize && customWidth && customHeight
-    ? `${customWidth}" × ${customHeight}"`
-    : selectedSizeObj?.displayName || selectedSizeObj?.name
+  const finalSize =
+    isCustomSize && customWidth && customHeight
+      ? `${customWidth}" × ${customHeight}"`
+      : selectedSizeObj?.displayName || selectedSizeObj?.name
 
   // Get paper, coating, sides, turnaround names
   const finalPaper = selectedPaperObj?.name || 'Not set'
-  const finalCoating = availableCoatings.find(c => c.id === selectedCoating)?.name || 'Not set'
-  const finalSides = availableSides.find(s => s.id === selectedSides)?.name || 'Not set'
-  const selectedTurnaroundObj = memoizedTurnaroundTimes.find(t => t.id === selectedTurnaround)
+  const finalCoating = availableCoatings.find((c) => c.id === selectedCoating)?.name || 'Not set'
+  const finalSides = availableSides.find((s) => s.id === selectedSides)?.name || 'Not set'
+  const selectedTurnaroundObj = memoizedTurnaroundTimes.find((t) => t.id === selectedTurnaround)
   const finalTurnaround = selectedTurnaroundObj
     ? `${selectedTurnaroundObj.displayName || selectedTurnaroundObj.name} (${selectedTurnaroundObj.daysMin}-${selectedTurnaroundObj.daysMax} days)`
     : 'Not set'
@@ -213,18 +234,22 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
 
     try {
       const quantity = finalQuantity
-      const squareInches = isCustomSize && customWidth && customHeight
-        ? parseFloat(customWidth) * parseFloat(customHeight)
-        : selectedSizeObj.squareInches || 0
+      const squareInches =
+        isCustomSize && customWidth && customHeight
+          ? parseFloat(customWidth) * parseFloat(customHeight)
+          : selectedSizeObj.squareInches || 0
 
       if (squareInches === 0) return 0
 
       const paperPricePerSqInch = selectedPaperObj.pricePerSqInch || 0.0005
-      const coatingMultiplier = availableCoatings.find(c => c.id === selectedCoating)?.priceMultiplier || 1.0
-      const sidesMultiplier = availableSides.find(s => s.id === selectedSides)?.priceMultiplier || 1.0
+      const coatingMultiplier =
+        availableCoatings.find((c) => c.id === selectedCoating)?.priceMultiplier || 1.0
+      const sidesMultiplier =
+        availableSides.find((s) => s.id === selectedSides)?.priceMultiplier || 1.0
 
       // Base calculation: Quantity × Square Inches × Paper Price × Coating Multiplier × Sides Multiplier
-      const basePrice = quantity * squareInches * paperPricePerSqInch * coatingMultiplier * sidesMultiplier
+      const basePrice =
+        quantity * squareInches * paperPricePerSqInch * coatingMultiplier * sidesMultiplier
 
       return basePrice
     } catch (error) {
@@ -246,10 +271,10 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
     } else if (turnaround.pricingModel === 'PERCENTAGE') {
       // PERCENTAGE: Base + (Base × Multiplier)
       // Example: $100 base + ($100 × 0.3) = $130 (30% extra)
-      return basePrice + (basePrice * (turnaround.priceMultiplier || 0))
+      return basePrice + basePrice * (turnaround.priceMultiplier || 0)
     } else if (turnaround.pricingModel === 'CUSTOM') {
       // Custom model combines both: (Base + Percentage) + Flat Fee
-      return basePrice + (basePrice * (turnaround.priceMultiplier || 0)) + (turnaround.basePrice || 0)
+      return basePrice + basePrice * (turnaround.priceMultiplier || 0) + (turnaround.basePrice || 0)
     }
     return basePrice
   }
@@ -290,12 +315,15 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
     }
 
     // Get primary image
-    const primaryImage = product.ProductImage.find(img => img.isPrimary)
-    const imageUrl = primaryImage?.thumbnailUrl || primaryImage?.url || product.ProductImage[0]?.url || ''
+    const primaryImage = product.ProductImage.find((img) => img.isPrimary)
+    const imageUrl =
+      primaryImage?.thumbnailUrl || primaryImage?.url || product.ProductImage[0]?.url || ''
 
     // Calculate dimensions for shipping
-    const width = isCustomSize && customWidth ? parseFloat(customWidth) : (selectedSizeObj?.width || 8.5)
-    const height = isCustomSize && customHeight ? parseFloat(customHeight) : (selectedSizeObj?.height || 11)
+    const width =
+      isCustomSize && customWidth ? parseFloat(customWidth) : selectedSizeObj?.width || 8.5
+    const height =
+      isCustomSize && customHeight ? parseFloat(customHeight) : selectedSizeObj?.height || 11
     const paperWeight = selectedPaperObj?.weight || selectedPaperObj?.pricePerSqInch || 0.0015 // Default to 0.0015 lbs per sq inch
 
     // Build cart item matching CartItem type
@@ -306,33 +334,35 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       sku: `${product.slug}-${selectedQuantity || customQuantity}-${Date.now()}`,
       price: totalPrice / (finalQuantity || 1), // Price PER UNIT (cart will multiply by quantity)
       quantity: finalQuantity || 1,
-      turnaround: selectedTurnaroundObj ? {
-        id: selectedTurnaroundObj.id,
-        name: selectedTurnaroundObj.name,
-        displayName: selectedTurnaroundObj.displayName || selectedTurnaroundObj.name,
-        description: selectedTurnaroundObj.description,
-        daysMin: selectedTurnaroundObj.daysMin,
-        daysMax: selectedTurnaroundObj.daysMax,
-        pricingModel: selectedTurnaroundObj.pricingModel,
-        basePrice: selectedTurnaroundObj.basePrice || 0,
-        priceMultiplier: selectedTurnaroundObj.priceMultiplier || 1,
-        requiresNoCoating: selectedTurnaroundObj.requiresNoCoating || false,
-        restrictedCoatings: selectedTurnaroundObj.restrictedCoatings || [],
-        totalPrice: totalPrice,
-        pricePerUnit: totalPrice / (finalQuantity || 1),
-      } : {
-        id: '',
-        name: 'Standard',
-        displayName: 'Standard',
-        daysMin: product.productionTime,
-        pricingModel: 'FLAT' as const,
-        basePrice: 0,
-        priceMultiplier: 1,
-        requiresNoCoating: false,
-        restrictedCoatings: [],
-        totalPrice: totalPrice,
-        pricePerUnit: totalPrice / (finalQuantity || 1),
-      },
+      turnaround: selectedTurnaroundObj
+        ? {
+            id: selectedTurnaroundObj.id,
+            name: selectedTurnaroundObj.name,
+            displayName: selectedTurnaroundObj.displayName || selectedTurnaroundObj.name,
+            description: selectedTurnaroundObj.description,
+            daysMin: selectedTurnaroundObj.daysMin,
+            daysMax: selectedTurnaroundObj.daysMax,
+            pricingModel: selectedTurnaroundObj.pricingModel,
+            basePrice: selectedTurnaroundObj.basePrice || 0,
+            priceMultiplier: selectedTurnaroundObj.priceMultiplier || 1,
+            requiresNoCoating: selectedTurnaroundObj.requiresNoCoating || false,
+            restrictedCoatings: selectedTurnaroundObj.restrictedCoatings || [],
+            totalPrice: totalPrice,
+            pricePerUnit: totalPrice / (finalQuantity || 1),
+          }
+        : {
+            id: '',
+            name: 'Standard',
+            displayName: 'Standard',
+            daysMin: product.productionTime,
+            pricingModel: 'FLAT' as const,
+            basePrice: 0,
+            priceMultiplier: 1,
+            requiresNoCoating: false,
+            restrictedCoatings: [],
+            totalPrice: totalPrice,
+            pricePerUnit: totalPrice / (finalQuantity || 1),
+          },
       options: {
         size: finalSize || 'Not set',
         paperStock: finalPaper,
@@ -369,10 +399,13 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       {/* Quantity */}
       <div>
         <Label className="text-sm font-semibold uppercase">QUANTITY</Label>
-        <Select value={selectedQuantity} onValueChange={(value) => {
-          setSelectedQuantity(value)
-          setCustomQuantity('') // Reset custom when changing selection
-        }}>
+        <Select
+          value={selectedQuantity}
+          onValueChange={(value) => {
+            setSelectedQuantity(value)
+            setCustomQuantity('') // Reset custom when changing selection
+          }}
+        >
           <SelectTrigger className="w-full mt-2">
             <SelectValue placeholder="Select quantity" />
           </SelectTrigger>
@@ -389,16 +422,17 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
         {isCustomQuantity && (
           <div className="mt-2">
             <Label className="text-xs text-gray-600">
-              Enter custom quantity ({selectedQtyObj?.customMin || 0} - {selectedQtyObj?.customMax || 100000})
+              Enter custom quantity ({selectedQtyObj?.customMin || 0} -{' '}
+              {selectedQtyObj?.customMax || 100000})
             </Label>
             <Input
-              type="number"
-              min={selectedQtyObj?.customMin || 0}
+              className="mt-1"
               max={selectedQtyObj?.customMax || 100000}
+              min={selectedQtyObj?.customMin || 0}
+              placeholder="Enter quantity"
+              type="number"
               value={customQuantity}
               onChange={(e) => setCustomQuantity(e.target.value)}
-              placeholder="Enter quantity"
-              className="mt-1"
             />
           </div>
         )}
@@ -408,11 +442,14 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       {memoizedSizes.length > 0 && (
         <div>
           <Label className="text-sm font-semibold uppercase">SIZE</Label>
-          <Select value={selectedSize} onValueChange={(value) => {
-            setSelectedSize(value)
-            setCustomWidth('')
-            setCustomHeight('')
-          }}>
+          <Select
+            value={selectedSize}
+            onValueChange={(value) => {
+              setSelectedSize(value)
+              setCustomWidth('')
+              setCustomHeight('')
+            }}
+          >
             <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
@@ -433,27 +470,27 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
                 <div>
                   <Label className="text-xs">Width</Label>
                   <Input
-                    type="number"
-                    step="0.25"
-                    min={selectedSizeObj?.customMinWidth || 0}
+                    className="mt-1"
                     max={selectedSizeObj?.customMaxWidth || 100}
+                    min={selectedSizeObj?.customMinWidth || 0}
+                    placeholder="Width"
+                    step="0.25"
+                    type="number"
                     value={customWidth}
                     onChange={(e) => setCustomWidth(e.target.value)}
-                    placeholder="Width"
-                    className="mt-1"
                   />
                 </div>
                 <div>
                   <Label className="text-xs">Height</Label>
                   <Input
-                    type="number"
-                    step="0.25"
-                    min={selectedSizeObj?.customMinHeight || 0}
+                    className="mt-1"
                     max={selectedSizeObj?.customMaxHeight || 100}
+                    min={selectedSizeObj?.customMinHeight || 0}
+                    placeholder="Height"
+                    step="0.25"
+                    type="number"
                     value={customHeight}
                     onChange={(e) => setCustomHeight(e.target.value)}
-                    placeholder="Height"
-                    className="mt-1"
                   />
                 </div>
               </div>
@@ -466,13 +503,16 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
       {memoizedPaperStocks.length > 0 && (
         <div>
           <Label className="text-sm font-semibold uppercase">PAPER STOCK</Label>
-          <Select value={selectedPaper} onValueChange={(value) => {
-            setSelectedPaper(value)
-            // Reset coating and sides when paper changes
-            const newPaper = memoizedPaperStocks.find(p => p.id === value)
-            setSelectedCoating(newPaper?.coatings?.[0]?.id || '')
-            setSelectedSides(newPaper?.sides?.[0]?.id || '')
-          }}>
+          <Select
+            value={selectedPaper}
+            onValueChange={(value) => {
+              setSelectedPaper(value)
+              // Reset coating and sides when paper changes
+              const newPaper = memoizedPaperStocks.find((p) => p.id === value)
+              setSelectedCoating(newPaper?.coatings?.[0]?.id || '')
+              setSelectedSides(newPaper?.sides?.[0]?.id || '')
+            }}
+          >
             <SelectTrigger className="w-full mt-2">
               <SelectValue placeholder="Select paper stock" />
             </SelectTrigger>
@@ -493,11 +533,11 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
           <Label className="text-sm font-semibold uppercase">COATING</Label>
           <Select value={selectedCoating} onValueChange={setSelectedCoating}>
             <SelectTrigger className="w-full mt-2 text-foreground">
-              <SelectValue placeholder="Select coating" className="text-foreground" />
+              <SelectValue className="text-foreground" placeholder="Select coating" />
             </SelectTrigger>
             <SelectContent className="bg-background">
               {availableCoatings.map((coating) => (
-                <SelectItem key={coating.id} value={coating.id} className="text-foreground">
+                <SelectItem key={coating.id} className="text-foreground" value={coating.id}>
                   {coating.name}
                 </SelectItem>
               ))}
@@ -512,11 +552,11 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
           <Label className="text-sm font-semibold uppercase">SIDES</Label>
           <Select value={selectedSides} onValueChange={setSelectedSides}>
             <SelectTrigger className="w-full mt-2 text-foreground">
-              <SelectValue placeholder="Select sides" className="text-foreground" />
+              <SelectValue className="text-foreground" placeholder="Select sides" />
             </SelectTrigger>
             <SelectContent className="bg-background">
               {availableSides.map((side) => (
-                <SelectItem key={side.id} value={side.id} className="text-foreground">
+                <SelectItem key={side.id} className="text-foreground" value={side.id}>
                   {side.name}
                 </SelectItem>
               ))}
@@ -538,20 +578,19 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
                   className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
                 >
                   <input
-                    type="radio"
-                    name="turnaround"
-                    value={turnaround.id}
                     checked={selectedTurnaround === turnaround.id}
-                    onChange={(e) => setSelectedTurnaround(e.target.value)}
                     className="w-4 h-4 text-primary focus:ring-2 focus:ring-primary"
+                    name="turnaround"
+                    type="radio"
+                    value={turnaround.id}
+                    onChange={(e) => setSelectedTurnaround(e.target.value)}
                   />
                   <div className="flex-1">
                     <div className="font-medium">{turnaround.displayName || turnaround.name}</div>
                     <div className="text-sm text-gray-600">
                       {turnaround.daysMin === turnaround.daysMax
                         ? `${turnaround.daysMin} business day${turnaround.daysMin > 1 ? 's' : ''}`
-                        : `${turnaround.daysMin}-${turnaround.daysMax} business days`
-                      }
+                        : `${turnaround.daysMin}-${turnaround.daysMax} business days`}
                     </div>
                   </div>
                   <div className="text-right">
@@ -577,12 +616,24 @@ export default function SimpleQuantityTest({ productId, product, initialConfigur
           Total Price: ${totalPrice.toFixed(2)}
         </div>
         <div className="text-sm text-gray-600 p-3 bg-gray-50 rounded space-y-1">
-          <div><strong>Quantity:</strong> {finalQuantity || 'Not set'}</div>
-          <div><strong>Size:</strong> {finalSize || 'Not set'}</div>
-          <div><strong>Paper:</strong> {finalPaper}</div>
-          <div><strong>Coating:</strong> {finalCoating}</div>
-          <div><strong>Sides:</strong> {finalSides}</div>
-          <div><strong>Turnaround:</strong> {finalTurnaround}</div>
+          <div>
+            <strong>Quantity:</strong> {finalQuantity || 'Not set'}
+          </div>
+          <div>
+            <strong>Size:</strong> {finalSize || 'Not set'}
+          </div>
+          <div>
+            <strong>Paper:</strong> {finalPaper}
+          </div>
+          <div>
+            <strong>Coating:</strong> {finalCoating}
+          </div>
+          <div>
+            <strong>Sides:</strong> {finalSides}
+          </div>
+          <div>
+            <strong>Turnaround:</strong> {finalTurnaround}
+          </div>
         </div>
       </div>
 

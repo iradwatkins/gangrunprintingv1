@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedPaperStocks() {
-
   const paperStocks = [
     // Business Card Papers
     {
@@ -51,14 +50,14 @@ async function seedPaperStocks() {
     },
     {
       name: '100lb Text',
-      weight: 0.010,
+      weight: 0.01,
       pricePerSqInch: 0.0012,
       tooltipText: 'Premium text weight for high-end brochures',
       isActive: true,
     },
     {
       name: '100lb Cover',
-      weight: 0.010,
+      weight: 0.01,
       pricePerSqInch: 0.0014,
       tooltipText: 'Light cardstock for postcards and covers',
       isActive: true,
@@ -66,7 +65,7 @@ async function seedPaperStocks() {
     // Poster Papers
     {
       name: '100lb Gloss Cover',
-      weight: 0.010,
+      weight: 0.01,
       pricePerSqInch: 0.0015,
       tooltipText: 'Glossy cover stock for vibrant posters',
       isActive: true,
@@ -80,7 +79,7 @@ async function seedPaperStocks() {
     },
     {
       name: 'Vinyl Banner',
-      weight: 0.020,
+      weight: 0.02,
       pricePerSqInch: 0.0025,
       tooltipText: 'Durable vinyl for outdoor banners',
       isActive: true,
@@ -108,16 +107,13 @@ async function seedPaperStocks() {
       update: stock,
       create: stock,
     })
-
   }
-
 }
 
 // Run if executed directly
 if (require.main === module) {
   seedPaperStocks()
     .then(() => {
-
       process.exit(0)
     })
     .catch((error) => {

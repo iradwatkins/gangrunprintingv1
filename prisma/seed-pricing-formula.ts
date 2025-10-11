@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function seedStandardSizes() {
-
   const sizes = [
     // Business Card Sizes
     {
@@ -177,11 +176,9 @@ async function seedStandardSizes() {
       create: size,
     })
   }
-
 }
 
 async function seedStandardQuantities() {
-
   const quantities = [
     // Small quantities with adjustments (< 5000)
     { displayValue: 25, calculationValue: 50, sortOrder: 1 }, // 100% adjustment
@@ -222,11 +219,9 @@ async function seedStandardQuantities() {
       create: qty,
     })
   }
-
 }
 
 async function seedPaperExceptions() {
-
   // Find all text papers by category
   const textPapers = await prisma.paperStock.findMany({
     where: {
@@ -279,7 +274,6 @@ async function seedPaperExceptions() {
 }
 
 async function seedProductPricingConfig() {
-
   // Get all products
   const products = await prisma.product.findMany()
 
@@ -315,11 +309,9 @@ async function seedProductPricingConfig() {
       create: config,
     })
   }
-
 }
 
 async function linkProductsToSizesAndQuantities() {
-
   const products = await prisma.product.findMany()
   const sizes = await prisma.standardSize.findMany()
   const quantities = await prisma.standardQuantity.findMany()
@@ -410,18 +402,15 @@ async function linkProductsToSizesAndQuantities() {
       }
     }
   }
-
 }
 
 async function main() {
-
   try {
     await seedStandardSizes()
     await seedStandardQuantities()
     await seedPaperExceptions()
     await seedProductPricingConfig()
     await linkProductsToSizesAndQuantities()
-
   } catch (error) {
     console.error('❌ Seed failed:', error)
     throw error

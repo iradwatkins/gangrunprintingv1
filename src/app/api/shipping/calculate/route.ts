@@ -133,11 +133,19 @@ export async function POST(request: NextRequest) {
     // Use the split boxes for rating
     packages.push(...boxes)
 
-    // Get rates from FedEx only
-    const rates = await shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages)
+    // Get rates from both FedEx and Southwest Cargo
+    console.log('[Shipping API] Fetching rates from FedEx and Southwest Cargo...')
 
-    console.log('[Shipping API] FedEx rates received:', rates.length, 'rates')
-    console.log('[Shipping API] Rates:', JSON.stringify(rates, null, 2))
+    const [fedexRates, southwestRates] = await Promise.all([
+      shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages),
+      shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages),
+    ])
+
+    console.log('[Shipping API] FedEx rates received:', fedexRates.length, 'rates')
+    console.log('[Shipping API] Southwest Cargo rates received:', southwestRates.length, 'rates')
+
+    const rates = [...fedexRates, ...southwestRates]
+    console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
 
     return NextResponse.json({
       success: true,
@@ -148,9 +156,12 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('[Shipping API] Error:', error)
-    return NextResponse.json({
-      error: 'Failed to calculate shipping rates',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to calculate shipping rates',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
   }
 }

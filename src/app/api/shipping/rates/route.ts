@@ -1,5 +1,5 @@
 import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { generateRequestId } from '@/lib/api-response'
 
@@ -9,17 +9,19 @@ const RateRequestSchema = z.object({
     zipCode: z.string().regex(/^\d{5}(-\d{4})?$/),
     state: z.string().length(2),
     city: z.string(),
-    countryCode: z.string().default('US')
+    countryCode: z.string().default('US'),
   }),
   package: z.object({
     weight: z.number().min(0.1).max(150), // in pounds
-    dimensions: z.object({
-      length: z.number(),
-      width: z.number(),
-      height: z.number()
-    }).optional()
+    dimensions: z
+      .object({
+        length: z.number(),
+        width: z.number(),
+        height: z.number(),
+      })
+      .optional(),
   }),
-  providers: z.array(z.enum(['fedex', 'southwest-dash'])).default(['fedex', 'southwest-dash'])
+  providers: z.array(z.enum(['fedex', 'southwest-dash'])).default(['fedex', 'southwest-dash']),
 })
 
 // Default origin (Gang Run Printing warehouse in Dallas)
@@ -27,7 +29,7 @@ const DEFAULT_ORIGIN = {
   zipCode: DEFAULT_WAREHOUSE_ZIP,
   state: 'TX',
   city: 'Dallas',
-  countryCode: 'US'
+  countryCode: 'US',
 }
 
 export async function POST(request: NextRequest) {
@@ -42,7 +44,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Invalid request',
           details: validation.error.issues,
-          requestId
+          requestId,
         },
         { status: 400 }
       )
@@ -60,12 +62,12 @@ export async function POST(request: NextRequest) {
         serviceType: 'GROUND',
         rate: {
           amount: calculateFedExRate(pkg.weight),
-          currency: 'USD'
+          currency: 'USD',
         },
         delivery: {
           estimatedDays: { min: 3, max: 5 },
-          text: '3-5 business days'
-        }
+          text: '3-5 business days',
+        },
       })
     }
 
@@ -76,26 +78,23 @@ export async function POST(request: NextRequest) {
         serviceType: 'EXPRESS',
         rate: {
           amount: calculateSouthwestRate(pkg.weight),
-          currency: 'USD'
+          currency: 'USD',
         },
         delivery: {
           estimatedDays: { min: 1, max: 2 },
-          text: '1-2 business days'
-        }
+          text: '1-2 business days',
+        },
       })
     }
 
     return NextResponse.json({
       success: true,
       rates,
-      requestId
+      requestId,
     })
   } catch (error) {
     console.error('Shipping rate error:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate shipping rates' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate shipping rates' }, { status: 500 })
   }
 }
 

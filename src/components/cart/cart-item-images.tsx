@@ -35,7 +35,7 @@ export function CartItemImages({ item }: CartItemImagesProps) {
           }
         }
       } catch (error) {
-        } finally {
+      } finally {
         setIsLoading(false)
       }
     }

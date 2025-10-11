@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   // Apply rate limiting for auth endpoints
   const rateLimitResponse = await withRateLimit(request, {
     ...RateLimitPresets.auth,
-    prefix: 'auth-verify'
+    prefix: 'auth-verify',
   })
   if (rateLimitResponse) return rateLimitResponse
 
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     // Add a small delay to ensure database operations are committed
     // This prevents race conditions where the redirect happens before session is fully committed
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Log completion
     console.log(`Verification completed`)

@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { HelpCircle } from 'lucide-react'
 import FileUploadZone from '../FileUploadZone'
@@ -43,7 +49,7 @@ export function DesignAddonSelector({
   uploadedFiles = [],
   onDesignOptionChange,
   onFilesUploaded,
-  disabled = false
+  disabled = false,
 }: DesignAddonSelectorProps) {
   const [primarySelection, setPrimarySelection] = useState<string>('none')
   const [secondarySelection, setSecondarySelection] = useState<string>('')
@@ -58,7 +64,7 @@ export function DesignAddonSelector({
     }
   }, [selectedDesignOption, selectedSide])
 
-  const selectedAddon = designAddons.find(addon => addon.id === primarySelection)
+  const selectedAddon = designAddons.find((addon) => addon.id === primarySelection)
 
   const handlePrimaryChange = (value: string) => {
     setPrimarySelection(value)
@@ -67,7 +73,7 @@ export function DesignAddonSelector({
     if (value === 'none') {
       onDesignOptionChange(null, null, [])
     } else {
-      const addon = designAddons.find(a => a.id === value)
+      const addon = designAddons.find((a) => a.id === value)
       if (addon) {
         // For options that don't require side selection, immediately update
         if (!addon.configuration?.requiresSideSelection) {
@@ -96,7 +102,7 @@ export function DesignAddonSelector({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(price)
   }
 
@@ -108,7 +114,10 @@ export function DesignAddonSelector({
     if (!selectedAddon) return null
 
     // For Standard/Rush Design with side selection
-    if (selectedAddon.configuration?.requiresSideSelection && selectedAddon.configuration.sideOptions) {
+    if (
+      selectedAddon.configuration?.requiresSideSelection &&
+      selectedAddon.configuration.sideOptions
+    ) {
       if (secondarySelection) {
         const side = secondarySelection as 'oneSide' | 'twoSides'
         return formatPrice(selectedAddon.configuration.sideOptions[side].price)
@@ -127,10 +136,9 @@ export function DesignAddonSelector({
 
   const shouldShowFileUpload = primarySelection === 'addon_upload_artwork'
   const shouldShowSecondaryDropdown = selectedAddon?.configuration?.requiresSideSelection === true
-  const shouldShowPrice = (
+  const shouldShowPrice =
     primarySelection === 'addon_design_changes_minor' ||
     primarySelection === 'addon_design_changes_major'
-  )
 
   return (
     <TooltipProvider>
@@ -149,11 +157,7 @@ export function DesignAddonSelector({
             </Tooltip>
           </div>
 
-          <Select
-            value={primarySelection}
-            onValueChange={handlePrimaryChange}
-            disabled={disabled}
-          >
+          <Select disabled={disabled} value={primarySelection} onValueChange={handlePrimaryChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Options" />
             </SelectTrigger>
@@ -175,9 +179,9 @@ export function DesignAddonSelector({
           <div className="ml-6 space-y-2">
             <Label>Select Sides *</Label>
             <Select
+              disabled={disabled}
               value={secondarySelection}
               onValueChange={handleSecondaryChange}
-              disabled={disabled}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Choose number of sides..." />
@@ -215,14 +219,15 @@ export function DesignAddonSelector({
             </div>
 
             <FileUploadZone
-              onFilesUploaded={handleFilesUploaded}
+              disabled={disabled}
               maxFiles={5}
               maxFileSize={25}
-              disabled={disabled}
+              onFilesUploaded={handleFilesUploaded}
             />
 
             <p className="text-sm text-muted-foreground">
-              Note: File upload is optional. You can email your files to us after placing your order.
+              Note: File upload is optional. You can email your files to us after placing your
+              order.
             </p>
           </div>
         )}
@@ -230,9 +235,7 @@ export function DesignAddonSelector({
         {/* Static Price Display for Minor/Major Changes */}
         {shouldShowPrice && (
           <div className="ml-6 p-3 bg-muted/50 rounded-lg">
-            <p className="text-sm font-medium">
-              Price: {getDisplayPrice()}
-            </p>
+            <p className="text-sm font-medium">Price: {getDisplayPrice()}</p>
           </div>
         )}
 
@@ -251,16 +254,12 @@ export function DesignAddonSelector({
 
               {/* Show price if available */}
               {getDisplayPrice() && (
-                <div className="font-medium text-primary">
-                  Total: {getDisplayPrice()}
-                </div>
+                <div className="font-medium text-primary">Total: {getDisplayPrice()}</div>
               )}
 
               {/* Show uploaded files count */}
               {shouldShowFileUpload && uploadedFiles.length > 0 && (
-                <div className="text-muted-foreground">
-                  {uploadedFiles.length} file(s) uploaded
-                </div>
+                <div className="text-muted-foreground">{uploadedFiles.length} file(s) uploaded</div>
               )}
 
               {/* Warning if Standard/Rush selected but no side chosen */}

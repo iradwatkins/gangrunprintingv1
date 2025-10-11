@@ -67,25 +67,16 @@ export async function optionalAuth(): Promise<OptionalAuthResult> {
  */
 export function handleAuthError(error: unknown): NextResponse {
   if (error instanceof AuthenticationError) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 401 }
-    )
+    return NextResponse.json({ error: error.message }, { status: 401 })
   }
 
   if (error instanceof AuthorizationError) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 403 }
-    )
+    return NextResponse.json({ error: error.message }, { status: 403 })
   }
 
   // Log unexpected errors
   console.error('Unexpected auth error:', error)
-  return NextResponse.json(
-    { error: 'Internal server error' },
-    { status: 500 }
-  )
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
 }
 
 /**

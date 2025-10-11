@@ -4,29 +4,24 @@ import { createId } from '@paralleldrive/cuid2'
 const prisma = new PrismaClient()
 
 async function restoreAndProtectAllAddons() {
+  console.log('='.repeat(60))
 
-  console.log('=' .repeat(60))
-
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     // First, verify Corner Rounding is safe
 
     const cornerRounding = await prisma.addOn.findFirst({
-      where: { name: 'Corner Rounding' }
+      where: { name: 'Corner Rounding' },
     })
 
     if (cornerRounding) {
-
       const config = cornerRounding.configuration as any
       if (config?.conditionalFields?.cornerType?.label === 'ROUNDED CORNERS') {
-
       } else {
-
         await updateCornerRounding(cornerRounding.id)
       }
     } else {
-
       await createCornerRounding()
     }
 
@@ -51,15 +46,15 @@ async function restoreAndProtectAllAddons() {
                 'Unique QR Codes',
                 'Custom Addresses',
                 'Personalized Images',
-                'Variable Barcodes'
+                'Variable Barcodes',
               ],
               required: true,
-              displayType: 'checkbox'
-            }
-          }
+              displayType: 'checkbox',
+            },
+          },
         },
         tooltipText: 'Print unique information on each piece',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Perforation',
@@ -75,12 +70,12 @@ async function restoreAndProtectAllAddons() {
               type: 'select',
               options: ['Horizontal', 'Vertical', 'Both'],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Add tear-away perforations for coupons or tickets',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Banding',
@@ -96,12 +91,12 @@ async function restoreAndProtectAllAddons() {
               type: 'select',
               options: ['Paper Band', 'Rubber Band'],
               required: true,
-              displayType: 'dropdown'
-            }
-          }
+              displayType: 'dropdown',
+            },
+          },
         },
         tooltipText: 'Bundle your products with paper or rubber bands',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Foil Stamping',
@@ -109,10 +104,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'foil_stamping',
           percentage: 35,
-          displayPrice: '+35% of base price'
+          displayPrice: '+35% of base price',
         },
         tooltipText: 'Add metallic foil accents for premium appeal',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Embossing',
@@ -120,10 +115,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'embossing',
           percentage: 30,
-          displayPrice: '+30% of base price'
+          displayPrice: '+30% of base price',
         },
         tooltipText: 'Create raised impressions for elegant texture',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Die Cutting',
@@ -132,10 +127,10 @@ async function restoreAndProtectAllAddons() {
           type: 'die_cutting',
           basePrice: 50,
           pricePerPiece: 0.02,
-          displayPrice: '$50.00 + $0.02/piece'
+          displayPrice: '$50.00 + $0.02/piece',
         },
         tooltipText: 'Custom shapes and cuts for unique designs',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Spot UV',
@@ -143,10 +138,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'spot_uv',
           percentage: 25,
-          displayPrice: '+25% of base price'
+          displayPrice: '+25% of base price',
         },
         tooltipText: 'Glossy UV coating on specific areas',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Raised Spot UV',
@@ -154,10 +149,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'raised_spot_uv',
           percentage: 40,
-          displayPrice: '+40% of base price'
+          displayPrice: '+40% of base price',
         },
         tooltipText: 'Raised glossy coating for premium texture',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Letterpress',
@@ -165,10 +160,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'letterpress',
           percentage: 45,
-          displayPrice: '+45% of base price'
+          displayPrice: '+45% of base price',
         },
         tooltipText: 'Traditional pressed printing for vintage appeal',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Edge Painting',
@@ -177,10 +172,10 @@ async function restoreAndProtectAllAddons() {
           type: 'edge_painting',
           basePrice: 30,
           pricePerPiece: 0.03,
-          displayPrice: '$30.00 + $0.03/piece'
+          displayPrice: '$30.00 + $0.03/piece',
         },
         tooltipText: 'Color the edges of thick cards',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Plastic Card',
@@ -188,10 +183,10 @@ async function restoreAndProtectAllAddons() {
         configuration: {
           type: 'plastic_card',
           percentage: 60,
-          displayPrice: '+60% of base price'
+          displayPrice: '+60% of base price',
         },
         tooltipText: 'Durable plastic cards instead of paper',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Magnetic Strip',
@@ -200,10 +195,10 @@ async function restoreAndProtectAllAddons() {
           type: 'magnetic_strip',
           basePrice: 40,
           pricePerPiece: 0.05,
-          displayPrice: '$40.00 + $0.05/piece'
+          displayPrice: '$40.00 + $0.05/piece',
         },
         tooltipText: 'Add magnetic strip for card functionality',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Signature Strip',
@@ -212,10 +207,10 @@ async function restoreAndProtectAllAddons() {
           type: 'signature_strip',
           basePrice: 10,
           pricePerPiece: 0.01,
-          displayPrice: '$10.00 + $0.01/piece'
+          displayPrice: '$10.00 + $0.01/piece',
         },
         tooltipText: 'White strip for signatures on cards',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Scratch-off Panel',
@@ -224,10 +219,10 @@ async function restoreAndProtectAllAddons() {
           type: 'scratch_off',
           basePrice: 35,
           pricePerPiece: 0.04,
-          displayPrice: '$35.00 + $0.04/piece'
+          displayPrice: '$35.00 + $0.04/piece',
         },
         tooltipText: 'Add scratch-off areas for promotions',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Folding',
@@ -236,10 +231,10 @@ async function restoreAndProtectAllAddons() {
           type: 'folding',
           basePrice: 20,
           pricePerPiece: 0.01,
-          displayPrice: '$20.00 + $0.01/piece'
+          displayPrice: '$20.00 + $0.01/piece',
         },
         tooltipText: 'Professional folding for brochures',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Scoring',
@@ -248,10 +243,10 @@ async function restoreAndProtectAllAddons() {
           type: 'scoring',
           basePrice: 15,
           pricePerPiece: 0.005,
-          displayPrice: '$15.00 + $0.005/piece'
+          displayPrice: '$15.00 + $0.005/piece',
         },
         tooltipText: 'Pre-score for clean folds',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Hole Drilling',
@@ -260,10 +255,10 @@ async function restoreAndProtectAllAddons() {
           type: 'hole_drilling',
           basePrice: 10,
           pricePerHole: 5,
-          displayPrice: '$10.00 + $5.00/hole'
+          displayPrice: '$10.00 + $5.00/hole',
         },
         tooltipText: 'Add holes for hanging or binding',
-        isActive: true
+        isActive: true,
       },
       {
         name: 'Shrink Wrapping',
@@ -272,17 +267,17 @@ async function restoreAndProtectAllAddons() {
           type: 'shrink_wrapping',
           basePrice: 25,
           pricePerBundle: 3,
-          displayPrice: '$25.00 + $3.00/bundle'
+          displayPrice: '$25.00 + $3.00/bundle',
         },
         tooltipText: 'Protective shrink wrap packaging',
-        isActive: true
-      }
+        isActive: true,
+      },
     ]
 
     // Restore each missing addon
     for (const addonData of allAddons) {
       const existing = await prisma.addOn.findFirst({
-        where: { name: addonData.name }
+        where: { name: addonData.name },
       })
 
       if (!existing) {
@@ -290,33 +285,29 @@ async function restoreAndProtectAllAddons() {
           data: {
             ...addonData,
             id: createId(),
-            updatedAt: new Date()
-          } as any
+            updatedAt: new Date(),
+          } as any,
         })
-
       } else {
-
       }
     }
 
     // Verify all addons are present
 
     const allAddonsInDb = await prisma.addOn.findMany({
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
 
     // Specifically verify Corner Rounding
-    const finalCornerCheck = allAddonsInDb.find(a => a.name === 'Corner Rounding')
+    const finalCornerCheck = allAddonsInDb.find((a) => a.name === 'Corner Rounding')
     if (finalCornerCheck) {
       const config = finalCornerCheck.configuration as any
       if (config?.conditionalFields?.cornerType?.label === 'ROUNDED CORNERS') {
-
       }
     }
 
     // Create protection verification file
     await createProtectionVerificationFile()
-
   } catch (error) {
     console.error('Error in restoration:', error)
   } finally {
@@ -347,17 +338,17 @@ async function updateCornerRounding(id: string) {
               { label: 'Bottom Left', value: 'Bottom Left' },
               { label: 'Bottom Right', value: 'Bottom Right' },
               { label: 'Top Left & Bottom Right', value: 'Top Left & Bottom Right' },
-              { label: 'Top Right & Bottom Left', value: 'Top Right & Bottom Left' }
+              { label: 'Top Right & Bottom Left', value: 'Top Right & Bottom Left' },
             ],
             required: true,
             defaultValue: 'All Four',
             helpText: 'Select the type of corner rounding for your order.',
-            displayType: 'dropdown'
-          }
+            displayType: 'dropdown',
+          },
         },
-        showConditionalOnCheck: true
-      }
-    }
+        showConditionalOnCheck: true,
+      },
+    },
   })
 }
 
@@ -386,20 +377,20 @@ async function createCornerRounding() {
               { label: 'Bottom Left', value: 'Bottom Left' },
               { label: 'Bottom Right', value: 'Bottom Right' },
               { label: 'Top Left & Bottom Right', value: 'Top Left & Bottom Right' },
-              { label: 'Top Right & Bottom Left', value: 'Top Right & Bottom Left' }
+              { label: 'Top Right & Bottom Left', value: 'Top Right & Bottom Left' },
             ],
             required: true,
             defaultValue: 'All Four',
             helpText: 'Select the type of corner rounding for your order.',
-            displayType: 'dropdown'
-          }
+            displayType: 'dropdown',
+          },
         },
-        showConditionalOnCheck: true
+        showConditionalOnCheck: true,
       },
       tooltipText: 'Add rounded corners for a professional, modern look',
       isActive: true,
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   })
 }
 
@@ -421,7 +412,6 @@ echo "npx tsx scripts/restore-and-protect-all-addons.ts"
 
   const fs = require('fs').promises
   await fs.writeFile('/root/websites/gangrunprinting/verify-addons.sh', verificationScript)
-
 }
 
 restoreAndProtectAllAddons()

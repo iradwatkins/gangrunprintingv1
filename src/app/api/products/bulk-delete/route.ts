@@ -15,20 +15,17 @@ export async function POST(request: NextRequest) {
     const { productIds } = await request.json()
 
     if (!Array.isArray(productIds) || productIds.length === 0) {
-      return NextResponse.json(
-        { error: 'Product IDs array is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Product IDs array is required' }, { status: 400 })
     }
 
     // Fetch all products to get their images for deletion
     const productsToDelete = await prisma.product.findMany({
       where: {
-        id: { in: productIds }
+        id: { in: productIds },
       },
       include: {
-        productImages: true
-      }
+        productImages: true,
+      },
     })
 
     // Delete all product images from MinIO
@@ -48,13 +45,13 @@ export async function POST(request: NextRequest) {
     // Delete products (cascade will handle related records)
     const result = await prisma.product.deleteMany({
       where: {
-        id: { in: productIds }
-      }
+        id: { in: productIds },
+      },
     })
 
     return createSuccessResponse({
       deleted: result.count,
-      message: `Successfully deleted ${result.count} product${result.count > 1 ? 's' : ''}`
+      message: `Successfully deleted ${result.count} product${result.count > 1 ? 's' : ''}`,
     })
   } catch (error) {
     console.error('Bulk delete error:', error)

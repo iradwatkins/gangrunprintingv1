@@ -20,7 +20,7 @@ export function SessionKeeper() {
     // Track various user activities
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove']
 
-    events.forEach(event => {
+    events.forEach((event) => {
       window.addEventListener(event, updateActivity, { passive: true })
     })
 
@@ -28,7 +28,7 @@ export function SessionKeeper() {
     updateActivity()
 
     return () => {
-      events.forEach(event => {
+      events.forEach((event) => {
         window.removeEventListener(event, updateActivity)
       })
     }
@@ -65,10 +65,12 @@ export function SessionKeeper() {
         const { timeUntilExpiry } = statusData.session
 
         // Refresh if session has less than 30 days left (more aggressive than before)
-        const shouldRefresh = timeUntilExpiry < (30 * 24 * 60 * 60 * 1000)
+        const shouldRefresh = timeUntilExpiry < 30 * 24 * 60 * 60 * 1000
 
         if (shouldRefresh) {
-          console.log(`Session refresh needed: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left)`)
+          console.log(
+            `Session refresh needed: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left)`
+          )
 
           const refreshResponse = await fetch('/api/auth/session/refresh', {
             method: 'POST',
@@ -82,7 +84,9 @@ export function SessionKeeper() {
             console.log('Session refresh failed:', await refreshResponse.text())
           }
         } else {
-          console.log(`Session still valid: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left`)
+          console.log(
+            `Session still valid: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left`
+          )
         }
       } catch (error) {
         console.log('Session check error:', error)

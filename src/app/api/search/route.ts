@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 
 import { logSearch } from '@/components/GoogleAnalytics'
 import { prisma } from '@/lib/prisma'
@@ -72,7 +72,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Determine order by - properly typed
-    let orderBy: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[] = {}
+    let orderBy: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[] =
+      {}
 
     switch (sortBy) {
       case 'price_asc':
@@ -179,9 +180,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response)
   } catch (error) {
     console.error('Search error:', error)
-    return NextResponse.json(
-      { error: 'Failed to perform search' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to perform search' }, { status: 500 })
   }
 }

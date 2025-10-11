@@ -154,7 +154,6 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
   })
 
   test('should successfully create product with all dependencies', async ({ page }) => {
-
     // Mock successful product creation
     await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
@@ -210,11 +209,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     // Wait for success message
     await expect(page.locator('text=Product created successfully')).toBeVisible({ timeout: 10000 })
-
   })
 
   test('should handle authentication errors gracefully', async ({ page }) => {
-
     // Override auth to return unauthorized
     await page.route('**/api/auth/validate', (route) => {
       route.fulfill({
@@ -250,11 +247,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     const hasAuthError = (await page.locator('text=/unauthorized|access denied/i').count()) > 0
 
     expect(url.includes('/auth/signin') || hasAuthError).toBeTruthy()
-
   })
 
   test('should handle validation errors with detailed feedback', async ({ page }) => {
-
     // Mock validation error response
     await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
@@ -290,11 +285,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     // Should show validation errors
     await expect(page.locator('text=/validation failed|required/i')).toBeVisible({ timeout: 5000 })
-
   })
 
   test('should handle database constraint violations', async ({ page }) => {
-
     // Mock constraint violation (duplicate SKU)
     await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
@@ -324,11 +317,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     // Should show constraint violation error
     await expect(page.locator('text=/already exists|duplicate/i')).toBeVisible({ timeout: 5000 })
-
   })
 
   test('should handle foreign key validation errors', async ({ page }) => {
-
     // Mock foreign key error
     await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
@@ -353,11 +344,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     await page.click('button:has-text("Save Product")')
 
     await expect(page.locator('text=/not found|invalid/i')).toBeVisible({ timeout: 5000 })
-
   })
 
   test('should handle transaction timeout errors', async ({ page }) => {
-
     // Mock transaction timeout
     await page.route('**/api/products', (route) => {
       if (route.request().method() === 'POST') {
@@ -387,11 +376,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     await page.click('button:has-text("Save Product")')
 
     await expect(page.locator('text=/timed out|timeout/i')).toBeVisible({ timeout: 10000 })
-
   })
 
   test('should handle dependency API failures gracefully', async ({ page }) => {
-
     // Mock API failures for dependencies
     await page.route('**/api/product-categories', (route) => {
       route.fulfill({
@@ -418,11 +405,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     // Should show retry button
     await expect(page.locator('button:has-text("Retry Loading")')).toBeVisible()
-
   })
 
   test('should test complete product creation workflow', async ({ page }) => {
-
     let productCreationCalled = false
 
     // Mock successful product creation and track if it's called
@@ -490,11 +475,9 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
 
     // Should redirect to products list
     await expect(page).toHaveURL(/\/admin\/products$/, { timeout: 10000 })
-
   })
 
   test('should monitor console errors during product creation', async ({ page }) => {
-
     const consoleErrors: string[] = []
     const networkErrors: string[] = []
 
@@ -536,24 +519,20 @@ test.describe('Product Creation - Comprehensive Error Testing', () => {
     )
 
     if (criticalErrors.length > 0) {
-
       criticalErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     if (networkErrors.length > 0) {
-
       networkErrors.forEach((err) => console.log(`  - ${err}`))
     }
 
     // We should have minimal critical errors
     expect(criticalErrors.length).toBeLessThan(3)
-
   })
 })
 
 test.describe('Product Creation Performance Tests', () => {
   test('should load product creation page within performance budget', async ({ page }) => {
-
     const startTime = Date.now()
 
     await page.goto('http://localhost:3002/admin/products/new', {
@@ -569,6 +548,5 @@ test.describe('Product Creation Performance Tests', () => {
     // Performance expectations
     expect(domLoadTime).toBeLessThan(3000) // DOM should load within 3 seconds
     expect(totalLoadTime).toBeLessThan(8000) // Form should be ready within 8 seconds
-
   })
 })

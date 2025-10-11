@@ -30,7 +30,7 @@ export async function createSquareCheckout(orderData: {
   }>
 }) {
   try {
-    const { result } = await client.checkout.createPaymentLink({
+    const { result } = await client.checkoutApi.createPaymentLink({
       checkoutOptions: {
         acceptedPaymentMethods: {
           applePay: true,
@@ -77,7 +77,7 @@ export async function createSquareCheckout(orderData: {
 // Retrieve payment details
 export async function retrieveSquarePayment(paymentId: string) {
   try {
-    const { result } = await client.payments.getPayment(paymentId)
+    const { result } = await client.paymentsApi.getPayment(paymentId)
 
     return {
       id: result.payment?.id,
@@ -100,10 +100,12 @@ export async function retrieveSquarePayment(paymentId: string) {
 export async function createOrUpdateSquareCustomer(email: string, name?: string, phone?: string) {
   try {
     // First, try to find existing customer by email
-    const searchResult = await client.customers.searchCustomers({
-      filter: {
-        emailAddress: {
-          exact: email,
+    const searchResult = await client.customersApi.searchCustomers({
+      query: {
+        filter: {
+          emailAddress: {
+            exact: email,
+          },
         },
       },
     })
@@ -114,7 +116,7 @@ export async function createOrUpdateSquareCustomer(email: string, name?: string,
       // Update existing customer
       customerId = searchResult.result.customers[0].id
 
-      await client.customers.updateCustomer(customerId, {
+      await client.customersApi.updateCustomer(customerId, {
         emailAddress: email,
         ...(name && {
           givenName: name.split(' ')[0],
@@ -124,7 +126,7 @@ export async function createOrUpdateSquareCustomer(email: string, name?: string,
       })
     } else {
       // Create new customer
-      const createResult = await client.customers.createCustomer({
+      const createResult = await client.customersApi.createCustomer({
         emailAddress: email,
         ...(name && {
           givenName: name.split(' ')[0],
@@ -168,7 +170,7 @@ export async function createSquareOrder(orderData: {
   }>
 }) {
   try {
-    const { result } = await client.orders.createOrder({
+    const { result } = await client.ordersApi.createOrder({
       order: {
         locationId: SQUARE_LOCATION_ID,
         referenceId: orderData.referenceId,
@@ -195,7 +197,7 @@ export async function createSquareOrder(orderData: {
 // Retrieve an order
 export async function retrieveSquareOrder(orderId: string) {
   try {
-    const { result } = await client.orders.retrieveOrder(orderId)
+    const { result } = await client.ordersApi.retrieveOrder(orderId)
 
     return {
       id: result.order?.id,
@@ -220,7 +222,7 @@ export async function updateSquareFulfillment(
   state: 'PROPOSED' | 'RESERVED' | 'PREPARED' | 'COMPLETED' | 'CANCELED' | 'FAILED'
 ) {
   try {
-    const { result } = await client.orders.updateOrder(orderId, {
+    const { result } = await client.ordersApi.updateOrder(orderId, {
       order: {
         locationId: SQUARE_LOCATION_ID,
         fulfillments: [

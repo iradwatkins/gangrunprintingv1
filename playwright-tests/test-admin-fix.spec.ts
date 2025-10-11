@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test'
 
 test('Admin products page renders correctly', async ({ page }) => {
-
   // Go to the admin page
   await page.goto('https://gangrunprinting.com/admin/products/new', {
     waitUntil: 'networkidle',
@@ -18,11 +17,9 @@ test('Admin products page renders correctly', async ({ page }) => {
   await page.screenshot({ path: 'admin-page-test.png' })
 
   if (currentUrl.includes('/auth/signin')) {
-
     // This is expected behavior for unauthenticated users
     expect(currentUrl).toContain('/auth/signin')
   } else if (currentUrl.includes('/admin/products/new')) {
-
     // Check if the page has the expected content
     const hasLoadingMessage = await page
       .locator('text=Verifying admin access')
@@ -43,20 +40,15 @@ test('Admin products page renders correctly', async ({ page }) => {
 
     // The page should either show the form or redirect
     if (hasProductForm || hasCreateButton) {
-
       expect(hasProductForm || hasCreateButton).toBeTruthy()
     } else if (hasLoadingMessage) {
-
       expect(hasLoadingMessage).toBeFalsy()
     } else if (hasSidebar) {
-
       const bodyHTML = await page.content()
 
       // Check for specific form elements
       const hasInputs = await page.locator('input').count()
       const hasButtons = await page.locator('button').count()
-
     }
   }
-
 })

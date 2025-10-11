@@ -4,15 +4,7 @@
  * Sent immediately after payment is received
  */
 
-import {
-  Button,
-  Column,
-  Heading,
-  Hr,
-  Row,
-  Section,
-  Text,
-} from '@react-email/components'
+import { Button, Column, Heading, Hr, Row, Section, Text } from '@react-email/components'
 import * as React from 'react'
 import { EmailLayout } from './email-layout'
 

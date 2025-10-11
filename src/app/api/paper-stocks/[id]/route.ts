@@ -32,8 +32,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           pricePerSqInch: pricePerSqInch || 0,
           tooltipText: tooltipText || null,
           isActive: isActive !== undefined ? isActive : true,
+          updatedAt: new Date(),
           // Add new coating relationships
-          paperStockCoatings: {
+          PaperStockCoating: {
             create:
               coatings?.map((c: Record<string, unknown>) => ({
                 coatingId: c.id,
@@ -41,7 +42,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               })) || [],
           },
           // Add new sides relationships
-          paperStockSides: {
+          PaperStockSides: {
             create:
               sidesOptions?.map((s: Record<string, unknown>) => ({
                 sidesOptionId: s.id,
@@ -52,10 +53,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           },
         },
         include: {
-          paperStockCoatings: {
+          PaperStockCoating: {
             include: { CoatingOption: true },
           },
-          paperStockSides: {
+          PaperStockSides: {
             include: { SidesOption: true },
           },
         },

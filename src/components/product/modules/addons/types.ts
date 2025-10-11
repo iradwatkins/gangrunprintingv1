@@ -1,14 +1,14 @@
 import {
   StandardModuleProps,
   StandardModuleValue,
-  AddonItem,
+  type AddonItem,
   AddonValue,
-  AddonsModuleProps as StandardAddonsModuleProps,
-  AddonsModuleValue as StandardAddonsModuleValue,
+  type AddonsModuleProps as StandardAddonsModuleProps,
+  type AddonsModuleValue as StandardAddonsModuleValue,
   VariableDataConfig,
   PerforationConfig,
   BandingConfig,
-  CornerRoundingConfig
+  CornerRoundingConfig,
 } from '../types/StandardModuleTypes'
 
 // Use standardized interface with legacy compatibility
@@ -24,15 +24,11 @@ export interface AddonsGrouped {
 }
 
 // Re-export standard config interfaces
-export {
-  VariableDataConfig,
-  PerforationConfig,
-  BandingConfig,
-  CornerRoundingConfig
-}
+export { VariableDataConfig, PerforationConfig, BandingConfig, CornerRoundingConfig }
 
 // Use standardized props interface with legacy compatibility
-export interface AddonsModuleProps extends Omit<StandardAddonsModuleProps, 'onChange' | 'items' | 'value'> {
+export interface AddonsModuleProps
+  extends Omit<StandardAddonsModuleProps, 'onChange' | 'items' | 'value'> {
   addons: Addon[]
   selectedAddons: string[]
   onAddonChange: (selectedAddonIds: string[]) => void

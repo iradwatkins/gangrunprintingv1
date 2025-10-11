@@ -260,8 +260,7 @@ function ColorCard({ color, currentTheme }: { color: ColorInfo; currentTheme: st
       await navigator.clipboard.writeText(text)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      }
+    } catch (err) {}
   }
 
   return (

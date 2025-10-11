@@ -136,7 +136,7 @@ function StaffPageContent() {
           })
         }
       } catch (error) {
-        } finally {
+      } finally {
         setLoading(false)
       }
     }

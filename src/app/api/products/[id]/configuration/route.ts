@@ -585,8 +585,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           belowDropdown,
         }
       }
-    } catch (groupingError) {
-      }
+    } catch (groupingError) {}
 
     // Build the configuration object with dynamic quantities, sizes, paper stocks, turnaround times, and addons
     const fallbackConfig = {
@@ -621,12 +620,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
       // Also update default coating and sides from the default paper stock
       if (defaultPaper.coatings && defaultPaper.coatings.length > 0) {
-        const defaultCoating = defaultPaper.coatings.find((c: any) => c.isDefault) || defaultPaper.coatings[0]
+        const defaultCoating =
+          defaultPaper.coatings.find((c: any) => c.isDefault) || defaultPaper.coatings[0]
         updatedDefaults.coating = defaultCoating.id
       }
 
       if (defaultPaper.sides && defaultPaper.sides.length > 0) {
-        const defaultSide = defaultPaper.sides.find((s: any) => s.isDefault) || defaultPaper.sides[0]
+        const defaultSide =
+          defaultPaper.sides.find((s: any) => s.isDefault) || defaultPaper.sides[0]
         updatedDefaults.sides = defaultSide.id
       }
     }

@@ -76,7 +76,7 @@ export default function AutomationPage() {
         setWorkflows(data)
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -92,8 +92,7 @@ export default function AutomationPage() {
       if (response.ok) {
         fetchWorkflows() // Refresh the list
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleDeleteWorkflow = async (workflowId: string) => {
@@ -107,8 +106,7 @@ export default function AutomationPage() {
       if (response.ok) {
         setWorkflows((prev) => prev.filter((w) => w.id !== workflowId))
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const getTriggerLabel = (trigger: Record<string, unknown>) => {

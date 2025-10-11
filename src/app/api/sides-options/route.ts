@@ -2,15 +2,10 @@ import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const sidesOptions = await prisma.sidesOption.findMany({
       orderBy: { name: 'asc' },
-      include: {
-        _count: {
-          select: { paperStockSides: true },
-        },
-      },
     })
 
     return NextResponse.json(sidesOptions)
@@ -36,7 +31,10 @@ export async function POST(request: NextRequest) {
     const sidesOption = await prisma.sidesOption.create({
       data: {
         name,
-        code: name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''),
+        code: name
+          .toLowerCase()
+          .replace(/\s+/g, '_')
+          .replace(/[^a-z0-9_]/g, ''),
       },
     })
 

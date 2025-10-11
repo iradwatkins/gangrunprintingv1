@@ -25,10 +25,10 @@ test.describe('Product Page Error Handling', () => {
   test('should handle invalid slug formats gracefully', async ({ page }) => {
     // Test with various invalid slug formats
     const invalidSlugs = [
-      'products/../../etc/passwd',  // Path traversal attempt
-      'products/<script>alert(1)</script>',  // XSS attempt
-      'products/' + 'a'.repeat(200),  // Excessively long slug
-      'products/invalid@slug#',  // Special characters
+      'products/../../etc/passwd', // Path traversal attempt
+      'products/<script>alert(1)</script>', // XSS attempt
+      'products/' + 'a'.repeat(200), // Excessively long slug
+      'products/invalid@slug#', // Special characters
     ]
 
     for (const slug of invalidSlugs) {
@@ -47,7 +47,7 @@ test.describe('Product Page Error Handling', () => {
     // Click on first product if available
     const firstProduct = page.locator('a[href^="/products/"]:not([href="/products"])').first()
 
-    const productExists = await firstProduct.count() > 0
+    const productExists = (await firstProduct.count()) > 0
 
     if (productExists) {
       // Get the href to visit directly
@@ -75,14 +75,18 @@ test.describe('Product Page Error Handling', () => {
     await page.goto('/products/test-product')
 
     // Inject an error into the page
-    await page.evaluate(() => {
-      throw new Error('Test error for error boundary')
-    }).catch(() => {
-      // Expected to throw
-    })
+    await page
+      .evaluate(() => {
+        throw new Error('Test error for error boundary')
+      })
+      .catch(() => {
+        // Expected to throw
+      })
 
     // Check if error boundary catches the error
-    const errorBoundaryVisible = await page.getByText(/Something went wrong|Unable to Load/i).isVisible()
+    const errorBoundaryVisible = await page
+      .getByText(/Something went wrong|Unable to Load/i)
+      .isVisible()
 
     if (errorBoundaryVisible) {
       // Verify error recovery options
@@ -92,7 +96,7 @@ test.describe('Product Page Error Handling', () => {
 
   test('should handle network failures gracefully', async ({ page }) => {
     // Intercept network requests to simulate failure
-    await page.route('**/api/products/**', route => {
+    await page.route('**/api/products/**', (route) => {
       route.abort('failed')
     })
 
@@ -122,7 +126,7 @@ test.describe('Product Page Error Handling', () => {
   test('should log errors to console in development mode', async ({ page }) => {
     // Collect console messages
     const consoleLogs: string[] = []
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error' || msg.type() === 'warning') {
         consoleLogs.push(msg.text())
       }
@@ -136,8 +140,8 @@ test.describe('Product Page Error Handling', () => {
 
     // In development, we should see logging
     if (process.env.NODE_ENV === 'development') {
-      const hasProductLogs = consoleLogs.some(log =>
-        log.includes('[Product Page]') || log.includes('slug')
+      const hasProductLogs = consoleLogs.some(
+        (log) => log.includes('[Product Page]') || log.includes('slug')
       )
       expect(hasProductLogs).toBeTruthy()
     }
@@ -154,7 +158,7 @@ test.describe('Product Page Performance', () => {
     // Find and click first product
     const firstProduct = page.locator('a[href^="/products/"]:not([href="/products"])').first()
 
-    if (await firstProduct.count() > 0) {
+    if ((await firstProduct.count()) > 0) {
       await firstProduct.click()
       await page.waitForLoadState('networkidle')
 

@@ -34,15 +34,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 function generateReceiptHtml(order: Record<string, any>): string {
-  const itemsList = (order.OrderItem as any[])?.map(
-    (item: Record<string, unknown>) =>
-      `<tr>
+  const itemsList =
+    (order.OrderItem as any[])
+      ?.map(
+        (item: Record<string, unknown>) =>
+          `<tr>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.productName}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price as number).toFixed(2)}</td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${((item.price as number) * (item.quantity as number)).toFixed(2)}</td>
       </tr>`
-  )?.join('') || ''
+      )
+      ?.join('') || ''
 
   const shippingAddress =
     typeof order.shippingAddress === 'string'

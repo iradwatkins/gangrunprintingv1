@@ -126,8 +126,7 @@ export function BrandEditor({ section }: BrandEditorProps) {
         const data = await response.json()
         setConfig((prev) => ({ ...prev, ...data.config }))
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const saveBrandConfig = async () => {

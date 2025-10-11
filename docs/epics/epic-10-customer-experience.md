@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-010 |
-| **Phase** | Phase 2 |
-| **Priority** | MEDIUM |
-| **Status** | Not Started |
-| **Story Points** | 44 |
-| **Estimated Duration** | 4-5 weeks |
-| **Dependencies** | Epic 3 (Core Commerce), Epic 4 (Customer Accounts) |
+| Field                  | Value                                              |
+| ---------------------- | -------------------------------------------------- |
+| **Epic ID**            | EPIC-010                                           |
+| **Phase**              | Phase 2                                            |
+| **Priority**           | MEDIUM                                             |
+| **Status**             | Not Started                                        |
+| **Story Points**       | 44                                                 |
+| **Estimated Duration** | 4-5 weeks                                          |
+| **Dependencies**       | Epic 3 (Core Commerce), Epic 4 (Customer Accounts) |
 
 ---
 
@@ -25,6 +25,7 @@ Enhance the customer experience with features that increase satisfaction, reduce
 **Problem:** Basic customer experience causing support overhead and missed opportunities
 **Solution:** Self-service tools and engagement features that delight customers
 **Impact:**
+
 - Reduce support tickets by 50%
 - Increase customer satisfaction score by 30%
 - Increase repeat purchase rate by 35%
@@ -41,6 +42,7 @@ Enhance the customer experience with features that increase satisfaction, reduce
 **So that** I don't have to wait for email support
 
 **Acceptance Criteria:**
+
 - [ ] Chat widget appears on all pages
 - [ ] AI answers common questions instantly
 - [ ] Can escalate to human support if needed
@@ -50,6 +52,7 @@ Enhance the customer experience with features that increase satisfaction, reduce
 - [ ] Mobile responsive
 
 **AI Capabilities:**
+
 ```typescript
 // Common questions AI should handle:
 - Product specifications and options
@@ -69,6 +72,7 @@ Enhance the customer experience with features that increase satisfaction, reduce
 ```
 
 **Implementation:**
+
 ```typescript
 // Using Ollama (already running on port 11434)
 import { Ollama } from 'ollama'
@@ -76,10 +80,7 @@ import { Ollama } from 'ollama'
 export class ChatSupportService {
   private ollama = new Ollama({ host: 'http://localhost:11434' })
 
-  async generateResponse(
-    message: string,
-    context: ChatContext
-  ): Promise<ChatResponse> {
+  async generateResponse(message: string, context: ChatContext): Promise<ChatResponse> {
     // Build context from order history, product catalog, FAQs
     const prompt = this.buildPrompt(message, context)
 
@@ -131,6 +132,7 @@ Provide a helpful, friendly response. If you're unsure, suggest escalating to a 
 ```
 
 **Tasks:**
+
 1. Integrate Ollama AI service
 2. Build chat widget UI
 3. Create conversation management system
@@ -149,6 +151,7 @@ Provide a helpful, friendly response. If you're unsure, suggest escalating to a 
 **So that** I don't need to hire a designer
 
 **Acceptance Criteria:**
+
 - [ ] Template library with 50+ designs
 - [ ] Filter by product type and industry
 - [ ] Preview templates before selecting
@@ -159,6 +162,7 @@ Provide a helpful, friendly response. If you're unsure, suggest escalating to a 
 - [ ] Export design to order
 
 **Template Categories:**
+
 ```
 Business Cards:
 - Corporate Professional
@@ -184,6 +188,7 @@ Brochures:
 ```
 
 **Design Editor Features:**
+
 ```typescript
 // Online editor capabilities
 interface DesignEditor {
@@ -218,6 +223,7 @@ interface DesignEditor {
 ```
 
 **Implementation:**
+
 ```typescript
 // Use Fabric.js for canvas editing
 import { fabric } from 'fabric'
@@ -270,6 +276,7 @@ export class DesignEditor {
 ```
 
 **Tasks:**
+
 1. Create template library (50+ designs)
 2. Build template selection UI
 3. Integrate Fabric.js editor
@@ -288,6 +295,7 @@ export class DesignEditor {
 **So that** I can ensure it looks perfect
 
 **Acceptance Criteria:**
+
 - [ ] Customer receives proof after upload
 - [ ] Can view proof with zoom and measurements
 - [ ] Can approve or request changes
@@ -297,6 +305,7 @@ export class DesignEditor {
 - [ ] Approval required before production
 
 **Proofing Workflow:**
+
 ```
 1. Customer uploads file
 2. System generates proof (PDF thumbnail)
@@ -312,6 +321,7 @@ export class DesignEditor {
 ```
 
 **Tasks:**
+
 1. Build proof generation (PDF → thumbnail)
 2. Create proof viewer UI with zoom
 3. Implement approval/rejection flow
@@ -330,6 +340,7 @@ export class DesignEditor {
 **So that** I can make informed decisions
 
 **Acceptance Criteria:**
+
 - [ ] Customers can leave reviews after order completion
 - [ ] Star rating (1-5) with written review
 - [ ] Can upload photos of received product
@@ -339,6 +350,7 @@ export class DesignEditor {
 - [ ] Incentive for leaving reviews (5% discount)
 
 **Database Schema:**
+
 ```prisma
 model Review {
   id          String   @id @default(cuid())
@@ -369,6 +381,7 @@ model Review {
 ```
 
 **Tasks:**
+
 1. Create review database schema
 2. Build review submission form
 3. Create review display component
@@ -387,6 +400,7 @@ model Review {
 **So that** I can easily find them when ready to order
 
 **Acceptance Criteria:**
+
 - [ ] Can add products to wishlist
 - [ ] Can view all wishlist items
 - [ ] Can remove items from wishlist
@@ -396,6 +410,7 @@ model Review {
 - [ ] Share wishlist with others
 
 **Tasks:**
+
 1. Create wishlist database table
 2. Build add to wishlist button
 3. Create wishlist page
@@ -417,10 +432,7 @@ export class ChatService {
   private ollamaClient: Ollama
   private contextBuilder: ChatContextBuilder
 
-  async handleMessage(
-    message: string,
-    sessionId: string
-  ): Promise<ChatResponse> {
+  async handleMessage(message: string, sessionId: string): Promise<ChatResponse> {
     // Get conversation history
     const history = await this.getConversationHistory(sessionId)
 
@@ -452,7 +464,7 @@ export class ChatService {
     if (confidence < 0.7 || this.shouldEscalate(message.content)) {
       await this.notifySupport(sessionId)
       return {
-        message: "Let me connect you with our support team for better assistance.",
+        message: 'Let me connect you with our support team for better assistance.',
         escalated: true,
       }
     }
@@ -491,10 +503,7 @@ export class TemplateService {
     // Apply customizations
     const design = {
       ...template.canvasData,
-      elements: this.applyCustomizations(
-        template.canvasData.elements,
-        customizations
-      ),
+      elements: this.applyCustomizations(template.canvasData.elements, customizations),
     }
 
     // Save customized version
@@ -567,18 +576,21 @@ DELETE /api/account/wishlist/:productId
 ## Testing Strategy
 
 ### Unit Tests
+
 - AI response generation
 - Template customization logic
 - Proof approval workflow
 - Review validation
 
 ### Integration Tests
+
 - Ollama AI integration
 - Template export to PDF
 - Email notifications
 - Review submission
 
 ### E2E Tests
+
 1. Chat with AI and get accurate answer
 2. Customize template and place order
 3. Upload file, review proof, approve
@@ -590,6 +602,7 @@ DELETE /api/account/wishlist/:productId
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] AI chat answers >80% of questions correctly
 - [ ] 50+ design templates available
 - [ ] Proof approval workflow functional
@@ -597,12 +610,14 @@ DELETE /api/account/wishlist/:productId
 - [ ] Wishlist working across devices
 
 ### Performance Targets
+
 - AI response time: <3 seconds
 - Template load time: <2 seconds
 - Proof generation: <30 seconds
 - Review submission: <2 seconds
 
 ### Business Metrics (60 days post-launch)
+
 - Support ticket reduction: >40%
 - AI chat resolution rate: >75%
 - Template usage: >30% of orders
@@ -615,27 +630,33 @@ DELETE /api/account/wishlist/:productId
 ## Risks & Mitigation
 
 ### Risk 1: AI Accuracy
+
 **Impact:** High
 **Probability:** Medium
 **Mitigation:**
+
 - Extensive testing with real questions
 - Human escalation for low confidence
 - Continuous training with support logs
 - Clear limitations communicated
 
 ### Risk 2: Template Quality
+
 **Impact:** Medium
 **Probability:** Low
 **Mitigation:**
+
 - Professional designers create templates
 - Print quality testing
 - Customer feedback loop
 - Regular template updates
 
 ### Risk 3: Proof Delays
+
 **Impact:** Medium
 **Probability:** Medium
 **Mitigation:**
+
 - Automated proof generation
 - Clear timeline expectations
 - Admin alerts for pending proofs
@@ -646,30 +667,35 @@ DELETE /api/account/wishlist/:productId
 ## Timeline
 
 ### Week 1: AI Chat Support
+
 - Ollama integration
 - Chat widget UI
 - Context building
 - Escalation logic
 
 ### Week 2: Design Templates
+
 - Template creation (50+ designs)
 - Template library UI
 - Basic editor integration
 - Export functionality
 
 ### Week 3: Advanced Editor & Proofing
+
 - Full editor features
 - Proof generation system
 - Approval workflow
 - Email notifications
 
 ### Week 4: Reviews & Wishlist
+
 - Review system
 - Moderation panel
 - Wishlist functionality
 - Sale notifications
 
 ### Week 5: Testing & Polish
+
 - E2E testing
 - Performance optimization
 - User acceptance testing

@@ -71,7 +71,7 @@ function EmailBuilderPageContent() {
         })
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -99,7 +99,7 @@ function EmailBuilderPageContent() {
         })
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -170,7 +170,7 @@ function EmailBuilderPageContent() {
         }
       }
     } catch (error) {
-      } finally {
+    } finally {
       setSaving(false)
     }
   }
@@ -264,8 +264,7 @@ function EmailBuilderPageContent() {
       if (response.ok) {
         router.push('/admin/marketing/campaigns')
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   if (loading) {

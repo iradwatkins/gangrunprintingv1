@@ -51,8 +51,7 @@ export class ShippingCalculator {
         if (cached) {
           return JSON.parse(cached)
         }
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     // Get rates from all providers in parallel
@@ -72,8 +71,7 @@ export class ShippingCalculator {
     if (redis && allRates.length > 0) {
       try {
         await redis.setex(cacheKey, 1800, JSON.stringify(allRates))
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     return allRates
@@ -144,8 +142,7 @@ export class ShippingCalculator {
       try {
         const isValid = await provider.validateAddress(address)
         if (isValid) return true
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     return false

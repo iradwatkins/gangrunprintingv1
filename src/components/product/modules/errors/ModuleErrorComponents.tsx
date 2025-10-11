@@ -17,13 +17,13 @@ import {
   X,
   RefreshCw,
   ExternalLink,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react'
 import {
-  IndependentModuleError,
+  type IndependentModuleError,
   ModuleErrorSeverity,
   ModuleErrorType,
-  ModuleErrorRecoveryAction
+  type ModuleErrorRecoveryAction,
 } from './ModuleErrorSystem'
 
 // =============================================================================
@@ -71,31 +71,31 @@ function getErrorStyling(severity: ModuleErrorSeverity) {
       return {
         alertClass: 'border-red-600 bg-red-50',
         titleClass: 'text-red-800',
-        descClass: 'text-red-700'
+        descClass: 'text-red-700',
       }
     case ModuleErrorSeverity.ERROR:
       return {
         alertClass: 'border-red-500 bg-red-50',
         titleClass: 'text-red-800',
-        descClass: 'text-red-700'
+        descClass: 'text-red-700',
       }
     case ModuleErrorSeverity.WARNING:
       return {
         alertClass: 'border-yellow-500 bg-yellow-50',
         titleClass: 'text-yellow-800',
-        descClass: 'text-yellow-700'
+        descClass: 'text-yellow-700',
       }
     case ModuleErrorSeverity.INFO:
       return {
         alertClass: 'border-blue-500 bg-blue-50',
         titleClass: 'text-blue-800',
-        descClass: 'text-blue-700'
+        descClass: 'text-blue-700',
       }
     default:
       return {
         alertClass: 'border-gray-500 bg-gray-50',
         titleClass: 'text-gray-800',
-        descClass: 'text-gray-700'
+        descClass: 'text-gray-700',
       }
   }
 }
@@ -111,7 +111,7 @@ export function ModuleErrorDisplay({
   recoveryActions = [],
   compact = false,
   showDetails = false,
-  className = ''
+  className = '',
 }: ModuleErrorDisplayProps) {
   const styling = getErrorStyling(error.severity)
   const icon = getErrorIcon(error.severity)
@@ -140,7 +140,7 @@ export function ModuleErrorDisplay({
             <AlertTitle className={`${styling.titleClass} text-sm font-medium`}>
               {error.userMessage}
               {error.field && (
-                <Badge variant="outline" className="ml-2 text-xs">
+                <Badge className="ml-2 text-xs" variant="outline">
                   {error.field}
                 </Badge>
               )}
@@ -154,15 +154,11 @@ export function ModuleErrorDisplay({
                 {/* Constraint information */}
                 {error.constraint && (
                   <div className="mt-1 text-xs opacity-75">
-                    {error.constraint.min !== undefined && error.constraint.max !== undefined && (
-                      `Range: ${error.constraint.min} - ${error.constraint.max}`
-                    )}
-                    {error.constraint.pattern && (
-                      `Format: ${error.constraint.pattern}`
-                    )}
-                    {error.constraint.allowed && (
-                      `Allowed: ${error.constraint.allowed.join(', ')}`
-                    )}
+                    {error.constraint.min !== undefined &&
+                      error.constraint.max !== undefined &&
+                      `Range: ${error.constraint.min} - ${error.constraint.max}`}
+                    {error.constraint.pattern && `Format: ${error.constraint.pattern}`}
+                    {error.constraint.allowed && `Allowed: ${error.constraint.allowed.join(', ')}`}
                   </div>
                 )}
               </AlertDescription>
@@ -171,9 +167,7 @@ export function ModuleErrorDisplay({
             {/* Technical details (dev mode) */}
             {showDetails && error.technicalDetails && (
               <details className="mt-2">
-                <summary className="text-xs cursor-pointer opacity-75">
-                  Technical Details
-                </summary>
+                <summary className="text-xs cursor-pointer opacity-75">Technical Details</summary>
                 <pre className="text-xs mt-1 p-2 bg-gray-100 rounded overflow-x-auto">
                   {error.technicalDetails}
                 </pre>
@@ -186,9 +180,9 @@ export function ModuleErrorDisplay({
                 {recoveryActions.map((action) => (
                   <Button
                     key={action.id}
-                    size="sm"
-                    variant={action.destructive ? "destructive" : "outline"}
                     className="text-xs h-6"
+                    size="sm"
+                    variant={action.destructive ? 'destructive' : 'outline'}
                     onClick={() => onRecovery?.(error.id, action.id)}
                   >
                     {action.label}
@@ -217,11 +211,11 @@ export function ModuleErrorDisplay({
           {/* Retry button */}
           {error.retryable && onRetry && (
             <Button
-              size="sm"
-              variant="ghost"
               className="h-6 w-6 p-0"
-              onClick={() => onRetry(error.id)}
+              size="sm"
               title="Retry"
+              variant="ghost"
+              onClick={() => onRetry(error.id)}
             >
               <RefreshCw className="h-3 w-3" />
             </Button>
@@ -230,11 +224,11 @@ export function ModuleErrorDisplay({
           {/* Help link */}
           {error.helpUrl && (
             <Button
-              size="sm"
-              variant="ghost"
               className="h-6 w-6 p-0"
-              onClick={() => window.open(error.helpUrl, '_blank')}
+              size="sm"
               title="Help"
+              variant="ghost"
+              onClick={() => window.open(error.helpUrl, '_blank')}
             >
               <ExternalLink className="h-3 w-3" />
             </Button>
@@ -243,11 +237,11 @@ export function ModuleErrorDisplay({
           {/* Dismiss button */}
           {onDismiss && (
             <Button
-              size="sm"
-              variant="ghost"
               className="h-6 w-6 p-0"
-              onClick={() => onDismiss(error.id)}
+              size="sm"
               title="Dismiss"
+              variant="ghost"
+              onClick={() => onDismiss(error.id)}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -284,7 +278,7 @@ export function ModuleErrorList({
   maxDisplayed = 5,
   groupByField = true,
   compact = false,
-  className = ''
+  className = '',
 }: ModuleErrorListProps) {
   // Group errors by field if requested
   const groupedErrors = React.useMemo(() => {
@@ -292,12 +286,15 @@ export function ModuleErrorList({
       return { '': errors }
     }
 
-    return errors.reduce((groups, error) => {
-      const key = error.field || 'general'
-      if (!groups[key]) groups[key] = []
-      groups[key].push(error)
-      return groups
-    }, {} as Record<string, IndependentModuleError[]>)
+    return errors.reduce(
+      (groups, error) => {
+        const key = error.field || 'general'
+        if (!groups[key]) groups[key] = []
+        groups[key].push(error)
+        return groups
+      },
+      {} as Record<string, IndependentModuleError[]>
+    )
   }, [errors, groupByField])
 
   // Calculate display counts
@@ -319,12 +316,7 @@ export function ModuleErrorList({
         </div>
 
         {onDismissAll && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={onDismissAll}
-            className="text-xs h-6"
-          >
+          <Button className="text-xs h-6" size="sm" variant="ghost" onClick={onDismissAll}>
             Dismiss All
           </Button>
         )}
@@ -344,13 +336,13 @@ export function ModuleErrorList({
           {fieldErrors.slice(0, maxDisplayed).map((error) => (
             <ModuleErrorDisplay
               key={error.id}
-              error={error}
-              onDismiss={onDismiss}
-              onRetry={onRetry}
-              onRecovery={onRecovery}
-              recoveryActions={recoveryActions[error.errorType] || []}
               compact={compact}
+              error={error}
+              recoveryActions={recoveryActions[error.errorType] || []}
               showDetails={false}
+              onDismiss={onDismiss}
+              onRecovery={onRecovery}
+              onRetry={onRetry}
             />
           ))}
         </div>
@@ -378,12 +370,11 @@ export interface ModuleErrorIndicatorProps {
 export function ModuleErrorIndicator({
   errors,
   onClick,
-  className = ''
+  className = '',
 }: ModuleErrorIndicatorProps) {
   const errorCount = errors.length
-  const hasBlocking = errors.some(e =>
-    e.severity === ModuleErrorSeverity.ERROR ||
-    e.severity === ModuleErrorSeverity.CRITICAL
+  const hasBlocking = errors.some(
+    (e) => e.severity === ModuleErrorSeverity.ERROR || e.severity === ModuleErrorSeverity.CRITICAL
   )
 
   if (errorCount === 0) return null
@@ -392,9 +383,9 @@ export function ModuleErrorIndicator({
 
   return (
     <button
-      onClick={onClick}
       className={`inline-flex items-center space-x-1 text-xs ${severityColor} hover:opacity-75 ${className}`}
       title={`${errorCount} error${errorCount > 1 ? 's' : ''}`}
+      onClick={onClick}
     >
       <AlertCircle className="h-3 w-3" />
       <span>{errorCount}</span>
@@ -411,19 +402,19 @@ export interface ModuleFieldErrorProps {
   className?: string
 }
 
-export function ModuleFieldError({
-  errors,
-  field,
-  className = ''
-}: ModuleFieldErrorProps) {
-  const fieldErrors = errors.filter(error => error.field === field)
+export function ModuleFieldError({ errors, field, className = '' }: ModuleFieldErrorProps) {
+  const fieldErrors = errors.filter((error) => error.field === field)
 
   if (fieldErrors.length === 0) return null
 
   // Show only the most recent/severe error for the field
   const primaryError = fieldErrors.reduce((most, current) => {
     if (current.severity === ModuleErrorSeverity.CRITICAL) return current
-    if (current.severity === ModuleErrorSeverity.ERROR && most.severity !== ModuleErrorSeverity.CRITICAL) return current
+    if (
+      current.severity === ModuleErrorSeverity.ERROR &&
+      most.severity !== ModuleErrorSeverity.CRITICAL
+    )
+      return current
     if (current.timestamp > most.timestamp && most.severity === current.severity) return current
     return most
   }, fieldErrors[0])
@@ -432,9 +423,7 @@ export function ModuleFieldError({
     <div className={`text-xs text-red-600 mt-1 ${className}`}>
       {primaryError.userMessage}
       {fieldErrors.length > 1 && (
-        <span className="ml-1 text-red-500">
-          (+{fieldErrors.length - 1} more)
-        </span>
+        <span className="ml-1 text-red-500">(+{fieldErrors.length - 1} more)</span>
       )}
     </div>
   )
@@ -449,8 +438,8 @@ export interface ModuleSuccessIndicatorProps {
 }
 
 export function ModuleSuccessIndicator({
-  message = "All valid",
-  className = ''
+  message = 'All valid',
+  className = '',
 }: ModuleSuccessIndicatorProps) {
   return (
     <div className={`inline-flex items-center space-x-1 text-xs text-green-600 ${className}`}>
@@ -515,27 +504,23 @@ export class ModuleErrorBoundary extends React.Component<
       return (
         <Alert className="border-red-500 bg-red-50">
           <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertTitle className="text-red-800">
-            {this.props.moduleName} Error
-          </AlertTitle>
+          <AlertTitle className="text-red-800">{this.props.moduleName} Error</AlertTitle>
           <AlertDescription className="text-red-700">
             <div className="space-y-2">
-              <p>This module encountered an unexpected error and has been disabled to prevent further issues.</p>
+              <p>
+                This module encountered an unexpected error and has been disabled to prevent further
+                issues.
+              </p>
               <div className="flex space-x-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={this.resetError}
-                  className="text-xs"
-                >
+                <Button className="text-xs" size="sm" variant="outline" onClick={this.resetError}>
                   <RefreshCw className="h-3 w-3 mr-1" />
                   Retry Module
                 </Button>
                 <Button
+                  className="text-xs"
                   size="sm"
                   variant="ghost"
                   onClick={() => window.location.reload()}
-                  className="text-xs"
                 >
                   Reload Page
                 </Button>
@@ -565,5 +550,5 @@ export default {
   ModuleErrorIndicator,
   ModuleFieldError,
   ModuleSuccessIndicator,
-  ModuleErrorBoundary
+  ModuleErrorBoundary,
 }

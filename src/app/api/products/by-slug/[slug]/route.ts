@@ -9,10 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     // Look up by slug OR SKU
     const product = await prisma.product.findFirst({
       where: {
-        OR: [
-          { slug: params.slug },
-          { sku: params.slug }
-        ],
+        OR: [{ slug: params.slug }, { sku: params.slug }],
         isActive: true,
       },
       include: {

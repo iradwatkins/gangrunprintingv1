@@ -3,7 +3,10 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { SafeProductImage, ProductImageWithErrorBoundary } from '@/components/product/ProductImageErrorBoundary'
+import {
+  SafeProductImage,
+  ProductImageWithErrorBoundary,
+} from '@/components/product/ProductImageErrorBoundary'
 
 interface OptimizedImageProps {
   src: string
@@ -136,9 +139,9 @@ export function ProductImage({ images, productName, className }: ProductImagePro
           <SafeProductImage
             fill
             alt="No image available"
+            productName={productName}
             sizes="(max-width: 768px) 100vw, 50vw"
             src="/images/product-placeholder.jpg"
-            productName={productName}
           />
         </div>
       </ProductImageWithErrorBoundary>
@@ -163,37 +166,37 @@ export function ProductImage({ images, productName, className }: ProductImagePro
               'transition-transform duration-300',
               isZoomed ? 'scale-110' : 'scale-100'
             )}
+            productName={productName}
             sizes="(max-width: 768px) 100vw, 50vw"
             src={currentImage.url}
-            productName={productName}
           />
         </div>
 
-      {/* Thumbnail gallery */}
-      {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              className={cn(
-                'relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors',
-                selectedIndex === index
-                  ? 'border-primary'
-                  : 'border-transparent hover:border-gray-300'
-              )}
-              onClick={() => setSelectedIndex(index)}
-            >
-              <SafeProductImage
-                fill
-                alt={`${productName} ${index + 1}`}
-                sizes="80px"
-                src={image.url}
-                productName={productName}
-              />
-            </button>
-          ))}
-        </div>
-      )}
+        {/* Thumbnail gallery */}
+        {images.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {images.map((image, index) => (
+              <button
+                key={index}
+                className={cn(
+                  'relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors',
+                  selectedIndex === index
+                    ? 'border-primary'
+                    : 'border-transparent hover:border-gray-300'
+                )}
+                onClick={() => setSelectedIndex(index)}
+              >
+                <SafeProductImage
+                  fill
+                  alt={`${productName} ${index + 1}`}
+                  productName={productName}
+                  sizes="80px"
+                  src={image.url}
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </ProductImageWithErrorBoundary>
   )

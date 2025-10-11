@@ -62,7 +62,7 @@ interface QuantityGroup {
   valuesList?: string[]
   hasCustomOption?: boolean
   _count: {
-    products: number
+    ProductQuantityGroup: number
   }
 }
 
@@ -319,10 +319,10 @@ export default function QuantitiesPage() {
                               <Hash className="h-4 w-4" />
                               {(group.valuesList && group.valuesList.length) || 0} values
                             </div>
-                            {group._count.products > 0 && (
+                            {group._count.ProductQuantityGroup > 0 && (
                               <div className="flex items-center gap-1">
                                 <Package2 className="h-4 w-4" />
-                                {group._count.products} products
+                                {group._count.ProductQuantityGroup} products
                               </div>
                             )}
                           </div>
@@ -465,8 +465,8 @@ export default function QuantitiesPage() {
                 </Select>
               ) : (
                 <Input
-                  className="col-span-3"
                   disabled
+                  className="col-span-3"
                   placeholder="Enter values first to select a default"
                   value=""
                 />
@@ -574,11 +574,13 @@ export default function QuantitiesPage() {
             <DialogTitle>Delete Quantities</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete "{groupToDelete?.name}"?
-              {groupToDelete?._count.products && groupToDelete._count.products > 0 && (
-                <span className="block mt-2 text-red-500">
-                  Warning: This group is being used by {groupToDelete._count.products} product(s).
-                </span>
-              )}
+              {groupToDelete?._count.ProductQuantityGroup &&
+                groupToDelete._count.ProductQuantityGroup > 0 && (
+                  <span className="block mt-2 text-red-500">
+                    Warning: This group is being used by {groupToDelete._count.ProductQuantityGroup}{' '}
+                    product(s).
+                  </span>
+                )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

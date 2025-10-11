@@ -57,8 +57,7 @@ export async function notifyPaymentReceived(userId: string, orderId: string, amo
       orderId,
       amount: amount.toFixed(2),
     })
-  } catch (error) {
-    }
+  } catch (error) {}
 }
 
 // Send notification for design revision needed
@@ -68,8 +67,7 @@ export async function notifyDesignRevision(userId: string, orderId: string, comm
       orderId,
       comments,
     })
-  } catch (error) {
-    }
+  } catch (error) {}
 }
 
 // Send promotional notification
@@ -79,6 +77,5 @@ export async function notifySpecialOffer(userId: string, message: string, offerU
       message,
       url: offerUrl || '/products',
     })
-  } catch (error) {
-    }
+  } catch (error) {}
 }

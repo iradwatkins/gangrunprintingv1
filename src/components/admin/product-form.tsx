@@ -91,8 +91,7 @@ export function ProductForm({ product }: ProductFormProps) {
         const data = await res.json()
         setCategories(data)
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const fetchPaperStocks = async () => {
@@ -102,8 +101,7 @@ export function ProductForm({ product }: ProductFormProps) {
         const data = await res.json()
         setPaperStocks(data.filter((ps: any) => ps.isActive))
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

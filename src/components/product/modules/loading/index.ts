@@ -13,7 +13,7 @@ export {
   useModuleLoading,
   UseModuleLoadingOptions,
   combineModuleLoadingStates,
-  createModuleDisabledState
+  createModuleDisabledState,
 } from './ModuleLoadingSystem'
 
 // Loading display components
@@ -31,7 +31,7 @@ export {
   ModuleLoadingIndicatorProps,
   ModuleLoadingSkeletonProps,
   ModuleLoadingSuccessProps,
-  ModuleLoadingBoundaryProps
+  ModuleLoadingBoundaryProps,
 } from './ModuleLoadingComponents'
 
 // Utility functions
@@ -46,8 +46,11 @@ export const LoadingUtils = {
   /**
    * Get operations by type
    */
-  getOperationsByType: (state: ModuleLoadingState, type: ModuleLoadingType): ModuleLoadingOperation[] => {
-    return Array.from(state.operations.values()).filter(op => op.type === type)
+  getOperationsByType: (
+    state: ModuleLoadingState,
+    type: ModuleLoadingType
+  ): ModuleLoadingOperation[] => {
+    return Array.from(state.operations.values()).filter((op) => op.type === type)
   },
 
   /**
@@ -55,9 +58,7 @@ export const LoadingUtils = {
    */
   getTotalEstimatedTime: (state: ModuleLoadingState): number | null => {
     const operations = Array.from(state.operations.values())
-    const estimates = operations
-      .map(op => op.estimatedDuration)
-      .filter(Boolean) as number[]
+    const estimates = operations.map((op) => op.estimatedDuration).filter(Boolean) as number[]
 
     return estimates.length > 0 ? Math.max(...estimates) : null
   },
@@ -82,6 +83,6 @@ export const LoadingUtils = {
     operationCount: state.totalOperations,
     progress: state.overallProgress,
     hasBlocking: state.hasCriticalLoading,
-    timeRemaining: state.estimatedTimeRemaining
-  })
+    timeRemaining: state.estimatedTimeRemaining,
+  }),
 }

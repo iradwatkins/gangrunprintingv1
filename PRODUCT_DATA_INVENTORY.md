@@ -6,6 +6,7 @@
 ## 📦 PAPER STOCKS (11 total)
 
 ### Business Card Papers
+
 - **14pt Gloss Cover** (`paper_14pt_gloss_cover`) - Active ✅
 - **14pt Matte Cover** (`paper_14pt_matte_cover`) - Active ✅
 - **16pt Premium Cover** (`paper_16pt_premium_cover`) - Active ✅
@@ -13,11 +14,13 @@
 - **32pt UltraThick** (`paper_32pt_ultrathick`) - Active ✅
 
 ### Marketing Materials
+
 - **100lb Gloss Text** (`paper_100lb_gloss_text`) - Active ✅
 - **100lb Matte Text** (`paper_100lb_matte_text`) - Active ✅
 - **80lb Gloss Cover** (`paper_80lb_gloss_cover`) - Active ✅
 
 ### Specialty Papers
+
 - **12pt C2S Poster** (`paper_12pt_c2s_poster`) - Active ✅
 - **100% Recycled 14pt** (`paper_recycled_14pt`) - Active ✅
 - **Metallic Pearl** (`paper_metallic_pearl`) - Active ✅
@@ -32,6 +35,7 @@
 ## 🎨 COATING OPTIONS (12 total)
 
 ### Primary Coatings
+
 - **No Coating** (`coating_no_coating`)
 - **Gloss Coating** (`coating_gloss_coating`)
 - **Matte Coating** (`coating_matte_coating`)
@@ -39,12 +43,14 @@
 - **UV Coating** (`coating_uv_coating`)
 
 ### Alternative Coatings
+
 - **Gloss** (`coating_gloss`)
 - **Matte** (`coating_matte`)
 - **Satin** (`coating_satin`)
 - **UV** (`coating_uv`)
 
 ### Specialty Coatings
+
 - **Aqueous** (`coating_aqueous`)
 - **Soft Touch** (`coating_soft_touch`)
 - **Pearlescent** (`coating_pearlescent`)
@@ -59,6 +65,7 @@
 ## 🔗 RELATIONSHIP INTEGRITY
 
 All paper stocks have proper relationships:
+
 - ✅ Paper Stock → Coating Options (via `paperStockCoatings`)
 - ✅ Paper Stock → Sides Options (via `paperStockSides`)
 - ✅ Paper Stock Sets → Paper Stocks (via `PaperStockSetItem`)
@@ -66,6 +73,7 @@ All paper stocks have proper relationships:
 ## 🛡️ BACKUP GUARANTEE
 
 This inventory represents a complete, functional product system where:
+
 - All APIs return proper data
 - All admin pages display correctly
 - All relationships are intact

@@ -21,9 +21,7 @@ const colors = {
   blue: '\x1b[34m',
 }
 
-function log(message, color = colors.reset) {
-
-}
+function log(message, color = colors.reset) {}
 
 async function makeRequest(path, options = {}) {
   return new Promise((resolve, reject) => {

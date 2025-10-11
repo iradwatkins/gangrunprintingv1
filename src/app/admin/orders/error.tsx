@@ -14,7 +14,7 @@ export default function OrdersError({
 }) {
   useEffect(() => {
     // Log the error to console for debugging
-    }, [error])
+  }, [error])
 
   return (
     <div className="space-y-8">
@@ -34,16 +34,14 @@ export default function OrdersError({
               {error.message || 'There was an error loading the orders page. Please try again.'}
             </p>
             {error.digest && (
-              <p className="text-xs text-muted-foreground font-mono">
-                Error ID: {error.digest}
-              </p>
+              <p className="text-xs text-muted-foreground font-mono">Error ID: {error.digest}</p>
             )}
             <div className="flex gap-2">
               <Button onClick={() => reset()}>
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Try again
               </Button>
-              <Button variant="outline" onClick={() => window.location.href = '/admin'}>
+              <Button variant="outline" onClick={() => (window.location.href = '/admin')}>
                 Go to Dashboard
               </Button>
             </div>

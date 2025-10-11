@@ -11,17 +11,17 @@ module.exports = {
       name: '#name',
       sku: '#sku',
       category: '#category',
-      description: '#description'
+      description: '#description',
     },
     imageUpload: {
       uploadZone: '[data-testid="image-upload-zone"]',
       fileInput: 'input[type="file"]',
       uploadButton: '[data-testid="upload-button"]',
       uploadProgress: '[data-testid="upload-progress"]',
-      uploadSuccess: '[data-testid="upload-success"]'
+      uploadSuccess: '[data-testid="upload-success"]',
     },
     saveButton: '[data-testid="save-product"]',
-    publishButton: '[data-testid="publish-product"]'
+    publishButton: '[data-testid="publish-product"]',
   },
 
   // Quantity Module Selectors
@@ -33,7 +33,7 @@ module.exports = {
     customInput: 'input[placeholder*="custom quantity"]',
     errorMessage: '[data-testid="quantity-error"]',
     value: (value) => `[data-value="${value}"]`,
-    selectedValue: '[data-testid="quantity-selected"]'
+    selectedValue: '[data-testid="quantity-selected"]',
   },
 
   // Size Module Selectors
@@ -47,7 +47,7 @@ module.exports = {
     exactSizeCheckbox: '#exactSize',
     errorMessage: '[data-testid="size-error"]',
     dimensionsDisplay: '[data-testid="size-dimensions"]',
-    value: (value) => `[data-value="${value}"]`
+    value: (value) => `[data-value="${value}"]`,
   },
 
   // Paper Stock Module Selectors
@@ -60,7 +60,7 @@ module.exports = {
     coatingOption: (coatingId) => `[data-value="${coatingId}"]`,
     sidesOption: (sidesId) => `[data-value="${sidesId}"]`,
     tooltip: '[data-testid="paper-tooltip"]',
-    description: '[data-testid="paper-description"]'
+    description: '[data-testid="paper-description"]',
   },
 
   // Addons Module Selectors
@@ -72,22 +72,22 @@ module.exports = {
     variableData: {
       enable: '[data-testid="variable-data-enable"]',
       locations: '[data-testid="variable-data-locations"]',
-      locationsInput: '[data-testid="variable-data-locations-input"]'
+      locationsInput: '[data-testid="variable-data-locations-input"]',
     },
     perforation: {
       enable: '[data-testid="perforation-enable"]',
       vertical: '[data-testid="perforation-vertical"]',
-      horizontal: '[data-testid="perforation-horizontal"]'
+      horizontal: '[data-testid="perforation-horizontal"]',
     },
     cornerRounding: {
       enable: '[data-testid="corner-rounding-enable"]',
-      type: '[data-testid="corner-rounding-type"]'
+      type: '[data-testid="corner-rounding-type"]',
     },
     banding: {
       enable: '[data-testid="banding-enable"]',
       type: '[data-testid="banding-type"]',
-      itemsPerBundle: '[data-testid="banding-items"]'
-    }
+      itemsPerBundle: '[data-testid="banding-items"]',
+    },
   },
 
   // Turnaround Module Selectors
@@ -98,7 +98,7 @@ module.exports = {
     deliveryDate: '[data-testid="delivery-date"]',
     businessDays: '[data-testid="business-days"]',
     rushPricing: '[data-testid="rush-pricing"]',
-    description: '[data-testid="turnaround-description"]'
+    description: '[data-testid="turnaround-description"]',
   },
 
   // Price Display
@@ -110,7 +110,7 @@ module.exports = {
     paperPrice: '[data-testid="paper-price"]',
     addonPrice: '[data-testid="addon-price"]',
     turnaroundPrice: '[data-testid="turnaround-price"]',
-    priceBreakdown: '[data-testid="price-breakdown"]'
+    priceBreakdown: '[data-testid="price-breakdown"]',
   },
 
   // Customer Frontend Selectors
@@ -123,7 +123,7 @@ module.exports = {
     sizeSelector: '[data-testid="customer-size"]',
     paperSelector: '[data-testid="customer-paper"]',
     addonsSelector: '[data-testid="customer-addons"]',
-    turnaroundSelector: '[data-testid="customer-turnaround"]'
+    turnaroundSelector: '[data-testid="customer-turnaround"]',
   },
 
   // General UI Elements
@@ -138,6 +138,6 @@ module.exports = {
     dropdownOption: '[role="option"]',
     button: 'button',
     input: 'input',
-    select: 'select'
-  }
-};
+    select: 'select',
+  },
+}

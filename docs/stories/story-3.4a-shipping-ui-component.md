@@ -1,15 +1,19 @@
 # Story 4a: Shipping UI Component
 
 ## Story Title
+
 Create Shipping Provider Selection UI with Static Rates
 
 ## Story Type
+
 Feature Implementation
 
 ## Story Points
+
 2
 
 ## Priority
+
 P1 - High (Checkout flow requirement)
 
 ## Story Description
@@ -19,6 +23,7 @@ As a **customer**, I want to see and select between FedEx and Southwest Cargo/DA
 ## Background
 
 This story focuses on the UI component for shipping selection without the complexity of real-time rate calculation. It provides:
+
 - Visual shipping provider selection
 - Provider branding and logos
 - Static delivery timeframes
@@ -29,6 +34,7 @@ This creates the foundation for dynamic rate integration in Story 4b.
 ## Acceptance Criteria
 
 ### Must Have
+
 - [ ] Radio button group for shipping selection
 - [ ] FedEx and Southwest Cargo/DASH options displayed
 - [ ] Provider logos visible for brand recognition
@@ -38,6 +44,7 @@ This creates the foundation for dynamic rate integration in Story 4b.
 - [ ] Mobile responsive design
 
 ### Should Have
+
 - [ ] Visual highlight on selected option
 - [ ] Hover states for better interactivity
 - [ ] Default selection (FedEx as economical option)
@@ -48,25 +55,25 @@ This creates the foundation for dynamic rate integration in Story 4b.
 ### Static Shipping Selection Component
 
 ```tsx
-import { useState } from 'react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Truck, Clock, Shield, Package } from 'lucide-react';
+import { useState } from 'react'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Truck, Clock, Shield, Package } from 'lucide-react'
 
 export interface ShippingProvider {
-  id: 'fedex' | 'southwest-dash';
-  name: string;
-  displayName: string;
-  logo: string;
+  id: 'fedex' | 'southwest-dash'
+  name: string
+  displayName: string
+  logo: string
   deliveryDays: {
-    min: number;
-    max: number;
-    text: string;
-  };
-  features: string[];
-  baseRate: number; // Static rate for now
+    min: number
+    max: number
+    text: string
+  }
+  features: string[]
+  baseRate: number // Static rate for now
 }
 
 const SHIPPING_PROVIDERS: ShippingProvider[] = [
@@ -78,14 +85,10 @@ const SHIPPING_PROVIDERS: ShippingProvider[] = [
     deliveryDays: {
       min: 3,
       max: 5,
-      text: '3-5 business days'
+      text: '3-5 business days',
     },
-    features: [
-      'Reliable nationwide delivery',
-      'Package tracking included',
-      'Up to $100 insurance'
-    ],
-    baseRate: 12.99
+    features: ['Reliable nationwide delivery', 'Package tracking included', 'Up to $100 insurance'],
+    baseRate: 12.99,
   },
   {
     id: 'southwest-dash',
@@ -95,38 +98,38 @@ const SHIPPING_PROVIDERS: ShippingProvider[] = [
     deliveryDays: {
       min: 1,
       max: 2,
-      text: '1-2 business days'
+      text: '1-2 business days',
     },
     features: [
       'Express priority shipping',
       'Real-time tracking',
       'Up to $500 insurance',
-      'Signature required'
+      'Signature required',
     ],
-    baseRate: 29.99
-  }
-];
+    baseRate: 29.99,
+  },
+]
 
 interface ShippingSelectionProps {
-  onSelect: (provider: ShippingProvider) => void;
-  selectedId?: string;
-  className?: string;
+  onSelect: (provider: ShippingProvider) => void
+  selectedId?: string
+  className?: string
 }
 
 export function ShippingSelection({
   onSelect,
   selectedId = 'fedex',
-  className = ''
+  className = '',
 }: ShippingSelectionProps) {
-  const [selected, setSelected] = useState(selectedId);
+  const [selected, setSelected] = useState(selectedId)
 
   const handleSelect = (providerId: string) => {
-    setSelected(providerId);
-    const provider = SHIPPING_PROVIDERS.find(p => p.id === providerId);
+    setSelected(providerId)
+    const provider = SHIPPING_PROVIDERS.find((p) => p.id === providerId)
     if (provider) {
-      onSelect(provider);
+      onSelect(provider)
     }
-  };
+  }
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -138,30 +141,23 @@ export function ShippingSelection({
       <RadioGroup value={selected} onValueChange={handleSelect}>
         <div className="space-y-3">
           {SHIPPING_PROVIDERS.map((provider) => {
-            const isSelected = selected === provider.id;
-            const isEconomy = provider.id === 'fedex';
+            const isSelected = selected === provider.id
+            const isEconomy = provider.id === 'fedex'
 
             return (
-              <Label
-                key={provider.id}
-                htmlFor={provider.id}
-                className="cursor-pointer block"
-              >
+              <Label key={provider.id} htmlFor={provider.id} className="cursor-pointer block">
                 <Card
                   className={`
                     relative p-4 transition-all hover:shadow-md
-                    ${isSelected
-                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
-                      : 'hover:border-gray-400'
+                    ${
+                      isSelected
+                        ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
+                        : 'hover:border-gray-400'
                     }
                   `}
                 >
                   <div className="flex items-start gap-3">
-                    <RadioGroupItem
-                      value={provider.id}
-                      id={provider.id}
-                      className="mt-1"
-                    />
+                    <RadioGroupItem value={provider.id} id={provider.id} className="mt-1" />
 
                     <div className="flex-1">
                       {/* Header with logo and badges */}
@@ -184,9 +180,7 @@ export function ShippingSelection({
 
                         {/* Static Price Display */}
                         <div className="text-right">
-                          <p className="text-2xl font-bold">
-                            ${provider.baseRate.toFixed(2)}
-                          </p>
+                          <p className="text-2xl font-bold">${provider.baseRate.toFixed(2)}</p>
                         </div>
                       </div>
 
@@ -199,10 +193,7 @@ export function ShippingSelection({
                       {/* Features */}
                       <div className="space-y-1">
                         {provider.features.map((feature, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-2 text-xs text-gray-600"
-                          >
+                          <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
                             <div className="w-1 h-1 bg-gray-400 rounded-full" />
                             <span>{feature}</span>
                           </div>
@@ -215,11 +206,7 @@ export function ShippingSelection({
                   {isSelected && (
                     <div className="absolute top-2 right-2">
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -231,7 +218,7 @@ export function ShippingSelection({
                   )}
                 </Card>
               </Label>
-            );
+            )
           })}
         </div>
       </RadioGroup>
@@ -249,19 +236,16 @@ export function ShippingSelection({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 // Usage Example in Checkout Page
 export function CheckoutShippingStep() {
-  const [shippingProvider, setShippingProvider] = useState<ShippingProvider | null>(null);
+  const [shippingProvider, setShippingProvider] = useState<ShippingProvider | null>(null)
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <ShippingSelection
-        onSelect={setShippingProvider}
-        selectedId={shippingProvider?.id}
-      />
+      <ShippingSelection onSelect={setShippingProvider} selectedId={shippingProvider?.id} />
 
       {shippingProvider && (
         <div className="mt-6 p-4 bg-gray-50 rounded">
@@ -277,7 +261,7 @@ export function CheckoutShippingStep() {
         </div>
       )}
     </div>
-  );
+  )
 }
 ```
 
@@ -286,40 +270,41 @@ export function CheckoutShippingStep() {
 ```tsx
 // types/shipping.ts
 export interface ShippingSelection {
-  providerId: 'fedex' | 'southwest-dash';
-  rate: number;
+  providerId: 'fedex' | 'southwest-dash'
+  rate: number
   deliveryDays: {
-    min: number;
-    max: number;
-  };
-  selectedAt: Date;
+    min: number
+    max: number
+  }
+  selectedAt: Date
 }
 
 // hooks/useShipping.ts
 export function useShipping() {
-  const [selection, setSelection] = useState<ShippingSelection | null>(null);
+  const [selection, setSelection] = useState<ShippingSelection | null>(null)
 
   const selectProvider = useCallback((provider: ShippingProvider) => {
     setSelection({
       providerId: provider.id,
       rate: provider.baseRate,
       deliveryDays: provider.deliveryDays,
-      selectedAt: new Date()
-    });
-  }, []);
+      selectedAt: new Date(),
+    })
+  }, [])
 
   return {
     selection,
     selectProvider,
     hasSelection: !!selection,
-    clearSelection: () => setSelection(null)
-  };
+    clearSelection: () => setSelection(null),
+  }
 }
 ```
 
 ## Testing Requirements
 
 ### Manual Testing Checklist
+
 - [ ] Both shipping options display correctly
 - [ ] Radio buttons function properly
 - [ ] Selection highlights active choice
@@ -332,12 +317,14 @@ export function useShipping() {
 - [ ] Screen reader announces options correctly
 
 ## Dependencies
+
 - shadcn/ui RadioGroup component
 - Shipping provider logo assets
 - Card and Badge components
 - Lucide icons for visual elements
 
 ## Definition of Done
+
 - [ ] Component renders both shipping options
 - [ ] Selection state management works
 - [ ] Visual design matches mockups
@@ -348,6 +335,7 @@ export function useShipping() {
 - [ ] Tested across browsers
 
 ## Notes
+
 - This story uses static rates for simplicity
 - Dynamic rate calculation comes in Story 4b
 - Ensure logos are optimized for web (SVG preferred)
@@ -355,6 +343,7 @@ export function useShipping() {
 - Component should be reusable across checkout flow
 
 ## Estimation Breakdown
+
 - Create base component structure: 1 hour
 - Style shipping cards: 1 hour
 - Add selection state management: 0.5 hours

@@ -1,7 +1,9 @@
 # 🏗️ GANGRUN PRINTING - COMPLETE TECHNOLOGY STACK
 
 ## 📅 Last Updated: 2025-09-28
+
 ## 🚀 Production URL: https://gangrunprinting.com
+
 ## 🔧 Status: FULLY DEPLOYED & MONITORED
 
 ---
@@ -15,6 +17,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📦 CORE APPLICATION STACK
 
 ### Frontend Framework
+
 - **Next.js 15.5.2** - React framework with App Router
   - Server Components for optimal performance
   - Streaming SSR
@@ -23,6 +26,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - TypeScript support
 
 ### UI & Styling
+
 - **React 19.0** - UI library
 - **Tailwind CSS 3.4** - Utility-first CSS framework
 - **Tailwind UI** - Premium component library
@@ -32,6 +36,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 - **Framer Motion** - Animation library
 
 ### State Management & Forms
+
 - **React Hook Form 7.54** - Form management
 - **Zod 3.24** - Schema validation
 - **Zustand** - State management
@@ -42,6 +47,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🔐 AUTHENTICATION & SECURITY
 
 ### Authentication System
+
 - **Lucia Auth 3.2** - Modern auth library
   - Session-based authentication
   - Magic link authentication
@@ -50,6 +56,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Prisma adapter
 
 ### Security Features
+
 - **bcryptjs** - Password hashing
 - **Iron Session** - Encrypted sessions
 - **CORS** - Cross-origin resource sharing
@@ -61,6 +68,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🗄️ DATABASE & ORM
 
 ### Database
+
 - **PostgreSQL 16** - Primary database
   - Hosted on Docker container
   - Connection: `172.22.0.1:5432`
@@ -68,6 +76,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - User: `gangrun_user`
 
 ### ORM & Data Layer
+
 - **Prisma 6.2** - Next-generation ORM
   - Type-safe database queries
   - Migration system
@@ -75,6 +84,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Relation handling
 
 ### Caching
+
 - **Redis** - In-memory data store
   - Session storage
   - Cache layer
@@ -86,6 +96,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📧 COMMUNICATION & NOTIFICATIONS
 
 ### Email Service
+
 - **Resend** - Transactional email service
   - Magic link authentication
   - Order confirmations
@@ -93,6 +104,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Admin alerts
 
 ### Email Templates
+
 - **React Email** - Email component framework
 - **MJML** - Responsive email framework
 
@@ -101,6 +113,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 💾 FILE STORAGE
 
 ### Object Storage
+
 - **MinIO** - S3-compatible object storage
   - Self-hosted on server
   - Product images
@@ -113,6 +126,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 💳 PAYMENT PROCESSING
 
 ### Payment Gateway
+
 - **Square SDK** - Payment processing
   - Credit card processing
   - Digital wallets
@@ -124,6 +138,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📦 SHIPPING & LOGISTICS
 
 ### Shipping APIs
+
 - **FedEx API** - Shipping rates & tracking
 - **USPS API** - Shipping rates & tracking
 - **EasyPost** - Multi-carrier shipping API
@@ -133,10 +148,12 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🔍 SEARCH & ANALYTICS
 
 ### Search
+
 - **Fuse.js** - Fuzzy search library
 - **PostgreSQL Full-Text Search** - Database search
 
 ### Analytics
+
 - **Google Analytics 4** - User analytics
 - **Custom Metrics** - Prometheus metrics
 
@@ -145,12 +162,14 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🚀 DEPLOYMENT & INFRASTRUCTURE
 
 ### Hosting
+
 - **VPS Server** - Dedicated server
   - IP: `72.60.28.175`
   - OS: Ubuntu Linux
   - Location: USA
 
 ### Process Management
+
 - **PM2** - Node.js process manager
   - Auto-restart on failure
   - Log management
@@ -158,10 +177,12 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Cluster mode support
 
 ### Containerization
+
 - **Docker** - Container platform
 - **Docker Compose** - Multi-container orchestration
 
 ### Web Server
+
 - **Nginx** - Reverse proxy
   - SSL termination
   - Load balancing
@@ -169,6 +190,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Gzip compression
 
 ### Domain & SSL
+
 - **Domain**: gangrunprinting.com
 - **SSL**: Let's Encrypt
 - **CDN**: Cloudflare (optional)
@@ -178,6 +200,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📊 MONITORING & OBSERVABILITY
 
 ### Metrics Collection
+
 - **Prometheus** - Time-series database
   - Port: 9090
   - Scraping interval: 15s
@@ -185,6 +208,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Custom business metrics
 
 ### Visualization
+
 - **Grafana** - Metrics dashboards
   - Port: 3010
   - Real-time dashboards
@@ -192,6 +216,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Custom panels
 
 ### Alerting
+
 - **AlertManager** - Alert routing
   - Port: 9093
   - Email notifications
@@ -199,12 +224,14 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Alert grouping
 
 ### System Monitoring
+
 - **Node Exporter** - System metrics
   - Port: 9100
   - CPU, Memory, Disk metrics
   - Network statistics
 
 ### Error Tracking
+
 - **Sentry** - Error monitoring (configured)
   - Real-time error tracking
   - Performance monitoring
@@ -212,6 +239,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - User feedback
 
 ### Application Monitoring
+
 - **Custom Metrics** - Business KPIs
   - Order metrics
   - Revenue tracking
@@ -219,6 +247,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
   - Performance metrics
 
 ### Logging
+
 - **PM2 Logs** - Application logs
 - **Docker Logs** - Container logs
 - **Nginx Logs** - Access/error logs
@@ -228,22 +257,26 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🛠️ DEVELOPMENT TOOLS
 
 ### Language & Runtime
+
 - **Node.js 20.18** - JavaScript runtime
 - **TypeScript 5.7** - Type-safe JavaScript
 - **pnpm** - Package manager
 
 ### Build Tools
+
 - **Webpack** - Module bundler (via Next.js)
 - **SWC** - Fast TypeScript/JavaScript compiler
 - **PostCSS** - CSS processor
 
 ### Code Quality
+
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Husky** - Git hooks
 - **lint-staged** - Pre-commit linting
 
 ### Testing
+
 - **Jest** - Unit testing
 - **React Testing Library** - Component testing
 - **Playwright** - E2E testing
@@ -254,11 +287,13 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🔄 CI/CD & VERSION CONTROL
 
 ### Version Control
+
 - **Git** - Source control
 - **GitHub** - Repository hosting
   - Repository: `https://github.com/iradwatkins/gangrunprinting.git`
 
 ### Continuous Integration
+
 - **GitHub Actions** - CI/CD pipelines
 - **Automated testing**
 - **Build verification**
@@ -269,10 +304,12 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🎨 DESIGN & ASSETS
 
 ### Design Tools Integration
+
 - **Figma API** - Design system sync
 - **Adobe Creative Cloud** - Asset generation
 
 ### Image Processing
+
 - **Sharp** - Image optimization
 - **Canvas API** - Dynamic image generation
 - **PDF.js** - PDF processing
@@ -282,12 +319,14 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🤖 AI & AUTOMATION
 
 ### AI Services
+
 - **OpenAI API** - Content generation (optional)
 - **Ollama** - Local AI (available on server)
   - Port: 11434
   - Self-hosted LLM
 
 ### Workflow Automation
+
 - **N8N** - Workflow automation (available)
   - Port: 5678
   - Webhook integration
@@ -298,11 +337,13 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📡 API & INTEGRATIONS
 
 ### API Architecture
+
 - **RESTful API** - Standard HTTP endpoints
 - **GraphQL** (optional) - Query language
 - **Webhook System** - Event-driven updates
 
 ### Third-Party Integrations
+
 - **Google OAuth** - Social login
 - **Google Maps API** - Location services
 - **Twilio** - SMS notifications (optional)
@@ -313,16 +354,19 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 🔧 UTILITY LIBRARIES
 
 ### Date & Time
+
 - **date-fns 4.1** - Date manipulation
 - **dayjs** - Lightweight date library
 
 ### Data Processing
+
 - **uuid** - Unique ID generation
 - **slugify** - URL slug generation
 - **DOMPurify** - HTML sanitization
 - **csv-parse** - CSV processing
 
 ### HTTP & Networking
+
 - **Axios** - HTTP client
 - **node-fetch** - Fetch API for Node.js
 - **ws** - WebSocket library
@@ -332,6 +376,7 @@ GangRun Printing is a modern e-commerce platform for custom printing services, b
 ## 📱 MOBILE & PWA
 
 ### Progressive Web App
+
 - **next-pwa** - PWA support
 - **Service Workers** - Offline functionality
 - **Web Push API** - Push notifications
@@ -362,6 +407,7 @@ Shared Services:
 ## 🔒 ENVIRONMENT CONFIGURATION
 
 ### Environment Variables Categories
+
 1. **Domain Configuration** - URLs and endpoints
 2. **Database Configuration** - Connection strings
 3. **Authentication** - Secrets and OAuth
@@ -376,6 +422,7 @@ Shared Services:
 ## 📈 PERFORMANCE SPECIFICATIONS
 
 ### Current Performance Metrics
+
 - **Page Load Time**: < 2.1s
 - **API Response**: < 150ms (p50)
 - **Database Query**: < 85ms
@@ -384,6 +431,7 @@ Shared Services:
 - **CPU Usage**: < 30% average
 
 ### Scalability
+
 - **Concurrent Users**: 1000+
 - **Requests/Second**: 500+
 - **Database Connections**: 100 pool
@@ -395,18 +443,21 @@ Shared Services:
 ## 🏆 COMPLIANCE & STANDARDS
 
 ### Security Compliance
+
 - **HTTPS Everywhere** - SSL/TLS encryption
 - **GDPR Ready** - Data privacy
 - **PCI DSS** - Payment security (via Square)
 - **OWASP Top 10** - Security best practices
 
 ### Accessibility
+
 - **WCAG 2.1** - Accessibility guidelines
 - **ARIA Labels** - Screen reader support
 - **Keyboard Navigation** - Full support
 - **Color Contrast** - AAA compliant
 
 ### Performance Standards
+
 - **Core Web Vitals** - Google standards
 - **Lighthouse Score** - 85+ target
 - **SEO Optimization** - Meta tags, sitemap
@@ -417,6 +468,7 @@ Shared Services:
 ## 🎯 ARCHITECTURE DECISIONS
 
 ### Design Patterns
+
 - **Server Components First** - Optimal performance
 - **Service Layer Pattern** - Business logic separation
 - **Repository Pattern** - Data access abstraction
@@ -424,6 +476,7 @@ Shared Services:
 - **Observer Pattern** - Event handling
 
 ### Best Practices
+
 - **TypeScript Strict Mode** - Type safety
 - **Error Boundaries** - Graceful error handling
 - **Correlation IDs** - Request tracking
@@ -435,6 +488,7 @@ Shared Services:
 ## 📚 DOCUMENTATION
 
 ### Available Documentation
+
 1. **CLAUDE.md** - AI assistant instructions
 2. **README.md** - Project overview
 3. **MONITORING-RUNBOOK.md** - Operations guide
@@ -447,6 +501,7 @@ Shared Services:
 ## 🚦 SYSTEM STATUS
 
 ### Current Status: **PRODUCTION READY** ✅
+
 - **Health Score**: 82/100
 - **Monitoring**: 100% Coverage
 - **Error Tracking**: Configured

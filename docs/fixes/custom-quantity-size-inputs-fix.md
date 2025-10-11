@@ -32,18 +32,22 @@
 ## Root Cause Analysis
 
 ### 1. API Configuration Endpoint
+
 **File**: `/src/app/api/products/[id]/configuration/route.ts`
 
 **Problems**:
+
 - Lines 82-108: Not detecting "Custom" string in values
 - Not setting `isCustom: true` flag
 - Not including min/max constraints from QuantityGroup/SizeGroup
 - Line 236: Hardcoded to use first quantity instead of checking `defaultValue`
 
 ### 2. Frontend Component
+
 **File**: `/src/components/product/ProductConfigurationForm.tsx`
 
 **Problems**:
+
 - Used basic Select components without conditional custom input logic
 - No detection of when "Custom" option was selected
 - No custom input fields to show/hide
@@ -57,6 +61,7 @@
 #### File: `/src/app/api/products/[id]/configuration/route.ts`
 
 **Lines 82-112 - Quantity Processing**:
+
 ```typescript
 values.forEach((value, index) => {
   // Detect if this is the "Custom" option
@@ -73,7 +78,7 @@ values.forEach((value, index) => {
       isCustom: true,
       isDefault: false,
       minValue: qtyGroup.customMin || 1,
-      maxValue: qtyGroup.customMax || 100000
+      maxValue: qtyGroup.customMax || 100000,
     })
   } else {
     // Standard quantity option
@@ -84,13 +89,14 @@ values.forEach((value, index) => {
       displayValue: value,
       label: value,
       isCustom: false,
-      isDefault: isDefault
+      isDefault: isDefault,
     })
   }
 })
 ```
 
 **Lines 114-158 - Size Processing**:
+
 ```typescript
 values.forEach((value, index) => {
   // Detect if this is the "Custom" option
@@ -111,11 +117,13 @@ values.forEach((value, index) => {
       minWidth: sizeGroup.customMinWidth || 1,
       maxWidth: sizeGroup.customMaxWidth || 96,
       minHeight: sizeGroup.customMinHeight || 1,
-      maxHeight: sizeGroup.customMaxHeight || 96
+      maxHeight: sizeGroup.customMaxHeight || 96,
     })
   } else {
     // Standard size option
-    const [width, height] = value.includes('x') ? value.split('x').map(v => parseFloat(v.trim())) : [0, 0]
+    const [width, height] = value.includes('x')
+      ? value.split('x').map((v) => parseFloat(v.trim()))
+      : [0, 0]
     sizes.push({
       id: `size_${index + 1}`,
       name: value,
@@ -125,17 +133,19 @@ values.forEach((value, index) => {
       squareInches: (width || 0) * (height || 0),
       priceMultiplier: 1,
       isDefault: value === sizeGroup.defaultValue,
-      isCustom: false
+      isCustom: false,
     })
   }
 })
 ```
 
 **Line 236 - Default Quantity Fix**:
+
 ```typescript
 const defaults = {
-  quantity: quantities.find(q => q.isDefault)?.id || (quantities.length > 0 ? quantities[0].id : null),
-  size: sizes.find(s => s.isDefault)?.id || (sizes.length > 0 ? sizes[0].id : null),
+  quantity:
+    quantities.find((q) => q.isDefault)?.id || (quantities.length > 0 ? quantities[0].id : null),
+  size: sizes.find((s) => s.isDefault)?.id || (sizes.length > 0 ? sizes[0].id : null),
   // ... rest of defaults
 }
 ```
@@ -145,11 +155,13 @@ const defaults = {
 #### File: `/src/components/product/ProductConfigurationForm.tsx`
 
 **Added Import (Line 9)**:
+
 ```typescript
 import { Input } from '@/components/ui/input'
 ```
 
 **Lines 471-531 - Quantity with Conditional Custom Input**:
+
 ```typescript
 {/* Quantity */}
 <div>
@@ -212,6 +224,7 @@ import { Input } from '@/components/ui/input'
 ```
 
 **Lines 533-615 - Size with Conditional Custom Inputs**:
+
 ```typescript
 {/* Print Size */}
 <div>
@@ -296,6 +309,7 @@ import { Input } from '@/components/ui/input'
 ```
 
 **Line 289 - Hook Destructuring (kept getQuantityValue)**:
+
 ```typescript
 const {
   configData,
@@ -317,6 +331,7 @@ const {
 ## Database Schema Reference
 
 ### QuantityGroup Table
+
 ```sql
 columns:
   - id: String
@@ -328,6 +343,7 @@ columns:
 ```
 
 ### SizeGroup Table
+
 ```sql
 columns:
   - id: String
@@ -345,6 +361,7 @@ columns:
 ## Testing Checklist
 
 ### ✅ Custom Quantity Input
+
 - [x] Dropdown shows all quantity values + "Custom..."
 - [x] Selecting standard quantity (100, 250, etc.) works
 - [x] Selecting "Custom..." shows input field below dropdown
@@ -353,6 +370,7 @@ columns:
 - [x] Custom value updates configuration state
 
 ### ✅ Custom Size Input
+
 - [x] Dropdown shows all size values + "Custom..."
 - [x] Selecting standard size (2x4, 4x6, etc.) works
 - [x] Selecting "Custom..." shows width/height inputs below dropdown
@@ -361,11 +379,13 @@ columns:
 - [x] Custom values update configuration state
 
 ### ✅ Default Values
+
 - [x] Default quantity is 5000 (from database defaultValue)
 - [x] Default size is selected from database defaultValue
 - [x] Defaults are applied on page load
 
 ### ✅ Data Flow
+
 - [x] API correctly detects "Custom" in values
 - [x] API sets isCustom flag
 - [x] API includes min/max constraints
@@ -378,12 +398,14 @@ columns:
 ## Files Modified
 
 ### 1. API Layer
+
 - `/src/app/api/products/[id]/configuration/route.ts`
   - Lines 82-112: Quantity processing with Custom detection
   - Lines 114-158: Size processing with Custom detection
   - Line 236: Default quantity fix
 
 ### 2. Component Layer
+
 - `/src/components/product/ProductConfigurationForm.tsx`
   - Line 9: Added Input import
   - Lines 289: Kept getQuantityValue in hook destructuring
@@ -392,6 +414,7 @@ columns:
   - Removed: "Exact Size" checkbox section
 
 ### 3. Hook Layer
+
 - `/src/hooks/useProductConfiguration.ts`
   - No changes needed (already supported customQuantity, customWidth, customHeight)
 
@@ -400,28 +423,34 @@ columns:
 ## Key Learnings
 
 ### 1. API Data Structure
+
 - Always detect special values like "Custom" in comma-separated lists
 - Set proper flags (isCustom, isDefault) for UI logic
 - Include constraint data (min/max) from database
 
 ### 2. Conditional Rendering Pattern
+
 ```typescript
 {condition && (
   <ConditionalComponent />
 )}
 ```
+
 - Use to show/hide custom inputs based on selection
 - Check configuration state + data structure
 
 ### 3. Default Value Priority
+
 ```typescript
-collection.find(item => item.isDefault)?.id || collection[0]?.id || null
+collection.find((item) => item.isDefault)?.id || collection[0]?.id || null
 ```
+
 - First: Look for explicitly marked default
 - Second: Fall back to first item
 - Third: Return null if empty
 
 ### 4. State Management
+
 - Clear custom values when switching from Custom to standard options
 - Preserve custom values when user re-selects Custom
 - Update configuration immediately on value change
@@ -454,6 +483,7 @@ collection.find(item => item.isDefault)?.id || collection[0]?.id || null
 **Verification URL**: `https://gangrunprinting.com/products/test`
 
 **API Endpoint Test**:
+
 ```bash
 curl -s http://localhost:3002/api/products/{productId}/configuration | jq '.quantities, .sizes'
 ```

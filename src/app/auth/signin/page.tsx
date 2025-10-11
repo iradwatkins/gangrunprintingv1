@@ -47,12 +47,12 @@ export default function SignInPage() {
         <div className="text-center">
           <div className="mb-8 flex justify-center">
             <Image
-              src="/gangrunprinting_logo_new_1448921366__42384-432x65.png"
-              alt="GangRun Printing"
-              width={432}
-              height={65}
               priority
+              alt="GangRun Printing"
               className="h-16 w-auto"
+              height={65}
+              src="/gangrunprinting_logo_new_1448921366__42384-432x65.png"
+              width={432}
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign in to GangRun Printing</h1>

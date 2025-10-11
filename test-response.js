@@ -26,7 +26,6 @@ async function testResponse() {
 
     console.log('Raw Prisma response structure:')
     console.log(JSON.stringify(paperStocks[0], null, 2))
-
   } catch (error) {
     console.error('Error in query:', error)
   } finally {

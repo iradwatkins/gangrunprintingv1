@@ -93,8 +93,7 @@ export default function NotificationPreferences() {
         ...prev,
         isSubscribed: !!subscription,
       }))
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const loadPreferences = async () => {
@@ -104,8 +103,7 @@ export default function NotificationPreferences() {
         const data = await response.json()
         setPreferences(data.preferences || preferences)
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const savePreferences = async (newPreferences: typeof preferences) => {

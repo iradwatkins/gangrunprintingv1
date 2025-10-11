@@ -8,12 +8,14 @@
 ## 📊 Current System State
 
 ### What's Built & Documented ✅
+
 - ✅ **Story 5.8:** Admin Order Processing System (complete, documented)
 - ✅ **Epic 5:** 90% complete (7 of 8 stories done)
 - ⚠️ **Story 4.3:** Customer Orders Page (documented but NOT implemented - stub only)
 - ⚠️ **Epic 4:** 80% complete (corrected from 90% - documentation error discovered)
 
 ### Critical Production Blockers 🔴
+
 1. **Database migration not run** - Orders have old statuses, admin can't see them
 2. **Customer orders page is stub** - Customers can't view orders
 3. **Email confirmations not sent** - Webhook flow depends on new statuses
@@ -23,15 +25,19 @@
 ## 🎯 Deployment Strategy
 
 ### Phase 1: Database Migration (30 min) - IMMEDIATE
+
 **Goal:** Update order statuses to new broker workflow
 
 ### Phase 2: Testing & Verification (2 hours) - IMMEDIATE
+
 **Goal:** Verify migration successful, existing orders visible in admin
 
 ### Phase 3: Customer Orders Implementation (12-16 hours) - HIGH PRIORITY
+
 **Goal:** Implement Story 4.3 so customers can view orders
 
 ### Phase 4: End-to-End Testing (4 hours) - BEFORE NEXT DEPLOY
+
 **Goal:** Verify complete order flow works
 
 ---
@@ -41,34 +47,43 @@
 ### Pre-Migration Verification
 
 - [ ] **1.1: Check database connection**
+
   ```bash
   export PGPASSWORD='GangRun2024Secure'
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "SELECT 1;"
   ```
+
   Expected: Connection successful
 
 - [ ] **1.2: Verify current order count**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "SELECT COUNT(*) FROM \"Order\";"
   ```
-  Record count: _______
+
+  Record count: **\_\_\_**
 
 - [ ] **1.3: Check current order statuses**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "SELECT DISTINCT status FROM \"Order\" ORDER BY status;"
   ```
+
   Expect old statuses: PAID, PRE_PRESS, PRINTING, PAYMENT_FAILED, etc.
 
 - [ ] **1.4: Verify backup directory exists**
+
   ```bash
   mkdir -p /root/backups
   ls -la /root/backups
   ```
 
 - [ ] **1.5: Check disk space**
+
   ```bash
   df -h | grep "/$"
   ```
+
   Need at least 1GB free
 
 - [ ] **1.6: Verify migration files exist**
@@ -80,24 +95,28 @@
 ### Run Migration
 
 - [ ] **1.7: Make migration script executable**
+
   ```bash
   cd /root/websites/gangrunprinting
   chmod +x run-migration.sh
   ```
 
 - [ ] **1.8: Review migration script (optional but recommended)**
+
   ```bash
   cat migrations/migrate-broker-order-system.sql
   ```
 
 - [ ] **1.9: Run migration**
+
   ```bash
   ./run-migration.sh
   ```
+
   **IMPORTANT:** Type "yes" when prompted
 
 - [ ] **1.10: Verify migration output**
-  Expected messages:
+      Expected messages:
   - ✓ Database connected successfully
   - ✓ Backup created successfully
   - ✓ Current order statuses: (shows status distribution)
@@ -106,6 +125,7 @@
 ### Post-Migration Verification
 
 - [ ] **1.11: Verify new order statuses exist**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "
     SELECT typname, enumlabel FROM pg_type t
@@ -114,6 +134,7 @@
     ORDER BY enumsortorder;
   "
   ```
+
   Expect 13 broker statuses:
   - PENDING_PAYMENT
   - PAYMENT_DECLINED
@@ -130,6 +151,7 @@
   - REFUNDED
 
 - [ ] **1.12: Verify orders were migrated**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "
     SELECT status, COUNT(*) as count
@@ -138,15 +160,19 @@
     ORDER BY status;
   "
   ```
+
   Expect: Old PAID → CONFIRMATION, PRINTING → PRODUCTION, etc.
 
 - [ ] **1.13: Verify no data loss**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "SELECT COUNT(*) FROM \"Order\";"
   ```
+
   Count should match pre-migration count from step 1.2
 
 - [ ] **1.14: Check for specific test order**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "
     SELECT id, \"orderNumber\", status, email, total
@@ -154,20 +180,25 @@
     WHERE \"orderNumber\" = 'GRP-689757';
   "
   ```
+
   Expect: Status should be CONFIRMATION (was PAID)
 
 - [ ] **1.15: Generate new Prisma client**
+
   ```bash
   cd /root/websites/gangrunprinting
   npx prisma generate
   ```
+
   Expected: "Generated Prisma Client"
 
 - [ ] **1.16: Restart application**
+
   ```bash
   pm2 restart gangrunprinting
   pm2 save
   ```
+
   Expected: gangrunprinting restarted
 
 - [ ] **1.17: Check application logs**
@@ -181,6 +212,7 @@
 **IF MIGRATION FAILS:**
 
 - [ ] **1.18: Restore from backup**
+
   ```bash
   # Find backup file
   ls -lt /root/backups/ | head -5
@@ -227,9 +259,11 @@
 ### Database Query Verification
 
 - [ ] **2.6: Verify new tracking fields exist**
+
   ```bash
   psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -c "\d \"Order\"" | grep -E "filesApproved|vendor|rush|priority"
   ```
+
   Expect: New columns visible
 
 - [ ] **2.7: Verify indexes were created**
@@ -245,10 +279,12 @@
 ### Email System Verification
 
 - [ ] **2.8: Check email service configuration**
+
   ```bash
   cd /root/websites/gangrunprinting
   grep -E "RESEND_API_KEY|SMTP" .env
   ```
+
   Verify Resend API key is set
 
 - [ ] **2.9: Test email template rendering (optional)**
@@ -261,27 +297,35 @@
 ### Application Health Check
 
 - [ ] **2.10: Check application is running**
+
   ```bash
   pm2 status gangrunprinting
   ```
+
   Status should be "online"
 
 - [ ] **2.11: Check memory usage**
+
   ```bash
   pm2 show gangrunprinting | grep -E "memory|cpu"
   ```
+
   Memory should be < 1.5GB
 
 - [ ] **2.12: Check for errors in logs**
+
   ```bash
   pm2 logs gangrunprinting --lines 100 | grep -i error
   ```
+
   No critical errors expected
 
 - [ ] **2.13: Test homepage loads**
+
   ```bash
   curl -I https://gangrunprinting.com
   ```
+
   Expect: HTTP 200
 
 - [ ] **2.14: Test API endpoint**
@@ -303,9 +347,9 @@
   - Status: ✅ Documented
 
 - [ ] **3.2: Assign to developer**
-  - Developer: _______________
+  - Developer: ******\_\_\_******
   - Estimated time: 12-16 hours
-  - Sprint: _______________
+  - Sprint: ******\_\_\_******
 
 - [ ] **3.3: Create feature branch**
   ```bash
@@ -315,8 +359,8 @@
 ### Implementation Verification (Post-Development)
 
 - [ ] **3.4: Code review completed**
-  - Reviewer: _______________
-  - Review date: _______________
+  - Reviewer: ******\_\_\_******
+  - Review date: ******\_\_\_******
   - Approved: ☐ Yes ☐ No
 
 - [ ] **3.5: All acceptance criteria met**
@@ -326,7 +370,7 @@
 - [ ] **3.6: Tests written and passing**
   - Unit tests: ☐ Pass
   - E2E tests: ☐ Pass
-  - Test coverage: _____% (target: >70%)
+  - Test coverage: **\_**% (target: >70%)
 
 - [ ] **3.7: Code follows patterns**
   - Server Component for data fetching ☐
@@ -346,7 +390,7 @@
   - Add to cart
   - Complete checkout
   - Pay with test card
-  - Record order number: _______________
+  - Record order number: ******\_\_\_******
 
 - [ ] **4.2: Verify order in customer account**
   - Login as customer who placed order
@@ -419,10 +463,10 @@
 ### Performance Testing
 
 - [ ] **4.14: Measure page load times**
-  - Homepage: _____ seconds (target: <2s)
-  - Products page: _____ seconds (target: <2s)
-  - Orders page (customer): _____ seconds (target: <2s)
-  - Orders page (admin): _____ seconds (target: <2s)
+  - Homepage: **\_** seconds (target: <2s)
+  - Products page: **\_** seconds (target: <2s)
+  - Orders page (customer): **\_** seconds (target: <2s)
+  - Orders page (admin): **\_** seconds (target: <2s)
 
 - [ ] **4.15: Test with multiple orders**
   - Create 25+ test orders (if possible)
@@ -465,6 +509,7 @@
 ### Code Quality
 
 - [ ] **5.1: TypeScript build passes**
+
   ```bash
   npm run type-check
   ```
@@ -474,10 +519,12 @@
   - No critical errors
 
 - [ ] **5.3: Prisma schema matches database**
+
   ```bash
   npx prisma db pull
   git diff prisma/schema.prisma
   ```
+
   No unexpected changes
 
 - [ ] **5.4: All environment variables set**
@@ -496,6 +543,7 @@
 ### Backups
 
 - [ ] **5.10: Database backup exists**
+
   ```bash
   ls -lh /root/backups/ | head -3
   ```
@@ -522,16 +570,19 @@
 ## 🚨 Known Issues & Workarounds
 
 ### Issue 1: Migration Not Run
+
 **Status:** ⚠️ BLOCKER
 **Impact:** Orders with old statuses invisible in admin
 **Fix:** Complete Phase 1 of this checklist
 
 ### Issue 2: Customer Orders Page is Stub
+
 **Status:** ⚠️ BLOCKER
 **Impact:** Customers can't see their orders
 **Fix:** Complete Story 4.3 implementation (Phase 3)
 
 ### Issue 3: Limited Test Coverage
+
 **Status:** ⚠️ MEDIUM
 **Impact:** Confidence in deployment lower
 **Current:** ~20% coverage
@@ -539,11 +590,13 @@
 **Fix:** Write tests during Story 4.3 implementation
 
 ### Issue 4: N8N Webhooks Not Configured
+
 **Status:** ⚠️ LOW
 **Impact:** Automation not enabled
 **Fix:** Configure N8N after core features working
 
 ### Issue 5: No Sentry Monitoring
+
 **Status:** ⚠️ MEDIUM
 **Impact:** Errors not tracked in production
 **Fix:** Story-004 from remaining-work.md
@@ -557,11 +610,13 @@
 **If deployment causes critical issues:**
 
 1. **Restore database from backup:**
+
    ```bash
    psql -h 172.22.0.1 -U gangrun_user -d gangrun_db < /root/backups/backup_YYYYMMDD_HHMMSS.sql
    ```
 
 2. **Revert code changes:**
+
    ```bash
    git reset --hard HEAD~1
    pm2 restart gangrunprinting
@@ -585,24 +640,29 @@
 ## ✅ Deployment Sign-Off
 
 **Phase 1: Database Migration**
-- [ ] Completed by: _______________ Date: _______________
-- [ ] Verified by: _______________ Date: _______________
+
+- [ ] Completed by: ******\_\_\_****** Date: ******\_\_\_******
+- [ ] Verified by: ******\_\_\_****** Date: ******\_\_\_******
 
 **Phase 2: Testing & Verification**
-- [ ] Completed by: _______________ Date: _______________
-- [ ] Verified by: _______________ Date: _______________
+
+- [ ] Completed by: ******\_\_\_****** Date: ******\_\_\_******
+- [ ] Verified by: ******\_\_\_****** Date: ******\_\_\_******
 
 **Phase 3: Customer Orders Implementation**
-- [ ] Completed by: _______________ Date: _______________
-- [ ] Verified by: _______________ Date: _______________
+
+- [ ] Completed by: ******\_\_\_****** Date: ******\_\_\_******
+- [ ] Verified by: ******\_\_\_****** Date: ******\_\_\_******
 
 **Phase 4: End-to-End Testing**
-- [ ] Completed by: _______________ Date: _______________
-- [ ] Verified by: _______________ Date: _______________
+
+- [ ] Completed by: ******\_\_\_****** Date: ******\_\_\_******
+- [ ] Verified by: ******\_\_\_****** Date: ******\_\_\_******
 
 **Final Deployment Approval:**
-- [ ] Product Owner: _______________ Date: _______________
-- [ ] Tech Lead: _______________ Date: _______________
+
+- [ ] Product Owner: ******\_\_\_****** Date: ******\_\_\_******
+- [ ] Tech Lead: ******\_\_\_****** Date: ******\_\_\_******
 
 ---
 

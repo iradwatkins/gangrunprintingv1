@@ -64,7 +64,7 @@ export function GlobalStatusProvider({ children }: GlobalStatusProviderProps) {
                   <span className="text-sm font-medium">{loading.label || 'Loading...'}</span>
                 </div>
                 {loading.type === 'progress' && typeof loading.progress === 'number' && (
-                  <Progress value={loading.progress} className="w-full" />
+                  <Progress className="w-full" value={loading.progress} />
                 )}
               </div>
             ))}
@@ -89,19 +89,11 @@ export function GlobalStatusProvider({ children }: GlobalStatusProviderProps) {
                 {globalError.message}
                 {globalError.retry && (
                   <div className="mt-4 flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={globalError.retry}
-                    >
+                    <Button size="sm" variant="outline" onClick={globalError.retry}>
                       <RefreshCw className="mr-2 h-3 w-3" />
                       Retry
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => removeError(globalError.id)}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => removeError(globalError.id)}>
                       Cancel
                     </Button>
                   </div>
@@ -114,43 +106,43 @@ export function GlobalStatusProvider({ children }: GlobalStatusProviderProps) {
 
       {/* Toast-style Notifications */}
       <div className="fixed top-4 right-4 z-40 space-y-2 max-w-sm">
-        {errors.slice(-3).map((error) => ( // Show only last 3 errors
-          <Alert
-            key={error.id}
-            variant={getErrorVariant(error.type)}
-            className="shadow-lg border"
-          >
-            {getErrorIcon(error.type)}
-            <AlertTitle className="flex items-center justify-between">
-              {error.title || 'Notification'}
-              {error.dismissible && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 hover:bg-transparent"
-                  onClick={() => removeError(error.id)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </AlertTitle>
-            <AlertDescription className="mt-1">
-              {error.message}
-              {error.retry && (
-                <div className="mt-2">
+        {errors.slice(-3).map(
+          (
+            error // Show only last 3 errors
+          ) => (
+            <Alert
+              key={error.id}
+              className="shadow-lg border"
+              variant={getErrorVariant(error.type)}
+            >
+              {getErrorIcon(error.type)}
+              <AlertTitle className="flex items-center justify-between">
+                {error.title || 'Notification'}
+                {error.dismissible && (
                   <Button
+                    className="h-auto p-0 hover:bg-transparent"
                     size="sm"
-                    variant="outline"
-                    onClick={error.retry}
+                    variant="ghost"
+                    onClick={() => removeError(error.id)}
                   >
-                    <RefreshCw className="mr-2 h-3 w-3" />
-                    Retry
+                    <X className="h-3 w-3" />
                   </Button>
-                </div>
-              )}
-            </AlertDescription>
-          </Alert>
-        ))}
+                )}
+              </AlertTitle>
+              <AlertDescription className="mt-1">
+                {error.message}
+                {error.retry && (
+                  <div className="mt-2">
+                    <Button size="sm" variant="outline" onClick={error.retry}>
+                      <RefreshCw className="mr-2 h-3 w-3" />
+                      Retry
+                    </Button>
+                  </div>
+                )}
+              </AlertDescription>
+            </Alert>
+          )
+        )}
       </div>
 
       {/* Non-blocking Loading Indicators */}
@@ -171,7 +163,7 @@ export function GlobalStatusProvider({ children }: GlobalStatusProviderProps) {
                   <span>{loading.label || 'Loading...'}</span>
                   {loading.type === 'progress' && typeof loading.progress === 'number' && (
                     <div className="w-16">
-                      <Progress value={loading.progress} className="h-1" />
+                      <Progress className="h-1" value={loading.progress} />
                     </div>
                   )}
                 </div>

@@ -32,11 +32,13 @@ npm run build && pm2 restart gangrunprinting
 ## 📖 FULL DOCUMENTATION
 
 ### Quick Check (1 minute):
+
 ```bash
 cat docs/UPLOAD-ERRORS-QUICK-CHECK.md
 ```
 
 ### Complete Fix Guide (5 minutes):
+
 ```bash
 cat docs/IMAGE-UPLOAD-500-ERROR-FIX.md
 ```

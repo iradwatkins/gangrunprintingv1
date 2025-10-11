@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // Simple working products endpoint for testing
@@ -37,9 +37,9 @@ export async function GET(request: NextRequest) {
                 name: true,
                 values: true,
                 defaultValue: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         productPaperStockSets: {
           include: {
@@ -48,9 +48,9 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 description: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         productAddOns: {
           include: {
@@ -59,9 +59,9 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 description: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         _count: {
           select: {
@@ -72,10 +72,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
-        { isFeatured: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
 
     console.log(`✅ Found ${products.length} products`)
@@ -86,7 +83,6 @@ export async function GET(request: NextRequest) {
       count: products.length,
       message: `Found ${products.length} products`,
     })
-
   } catch (error) {
     console.error('❌ Products API Error:', error)
     return NextResponse.json(

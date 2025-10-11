@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function verifyProductConfigurations() {
-
   try {
     // Get our test products
     const products = await prisma.product.findMany({
@@ -43,7 +42,6 @@ async function verifyProductConfigurations() {
     })
 
     for (const product of products) {
-
       if (product.productPaperStockSets.length > 0) {
         const paperStockSet = product.productPaperStockSets[0].paperStockSet
 
@@ -58,26 +56,20 @@ async function verifyProductConfigurations() {
               )
             })
             if (paperStock.paperStockCoatings.length > 3) {
-
             }
           }
 
           if (paperStock.paperStockSides.length > 0) {
-            paperStock.paperStockSides.slice(0, 3).forEach((side) => {
-
-            })
+            paperStock.paperStockSides.slice(0, 3).forEach((side) => {})
             if (paperStock.paperStockSides.length > 3) {
-
             }
           }
         })
       } else {
-
       }
 
       console.log('\n' + '─'.repeat(60) + '\n')
     }
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

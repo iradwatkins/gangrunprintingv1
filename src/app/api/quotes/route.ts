@@ -182,10 +182,22 @@ export async function PUT(request: NextRequest) {
           userId: quote.userId,
           email: quote.customerEmail,
           phone: quote.customerPhone,
-          subtotal: quote.pricing && typeof quote.pricing === 'object' && 'subtotal' in quote.pricing ? Number(quote.pricing.subtotal) : 0,
-          tax: quote.pricing && typeof quote.pricing === 'object' && 'tax' in quote.pricing ? Number(quote.pricing.tax) : 0,
-          shipping: quote.pricing && typeof quote.pricing === 'object' && 'shipping' in quote.pricing ? Number(quote.pricing.shipping) : 0,
-          total: quote.pricing && typeof quote.pricing === 'object' && 'total' in quote.pricing ? Number(quote.pricing.total) : 0,
+          subtotal:
+            quote.pricing && typeof quote.pricing === 'object' && 'subtotal' in quote.pricing
+              ? Number(quote.pricing.subtotal)
+              : 0,
+          tax:
+            quote.pricing && typeof quote.pricing === 'object' && 'tax' in quote.pricing
+              ? Number(quote.pricing.tax)
+              : 0,
+          shipping:
+            quote.pricing && typeof quote.pricing === 'object' && 'shipping' in quote.pricing
+              ? Number(quote.pricing.shipping)
+              : 0,
+          total:
+            quote.pricing && typeof quote.pricing === 'object' && 'total' in quote.pricing
+              ? Number(quote.pricing.total)
+              : 0,
           status: 'PENDING_PAYMENT',
           shippingAddress: {
             name: quote.customerName,

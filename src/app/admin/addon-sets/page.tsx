@@ -426,11 +426,7 @@ export default function AddOnSetsPage() {
                       <Button size="sm" variant="outline" onClick={() => handleEditSet(set)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteSet(set)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleDeleteSet(set)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

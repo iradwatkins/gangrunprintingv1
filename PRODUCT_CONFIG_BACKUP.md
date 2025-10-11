@@ -9,6 +9,7 @@ This document serves as the human-readable backup for all product configuration 
 ## Quick Recovery Commands
 
 If configurations are missing, the AI agent should:
+
 1. Read `PRODUCT_MASTER_CONFIG.json`
 2. Restore each section using the data provided
 3. Verify all relationships between sections are intact
@@ -16,20 +17,23 @@ If configurations are missing, the AI agent should:
 ## Current Active Configurations
 
 ### All Products
+
 - **Total Products**: 0
 - **Status**: Empty - No products exist yet
 - **Categories Available**: 4 (Business Cards, Flyers, Posters, Brochures)
 - **Last Modified**: N/A
 - **Implementation**: `/src/app/api/products/route.ts`
 
-*No products have been created yet in the system*
+_No products have been created yet in the system_
 
 ### Categories
+
 - **Total Categories**: 4
 - **Structure**: Flat (no parent-child relationships)
 - **Implementation**: `/src/app/api/product-categories/route.ts`
 
 **Categories List:**
+
 1. **Business Cards** (ID: zjg5ia39fjfjsva8f0oq64gl)
    - Slug: business-cards
    - Description: Professional business cards with multiple finish options
@@ -55,6 +59,7 @@ If configurations are missing, the AI agent should:
    - Products: 0
 
 ### Paper Stocks
+
 - **Total Options**: 11
 - **Most Used**: 16pt Premium Cover (2 products), Others (1 product each)
 - **Implementation**: `/src/app/api/paper-stocks/route.ts`
@@ -139,6 +144,7 @@ If configurations are missing, the AI agent should:
     - Sides: Single (1x), Double (1.5x)
 
 ### Add-ons
+
 - **Total Options**: 19
 - **Most Complex**: Variable Data Printing, Corner Rounding
 - **Implementation**: `/src/app/api/add-ons/route.ts`
@@ -146,6 +152,7 @@ If configurations are missing, the AI agent should:
 **Add-ons by Category:**
 
 **Finishing Effects:**
+
 1. **Corner Rounding** - $20.00 + $0.01/piece
 2. **Foil Stamping** - +35% of base price
 3. **Embossing** - +30% of base price
@@ -154,71 +161,66 @@ If configurations are missing, the AI agent should:
 6. **Letterpress** - +45% of base price
 7. **Edge Painting** - $30.00 + $0.03/piece
 
-**Special Features:**
-8. **Variable Data Printing** - $60.00 + $0.02/piece
-9. **Perforation** - $25.00 + $0.005/piece
-10. **Die Cutting** - $50.00 + $0.02/piece
-11. **Folding** - $20.00 + $0.01/piece
-12. **Scoring** - $15.00 + $0.005/piece
-13. **Hole Drilling** - $10.00 + $5.00/hole
+**Special Features:** 8. **Variable Data Printing** - $60.00 + $0.02/piece 9. **Perforation** - $25.00 + $0.005/piece 10. **Die Cutting** - $50.00 + $0.02/piece 11. **Folding** - $20.00 + $0.01/piece 12. **Scoring** - $15.00 + $0.005/piece 13. **Hole Drilling** - $10.00 + $5.00/hole
 
-**Card Enhancements:**
-14. **Plastic Card** - +60% of base price
-15. **Magnetic Strip** - $40.00 + $0.05/piece
-16. **Signature Strip** - $10.00 + $0.01/piece
-17. **Scratch-off Panel** - $35.00 + $0.04/piece
+**Card Enhancements:** 14. **Plastic Card** - +60% of base price 15. **Magnetic Strip** - $40.00 + $0.05/piece 16. **Signature Strip** - $10.00 + $0.01/piece 17. **Scratch-off Panel** - $35.00 + $0.04/piece
 
-**Packaging:**
-18. **Banding** - $15.00 + $2.00/bundle
-19. **Shrink Wrapping** - $25.00 + $3.00/bundle
+**Packaging:** 18. **Banding** - $15.00 + $2.00/bundle 19. **Shrink Wrapping** - $25.00 + $3.00/bundle
 
 ### Paper Stock Sets
+
 - **Total Sets**: 0
 - **Status**: ❌ INACTIVE - API Error
 - **Implementation**: `/src/app/api/paper-stock-sets/route.ts`
 - **Issue**: "Failed to fetch paper stock sets"
 
-*This section needs investigation and repair*
+_This section needs investigation and repair_
 
 ### Quantities
+
 - **Total Options**: 0
 - **Status**: ❌ INACTIVE - Empty
 - **Implementation**: `/src/app/api/quantities/route.ts`
 
-*No quantity configurations exist - needs setup*
+_No quantity configurations exist - needs setup_
 
 ### Sizes
+
 - **Total Options**: 0
 - **Status**: ❌ INACTIVE - API Error
 - **Implementation**: `/src/app/api/sizes/route.ts`
 - **Issue**: "Failed to fetch size groups"
 
-*This section needs investigation and repair*
+_This section needs investigation and repair_
 
 ### Add-on Sets
+
 - **Total Sets**: 0
 - **Status**: ❌ INACTIVE - Not Implemented
 - **Implementation**: Not found
 
-*No API endpoint exists for addon sets - needs implementation*
+_No API endpoint exists for addon sets - needs implementation_
 
 ### Turnaround Times
+
 - **Total Options**: 0
 - **Status**: ❌ INACTIVE - Empty
 - **Implementation**: `/src/app/api/turnaround-times/route.ts`
 
-*No turnaround time configurations exist - needs setup*
+_No turnaround time configurations exist - needs setup_
 
 ### Turnaround Time Sets
+
 - **Total Sets**: 0
 - **Status**: ❌ INACTIVE - Empty
 - **Implementation**: `/src/app/api/turnaround-time-sets/route.ts`
 
-*No turnaround time set configurations exist - needs setup*
+_No turnaround time set configurations exist - needs setup_
 
 ## Recovery Log
 
 ### 2025-09-21T19:36:09.922Z - Initial Protection System Setup
+
 - **Action**: Created protection system from existing data
 - **Sections Recovered**: Categories (4), Paper Stocks (11), Add-ons (19)
 - **Issues Identified**: 5 sections need attention
@@ -238,12 +240,14 @@ If configurations are missing, the AI agent should:
 ### If PRODUCT_MASTER_CONFIG.json is lost:
 
 1. **Immediate Actions:**
+
    ```bash
    # Stop all work and assess damage
    echo "CRITICAL: PRODUCT_MASTER_CONFIG.json missing!"
    ```
 
 2. **Data Extraction Process:**
+
    ```bash
    # Extract current data from APIs
    curl http://localhost:3002/api/product-categories > categories.json
@@ -267,6 +271,7 @@ If configurations are missing, the AI agent should:
 ### Database-Level Recovery:
 
 If APIs are non-functional, direct database queries:
+
 ```sql
 -- Categories
 SELECT * FROM "ProductCategory" ORDER BY "sortOrder";
@@ -283,15 +288,18 @@ SELECT * FROM "AddOn" WHERE "isActive" = true ORDER BY "sortOrder";
 ## Protection Protocol Summary
 
 **SACRED FILES:**
+
 - ✅ `PRODUCT_MASTER_CONFIG.json` - Machine-readable source of truth
 - ✅ `PRODUCT_CONFIG_BACKUP.md` - Human-readable documentation
 
 **WORKING CONFIGURATIONS:**
+
 - ✅ Categories (4 active)
 - ✅ Paper Stocks (11 active)
 - ✅ Add-ons (19 active)
 
 **BROKEN/MISSING CONFIGURATIONS:**
+
 - ❌ Paper Stock Sets (API error)
 - ❌ Sizes (API error)
 - ❌ Quantities (empty)
@@ -299,10 +307,12 @@ SELECT * FROM "AddOn" WHERE "isActive" = true ORDER BY "sortOrder";
 - ❌ Add-on Sets (not implemented)
 
 **NEXT STEPS:**
+
 1. Fix API errors for Paper Stock Sets and Sizes
 2. Configure Quantities and Turnaround Times
 3. Implement Add-on Sets functionality
 4. Create first products to test system
 
 ---
-*This backup document ensures all configuration data can be recovered manually if needed. Keep this file synchronized with PRODUCT_MASTER_CONFIG.json.*
+
+_This backup document ensures all configuration data can be recovered manually if needed. Keep this file synchronized with PRODUCT_MASTER_CONFIG.json._

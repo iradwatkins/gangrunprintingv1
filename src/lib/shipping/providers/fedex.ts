@@ -299,12 +299,14 @@ export class FedExProvider implements ShippingProvider {
 
       const trackResult = response.data.output.completeTrackResults[0].trackResults[0]
 
-      const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: Record<string, unknown>) => ({
-        timestamp: new Date(event.date),
-        location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
-        status: event.derivedStatus || event.eventType,
-        description: event.eventDescription,
-      }))
+      const events: TrackingEvent[] = (trackResult.scanEvents || []).map(
+        (event: Record<string, unknown>) => ({
+          timestamp: new Date(event.date),
+          location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
+          status: event.derivedStatus || event.eventType,
+          description: event.eventDescription,
+        })
+      )
 
       const status = this.mapTrackingStatus(trackResult.latestStatusDetail?.code)
 
@@ -389,11 +391,7 @@ export class FedExProvider implements ShippingProvider {
    * Calculate estimated transit days based on zip code distance
    * More accurate than hardcoded values for sandbox/test mode
    */
-  private calculateTransitDays(
-    fromZip: string,
-    toZip: string,
-    serviceType: string
-  ): number {
+  private calculateTransitDays(fromZip: string, toZip: string, serviceType: string): number {
     // Service-specific transit times
     if (serviceType === 'STANDARD_OVERNIGHT') return 1
     if (serviceType === 'FEDEX_2_DAY') return 2
@@ -415,11 +413,7 @@ export class FedExProvider implements ShippingProvider {
    * Get estimated days for service type
    * Fallback when API doesn't provide delivery dates
    */
-  private getEstimatedDays(
-    serviceType: string,
-    fromZip?: string,
-    toZip?: string
-  ): number {
+  private getEstimatedDays(serviceType: string, fromZip?: string, toZip?: string): number {
     // If we have zip codes, calculate based on distance
     if (fromZip && toZip) {
       return this.calculateTransitDays(fromZip, toZip, serviceType)

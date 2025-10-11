@@ -21,12 +21,8 @@ export type {
   ImageModuleState,
   ImageModuleProps,
   ImageModuleValue,
-  ImageUploadResult
+  ImageUploadResult,
 } from './types'
 
 // Enums
-export {
-  ImageUploadState,
-  ImageModuleError,
-  DEFAULT_IMAGE_CONFIG
-} from './types'
+export { ImageUploadState, ImageModuleError, DEFAULT_IMAGE_CONFIG } from './types'

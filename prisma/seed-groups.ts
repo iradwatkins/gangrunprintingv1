@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   // Create Quantity Groups
   const quantityGroups = [
     {
@@ -64,7 +63,6 @@ async function main() {
       update: group,
       create: group,
     })
-
   }
 
   // Create Size Groups
@@ -161,9 +159,7 @@ async function main() {
       update: group,
       create: group,
     })
-
   }
-
 }
 
 main()

@@ -198,8 +198,7 @@ export class WorkflowEngine {
     })
 
     // Start execution asynchronously
-    this.executeWorkflow(execution.id).catch((error) => {
-      })
+    this.executeWorkflow(execution.id).catch((error) => {})
 
     return execution
   }

@@ -23,13 +23,17 @@ export const createProductDTO = z.object({
   quantityGroupId: z.string().uuid(),
   sizeGroupId: z.string().uuid(),
   selectedAddOns: z.array(z.string().uuid()).default([]),
-  images: z.array(z.object({
-    url: z.string().url(),
-    thumbnailUrl: z.string().url().optional(),
-    alt: z.string().optional(),
-    caption: z.string().optional(),
-    isPrimary: z.boolean().optional(),
-  })).default([]),
+  images: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        thumbnailUrl: z.string().url().optional(),
+        alt: z.string().optional(),
+        caption: z.string().optional(),
+        isPrimary: z.boolean().optional(),
+      })
+    )
+    .default([]),
 })
 
 export const listProductsDTO = z.object({
@@ -64,7 +68,9 @@ export class ProductService {
   /**
    * List products with pagination and caching
    */
-  static async listProducts(params: z.infer<typeof listProductsDTO>): Promise<PaginatedResponse<any>> {
+  static async listProducts(
+    params: z.infer<typeof listProductsDTO>
+  ): Promise<PaginatedResponse<any>> {
     const validated = listProductsDTO.parse(params)
     const { page, limit, ...filters } = validated
 
@@ -109,7 +115,7 @@ export class ProductService {
           categoryId: true,
           createdAt: true,
           updatedAt: true,
-          productCategory: {
+          ProductCategory: {
             select: {
               id: true,
               name: true,
@@ -117,7 +123,7 @@ export class ProductService {
               description: true,
             },
           },
-          productImages: {
+          ProductImage: {
             select: {
               id: true,
               imageId: true,
@@ -139,21 +145,18 @@ export class ProductService {
           },
           _count: {
             select: {
-              productImages: true,
-              productOptions: true,
-              pricingTiers: true,
+              ProductImage: true,
+              ProductOption: true,
+              PricingTier: true,
             },
           },
-          productSizeGroups: true,
-          productQuantityGroups: true,
-          productPaperStockSets: true,
-          productTurnaroundTimeSets: true,
-          productAddOnSets: true,
+          ProductSizeGroup: true,
+          ProductQuantityGroup: true,
+          ProductPaperStockSet: true,
+          ProductTurnaroundTimeSet: true,
+          ProductAddOnSet: true,
         },
-        orderBy: [
-          { isFeatured: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
       }),
     ])
 
@@ -228,82 +231,84 @@ export class ProductService {
           },
           orderBy: { sortOrder: 'asc' },
         },
-        ...(includeDetails ? {
-          productPaperStockSets: {
-            include: {
-              PaperStockSet: {
-                select: {
-                  id: true,
-                  name: true,
-                  description: true,
+        ...(includeDetails
+          ? {
+              productPaperStockSets: {
+                include: {
+                  PaperStockSet: {
+                    select: {
+                      id: true,
+                      name: true,
+                      description: true,
+                    },
+                  },
                 },
               },
-            },
-          },
-          productOptions: {
-            select: {
-              id: true,
-              optionName: true,
-              optionType: true,
-              isRequired: true,
-              sortOrder: true,
-              OptionValue: {
+              productOptions: {
                 select: {
                   id: true,
-                  value: true,
-                  priceModifier: true,
+                  optionName: true,
+                  optionType: true,
+                  isRequired: true,
                   sortOrder: true,
+                  OptionValue: {
+                    select: {
+                      id: true,
+                      value: true,
+                      priceModifier: true,
+                      sortOrder: true,
+                    },
+                    orderBy: { sortOrder: 'asc' },
+                  },
                 },
                 orderBy: { sortOrder: 'asc' },
               },
-            },
-            orderBy: { sortOrder: 'asc' },
-          },
-          pricingTiers: {
-            orderBy: { minQuantity: 'asc' },
-          },
-          productQuantityGroups: {
-            include: {
-              QuantityGroup: true,
-            },
-          },
-          productSizeGroups: {
-            include: {
-              SizeGroup: true,
-            },
-          },
-          productTurnaroundTimeSets: {
-            include: {
-              TurnaroundTimeSet: {
+              pricingTiers: {
+                orderBy: { minQuantity: 'asc' },
+              },
+              productQuantityGroups: {
                 include: {
-                  TurnaroundTimeSetItem: {
+                  QuantityGroup: true,
+                },
+              },
+              productSizeGroups: {
+                include: {
+                  SizeGroup: true,
+                },
+              },
+              productTurnaroundTimeSets: {
+                include: {
+                  TurnaroundTimeSet: {
                     include: {
-                      TurnaroundTime: true,
+                      TurnaroundTimeSetItem: {
+                        include: {
+                          TurnaroundTime: true,
+                        },
+                      },
                     },
                   },
                 },
               },
-            },
-          },
-          productAddOnSets: {
-            include: {
-              AddOnSet: {
+              productAddOnSets: {
                 include: {
-                  addOnSetItems: {
+                  AddOnSet: {
                     include: {
-                      AddOn: true,
+                      addOnSetItems: {
+                        include: {
+                          AddOn: true,
+                        },
+                      },
                     },
                   },
                 },
               },
-            },
-          },
-          productAddOns: {
-            include: {
-              AddOn: true,
-            },
-          },
-        } : {}),
+              productAddOns: {
+                include: {
+                  AddOn: true,
+                },
+              },
+            }
+          : {}),
       },
     })
 
@@ -429,7 +434,11 @@ export class ProductService {
   /**
    * Update product with optimistic locking
    */
-  static async updateProduct(id: string, data: Partial<z.infer<typeof createProductDTO>>, userId: string): Promise<any> {
+  static async updateProduct(
+    id: string,
+    data: Partial<z.infer<typeof createProductDTO>>,
+    userId: string
+  ): Promise<any> {
     // Check product exists
     const existing = await prisma.product.findUnique({
       where: { id },
@@ -475,7 +484,9 @@ export class ProductService {
   /**
    * Validate related entities exist
    */
-  private static async validateRelatedEntities(data: z.infer<typeof createProductDTO>): Promise<void> {
+  private static async validateRelatedEntities(
+    data: z.infer<typeof createProductDTO>
+  ): Promise<void> {
     const [category, paperStockSet, quantityGroup, sizeGroup] = await Promise.all([
       prisma.productCategory.findUnique({ where: { id: data.categoryId } }),
       prisma.paperStockSet.findUnique({ where: { id: data.paperStockSetId } }),

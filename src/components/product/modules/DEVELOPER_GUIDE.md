@@ -9,6 +9,7 @@
 ## 🏗️ **Architecture Overview**
 
 ### **What We Built**
+
 - ✅ **Error Independence** - Module A error doesn't crash Module B
 - ✅ **UI Independence** - Each module renders independently
 - ✅ **Loading Independence** - Each module manages its own loading states
@@ -17,6 +18,7 @@
 - ✅ **Performance Optimization** - High-performance caching system
 
 ### **Pricing Flow (CORRECT Dependencies)**
+
 ```
 STEP 1: Base Price = quantity × paper_stock × size × coating × sides
 STEP 2: Addon Price = quantity × addon (PER_UNIT) OR base_price × addon (PERCENTAGE)
@@ -28,16 +30,19 @@ STEP 3: Final Price = base_price + addon_price × turnaround
 ## 📦 **Module Types & Characteristics**
 
 ### **Required Modules (Core)**
+
 1. **Quantity** - Always required, provides quantity multiplier
 2. **Paper Stock** - Always required, provides base price per unit
 3. **Size** - Always required, provides size multiplier
 
 ### **Optional Modules (Enhancement)**
+
 4. **Add-ons** - Optional, depends on quantity + base price
 5. **Turnaround** - Optional, depends on base/product price
 6. **Images** - ALWAYS optional, NEVER affects pricing
 
 ### **Image Module Special Rules** 🚫
+
 - ✅ **Never required** for pricing calculations
 - ✅ **Never blocks** checkout process
 - ✅ **System works completely** without any uploads
@@ -48,6 +53,7 @@ STEP 3: Final Price = base_price + addon_price × turnaround
 ## 🔧 **Creating a New Module**
 
 ### **1. File Structure**
+
 ```
 src/components/product/modules/[module-name]/
 ├── index.ts                 # Clean exports
@@ -64,7 +70,7 @@ src/components/product/modules/[module-name]/
 import {
   StandardModuleProps,
   ModulePricingContribution,
-  ModuleType
+  ModuleType,
 } from '../types/StandardModuleTypes'
 
 export interface YourModuleItem {
@@ -148,13 +154,12 @@ export function useYourModule({
   moduleType,
   items,
   value,
-  onChange
+  onChange,
 }: UseYourModuleOptions): YourModuleValue {
-
   // Ultra-independent error handling
   const moduleErrors = useModuleErrors({
     moduleType,
-    onError: (error) => console.log(`${moduleType} Error:`, error)
+    onError: (error) => console.log(`${moduleType} Error:`, error),
   })
 
   // Ultra-independent loading state
@@ -162,7 +167,7 @@ export function useYourModule({
     moduleType,
     onLoadingChange: (isLoading, state) => {
       // Loading changes don't affect other modules
-    }
+    },
   })
 
   // Validation logic (module-specific)
@@ -177,7 +182,7 @@ export function useYourModule({
         type: 'validation',
         moduleType,
         field: 'selection',
-        severity: 'error'
+        severity: 'error',
       })
       return false
     }
@@ -191,30 +196,28 @@ export function useYourModule({
 
     // Calculate your module's pricing impact
     return {
-      basePrice: 0,        // If this module provides base price
-      multiplier: 1.2,     // If this module provides multiplier
-      addonCost: 25,       // If this module provides flat addon
+      basePrice: 0, // If this module provides base price
+      multiplier: 1.2, // If this module provides multiplier
+      addonCost: 25, // If this module provides flat addon
       isValid: true,
       calculation: {
         description: 'Your module contribution',
-        breakdown: [
-          { type: 'your_type', item: 'Description', cost: 25 }
-        ]
-      }
+        breakdown: [{ type: 'your_type', item: 'Description', cost: 25 }],
+      },
     }
   }, [isValid, value])
 
   return {
     // Standard interface
     value: {
-      selectedItem: items.find(item => item.id === value) || null,
-      isValid
+      selectedItem: items.find((item) => item.id === value) || null,
+      isValid,
     },
     pricing,
     display: {
       description: isValid ? 'Selection made' : 'No selection',
       summary: `Your module`,
-      showInSummary: isValid
+      showInSummary: isValid,
     },
     isValid,
     error: moduleErrors.hasErrors ? moduleErrors.errors[0] : null,
@@ -222,7 +225,7 @@ export function useYourModule({
     // Ultra-independent characteristics
     errors: moduleErrors.errors,
     hasErrors: moduleErrors.hasErrors,
-    clearErrors: moduleErrors.clearErrors
+    clearErrors: moduleErrors.clearErrors,
   }
 }
 ```
@@ -232,27 +235,22 @@ export function useYourModule({
 ## ⚡ **Performance Guidelines**
 
 ### **Caching Integration**
+
 ```typescript
-import {
-  ModulePricingEngine,
-  PricingConstants,
-  debounce
-} from '../pricing'
+import { ModulePricingEngine, PricingConstants, debounce } from '../pricing'
 
 // Use caching for expensive calculations
 const pricingEngine = new ModulePricingEngine({
   maxCacheSize: PricingConstants.DEFAULT_CACHE_SIZE,
-  maxAge: PricingConstants.DEFAULT_CACHE_TTL_MS
+  maxAge: PricingConstants.DEFAULT_CACHE_TTL_MS,
 })
 
 // Debounce frequent updates
-const debouncedPriceUpdate = debounce(
-  updatePrice,
-  PricingConstants.DEFAULT_DEBOUNCE_MS
-)
+const debouncedPriceUpdate = debounce(updatePrice, PricingConstants.DEFAULT_DEBOUNCE_MS)
 ```
 
 ### **Memory Management**
+
 ```typescript
 // Cleanup resources when component unmounts
 useEffect(() => {
@@ -267,6 +265,7 @@ useEffect(() => {
 ## 🧪 **Testing Your Module**
 
 ### **1. Independence Tests**
+
 ```typescript
 // Test error isolation
 test('module errors do not affect other modules', () => {
@@ -282,6 +281,7 @@ test('module loading states are independent', () => {
 ```
 
 ### **2. Pricing Integration Tests**
+
 ```typescript
 // Test pricing contributions
 test('module pricing contribution is correct', () => {
@@ -295,6 +295,7 @@ test('module pricing contribution is correct', () => {
 ```
 
 ### **3. Dependency Tests**
+
 ```typescript
 // Test required dependencies
 test('module gets correct context dependencies', () => {
@@ -309,6 +310,7 @@ test('module gets correct context dependencies', () => {
 ## 🚫 **Common Mistakes to Avoid**
 
 ### **❌ WRONG: Removing Pricing Dependencies**
+
 ```typescript
 // DON'T DO THIS - Breaks pricing calculations
 function useAddonsModule() {
@@ -318,20 +320,25 @@ function useAddonsModule() {
 ```
 
 ### **✅ CORRECT: Keeping Required Dependencies**
+
 ```typescript
 // DO THIS - Preserves pricing accuracy
 function useAddonsModule({ quantity, basePrice }) {
-  const pricing = useMemo(() => ({
-    addonCost: quantity * 0.02,           // NEEDS quantity
-    percentageCost: basePrice * 0.15,     // NEEDS basePrice
-    isValid: true
-  }), [quantity, basePrice])
+  const pricing = useMemo(
+    () => ({
+      addonCost: quantity * 0.02, // NEEDS quantity
+      percentageCost: basePrice * 0.15, // NEEDS basePrice
+      isValid: true,
+    }),
+    [quantity, basePrice]
+  )
 
   return { pricing }
 }
 ```
 
 ### **❌ WRONG: Direct Module Communication**
+
 ```typescript
 // DON'T DO THIS - Breaks independence
 function useModuleA() {
@@ -340,6 +347,7 @@ function useModuleA() {
 ```
 
 ### **✅ CORRECT: Communication Through Pricing Engine**
+
 ```typescript
 // DO THIS - Maintains independence
 function useModuleA() {
@@ -349,6 +357,7 @@ function useModuleA() {
 ```
 
 ### **❌ WRONG: Making Images Required**
+
 ```typescript
 // DON'T DO THIS - Images must always be optional
 if (!images.length) {
@@ -357,6 +366,7 @@ if (!images.length) {
 ```
 
 ### **✅ CORRECT: Images Always Optional**
+
 ```typescript
 // DO THIS - Images never block system
 const isValid = true // Always valid, regardless of images
@@ -370,30 +380,35 @@ const pricing = { isValid: true } // Images never affect pricing
 ### **Before Submitting Your Module:**
 
 #### **Independence Checklist** ✅
+
 - [ ] Module errors don't crash other modules
 - [ ] Module loading states don't block other modules
 - [ ] Module can be fixed without touching other modules
 - [ ] Module renders independently of other module states
 
 #### **Integration Checklist** ✅
+
 - [ ] Pricing dependencies are preserved (if required)
 - [ ] Module contributes to pricing correctly
 - [ ] Module gets required context from pricing engine
 - [ ] Module doesn't directly access other module states
 
 #### **Image Module Special Checklist** 📁
+
 - [ ] Module is completely optional
 - [ ] System works without any uploads
 - [ ] Errors are warnings, never critical
 - [ ] Never blocks pricing or checkout
 
 #### **Performance Checklist** ⚡
+
 - [ ] Uses caching for expensive calculations
 - [ ] Debounces frequent updates
 - [ ] Cleans up resources on unmount
 - [ ] Handles loading states efficiently
 
 #### **Testing Checklist** 🧪
+
 - [ ] Tests error isolation
 - [ ] Tests loading isolation
 - [ ] Tests pricing integration
@@ -404,6 +419,7 @@ const pricing = { isValid: true } // Images never affect pricing
 ## 🎯 **Module Integration Points**
 
 ### **With Pricing Engine**
+
 ```typescript
 // Your module contributes to pricing
 engine.updateModuleContribution(ModuleType.YOUR_MODULE, contribution)
@@ -413,12 +429,14 @@ const context = engine.getContextForModule(ModuleType.YOUR_MODULE)
 ```
 
 ### **With Error System**
+
 ```typescript
 // Independent error handling
 const moduleErrors = useModuleErrors({ moduleType: ModuleType.YOUR_MODULE })
 ```
 
 ### **With Loading System**
+
 ```typescript
 // Independent loading management
 const moduleLoading = useModuleLoading({ moduleType: ModuleType.YOUR_MODULE })
@@ -429,6 +447,7 @@ const moduleLoading = useModuleLoading({ moduleType: ModuleType.YOUR_MODULE })
 ## 🚀 **Deployment Considerations**
 
 ### **Production Checklist**
+
 - [ ] All modules tested in isolation
 - [ ] Pricing calculations verified for accuracy
 - [ ] Performance optimizations enabled
@@ -436,6 +455,7 @@ const moduleLoading = useModuleLoading({ moduleType: ModuleType.YOUR_MODULE })
 - [ ] Caching properly configured
 
 ### **Monitoring**
+
 ```typescript
 // Monitor pricing performance
 const stats = engine.getPerformanceStats()

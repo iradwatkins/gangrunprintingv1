@@ -18,7 +18,6 @@ import { ModuleErrorType, ModuleErrorSeverity } from '../errors/ModuleErrorSyste
 import { ModuleLoadingType, ModuleLoadingPriority } from '../loading/ModuleLoadingSystem'
 
 describe('Ultra-Independent Module Architecture', () => {
-
   describe('Error Handling Independence', () => {
     test('Module errors are completely isolated', () => {
       // Create separate error handlers for different modules
@@ -42,7 +41,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
-          severity: ModuleErrorSeverity.ERROR
+          severity: ModuleErrorSeverity.ERROR,
         })
       })
 
@@ -74,7 +73,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
-          severity: ModuleErrorSeverity.ERROR
+          severity: ModuleErrorSeverity.ERROR,
         })
 
         sizeErrors.current.addError({
@@ -83,7 +82,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.SIZE,
           field: 'dimensions',
-          severity: ModuleErrorSeverity.ERROR
+          severity: ModuleErrorSeverity.ERROR,
         })
       })
 
@@ -114,7 +113,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.ADDONS,
           field: 'addon',
-          severity: ModuleErrorSeverity.WARNING
+          severity: ModuleErrorSeverity.WARNING,
         })
 
         moduleErrors.current.addError({
@@ -123,7 +122,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.ADDONS,
           field: 'addon',
-          severity: ModuleErrorSeverity.ERROR
+          severity: ModuleErrorSeverity.ERROR,
         })
 
         moduleErrors.current.addError({
@@ -132,7 +131,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.SYSTEM_ERROR,
           moduleType: ModuleType.ADDONS,
           field: 'system',
-          severity: ModuleErrorSeverity.CRITICAL
+          severity: ModuleErrorSeverity.CRITICAL,
         })
       })
 
@@ -284,7 +283,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.SYSTEM_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'system',
-          severity: ModuleErrorSeverity.CRITICAL
+          severity: ModuleErrorSeverity.CRITICAL,
         })
       })
 
@@ -315,7 +314,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.UPLOAD_ERROR,
           moduleType: ModuleType.IMAGES,
           field: 'upload',
-          severity: ModuleErrorSeverity.WARNING // Images should always be warnings, never critical
+          severity: ModuleErrorSeverity.WARNING, // Images should always be warnings, never critical
         })
       })
 
@@ -346,7 +345,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
-          severity: ModuleErrorSeverity.ERROR
+          severity: ModuleErrorSeverity.ERROR,
         })
       })
 
@@ -361,7 +360,7 @@ describe('Ultra-Independent Module Architecture', () => {
       const { result: paperLoading } = renderHook(() =>
         useModuleLoading({
           moduleType: ModuleType.PAPER_STOCK,
-          autoCleanup: true
+          autoCleanup: true,
         })
       )
 
@@ -417,7 +416,7 @@ describe('Ultra-Independent Module Architecture', () => {
           type: ModuleErrorType.UPLOAD_ERROR,
           moduleType: ModuleType.IMAGES,
           field: 'upload',
-          severity: ModuleErrorSeverity.WARNING // Never critical
+          severity: ModuleErrorSeverity.WARNING, // Never critical
         })
       })
 
@@ -443,4 +442,4 @@ describe('Ultra-Independent Module Architecture', () => {
   })
 })
 
-export { }
+export {}

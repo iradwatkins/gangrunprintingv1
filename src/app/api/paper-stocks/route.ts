@@ -3,22 +3,22 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const paperStocks = await prisma.paperStock.findMany({
       orderBy: { name: 'asc' },
       include: {
-        paperStockCoatings: {
+        PaperStockCoating: {
           include: {
             CoatingOption: true,
           },
         },
-        paperStockSides: {
+        PaperStockSides: {
           include: {
             SidesOption: true,
           },
         },
-        paperStockSetItems: true,
+        PaperStockSetItem: true,
       },
     })
 
@@ -29,7 +29,7 @@ export async function GET() : Promise<unknown> {
     // Transform to match the frontend structure
     const transformed = paperStocks.map((stock) => {
       // Map coatings
-      const stockCoatingIds = stock.paperStockCoatings.map((sc) => sc.coatingId)
+      const stockCoatingIds = stock.PaperStockCoating.map((sc) => sc.coatingId)
       const coatings = allCoatings.map((coating) => ({
         id: coating.id,
         label: coating.name,
@@ -37,7 +37,7 @@ export async function GET() : Promise<unknown> {
       }))
 
       // Map sides options
-      const stockSidesMap = new Map(stock.paperStockSides.map((ss) => [ss.sidesOptionId, ss]))
+      const stockSidesMap = new Map(stock.PaperStockSides.map((ss) => [ss.sidesOptionId, ss]))
       const sidesOptions = allSides.map((side) => {
         const stockSide = stockSidesMap.get(side.id)
         return {
@@ -50,15 +50,12 @@ export async function GET() : Promise<unknown> {
 
       // Find defaults
       const defaultCoating =
-        stock.paperStockCoatings.find((c) => c.isDefault)?.coatingId ||
+        stock.PaperStockCoating.find((c) => c.isDefault)?.coatingId ||
         coatings.find((c) => c.enabled)?.id ||
         allCoatings[0]?.id ||
         ''
 
-      const defaultSides =
-        sidesOptions.find((s) => s.enabled)?.id ||
-        allSides[0]?.id ||
-        ''
+      const defaultSides = sidesOptions.find((s) => s.enabled)?.id || allSides[0]?.id || ''
 
       return {
         id: stock.id,
@@ -67,15 +64,15 @@ export async function GET() : Promise<unknown> {
         pricePerSqInch: stock.pricePerSqInch,
         tooltipText: stock.tooltipText,
         isActive: stock.isActive,
-        paperStockCoatings: stock.paperStockCoatings.map(pc => ({
+        paperStockCoatings: stock.PaperStockCoating.map((pc) => ({
           ...pc,
-          coating: pc.CoatingOption // Transform PascalCase to camelCase for frontend
+          coating: pc.CoatingOption, // Transform PascalCase to camelCase for frontend
         })),
-        paperStockSides: stock.paperStockSides.map(ps => ({
+        paperStockSides: stock.PaperStockSides.map((ps) => ({
           ...ps,
-          sidesOption: ps.SidesOption // Transform PascalCase to camelCase for frontend
+          sidesOption: ps.SidesOption, // Transform PascalCase to camelCase for frontend
         })),
-        productsCount: stock.paperStockSetItems.length,
+        productsCount: stock.PaperStockSetItem.length,
       }
     })
 
@@ -110,7 +107,7 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true,
         updatedAt: new Date(),
         // Add coating relationships
-        paperStockCoatings: {
+        PaperStockCoating: {
           create:
             coatings?.map((c: Record<string, unknown>) => ({
               coatingId: c.id,
@@ -118,7 +115,7 @@ export async function POST(request: NextRequest) {
             })) || [],
         },
         // Add sides relationships
-        paperStockSides: {
+        PaperStockSides: {
           create:
             sidesOptions?.map((s: Record<string, unknown>) => ({
               sidesOptionId: s.id,
@@ -129,10 +126,10 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        paperStockCoatings: {
+        PaperStockCoating: {
           include: { CoatingOption: true },
         },
-        paperStockSides: {
+        PaperStockSides: {
           include: { SidesOption: true },
         },
       },

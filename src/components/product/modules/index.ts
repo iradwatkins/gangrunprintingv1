@@ -13,7 +13,7 @@ export type {
   Coating,
   SidesOption,
   PaperStockModuleProps,
-  PaperStockModuleValue
+  PaperStockModuleValue,
 } from './paper-stock'
 
 // Addons Module
@@ -26,13 +26,9 @@ export type {
   BandingConfig,
   CornerRoundingConfig,
   AddonsModuleProps,
-  AddonsModuleValue
+  AddonsModuleValue,
 } from './addons'
 
 // Turnaround Module
 export { TurnaroundModule, useTurnaroundModule } from './turnaround'
-export type {
-  TurnaroundTime,
-  TurnaroundModuleProps,
-  TurnaroundModuleValue
-} from './turnaround'
+export type { TurnaroundTime, TurnaroundModuleProps, TurnaroundModuleValue } from './turnaround'

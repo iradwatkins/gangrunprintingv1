@@ -19,7 +19,7 @@ export default defineConfig({
       '**/*.spec.{ts,tsx,js,jsx}',
       '.next/**',
       'dist/**',
-      'build/**'
+      'build/**',
     ],
     coverage: {
       reporter: ['text', 'json', 'html'],

@@ -26,7 +26,7 @@ export function SizeModule({
 
   // Calculate actual size dimensions
   const getSizeDimensions = () => {
-    const selectedSize = sizes.find(s => s.id === value)
+    const selectedSize = sizes.find((s) => s.id === value)
 
     if (selectedSize?.isCustom && customWidth && customHeight) {
       return { width: customWidth, height: customHeight }
@@ -35,7 +35,7 @@ export function SizeModule({
     if (selectedSize) {
       return {
         width: selectedSize.width || 0,
-        height: selectedSize.height || 0
+        height: selectedSize.height || 0,
       }
     }
 
@@ -48,14 +48,14 @@ export function SizeModule({
   const handleSizeChange = (newDimensions: { width: number; height: number }) => {
     // Check if it matches a standard size
     const standardSize = sizes.find(
-      s => !s.isCustom && s.width === newDimensions.width && s.height === newDimensions.height
+      (s) => !s.isCustom && s.width === newDimensions.width && s.height === newDimensions.height
     )
 
     if (standardSize) {
       onChange(standardSize.id, undefined, undefined)
     } else {
       // It's a custom size
-      const customOption = sizes.find(s => s.isCustom)
+      const customOption = sizes.find((s) => s.isCustom)
       if (customOption) {
         onChange(customOption.id, newDimensions.width, newDimensions.height)
       }
@@ -72,22 +72,22 @@ export function SizeModule({
   return (
     <div className={`size-module space-y-4 ${className}`}>
       <SizeSelector
-        sizes={sizes}
-        value={dimensions}
-        onChange={handleSizeChange}
+        className={disabled ? 'opacity-50 pointer-events-none' : ''}
         label="PRINT SIZE"
         required={required}
+        sizes={sizes}
         unit="inch"
-        className={disabled ? 'opacity-50 pointer-events-none' : ''}
+        value={dimensions}
+        onChange={handleSizeChange}
       />
 
       {/* Exact Size Checkbox */}
       <div className="flex items-center space-x-2">
         <Checkbox
           checked={exactSize}
+          disabled={disabled}
           id="exactSize"
           onCheckedChange={handleExactSizeChange}
-          disabled={disabled}
         />
         <Label
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

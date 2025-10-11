@@ -3,7 +3,7 @@ import { checkMinioHealth, testMinioUpload, getMinioConfig } from '@/lib/minio-h
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     // Get MinIO configuration
     const config = getMinioConfig()

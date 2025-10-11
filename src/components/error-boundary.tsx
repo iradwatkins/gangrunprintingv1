@@ -160,12 +160,7 @@ export const PageErrorBoundary: React.FC<{ children: React.ReactNode; pageName?:
   children,
   pageName,
 }) => (
-  <ErrorBoundary
-    isolate={true}
-    name={`Page: ${pageName}`}
-    onError={(error, errorInfo) => {
-      }}
-  >
+  <ErrorBoundary isolate={true} name={`Page: ${pageName}`} onError={(error, errorInfo) => {}}>
     {children}
   </ErrorBoundary>
 )

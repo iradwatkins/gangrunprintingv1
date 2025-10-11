@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Admin Authentication Flow Test', () => {
   test('verify authentication redirect flow works properly', async ({ page }) => {
-
     // Navigate to admin page as unauthenticated user
     await page.goto('https://gangrunprinting.com/admin/products/new')
 
@@ -27,11 +26,9 @@ test.describe('Admin Authentication Flow Test', () => {
     // Check for email input field
     const emailInput = page.locator('input[type="email"], input[name="email"]')
     const hasEmailInput = await emailInput.isVisible()
-
   })
 
   test('test magic link API endpoint', async ({ request }) => {
-
     const response = await request.post('https://gangrunprinting.com/api/auth/send-magic-link', {
       data: {
         email: 'test@example.com',
@@ -39,17 +36,11 @@ test.describe('Admin Authentication Flow Test', () => {
     })
 
     if (response.status() === 200) {
-
       const data = await response.json()
-
     } else {
-
       try {
         const error = await response.text()
-
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
   })
 })

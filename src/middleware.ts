@@ -12,9 +12,9 @@ import { addBreadcrumb } from '@/lib/sentry'
 // Request correlation ID for distributed tracing
 function generateCorrelationId(): string {
   // Generate random UUID without external dependency
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0
-    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
     return v.toString(16)
   })
 }
@@ -145,15 +145,15 @@ function addResponseHeaders(response: NextResponse, correlationId: string) {
   response.headers.set('x-powered-by', 'GangRun Printing')
 
   // Security headers
-  response.headers.set('x-frame-options', 'DENY')
+  // Remove X-Frame-Options: DENY to allow Square payment iframes
   response.headers.set('x-content-type-options', 'nosniff')
   response.headers.set('referrer-policy', 'origin-when-cross-origin')
 
-  // CSP for production
+  // CSP for production - Updated to support Square and PayPal payment processors
   if (process.env.NODE_ENV === 'production') {
     response.headers.set(
       'content-security-policy',
-      "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+      "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://www.paypal.com https://*.paypal.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://pci-connect.squareup.com https://*.square.com https://*.squareup.com https://*.squarecdn.com https://www.paypal.com https://*.paypal.com; img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com https://fonts.gstatic.com https://*.gstatic.com https://www.paypalobjects.com https://*.paypalobjects.com; style-src 'self' 'unsafe-inline' https://*.squarecdn.com; font-src 'self' data: https://*.squarecdn.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.paypal.com; frame-ancestors 'none'; frame-src https://web.squarecdn.com https://*.squarecdn.com https://www.paypal.com https://*.paypal.com; upgrade-insecure-requests;"
     )
   }
 }

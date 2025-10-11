@@ -1,6 +1,7 @@
 # Story 4.3: Customer Order History with Filtering
 
 ## Status
+
 **Ready for Review** ✅
 
 **Story Type:** Feature Implementation (Brownfield - Completing Stub)
@@ -25,12 +26,14 @@
 ### Existing System Integration
 
 **Current State:**
+
 - Page exists at `/account/orders` but is non-functional stub
 - Shows hardcoded "You haven't placed any orders yet" message
 - Does NOT fetch orders from database
 - AccountWrapper layout component exists and works
 
 **Database Schema:**
+
 ```typescript
 Order model (Prisma):
 - id, orderNumber, referenceNumber
@@ -43,6 +46,7 @@ Order model (Prisma):
 ```
 
 **Technology Stack:**
+
 - Next.js 15 App Router
 - Server Components for data fetching
 - Prisma ORM for database queries
@@ -50,6 +54,7 @@ Order model (Prisma):
 - shadcn/ui components (Card, Button, Badge, etc.)
 
 **Integration Points:**
+
 - Authentication: `validateRequest()` from `@/lib/auth`
 - Database: `prisma` from `@/lib/prisma`
 - Existing layout: `AccountWrapper` component
@@ -167,11 +172,13 @@ Order model (Prisma):
 ## Tasks / Subtasks
 
 ### ✅ Foundation (Already Complete)
+
 - [x] Page file exists at `/account/orders/page.tsx`
 - [x] AccountWrapper layout component working
 - [x] Empty state UI exists
 
 ### ❌ Data Fetching (AC: 2)
+
 - [ ] Convert page to Server Component
   - [ ] Remove `'use client'` directive
   - [ ] Add async function for data fetching
@@ -186,6 +193,7 @@ Order model (Prisma):
   - [ ] Add error handling
 
 ### ❌ Order List Display (AC: 3, 8)
+
 - [ ] Create `OrderCard` component
   - [ ] Display order number (link to detail)
   - [ ] Display formatted order date
@@ -201,6 +209,7 @@ Order model (Prisma):
   - [ ] Handle empty array
 
 ### ❌ Pagination (AC: 3)
+
 - [ ] Implement pagination logic
   - [ ] Calculate total pages (totalOrders / ordersPerPage)
   - [ ] Slice orders array for current page
@@ -213,6 +222,7 @@ Order model (Prisma):
   - [ ] Update URL on page change
 
 ### ❌ Status Filter (AC: 4)
+
 - [ ] Create status filter dropdown component
   - [ ] List all order statuses
   - [ ] Add "All Orders" option
@@ -224,6 +234,7 @@ Order model (Prisma):
 - [ ] Style selected status
 
 ### ❌ Date Range Filter (AC: 5)
+
 - [ ] Create date range picker component (or use shadcn DatePicker)
   - [ ] Preset buttons (7d, 30d, 90d, All)
   - [ ] Custom date range inputs
@@ -234,6 +245,7 @@ Order model (Prisma):
   - [ ] Update URL when dates change
 
 ### ❌ Search Functionality (AC: 6)
+
 - [ ] Create search input component
   - [ ] Input field with search icon
   - [ ] Clear button (X)
@@ -246,6 +258,7 @@ Order model (Prisma):
   - [ ] Show "No results" message
 
 ### ❌ Sort Functionality (AC: 7)
+
 - [ ] Create sort dropdown component
   - [ ] Sort options list
   - [ ] Selected indicator
@@ -260,12 +273,14 @@ Order model (Prisma):
   - [ ] Update URL when sort changes
 
 ### ❌ Empty State Logic (AC: 9)
+
 - [ ] Implement conditional rendering
   - [ ] Check if orders.length === 0 AND no filters active → Show "no orders yet"
   - [ ] Check if filteredOrders.length === 0 AND filters active → Show "no results match filters"
   - [ ] Show reset filters button in second case
 
 ### ❌ Integration & Links (AC: 11, 12, 13)
+
 - [ ] Link order cards to detail page
   - [ ] href="/account/orders/[orderId]"
   - [ ] Ensure order ID is included
@@ -277,6 +292,7 @@ Order model (Prisma):
   - [ ] Show discount badge/indicator on orders with discounts
 
 ### ❌ Loading & Error States (AC: 14, 15, 16)
+
 - [ ] Create loading skeleton component
   - [ ] Skeleton order cards (3-5)
   - [ ] Shimmer animation
@@ -287,6 +303,7 @@ Order model (Prisma):
   - [ ] Log errors to console
 
 ### ❌ Responsive Design (AC: 17)
+
 - [ ] Test on mobile (375px)
   - [ ] Order cards stack vertically
   - [ ] Filters collapse into drawer/accordion
@@ -299,6 +316,7 @@ Order model (Prisma):
   - [ ] Filters in sidebar
 
 ### ❌ URL State Management (AC: 18)
+
 - [ ] Use Next.js useSearchParams hook
 - [ ] Update URL for all filters/sort:
   - [ ] ?status=SHIPPED
@@ -310,6 +328,7 @@ Order model (Prisma):
 - [ ] Restore state from URL on page load
 
 ### ❌ Testing & QA (AC: 19, 20)
+
 - [ ] Performance testing
   - [ ] Measure initial page load
   - [ ] Test with 100+ orders
@@ -369,11 +388,13 @@ This is a **customer-facing feature** in the account management section. It comp
 ### Source Tree
 
 **Page (modify existing):**
+
 ```
 src/app/account/orders/page.tsx  (currently 31 lines → will be 300+ lines)
 ```
 
 **New Components (create):**
+
 ```
 src/components/account/
 ├── order-card.tsx              (Order display card)
@@ -384,6 +405,7 @@ src/components/account/
 ```
 
 **Utilities (may need to create):**
+
 ```
 src/lib/utils/
 └── date-formatter.ts           (Format order dates)
@@ -394,6 +416,7 @@ src/lib/utils/
 
 **1. Order Status After Migration:**
 After running the migration (Story 5.8), order statuses will be:
+
 - PENDING_PAYMENT, PAYMENT_DECLINED
 - CONFIRMATION, ON_HOLD
 - PRODUCTION
@@ -402,6 +425,7 @@ After running the migration (Story 5.8), order statuses will be:
 - REPRINT, CANCELLED, REFUNDED
 
 **2. Authentication Flow:**
+
 ```typescript
 import { validateRequest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
@@ -417,26 +441,28 @@ export default async function OrdersPage() {
 ```
 
 **3. Database Query:**
+
 ```typescript
 const orders = await prisma.order.findMany({
   where: {
-    userId: user.id
+    userId: user.id,
   },
   include: {
     OrderItem: {
       include: {
         // Include product info if needed for thumbnails
-      }
-    }
+      },
+    },
   },
   orderBy: {
-    createdAt: 'desc'
-  }
+    createdAt: 'desc',
+  },
 })
 ```
 
 **4. Broker Discount Display:**
 If `user.isBroker === true`, calculate and show savings:
+
 ```typescript
 // In order card
 {user.isBroker && order.brokerDiscountAmount && (
@@ -447,6 +473,7 @@ If `user.isBroker === true`, calculate and show savings:
 ```
 
 **5. URL State Pattern:**
+
 ```typescript
 'use client'
 
@@ -475,6 +502,7 @@ function OrderFilters() {
 ### Database Indexes (for performance)
 
 Ensure these indexes exist (should be created by Story 5.8 migration):
+
 ```sql
 CREATE INDEX "Order_userId_createdAt_idx" ON "Order"("userId", "createdAt");
 CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
@@ -483,11 +511,13 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 ### Known Integration Issues
 
 **Issue 1: Migration Must Be Run First**
+
 - Story 5.8 migration creates new order statuses
 - This story depends on migration being complete
 - If migration not run, status filter will have wrong values
 
 **Issue 2: Order Detail Page (Story 4.4)**
+
 - Epic 4 claims Story 4.4 is complete
 - Need to verify `/account/orders/[id]` actually works
 - If stub, will need separate implementation
@@ -497,6 +527,7 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 ## Testing
 
 ### Test Standards
+
 - **Location:** `/tests/e2e/` for user flow tests
 - **Frameworks:** Playwright for E2E testing
 - **Naming:** `customer-order-history.spec.ts`
@@ -504,11 +535,13 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 ### Test Cases Required
 
 **Authentication Tests:**
+
 - [ ] Unauthenticated user redirected to signin
 - [ ] Authenticated user sees their orders only
 - [ ] After login, user redirected back to orders page
 
 **Data Display Tests:**
+
 - [ ] Orders display in descending date order
 - [ ] Order card shows all required info (number, date, status, total, items)
 - [ ] Status badge colors match status type
@@ -516,6 +549,7 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 - [ ] Date formatted correctly (Oct 2, 2025)
 
 **Filter Tests:**
+
 - [ ] Status filter shows only matching orders
 - [ ] Date range filter works correctly
 - [ ] Multiple filters work together (AND logic)
@@ -523,6 +557,7 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 - [ ] Filters persist on page reload
 
 **Search Tests:**
+
 - [ ] Search by order number finds exact match
 - [ ] Search by product name finds orders containing product
 - [ ] Search is case-insensitive
@@ -530,6 +565,7 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 - [ ] Clear search button resets search
 
 **Sort Tests:**
+
 - [ ] Date newest first (default)
 - [ ] Date oldest first
 - [ ] Amount high to low
@@ -537,6 +573,7 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 - [ ] Status alphabetical
 
 **Pagination Tests:**
+
 - [ ] Shows 10 orders per page
 - [ ] Next button works
 - [ ] Previous button works
@@ -546,28 +583,33 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 - [ ] Page number persists on reload
 
 **Empty State Tests:**
+
 - [ ] Shows "no orders" message for new user
 - [ ] Shows "Browse Products" button
 - [ ] Shows "no results" message when filters return empty
 - [ ] Shows "Reset Filters" button in filter empty state
 
 **Responsive Tests:**
+
 - [ ] Mobile: Cards stack vertically, filters collapsible
 - [ ] Tablet: 2-column grid
 - [ ] Desktop: 3-column grid
 
 **Performance Tests:**
+
 - [ ] Initial page load < 2 seconds
 - [ ] Filter changes < 200ms
 - [ ] Search debounce works (not firing on every keystroke)
 
 **Accessibility Tests:**
+
 - [ ] Keyboard navigation works (Tab, Enter)
 - [ ] Screen reader announces order count
 - [ ] ARIA labels on interactive elements
 - [ ] Color contrast meets WCAG AA
 
 ### Test Data Requirements
+
 - Test user with 0 orders
 - Test user with 1 order
 - Test user with 25 orders (3 pages)
@@ -579,22 +621,25 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-10-02 | 1.0 | Initial story creation - correcting documentation error from Epic 4 | John (PM Agent) |
-| 2025-10-02 | 1.1 | Implemented customer order history with filters, search, sorting, pagination | James (Dev Agent) |
+| Date       | Version | Description                                                                  | Author            |
+| ---------- | ------- | ---------------------------------------------------------------------------- | ----------------- |
+| 2025-10-02 | 1.0     | Initial story creation - correcting documentation error from Epic 4          | John (PM Agent)   |
+| 2025-10-02 | 1.1     | Implemented customer order history with filters, search, sorting, pagination | James (Dev Agent) |
 
 ---
 
 ## Dev Agent Record
 
 ### Agent Model Used
+
 **Claude Sonnet 4.5** (claude-sonnet-4-5-20250929)
 
 ### Debug Log References
+
 None - Implementation completed without blockers
 
 ### Completion Notes List
+
 - ✅ Converted stub page to Server Component with Lucia Auth authentication
 - ✅ Implemented database query to fetch user's orders with OrderItem relation
 - ✅ Created OrdersList client component with:
@@ -616,10 +661,13 @@ None - Implementation completed without blockers
 - ✅ Built and deployed successfully to production (port 3002)
 
 ### File List
+
 **Modified:**
+
 - [src/app/account/orders/page.tsx](src/app/account/orders/page.tsx) - Converted from client stub to Server Component with authentication and data fetching
 
 **Created:**
+
 - [src/components/account/orders-list.tsx](src/components/account/orders-list.tsx) - Client component with filtering, sorting, pagination, and search logic
 - [src/components/account/order-card.tsx](src/components/account/order-card.tsx) - Order card display component with status badges
 - [src/components/account/orders-list-skeleton.tsx](src/components/account/orders-list-skeleton.tsx) - Loading skeleton component
@@ -636,6 +684,7 @@ This story corrects a documentation error where Story 4.3 was marked complete in
 **Priority:** CRITICAL - Must be completed before Story 5.7 (Broker UI) or Story 4.5 (Re-Order).
 
 **Dependencies:**
+
 - ⚠️ Story 5.8 database migration must be run first (for correct order statuses)
 - ✅ Authentication system working (Lucia Auth)
 - ✅ Database schema ready (Order + OrderItem models)

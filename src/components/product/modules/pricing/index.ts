@@ -14,7 +14,7 @@ export {
   ModulePricingContext,
   ModulePricingRequirements,
   useModulePricingEngine,
-  UseModulePricingEngineOptions
+  UseModulePricingEngineOptions,
 } from './ModulePricingEngine'
 
 // High-performance caching system
@@ -24,20 +24,16 @@ export {
   generateModuleContextKey,
   measureExecutionTime,
   debounce,
-  throttle
+  throttle,
 } from './PricingCache'
 
-export type {
-  CachedPricingResult,
-  CachedModuleContext,
-  PricingCacheStats
-} from './PricingCache'
+export type { CachedPricingResult, CachedModuleContext, PricingCacheStats } from './PricingCache'
 
 // Re-export types from standard module types that are needed for pricing
 export type {
   ModulePricingContribution,
   ModulePricingCalculation,
-  ModuleType
+  ModuleType,
 } from '../types/StandardModuleTypes'
 
 /**
@@ -73,7 +69,7 @@ export const PricingConstants = {
 
   // Debounce/throttle defaults
   DEFAULT_DEBOUNCE_MS: 300,
-  DEFAULT_THROTTLE_MS: 100
+  DEFAULT_THROTTLE_MS: 100,
 } as const
 
 /**
@@ -126,7 +122,7 @@ export const PricingUtils = {
       context.sizeMultiplier > 0 &&
       context.isValid
     )
-  }
+  },
 } as const
 
 /**

@@ -5,20 +5,17 @@ test.describe('Admin Products Page Tests', () => {
     // Enable console logging for debugging
     page.on('console', (msg) => {
       if (msg.type() === 'log' || msg.type() === 'error') {
-
       }
     })
 
     // Track network requests to API
     page.on('request', (request) => {
       if (request.url().includes('/api/')) {
-
       }
     })
 
     page.on('response', (response) => {
       if (response.url().includes('/api/')) {
-
       }
     })
 
@@ -30,7 +27,6 @@ test.describe('Admin Products Page Tests', () => {
 
     // Check if we get redirected to login (if not authenticated)
     if (page.url().includes('/auth/signin')) {
-
       return
     }
 
@@ -81,7 +77,6 @@ test.describe('Admin Products Page Tests', () => {
           // Check for status badges
           const statusBadges = productRow.locator('.badge, [class*="badge"]')
           const badgeCount = await statusBadges.count()
-
         }
       }
 
@@ -94,7 +89,6 @@ test.describe('Admin Products Page Tests', () => {
       if (statsCount > 0) {
         for (let i = 0; i < Math.min(statsCount, 4); i++) {
           const cardText = await statsCards.nth(i).textContent()
-
         }
       }
 
@@ -105,14 +99,12 @@ test.describe('Admin Products Page Tests', () => {
       const addButtonVisible = await addButton.isVisible()
 
       if (addButtonVisible) {
-
         await addButton.click()
         await page.waitForTimeout(1000)
 
         const newPageUrl = page.url()
 
         if (newPageUrl.includes('/admin/products/new')) {
-
           // Check if the form loads
           await page.waitForSelector('form', { timeout: 5000 })
           const formExists = await page.locator('form').isVisible()
@@ -125,7 +117,6 @@ test.describe('Admin Products Page Tests', () => {
               .locator('select, [role="combobox"]')
               .first()
               .isVisible()
-
           }
         }
       }
@@ -134,7 +125,6 @@ test.describe('Admin Products Page Tests', () => {
       const noProductsMessage = await page.locator('text*=No products').isVisible()
 
       if (noProductsMessage) {
-
       }
     }
 
@@ -144,17 +134,14 @@ test.describe('Admin Products Page Tests', () => {
     // Check for any JavaScript errors in console
     const errors = []
     page.on('pageerror', (error) => errors.push(error.message))
-
   })
 
   test('should test individual product actions', async ({ page }) => {
-
     await page.goto('https://gangrunprinting.com/admin/products')
     await page.waitForTimeout(3000)
 
     // Skip if not authenticated
     if (page.url().includes('/auth/signin')) {
-
       return
     }
 
@@ -195,10 +182,8 @@ test.describe('Admin Products Page Tests', () => {
 
       if (statusBadgeExists) {
         const statusText = await statusBadge.textContent()
-
       }
     } else {
-
     }
   })
 })

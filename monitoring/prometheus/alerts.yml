@@ -14,8 +14,8 @@ groups:
           severity: warning
           team: business
         annotations:
-          summary: "No orders received in 2 hours"
-          description: "The system has not received any orders in the last 2 hours. This could indicate a business issue or technical problem."
+          summary: 'No orders received in 2 hours'
+          description: 'The system has not received any orders in the last 2 hours. This could indicate a business issue or technical problem.'
 
       - alert: HighOrderFailureRate
         expr: rate(gangrun_orders_total{status="failed"}[1h]) / rate(gangrun_orders_total[1h]) > 0.05
@@ -24,8 +24,8 @@ groups:
           severity: critical
           team: business
         annotations:
-          summary: "High order failure rate detected"
-          description: "Order failure rate is {{ $value | humanizePercentage }}. More than 5% of orders are failing."
+          summary: 'High order failure rate detected'
+          description: 'Order failure rate is {{ $value | humanizePercentage }}. More than 5% of orders are failing.'
 
       - alert: LowRevenueAlert
         expr: increase(gangrun_revenue_total_cents[1h]) < 10000
@@ -34,8 +34,8 @@ groups:
           severity: warning
           team: business
         annotations:
-          summary: "Low revenue in the last hour"
-          description: "Revenue in the last hour is less than $100"
+          summary: 'Low revenue in the last hour'
+          description: 'Revenue in the last hour is less than $100'
 
   # ========================================
   # APPLICATION ALERTS
@@ -50,8 +50,8 @@ groups:
           severity: critical
           team: engineering
         annotations:
-          summary: "High application error rate"
-          description: "Error rate is {{ $value }} errors per second (threshold: 0.05)"
+          summary: 'High application error rate'
+          description: 'Error rate is {{ $value }} errors per second (threshold: 0.05)'
 
       - alert: SlowAPIResponse
         expr: histogram_quantile(0.95, rate(gangrun_http_request_duration_ms_bucket[5m])) > 1000
@@ -60,8 +60,8 @@ groups:
           severity: warning
           team: engineering
         annotations:
-          summary: "API response time degradation"
-          description: "95th percentile response time is {{ $value }}ms (threshold: 1000ms)"
+          summary: 'API response time degradation'
+          description: '95th percentile response time is {{ $value }}ms (threshold: 1000ms)'
 
       - alert: HighMemoryUsage
         expr: gangrun_nodejs_heap_size_used_bytes / gangrun_nodejs_heap_size_total_bytes > 0.9
@@ -70,8 +70,8 @@ groups:
           severity: warning
           team: engineering
         annotations:
-          summary: "High Node.js heap memory usage"
-          description: "Heap memory usage is {{ $value | humanizePercentage }}"
+          summary: 'High Node.js heap memory usage'
+          description: 'Heap memory usage is {{ $value | humanizePercentage }}'
 
       - alert: ApplicationDown
         expr: up{job="gangrunprinting"} == 0
@@ -80,8 +80,8 @@ groups:
           severity: critical
           team: engineering
         annotations:
-          summary: "GangRun Printing application is down"
-          description: "The main application is not responding to health checks"
+          summary: 'GangRun Printing application is down'
+          description: 'The main application is not responding to health checks'
 
   # ========================================
   # DATABASE ALERTS
@@ -96,8 +96,8 @@ groups:
           severity: warning
           team: engineering
         annotations:
-          summary: "Database connection pool has waiting connections"
-          description: "{{ $value }} connections are waiting for database access"
+          summary: 'Database connection pool has waiting connections'
+          description: '{{ $value }} connections are waiting for database access'
 
       - alert: SlowDatabaseQueries
         expr: histogram_quantile(0.95, rate(gangrun_db_query_duration_ms_bucket[5m])) > 500
@@ -106,8 +106,8 @@ groups:
           severity: warning
           team: engineering
         annotations:
-          summary: "Database queries are slow"
-          description: "95th percentile query time is {{ $value }}ms (threshold: 500ms)"
+          summary: 'Database queries are slow'
+          description: '95th percentile query time is {{ $value }}ms (threshold: 500ms)'
 
       - alert: PostgreSQLDown
         expr: up{job="postgres"} == 0
@@ -116,8 +116,8 @@ groups:
           severity: critical
           team: engineering
         annotations:
-          summary: "PostgreSQL database is down"
-          description: "PostgreSQL is not responding to health checks"
+          summary: 'PostgreSQL database is down'
+          description: 'PostgreSQL is not responding to health checks'
 
   # ========================================
   # INFRASTRUCTURE ALERTS
@@ -132,8 +132,8 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is {{ $value | humanizePercentage }}"
+          summary: 'High CPU usage detected'
+          description: 'CPU usage is {{ $value | humanizePercentage }}'
 
       - alert: HighMemoryUsageSystem
         expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
@@ -142,8 +142,8 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "High system memory usage"
-          description: "Memory usage is {{ $value | humanizePercentage }}"
+          summary: 'High system memory usage'
+          description: 'Memory usage is {{ $value | humanizePercentage }}'
 
       - alert: DiskSpaceRunningOut
         expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
@@ -152,8 +152,8 @@ groups:
           severity: critical
           team: infrastructure
         annotations:
-          summary: "Disk space is running out"
-          description: "Only {{ $value | humanizePercentage }} of disk space remaining"
+          summary: 'Disk space is running out'
+          description: 'Only {{ $value | humanizePercentage }} of disk space remaining'
 
       - alert: HighNetworkTraffic
         expr: rate(node_network_receive_bytes_total[5m]) > 100000000
@@ -162,8 +162,8 @@ groups:
           severity: info
           team: infrastructure
         annotations:
-          summary: "High network traffic detected"
-          description: "Network receive traffic is {{ $value | humanize }}B/s"
+          summary: 'High network traffic detected'
+          description: 'Network receive traffic is {{ $value | humanize }}B/s'
 
   # ========================================
   # AUTHENTICATION & SECURITY ALERTS
@@ -178,8 +178,8 @@ groups:
           severity: warning
           team: security
         annotations:
-          summary: "High authentication failure rate"
-          description: "{{ $value }} failed auth attempts per second"
+          summary: 'High authentication failure rate'
+          description: '{{ $value }} failed auth attempts per second'
 
       - alert: SuspiciousActivity
         expr: rate(gangrun_errors_total{type="security"}[5m]) > 0
@@ -188,8 +188,8 @@ groups:
           severity: critical
           team: security
         annotations:
-          summary: "Security error detected"
-          description: "Security-related errors are being logged"
+          summary: 'Security error detected'
+          description: 'Security-related errors are being logged'
 
   # ========================================
   # MONITORING SYSTEM ALERTS
@@ -204,8 +204,8 @@ groups:
           severity: critical
           team: infrastructure
         annotations:
-          summary: "Prometheus is down"
-          description: "Prometheus monitoring system is not operational"
+          summary: 'Prometheus is down'
+          description: 'Prometheus monitoring system is not operational'
 
       - alert: GrafanaDown
         expr: up{job="grafana"} == 0
@@ -214,8 +214,8 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "Grafana is down"
-          description: "Grafana dashboard is not accessible"
+          summary: 'Grafana is down'
+          description: 'Grafana dashboard is not accessible'
 
       - alert: HighMetricsScrapeFailure
         expr: up == 0
@@ -224,5 +224,5 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "Metrics scrape failing for {{ $labels.job }}"
-          description: "Prometheus cannot scrape metrics from {{ $labels.instance }}"
+          summary: 'Metrics scrape failing for {{ $labels.job }}'
+          description: 'Prometheus cannot scrape metrics from {{ $labels.instance }}'

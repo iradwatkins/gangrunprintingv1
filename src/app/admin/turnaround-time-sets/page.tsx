@@ -343,7 +343,9 @@ export default function TurnaroundTimeSetsPage() {
       name: set.name,
       description: set.description || '',
       isActive: set.isActive,
-      selectedTurnaroundTimes: (set.TurnaroundTimeSetItem || []).map((item) => item.turnaroundTimeId),
+      selectedTurnaroundTimes: (set.TurnaroundTimeSetItem || []).map(
+        (item) => item.turnaroundTimeId
+      ),
     })
     setShowDialog(true)
   }
@@ -401,7 +403,9 @@ export default function TurnaroundTimeSetsPage() {
                     <Badge variant={set.isActive ? 'default' : 'secondary'}>
                       {set.isActive ? 'Active' : 'Inactive'}
                     </Badge>
-                    <Badge variant="outline">{set.TurnaroundTimeSetItem?.length || 0} options</Badge>
+                    <Badge variant="outline">
+                      {set.TurnaroundTimeSetItem?.length || 0} options
+                    </Badge>
                     <Button size="icon" variant="ghost" onClick={() => handleDuplicate(set)}>
                       <Copy className="h-4 w-4" />
                     </Button>

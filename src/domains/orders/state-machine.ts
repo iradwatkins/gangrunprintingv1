@@ -22,15 +22,15 @@ export enum OrderStatus {
 
   // Final states
   DELIVERED = 'delivered',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export interface OrderTransition {
-  from: OrderStatus[];
-  to: OrderStatus;
-  event: string;
-  requiresVendorUpdate?: boolean;
-  notifyCustomer?: boolean;
+  from: OrderStatus[]
+  to: OrderStatus
+  event: string
+  requiresVendorUpdate?: boolean
+  notifyCustomer?: boolean
 }
 
 export const ORDER_TRANSITIONS: OrderTransition[] = [
@@ -40,7 +40,7 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
     to: OrderStatus.PREPRESS,
     event: 'vendor_accepted',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
 
   // Prepress can go to production or any hold status
@@ -49,35 +49,35 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
     to: OrderStatus.PRODUCTION,
     event: 'files_approved',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
   {
     from: [OrderStatus.PREPRESS],
     to: OrderStatus.ON_HOLD_BAD_FILES,
     event: 'bad_files_detected',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
   {
     from: [OrderStatus.PREPRESS],
     to: OrderStatus.ON_HOLD_BAD_IMAGES,
     event: 'bad_images_detected',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
   {
     from: [OrderStatus.PREPRESS],
     to: OrderStatus.ON_HOLD_FILE_MISSING,
     event: 'file_missing',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
   {
     from: [OrderStatus.PREPRESS],
     to: OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES,
     event: 'text_edge_issue',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
 
   // Any hold status can return to prepress after customer fixes
@@ -86,12 +86,12 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
       OrderStatus.ON_HOLD_BAD_FILES,
       OrderStatus.ON_HOLD_BAD_IMAGES,
       OrderStatus.ON_HOLD_FILE_MISSING,
-      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES
+      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES,
     ],
     to: OrderStatus.PREPRESS,
     event: 'files_resubmitted',
     requiresVendorUpdate: false,
-    notifyCustomer: false
+    notifyCustomer: false,
   },
 
   // Production to shipped
@@ -100,7 +100,7 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
     to: OrderStatus.SHIPPED,
     event: 'order_shipped',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
 
   // Shipped to delivered
@@ -109,7 +109,7 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
     to: OrderStatus.DELIVERED,
     event: 'order_delivered',
     requiresVendorUpdate: true,
-    notifyCustomer: true
+    notifyCustomer: true,
   },
 
   // Cancellation can happen from most states
@@ -120,57 +120,57 @@ export const ORDER_TRANSITIONS: OrderTransition[] = [
       OrderStatus.ON_HOLD_BAD_FILES,
       OrderStatus.ON_HOLD_BAD_IMAGES,
       OrderStatus.ON_HOLD_FILE_MISSING,
-      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES
+      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES,
     ],
     to: OrderStatus.CANCELLED,
     event: 'order_cancelled',
     requiresVendorUpdate: false,
-    notifyCustomer: true
-  }
-];
+    notifyCustomer: true,
+  },
+]
 
 export class OrderStateMachine {
-  private currentStatus: OrderStatus;
+  private currentStatus: OrderStatus
 
   constructor(initialStatus: OrderStatus = OrderStatus.PENDING) {
-    this.currentStatus = initialStatus;
+    this.currentStatus = initialStatus
   }
 
   canTransition(event: string): boolean {
     const transition = ORDER_TRANSITIONS.find(
-      t => t.event === event && t.from.includes(this.currentStatus)
-    );
-    return !!transition;
+      (t) => t.event === event && t.from.includes(this.currentStatus)
+    )
+    return !!transition
   }
 
   transition(event: string): {
-    success: boolean;
-    newStatus?: OrderStatus;
-    notifyCustomer?: boolean;
-    error?: string;
+    success: boolean
+    newStatus?: OrderStatus
+    notifyCustomer?: boolean
+    error?: string
   } {
     const transition = ORDER_TRANSITIONS.find(
-      t => t.event === event && t.from.includes(this.currentStatus)
-    );
+      (t) => t.event === event && t.from.includes(this.currentStatus)
+    )
 
     if (!transition) {
       return {
         success: false,
-        error: `Cannot transition from ${this.currentStatus} with event ${event}`
-      };
+        error: `Cannot transition from ${this.currentStatus} with event ${event}`,
+      }
     }
 
-    this.currentStatus = transition.to;
+    this.currentStatus = transition.to
 
     return {
       success: true,
       newStatus: transition.to,
-      notifyCustomer: transition.notifyCustomer
-    };
+      notifyCustomer: transition.notifyCustomer,
+    }
   }
 
   getCurrentStatus(): OrderStatus {
-    return this.currentStatus;
+    return this.currentStatus
   }
 
   isOnHold(): boolean {
@@ -178,15 +178,12 @@ export class OrderStateMachine {
       OrderStatus.ON_HOLD_BAD_FILES,
       OrderStatus.ON_HOLD_BAD_IMAGES,
       OrderStatus.ON_HOLD_FILE_MISSING,
-      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES
-    ].includes(this.currentStatus);
+      OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES,
+    ].includes(this.currentStatus)
   }
 
   isFinalState(): boolean {
-    return [
-      OrderStatus.DELIVERED,
-      OrderStatus.CANCELLED
-    ].includes(this.currentStatus);
+    return [OrderStatus.DELIVERED, OrderStatus.CANCELLED].includes(this.currentStatus)
   }
 
   getHoldReason(): string | null {
@@ -194,9 +191,9 @@ export class OrderStateMachine {
       [OrderStatus.ON_HOLD_BAD_FILES]: 'Files do not meet printing specifications',
       [OrderStatus.ON_HOLD_BAD_IMAGES]: 'Image resolution or quality issues detected',
       [OrderStatus.ON_HOLD_FILE_MISSING]: 'Required files are missing from submission',
-      [OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES]: 'Text is too close to trim edges'
-    };
+      [OrderStatus.ON_HOLD_TEXT_CLOSE_TO_EDGES]: 'Text is too close to trim edges',
+    }
 
-    return holdReasons[this.currentStatus] || null;
+    return holdReasons[this.currentStatus] || null
   }
 }

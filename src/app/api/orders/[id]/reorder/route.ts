@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
@@ -10,10 +10,7 @@ import { prisma } from '@/lib/prisma'
  * - Retrieves current product data
  * - Returns structured data for client-side cart population
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Authenticate user
     const { user } = await validateRequest()
@@ -62,12 +59,9 @@ export async function POST(
         const options = (orderItem.options as Record<string, any>) || {}
 
         // Try to find the product by SKU first, then by name
-        let product = await prisma.product.findFirst({
+        const product = await prisma.product.findFirst({
           where: {
-            OR: [
-              { sku: orderItem.productSku },
-              { name: orderItem.productName },
-            ],
+            OR: [{ sku: orderItem.productSku }, { name: orderItem.productName }],
             isActive: true,
           },
           include: {
@@ -153,9 +147,6 @@ export async function POST(
     })
   } catch (error) {
     console.error('Error processing reorder:', error)
-    return NextResponse.json(
-      { error: 'Failed to process reorder' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process reorder' }, { status: 500 })
   }
 }

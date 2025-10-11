@@ -11,30 +11,30 @@ const PATTERNS = [
   {
     // API error handlers
     regex: /catch\s*\(\s*error:\s*unknown\s*\/\/\s*TODO:\s*Define proper type\s*\)/g,
-    replacement: 'catch (error)'
+    replacement: 'catch (error)',
   },
   {
     // Database errors in Prisma contexts
     regex: /error:\s*unknown\s*\/\/\s*TODO:\s*Define proper type/g,
     context: /prisma|database|tx\./i,
-    replacement: 'error: Error'
+    replacement: 'error: Error',
   },
   {
     // Request/Response objects in API routes
     regex: /:\s*unknown\s*\/\/\s*TODO:\s*Define proper type/g,
     context: /request|response|body|params|query/i,
-    replacement: ': Record<string, unknown>'
+    replacement: ': Record<string, unknown>',
   },
   {
     // Array parameters
     regex: /:\s*unknown\s*\/\/\s*TODO:\s*Define proper type\[\]/g,
-    replacement: ': unknown[]'
+    replacement: ': unknown[]',
   },
   {
     // Generic objects
     regex: /:\s*unknown\s*\/\/\s*TODO:\s*Define proper type/g,
-    replacement: ': Record<string, unknown>'
-  }
+    replacement: ': Record<string, unknown>',
+  },
 ]
 
 function getAllFiles(dir: string, files: string[] = []): string[] {

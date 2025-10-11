@@ -5,44 +5,44 @@ async function associateCornerRoundingWithProducts() {
     // Find the Corner Rounding addon
     const cornerRoundingAddon = await prisma.addOn.findFirst({
       where: {
-        name: 'Corner Rounding'
-      }
+        name: 'Corner Rounding',
+      },
     })
 
     if (!cornerRoundingAddon) {
-      console.error('Corner Rounding addon not found. Please run add-corner-rounding-addon.ts first.')
+      console.error(
+        'Corner Rounding addon not found. Please run add-corner-rounding-addon.ts first.'
+      )
       process.exit(1)
     }
 
     // Get all active products
     const products = await prisma.product.findMany({
       where: {
-        isActive: true
+        isActive: true,
       },
       include: {
-        productAddOns: true
-      }
+        productAddOns: true,
+      },
     })
 
     // Associate Corner Rounding with each product if not already associated
     for (const product of products) {
       // Check if Corner Rounding is already associated with this product
       const existingAssociation = product.productAddOns.find(
-        pa => pa.addOnId === cornerRoundingAddon.id
+        (pa) => pa.addOnId === cornerRoundingAddon.id
       )
 
       if (existingAssociation) {
-
       } else {
         // Create the association
         await prisma.productAddOn.create({
           data: {
             productId: product.id,
             addOnId: cornerRoundingAddon.id,
-            isMandatory: false
-          }
+            isMandatory: false,
+          },
         })
-
       }
     }
 
@@ -51,27 +51,22 @@ async function associateCornerRoundingWithProducts() {
 
     for (const addonName of specialAddons) {
       const addon = await prisma.addOn.findFirst({
-        where: { name: addonName }
+        where: { name: addonName },
       })
 
       if (addon) {
-
         for (const product of products) {
-          const existingAssociation = product.productAddOns.find(
-            pa => pa.addOnId === addon.id
-          )
+          const existingAssociation = product.productAddOns.find((pa) => pa.addOnId === addon.id)
 
           if (!existingAssociation) {
             await prisma.productAddOn.create({
               data: {
                 productId: product.id,
                 addOnId: addon.id,
-                isMandatory: false
-              }
+                isMandatory: false,
+              },
             })
-
           } else {
-
           }
         }
       }

@@ -333,10 +333,10 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
               <CardContent>
                 <Suspense fallback={<div className="h-[300px] animate-pulse bg-muted rounded" />}>
                   <ProductPerformanceChart
-                    data={metrics.products.categories.map(cat => ({
+                    data={metrics.products.categories.map((cat) => ({
                       category: cat.name,
                       revenue: cat.revenue,
-                      orders: cat.orders
+                      orders: cat.orders,
                     }))}
                   />
                 </Suspense>

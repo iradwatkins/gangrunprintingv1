@@ -204,4 +204,3 @@ jobs:
 | Development | http://localhost:3002               | http://localhost:3002/api               | Local development      |
 | Staging     | https://staging.gangrunprinting.com | https://staging.gangrunprinting.com/api | Pre-production testing |
 | Production  | https://gangrunprinting.com         | https://gangrunprinting.com/api         | Live environment       |
-

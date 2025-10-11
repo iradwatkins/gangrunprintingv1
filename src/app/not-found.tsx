@@ -29,7 +29,7 @@ export default function NotFound() {
                 Go to Homepage
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
+            <Button asChild size="lg" variant="outline">
               <Link href="/products">
                 <Search className="mr-2 h-4 w-4" />
                 Browse Products
@@ -40,16 +40,16 @@ export default function NotFound() {
           <div className="pt-6 border-t">
             <h3 className="font-semibold mb-3 text-center">Quick Links</h3>
             <div className="grid grid-cols-2 gap-3">
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/about">About Us</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/contact">Contact</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/products">Products</Link>
               </Button>
-              <Button asChild variant="ghost" className="justify-start">
+              <Button asChild className="justify-start" variant="ghost">
                 <Link href="/help">Help Center</Link>
               </Button>
             </div>

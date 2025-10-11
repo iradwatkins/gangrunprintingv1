@@ -3,130 +3,131 @@
  * Creates real products directly in the database to verify the system works
  */
 
-const { PrismaClient } = require('@prisma/client');
-const { randomUUID } = require('crypto');
+const { PrismaClient } = require('@prisma/client')
+const { randomUUID } = require('crypto')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function createRealProductsTest() {
-  console.log('🚀 Starting Direct Real Product Creation Test...');
-  console.log('=' .repeat(60));
+  console.log('🚀 Starting Direct Real Product Creation Test...')
+  console.log('='.repeat(60))
 
-  let createdProducts = [];
+  let createdProducts = []
 
   try {
     // Step 1: Check database state
-    console.log('\n📊 Step 1: Checking current database state...');
+    console.log('\n📊 Step 1: Checking current database state...')
 
     const initialCounts = await Promise.all([
       prisma.product.count(),
       prisma.productCategory.count(),
       prisma.quantityGroup.count(),
-      prisma.user.count()
-    ]);
+      prisma.user.count(),
+    ])
 
-    console.log(`  - Products: ${initialCounts[0]}`);
-    console.log(`  - Categories: ${initialCounts[1]}`);
-    console.log(`  - Quantity Groups: ${initialCounts[2]}`);
-    console.log(`  - Users: ${initialCounts[3]}`);
+    console.log(`  - Products: ${initialCounts[0]}`)
+    console.log(`  - Categories: ${initialCounts[1]}`)
+    console.log(`  - Quantity Groups: ${initialCounts[2]}`)
+    console.log(`  - Users: ${initialCounts[3]}`)
 
     // Step 2: Fetch real data to use
-    console.log('\n📋 Step 2: Fetching real data from database...');
+    console.log('\n📋 Step 2: Fetching real data from database...')
 
     const categories = await prisma.productCategory.findMany({
       where: { isActive: true },
-      orderBy: { sortOrder: 'asc' }
-    });
+      orderBy: { sortOrder: 'asc' },
+    })
 
     const quantityGroups = await prisma.quantityGroup.findMany({
       where: { isActive: true },
-      orderBy: { sortOrder: 'asc' }
-    });
+      orderBy: { sortOrder: 'asc' },
+    })
 
     const paperStockSets = await prisma.paperStockSet.findMany({
       where: { isActive: true },
       include: {
         PaperStockSetItem: {
           include: {
-            PaperStock: true
-          }
-        }
-      }
-    });
+            PaperStock: true,
+          },
+        },
+      },
+    })
 
     const addons = await prisma.addOn.findMany({
       where: { isActive: true },
-      take: 5 // Just get a few for testing
-    });
+      take: 5, // Just get a few for testing
+    })
 
     const turnaroundSets = await prisma.turnaroundTimeSet.findMany({
       where: { isActive: true },
       include: {
         TurnaroundTimeSetItem: {
           include: {
-            TurnaroundTime: true
-          }
-        }
-      }
-    });
+            TurnaroundTime: true,
+          },
+        },
+      },
+    })
 
-    console.log(`✅ Found ${categories.length} real categories`);
-    console.log(`✅ Found ${quantityGroups.length} real quantity groups`);
-    console.log(`✅ Found ${paperStockSets.length} real paper stock sets`);
-    console.log(`✅ Found ${addons.length} real addons`);
-    console.log(`✅ Found ${turnaroundSets.length} real turnaround sets`);
+    console.log(`✅ Found ${categories.length} real categories`)
+    console.log(`✅ Found ${quantityGroups.length} real quantity groups`)
+    console.log(`✅ Found ${paperStockSets.length} real paper stock sets`)
+    console.log(`✅ Found ${addons.length} real addons`)
+    console.log(`✅ Found ${turnaroundSets.length} real turnaround sets`)
 
     if (categories.length === 0 || quantityGroups.length === 0) {
-      throw new Error('Insufficient data in database to create products');
+      throw new Error('Insufficient data in database to create products')
     }
 
     // Step 3: Create real products with different configurations
-    console.log('\n🏗️  Step 3: Creating real products with different module configurations...');
+    console.log('\n🏗️  Step 3: Creating real products with different module configurations...')
 
     const testProducts = [
       {
         name: `Real Business Cards - ${Date.now()}`,
         description: 'Real business cards created using actual database data',
-        category: categories.find(c => c.slug === 'business-cards') || categories[0],
+        category: categories.find((c) => c.slug === 'business-cards') || categories[0],
         quantityGroup: quantityGroups[0],
-        modules: ['basic']
+        modules: ['basic'],
       },
       {
         name: `Real Flyers with Paper Stock - ${Date.now()}`,
         description: 'Real flyers with paper stock configuration',
-        category: categories.find(c => c.slug === 'flyers') || categories[1] || categories[0],
+        category: categories.find((c) => c.slug === 'flyers') || categories[1] || categories[0],
         quantityGroup: quantityGroups[0],
         paperStockSet: paperStockSets[0] || null,
-        modules: ['basic', 'paper-stock']
+        modules: ['basic', 'paper-stock'],
       },
       {
         name: `Real Brochures with Full Config - ${Date.now()}`,
         description: 'Real brochures with complete module configuration',
-        category: categories.find(c => c.slug === 'brochures') || categories[2] || categories[0],
+        category: categories.find((c) => c.slug === 'brochures') || categories[2] || categories[0],
         quantityGroup: quantityGroups[0],
         paperStockSet: paperStockSets[0] || null,
         addons: addons.slice(0, 2), // First 2 addons
         turnaroundSet: turnaroundSets[0] || null,
-        modules: ['basic', 'paper-stock', 'addons', 'turnaround']
-      }
-    ];
+        modules: ['basic', 'paper-stock', 'addons', 'turnaround'],
+      },
+    ]
 
     for (let i = 0; i < testProducts.length; i++) {
-      const productData = testProducts[i];
-      console.log(`\n🔧 Creating product ${i + 1}/${testProducts.length}: ${productData.name}`);
-      console.log(`   Category: ${productData.category.name}`);
-      console.log(`   Quantity Group: ${productData.quantityGroup.name}`);
-      console.log(`   Modules: ${productData.modules.join(', ')}`);
+      const productData = testProducts[i]
+      console.log(`\n🔧 Creating product ${i + 1}/${testProducts.length}: ${productData.name}`)
+      console.log(`   Category: ${productData.category.name}`)
+      console.log(`   Quantity Group: ${productData.quantityGroup.name}`)
+      console.log(`   Modules: ${productData.modules.join(', ')}`)
 
       try {
         // Generate unique identifiers
-        const productId = randomUUID();
-        const timestamp = Date.now();
-        const baseSku = productData.name.toLowerCase()
+        const productId = randomUUID()
+        const timestamp = Date.now()
+        const baseSku = productData.name
+          .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-        const uniqueSku = `${baseSku}-${timestamp}`;
-        const slug = `${baseSku}-${timestamp}`;
+          .replace(/^-+|-+$/g, '')
+        const uniqueSku = `${baseSku}-${timestamp}`
+        const slug = `${baseSku}-${timestamp}`
 
         // Create the product with transaction for data integrity
         const product = await prisma.$transaction(async (tx) => {
@@ -145,22 +146,22 @@ async function createRealProductsTest() {
               productionTime: 3,
               rushAvailable: true,
               rushDays: 1,
-              rushFee: 15.00,
+              rushFee: 15.0,
               isActive: true,
               isFeatured: false,
               gangRunEligible: true,
               minGangQuantity: 100,
-              maxGangQuantity: 10000
-            }
-          });
+              maxGangQuantity: 10000,
+            },
+          })
 
           // 2. Add quantity group relationship
           await tx.productQuantityGroup.create({
             data: {
               productId: newProduct.id,
-              quantityGroupId: productData.quantityGroup.id
-            }
-          });
+              quantityGroupId: productData.quantityGroup.id,
+            },
+          })
 
           // 3. Add paper stock set if available
           if (productData.paperStockSet) {
@@ -169,10 +170,10 @@ async function createRealProductsTest() {
                 productId: newProduct.id,
                 paperStockSetId: productData.paperStockSet.id,
                 isDefault: true,
-                sortOrder: 0
-              }
-            });
-            console.log(`   ✅ Added paper stock: ${productData.paperStockSet.name}`);
+                sortOrder: 0,
+              },
+            })
+            console.log(`   ✅ Added paper stock: ${productData.paperStockSet.name}`)
           }
 
           // 4. Add addons if available
@@ -182,11 +183,11 @@ async function createRealProductsTest() {
                 data: {
                   productId: newProduct.id,
                   addOnId: addon.id,
-                  isMandatory: false
-                }
-              });
+                  isMandatory: false,
+                },
+              })
             }
-            console.log(`   ✅ Added ${productData.addons.length} addons`);
+            console.log(`   ✅ Added ${productData.addons.length} addons`)
           }
 
           // 5. Add turnaround set if available
@@ -195,32 +196,31 @@ async function createRealProductsTest() {
               data: {
                 productId: newProduct.id,
                 turnaroundTimeSetId: productData.turnaroundSet.id,
-                isDefault: true
-              }
-            });
-            console.log(`   ✅ Added turnaround set: ${productData.turnaroundSet.name}`);
+                isDefault: true,
+              },
+            })
+            console.log(`   ✅ Added turnaround set: ${productData.turnaroundSet.name}`)
           }
 
-          return newProduct;
-        });
+          return newProduct
+        })
 
-        console.log(`   ✅ Product created successfully: ${product.id}`);
+        console.log(`   ✅ Product created successfully: ${product.id}`)
         createdProducts.push({
           id: product.id,
           name: product.name,
           sku: product.sku,
           category: productData.category.name,
           modules: productData.modules,
-          timestamp: new Date().toISOString()
-        });
-
+          timestamp: new Date().toISOString(),
+        })
       } catch (error) {
-        console.error(`   ❌ Failed to create product: ${error.message}`);
+        console.error(`   ❌ Failed to create product: ${error.message}`)
       }
     }
 
     // Step 4: Verify products in database
-    console.log('\n🔍 Step 4: Verifying products in database...');
+    console.log('\n🔍 Step 4: Verifying products in database...')
 
     for (const createdProduct of createdProducts) {
       const dbProduct = await prisma.product.findUnique({
@@ -228,103 +228,106 @@ async function createRealProductsTest() {
         include: {
           productCategory: true,
           productQuantityGroups: {
-            include: { QuantityGroup: true }
+            include: { QuantityGroup: true },
           },
           productPaperStockSets: {
-            include: { PaperStockSet: true }
+            include: { PaperStockSet: true },
           },
           productAddOns: {
-            include: { AddOn: true }
+            include: { AddOn: true },
           },
           productTurnaroundTimeSets: {
-            include: { TurnaroundTimeSet: true }
-          }
-        }
-      });
+            include: { TurnaroundTimeSet: true },
+          },
+        },
+      })
 
       if (dbProduct) {
-        console.log(`✅ Verified: ${dbProduct.name}`);
-        console.log(`   - ID: ${dbProduct.id}`);
-        console.log(`   - SKU: ${dbProduct.sku}`);
-        console.log(`   - Category: ${dbProduct.productCategory.name}`);
-        console.log(`   - Quantity Groups: ${dbProduct.productQuantityGroups.length}`);
-        console.log(`   - Paper Stock Sets: ${dbProduct.productPaperStockSets.length}`);
-        console.log(`   - Addons: ${dbProduct.productAddOns.length}`);
-        console.log(`   - Turnaround Sets: ${dbProduct.productTurnaroundTimeSets.length}`);
+        console.log(`✅ Verified: ${dbProduct.name}`)
+        console.log(`   - ID: ${dbProduct.id}`)
+        console.log(`   - SKU: ${dbProduct.sku}`)
+        console.log(`   - Category: ${dbProduct.productCategory.name}`)
+        console.log(`   - Quantity Groups: ${dbProduct.productQuantityGroups.length}`)
+        console.log(`   - Paper Stock Sets: ${dbProduct.productPaperStockSets.length}`)
+        console.log(`   - Addons: ${dbProduct.productAddOns.length}`)
+        console.log(`   - Turnaround Sets: ${dbProduct.productTurnaroundTimeSets.length}`)
       } else {
-        console.log(`❌ Product not found: ${createdProduct.name}`);
+        console.log(`❌ Product not found: ${createdProduct.name}`)
       }
     }
 
     // Step 5: Check final database state
-    console.log('\n📊 Step 5: Checking final database state...');
+    console.log('\n📊 Step 5: Checking final database state...')
 
     const finalCounts = await Promise.all([
       prisma.product.count(),
       prisma.productQuantityGroup.count(),
       prisma.productPaperStockSet.count(),
       prisma.productAddOn.count(),
-      prisma.productTurnaroundTimeSet.count()
-    ]);
+      prisma.productTurnaroundTimeSet.count(),
+    ])
 
-    console.log(`  - Products: ${initialCounts[0]} → ${finalCounts[0]} (+${finalCounts[0] - initialCounts[0]})`);
-    console.log(`  - Product-Quantity Relationships: ${finalCounts[1]}`);
-    console.log(`  - Product-PaperStock Relationships: ${finalCounts[2]}`);
-    console.log(`  - Product-Addon Relationships: ${finalCounts[3]}`);
-    console.log(`  - Product-Turnaround Relationships: ${finalCounts[4]}`);
+    console.log(
+      `  - Products: ${initialCounts[0]} → ${finalCounts[0]} (+${finalCounts[0] - initialCounts[0]})`
+    )
+    console.log(`  - Product-Quantity Relationships: ${finalCounts[1]}`)
+    console.log(`  - Product-PaperStock Relationships: ${finalCounts[2]}`)
+    console.log(`  - Product-Addon Relationships: ${finalCounts[3]}`)
+    console.log(`  - Product-Turnaround Relationships: ${finalCounts[4]}`)
 
     // Step 6: Test API retrieval
-    console.log('\n🌐 Step 6: Testing API retrieval of created products...');
+    console.log('\n🌐 Step 6: Testing API retrieval of created products...')
 
     try {
-      const response = await fetch('http://localhost:3002/api/products?limit=10');
-      const apiData = await response.json();
+      const response = await fetch('http://localhost:3002/api/products?limit=10')
+      const apiData = await response.json()
 
-      let apiProducts = [];
+      let apiProducts = []
       if (Array.isArray(apiData)) {
-        apiProducts = apiData;
+        apiProducts = apiData
       } else if (apiData.data && Array.isArray(apiData.data)) {
-        apiProducts = apiData.data;
+        apiProducts = apiData.data
       }
 
-      console.log(`✅ API returned ${apiProducts.length} products`);
+      console.log(`✅ API returned ${apiProducts.length} products`)
 
       // Check if our created products appear in API
-      let foundCount = 0;
+      let foundCount = 0
       for (const createdProduct of createdProducts) {
-        const foundInApi = apiProducts.find(p => p.id === createdProduct.id || p.sku === createdProduct.sku);
+        const foundInApi = apiProducts.find(
+          (p) => p.id === createdProduct.id || p.sku === createdProduct.sku
+        )
         if (foundInApi) {
-          foundCount++;
-          console.log(`✅ Found in API: ${createdProduct.name}`);
+          foundCount++
+          console.log(`✅ Found in API: ${createdProduct.name}`)
         } else {
-          console.log(`⚠️  Not found in API: ${createdProduct.name}`);
+          console.log(`⚠️  Not found in API: ${createdProduct.name}`)
         }
       }
 
-      console.log(`📊 API verification: ${foundCount}/${createdProducts.length} products found`);
-
+      console.log(`📊 API verification: ${foundCount}/${createdProducts.length} products found`)
     } catch (apiError) {
-      console.error(`❌ API test failed: ${apiError.message}`);
+      console.error(`❌ API test failed: ${apiError.message}`)
     }
 
     // Final summary
-    console.log('\n🎉 TEST SUMMARY:');
-    console.log('=' .repeat(60));
-    console.log(`✅ Successfully created ${createdProducts.length} real products`);
-    console.log(`✅ Used real data from ${categories.length} categories`);
-    console.log(`✅ Used real data from ${quantityGroups.length} quantity groups`);
-    console.log(`✅ Tested modular product architecture`);
-    console.log(`✅ Verified database integrity`);
-    console.log(`✅ Tested API retrieval`);
+    console.log('\n🎉 TEST SUMMARY:')
+    console.log('='.repeat(60))
+    console.log(`✅ Successfully created ${createdProducts.length} real products`)
+    console.log(`✅ Used real data from ${categories.length} categories`)
+    console.log(`✅ Used real data from ${quantityGroups.length} quantity groups`)
+    console.log(`✅ Tested modular product architecture`)
+    console.log(`✅ Verified database integrity`)
+    console.log(`✅ Tested API retrieval`)
 
-    console.log('\n📋 Created Products:');
+    console.log('\n📋 Created Products:')
     createdProducts.forEach((product, index) => {
-      console.log(`${index + 1}. ${product.name}`);
-      console.log(`   - SKU: ${product.sku}`);
-      console.log(`   - Category: ${product.category}`);
-      console.log(`   - Modules: ${product.modules.join(', ')}`);
-      console.log(`   - Created: ${product.timestamp}`);
-    });
+      console.log(`${index + 1}. ${product.name}`)
+      console.log(`   - SKU: ${product.sku}`)
+      console.log(`   - Category: ${product.category}`)
+      console.log(`   - Modules: ${product.modules.join(', ')}`)
+      console.log(`   - Created: ${product.timestamp}`)
+    })
 
     return {
       success: true,
@@ -333,43 +336,44 @@ async function createRealProductsTest() {
         productsCreated: createdProducts.length,
         categoriesUsed: categories.length,
         quantityGroupsUsed: quantityGroups.length,
-        modulesTestred: ['basic', 'paper-stock', 'addons', 'turnaround']
-      }
-    };
-
+        modulesTestred: ['basic', 'paper-stock', 'addons', 'turnaround'],
+      },
+    }
   } catch (error) {
-    console.error('\n❌ TEST FAILED:', error.message);
-    console.error('Stack trace:', error.stack);
+    console.error('\n❌ TEST FAILED:', error.message)
+    console.error('Stack trace:', error.stack)
     return {
       success: false,
       error: error.message,
-      createdProducts
-    };
+      createdProducts,
+    }
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
 // Run the test
 if (require.main === module) {
   createRealProductsTest()
-    .then(result => {
+    .then((result) => {
       if (result.success) {
-        console.log('\n🌟 ALL REAL PRODUCT TESTS PASSED!');
-        console.log('✅ The modular product system is working correctly with real data');
-        process.exit(0);
+        console.log('\n🌟 ALL REAL PRODUCT TESTS PASSED!')
+        console.log('✅ The modular product system is working correctly with real data')
+        process.exit(0)
       } else {
-        console.log('\n💥 REAL PRODUCT TESTS FAILED:', result.error);
+        console.log('\n💥 REAL PRODUCT TESTS FAILED:', result.error)
         if (result.createdProducts.length > 0) {
-          console.log(`⚠️  However, ${result.createdProducts.length} products were successfully created`);
+          console.log(
+            `⚠️  However, ${result.createdProducts.length} products were successfully created`
+          )
         }
-        process.exit(1);
+        process.exit(1)
       }
     })
-    .catch(error => {
-      console.error('\n🔥 UNEXPECTED ERROR:', error);
-      process.exit(1);
-    });
+    .catch((error) => {
+      console.error('\n🔥 UNEXPECTED ERROR:', error)
+      process.exit(1)
+    })
 }
 
-module.exports = { createRealProductsTest };
+module.exports = { createRealProductsTest }

@@ -5,8 +5,8 @@ async function addPerforationAddOn() {
     // Check if Perforation add-on already exists
     const existingAddOn = await prisma.addOn.findFirst({
       where: {
-        name: 'Perforation'
-      }
+        name: 'Perforation',
+      },
     })
 
     if (existingAddOn) {
@@ -14,8 +14,10 @@ async function addPerforationAddOn() {
       const updated = await prisma.addOn.update({
         where: { id: existingAddOn.id },
         data: {
-          description: 'A straight row of tiny holes punched in the paper so that a part can be torn off easily',
-          tooltipText: 'A straight row of tiny holes punched in the paper so that a part can be torn off easily. This perforation row goes completely across the sheet from one side to the other.',
+          description:
+            'A straight row of tiny holes punched in the paper so that a part can be torn off easily',
+          tooltipText:
+            'A straight row of tiny holes punched in the paper so that a part can be torn off easily. This perforation row goes completely across the sheet from one side to the other.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'perforation',
@@ -32,19 +34,20 @@ async function addPerforationAddOn() {
                   { value: '2', label: '2' },
                   { value: '3', label: '3' },
                   { value: '4', label: '4' },
-                  { value: '5', label: '5' }
+                  { value: '5', label: '5' },
                 ],
                 defaultValue: '0',
                 helpText: 'Select the number of vertical perforation rows that you need.',
-                required: false
+                required: false,
               },
               verticalPosition: {
                 label: 'Vertical Position',
                 type: 'text',
-                helpText: 'Enter the position of the vertical perforation. For example, 2 inches from the right front.',
+                helpText:
+                  'Enter the position of the vertical perforation. For example, 2 inches from the right front.',
                 placeholder: 'e.g., 2 inches from the right front',
                 required: false,
-                showWhen: 'verticalCount > 0'
+                showWhen: 'verticalCount > 0',
               },
               horizontalCount: {
                 label: 'How Many Horizontal',
@@ -55,37 +58,40 @@ async function addPerforationAddOn() {
                   { value: '2', label: '2' },
                   { value: '3', label: '3' },
                   { value: '4', label: '4' },
-                  { value: '5', label: '5' }
+                  { value: '5', label: '5' },
                 ],
                 defaultValue: '0',
                 helpText: 'Select the number of horizontal perforation rows that you need.',
-                required: false
+                required: false,
               },
               horizontalPosition: {
                 label: 'Horizontal Position',
                 type: 'text',
-                helpText: 'Enter the position of the horizontal perforation. For example, 2 inches from the top front.',
+                helpText:
+                  'Enter the position of the horizontal perforation. For example, 2 inches from the top front.',
                 placeholder: 'e.g., 2 inches from the top front',
                 required: false,
-                showWhen: 'horizontalCount > 0'
-              }
+                showWhen: 'horizontalCount > 0',
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           sortOrder: 14,
           isActive: true,
-          adminNotes: 'Perforation service with conditional fields for vertical and horizontal positioning'
-        }
+          adminNotes:
+            'Perforation service with conditional fields for vertical and horizontal positioning',
+        },
       })
-
     } else {
       // Create new add-on
       const newAddOn = await prisma.addOn.create({
         data: {
           name: 'Perforation',
-          description: 'A straight row of tiny holes punched in the paper so that a part can be torn off easily',
-          tooltipText: 'A straight row of tiny holes punched in the paper so that a part can be torn off easily. This perforation row goes completely across the sheet from one side to the other.',
+          description:
+            'A straight row of tiny holes punched in the paper so that a part can be torn off easily',
+          tooltipText:
+            'A straight row of tiny holes punched in the paper so that a part can be torn off easily. This perforation row goes completely across the sheet from one side to the other.',
           pricingModel: 'CUSTOM',
           configuration: {
             type: 'perforation',
@@ -102,19 +108,20 @@ async function addPerforationAddOn() {
                   { value: '2', label: '2' },
                   { value: '3', label: '3' },
                   { value: '4', label: '4' },
-                  { value: '5', label: '5' }
+                  { value: '5', label: '5' },
                 ],
                 defaultValue: '0',
                 helpText: 'Select the number of vertical perforation rows that you need.',
-                required: false
+                required: false,
               },
               verticalPosition: {
                 label: 'Vertical Position',
                 type: 'text',
-                helpText: 'Enter the position of the vertical perforation. For example, 2 inches from the right front.',
+                helpText:
+                  'Enter the position of the vertical perforation. For example, 2 inches from the right front.',
                 placeholder: 'e.g., 2 inches from the right front',
                 required: false,
-                showWhen: 'verticalCount > 0'
+                showWhen: 'verticalCount > 0',
               },
               horizontalCount: {
                 label: 'How Many Horizontal',
@@ -125,31 +132,32 @@ async function addPerforationAddOn() {
                   { value: '2', label: '2' },
                   { value: '3', label: '3' },
                   { value: '4', label: '4' },
-                  { value: '5', label: '5' }
+                  { value: '5', label: '5' },
                 ],
                 defaultValue: '0',
                 helpText: 'Select the number of horizontal perforation rows that you need.',
-                required: false
+                required: false,
               },
               horizontalPosition: {
                 label: 'Horizontal Position',
                 type: 'text',
-                helpText: 'Enter the position of the horizontal perforation. For example, 2 inches from the top front.',
+                helpText:
+                  'Enter the position of the horizontal perforation. For example, 2 inches from the top front.',
                 placeholder: 'e.g., 2 inches from the top front',
                 required: false,
-                showWhen: 'horizontalCount > 0'
-              }
+                showWhen: 'horizontalCount > 0',
+              },
             },
             requiresCheckbox: true,
-            showConditionalOnCheck: true
+            showConditionalOnCheck: true,
           },
           additionalTurnaroundDays: 1,
           sortOrder: 14,
           isActive: true,
-          adminNotes: 'Perforation service with conditional fields for vertical and horizontal positioning'
-        }
+          adminNotes:
+            'Perforation service with conditional fields for vertical and horizontal positioning',
+        },
       })
-
     }
 
     process.exit(0)

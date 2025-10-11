@@ -212,8 +212,7 @@ async function handleVendorAssignment(identifier: string, payload: Record<string
             },
           }),
         })
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     return NextResponse.json({

@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client'
+import { type PrismaClient, type Prisma } from '@prisma/client'
 import { cache } from 'react'
 
 // Repository pattern for data access abstraction
@@ -208,11 +208,14 @@ export class ProductRepository {
   }
 
   // Search products with full-text search
-  async searchProducts(query: string, options: {
-    categoryId?: string
-    limit?: number
-    page?: number
-  } = {}) {
+  async searchProducts(
+    query: string,
+    options: {
+      categoryId?: string
+      limit?: number
+      page?: number
+    } = {}
+  ) {
     const { categoryId, limit = 20, page = 1 } = options
     const skip = (page - 1) * limit
 
@@ -312,10 +315,7 @@ export class ProductRepository {
           take: 1,
         },
       },
-      orderBy: [
-        { viewCount: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ viewCount: 'desc' }, { createdAt: 'desc' }],
       take: limit,
     })
   }

@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle OPTIONS for CORS
-export async function OPTIONS() : Promise<unknown> {
+export async function OPTIONS(): Promise<unknown> {
   return new NextResponse(null, {
     status: 200,
     headers: {

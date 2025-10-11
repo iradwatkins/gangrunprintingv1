@@ -155,12 +155,50 @@ export function StaffTable({ staff }: StaffTableProps) {
     }
   }
 
-  const handleDeleteStaff = (staffId: string) => {
-    // TODO: Implement staff deletion
+  const handleDeleteStaff = async (staffId: string) => {
+    try {
+      const response = await fetch(`/api/staff?id=${staffId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to delete staff member')
+        return
+      }
+
+      // Reload the page to show updated list
+      window.location.reload()
+    } catch (error) {
+      alert('Failed to delete staff member')
+    }
   }
 
-  const handleToggleStatus = (staffId: string) => {
-    // TODO: Implement status toggle
+  const handleToggleStatus = async (staffId: string) => {
+    const member = staff.find((s) => s.id === staffId)
+    if (!member) return
+
+    try {
+      const response = await fetch('/api/staff', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: staffId,
+          isActive: !member.isActive,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to update staff member')
+        return
+      }
+
+      // Reload the page to show updated list
+      window.location.reload()
+    } catch (error) {
+      alert('Failed to update staff member')
+    }
   }
 
   return (

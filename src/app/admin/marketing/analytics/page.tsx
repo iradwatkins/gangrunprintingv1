@@ -109,7 +109,7 @@ export default function MarketingAnalyticsPage() {
 
       setAnalytics(mockData)
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false)
     }
   }

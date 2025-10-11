@@ -77,11 +77,11 @@ export async function POST(request: NextRequest) {
 
       // Parse with longer timeout and better error handling
       const formDataPromise = request.formData()
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Form data parsing timeout')), 30000) // Increased timeout
+      const timeoutPromise = new Promise(
+        (_, reject) => setTimeout(() => reject(new Error('Form data parsing timeout')), 30000) // Increased timeout
       )
 
-      formData = await Promise.race([formDataPromise, timeoutPromise]) as FormData
+      formData = (await Promise.race([formDataPromise, timeoutPromise])) as FormData
     } catch (error) {
       if (error instanceof Error && error.message.includes('timeout')) {
         return createTimeoutErrorResponse('Form data parsing', 15000, requestId)
@@ -156,8 +156,7 @@ export async function POST(request: NextRequest) {
             )
           }
         }
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     // Upload and process image with better error handling
@@ -201,7 +200,9 @@ export async function POST(request: NextRequest) {
       // STEP 1: Create Image record (always, even without productId)
       dbImage = await prisma.image.create({
         data: {
-          name: productId ? `product-${productId}-${imageCount}` : `temp-product-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+          name: productId
+            ? `product-${productId}-${imageCount}`
+            : `temp-product-${Date.now()}-${Math.random().toString(36).substring(7)}`,
           url: uploadedImages.optimized || uploadedImages.large,
           thumbnailUrl: uploadedImages.thumbnail,
           largeUrl: uploadedImages.large,
@@ -275,7 +276,7 @@ export async function POST(request: NextRequest) {
         compressedSize: uploadedImages.metadata.size,
         compressionRatio: uploadedImages.metadata.compressionRatio,
         profileUsed: uploadedImages.metadata.profileUsed,
-      }
+      },
     }
 
     return createSuccessResponse(responseData, 200, undefined, requestId)
@@ -297,11 +298,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return createErrorResponse(
-      'Failed to upload image',
-      500,
-      { uploadError: true },
-      requestId
-    )
+    return createErrorResponse('Failed to upload image', 500, { uploadError: true }, requestId)
   }
 }

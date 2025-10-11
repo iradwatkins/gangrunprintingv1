@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   const paperStocks = [
     // Business Card Stocks
     {
@@ -384,12 +383,10 @@ async function main() {
         create: stock,
       })
       createdCount++
-
     } catch (error) {
       console.error(`✗ Error creating paper stock ${stock.name}:`, error)
     }
   }
-
 }
 
 main()

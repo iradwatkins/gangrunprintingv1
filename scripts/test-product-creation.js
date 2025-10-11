@@ -3,7 +3,6 @@
 // Simple test script to create a product via the API
 
 const testProductCreation = async () => {
-
   // Test data for a simple business card product
   const productData = {
     name: 'Test Business Cards',
@@ -23,7 +22,6 @@ const testProductCreation = async () => {
   console.log('Product Data:', JSON.stringify(productData, null, 2))
 
   try {
-
     const response = await fetch('http://localhost:3002/api/products/simple', {
       method: 'POST',
       headers: {
@@ -43,19 +41,15 @@ const testProductCreation = async () => {
     }
 
     if (result.ProductCategory) {
-
     }
 
     if (result.productPaperStocks?.[0]) {
-
     }
 
     if (result.productQuantityGroups?.[0]) {
-
     }
 
     if (result.productSizeGroups?.[0]) {
-
     }
 
     // Now test deletion
@@ -68,9 +62,7 @@ const testProductCreation = async () => {
     })
 
     if (deleteResponse.ok) {
-
     } else {
-
     }
   } catch (error) {
     console.error('\n❌ Error:', error.message)

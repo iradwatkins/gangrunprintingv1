@@ -1,14 +1,14 @@
-import { Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { logger, logBusinessEvent, logError, logSecurity } from '@/lib/logger-safe'
 import {
-  CreateUserInput,
-  UpdateUserInput,
-  UserSearchFilters,
-  PaginationOptions,
-  PaginatedResult,
-  ServiceContext,
-  ServiceResult
+  type CreateUserInput,
+  type UpdateUserInput,
+  type UserSearchFilters,
+  type PaginationOptions,
+  type PaginatedResult,
+  type ServiceContext,
+  type ServiceResult,
 } from '@/types/service'
 import {
   AppError,
@@ -16,7 +16,7 @@ import {
   NotFoundError,
   ConflictError,
   ForbiddenError,
-  normalizeError
+  normalizeError,
 } from '@/exceptions/AppError'
 
 export class UserService {
@@ -36,7 +36,7 @@ export class UserService {
 
       // Check for existing user
       const existingUser = await prisma.user.findUnique({
-        where: { email: input.email }
+        where: { email: input.email },
       })
 
       if (existingUser) {
@@ -63,8 +63,8 @@ export class UserService {
           role: true,
           emailVerified: true,
           createdAt: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       })
 
       logBusinessEvent('user_created', {
@@ -72,7 +72,7 @@ export class UserService {
         email: user.email,
         role: user.role,
         createdBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       if (input.role && input.role !== 'USER') {
@@ -81,26 +81,25 @@ export class UserService {
           email: user.email,
           role: user.role,
           createdBy: this.context.userId,
-          requestId: this.context.requestId
+          requestId: this.context.requestId,
         })
       }
 
       return {
         success: true,
-        data: user
+        data: user,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to create user')
       logError(normalizedError, {
         operation: 'create_user',
         input: { email: input.email, role: input.role },
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -108,10 +107,13 @@ export class UserService {
   /**
    * Get user by ID with security filtering
    */
-  async getUserById(userId: string, includePrivateData: boolean = false): Promise<ServiceResult<any>> {
+  async getUserById(
+    userId: string,
+    includePrivateData: boolean = false
+  ): Promise<ServiceResult<any>> {
     try {
       // Check if requesting user can access private data
-      if (includePrivateData && !await this.canAccessPrivateUserData(userId)) {
+      if (includePrivateData && !(await this.canAccessPrivateUserData(userId))) {
         throw new ForbiddenError('Insufficient permissions to access private user data')
       }
 
@@ -134,13 +136,13 @@ export class UserService {
                 orderNumber: true,
                 status: true,
                 total: true,
-                createdAt: true
+                createdAt: true,
               },
               orderBy: { createdAt: 'desc' },
-              take: 10
-            }
-          })
-        }
+              take: 10,
+            },
+          }),
+        },
       })
 
       if (!user) {
@@ -149,21 +151,20 @@ export class UserService {
 
       return {
         success: true,
-        data: user
+        data: user,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to get user')
       logError(normalizedError, {
         operation: 'get_user_by_id',
         userId,
         includePrivateData,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -176,7 +177,7 @@ export class UserService {
       // Check if user exists
       const existingUser = await prisma.user.findUnique({
         where: { id: userId },
-        select: { id: true, email: true, role: true }
+        select: { id: true, email: true, role: true },
       })
 
       if (!existingUser) {
@@ -189,7 +190,7 @@ export class UserService {
       }
 
       // Check update permissions
-      if (!await this.canUpdateUser(userId)) {
+      if (!(await this.canUpdateUser(userId))) {
         throw new ForbiddenError('Insufficient permissions to update this user')
       }
 
@@ -197,7 +198,7 @@ export class UserService {
         where: { id: userId },
         data: {
           ...input,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         select: {
           id: true,
@@ -206,15 +207,15 @@ export class UserService {
           role: true,
           emailVerified: true,
           createdAt: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       })
 
       logBusinessEvent('user_updated', {
         userId,
         changes: input,
         updatedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       // Log security event for role changes
@@ -225,27 +226,26 @@ export class UserService {
           oldRole: existingUser.role,
           newRole: input.role,
           changedBy: this.context.userId,
-          requestId: this.context.requestId
+          requestId: this.context.requestId,
         })
       }
 
       return {
         success: true,
-        data: updatedUser
+        data: updatedUser,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to update user')
       logError(normalizedError, {
         operation: 'update_user',
         userId,
         input,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -259,7 +259,7 @@ export class UserService {
   ): Promise<ServiceResult<PaginatedResult<any>>> {
     try {
       // Check search permissions
-      if (!await this.canSearchUsers()) {
+      if (!(await this.canSearchUsers())) {
         throw new ForbiddenError('Insufficient permissions to search users')
       }
 
@@ -279,15 +279,15 @@ export class UserService {
             updatedAt: true,
             _count: {
               select: {
-                Orders: true
-              }
-            }
+                Orders: true,
+              },
+            },
           },
           orderBy,
           skip: (pagination.page - 1) * pagination.limit,
           take: pagination.limit,
         }),
-        prisma.user.count({ where })
+        prisma.user.count({ where }),
       ])
 
       const totalPages = Math.ceil(total / pagination.limit)
@@ -301,26 +301,25 @@ export class UserService {
           totalPages,
           hasNext: pagination.page < totalPages,
           hasPrev: pagination.page > 1,
-        }
+        },
       }
 
       return {
         success: true,
-        data: result
+        data: result,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to search users')
       logError(normalizedError, {
         operation: 'search_users',
         filters,
         pagination,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -334,38 +333,37 @@ export class UserService {
         where: { id: userId },
         data: {
           emailVerified: true,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         select: {
           id: true,
           email: true,
-          emailVerified: true
-        }
+          emailVerified: true,
+        },
       })
 
       logBusinessEvent('email_verified', {
         userId,
         email: user.email,
         verifiedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: user
+        data: user,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to verify email')
       logError(normalizedError, {
         operation: 'verify_email',
         userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -376,13 +374,13 @@ export class UserService {
   async deactivateUser(userId: string, reason?: string): Promise<ServiceResult<any>> {
     try {
       // Check permissions
-      if (!await this.canDeactivateUser(userId)) {
+      if (!(await this.canDeactivateUser(userId))) {
         throw new ForbiddenError('Insufficient permissions to deactivate this user')
       }
 
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { id: true, email: true, role: true }
+        select: { id: true, email: true, role: true },
       })
 
       if (!user) {
@@ -398,16 +396,16 @@ export class UserService {
             deactivated: true,
             deactivatedAt: new Date().toISOString(),
             deactivatedBy: this.context.userId,
-            deactivationReason: reason
+            deactivationReason: reason,
           },
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         select: {
           id: true,
           email: true,
           name: true,
-          role: true
-        }
+          role: true,
+        },
       })
 
       logBusinessEvent('user_deactivated', {
@@ -415,7 +413,7 @@ export class UserService {
         email: user.email,
         reason,
         deactivatedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       logSecurity('user_deactivated', {
@@ -424,26 +422,25 @@ export class UserService {
         role: user.role,
         reason,
         deactivatedBy: this.context.userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: true,
-        data: deactivatedUser
+        data: deactivatedUser,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to deactivate user')
       logError(normalizedError, {
         operation: 'deactivate_user',
         userId,
         reason,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -453,7 +450,7 @@ export class UserService {
    */
   async getUserActivitySummary(userId: string): Promise<ServiceResult<any>> {
     try {
-      if (!await this.canAccessPrivateUserData(userId)) {
+      if (!(await this.canAccessPrivateUserData(userId))) {
         throw new ForbiddenError('Insufficient permissions to access user activity')
       }
 
@@ -463,7 +460,7 @@ export class UserService {
           by: ['status'],
           where: { userId },
           _count: true,
-          _sum: { total: true }
+          _sum: { total: true },
         }),
         // Recent activity
         prisma.order.findMany({
@@ -473,11 +470,11 @@ export class UserService {
             orderNumber: true,
             status: true,
             total: true,
-            createdAt: true
+            createdAt: true,
           },
           orderBy: { createdAt: 'desc' },
-          take: 5
-        })
+          take: 5,
+        }),
       ])
 
       const totalOrders = orderStats.reduce((sum, stat) => sum + stat._count, 0)
@@ -486,29 +483,31 @@ export class UserService {
       const summary = {
         totalOrders,
         totalSpent,
-        ordersByStatus: orderStats.reduce((acc, stat) => {
-          acc[stat.status] = stat._count
-          return acc
-        }, {} as Record<string, number>),
-        recentOrders: recentActivity
+        ordersByStatus: orderStats.reduce(
+          (acc, stat) => {
+            acc[stat.status] = stat._count
+            return acc
+          },
+          {} as Record<string, number>
+        ),
+        recentOrders: recentActivity,
       }
 
       return {
         success: true,
-        data: summary
+        data: summary,
       }
-
     } catch (error) {
       const normalizedError = normalizeError(error, 'Failed to get user activity summary')
       logError(normalizedError, {
         operation: 'get_user_activity_summary',
         userId,
-        requestId: this.context.requestId
+        requestId: this.context.requestId,
       })
 
       return {
         success: false,
-        error: normalizedError.message
+        error: normalizedError.message,
       }
     }
   }
@@ -551,7 +550,7 @@ export class UserService {
     // Prevent changing the last admin
     if (currentRole === 'ADMIN' && newRole !== 'ADMIN') {
       const adminCount = await prisma.user.count({
-        where: { role: 'ADMIN' }
+        where: { role: 'ADMIN' },
       })
 
       if (adminCount <= 1) {
@@ -609,12 +608,14 @@ export class UserService {
     return where
   }
 
-  private buildUserOrderByClause(pagination: PaginationOptions): Prisma.UserOrderByWithRelationInput {
+  private buildUserOrderByClause(
+    pagination: PaginationOptions
+  ): Prisma.UserOrderByWithRelationInput {
     const sortBy = pagination.sortBy || 'createdAt'
     const sortOrder = pagination.sortOrder || 'desc'
 
     return {
-      [sortBy]: sortOrder
+      [sortBy]: sortOrder,
     }
   }
 }

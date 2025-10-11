@@ -31,7 +31,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Latham',
     state: 'NY',
     zip: '12110',
-    hours: { 'mon-fri': '5:00am-9:00pm', 'sat-sun': 'Closed' }
+    hours: { 'mon-fri': '5:00am-9:00pm', 'sat-sun': 'Closed' },
   },
   {
     code: 'ABQ',
@@ -40,7 +40,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Albuquerque',
     state: 'NM',
     zip: '87106',
-    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '5:30am-9:00pm' }
+    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '5:30am-9:00pm' },
   },
   {
     code: 'AMA',
@@ -49,7 +49,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Amarillo',
     state: 'TX',
     zip: '79111',
-    hours: { 'mon-fri': '6:00am-10:45pm', 'sat': '7:00am-3:30pm', 'sun': '9:00am-8:00pm' }
+    hours: { 'mon-fri': '6:00am-10:45pm', sat: '7:00am-3:30pm', sun: '9:00am-8:00pm' },
   },
   {
     code: 'ATL',
@@ -58,7 +58,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Atlanta',
     state: 'GA',
     zip: '30354',
-    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '5:00am-11:00pm' }
+    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '5:00am-11:00pm' },
   },
   {
     code: 'AUS',
@@ -67,7 +67,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Austin',
     state: 'TX',
     zip: '78719',
-    hours: { 'mon-fri': '4:30am-1:30am', 'sat': '5:30am-9:00pm', 'sun': '4:30am-9:00pm' }
+    hours: { 'mon-fri': '4:30am-1:30am', sat: '5:30am-9:00pm', sun: '4:30am-9:00pm' },
   },
   {
     code: 'BWI',
@@ -76,7 +76,12 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Linthicum',
     state: 'MD',
     zip: '21240',
-    hours: { 'mon': '5:00am-12:00am', 'tue-fri': 'Open 24 hours', 'sat': '12:00am-8:00pm', 'sun': '5:00am-8:00pm' }
+    hours: {
+      mon: '5:00am-12:00am',
+      'tue-fri': 'Open 24 hours',
+      sat: '12:00am-8:00pm',
+      sun: '5:00am-8:00pm',
+    },
   },
   {
     code: 'BHM',
@@ -85,7 +90,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Birmingham',
     state: 'AL',
     zip: '35217',
-    hours: { 'mon-fri': '4:45am-9:45pm', 'sat': '5:00am-8:00pm', 'sun': '5:00am-7:30pm' }
+    hours: { 'mon-fri': '4:45am-9:45pm', sat: '5:00am-8:00pm', sun: '5:00am-7:30pm' },
   },
   {
     code: 'BOS',
@@ -94,7 +99,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Boston',
     state: 'MA',
     zip: '02128',
-    hours: { 'mon-fri': '4:30am-12:00am', 'sat': '5:00am-7:00pm', 'sun': '5:00am-5:00pm' }
+    hours: { 'mon-fri': '4:30am-12:00am', sat: '5:00am-7:00pm', sun: '5:00am-5:00pm' },
   },
   {
     code: 'BUF',
@@ -103,7 +108,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Buffalo',
     state: 'NY',
     zip: '14225',
-    hours: { 'mon-fri': '6:00am-11:00pm', 'sat-sun': '6:00am-1:30pm' }
+    hours: { 'mon-fri': '6:00am-11:00pm', 'sat-sun': '6:00am-1:30pm' },
   },
   {
     code: 'BUR',
@@ -112,7 +117,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Burbank',
     state: 'CA',
     zip: '91505',
-    hours: { 'mon-fri': '5:30am-10:30pm', 'sat-sun': '6:30am-6:30pm' }
+    hours: { 'mon-fri': '5:30am-10:30pm', 'sat-sun': '6:30am-6:30pm' },
   },
   // Continue with remaining airports...
   // For brevity, I'll include a few more key locations
@@ -123,7 +128,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Dallas',
     state: 'TX',
     zip: '75235',
-    hours: { 'mon-fri': '4:30am-1:30am', 'sat': '4:30am-12:00am', 'sun': '4:30am-1:30am' }
+    hours: { 'mon-fri': '4:30am-1:30am', sat: '4:30am-12:00am', sun: '4:30am-1:30am' },
   },
   {
     code: 'DEN',
@@ -132,7 +137,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Denver',
     state: 'CO',
     zip: '80249',
-    hours: { 'mon-sat': '4:30am-12:00am', 'sun': '5:00am-12:00am' }
+    hours: { 'mon-sat': '4:30am-12:00am', sun: '5:00am-12:00am' },
   },
   {
     code: 'HOU',
@@ -141,7 +146,12 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Houston',
     state: 'TX',
     zip: '77061',
-    hours: { 'mon': '4:00am-12:00am', 'tue-fri': 'Open 24 hours', 'sat': '12:00am-12:00am', 'sun': '5:00am-12:00am' }
+    hours: {
+      mon: '4:00am-12:00am',
+      'tue-fri': 'Open 24 hours',
+      sat: '12:00am-12:00am',
+      sun: '5:00am-12:00am',
+    },
   },
   {
     code: 'IAH',
@@ -151,7 +161,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Houston',
     state: 'TX',
     zip: '77032',
-    hours: { 'mon-fri': '8:00am-10:00pm', 'sat': '8:00am-12:00pm', 'sun': 'Closed' }
+    hours: { 'mon-fri': '8:00am-10:00pm', sat: '8:00am-12:00pm', sun: 'Closed' },
   },
   {
     code: 'LAS',
@@ -160,7 +170,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Las Vegas',
     state: 'NV',
     zip: '89119',
-    hours: { 'mon-fri': '4:30am-11:30pm', 'sat-sun': '6:00am-9:30pm' }
+    hours: { 'mon-fri': '4:30am-11:30pm', 'sat-sun': '6:00am-9:30pm' },
   },
   {
     code: 'LAX',
@@ -169,7 +179,12 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Los Angeles',
     state: 'CA',
     zip: '90045',
-    hours: { 'mon': '4:30am-12:00am', 'tue-fri': 'Open 24 hours', 'sat': '12:00am-12:00am', 'sun': '5:00am-12:00am' }
+    hours: {
+      mon: '4:30am-12:00am',
+      'tue-fri': 'Open 24 hours',
+      sat: '12:00am-12:00am',
+      sun: '5:00am-12:00am',
+    },
   },
   {
     code: 'PHX',
@@ -178,7 +193,7 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Phoenix',
     state: 'AZ',
     zip: '85034',
-    hours: { 'mon-fri': '4:15am-1:30am', 'sat': '5:00am-12:45am', 'sun': '5:00am-1:30am' }
+    hours: { 'mon-fri': '4:15am-1:30am', sat: '5:00am-12:45am', sun: '5:00am-1:30am' },
   },
   {
     code: 'SEA',
@@ -187,8 +202,8 @@ const SOUTHWEST_CARGO_AIRPORTS: AirportData[] = [
     city: 'Seattle',
     state: 'WA',
     zip: '98158',
-    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '6:00am-10:00pm' }
-  }
+    hours: { 'mon-fri': '5:00am-12:00am', 'sat-sun': '6:00am-10:00pm' },
+  },
 ]
 
 async function seedAirports() {
@@ -217,7 +232,7 @@ async function seedAirports() {
           state: airport.state,
           zip: airport.zip,
           hours: airport.hours,
-          isActive: true
+          isActive: true,
         },
         create: {
           id: randomUUID(),
@@ -230,12 +245,14 @@ async function seedAirports() {
           state: airport.state,
           zip: airport.zip,
           hours: airport.hours,
-          isActive: true
-        }
+          isActive: true,
+        },
       })
 
       successCount++
-      console.log(`✅ Imported: ${airport.code} - ${airport.name} (Weekend: ${weekendAvailable ? 'Open' : 'Closed'})`)
+      console.log(
+        `✅ Imported: ${airport.code} - ${airport.name} (Weekend: ${weekendAvailable ? 'Open' : 'Closed'})`
+      )
     } catch (error) {
       errorCount++
       console.error(`❌ Failed to import ${airport.code}:`, error)

@@ -58,7 +58,7 @@ export default function DesignAddonTestPage() {
 
   const getSelectedAddonInfo = () => {
     if (!selectedDesignOption) return null
-    const addon = designAddons.find(a => a.id === selectedDesignOption)
+    const addon = designAddons.find((a) => a.id === selectedDesignOption)
     if (!addon) return null
 
     let price = 0
@@ -81,7 +81,7 @@ export default function DesignAddonTestPage() {
       price: price,
       files: uploadedFiles.length,
       isValid: isValid,
-      requiresSideSelection: addon.configuration?.requiresSideSelection || false
+      requiresSideSelection: addon.configuration?.requiresSideSelection || false,
     }
   }
 
@@ -103,12 +103,12 @@ export default function DesignAddonTestPage() {
             ) : (
               <DesignAddonSelector
                 designAddons={designAddons}
+                disabled={false}
                 selectedDesignOption={selectedDesignOption}
                 selectedSide={selectedSide}
                 uploadedFiles={uploadedFiles}
                 onDesignOptionChange={handleDesignOptionChange}
                 onFilesUploaded={handleFilesUploaded}
-                disabled={false}
               />
             )}
           </CardContent>
@@ -122,19 +122,31 @@ export default function DesignAddonTestPage() {
           <CardContent>
             {selectedInfo ? (
               <div className="space-y-2">
-                <p><strong>Selected Service:</strong> {selectedInfo.name}</p>
+                <p>
+                  <strong>Selected Service:</strong> {selectedInfo.name}
+                </p>
                 {selectedInfo.requiresSideSelection && (
                   <>
                     {selectedInfo.side ? (
-                      <p><strong>Sides:</strong> {selectedInfo.side === 'oneSide' ? 'One Side' : 'Two Sides'}</p>
+                      <p>
+                        <strong>Sides:</strong>{' '}
+                        {selectedInfo.side === 'oneSide' ? 'One Side' : 'Two Sides'}
+                      </p>
                     ) : (
-                      <p className="text-orange-600"><strong>⚠️ Sides:</strong> Please select sides to continue</p>
+                      <p className="text-orange-600">
+                        <strong>⚠️ Sides:</strong> Please select sides to continue
+                      </p>
                     )}
                   </>
                 )}
-                <p><strong>Price:</strong> ${selectedInfo.price.toFixed(2)}</p>
-                <p><strong>Files Uploaded:</strong> {selectedInfo.files}</p>
-                <p><strong>Valid for Cart:</strong>
+                <p>
+                  <strong>Price:</strong> ${selectedInfo.price.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Files Uploaded:</strong> {selectedInfo.files}
+                </p>
+                <p>
+                  <strong>Valid for Cart:</strong>
                   <span className={selectedInfo.isValid ? 'text-green-600' : 'text-red-600'}>
                     {selectedInfo.isValid ? ' ✓ Yes' : ' ✗ No (incomplete selection)'}
                   </span>
@@ -153,21 +165,25 @@ export default function DesignAddonTestPage() {
           </CardHeader>
           <CardContent>
             <pre className="bg-muted p-4 rounded-lg overflow-auto text-xs">
-              {JSON.stringify({
-                selectedDesignOption,
-                selectedSide,
-                uploadedFilesCount: uploadedFiles.length,
-                uploadedFiles: uploadedFiles.map(f => ({
-                  fileId: f.fileId,
-                  name: f.originalName,
-                  size: f.size
-                })),
-                availableAddons: designAddons.map(a => ({
-                  id: a.id,
-                  name: a.name,
-                  configuration: a.configuration
-                }))
-              }, null, 2)}
+              {JSON.stringify(
+                {
+                  selectedDesignOption,
+                  selectedSide,
+                  uploadedFilesCount: uploadedFiles.length,
+                  uploadedFiles: uploadedFiles.map((f) => ({
+                    fileId: f.fileId,
+                    name: f.originalName,
+                    size: f.size,
+                  })),
+                  availableAddons: designAddons.map((a) => ({
+                    id: a.id,
+                    name: a.name,
+                    configuration: a.configuration,
+                  })),
+                },
+                null,
+                2
+              )}
             </pre>
           </CardContent>
         </Card>
@@ -179,16 +195,18 @@ export default function DesignAddonTestPage() {
           </CardHeader>
           <CardContent className="flex gap-4">
             <Button
+              variant="outline"
               onClick={() => {
                 setSelectedDesignOption(null)
                 setSelectedSide(null)
                 setUploadedFiles([])
               }}
-              variant="outline"
             >
               Reset Selection
             </Button>
             <Button
+              disabled={!selectedDesignOption || !selectedInfo?.isValid}
+              variant="default"
               onClick={() => {
                 const info = getSelectedAddonInfo()
                 if (info?.isValid) {
@@ -197,8 +215,6 @@ export default function DesignAddonTestPage() {
                   alert('Cannot submit: Please complete your selection')
                 }
               }}
-              variant="default"
-              disabled={!selectedDesignOption || !selectedInfo?.isValid}
             >
               Submit Configuration
             </Button>

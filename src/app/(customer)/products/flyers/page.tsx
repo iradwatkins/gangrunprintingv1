@@ -62,8 +62,7 @@ export default function FlyerProductPage() {
             setSelectedSides(defaultStock.defaultSides)
           }
         }
-      } catch (error) {
-        }
+      } catch (error) {}
     }
     fetchPaperStocks()
   }, [])

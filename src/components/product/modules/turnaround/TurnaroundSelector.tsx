@@ -150,14 +150,15 @@ export default function TurnaroundTimeSelector({
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <div className="text-base font-semibold text-gray-900">
-                        {turnaround.name}
-                      </div>
+                      <div className="text-base font-semibold text-gray-900">{turnaround.name}</div>
                       <div className="text-sm text-gray-600">
-                        {turnaround.daysMin === 0 ? 'Today' :
-                         turnaround.daysMin === turnaround.daysMax ? `${turnaround.daysMin} Day${turnaround.daysMin !== 1 ? 's' : ''}` :
-                         turnaround.daysMax ? `${turnaround.daysMin} - ${turnaround.daysMax} Days` :
-                         `${turnaround.daysMin}+ Days`}
+                        {turnaround.daysMin === 0
+                          ? 'Today'
+                          : turnaround.daysMin === turnaround.daysMax
+                            ? `${turnaround.daysMin} Day${turnaround.daysMin !== 1 ? 's' : ''}`
+                            : turnaround.daysMax
+                              ? `${turnaround.daysMin} - ${turnaround.daysMax} Days`
+                              : `${turnaround.daysMin}+ Days`}
                       </div>
                       {turnaround.description && (
                         <div className="text-xs text-gray-600 mt-1">{turnaround.description}</div>

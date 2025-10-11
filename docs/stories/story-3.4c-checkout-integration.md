@@ -1,15 +1,19 @@
 # Story 4c: Checkout Integration
 
 ## Story Title
+
 Integrate Shipping Selection with Checkout Flow and Order Total
 
 ## Story Type
+
 Integration
 
 ## Story Points
+
 1
 
 ## Priority
+
 P1 - High (Completes checkout flow)
 
 ## Story Description
@@ -19,6 +23,7 @@ As a **customer**, I want my shipping selection to be integrated with the checko
 ## Background
 
 This story connects the shipping UI (Story 4a) and rate API (Story 4b) with the existing checkout flow:
+
 - Updates order total with shipping cost
 - Validates shipping selection before order submission
 - Saves shipping details with the order
@@ -27,6 +32,7 @@ This story connects the shipping UI (Story 4a) and rate API (Story 4b) with the 
 ## Acceptance Criteria
 
 ### Must Have
+
 - [ ] Shipping cost adds to order subtotal
 - [ ] Order cannot be submitted without shipping selection
 - [ ] Selected shipping method saves with order
@@ -35,6 +41,7 @@ This story connects the shipping UI (Story 4a) and rate API (Story 4b) with the 
 - [ ] Validation error if no shipping selected
 
 ### Should Have
+
 - [ ] Shipping selection persists if user navigates back
 - [ ] Email confirmation includes shipping details
 - [ ] Order history shows shipping method
@@ -45,66 +52,66 @@ This story connects the shipping UI (Story 4a) and rate API (Story 4b) with the 
 
 ```tsx
 // components/checkout/CheckoutFlow.tsx
-import { useState, useEffect } from 'react';
-import { useCart } from '@/hooks/useCart';
-import { ShippingSelection } from '@/components/shipping/ShippingSelection';
-import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { useCart } from '@/hooks/useCart'
+import { ShippingSelection } from '@/components/shipping/ShippingSelection'
+import { OrderSummary } from '@/components/checkout/OrderSummary'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 interface CheckoutState {
-  customerInfo: any;
-  shippingAddress: any;
+  customerInfo: any
+  shippingAddress: any
   shippingMethod: {
-    provider: string;
-    rate: number;
-    deliveryDays: any;
-  } | null;
-  paymentMethod: any;
+    provider: string
+    rate: number
+    deliveryDays: any
+  } | null
+  paymentMethod: any
 }
 
 export function CheckoutFlow() {
-  const { cart, cartTotal } = useCart();
+  const { cart, cartTotal } = useCart()
   const [checkoutState, setCheckoutState] = useState<CheckoutState>({
     customerInfo: null,
     shippingAddress: null,
     shippingMethod: null,
-    paymentMethod: null
-  });
-  const [shippingRates, setShippingRates] = useState([]);
-  const [loadingRates, setLoadingRates] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+    paymentMethod: null,
+  })
+  const [shippingRates, setShippingRates] = useState([])
+  const [loadingRates, setLoadingRates] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
 
   // Calculate order totals
   const calculateTotals = () => {
-    const subtotal = cartTotal;
-    const tax = subtotal * 0.0825; // 8.25% tax
-    const shipping = checkoutState.shippingMethod?.rate || 0;
-    const total = subtotal + tax + shipping;
+    const subtotal = cartTotal
+    const tax = subtotal * 0.0825 // 8.25% tax
+    const shipping = checkoutState.shippingMethod?.rate || 0
+    const total = subtotal + tax + shipping
 
     return {
       subtotal,
       tax,
       shipping,
-      total
-    };
-  };
+      total,
+    }
+  }
 
   // Fetch shipping rates when address is entered
   useEffect(() => {
     if (checkoutState.shippingAddress) {
-      fetchShippingRates();
+      fetchShippingRates()
     }
-  }, [checkoutState.shippingAddress]);
+  }, [checkoutState.shippingAddress])
 
   const fetchShippingRates = async () => {
-    setLoadingRates(true);
+    setLoadingRates(true)
     try {
       // Calculate package weight from cart items
       const totalWeight = cart.reduce((sum, item) => {
-        return sum + (item.product.weight || 1) * item.quantity;
-      }, 0);
+        return sum + (item.product.weight || 1) * item.quantity
+      }, 0)
 
       const response = await fetch('/api/shipping/rates', {
         method: 'POST',
@@ -113,72 +120,72 @@ export function CheckoutFlow() {
           destination: {
             zipCode: checkoutState.shippingAddress.zipCode,
             city: checkoutState.shippingAddress.city,
-            state: checkoutState.shippingAddress.state
+            state: checkoutState.shippingAddress.state,
           },
           package: {
             weight: totalWeight,
             dimensions: {
               length: 12,
               width: 12,
-              height: 6
-            }
-          }
-        })
-      });
+              height: 6,
+            },
+          },
+        }),
+      })
 
-      const data = await response.json();
-      setShippingRates(data.rates);
+      const data = await response.json()
+      setShippingRates(data.rates)
     } catch (error) {
-      console.error('Failed to fetch shipping rates:', error);
+      console.error('Failed to fetch shipping rates:', error)
     } finally {
-      setLoadingRates(false);
+      setLoadingRates(false)
     }
-  };
+  }
 
   const handleShippingSelect = (provider: any) => {
-    const rate = shippingRates.find((r: any) => r.provider === provider.id);
+    const rate = shippingRates.find((r: any) => r.provider === provider.id)
     if (rate) {
-      setCheckoutState(prev => ({
+      setCheckoutState((prev) => ({
         ...prev,
         shippingMethod: {
           provider: rate.provider,
           rate: rate.rate.amount,
-          deliveryDays: rate.delivery.estimatedDays
-        }
-      }));
-      setValidationErrors(errors => errors.filter(e => e !== 'shipping'));
+          deliveryDays: rate.delivery.estimatedDays,
+        },
+      }))
+      setValidationErrors((errors) => errors.filter((e) => e !== 'shipping'))
     }
-  };
+  }
 
   const validateCheckout = (): boolean => {
-    const errors: string[] = [];
+    const errors: string[] = []
 
     if (!checkoutState.customerInfo) {
-      errors.push('customer');
+      errors.push('customer')
     }
     if (!checkoutState.shippingAddress) {
-      errors.push('address');
+      errors.push('address')
     }
     if (!checkoutState.shippingMethod) {
-      errors.push('shipping');
+      errors.push('shipping')
     }
     if (!checkoutState.paymentMethod) {
-      errors.push('payment');
+      errors.push('payment')
     }
 
-    setValidationErrors(errors);
-    return errors.length === 0;
-  };
+    setValidationErrors(errors)
+    return errors.length === 0
+  }
 
   const submitOrder = async () => {
     if (!validateCheckout()) {
       // Scroll to first error
-      const firstError = document.querySelector('.error-section');
-      firstError?.scrollIntoView({ behavior: 'smooth' });
-      return;
+      const firstError = document.querySelector('.error-section')
+      firstError?.scrollIntoView({ behavior: 'smooth' })
+      return
     }
 
-    const totals = calculateTotals();
+    const totals = calculateTotals()
 
     try {
       const response = await fetch('/api/orders/create', {
@@ -189,35 +196,34 @@ export function CheckoutFlow() {
           shippingAddress: checkoutState.shippingAddress,
           shipping: {
             method: checkoutState.shippingMethod,
-            cost: checkoutState.shippingMethod.rate
+            cost: checkoutState.shippingMethod.rate,
           },
-          items: cart.map(item => ({
+          items: cart.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
             price: item.price,
-            options: item.options
+            options: item.options,
           })),
           totals: totals,
-          paymentMethod: checkoutState.paymentMethod
-        })
-      });
+          paymentMethod: checkoutState.paymentMethod,
+        }),
+      })
 
       if (!response.ok) {
-        throw new Error('Order submission failed');
+        throw new Error('Order submission failed')
       }
 
-      const order = await response.json();
+      const order = await response.json()
 
       // Redirect to confirmation
-      window.location.href = `/checkout/confirmation/${order.id}`;
-
+      window.location.href = `/checkout/confirmation/${order.id}`
     } catch (error) {
-      console.error('Order submission error:', error);
-      alert('Failed to submit order. Please try again.');
+      console.error('Order submission error:', error)
+      alert('Failed to submit order. Please try again.')
     }
-  };
+  }
 
-  const totals = calculateTotals();
+  const totals = calculateTotals()
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -234,9 +240,7 @@ export function CheckoutFlow() {
             {!checkoutState.shippingAddress ? (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Please enter your shipping address first
-                </AlertDescription>
+                <AlertDescription>Please enter your shipping address first</AlertDescription>
               </Alert>
             ) : loadingRates ? (
               <div className="flex items-center justify-center p-8">
@@ -253,9 +257,7 @@ export function CheckoutFlow() {
                 {validationErrors.includes('shipping') && (
                   <Alert variant="destructive" className="mt-2">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Please select a shipping method
-                    </AlertDescription>
+                    <AlertDescription>Please select a shipping method</AlertDescription>
                   </Alert>
                 )}
               </>
@@ -276,12 +278,7 @@ export function CheckoutFlow() {
               shippingMethod={checkoutState.shippingMethod}
             />
 
-            <Button
-              className="w-full mt-4"
-              size="lg"
-              onClick={submitOrder}
-              disabled={!cart.length}
-            >
+            <Button className="w-full mt-4" size="lg" onClick={submitOrder} disabled={!cart.length}>
               Place Order - ${totals.total.toFixed(2)}
             </Button>
 
@@ -294,7 +291,7 @@ export function CheckoutFlow() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 ```
 
@@ -302,13 +299,7 @@ export function CheckoutFlow() {
 
 ```tsx
 // components/checkout/OrderSummary.tsx
-export function OrderSummary({
-  subtotal,
-  tax,
-  shipping,
-  total,
-  shippingMethod
-}) {
+export function OrderSummary({ subtotal, tax, shipping, total, shippingMethod }) {
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
@@ -348,7 +339,7 @@ export function OrderSummary({
         </div>
       </div>
     </Card>
-  );
+  )
 }
 ```
 
@@ -356,21 +347,15 @@ export function OrderSummary({
 
 ```tsx
 // app/checkout/confirmation/[orderId]/page.tsx
-export default async function OrderConfirmation({
-  params
-}: {
-  params: { orderId: string }
-}) {
-  const order = await getOrder(params.orderId);
+export default async function OrderConfirmation({ params }: { params: { orderId: string } }) {
+  const order = await getOrder(params.orderId)
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
         <h1 className="text-3xl font-bold">Order Confirmed!</h1>
-        <p className="text-gray-600 mt-2">
-          Order #{order.orderNumber}
-        </p>
+        <p className="text-gray-600 mt-2">Order #{order.orderNumber}</p>
       </div>
 
       {/* Shipping Details */}
@@ -402,13 +387,14 @@ export default async function OrderConfirmation({
 
       {/* ... Order items and other details ... */}
     </div>
-  );
+  )
 }
 ```
 
 ## Testing Requirements
 
 ### Manual Testing Checklist
+
 - [ ] Select shipping updates order total
 - [ ] Cannot submit order without shipping
 - [ ] Shipping details save with order
@@ -419,12 +405,14 @@ export default async function OrderConfirmation({
 - [ ] Mobile responsive checkout
 
 ## Dependencies
+
 - Stories 4a and 4b must be complete
 - Existing checkout flow
 - Cart management system
 - Order creation API
 
 ## Definition of Done
+
 - [ ] Shipping integrates with checkout
 - [ ] Order total includes shipping
 - [ ] Validation prevents missing shipping
@@ -435,12 +423,14 @@ export default async function OrderConfirmation({
 - [ ] Code reviewed
 
 ## Notes
+
 - This is the final integration piece
 - Ensure shipping state persists through checkout steps
 - Consider session storage for checkout state
 - Handle edge cases like cart changes during checkout
 
 ## Estimation Breakdown
+
 - Integrate with checkout flow: 0.5 hours
 - Update order total calculation: 0.5 hours
 - Add validation: 0.5 hours

@@ -126,8 +126,7 @@ function loadCustomFonts(fonts: string[]) {
           document.fonts.add(fontFace)
           loadedFonts.add(fontFamily)
         })
-        .catch((error) => {
-          })
+        .catch((error) => {})
     }
   })
 }

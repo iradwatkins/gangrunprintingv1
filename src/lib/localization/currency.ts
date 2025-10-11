@@ -290,8 +290,7 @@ export class CurrencyService {
 
       // Clear cache to force refresh
       this.exchangeRateCache.clear()
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   /**
@@ -359,8 +358,7 @@ export class CurrencyService {
         )
         const data = await response.json()
         return data.conversion_rates
-      } catch (error) {
-        }
+      } catch (error) {}
     }
 
     // Fallback static rates (for development)

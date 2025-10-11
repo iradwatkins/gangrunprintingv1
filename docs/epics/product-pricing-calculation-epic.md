@@ -18,6 +18,7 @@ Connect the existing pricing calculation engines to the product configuration fr
 ### Existing System Context
 
 **Current relevant functionality:**
+
 - Three complete pricing engines exist:
   - `base-price-engine.ts` - Core formula implementation
   - `unified-pricing-engine.ts` - Comprehensive pricing with add-ons
@@ -33,6 +34,7 @@ Connect the existing pricing calculation engines to the product configuration fr
 - Pricing formula: `((Base Paper Price × Sides Multiplier) × Size × Quantity)` + add-ons + turnaround markup
 
 **Technology stack:**
+
 - Next.js 15 with App Router
 - TypeScript
 - PostgreSQL + Prisma ORM
@@ -40,6 +42,7 @@ Connect the existing pricing calculation engines to the product configuration fr
 - Existing hooks: `useProductConfiguration.ts`, `usePriceCalculation.ts`
 
 **Integration points:**
+
 - `/api/products/[id]/configuration` - Fetches product config options
 - `ProductConfigurationForm.tsx` - Main customer-facing form
 - `AddToCartSection.tsx` - Displays final price
@@ -48,18 +51,21 @@ Connect the existing pricing calculation engines to the product configuration fr
 ### Enhancement Details
 
 **What's being added/changed:**
+
 1. New API endpoint `/api/pricing/calculate` to accept configuration and return calculated price
 2. Frontend hook enhancement to call pricing API on option changes
 3. Real-time price display component in product configuration
 4. Cart integration to pass calculated price + breakdown
 
 **How it integrates:**
+
 - API endpoint uses existing `UnifiedPricingEngine` class
 - Frontend hooks call API via fetch
 - Product form triggers price calculation on any option change
 - Price breakdown shows itemized costs (base + add-ons + turnaround)
 
 **Success criteria:**
+
 - Real-time price updates within 200ms of option selection
 - Accurate pricing matching all existing formulas
 - Price breakdown visible to customer
@@ -75,6 +81,7 @@ Connect the existing pricing calculation engines to the product configuration fr
 Create `/api/pricing/calculate/route.ts` that accepts product configuration (quantity, size, paper, add-ons, turnaround) and returns calculated price using `UnifiedPricingEngine`. Include validation, error handling, and price breakdown in response.
 
 **Acceptance Criteria:**
+
 - POST endpoint accepts configuration JSON
 - Returns calculated price + breakdown
 - Handles all module combinations
@@ -83,12 +90,14 @@ Create `/api/pricing/calculate/route.ts` that accepts product configuration (qua
 - Response time < 200ms
 
 **Technical Details:**
+
 - Use `UnifiedPricingEngine` from `/src/lib/pricing/unified-pricing-engine.ts`
 - Request body validation with Zod schema
 - Error handling with try-catch
 - Response format: `{ price, breakdown, validation }`
 
 **Files to Create/Modify:**
+
 - `/src/app/api/pricing/calculate/route.ts` (NEW)
 - `/src/lib/validation.ts` (UPDATE - add pricing request schema)
 
@@ -99,6 +108,7 @@ Create `/api/pricing/calculate/route.ts` that accepts product configuration (qua
 Enhance or create `usePriceCalculation` hook to call pricing API on configuration changes. Wire up `ProductConfigurationForm.tsx` to trigger calculations. Display real-time price and breakdown to user.
 
 **Acceptance Criteria:**
+
 - Price updates automatically when options change
 - Loading state during calculation
 - Error handling for failed calculations
@@ -108,6 +118,7 @@ Enhance or create `usePriceCalculation` hook to call pricing API on configuratio
 - Show error message if calculation fails
 
 **Technical Details:**
+
 - Update `/src/hooks/usePriceCalculation.ts` to call API
 - Use `useDebouncedCallback` for option changes
 - Add loading/error states
@@ -115,6 +126,7 @@ Enhance or create `usePriceCalculation` hook to call pricing API on configuratio
 - Wire into `ProductConfigurationForm.tsx`
 
 **Files to Create/Modify:**
+
 - `/src/hooks/usePriceCalculation.ts` (UPDATE)
 - `/src/components/product/PriceDisplay.tsx` (NEW)
 - `/src/components/product/ProductConfigurationForm.tsx` (UPDATE)
@@ -126,6 +138,7 @@ Enhance or create `usePriceCalculation` hook to call pricing API on configuratio
 Integrate calculated price into cart system. Pass final price + configuration details to cart. Test complete flow from product page → cart → checkout.
 
 **Acceptance Criteria:**
+
 - Cart receives calculated price from API
 - Cart item includes all selected options
 - Price persists through checkout
@@ -134,12 +147,14 @@ Integrate calculated price into cart system. Pass final price + configuration de
 - All edge cases tested (custom quantities, optional modules)
 
 **Technical Details:**
+
 - Update `AddToCartSection.tsx` to use calculated price
 - Modify cart service to store price breakdown
 - Create E2E tests with Playwright/Cypress
 - Test all module combinations
 
 **Files to Create/Modify:**
+
 - `/src/components/product/AddToCartSection.tsx` (UPDATE)
 - `/src/services/CartService.ts` (UPDATE)
 - `/tests/e2e/pricing-calculation.test.ts` (NEW)
@@ -160,12 +175,14 @@ Integrate calculated price into cart system. Pass final price + configuration de
 **Primary Risk:** Pricing calculation errors leading to incorrect customer charges
 
 **Mitigation:**
+
 - Use existing tested pricing engines (no new formula logic)
 - Comprehensive unit tests for API endpoint
 - Validation at API layer before calculation
 - Price breakdown transparency for customer verification
 
 **Rollback Plan:**
+
 - New API endpoint can be disabled via feature flag
 - Frontend can fall back to static pricing display
 - No database migrations required (easy rollback)
@@ -187,11 +204,13 @@ Integrate calculated price into cart system. Pass final price + configuration de
 ## Dependencies
 
 **Technical Dependencies:**
+
 - Existing pricing engines: `base-price-engine.ts`, `unified-pricing-engine.ts`, `ModulePricingEngine.ts`
 - Product configuration API: `/api/products/[id]/configuration`
 - Existing hooks: `useProductConfiguration.ts`
 
 **Team Dependencies:**
+
 - None (single developer can complete)
 
 ---

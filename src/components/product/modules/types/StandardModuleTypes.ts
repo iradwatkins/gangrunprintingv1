@@ -55,7 +55,9 @@ export interface ModuleErrorHandling {
  * V = Value type (e.g., string, string[], number, custom object)
  */
 export interface StandardModuleProps<TItem = any, TValue = any>
-  extends BaseModuleProps, ModuleChangeHandler<TValue>, ModuleErrorHandling {
+  extends BaseModuleProps,
+    ModuleChangeHandler<TValue>,
+    ModuleErrorHandling {
   /** The data items this module manages */
   items: TItem[]
   /** Current selected value(s) */
@@ -455,17 +457,30 @@ export type ExtractModuleItem<T> = T extends StandardModuleProps<infer TItem, an
 /**
  * Type helper to extract value type from module props
  */
-export type ExtractModuleValue<T> = T extends StandardModuleProps<any, infer TValue> ? TValue : never
+export type ExtractModuleValue<T> =
+  T extends StandardModuleProps<any, infer TValue> ? TValue : never
 
 /**
  * Union of all module types for generic handling
  */
-export type AnyModuleItem = QuantityItem | SizeItem | PaperStockItem | AddonItem | TurnaroundItem | ImageItem
+export type AnyModuleItem =
+  | QuantityItem
+  | SizeItem
+  | PaperStockItem
+  | AddonItem
+  | TurnaroundItem
+  | ImageItem
 
 /**
  * Union of all module value types
  */
-export type AnyModuleValue = QuantityValue | SizeValue | PaperStockValue | AddonValue | TurnaroundValue | ImageValue
+export type AnyModuleValue =
+  | QuantityValue
+  | SizeValue
+  | PaperStockValue
+  | AddonValue
+  | TurnaroundValue
+  | ImageValue
 
 /**
  * Module identification enum
@@ -476,7 +491,7 @@ export enum ModuleType {
   PAPER_STOCK = 'paper-stock',
   ADDONS = 'addons',
   TURNAROUND = 'turnaround',
-  IMAGES = 'images'
+  IMAGES = 'images',
 }
 
 /**
@@ -529,5 +544,5 @@ export default {
   ModuleType,
   ModuleMetadata,
   ValidationRule,
-  ValidationContext
+  ValidationContext,
 }

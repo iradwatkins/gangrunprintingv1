@@ -183,8 +183,7 @@ async function seedCategories() {
           updatedAt: new Date(),
         },
       })
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 }
 

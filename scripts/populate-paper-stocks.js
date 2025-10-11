@@ -10,24 +10,24 @@ async function populatePaperStockData() {
     const coatingOptions = [
       {
         name: 'No Coating',
-        description: 'Uncoated paper with natural texture'
+        description: 'Uncoated paper with natural texture',
       },
       {
         name: 'Gloss Coating',
-        description: 'High-gloss finish for vibrant colors'
+        description: 'High-gloss finish for vibrant colors',
       },
       {
         name: 'Matte Coating',
-        description: 'Non-reflective smooth finish'
+        description: 'Non-reflective smooth finish',
       },
       {
         name: 'Satin Coating',
-        description: 'Semi-gloss finish between matte and gloss'
+        description: 'Semi-gloss finish between matte and gloss',
       },
       {
         name: 'UV Coating',
-        description: 'Ultra-violet coating for extra protection and shine'
-      }
+        description: 'Ultra-violet coating for extra protection and shine',
+      },
     ]
 
     console.log('Creating coating options...')
@@ -38,8 +38,8 @@ async function populatePaperStockData() {
             id: `coating_${coating.name.toLowerCase().replace(/\s+/g, '_')}`,
             name: coating.name,
             description: coating.description,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
         console.log(`Created coating: ${coating.name}`)
       } catch (error) {
@@ -56,23 +56,23 @@ async function populatePaperStockData() {
       {
         name: 'Single Side',
         code: '1S',
-        description: 'Printing on one side only'
+        description: 'Printing on one side only',
       },
       {
         name: 'Double Sided',
         code: '2S',
-        description: 'Printing on both sides'
+        description: 'Printing on both sides',
       },
       {
         name: 'Front Only',
         code: 'FRONT',
-        description: 'Front side printing only'
+        description: 'Front side printing only',
       },
       {
         name: 'Back Only',
         code: 'BACK',
-        description: 'Back side printing only'
-      }
+        description: 'Back side printing only',
+      },
     ]
 
     console.log('Creating sides options...')
@@ -84,8 +84,8 @@ async function populatePaperStockData() {
             name: sides.name,
             code: sides.code,
             description: sides.description,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
         console.log(`Created sides option: ${sides.name} (${sides.code})`)
       } catch (error) {
@@ -112,7 +112,7 @@ async function populatePaperStockData() {
         coatings: ['gloss_coating', 'matte_coating', 'uv_coating'],
         defaultCoating: 'gloss_coating',
         sides: ['1s', '2s'],
-        sidesMultipliers: { '1s': 1.0, '2s': 1.75 }
+        sidesMultipliers: { '1s': 1.0, '2s': 1.75 },
       },
       {
         name: '14pt C2S Cardstock',
@@ -123,7 +123,7 @@ async function populatePaperStockData() {
         coatings: ['gloss_coating', 'matte_coating', 'satin_coating'],
         defaultCoating: 'matte_coating',
         sides: ['1s', '2s'],
-        sidesMultipliers: { '1s': 1.0, '2s': 1.75 }
+        sidesMultipliers: { '1s': 1.0, '2s': 1.75 },
       },
       {
         name: '100lb Text Uncoated',
@@ -134,7 +134,7 @@ async function populatePaperStockData() {
         coatings: ['no_coating'],
         defaultCoating: 'no_coating',
         sides: ['1s', '2s', 'front', 'back'],
-        sidesMultipliers: { '1s': 1.0, '2s': 1.5, 'front': 1.0, 'back': 1.0 }
+        sidesMultipliers: { '1s': 1.0, '2s': 1.5, front: 1.0, back: 1.0 },
       },
       {
         name: '80lb Cover Stock',
@@ -145,7 +145,7 @@ async function populatePaperStockData() {
         coatings: ['gloss_coating', 'matte_coating', 'no_coating'],
         defaultCoating: 'gloss_coating',
         sides: ['1s', '2s'],
-        sidesMultipliers: { '1s': 1.0, '2s': 1.6 }
+        sidesMultipliers: { '1s': 1.0, '2s': 1.6 },
       },
       {
         name: '20pt Ultra Board',
@@ -156,7 +156,7 @@ async function populatePaperStockData() {
         coatings: ['matte_coating', 'satin_coating', 'uv_coating'],
         defaultCoating: 'satin_coating',
         sides: ['1s', '2s'],
-        sidesMultipliers: { '1s': 1.0, '2s': 2.0 }
+        sidesMultipliers: { '1s': 1.0, '2s': 2.0 },
       },
       {
         name: '12pt Gloss Cover',
@@ -167,8 +167,8 @@ async function populatePaperStockData() {
         coatings: ['gloss_coating'],
         defaultCoating: 'gloss_coating',
         sides: ['1s', '2s'],
-        sidesMultipliers: { '1s': 1.0, '2s': 1.4 }
-      }
+        sidesMultipliers: { '1s': 1.0, '2s': 1.4 },
+      },
     ]
 
     console.log('Creating paper stocks...')
@@ -176,13 +176,13 @@ async function populatePaperStockData() {
     for (const stock of paperStocks) {
       try {
         // Find coating and sides by their IDs/names
-        const stockCoatings = coatings.filter(c =>
-          stock.coatings.includes(c.id) ||
-          stock.coatings.includes(c.name.toLowerCase().replace(/\s+/g, '_'))
+        const stockCoatings = coatings.filter(
+          (c) =>
+            stock.coatings.includes(c.id) ||
+            stock.coatings.includes(c.name.toLowerCase().replace(/\s+/g, '_'))
         )
-        const stockSides = sides.filter(s =>
-          stock.sides.includes(s.id) ||
-          stock.sides.includes(s.code.toLowerCase())
+        const stockSides = sides.filter(
+          (s) => stock.sides.includes(s.id) || stock.sides.includes(s.code.toLowerCase())
         )
 
         const paperStock = await prisma.paperStock.create({
@@ -195,21 +195,24 @@ async function populatePaperStockData() {
             isActive: stock.isActive,
             updatedAt: new Date(),
             paperStockCoatings: {
-              create: stockCoatings.map(coating => ({
+              create: stockCoatings.map((coating) => ({
                 coatingId: coating.id,
-                isDefault: coating.id === stock.defaultCoating ||
-                          coating.name.toLowerCase().replace(/\s+/g, '_') === stock.defaultCoating
-              }))
+                isDefault:
+                  coating.id === stock.defaultCoating ||
+                  coating.name.toLowerCase().replace(/\s+/g, '_') === stock.defaultCoating,
+              })),
             },
             paperStockSides: {
-              create: stockSides.map(side => ({
+              create: stockSides.map((side) => ({
                 sidesOptionId: side.id,
-                priceMultiplier: stock.sidesMultipliers[side.id] ||
-                               stock.sidesMultipliers[side.code.toLowerCase()] || 1.0,
-                isEnabled: true
-              }))
-            }
-          }
+                priceMultiplier:
+                  stock.sidesMultipliers[side.id] ||
+                  stock.sidesMultipliers[side.code.toLowerCase()] ||
+                  1.0,
+                isEnabled: true,
+              })),
+            },
+          },
         })
 
         createdStocks.push(paperStock)
@@ -229,26 +232,26 @@ async function populatePaperStockData() {
         name: 'Business Card Papers',
         description: 'Premium paper options for business cards',
         paperStocks: ['16pt C2S Cardstock', '14pt C2S Cardstock', '20pt Ultra Board'],
-        defaultStock: '16pt C2S Cardstock'
+        defaultStock: '16pt C2S Cardstock',
       },
       {
         name: 'Flyer & Poster Papers',
         description: 'Lightweight options for flyers and posters',
         paperStocks: ['12pt Gloss Cover', '14pt C2S Cardstock', '80lb Cover Stock'],
-        defaultStock: '12pt Gloss Cover'
+        defaultStock: '12pt Gloss Cover',
       },
       {
         name: 'Stationery Papers',
         description: 'Professional paper for letterheads and stationery',
         paperStocks: ['100lb Text Uncoated', '80lb Cover Stock'],
-        defaultStock: '100lb Text Uncoated'
+        defaultStock: '100lb Text Uncoated',
       },
       {
         name: 'Premium Collection',
         description: 'High-end paper stocks for luxury projects',
         paperStocks: ['20pt Ultra Board', '16pt C2S Cardstock'],
-        defaultStock: '20pt Ultra Board'
-      }
+        defaultStock: '20pt Ultra Board',
+      },
     ]
 
     console.log('Creating paper stock sets...')
@@ -257,8 +260,8 @@ async function populatePaperStockData() {
         // Get all paper stocks from the database to find the IDs
         const allStocks = await prisma.paperStock.findMany()
 
-        const setStocks = allStocks.filter(stock => set.paperStocks.includes(stock.name))
-        const defaultStock = allStocks.find(stock => stock.name === set.defaultStock)
+        const setStocks = allStocks.filter((stock) => set.paperStocks.includes(stock.name))
+        const defaultStock = allStocks.find((stock) => stock.name === set.defaultStock)
 
         if (setStocks.length === 0) {
           console.log(`No matching stocks found for set: ${set.name}, skipping...`)
@@ -279,10 +282,10 @@ async function populatePaperStockData() {
                 paperStockId: stock.id,
                 isDefault: defaultStock ? stock.id === defaultStock.id : stockIndex === 0,
                 sortOrder: stockIndex,
-                updatedAt: new Date()
-              }))
-            }
-          }
+                updatedAt: new Date(),
+              })),
+            },
+          },
         })
 
         console.log(`Created paper stock set: ${set.name}`)
@@ -308,7 +311,6 @@ async function populatePaperStockData() {
     console.log(`Created ${setsCount} paper stock sets`)
     console.log(`Created ${coatingsCount} coating options`)
     console.log(`Created ${sidesCount} sides options`)
-
   } catch (error) {
     console.error('Error populating paper stock data:', error)
     throw error

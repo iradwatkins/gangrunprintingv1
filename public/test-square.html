@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Square Payment Test</title>
+    <script src="https://web.squarecdn.com/v1/square.js"></script>
+</head>
+<body>
+    <h1>Square Card Form Test</h1>
+    <div id="card-container" style="min-height: 100px; border: 1px solid #ccc; padding: 20px;"></div>
+    <button id="pay-button">Pay $10.00</button>
+    
+    <script>
+        const appId = 'sq0idp-AJF8fI5VayKCq9veQRAw5g';
+        const locationId = 'LWMA9R9E2ENXP';
+        
+        async function initSquare() {
+            console.log('[TEST] Starting Square initialization...');
+            console.log('[TEST] App ID:', appId);
+            console.log('[TEST] Location ID:', locationId);
+            
+            if (!window.Square) {
+                console.error('[TEST] Square SDK not loaded!');
+                return;
+            }
+            
+            console.log('[TEST] Square SDK loaded, creating payments instance...');
+            
+            try {
+                const payments = Square.payments(appId, locationId);
+                console.log('[TEST] Payments instance created');
+                
+                const card = await payments.card();
+                console.log('[TEST] Card instance created');
+                
+                await card.attach('#card-container');
+                console.log('[TEST] Card attached successfully!');
+                
+                document.getElementById('pay-button').addEventListener('click', async () => {
+                    const result = await card.tokenize();
+                    console.log('[TEST] Tokenization result:', result);
+                });
+            } catch (error) {
+                console.error('[TEST] Error:', error);
+            }
+        }
+        
+        window.addEventListener('load', initSquare);
+    </script>
+</body>
+</html>

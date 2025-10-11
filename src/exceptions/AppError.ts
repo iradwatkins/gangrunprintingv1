@@ -64,7 +64,7 @@ export class DatabaseError extends AppError {
   constructor(message: string, originalError?: Error) {
     super(`Database operation failed: ${message}`, 500, true, {
       originalError: originalError?.message,
-      stack: originalError?.stack
+      stack: originalError?.stack,
     })
   }
 }
@@ -73,7 +73,7 @@ export class ExternalServiceError extends AppError {
   constructor(service: string, message: string, originalError?: Error) {
     super(`External service error (${service}): ${message}`, 502, true, {
       service,
-      originalError: originalError?.message
+      originalError: originalError?.message,
     })
   }
 }
@@ -82,7 +82,7 @@ export class RateLimitError extends AppError {
   constructor(limit: number, window: string) {
     super(`Rate limit exceeded: ${limit} requests per ${window}`, 429, true, {
       limit,
-      window
+      window,
     })
   }
 }
@@ -93,7 +93,10 @@ export function isAppError(error: any): error is AppError {
 }
 
 // Convert unknown errors to AppError
-export function normalizeError(error: unknown, defaultMessage: string = 'An unexpected error occurred'): AppError {
+export function normalizeError(
+  error: unknown,
+  defaultMessage: string = 'An unexpected error occurred'
+): AppError {
   if (isAppError(error)) {
     return error
   }
@@ -101,12 +104,12 @@ export function normalizeError(error: unknown, defaultMessage: string = 'An unex
   if (error instanceof Error) {
     return new AppError(error.message || defaultMessage, 500, false, {
       originalName: error.name,
-      originalStack: error.stack
+      originalStack: error.stack,
     })
   }
 
   return new AppError(defaultMessage, 500, false, {
-    originalError: String(error)
+    originalError: String(error),
   })
 }
 

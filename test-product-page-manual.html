@@ -1,43 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Test Product Configuration API</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Product Configuration API Test</h1>
     <button onclick="testAPI()">Test API Call</button>
     <div id="result"></div>
 
     <script>
-        async function testAPI() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = 'Loading...';
+      async function testAPI() {
+        const resultDiv = document.getElementById('result')
+        resultDiv.innerHTML = 'Loading...'
 
-            try {
-                console.log('Starting fetch...');
-                const response = await fetch('http://localhost:3002/api/products/4faaa022-05ac-4607-9e73-2da77aecc7ce/configuration');
-                console.log('Response status:', response.status);
+        try {
+          console.log('Starting fetch...')
+          const response = await fetch(
+            'http://localhost:3002/api/products/4faaa022-05ac-4607-9e73-2da77aecc7ce/configuration'
+          )
+          console.log('Response status:', response.status)
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`)
+          }
 
-                const data = await response.json();
-                console.log('Data received:', data);
+          const data = await response.json()
+          console.log('Data received:', data)
 
-                resultDiv.innerHTML = `
+          resultDiv.innerHTML = `
                     <h2>Success!</h2>
                     <p>Quantities: ${data.quantities?.length || 0}</p>
                     <p>Sizes: ${data.sizes?.length || 0}</p>
                     <p>Paper Stocks: ${data.paperStocks?.length || 0}</p>
                     <p>Turnarounds: ${data.turnaroundTimes?.length || 0}</p>
                     <pre>${JSON.stringify(data, null, 2)}</pre>
-                `;
-            } catch (error) {
-                console.error('Error:', error);
-                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-            }
+                `
+        } catch (error) {
+          console.error('Error:', error)
+          resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`
         }
+      }
     </script>
-</body>
+  </body>
 </html>

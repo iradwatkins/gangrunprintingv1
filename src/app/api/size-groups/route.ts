@@ -17,7 +17,7 @@ const sizeGroupSchema = z.object({
 })
 
 // GET - List all size groups
-export async function GET() : Promise<unknown> {
+export async function GET(): Promise<unknown> {
   try {
     const groups = await prisma.sizeGroup.findMany({
       orderBy: {

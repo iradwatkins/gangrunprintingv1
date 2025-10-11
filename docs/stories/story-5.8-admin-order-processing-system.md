@@ -1,6 +1,7 @@
 # Story 5.8: Admin Order Processing System (Retrospective)
 
 ## Status
+
 **Done** ✅
 
 **Story Type:** Retrospective Documentation
@@ -77,6 +78,7 @@
 ## Tasks / Subtasks
 
 ### ✅ Database Layer
+
 - [x] Design 13 broker-specific order statuses (AC: 1)
 - [x] Add 18 tracking fields to Order model (AC: 2)
 - [x] Create migration script for status enum changes (AC: 8)
@@ -84,6 +86,7 @@
 - [x] Write safe migration with backup automation (AC: 8)
 
 ### ✅ Service Layer
+
 - [x] Implement OrderService.processPayment() (AC: 3, 4)
 - [x] Implement OrderService.assignVendor() (AC: 3)
 - [x] Implement OrderService.updateStatus() with validation (AC: 3)
@@ -93,6 +96,7 @@
 - [x] Add N8N webhook integration points (AC: 3)
 
 ### ✅ Payment System
+
 - [x] Create Square webhook handler (AC: 4)
   - [x] Verify webhook signature
   - [x] Process payment.updated events
@@ -108,6 +112,7 @@
   - [x] Send via Resend
 
 ### ✅ Email Templates
+
 - [x] Create email layout component (AC: 5)
   - [x] Professional branded design
   - [x] GangRun logo header
@@ -128,6 +133,7 @@
   - [x] sendReadyForPickup()
 
 ### ✅ Admin UI
+
 - [x] Create OrderQuickActions component (AC: 6)
   - [x] Dropdown menu with contextual actions
   - [x] Status update modal with validation
@@ -138,6 +144,7 @@
   - [x] Toast notifications for feedback
 
 ### ✅ API Endpoints
+
 - [x] POST /api/webhooks/square/payment (AC: 7)
   - [x] Signature verification
   - [x] Event processing
@@ -168,17 +175,20 @@
 ## Dev Notes
 
 ### Architecture Context
+
 This feature implements a **print broker order management system**. GangRun Printing operates as a broker that coordinates with vendor partners for production while maintaining the appearance of a full-service printing company.
 
 ### Source Tree
 
 **Service Layer:**
+
 ```
 src/lib/services/
 └── order-service.ts         (OrderService class with 6 methods)
 ```
 
 **Email System:**
+
 ```
 src/lib/email/
 ├── order-email-service.ts   (OrderEmailService with 5 send methods)
@@ -189,6 +199,7 @@ src/lib/email/
 ```
 
 **Admin UI:**
+
 ```
 src/components/admin/orders/
 └── order-quick-actions.tsx  (423 lines - dropdown with 4 modals)
@@ -198,6 +209,7 @@ src/app/admin/orders/
 ```
 
 **API Endpoints:**
+
 ```
 src/app/api/
 ├── webhooks/square/payment/route.ts
@@ -211,6 +223,7 @@ src/app/api/
 ```
 
 **Database:**
+
 ```
 prisma/
 └── schema.prisma           (Order model with broker fields)
@@ -224,28 +237,33 @@ run-migration.sh            (79 lines - safe migration runner)
 ### Key Technical Decisions
 
 **1. Status Workflow Design:**
+
 - Eliminated manufacturing statuses (PRINTING, BINDERY, PACKAGING)
 - Simplified to broker workflow: CONFIRMATION → PRODUCTION → SHIPPED/READY_FOR_PICKUP → DELIVERED
 - Special states: ON_HOLD (file issues), REPRINT (quality issues), PAYMENT_DECLINED
 
 **2. Service Layer Pattern:**
+
 - Created OrderService following ProductService pattern
 - All business logic abstracted from API routes
 - N8N webhook integration points prepared
 - Status transition validation built-in
 
 **3. Email Strategy:**
+
 - React Email for professional templates
 - Resend for email delivery
 - Trigger points: Payment received, Production start, Shipping, Pickup ready, On hold
 
 **4. Migration Safety:**
+
 - Automatic database backup before migration
 - Status mapping: PAID→CONFIRMATION, PRINTING→PRODUCTION, etc.
 - Transactional (BEGIN/COMMIT)
 - Verification queries included
 
 **5. Admin UX:**
+
 - Quick actions dropdown for efficiency
 - Modals for detailed interactions
 - Real-time status updates
@@ -254,12 +272,14 @@ run-migration.sh            (79 lines - safe migration runner)
 ### Important Notes
 
 **Print Broker Context:**
+
 - System manages orders that are fulfilled by vendor partners
 - "Vendor assignment" is a key workflow step
 - Production tracking is external (vendor handles)
 - Focus on coordination, not manufacturing
 
 **Status Transition Rules:**
+
 ```
 PENDING_PAYMENT → CONFIRMATION (payment received)
 CONFIRMATION → ON_HOLD (file issues)
@@ -273,6 +293,7 @@ READY_FOR_PICKUP → PICKED_UP
 ```
 
 **Email Triggers:**
+
 - Payment → Order Confirmation
 - Status: PRODUCTION → Production Notification
 - Tracking added → Shipping Notification
@@ -280,6 +301,7 @@ READY_FOR_PICKUP → PICKED_UP
 - Status: READY_FOR_PICKUP → Pickup Ready
 
 ### Dependencies
+
 - Lucia Auth (authentication)
 - Square SDK (payment processing)
 - Resend (email delivery)
@@ -290,6 +312,7 @@ READY_FOR_PICKUP → PICKED_UP
 ### Configuration Required
 
 **Environment Variables:**
+
 ```
 # Square
 SQUARE_ACCESS_TOKEN=
@@ -304,6 +327,7 @@ DATABASE_URL=postgresql://...
 ```
 
 **Migration Deployment:**
+
 ```bash
 cd /root/websites/gangrunprinting
 ./run-migration.sh
@@ -317,6 +341,7 @@ pm2 save
 ## Testing
 
 ### Test Standards
+
 - **Location:** `/tests/integration/` for API tests, `/tests/e2e/` for workflow tests
 - **Frameworks:** Playwright for E2E, Supertest for API integration
 - **Naming:** `{feature}-{test-type}.spec.ts`
@@ -324,6 +349,7 @@ pm2 save
 ### Required Test Coverage
 
 **Unit Tests (Service Layer):**
+
 - [ ] OrderService.processPayment() handles Square webhook correctly
 - [ ] OrderService.assignVendor() validates vendor existence
 - [ ] OrderService.updateStatus() enforces transition rules
@@ -332,6 +358,7 @@ pm2 save
 - [ ] OrderService.putOnHold() stores hold reason
 
 **Integration Tests (API):**
+
 - [ ] POST /api/webhooks/square/payment verifies signature
 - [ ] POST /api/admin/orders/[id]/capture-payment requires auth
 - [ ] POST /api/admin/orders/[id]/send-invoice generates PDF
@@ -339,6 +366,7 @@ pm2 save
 - [ ] POST /api/orders/[id]/assign-vendor notifies vendor
 
 **E2E Tests (Admin Workflow):**
+
 - [ ] Admin can update order status via dropdown
 - [ ] Admin can capture payment manually
 - [ ] Admin can send invoice email
@@ -347,12 +375,14 @@ pm2 save
 - [ ] Customer receives shipping notification
 
 **Migration Tests:**
+
 - [x] Migration script runs without errors on test database
 - [x] Status mapping converts old statuses to new correctly
 - [x] Existing orders retain all data
 - [x] Indexes are created successfully
 
 **Email Template Tests:**
+
 - [ ] Order confirmation renders correctly
 - [ ] Production notification includes vendor info
 - [ ] Shipping notification includes tracking link
@@ -360,6 +390,7 @@ pm2 save
 - [ ] Pickup notification includes location/instructions
 
 ### Test Data Requirements
+
 - Test orders with all status types
 - Test Square webhook payloads
 - Test vendor records
@@ -369,24 +400,27 @@ pm2 save
 
 ## Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-10-02 | 1.0 | Retrospective documentation of completed Admin Order Processing System | John (PM Agent) |
+| Date       | Version | Description                                                            | Author          |
+| ---------- | ------- | ---------------------------------------------------------------------- | --------------- |
+| 2025-10-02 | 1.0     | Retrospective documentation of completed Admin Order Processing System | John (PM Agent) |
 
 ---
 
 ## Dev Agent Record
 
 ### Agent Model Used
+
 **Implementation:** Multiple development sessions
 **Documentation:** Claude Sonnet 4.5 (2025-10-02)
 
 ### Debug Log References
+
 N/A - Retrospective documentation
 
 ### Completion Notes List
 
 **What Was Built:**
+
 1. ✅ Complete database schema with 13 broker statuses and 18 tracking fields
 2. ✅ OrderService with 6 core business logic methods
 3. ✅ 6 API endpoints for payment, status, shipping, vendor assignment
@@ -396,12 +430,14 @@ N/A - Retrospective documentation
 7. ✅ N8N integration points prepared
 
 **Known Issues:**
+
 1. ⚠️ Migration not yet run on production database
 2. ⚠️ N8N webhooks not yet configured
 3. ⚠️ Limited automated test coverage (~20%)
 4. ⚠️ Customer orders page is stub/placeholder (separate issue)
 
 **Post-Implementation Tasks:**
+
 - [ ] Run database migration on production
 - [ ] Configure N8N webhook URLs
 - [ ] Test Square webhook in production
@@ -412,6 +448,7 @@ N/A - Retrospective documentation
 ### File List
 
 **Created Files:**
+
 - `src/lib/services/order-service.ts` (300+ lines)
 - `src/lib/email/order-email-service.ts` (321 lines)
 - `src/lib/email/templates/email-layout.tsx` (130 lines)
@@ -429,6 +466,7 @@ N/A - Retrospective documentation
 - `ADMIN-ORDER-SYSTEM-README.md` (deployment guide)
 
 **Modified Files:**
+
 - `prisma/schema.prisma` (Order model updated with broker fields)
 - `src/app/admin/orders/page.tsx` (integrated OrderQuickActions)
 
@@ -442,6 +480,7 @@ N/A - Retrospective documentation
 A comprehensive audit was performed on 2025-10-02 by Quinn (QA Agent). Key findings:
 
 **Verified Complete (100%):**
+
 - ✅ All 5 email templates implemented
 - ✅ All 6 API endpoints exist
 - ✅ OrderService with all 6 methods implemented
@@ -449,12 +488,14 @@ A comprehensive audit was performed on 2025-10-02 by Quinn (QA Agent). Key findi
 - ✅ Database migration script ready
 
 **Gaps Identified:**
+
 - ❌ Database migration not executed (blocker)
 - ❌ No automated test coverage for this feature
 - ❌ No QA gate review conducted
 - ❌ Customer orders page doesn't show orders (separate story needed)
 
 **Production Readiness:** 85/100
+
 - Implementation: 95/100 ✅
 - Documentation: 70/100 ⚠️
 - Testing: 40/100 ❌
@@ -462,6 +503,7 @@ A comprehensive audit was performed on 2025-10-02 by Quinn (QA Agent). Key findi
 
 **Recommendation:**
 Deploy to production AFTER:
+
 1. Running database migration in staging
 2. Manual testing of complete order flow
 3. Verifying email delivery works

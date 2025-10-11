@@ -13,16 +13,13 @@ async function checkSessions() {
         where: { userId: user.id },
       })
 
-      sessions.forEach(session => {
-
+      sessions.forEach((session) => {
         console.log('  Expired?:', session.expiresAt < new Date())
       })
 
       // Check all sessions in DB
       const allSessions = await prisma.session.findMany()
-
     }
-
   } catch (error) {
     console.error('Error:', error)
   } finally {

@@ -54,9 +54,9 @@ interface Vendor {
   shippingCostFormula?: string
   n8nWebhookUrl?: string
   _count?: {
-    orders: number
-    vendorProducts: number
-    vendorPaperStocks: number
+    Order: number
+    VendorProduct: number
+    VendorPaperStock: number
   }
 }
 
@@ -309,9 +309,9 @@ export default function VendorsPage() {
                   <TableCell>{vendor.turnaroundDays} days</TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div>{vendor._count?.orders || 0} orders</div>
+                      <div>{vendor._count?.Order || 0} orders</div>
                       <div className="text-xs text-muted-foreground">
-                        {vendor._count?.vendorProducts || 0} products
+                        {vendor._count?.VendorProduct || 0} products
                       </div>
                     </div>
                   </TableCell>

@@ -2,15 +2,15 @@
 
 ## Epic Information
 
-| Field | Value |
-|-------|-------|
-| **Epic ID** | EPIC-006 |
-| **Phase** | Phase 2 |
-| **Priority** | CRITICAL |
-| **Status** | Not Started |
-| **Story Points** | 55 |
-| **Estimated Duration** | 6-8 weeks |
-| **Dependencies** | Phase 1 MVP Complete |
+| Field                  | Value                |
+| ---------------------- | -------------------- |
+| **Epic ID**            | EPIC-006             |
+| **Phase**              | Phase 2              |
+| **Priority**           | CRITICAL             |
+| **Status**             | Not Started          |
+| **Story Points**       | 55                   |
+| **Estimated Duration** | 6-8 weeks            |
+| **Dependencies**       | Phase 1 MVP Complete |
 
 ---
 
@@ -25,6 +25,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **Problem:** Cannot effectively market to customers or run retention campaigns
 **Solution:** Full-featured marketing automation and CRM platform
 **Impact:**
+
 - Increase repeat purchase rate by 30%
 - Reduce customer acquisition cost by 25%
 - Increase email marketing revenue by $10K/month
@@ -41,6 +42,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **So that** I can manage relationships and track customer information
 
 **Acceptance Criteria:**
+
 - [ ] Can view all customers in a searchable list
 - [ ] Can view individual customer profiles with complete history
 - [ ] Can add custom tags to customers
@@ -50,6 +52,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 - [ ] Can export customer data to CSV
 
 **Tasks:**
+
 1. Design CRM database schema
 2. Build customer list page with search/filter
 3. Build customer detail page
@@ -68,6 +71,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **So that** I can create professional marketing emails without coding
 
 **Acceptance Criteria:**
+
 - [ ] Can create emails using drag-and-drop interface
 - [ ] Can save email templates
 - [ ] Can preview emails in desktop/mobile view
@@ -78,6 +82,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 - [ ] Templates are responsive
 
 **Tasks:**
+
 1. Integrate email builder library (MJML or similar)
 2. Build template save/load functionality
 3. Create media library for images
@@ -96,6 +101,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **So that** I can promote products and engage customers
 
 **Acceptance Criteria:**
+
 - [ ] Can create new campaign
 - [ ] Can select recipient segments
 - [ ] Can schedule send time
@@ -106,6 +112,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 - [ ] Receives confirmation when complete
 
 **Tasks:**
+
 1. Build campaign creation UI
 2. Implement recipient selection
 3. Add campaign scheduling
@@ -124,6 +131,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **So that** I can nurture customers without manual effort
 
 **Acceptance Criteria:**
+
 - [ ] Can create multi-step workflows
 - [ ] Can set triggers (order placed, abandoned cart, etc.)
 - [ ] Can add delays between steps
@@ -134,6 +142,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 - [ ] Can clone existing workflows
 
 **Tasks:**
+
 1. Design automation database schema
 2. Build workflow editor UI
 3. Implement trigger system
@@ -144,6 +153,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 8. Build workflow clone feature
 
 **Automation Examples:**
+
 1. Welcome Series (3 emails over 5 days)
 2. Abandoned Cart Recovery (3 reminders over 24 hours)
 3. Post-Purchase Follow-up (feedback request after 7 days)
@@ -159,6 +169,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 **So that** I can measure performance and ROI
 
 **Acceptance Criteria:**
+
 - [ ] Can see overview dashboard with key metrics
 - [ ] Can view campaign-specific reports
 - [ ] Can track open rates by campaign
@@ -169,6 +180,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 - [ ] Can set custom date ranges
 
 **Tasks:**
+
 1. Design analytics database schema
 2. Build overview dashboard
 3. Implement email tracking pixels
@@ -179,6 +191,7 @@ Build the comprehensive Marketing & CRM platform that was deferred from Phase 1.
 8. Build custom date range selector
 
 **Key Metrics:**
+
 - Total emails sent
 - Delivery rate
 - Open rate
@@ -389,15 +402,18 @@ GET    /api/track/email/:id/unsubscribe
 ### Third-Party Integrations
 
 **Email Service Provider:**
+
 - Resend (already configured) ✅
 - Backup: SendGrid or AWS SES
 
 **Email Builder:**
+
 - Option 1: MJML (https://mjml.io)
 - Option 2: React Email (https://react.email)
 - Option 3: Unlayer (https://unlayer.com)
 
 **Analytics:**
+
 - Custom implementation using tracking pixels
 - Webhook integration with Resend for delivery events
 
@@ -406,18 +422,21 @@ GET    /api/track/email/:id/unsubscribe
 ## Testing Strategy
 
 ### Unit Tests
+
 - Customer segmentation logic
 - Email merge tag replacement
 - Workflow trigger evaluation
 - Revenue attribution calculations
 
 ### Integration Tests
+
 - Email sending via Resend
 - Campaign scheduling
 - Automation workflow execution
 - Tracking pixel clicks
 
 ### E2E Tests
+
 - Create and send campaign
 - Set up automation workflow
 - Customer receives and opens email
@@ -429,6 +448,7 @@ GET    /api/track/email/:id/unsubscribe
 ## Success Metrics
 
 ### Launch Criteria
+
 - [ ] Can manage 100+ customers in CRM
 - [ ] Can create email with builder in <10 minutes
 - [ ] Can send campaign to segmented list
@@ -437,12 +457,14 @@ GET    /api/track/email/:id/unsubscribe
 - [ ] Tracking accuracy >98%
 
 ### Performance Targets
+
 - Campaign creation time: <2 minutes
 - Email send speed: 100 emails/second
 - Analytics dashboard load: <2 seconds
 - Workflow trigger latency: <30 seconds
 
 ### Business Metrics (30 days post-launch)
+
 - Email open rate: >25%
 - Click-through rate: >5%
 - Campaign conversion rate: >2%
@@ -455,9 +477,11 @@ GET    /api/track/email/:id/unsubscribe
 ## Risks & Mitigation
 
 ### Risk 1: Email Deliverability
+
 **Impact:** High
 **Probability:** Medium
 **Mitigation:**
+
 - Use reputable ESP (Resend)
 - Implement double opt-in
 - Monitor spam complaints
@@ -465,18 +489,22 @@ GET    /api/track/email/:id/unsubscribe
 - Warm up sending domain gradually
 
 ### Risk 2: Complexity
+
 **Impact:** High
 **Probability:** High
 **Mitigation:**
+
 - Use existing email builder library
 - Start with simple automation workflows
 - Phase rollout (CRM → Templates → Campaigns → Automation)
 - Extensive testing before launch
 
 ### Risk 3: Performance
+
 **Impact:** Medium
 **Probability:** Medium
 **Mitigation:**
+
 - Queue-based email sending
 - Database indexing on key fields
 - Caching for analytics queries
@@ -487,11 +515,13 @@ GET    /api/track/email/:id/unsubscribe
 ## Dependencies
 
 **Completed:**
+
 - Resend account configured ✅
 - Email infrastructure working ✅
 - User/Order data available ✅
 
 **Required:**
+
 - Domain authentication (SPF/DKIM)
 - Email builder library selection
 - Analytics tracking infrastructure
@@ -502,6 +532,7 @@ GET    /api/track/email/:id/unsubscribe
 ## Timeline
 
 ### Sprint 1 (Week 1-2): CRM Foundation
+
 - Database schema
 - Customer list page
 - Customer detail page
@@ -509,6 +540,7 @@ GET    /api/track/email/:id/unsubscribe
 - Basic segmentation
 
 ### Sprint 2 (Week 3-4): Email Builder
+
 - Email builder integration
 - Template management
 - Preview functionality
@@ -516,6 +548,7 @@ GET    /api/track/email/:id/unsubscribe
 - Starter templates
 
 ### Sprint 3 (Week 5-6): Campaigns
+
 - Campaign creation
 - Recipient selection
 - Scheduling system
@@ -523,6 +556,7 @@ GET    /api/track/email/:id/unsubscribe
 - Delivery tracking
 
 ### Sprint 4 (Week 7-8): Automation & Analytics
+
 - Automation workflow builder
 - Trigger system
 - Workflow execution

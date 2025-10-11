@@ -125,8 +125,7 @@ async function handlePaymentCreated(data: Record<string, unknown>) {
         amount: payment.amount_money?.amount,
       })
       await N8NWorkflows.onOrderStatusChanged(order.id, order.status)
-    } catch (n8nError) {
-      }
+    } catch (n8nError) {}
   }
 }
 

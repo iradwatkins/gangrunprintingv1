@@ -36,10 +36,10 @@ export default function GlobalError({
                   viewBox="0 0 24 24"
                 >
                   <path
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
               </div>
@@ -50,15 +50,18 @@ export default function GlobalError({
             </h1>
 
             <p className="mb-6 text-center text-gray-600">
-              We're experiencing a critical issue. Our engineering team has been alerted and is investigating immediately.
+              We're experiencing a critical issue. Our engineering team has been alerted and is
+              investigating immediately.
             </p>
 
             <div className="mb-6 rounded-lg bg-red-50 p-4">
               <p className="text-sm text-red-700">
-                <strong>What happened?</strong> The application encountered a critical error and cannot continue.
+                <strong>What happened?</strong> The application encountered a critical error and
+                cannot continue.
               </p>
               <p className="mt-2 text-sm text-red-700">
-                <strong>What can you do?</strong> Please try refreshing the page or contact support if the issue persists.
+                <strong>What can you do?</strong> Please try refreshing the page or contact support
+                if the issue persists.
               </p>
             </div>
 
@@ -72,16 +75,16 @@ export default function GlobalError({
 
             <div className="flex gap-3">
               <button
+                className="flex-1 rounded-lg bg-gray-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-gray-700"
                 onClick={() => {
                   window.location.href = '/'
                 }}
-                className="flex-1 rounded-lg bg-gray-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-gray-700"
               >
                 Return Home
               </button>
               <button
-                onClick={() => reset()}
                 className="flex-1 rounded-lg bg-red-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-red-700"
+                onClick={() => reset()}
               >
                 Retry
               </button>
@@ -89,8 +92,8 @@ export default function GlobalError({
 
             <div className="mt-6 text-center">
               <a
-                href="mailto:support@gangrunprinting.com"
                 className="text-sm text-blue-600 hover:text-blue-700"
+                href="mailto:support@gangrunprinting.com"
               >
                 Contact Support →
               </a>

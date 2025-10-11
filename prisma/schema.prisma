@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String   @id
   userId            String
   type              String
   provider          String
@@ -21,14 +21,14 @@ model Account {
   id_token          String?
   session_state     String?
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime
   User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model AddOn {
-  id                       String           @id @default(cuid())
+  id                       String           @id
   name                     String           @unique
   description              String?
   tooltipText              String?
@@ -39,34 +39,34 @@ model AddOn {
   isActive                 Boolean          @default(true)
   adminNotes               String?
   createdAt                DateTime         @default(now())
-  updatedAt                DateTime         @updatedAt
-  addOnSetItems            AddOnSetItem[]
-  addOnSubOptions          AddOnSubOption[]
-  orderItemAddOns          OrderItemAddOn[]
-  productAddOns            ProductAddOn[]
+  updatedAt                DateTime
+  AddOnSetItem             AddOnSetItem[]
+  AddOnSubOption           AddOnSubOption[]
+  OrderItemAddOn           OrderItemAddOn[]
+  ProductAddOn             ProductAddOn[]
 }
 
 model AddOnSet {
-  id               String            @id @default(cuid())
-  name             String            @unique
-  description      String?
-  sortOrder        Int               @default(0)
-  isActive         Boolean           @default(true)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  addOnSetItems    AddOnSetItem[]
-  productAddOnSets ProductAddOnSet[]
+  id              String            @id
+  name            String            @unique
+  description     String?
+  sortOrder       Int               @default(0)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  AddOnSetItem    AddOnSetItem[]
+  ProductAddOnSet ProductAddOnSet[]
 }
 
 model AddOnSetItem {
-  id              String          @id @default(cuid())
+  id              String          @id
   addOnSetId      String
   addOnId         String
   displayPosition DisplayPosition @default(IN_DROPDOWN)
   isDefault       Boolean         @default(false)
   sortOrder       Int             @default(0)
   createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  updatedAt       DateTime
   AddOn           AddOn           @relation(fields: [addOnId], references: [id], onDelete: Cascade)
   AddOnSet        AddOnSet        @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
 
@@ -76,7 +76,7 @@ model AddOnSetItem {
 }
 
 model AddOnSubOption {
-  id             String   @id @default(cuid())
+  id             String   @id
   addOnId        String
   name           String
   optionType     String
@@ -87,12 +87,34 @@ model AddOnSubOption {
   tooltipText    String?
   displayOrder   Int      @default(0)
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime
   AddOn          AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
 }
 
+model Address {
+  id        String   @id
+  userId    String
+  label     String?
+  name      String
+  company   String?
+  street    String
+  street2   String?
+  city      String
+  state     String
+  zipCode   String
+  country   String   @default("United States")
+  phone     String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isDefault])
+}
+
 model Airport {
-  id        String   @id @default(cuid())
+  id        String   @id
   code      String   @unique
   name      String
   carrier   String
@@ -104,7 +126,7 @@ model Airport {
   hours     Json
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
   Order     Order[]
 
   @@index([code])
@@ -113,7 +135,7 @@ model Airport {
 }
 
 model CampaignABTest {
-  id                String            @id @default(cuid())
+  id                String            @id
   campaignId        String
   name              String
   description       String?
@@ -128,7 +150,7 @@ model CampaignABTest {
   startedAt         DateTime?
   endedAt           DateTime?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  updatedAt         DateTime
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
@@ -136,7 +158,7 @@ model CampaignABTest {
 }
 
 model CampaignAnalytics {
-  id                String            @id @default(cuid())
+  id                String            @id
   campaignId        String
   date              DateTime          @default(now())
   sent              Int               @default(0)
@@ -157,7 +179,7 @@ model CampaignAnalytics {
 }
 
 model CampaignSend {
-  id                String            @id @default(cuid())
+  id                String            @id
   campaignId        String
   recipientEmail    String
   recipientName     String?
@@ -173,7 +195,7 @@ model CampaignSend {
   errorMessage      String?
   trackingData      Json?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  updatedAt         DateTime
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User              User?             @relation(fields: [userId], references: [id])
 
@@ -183,17 +205,34 @@ model CampaignSend {
   @@index([status])
 }
 
+model CarrierSettings {
+  id               String   @id
+  carrier          Carrier  @unique
+  enabled          Boolean  @default(true)
+  testMode         Boolean  @default(false)
+  markupPercentage Decimal  @default(0) @db.Decimal(5, 2)
+  apiCredentials   Json?
+  serviceArea      Json?
+  packagingWeight  Decimal  @default(0.5) @db.Decimal(5, 2)
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+
+  @@index([carrier])
+  @@index([enabled])
+}
+
 model CoatingOption {
-  id                 String              @id @default(cuid())
-  name               String              @unique
-  description        String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  paperStockCoatings PaperStockCoating[]
+  id                String              @id
+  name              String              @unique
+  description       String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  PaperStockCoating PaperStockCoating[]
 }
 
 model Currency {
-  id                 String   @id @default(cuid())
+  id                 String   @id
   code               String   @unique
   name               String
   symbol             String
@@ -206,14 +245,14 @@ model Currency {
   countries          String[]
   isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime
 
   @@index([code])
   @@index([isActive])
 }
 
 model CustomTheme {
-  id                String   @id @default(cuid())
+  id                String   @id
   name              String
   description       String?
   cssVariables      Json
@@ -221,13 +260,13 @@ model CustomTheme {
   customCSS         String?
   isActive          Boolean  @default(false)
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime
 
   @@index([isActive])
 }
 
 model CustomerJourney {
-  id                 String               @id @default(cuid())
+  id                 String               @id
   userId             String               @unique
   stage              CustomerStage        @default(LEAD)
   score              Int                  @default(0)
@@ -240,7 +279,7 @@ model CustomerJourney {
   engagement         Json?
   preferences        Json?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  updatedAt          DateTime
   User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   CustomerTouchpoint CustomerTouchpoint[]
 
@@ -250,7 +289,7 @@ model CustomerJourney {
 }
 
 model CustomerSegment {
-  id                String              @id @default(cuid())
+  id                String              @id
   name              String
   description       String?
   criteria          Json
@@ -260,7 +299,7 @@ model CustomerSegment {
   count             Int                 @default(0)
   lastUpdated       DateTime            @default(now())
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  updatedAt         DateTime
   MarketingCampaign MarketingCampaign[]
   MarketingWorkflow MarketingWorkflow[]
   SMSCampaign       SMSCampaign[]
@@ -270,7 +309,7 @@ model CustomerSegment {
 }
 
 model CustomerTouchpoint {
-  id              String          @id @default(cuid())
+  id              String          @id
   journeyId       String
   type            TouchpointType
   channel         String
@@ -285,7 +324,7 @@ model CustomerTouchpoint {
 }
 
 model EmailTemplate {
-  id          String   @id @default(cuid())
+  id          String   @id
   name        String
   category    String
   subject     String
@@ -296,14 +335,14 @@ model EmailTemplate {
   tags        String[]
   createdBy   String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime
 
   @@index([category])
   @@index([isPublic])
 }
 
 model ExchangeRate {
-  id           String    @id @default(cuid())
+  id           String    @id
   fromCurrency String
   toCurrency   String
   rate         Float
@@ -319,7 +358,7 @@ model ExchangeRate {
 }
 
 model File {
-  id         String   @id @default(cuid())
+  id         String   @id
   orderId    String
   filename   String
   fileUrl    String?
@@ -328,12 +367,39 @@ model File {
   uploadedBy String?
   metadata   Json?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime
   Order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
+model Image {
+  id           String         @id
+  name         String         @unique
+  description  String?
+  url          String
+  thumbnailUrl String?
+  largeUrl     String?
+  mediumUrl    String?
+  webpUrl      String?
+  avifUrl      String?
+  blurDataUrl  String?
+  alt          String?
+  width        Int?
+  height       Int?
+  fileSize     Int?
+  mimeType     String?
+  category     String         @default("general")
+  tags         String[]       @default([])
+  metadata     Json?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  ProductImage ProductImage[]
+
+  @@index([category])
+  @@index([createdAt])
+}
+
 model Locale {
-  id             String   @id @default(cuid())
+  id             String   @id
   code           String   @unique
   name           String
   nativeName     String
@@ -346,14 +412,14 @@ model Locale {
   isActive       Boolean  @default(true)
   sortOrder      Int      @default(0)
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime
 
   @@index([code])
   @@index([isActive])
 }
 
 model MarketingAsset {
-  id         String    @id @default(cuid())
+  id         String    @id
   name       String
   type       AssetType
   url        String
@@ -364,14 +430,14 @@ model MarketingAsset {
   folder     String?
   createdBy  String
   createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  updatedAt  DateTime
 
   @@index([folder])
   @@index([type])
 }
 
 model MarketingCampaign {
-  id                String              @id @default(cuid())
+  id                String              @id
   name              String
   type              CampaignType
   status            CampaignStatus      @default(DRAFT)
@@ -395,7 +461,7 @@ model MarketingCampaign {
   utmMedium         String              @default("email")
   createdBy         String
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  updatedAt         DateTime
   CampaignABTest    CampaignABTest[]
   CampaignAnalytics CampaignAnalytics[]
   CampaignSend      CampaignSend[]
@@ -408,7 +474,7 @@ model MarketingCampaign {
 }
 
 model MarketingWorkflow {
-  id                String              @id @default(cuid())
+  id                String              @id
   name              String
   description       String?
   trigger           Json
@@ -417,7 +483,7 @@ model MarketingWorkflow {
   segmentId         String?
   settings          Json?
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  updatedAt         DateTime
   CustomerSegment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
   WorkflowExecution WorkflowExecution[]
 
@@ -425,7 +491,7 @@ model MarketingWorkflow {
 }
 
 model N8NWebhook {
-  id            String          @id @default(cuid())
+  id            String          @id
   name          String
   url           String          @unique
   trigger       String
@@ -435,7 +501,7 @@ model N8NWebhook {
   lastTriggered DateTime?
   triggerCount  Int             @default(0)
   createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  updatedAt     DateTime
   N8NWebhookLog N8NWebhookLog[]
 
   @@index([isActive])
@@ -443,7 +509,7 @@ model N8NWebhook {
 }
 
 model N8NWebhookLog {
-  id         String     @id @default(cuid())
+  id         String     @id
   webhookId  String
   payload    Json
   response   Json?
@@ -456,7 +522,7 @@ model N8NWebhookLog {
 }
 
 model Notification {
-  id        String           @id @default(cuid())
+  id        String           @id
   orderId   String
   type      NotificationType
   sent      Boolean          @default(false)
@@ -467,7 +533,7 @@ model Notification {
 }
 
 model OptionValue {
-  id             String        @id @default(cuid())
+  id             String        @id
   optionId       String
   value          String
   displayName    String?
@@ -477,18 +543,20 @@ model OptionValue {
   width          Float?
   height         Float?
   createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  updatedAt      DateTime
   ProductOption  ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
   @@index([optionId])
 }
 
 model Order {
-  id                  String          @id @default(cuid())
+  id                  String          @id
   orderNumber         String          @unique
   referenceNumber     String?         @unique
   userId              String?
   vendorId            String?
+  funnelId            String? // FUNNELKIT: Track which funnel generated this order
+  funnelStepId        String? // FUNNELKIT: Track which step converted
   subtotal            Float
   tax                 Float
   shipping            Float
@@ -496,7 +564,7 @@ model Order {
   shippingMethod      String?
   trackingNumber      String?
   createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  updatedAt           DateTime
   adminNotes          String?
   carrier             Carrier?
   deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
@@ -508,7 +576,6 @@ model Order {
   squareCustomerId    String?
   squareOrderId       String?
   squarePaymentId     String?
-  paymentMethod       String?
   status              OrderStatus     @default(PENDING_PAYMENT)
   shippingAddress     Json
   billingAddress      Json?
@@ -536,18 +603,23 @@ model Order {
   holdReason          String?
   pickupLocation      String?
   pickupInstructions  String?
+  paymentMethod       String?
   File                File[]
   Notification        Notification[]
   Airport             Airport?        @relation(fields: [selectedAirportId], references: [id])
   User                User?           @relation(fields: [userId], references: [id])
   Vendor              Vendor?         @relation(fields: [vendorId], references: [id])
+  Funnel              Funnel?         @relation(fields: [funnelId], references: [id])
   OrderItem           OrderItem[]
   ShippingRate        ShippingRate[]
   StatusHistory       StatusHistory[]
+
+  @@index([funnelId])
+  @@index([funnelStepId])
 }
 
 model OrderItem {
-  id               String           @id @default(cuid())
+  id               String           @id
   orderId          String
   quantity         Int
   createdAt        DateTime         @default(now())
@@ -564,7 +636,7 @@ model OrderItem {
 }
 
 model OrderItemAddOn {
-  id              String    @id @default(cuid())
+  id              String    @id
   orderItemId     String
   addOnId         String
   configuration   Json
@@ -577,34 +649,34 @@ model OrderItemAddOn {
 }
 
 model PaperException {
-  id                    String     @id @default(cuid())
+  id                    String     @id
   paperStockId          String     @unique
   exceptionType         String
   doubleSidedMultiplier Float      @default(1.75)
   description           String?
   createdAt             DateTime   @default(now())
-  updatedAt             DateTime   @updatedAt
+  updatedAt             DateTime
   PaperStock            PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
 
   @@index([exceptionType])
 }
 
 model PaperStock {
-  id                 String              @id @default(cuid())
-  name               String              @unique
-  pricePerSqInch     Float               @default(0.001)
-  tooltipText        String?
-  isActive           Boolean             @default(true)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  weight             Float               @default(0.0015)
-  OrderItem          OrderItem[]
-  PaperException     PaperException?
-  paperStockCoatings PaperStockCoating[]
-  paperStockSetItems PaperStockSetItem[]
-  paperStockSides    PaperStockSides[]
-  ProductPaperStock  ProductPaperStock[]
-  VendorPaperStock   VendorPaperStock[]
+  id                String              @id
+  name              String              @unique
+  pricePerSqInch    Float               @default(0.001)
+  tooltipText       String?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  weight            Float               @default(0.0015)
+  OrderItem         OrderItem[]
+  PaperException    PaperException?
+  PaperStockCoating PaperStockCoating[]
+  PaperStockSetItem PaperStockSetItem[]
+  PaperStockSides   PaperStockSides[]
+  ProductPaperStock ProductPaperStock[]
+  VendorPaperStock  VendorPaperStock[]
 }
 
 model PaperStockCoating {
@@ -620,25 +692,25 @@ model PaperStockCoating {
 }
 
 model PaperStockSet {
-  id                   String                 @id @default(cuid())
+  id                   String                 @id
   name                 String                 @unique
   description          String?
   sortOrder            Int                    @default(0)
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  updatedAt            DateTime
   PaperStockSetItem    PaperStockSetItem[]
   ProductPaperStockSet ProductPaperStockSet[]
 }
 
 model PaperStockSetItem {
-  id              String        @id @default(cuid())
+  id              String        @id
   paperStockSetId String
   paperStockId    String
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  updatedAt       DateTime
   PaperStock      PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
 
@@ -662,14 +734,14 @@ model PaperStockSides {
 }
 
 model PricingTier {
-  id          String   @id @default(cuid())
+  id          String   @id
   productId   String
   minQuantity Int
   maxQuantity Int?
   unitPrice   Float
   setupFee    Float    @default(0)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime
   Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, minQuantity])
@@ -677,55 +749,77 @@ model PricingTier {
 }
 
 model Product {
-  id                        String                     @id @default(cuid())
-  name                      String
-  slug                      String                     @unique
-  description               String?
-  categoryId                String
-  basePrice                 Float
-  isActive                  Boolean                    @default(true)
-  isFeatured                Boolean                    @default(false)
-  metadata                  Json?
-  productionTime            Int
-  createdAt                 DateTime                   @default(now())
-  updatedAt                 DateTime                   @updatedAt
-  gangRunEligible           Boolean                    @default(false)
-  maxGangQuantity           Int?
-  minGangQuantity           Int?
-  rushAvailable             Boolean                    @default(false)
-  rushDays                  Int?
-  rushFee                   Float?
-  setupFee                  Float                      @default(0)
-  shortDescription          String?
-  sku                       String                     @unique
-  pricingTiers              PricingTier[]
-  productCategory           ProductCategory            @relation(fields: [categoryId], references: [id])
-  productAddOns             ProductAddOn[]
-  productAddOnSets          ProductAddOnSet[]
-  productImages             ProductImage[]
-  productOptions            ProductOption[]
-  productPaperStocks        ProductPaperStock[]
-  productPaperStockSets     ProductPaperStockSet[]
-  productPricingConfig      ProductPricingConfig?
-  productQuantities         ProductQuantity[]
-  productQuantityGroups     ProductQuantityGroup[]
-  productSizes              ProductSize[]
-  productSizeGroups         ProductSizeGroup[]
-  productTurnaroundTimeSets ProductTurnaroundTimeSet[]
-  vendorProducts            VendorProduct[]
+  id                       String                     @id
+  name                     String
+  slug                     String                     @unique
+  description              String?
+  categoryId               String
+  basePrice                Float
+  isActive                 Boolean                    @default(true)
+  isFeatured               Boolean                    @default(false)
+  metadata                 Json?
+  productionTime           Int
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime
+  gangRunEligible          Boolean                    @default(false)
+  maxGangQuantity          Int?
+  minGangQuantity          Int?
+  rushAvailable            Boolean                    @default(false)
+  rushDays                 Int?
+  rushFee                  Float?
+  setupFee                 Float                      @default(0)
+  shortDescription         String?
+  sku                      String                     @unique
+
+  // SEO City Products (Epic 8)
+  parentProductId          String?                    // If this is a city-specific product
+  cityId                   String?                    // Associated city for city-specific products
+  seoFaqs                  Json?                      // FAQ for SEO/LLM optimization - array of {question, answer}
+
+  // SEO Enhancement Fields
+  seoKeywords              String[]   @default([])    // Target keywords for SEO (e.g., ["postcard printing", "custom postcards"])
+  seoMetaTitle             String?                    // Custom SEO title (max 60 chars) - overrides default
+  seoMetaDescription       String?                    // Custom meta description (max 160 chars)
+  seoImageAltText          String?                    // Template for image alt text
+  seoMetrics               Json?                      // SEO performance tracking (rankings, traffic, conversions)
+
+  // Relations for parent-child products
+  ParentProduct            Product?                   @relation("ProductHierarchy", fields: [parentProductId], references: [id])
+  ChildProducts            Product[]                  @relation("ProductHierarchy")
+  City                     City?                      @relation(fields: [cityId], references: [id])
+  PricingTier              PricingTier[]
+  ProductCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
+  ProductAddOn             ProductAddOn[]
+  ProductAddOnSet          ProductAddOnSet[]
+  ProductImage             ProductImage[]
+  ProductOption            ProductOption[]
+  ProductPaperStock        ProductPaperStock[]
+  ProductPaperStockSet     ProductPaperStockSet[]
+  ProductPricingConfig     ProductPricingConfig?
+  ProductQuantity          ProductQuantity[]
+  ProductQuantityGroup     ProductQuantityGroup[]
+  ProductSize              ProductSize[]
+  ProductSizeGroup         ProductSizeGroup[]
+  ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
+  VendorProduct            VendorProduct[]
+  FunnelStepProduct        FunnelStepProduct[]
+  OrderBump                OrderBump[]
+  Upsell                   Upsell[]
+  Downsell                 Downsell[]
+  CityLandingPage          CityLandingPage[]
 
   @@index([categoryId])
   @@index([slug])
 }
 
 model ProductAddOn {
-  id            String   @id @default(cuid())
+  id            String   @id
   productId     String
   addOnId       String
   priceOverride Float?
   isMandatory   Boolean  @default(false)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime
   AddOn         AddOn    @relation(fields: [addOnId], references: [id], onDelete: Cascade)
   Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -733,13 +827,13 @@ model ProductAddOn {
 }
 
 model ProductAddOnSet {
-  id         String   @id @default(cuid())
+  id         String   @id
   productId  String
   addOnSetId String
   isDefault  Boolean  @default(false)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime
   AddOnSet   AddOnSet @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
   Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -749,70 +843,49 @@ model ProductAddOnSet {
 }
 
 model ProductCategory {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
-  description String?
-  sortOrder   Int       @default(0)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  products    Product[]
-}
+  id               String              @id
+  name             String              @unique
+  slug             String              @unique
+  description      String?
+  sortOrder        Int                 @default(0)
+  isActive         Boolean             @default(true)
+  isHidden         Boolean             @default(false) // Hidden from navigation but products still searchable/SEO-friendly
+  parentCategoryId String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime
+  Product          Product[]
+  ParentCategory   ProductCategory?    @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  Subcategories    ProductCategory[]   @relation("CategoryHierarchy")
 
-model Image {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  description   String?
-  url           String
-  thumbnailUrl  String?
-  largeUrl      String?
-  mediumUrl     String?
-  webpUrl       String?
-  avifUrl       String?
-  blurDataUrl   String?
-  alt           String?
-  width         Int?
-  height        Int?
-  fileSize      Int?
-  mimeType      String?
-  category      String         @default("general")
-  tags          String[]       @default([])
-  metadata      Json?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  productImages ProductImage[]
-
-  @@index([category])
-  @@index([createdAt])
+  @@index([parentCategoryId])
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
+  id        String   @id
   productId String
-  imageId   String
   sortOrder Int      @default(0)
   isPrimary Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  updatedAt DateTime
+  imageId   String
   Image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, imageId])
-  @@index([productId])
   @@index([imageId])
   @@index([isPrimary])
+  @@index([productId])
 }
 
 model ProductOption {
-  id          String        @id @default(cuid())
+  id          String        @id
   productId   String
   name        String
   type        OptionType
   required    Boolean       @default(false)
   sortOrder   Int           @default(0)
   createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  updatedAt   DateTime
   OptionValue OptionValue[]
   Product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -824,7 +897,7 @@ model ProductPaperStock {
   paperStockId   String
   isDefault      Boolean    @default(false)
   additionalCost Float      @default(0)
-  id             String     @id @default(cuid())
+  id             String     @id
   PaperStock     PaperStock @relation(fields: [paperStockId], references: [id])
   Product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -834,13 +907,13 @@ model ProductPaperStock {
 }
 
 model ProductPaperStockSet {
-  id              String        @id @default(cuid())
+  id              String        @id
   productId       String
   paperStockSetId String
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  updatedAt       DateTime
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -850,7 +923,7 @@ model ProductPaperStockSet {
 }
 
 model ProductPricingConfig {
-  id                  String   @id @default(cuid())
+  id                  String   @id
   productId           String   @unique
   allowCustomSize     Boolean  @default(false)
   allowCustomQuantity Boolean  @default(false)
@@ -861,18 +934,18 @@ model ProductPricingConfig {
   minCustomQuantity   Int?
   maxCustomQuantity   Int?
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime
   Product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductQuantity {
-  id                 String           @id @default(cuid())
+  id                 String           @id
   productId          String
   standardQuantityId String
   isDefault          Boolean          @default(false)
   isActive           Boolean          @default(true)
   createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  updatedAt          DateTime
   Product            Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardQuantity   StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
 
@@ -882,11 +955,11 @@ model ProductQuantity {
 }
 
 model ProductQuantityGroup {
-  id              String        @id @default(cuid())
+  id              String        @id
   productId       String
   quantityGroupId String
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  updatedAt       DateTime
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   QuantityGroup   QuantityGroup @relation(fields: [quantityGroupId], references: [id], onDelete: Cascade)
 
@@ -896,13 +969,13 @@ model ProductQuantityGroup {
 }
 
 model ProductSize {
-  id             String       @id @default(cuid())
+  id             String       @id
   productId      String
   standardSizeId String
   isDefault      Boolean      @default(false)
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  updatedAt      DateTime
   Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardSize   StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
 
@@ -912,11 +985,11 @@ model ProductSize {
 }
 
 model ProductSizeGroup {
-  id          String    @id @default(cuid())
+  id          String    @id
   productId   String
   sizeGroupId String
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updatedAt   DateTime
   Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   SizeGroup   SizeGroup @relation(fields: [sizeGroupId], references: [id], onDelete: Cascade)
 
@@ -926,12 +999,12 @@ model ProductSizeGroup {
 }
 
 model ProductTurnaroundTimeSet {
-  id                  String            @id @default(cuid())
+  id                  String            @id
   productId           String
   turnaroundTimeSetId String
   isDefault           Boolean           @default(false)
   createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  updatedAt           DateTime
   Product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -941,7 +1014,7 @@ model ProductTurnaroundTimeSet {
 }
 
 model PushNotification {
-  id     String    @id @default(cuid())
+  id     String    @id
   userId String
   type   String
   title  String
@@ -957,13 +1030,13 @@ model PushNotification {
 }
 
 model PushSubscription {
-  id           String   @id @default(cuid())
+  id           String   @id
   userId       String?
   endpoint     String   @unique
   subscription Json
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime
   User         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([active])
@@ -971,22 +1044,22 @@ model PushSubscription {
 }
 
 model QuantityGroup {
-  id           String                 @id @default(cuid())
-  name         String                 @unique
-  description  String?
-  values       String
-  defaultValue String
-  customMin    Int?
-  customMax    Int?
-  sortOrder    Int                    @default(0)
-  isActive     Boolean                @default(true)
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  products     ProductQuantityGroup[]
+  id                   String                 @id
+  name                 String                 @unique
+  description          String?
+  values               String
+  defaultValue         String
+  customMin            Int?
+  customMax            Int?
+  sortOrder            Int                    @default(0)
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  ProductQuantityGroup ProductQuantityGroup[]
 }
 
 model Quote {
-  id                 String      @id @default(cuid())
+  id                 String      @id
   quoteNumber        String      @unique
   userId             String?
   customerEmail      String
@@ -1000,12 +1073,12 @@ model Quote {
   createdBy          String?
   convertedToOrderId String?
   createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  updatedAt          DateTime
   User               User?       @relation(fields: [userId], references: [id])
 }
 
 model SMSCampaign {
-  id              String           @id @default(cuid())
+  id              String           @id
   name            String
   message         String
   segmentId       String?
@@ -1014,7 +1087,7 @@ model SMSCampaign {
   sentAt          DateTime?
   createdBy       String
   createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  updatedAt       DateTime
   CustomerSegment CustomerSegment? @relation(fields: [segmentId], references: [id])
   SMSSend         SMSSend[]
 
@@ -1023,7 +1096,7 @@ model SMSCampaign {
 }
 
 model SMSSend {
-  id           String      @id @default(cuid())
+  id           String      @id
   campaignId   String
   phoneNumber  String
   userId       String?
@@ -1032,7 +1105,7 @@ model SMSSend {
   deliveredAt  DateTime?
   errorMessage String?
   createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  updatedAt    DateTime
   SMSCampaign  SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User         User?       @relation(fields: [userId], references: [id])
 
@@ -1042,16 +1115,15 @@ model SMSSend {
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String   @id
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ShippingRate {
-  id            String   @id @default(cuid())
+  id            String   @id
   orderId       String
   carrier       Carrier
   serviceName   String
@@ -1068,17 +1140,17 @@ model ShippingRate {
 }
 
 model SidesOption {
-  id              String            @id @default(cuid())
+  id              String            @id
   name            String            @unique
   code            String            @unique
   description     String?
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  paperStockSides PaperStockSides[]
+  updatedAt       DateTime
+  PaperStockSides PaperStockSides[]
 }
 
 model SizeGroup {
-  id               String             @id @default(cuid())
+  id               String             @id
   name             String             @unique
   description      String?
   values           String
@@ -1090,19 +1162,19 @@ model SizeGroup {
   sortOrder        Int                @default(0)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  updatedAt        DateTime
   ProductSizeGroup ProductSizeGroup[]
 }
 
 model StandardQuantity {
-  id               String            @id @default(cuid())
+  id               String            @id
   displayValue     Int               @unique
   calculationValue Int
   adjustmentValue  Int?
   sortOrder        Int               @default(0)
   isActive         Boolean           @default(true)
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  updatedAt        DateTime
   ProductQuantity  ProductQuantity[]
 
   @@index([isActive])
@@ -1110,7 +1182,7 @@ model StandardQuantity {
 }
 
 model StandardSize {
-  id                 String        @id @default(cuid())
+  id                 String        @id
   name               String        @unique
   displayName        String
   width              Float
@@ -1119,7 +1191,7 @@ model StandardSize {
   sortOrder          Int           @default(0)
   isActive           Boolean       @default(true)
   createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  updatedAt          DateTime
   ProductSize        ProductSize[]
 
   @@index([isActive])
@@ -1127,7 +1199,7 @@ model StandardSize {
 }
 
 model StatusHistory {
-  id         String       @id @default(cuid())
+  id         String       @id
   orderId    String
   fromStatus OrderStatus?
   toStatus   OrderStatus
@@ -1138,7 +1210,7 @@ model StatusHistory {
 }
 
 model Tenant {
-  id                 String               @id @default(cuid())
+  id                 String               @id
   name               String
   slug               String               @unique
   domain             String?              @unique
@@ -1159,7 +1231,7 @@ model Tenant {
   trialEndsAt        DateTime?
   suspendedAt        DateTime?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  updatedAt          DateTime
   TenantBrand        TenantBrand[]
   TenantDomain       TenantDomain[]
   TenantUser         TenantUser[]
@@ -1173,7 +1245,7 @@ model Tenant {
 }
 
 model TenantBrand {
-  id              String   @id @default(cuid())
+  id              String   @id
   tenantId        String
   name            String
   isDefault       Boolean  @default(false)
@@ -1196,7 +1268,7 @@ model TenantBrand {
   emailFooterText String?
   emailColors     Json?
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime
   Tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, name])
@@ -1205,7 +1277,7 @@ model TenantBrand {
 }
 
 model TenantDomain {
-  id                 String    @id @default(cuid())
+  id                 String    @id
   tenantId           String
   domain             String    @unique
   isVerified         Boolean   @default(false)
@@ -1217,7 +1289,7 @@ model TenantDomain {
   sslCertificateId   String?
   sslExpiresAt       DateTime?
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  updatedAt          DateTime
   Tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([domain])
@@ -1226,7 +1298,7 @@ model TenantDomain {
 }
 
 model TenantUser {
-  id       String         @id @default(cuid())
+  id       String         @id
   tenantId String
   userId   String
   role     TenantUserRole @default(MEMBER)
@@ -1240,7 +1312,7 @@ model TenantUser {
 }
 
 model ThemeTemplate {
-  id          String   @id @default(cuid())
+  id          String   @id
   name        String   @unique
   description String?
   category    String   @default("business")
@@ -1255,7 +1327,7 @@ model ThemeTemplate {
   tags        String[] @default([])
   createdBy   String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime
 
   @@index([category])
   @@index([isActive])
@@ -1263,7 +1335,7 @@ model ThemeTemplate {
 }
 
 model Translation {
-  id               String            @id @default(cuid())
+  id               String            @id
   tenantId         String?
   key              String
   namespace        String            @default("common")
@@ -1280,7 +1352,7 @@ model Translation {
   originalText     String?
   translationModel String?
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  updatedAt        DateTime
   Tenant           Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, key, namespace, locale])
@@ -1293,7 +1365,7 @@ model Translation {
 }
 
 model TranslationRequest {
-  id             String              @id @default(cuid())
+  id             String              @id
   tenantId       String?
   key            String
   namespace      String              @default("common")
@@ -1313,7 +1385,7 @@ model TranslationRequest {
   autoConfidence Float?
   requestedBy    String
   createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  updatedAt      DateTime
   Tenant         Tenant?             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([assignedTo])
@@ -1323,7 +1395,7 @@ model TranslationRequest {
 }
 
 model TurnaroundTime {
-  id                    String                  @id @default(cuid())
+  id                    String                  @id
   name                  String
   displayName           String
   description           String?
@@ -1338,7 +1410,7 @@ model TurnaroundTime {
   restrictedCoatings    String[]                @default([])
   restrictedOptions     Json?
   createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
+  updatedAt             DateTime
   TurnaroundTimeSetItem TurnaroundTimeSetItem[]
 
   @@index([isActive])
@@ -1346,13 +1418,13 @@ model TurnaroundTime {
 }
 
 model TurnaroundTimeSet {
-  id                       String                     @id @default(cuid())
+  id                       String                     @id
   name                     String                     @unique
   description              String?
   isActive                 Boolean                    @default(true)
   sortOrder                Int                        @default(0)
   createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
+  updatedAt                DateTime
   ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
   TurnaroundTimeSetItem    TurnaroundTimeSetItem[]
 
@@ -1361,14 +1433,14 @@ model TurnaroundTimeSet {
 }
 
 model TurnaroundTimeSetItem {
-  id                  String            @id @default(cuid())
+  id                  String            @id
   turnaroundTimeSetId String
   turnaroundTimeId    String
   isDefault           Boolean           @default(false)
   sortOrder           Int               @default(0)
   priceOverride       Float?
   createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  updatedAt           DateTime
   TurnaroundTime      TurnaroundTime    @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -1378,34 +1450,38 @@ model TurnaroundTimeSetItem {
 }
 
 model User {
-  id                 String              @id @default(cuid())
-  email              String              @unique
-  emailVerified      Boolean             @default(false)
-  image              String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  name               String?
-  role               UserRole            @default(CUSTOMER)
-  isBroker           Boolean             @default(false)
-  brokerDiscounts    Json?
-  marketingOptIn     Boolean             @default(true)
-  phoneNumber        String?
-  smsOptIn           Boolean             @default(false)
-  accounts           Account[]
-  campaignSends      CampaignSend[]
-  customerJourney    CustomerJourney?
-  orders             Order[]
-  pushNotifications  PushNotification[]
-  pushSubscriptions  PushSubscription[]
-  quotes             Quote[]
-  smsSends           SMSSend[]
-  session            Session[]
-  tenantUsers        TenantUser[]
-  workflowExecutions WorkflowExecution[]
+  id                String              @id
+  email             String              @unique
+  emailVerified     Boolean             @default(false)
+  image             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  name              String?
+  role              UserRole            @default(CUSTOMER)
+  isBroker          Boolean             @default(false)
+  brokerDiscounts   Json?
+  marketingOptIn    Boolean             @default(true)
+  phoneNumber       String?
+  smsOptIn          Boolean             @default(false)
+  Account           Account[]
+  Address           Address[]
+  CampaignSend      CampaignSend[]
+  CustomerJourney   CustomerJourney?
+  Order             Order[]
+  PushNotification  PushNotification[]
+  PushSubscription  PushSubscription[]
+  Quote             Quote[]
+  SMSSend           SMSSend[]
+  session           Session[]
+  TenantUser        TenantUser[]
+  WorkflowExecution WorkflowExecution[]
+  Funnel            Funnel[]
+  FunnelVisit       FunnelVisit[]
+  PageTemplate      PageTemplate[]
 }
 
 model Vendor {
-  id                  String             @id @default(cuid())
+  id                  String             @id
   name                String             @unique
   contactEmail        String
   orderEmail          String?
@@ -1421,14 +1497,14 @@ model Vendor {
   n8nWebhookUrl       String?
   apiCredentials      Json?
   createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  updatedAt           DateTime
   Order               Order[]
   VendorPaperStock    VendorPaperStock[]
   VendorProduct       VendorProduct[]
 }
 
 model VendorPaperStock {
-  id           String     @id @default(cuid())
+  id           String     @id
   vendorId     String
   paperStockId String
   vendorSku    String?
@@ -1436,7 +1512,7 @@ model VendorPaperStock {
   leadTime     Int?
   minQuantity  Int?
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  updatedAt    DateTime
   PaperStock   PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   Vendor       Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
@@ -1444,7 +1520,7 @@ model VendorPaperStock {
 }
 
 model VendorProduct {
-  id          String   @id @default(cuid())
+  id          String   @id
   vendorId    String
   productId   String
   vendorSku   String?
@@ -1452,7 +1528,7 @@ model VendorProduct {
   isPreferred Boolean  @default(false)
   notes       String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime
   Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   Vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
@@ -1464,14 +1540,14 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
   createdAt  DateTime @default(now())
-  id         String   @id @default(cuid())
-  updatedAt  DateTime @updatedAt
+  id         String   @id
+  updatedAt  DateTime
 
   @@unique([identifier, token])
 }
 
 model WorkflowExecution {
-  id                String            @id @default(cuid())
+  id                String            @id
   workflowId        String
   userId            String?
   triggerData       Json
@@ -1481,7 +1557,7 @@ model WorkflowExecution {
   errorMessage      String?
   stepResults       Json?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  updatedAt         DateTime
   User              User?             @relation(fields: [userId], references: [id])
   MarketingWorkflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
@@ -1669,4 +1745,431 @@ enum TranslationStatus {
 enum UserRole {
   CUSTOMER
   ADMIN
+}
+
+// ============================================
+// FUNNELKIT INTEGRATION MODELS
+// ============================================
+
+// Main funnel container - integrates with User (owner) and Product (offerings)
+model Funnel {
+  id               String       @id
+  userId           String // FK to User - funnel owner
+  name             String
+  slug             String       @unique // URL-friendly identifier
+  description      String?
+  status           FunnelStatus @default(DRAFT)
+  currency         String       @default("USD")
+  timezone         String       @default("America/Chicago")
+  utmTracking      Json? // {source, medium, campaign, term, content}
+  seoTitle         String?
+  seoDescription   String?
+  ogImage          String? // Social sharing image URL
+  customDomain     String?
+  pixelIds         Json? // {facebook, google, tiktok}
+  totalViews       Int          @default(0)
+  totalConversions Int          @default(0)
+  totalRevenue     Float        @default(0)
+  settings         Json? // Global funnel settings
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime
+
+  User            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  FunnelStep      FunnelStep[]
+  FunnelAnalytics FunnelAnalytics[]
+  FunnelVisit     FunnelVisit[]
+  Order           Order[] // Orders generated through this funnel
+
+  @@index([userId])
+  @@index([slug])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Individual pages within a funnel
+model FunnelStep {
+  id             String         @id
+  funnelId       String
+  name           String
+  slug           String // URL segment (e.g., "checkout", "upsell-1")
+  type           FunnelStepType
+  position       Int // Order in funnel sequence
+  config         Json // Step-specific configuration (template, layout, content)
+  design         Json? // Style overrides (colors, fonts, spacing)
+  seoTitle       String?
+  seoDescription String?
+  isActive       Boolean        @default(true)
+  views          Int            @default(0)
+  conversions    Int            @default(0)
+  revenue        Float          @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+
+  Funnel            Funnel              @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+  FunnelStepProduct FunnelStepProduct[]
+  OrderBump         OrderBump[]
+  Upsell            Upsell[]
+  Downsell          Downsell[]
+  FunnelAnalytics   FunnelAnalytics[]
+  PageVersion       PageVersion[]
+
+  @@unique([funnelId, position])
+  @@unique([funnelId, slug])
+  @@index([funnelId])
+  @@index([type])
+  @@index([isActive])
+}
+
+// Products offered at each funnel step
+model FunnelStepProduct {
+  id            String        @id
+  funnelStepId  String
+  productId     String // FK to existing Product model
+  quantity      Int           @default(1)
+  priceOverride Float? // Optional custom pricing for this funnel
+  discountType  DiscountType?
+  discountValue Float?
+  isDefault     Boolean       @default(false)
+  sortOrder     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+
+  FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  Product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([funnelStepId, productId])
+  @@index([funnelStepId])
+  @@index([productId])
+}
+
+// Order bumps - additional offers at checkout
+model OrderBump {
+  id            String        @id
+  funnelStepId  String
+  productId     String // FK to Product
+  headline      String
+  description   String?
+  discountType  DiscountType?
+  discountValue Float?
+  position      BumpPosition  @default(ABOVE_PAYMENT)
+  displayRules  Json? // {minCartValue, categories, etc}
+  design        Json?
+  views         Int           @default(0)
+  accepts       Int           @default(0)
+  revenue       Float         @default(0)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+
+  FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  Product    Product    @relation(fields: [productId], references: [id])
+
+  @@index([funnelStepId])
+  @@index([productId])
+  @@index([isActive])
+}
+
+// One-click upsells (post-purchase)
+model Upsell {
+  id            String        @id
+  funnelStepId  String
+  productId     String
+  headline      String
+  description   String?
+  discountType  DiscountType?
+  discountValue Float?
+  downsellId    String? // Optional associated downsell
+  design        Json?
+  views         Int           @default(0)
+  accepts       Int           @default(0)
+  rejects       Int           @default(0)
+  revenue       Float         @default(0)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+
+  FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  Product    Product    @relation(fields: [productId], references: [id])
+
+  @@index([funnelStepId])
+  @@index([productId])
+  @@index([isActive])
+}
+
+// Downsells (alternative offer when upsell rejected)
+model Downsell {
+  id            String        @id
+  funnelStepId  String
+  productId     String
+  headline      String
+  description   String?
+  discountType  DiscountType?
+  discountValue Float?
+  design        Json?
+  views         Int           @default(0)
+  accepts       Int           @default(0)
+  revenue       Float         @default(0)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+
+  FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  Product    Product    @relation(fields: [productId], references: [id])
+
+  @@index([funnelStepId])
+  @@index([productId])
+  @@index([isActive])
+}
+
+// Time-series analytics for funnels
+model FunnelAnalytics {
+  id             String   @id
+  funnelId       String
+  funnelStepId   String? // Null = funnel-level, Set = step-level
+  date           DateTime @default(now())
+  views          Int      @default(0)
+  uniqueVisitors Int      @default(0)
+  conversions    Int      @default(0)
+  revenue        Float    @default(0)
+  avgTimeOnPage  Int? // Seconds
+  bounceRate     Float? // Percentage
+  exitRate       Float? // Percentage
+  sourceData     Json? // UTM tracking, referrers
+  deviceData     Json? // {desktop, mobile, tablet}
+
+  Funnel     Funnel      @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+  FunnelStep FunnelStep? @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+
+  @@unique([funnelId, funnelStepId, date])
+  @@index([funnelId])
+  @@index([funnelStepId])
+  @@index([date])
+}
+
+// Session tracking for funnel visitors
+model FunnelVisit {
+  id            String    @id
+  funnelId      String
+  sessionId     String // Browser session identifier
+  userId        String? // Null if anonymous
+  currentStepId String?
+  entryStepId   String?
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  utmTerm       String?
+  utmContent    String?
+  referrer      String?
+  device        String? // desktop, mobile, tablet
+  browser       String?
+  os            String?
+  country       String?
+  region        String?
+  city          String?
+  ipAddress     String?
+  convertedAt   DateTime?
+  orderId       String? // FK to Order if converted
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+
+  Funnel Funnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+  User   User?  @relation(fields: [userId], references: [id])
+
+  @@index([funnelId])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([convertedAt])
+  @@index([createdAt])
+}
+
+// Enums for FunnelKit models
+enum FunnelStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum FunnelStepType {
+  LANDING
+  CHECKOUT
+  UPSELL
+  DOWNSELL
+  THANKYOU
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum BumpPosition {
+  ABOVE_PAYMENT
+  BELOW_PAYMENT
+  SIDEBAR
+}
+
+// ===== PAGE BUILDER MODELS (Week 4) =====
+
+// Page templates for landing pages
+model PageTemplate {
+  id          String   @id
+  userId      String // FK to User - template creator
+  name        String
+  description String?
+  thumbnail   String? // Preview image URL
+  category    String? // "Business Cards", "Flyers", "General"
+  isPublic    Boolean  @default(false) // Public templates available to all users
+  sortOrder   Int      @default(0)
+  useCount    Int      @default(0) // How many times this template has been used
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PageElement PageElement[]
+  PageVersion PageVersion[]
+
+  @@index([userId])
+  @@index([category])
+  @@index([isPublic])
+}
+
+// Individual elements on a page (heading, image, button, form, etc.)
+model PageElement {
+  id             String       @id
+  pageTemplateId String? // FK to PageTemplate (null if orphaned)
+  pageVersionId  String? // FK to PageVersion (for step-specific pages)
+  type           ElementType
+  content        Json // Element-specific content (text, image URL, button text, etc.)
+  styles         Json // CSS properties (color, fontSize, padding, etc.)
+  position       Json // {x, y, width, height} for drag-and-drop positioning
+  parentId       String? // FK to PageElement for nested elements (e.g., button inside container)
+  sortOrder      Int          @default(0)
+  isVisible      Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime
+
+  PageTemplate PageTemplate? @relation(fields: [pageTemplateId], references: [id], onDelete: Cascade)
+  PageVersion  PageVersion?  @relation(fields: [pageVersionId], references: [id], onDelete: Cascade)
+  Parent       PageElement?  @relation("ElementNesting", fields: [parentId], references: [id], onDelete: Cascade)
+  Children     PageElement[] @relation("ElementNesting")
+
+  @@index([pageTemplateId])
+  @@index([pageVersionId])
+  @@index([parentId])
+  @@index([sortOrder])
+}
+
+// Version control for funnel step pages (allows A/B testing and rollback)
+model PageVersion {
+  id           String   @id
+  funnelStepId String // FK to FunnelStep
+  versionName  String // "Original", "Variant A", "Variant B"
+  templateId   String? // FK to PageTemplate (if based on template)
+  isActive     Boolean  @default(false) // Only one version active per step
+  trafficSplit Int      @default(100) // Percentage of traffic (for A/B testing)
+  views        Int      @default(0)
+  conversions  Int      @default(0)
+  revenue      Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+
+  FunnelStep   FunnelStep    @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
+  PageTemplate PageTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  PageElement  PageElement[]
+
+  @@unique([funnelStepId, versionName])
+  @@index([funnelStepId])
+  @@index([templateId])
+  @@index([isActive])
+}
+
+enum ElementType {
+  HEADING
+  TEXT
+  IMAGE
+  BUTTON
+  FORM
+  VIDEO
+  COUNTDOWN
+  TESTIMONIAL
+  FEATURE_LIST
+  PRICING_TABLE
+  SPACER
+  DIVIDER
+  HTML
+  CONTAINER
+  COLUMN
+}
+
+// ============================================================================
+// SEO AI AGENT DASHBOARD MODELS (Epic 8 - October 2025)
+// ============================================================================
+
+// Top 200 US Cities for SEO targeting
+model City {
+  id          String   @id @default(cuid())
+  name        String   // "New York"
+  state       String   // "New York"
+  stateCode   String   // "NY"
+  population  Int
+  rank        Int      // 1-200 (by population)
+
+  // Geographic data
+  latitude    Float?
+  longitude   Float?
+  timezone    String?  // "America/New_York"
+
+  // Status and priority
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0) // Higher = more important for SEO
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  CityLandingPage CityLandingPage[]
+  Product         Product[]         // City-specific products
+
+  @@unique([name, state])
+  @@index([rank])
+  @@index([isActive])
+  @@index([priority])
+}
+
+// City-specific landing pages for products
+model CityLandingPage {
+  id          String   @id @default(cuid())
+  productId   String
+  cityId      String
+  slug        String   @unique // e.g., "postcards-4x6-new-york-ny"
+
+  // SEO Content (AI-generated)
+  title       String   // "4x6 Postcards in New York, NY | GangRun Printing"
+  metaDesc    String
+  h1          String
+  content     String   @db.Text // Full page content
+  faqSchema   Json     // FAQ structured data
+
+  // Status
+  status      String   @default("draft") // draft, published, needs_review
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+
+  // Analytics
+  views       Int      @default(0)
+  conversions Int      @default(0)
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  City        City     @relation(fields: [cityId], references: [id])
+
+  @@unique([productId, cityId])
+  @@index([slug])
+  @@index([status])
+  @@index([published])
 }

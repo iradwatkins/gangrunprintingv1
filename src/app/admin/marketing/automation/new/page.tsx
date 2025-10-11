@@ -19,8 +19,7 @@ export default function NewWorkflowPage() {
       if (response.ok) {
         router.push('/admin/marketing/automation')
       }
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handlePreview = (workflow: Record<string, unknown>) => {

@@ -70,13 +70,13 @@ async function testTransformation() {
         pricePerSqInch: stock.pricePerSqInch,
         tooltipText: stock.tooltipText,
         isActive: stock.isActive,
-        paperStockCoatings: stock.paperStockCoatings.map(pc => ({
+        paperStockCoatings: stock.paperStockCoatings.map((pc) => ({
           ...pc,
-          coating: pc.CoatingOption // Transform PascalCase to camelCase for frontend
+          coating: pc.CoatingOption, // Transform PascalCase to camelCase for frontend
         })),
-        paperStockSides: stock.paperStockSides.map(ps => ({
+        paperStockSides: stock.paperStockSides.map((ps) => ({
           ...ps,
-          sidesOption: ps.SidesOption // Transform PascalCase to camelCase for frontend
+          sidesOption: ps.SidesOption, // Transform PascalCase to camelCase for frontend
         })),
         productsCount: stock.paperStockSetItems.length,
       }
@@ -84,7 +84,6 @@ async function testTransformation() {
 
     console.log('Transformed result:')
     console.log(JSON.stringify(transformed[0], null, 2))
-
   } catch (error) {
     console.error('Error in transformation:', error)
   } finally {

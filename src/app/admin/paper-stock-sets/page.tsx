@@ -157,7 +157,7 @@ export default function PaperStockGroupsPage() {
       const processedGroups = (Array.isArray(data) ? data : []).map((group: any) => ({
         ...group,
         paperStockItems: group.paperStockItems || [],
-        productPaperStockGroups: group.productPaperStockGroups || []
+        productPaperStockGroups: group.productPaperStockGroups || [],
       }))
 
       setGroups(processedGroups)
@@ -174,8 +174,7 @@ export default function PaperStockGroupsPage() {
       if (!response.ok) throw new Error('Failed to fetch paper stocks')
       const data = await response.json()
       setAllPaperStocks(data.filter((stock: PaperStock) => stock.isActive))
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   const handleDragEnd = (event: DragEndEvent, groupId: string) => {
@@ -186,12 +185,8 @@ export default function PaperStockGroupsPage() {
         return groups.map((group) => {
           if (group.id === groupId) {
             const items = group.paperStockItems || []
-            const oldIndex = items.findIndex(
-              (item) => item.paperStockId === active.id
-            )
-            const newIndex = items.findIndex(
-              (item) => item.paperStockId === over?.id
-            )
+            const oldIndex = items.findIndex((item) => item.paperStockId === active.id)
+            const newIndex = items.findIndex((item) => item.paperStockId === over?.id)
 
             const newItems = arrayMove(items, oldIndex, newIndex)
 
@@ -477,13 +472,15 @@ export default function PaperStockGroupsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{(group.paperStockItems?.length || 0)} stocks</Badge>
+                        <Badge variant="secondary">
+                          {group.paperStockItems?.length || 0} stocks
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="font-medium">
-                            {(group.paperStockItems || []).find((item) => item.isDefault)?.paperStock
-                              .name ||
+                            {(group.paperStockItems || []).find((item) => item.isDefault)
+                              ?.paperStock.name ||
                               group.paperStockItems?.[0]?.paperStock.name ||
                               'None'}
                           </span>
@@ -554,7 +551,9 @@ export default function PaperStockGroupsPage() {
                               onDragEnd={(event) => handleDragEnd(event, group.id)}
                             >
                               <SortableContext
-                                items={(group.paperStockItems || []).map((item) => item.paperStockId)}
+                                items={(group.paperStockItems || []).map(
+                                  (item) => item.paperStockId
+                                )}
                                 strategy={verticalListSortingStrategy}
                               >
                                 <div className="space-y-2">
@@ -788,8 +787,8 @@ export default function PaperStockGroupsPage() {
             <Label className="text-base mb-3 block">Paper Type</Label>
             <Select
               value={
-                (previewGroup?.paperStockItems || []).find((item) => item.isDefault)?.paperStockId ||
-                previewGroup?.paperStockItems?.[0]?.paperStockId
+                (previewGroup?.paperStockItems || []).find((item) => item.isDefault)
+                  ?.paperStockId || previewGroup?.paperStockItems?.[0]?.paperStockId
               }
             >
               <SelectTrigger>

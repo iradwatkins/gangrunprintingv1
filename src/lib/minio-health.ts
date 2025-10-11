@@ -69,7 +69,7 @@ export async function testMinioUpload(): Promise<{
 /**
  * Get MinIO connection info for debugging
  */
-export function getMinioConfig() : unknown {
+export function getMinioConfig(): unknown {
   return {
     endpoint: process.env.MINIO_ENDPOINT || 'localhost',
     port: process.env.MINIO_PORT || '9000',

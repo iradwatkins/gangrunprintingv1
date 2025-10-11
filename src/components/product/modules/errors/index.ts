@@ -13,7 +13,7 @@ export {
   ModuleErrorRecovery,
   ModuleErrorRecoveryAction,
   useModuleErrors,
-  UseModuleErrorsOptions
+  UseModuleErrorsOptions,
 } from './ModuleErrorSystem'
 
 // Error display components
@@ -29,7 +29,7 @@ export {
   ModuleErrorIndicatorProps,
   ModuleFieldErrorProps,
   ModuleSuccessIndicatorProps,
-  ModuleErrorBoundaryProps
+  ModuleErrorBoundaryProps,
 } from './ModuleErrorComponents'
 
 // Utility functions
@@ -38,24 +38,28 @@ export const ErrorUtils = {
    * Check if any errors are blocking
    */
   hasBlockingErrors: (errors: IndependentModuleError[]): boolean => {
-    return errors.some(error =>
-      error.severity === ModuleErrorSeverity.ERROR ||
-      error.severity === ModuleErrorSeverity.CRITICAL
+    return errors.some(
+      (error) =>
+        error.severity === ModuleErrorSeverity.ERROR ||
+        error.severity === ModuleErrorSeverity.CRITICAL
     )
   },
 
   /**
    * Filter errors by severity
    */
-  filterBySeverity: (errors: IndependentModuleError[], severity: ModuleErrorSeverity): IndependentModuleError[] => {
-    return errors.filter(error => error.severity === severity)
+  filterBySeverity: (
+    errors: IndependentModuleError[],
+    severity: ModuleErrorSeverity
+  ): IndependentModuleError[] => {
+    return errors.filter((error) => error.severity === severity)
   },
 
   /**
    * Filter errors by field
    */
   filterByField: (errors: IndependentModuleError[], field: string): IndependentModuleError[] => {
-    return errors.filter(error => error.field === field)
+    return errors.filter((error) => error.field === field)
   },
 
   /**
@@ -68,7 +72,7 @@ export const ErrorUtils = {
       ModuleErrorSeverity.INFO,
       ModuleErrorSeverity.WARNING,
       ModuleErrorSeverity.ERROR,
-      ModuleErrorSeverity.CRITICAL
+      ModuleErrorSeverity.CRITICAL,
     ]
 
     return errors.reduce((maxSeverity, error) => {
@@ -82,12 +86,15 @@ export const ErrorUtils = {
    * Group errors by field
    */
   groupByField: (errors: IndependentModuleError[]): Record<string, IndependentModuleError[]> => {
-    return errors.reduce((groups, error) => {
-      const key = error.field || 'general'
-      if (!groups[key]) groups[key] = []
-      groups[key].push(error)
-      return groups
-    }, {} as Record<string, IndependentModuleError[]>)
+    return errors.reduce(
+      (groups, error) => {
+        const key = error.field || 'general'
+        if (!groups[key]) groups[key] = []
+        groups[key].push(error)
+        return groups
+      },
+      {} as Record<string, IndependentModuleError[]>
+    )
   },
 
   /**
@@ -97,7 +104,7 @@ export const ErrorUtils = {
     const byType: Record<ModuleErrorType, number> = {} as any
     const bySeverity: Record<ModuleErrorSeverity, number> = {} as any
 
-    errors.forEach(error => {
+    errors.forEach((error) => {
       byType[error.errorType] = (byType[error.errorType] || 0) + 1
       bySeverity[error.severity] = (bySeverity[error.severity] || 0) + 1
     })
@@ -107,7 +114,7 @@ export const ErrorUtils = {
       byType,
       bySeverity,
       hasBlocking: ErrorUtils.hasBlockingErrors(errors),
-      maxSeverity: ErrorUtils.getMaxSeverity(errors)
+      maxSeverity: ErrorUtils.getMaxSeverity(errors),
     }
-  }
+  },
 }

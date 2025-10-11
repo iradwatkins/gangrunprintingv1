@@ -107,7 +107,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Create translation with unique ID
-    const translationId = `${tenantId}_${namespace}_${key}_${locale}`.replace(/[^a-zA-Z0-9_-]/g, '_')
+    const translationId = `${tenantId}_${namespace}_${key}_${locale}`.replace(
+      /[^a-zA-Z0-9_-]/g,
+      '_'
+    )
     const translation = await prisma.translation.create({
       data: {
         id: translationId,

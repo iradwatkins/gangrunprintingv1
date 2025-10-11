@@ -43,19 +43,11 @@ async function testProductPages() {
         const configUrl = `http://localhost:3002/api/products/${product.slug}/configuration`
         try {
           const configResponse = await fetch(configUrl)
-
-        } catch (error) {
-
-        }
+        } catch (error) {}
       } else {
-
       }
-
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
-
 }
 
 // Run the test

@@ -44,7 +44,7 @@ function reducer(
   }
 }
 
-export function useToast() : unknown {
+export function useToast(): unknown {
   const [state, setState] = React.useState<ToastState>(memoryState)
 
   React.useEffect(() => {

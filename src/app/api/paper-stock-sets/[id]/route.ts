@@ -21,21 +21,22 @@ const updatePaperStockSetSchema = z.object({
 })
 
 // GET - Get a single paper stock set
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const group = await prisma.paperStockSet.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         PaperStockSetItem: {
           include: {
             PaperStock: {
               include: {
-                paperStockCoatings: {
+                PaperStockCoating: {
                   include: {
                     CoatingOption: true,
                   },
                 },
-                paperStockSides: {
+                PaperStockSides: {
                   include: {
                     SidesOption: true,
                   },
@@ -75,8 +76,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT - Update a paper stock set
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -86,7 +88,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     // Check if group exists
     const existingGroup = await prisma.paperStockSet.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingGroup) {
@@ -111,7 +113,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const updatedGroup = await prisma.$transaction(async (tx) => {
       // Update basic group info
       const group = await tx.paperStockSet.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           name: validatedData.name,
           description: validatedData.description,
@@ -124,7 +126,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       if (validatedData.paperStocks !== undefined) {
         // Delete existing paper stock items
         await tx.paperStockSetItem.deleteMany({
-          where: { paperStockSetId: params.id },
+          where: { paperStockSetId: id },
         })
 
         // Create new paper stock items
@@ -146,7 +148,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
           await tx.paperStockSetItem.createMany({
             data: paperStocksWithDefault.map((stock, index) => ({
-              paperStockSetId: params.id,
+              paperStockSetId: id,
               paperStockId: stock.id,
               isDefault: stock.isDefault,
               sortOrder: stock.sortOrder || index,
@@ -157,18 +159,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
       // Return the updated group with all relations
       return await tx.paperStockSet.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
           PaperStockSetItem: {
             include: {
               PaperStock: {
                 include: {
-                  paperStockCoatings: {
+                  PaperStockCoating: {
                     include: {
                       CoatingOption: true,
                     },
                   },
-                  paperStockSides: {
+                  PaperStockSides: {
                     include: {
                       SidesOption: true,
                     },
@@ -215,15 +217,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE - Delete a paper stock set
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     // Check if group exists
     const group = await prisma.paperStockSet.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         ProductPaperStockSet: true,
       },
@@ -243,7 +249,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     // Delete the group (cascade will handle paperStockSetItems)
     await prisma.paperStockSet.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: 'Paper stock set deleted successfully' })
