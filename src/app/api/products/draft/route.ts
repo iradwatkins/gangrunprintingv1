@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
         isActive: false, // Use isActive as draft indicator
       },
       include: {
-        productCategory: true,
-        productImages: {
+        ProductCategory: true,
+        ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
       },

@@ -55,6 +55,7 @@ interface Category {
   isActive: boolean
   isHidden: boolean
   parentCategoryId: string | null
+  brokerDiscount: number
   createdAt: string
   updatedAt: string
   _count?: {
@@ -87,6 +88,7 @@ export default function CategoriesPage() {
     isActive: true,
     isHidden: false,
     parentCategoryId: '',
+    brokerDiscount: 0,
   })
 
   useEffect(() => {
@@ -179,6 +181,7 @@ export default function CategoriesPage() {
       isActive: true,
       isHidden: false,
       parentCategoryId: '',
+      brokerDiscount: 0,
     })
     setEditingCategory(null)
   }
@@ -193,6 +196,7 @@ export default function CategoriesPage() {
       isActive: category.isActive,
       isHidden: category.isHidden,
       parentCategoryId: category.parentCategoryId || '',
+      brokerDiscount: category.brokerDiscount || 0,
     })
     setDialogOpen(true)
   }
@@ -482,6 +486,31 @@ export default function CategoriesPage() {
                   setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
                 }
               />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="brokerDiscount">
+                Broker Discount
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="brokerDiscount"
+                  placeholder="0"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.brokerDiscount}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      brokerDiscount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                    })
+                  }
+                />
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  Default discount percentage (0-100%) applied when customer has broker status enabled
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">

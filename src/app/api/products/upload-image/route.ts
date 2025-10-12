@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -136,8 +137,8 @@ export async function POST(request: NextRequest) {
         const product = await prisma.product.findUnique({
           where: { id: productId },
           include: {
-            productCategory: true,
-            productImages: {
+            ProductCategory: true,
+            ProductImage: {
               orderBy: { sortOrder: 'asc' },
             },
           },
@@ -200,6 +201,7 @@ export async function POST(request: NextRequest) {
       // STEP 1: Create Image record (always, even without productId)
       dbImage = await prisma.image.create({
         data: {
+          id: randomUUID(),
           name: productId
             ? `product-${productId}-${imageCount}`
             : `temp-product-${Date.now()}-${Math.random().toString(36).substring(7)}`,
@@ -242,10 +244,12 @@ export async function POST(request: NextRequest) {
 
         dbProductImage = await prisma.productImage.create({
           data: {
+            id: randomUUID(),
             productId,
             imageId: dbImage.id,
             sortOrder: sortOrder || imageCount,
             isPrimary: isPrimary || existingImagesCount === 0,
+            updatedAt: new Date(),
           },
         })
       }

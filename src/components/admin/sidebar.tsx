@@ -85,6 +85,12 @@ const navigationStructure = [
         description: 'Manage add-on sets',
       },
       {
+        title: 'Master Discounts',
+        href: '/admin/master-discounts',
+        icon: Percent,
+        description: 'Default broker discounts',
+      },
+      {
         title: 'Quantities',
         href: '/admin/quantities',
         icon: Grid3x3,
@@ -105,6 +111,12 @@ const navigationStructure = [
     icon: Mail,
     isDropdown: true,
     children: [
+      {
+        title: 'Landing Pages',
+        href: '/admin/landing-pages',
+        icon: Printer,
+        description: '200-city SEO campaigns',
+      },
       {
         title: 'Campaigns',
         href: '/admin/marketing/campaigns',

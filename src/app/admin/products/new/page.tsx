@@ -15,7 +15,6 @@ import {
   ArrowLeft,
   Save,
   Loader2,
-  Calculator,
   AlertCircle,
   RefreshCw,
   CheckCircle2,
@@ -27,7 +26,6 @@ import { responseToJsonSafely } from '@/lib/safe-json'
 export default function NewProductPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
-  const [testing, setTesting] = useState(false)
 
   const {
     formData,
@@ -43,33 +41,6 @@ export default function NewProductPage() {
   useEffect(() => {
     fetchOptions()
   }, [])
-
-  const testPrice = async () => {
-    setTesting(true)
-    try {
-      const response = await fetch('/api/products/test-price', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paperStockSet: formData.selectedPaperStockSet,
-          quantityGroup: formData.selectedQuantityGroup,
-          sizeGroup: formData.selectedSizeGroup,
-          addOns: formData.selectedAddOnSet,
-        }),
-      })
-
-      if (response.ok) {
-        const result = await responseToJsonSafely<any>(response, 'test-price')
-        toast.success(`Test Price: $${result.totalPrice.toFixed(2)}`)
-      } else {
-        toast.error('Failed to calculate price')
-      }
-    } catch (error) {
-      toast.error('Price calculation error')
-    } finally {
-      setTesting(false)
-    }
-  }
 
   // Calculate completion progress
   const calculateProgress = () => {
@@ -341,14 +312,6 @@ export default function NewProductPage() {
           >
             Quick Fill (Test)
           </Button>
-          <Button disabled={testing} variant="outline" onClick={testPrice}>
-            {testing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Calculator className="h-4 w-4" />
-            )}
-            <span className="ml-2">Test Price</span>
-          </Button>
           <Button disabled={submitting} onClick={handleSubmit}>
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -411,14 +374,6 @@ export default function NewProductPage() {
             Cancel
           </Button>
           <div className="flex gap-2">
-            <Button disabled={testing} variant="outline" onClick={testPrice}>
-              {testing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Calculator className="h-4 w-4" />
-              )}
-              <span className="ml-2">Test Price</span>
-            </Button>
             <Button
               className="bg-blue-600 hover:bg-blue-700"
               disabled={submitting}

@@ -57,6 +57,37 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       metadata,
     })
 
+    // Update landing page metrics if order came from a landing page
+    // Only update when order is confirmed (payment successful)
+    if (toStatus === 'CONFIRMATION' && order.sourceLandingPageId) {
+      try {
+        await prisma.cityLandingPage.update({
+          where: { id: order.sourceLandingPageId },
+          data: {
+            orders: { increment: 1 },
+            revenue: { increment: order.total }
+          }
+        })
+
+        // Recalculate conversion rate
+        const landingPage = await prisma.cityLandingPage.findUnique({
+          where: { id: order.sourceLandingPageId },
+          select: { organicViews: true, orders: true }
+        })
+
+        if (landingPage && landingPage.organicViews > 0) {
+          const conversionRate = (landingPage.orders / landingPage.organicViews) * 100
+          await prisma.cityLandingPage.update({
+            where: { id: order.sourceLandingPageId },
+            data: { conversionRate }
+          })
+        }
+      } catch (metricsError) {
+        // Don't fail status update if metrics update fails
+        console.error('[Landing Page Metrics] Failed to update:', metricsError)
+      }
+    }
+
     // Return updated order
     const updatedOrder = await prisma.order.findUnique({
       where: { id },

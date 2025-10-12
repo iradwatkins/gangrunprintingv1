@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     // Category filter
     if (category) {
       whereConditions.push({
-        productCategory: {
+        ProductCategory: {
           name: { equals: category, mode: 'insensitive' },
         },
       })
@@ -105,8 +105,8 @@ export async function GET(request: NextRequest) {
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          productCategory: true,
-          productImages: {
+          ProductCategory: true,
+          ProductImage: {
             where: { isPrimary: true },
             take: 1,
             include: {

@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     if (includeUsage) {
       include._count = {
         select: {
-          productImages: true,
+          ProductImage: true,
         },
       }
       include.productImages = {

@@ -28,7 +28,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { DollarSign, FileText, Mail, MoreVertical, RefreshCw, Send, Truck } from 'lucide-react'
+import { DollarSign, FileText, Mail, MoreVertical, RefreshCw, Send, Trash2, Truck } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,6 +54,7 @@ interface OrderQuickActionsProps {
 export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   // Default to page reload if no onUpdate provided
   const handleUpdate = onUpdate || (() => window.location.reload())
@@ -184,6 +185,38 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
     }
   }
 
+  /**
+   * Delete order
+   */
+  const handleDeleteOrder = async () => {
+    setUpdating(true)
+    try {
+      const response = await fetch(`/api/admin/orders/${order.id}/delete`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete order')
+      }
+
+      toast.success('Order deleted successfully', {
+        description: `Order ${order.orderNumber} and ${data.filesDeleted} associated files have been deleted.`,
+      })
+
+      setDeleteDialogOpen(false)
+      handleUpdate()
+    } catch (error) {
+      console.error('Error deleting order:', error)
+      toast.error('Failed to delete order', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      })
+    } finally {
+      setUpdating(false)
+    }
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -223,6 +256,16 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
           <DropdownMenuItem onClick={() => window.open(`/admin/orders/${order.id}`, '_blank')}>
             <Mail className="mr-2 h-4 w-4" />
             View Full Order
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Order
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -404,6 +447,45 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
             </Button>
             <Button disabled={updating} onClick={handleShippingUpdate}>
               {updating ? 'Updating...' : 'Update Shipping'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Order Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Order</DialogTitle>
+            <DialogDescription>
+              Are you absolutely sure you want to delete order {order.orderNumber}?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive font-medium">
+                ⚠️ This action cannot be undone
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                This will permanently delete:
+              </p>
+              <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
+                <li>Order record and all order items</li>
+                <li>All uploaded files from MinIO storage</li>
+                <li>Payment and shipping information</li>
+                <li>Order history and status updates</li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={updating}>
+              Cancel
+            </Button>
+            <Button variant="destructive" disabled={updating} onClick={handleDeleteOrder}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              {updating ? 'Deleting...' : 'Delete Order'}
             </Button>
           </DialogFooter>
         </DialogContent>

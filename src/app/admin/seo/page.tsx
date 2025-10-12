@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +10,26 @@ import toast from '@/lib/toast'
 
 export default function SEOPage() {
   const [copied, setCopied] = useState<string | null>(null)
+  const [productCount, setProductCount] = useState<number>(0)
+  const [loadingProducts, setLoadingProducts] = useState(true)
+
+  useEffect(() => {
+    fetchProductCount()
+  }, [])
+
+  async function fetchProductCount() {
+    try {
+      const response = await fetch('/api/products?isActive=true')
+      if (response.ok) {
+        const products = await response.json()
+        setProductCount(products.length)
+      }
+    } catch (error) {
+      console.error('Failed to fetch product count:', error)
+    } finally {
+      setLoadingProducts(false)
+    }
+  }
 
   const sitemapUrl = 'https://gangrunprinting.com/sitemap.xml'
   const robotsUrl = 'https://gangrunprinting.com/robots.txt'
@@ -125,7 +145,9 @@ export default function SEOPage() {
           <div className="bg-white rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <span className="font-medium">Feed Status: Active (4 products)</span>
+              <span className="font-medium">
+                Feed Status: {loadingProducts ? 'Loading...' : `Active (${productCount} products)`}
+              </span>
             </div>
             <div className="text-sm text-gray-600 space-y-1">
               <p>✅ JSON format compatible with OpenAI spec</p>

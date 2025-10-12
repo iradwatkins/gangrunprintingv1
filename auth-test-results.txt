@@ -1,0 +1,21 @@
+🚀 Authenticated Product CRUD Test
+============================================================
+🌐 Base URL: https://gangrunprinting.com
+👤 User: iradwatkins@gmail.com
+============================================================
+
+🔐 Authenticating with Google OAuth...
+============================================================
+1. Navigating to signin page...
+📸 /root/websites/gangrunprinting/test-screenshots/auth-01-signin-page-1760268519612.png
+2. Clicking Google sign-in button...
+📸 /root/websites/gangrunprinting/test-screenshots/auth-02-after-google-click-1760268522713.png
+3. Current URL: https://accounts.google.com/v3/signin/identifier?opparams=%253F&dsh=S-384895693%3A1760268519754464&client_id=180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com&code_challenge=S_ZcgBZy7zAXQFLPcmYhZMIFp3Gv2GuyS0UhNjrRYwY&code_challenge_method=S256&o2v=2&redirect_uri=https%3A%2F%2Fgangrunprinting.com%2Fapi%2Fauth%2Fgoogle%2Fcallback&response_type=code&scope=profile+email&service=lso&state=8sJack1Ajxgy1SLamlrg2xQY7fHv3dKb8xy3RRbfiyY&flowName=GeneralOAuthLite&continue=https%3A%2F%2Faccounts.google.com%2Fsignin%2Foauth%2Flegacy%2Fconsent%3Fauthuser%3Dunknown%26part%3DAJi8hAOKlqmvEiQJs_DR17ovfcUsCnC1nv5Ovqfp9ZEkHon1LZH0PUz1vlsCu7WDDE36duOlCdDEYgnjIHnpW5_uu20JHdCtnklBhQ6IHqOOaKeCdjQgH611GTXYouAi8UgrY_hRCTL8kT58fLje6fzIZevk6rPtyw5JZcBTCg_yRFFarmER_sRbx6SZIMqI3CXRZE7rJUV3Ch671Qwe4rOV-aIeNXHDHOLPGwoJdxDuyX03FvjB7rhL3p1i89V5JJ2c1hmBSbBNQv2XOreoXu9LO_LiFsU8h4dFV6qvQx43TWvzqpR5LjEVNYnvRyKfkTJD2ey-kvDZmEBAfr3ZE1Ro81hIP0z5pLZrzAL9LG9jzmQJPkK_OUpCi8xQOpj0coirkHqCJkpdTj5R2DRUmIP-C_J66MEwpNr50GjUz_YsA0iAGVhdO5f2ioZiRcFAwa971icPOBxENoBcu5GND-Gc5Rkby0FIxcH3BF86xmimVTzbzOGMIVsSD1fA4zC-DfbJNGZiQt7ev9ntY987ACeAxM3eluviJ65y04iEcBDfRfSMCGW0qIDTRWC8emuKGE7UD6gCUVWpJ8zG_3mtOMxppClRb0z4dNlamNFXgKAduHm9KhLiq_bJxOQZIBlowNLAv0LX9uJ4mqMJvPDhYn3S53QbYRh-1w%26flowName%3DGeneralOAuthFlow%26as%3DS-384895693%253A1760268519754464%26client_id%3D180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com%23&app_domain=https%3A%2F%2Fgangrunprinting.com&rart=ANgoxcfVfe68dkCQs9Bv1xUzgrudE4rDog8TxNKWlLR7VEAhVNs-ijU5AHmtQHBJ0rOlLP-48PAT1gcJkAKNsijLKJSAzWef-CqMuKsd4oqx_W3GavTSQB4
+4. On Google OAuth page - entering credentials...
+📸 /root/websites/gangrunprinting/test-screenshots/auth-03-google-oauth-page-1760268522802.png
+📸 /root/websites/gangrunprinting/test-screenshots/auth-04-email-entered-1760268525096.png
+📸 /root/websites/gangrunprinting/test-screenshots/auth-05-after-email-submit-1760268528228.png
+❌ Authentication error: Navigation timeout of 30000 ms exceeded
+📸 /root/websites/gangrunprinting/test-screenshots/auth-error-auth-1760268558345.png
+
+❌ Cannot proceed without authentication

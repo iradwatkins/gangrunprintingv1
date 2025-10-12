@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     const completeAddOnSet = await prisma.addOnSet.findUnique({
       where: { id: addOnSet.id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           include: {
             AddOn: true,
           },

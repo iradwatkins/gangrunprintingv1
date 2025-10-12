@@ -56,6 +56,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         isActive: data.isActive,
         isHidden: data.isHidden ?? false,
         parentCategoryId: data.parentCategoryId || null,
+        brokerDiscount: Math.min(100, Math.max(0, data.brokerDiscount || 0)),
         updatedAt: new Date(),
       },
     })

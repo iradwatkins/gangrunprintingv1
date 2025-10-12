@@ -19,7 +19,7 @@ import { ProductImageUpload } from '@/components/admin/product-image-upload'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import toast from '@/lib/toast'
-import { ArrowLeft, Save, Loader2, Calculator, Eye } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react'
 import Link from 'next/link'
 
 interface ProductImage {
@@ -52,7 +52,6 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 function EditProductClient({ id }: { id: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [testing, setTesting] = useState(false)
   const [loadingProduct, setLoadingProduct] = useState(true)
   const [categories, setCategories] = useState<any[]>([])
   const [paperStockSets, setPaperStockSets] = useState<any[]>([])
@@ -213,34 +212,6 @@ function EditProductClient({ id }: { id: string }) {
     }
   }
 
-  const testPrice = async () => {
-    setTesting(true)
-    try {
-      const response = await fetch('/api/products/test-price', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          basePrice: formData.basePrice,
-          setupFee: formData.setupFee,
-          paperStockSetId: formData.selectedPaperStockSet,
-          quantityGroupId: formData.selectedQuantityGroup,
-          sizeGroupId: formData.selectedSizeGroup,
-        }),
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        toast.success(`Test Price: $${result.totalPrice.toFixed(2)}`)
-      } else {
-        toast.error('Failed to calculate price')
-      }
-    } catch (error) {
-      toast.error('Price calculation error')
-    } finally {
-      setTesting(false)
-    }
-  }
-
   const handleSubmit = async () => {
     if (!formData.name || !formData.sku || !formData.categoryId) {
       toast.error('Please fill in all required fields')
@@ -339,14 +310,6 @@ function EditProductClient({ id }: { id: string }) {
               View Product
             </Button>
           </Link>
-          <Button disabled={testing} variant="outline" onClick={testPrice}>
-            {testing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Calculator className="h-4 w-4" />
-            )}
-            <span className="ml-2">Test Price</span>
-          </Button>
           <Button disabled={loading} onClick={handleSubmit}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             <span className="ml-2">Save Changes</span>

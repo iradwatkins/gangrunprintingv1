@@ -20,6 +20,9 @@ export async function POST(request: NextRequest) {
 
     const { items, email, name, phone, shippingAddress, billingAddress, shippingMethod } = data
 
+    // Get landing page source from cookie for attribution tracking
+    const landingPageSource = request.cookies.get('landing_page_source')?.value || null
+
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'No items in cart' }, { status: 400 })
     }
@@ -126,6 +129,7 @@ export async function POST(request: NextRequest) {
         squareCustomerId,
         squareOrderId,
         status: 'PENDING_PAYMENT',
+        sourceLandingPageId: landingPageSource, // Attribution tracking for landing pages
         OrderItem: {
           create: orderItems.map((item: Record<string, unknown>) => ({
             id: `${orderNumber}-${Math.random().toString(36).substring(7)}`,

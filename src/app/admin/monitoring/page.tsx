@@ -29,19 +29,48 @@ interface SystemMetrics {
 export default function MonitoringPage() {
   const [metrics, setMetrics] = useState<SystemMetrics>({
     uptime: '99.9%',
-    responseTime: 245,
-    errorRate: 0.1,
-    activeUsers: 142,
-    revenue: 15420,
+    responseTime: 0,
+    errorRate: 0,
+    activeUsers: 0,
+    revenue: 0,
     status: 'healthy',
   })
 
   const [isLoading, setIsLoading] = useState(true)
+  const [cpuUsage, setCpuUsage] = useState(0)
+  const [memoryUsage, setMemoryUsage] = useState(0)
+  const [diskUsage, setDiskUsage] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
+    fetchMetrics()
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchMetrics, 30000)
+    return () => clearInterval(interval)
   }, [])
+
+  async function fetchMetrics() {
+    try {
+      const response = await fetch('/api/metrics/system')
+      if (response.ok) {
+        const data = await response.json()
+        setMetrics({
+          uptime: data.uptime,
+          responseTime: data.responseTime,
+          errorRate: data.errorRate,
+          activeUsers: data.activeUsers,
+          revenue: data.revenue,
+          status: data.status,
+        })
+        setCpuUsage(data.cpu || 0)
+        setMemoryUsage(data.memory || 0)
+        setDiskUsage(data.disk || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch system metrics:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -84,8 +113,13 @@ export default function MonitoringPage() {
           <h1 className="text-3xl font-bold tracking-tight">System Monitoring</h1>
           <p className="text-muted-foreground">Real-time system health and performance metrics</p>
         </div>
-        <Button className="flex items-center gap-2" variant="outline">
-          <Activity className="h-4 w-4" />
+        <Button
+          className="flex items-center gap-2"
+          disabled={isLoading}
+          variant="outline"
+          onClick={fetchMetrics}
+        >
+          <Activity className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
@@ -162,28 +196,37 @@ export default function MonitoringPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">CPU Usage</span>
-                    <span className="text-sm font-medium">45%</span>
+                    <span className="text-sm font-medium">{cpuUsage.toFixed(1)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '45%' }}></div>
+                    <div
+                      className={`h-2 rounded-full ${cpuUsage > 80 ? 'bg-red-600' : cpuUsage > 60 ? 'bg-yellow-600' : 'bg-blue-600'}`}
+                      style={{ width: `${cpuUsage}%` }}
+                    ></div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Memory Usage</span>
-                    <span className="text-sm font-medium">62%</span>
+                    <span className="text-sm font-medium">{memoryUsage.toFixed(1)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '62%' }}></div>
+                    <div
+                      className={`h-2 rounded-full ${memoryUsage > 85 ? 'bg-red-600' : memoryUsage > 70 ? 'bg-yellow-600' : 'bg-green-600'}`}
+                      style={{ width: `${memoryUsage}%` }}
+                    ></div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Disk Usage</span>
-                    <span className="text-sm font-medium">78%</span>
+                    <span className="text-sm font-medium">{diskUsage.toFixed(1)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '78%' }}></div>
+                    <div
+                      className={`h-2 rounded-full ${diskUsage > 90 ? 'bg-red-600' : diskUsage > 75 ? 'bg-yellow-600' : 'bg-green-600'}`}
+                      style={{ width: `${diskUsage}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>

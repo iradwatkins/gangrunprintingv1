@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const updatedAddOnSet = await prisma.addOnSet.findUnique({
       where: { id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           include: {
             AddOn: true,
           },

@@ -71,44 +71,26 @@ export default function MarketingAnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      // In a real implementation, this would fetch from the analytics API
-      // For now, we'll use mock data
-      const mockData: AnalyticsData = {
-        campaigns: {
-          total: 24,
-          sent: 18,
-          active: 6,
-          deliveryRate: 98.5,
-          openRate: 24.3,
-          clickRate: 3.8,
-        },
-        workflows: {
-          total: 8,
-          active: 5,
-          executions: 1247,
-          completionRate: 89.2,
-        },
-        segments: {
-          total: 12,
-          customers: 3254,
-        },
-        performance: {
-          revenue: 45230.5,
-          orders: 187,
-          avgOrderValue: 241.93,
-          conversionRate: 2.1,
-        },
-        trends: {
-          period: '30d',
-          campaigns: [3, 5, 2, 4, 6, 3, 4],
-          opens: [120, 180, 95, 210, 165, 145, 190],
-          clicks: [15, 22, 12, 28, 19, 17, 24],
-          revenue: [2100, 3200, 1800, 4100, 2900, 2600, 3400],
-        },
+      const response = await fetch(`/api/marketing/analytics?dateRange=${dateRange}`)
+      if (response.ok) {
+        const data = await response.json()
+        // Set real data from API
+        setAnalytics({
+          campaigns: data.campaigns,
+          workflows: data.workflows,
+          segments: data.segments,
+          performance: data.performance,
+          trends: {
+            period: dateRange,
+            campaigns: [], // Would need time-series data
+            opens: [],
+            clicks: [],
+            revenue: [],
+          },
+        })
       }
-
-      setAnalytics(mockData)
     } catch (error) {
+      console.error('Failed to fetch marketing analytics:', error)
     } finally {
       setLoading(false)
     }

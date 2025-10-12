@@ -25,11 +25,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             StandardSize: true,
           },
         },
-        productAddOnSets: {
+        ProductAddOnSet: {
           include: {
             AddOnSet: {
               include: {
-                addOnSetItems: {
+                AddOnSetItem: {
                   include: {
                     AddOn: true,
                   },
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             },
           },
         },
-        productTurnaroundTimeSets: {
+        ProductTurnaroundTimeSet: {
           include: {
             TurnaroundTimeSet: {
               include: {
@@ -51,12 +51,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             },
           },
         },
-        productImages: {
+        ProductImage: {
           include: {
             Image: true,
           },
         },
-        productOptions: {
+        ProductOption: {
           include: {
             OptionValue: true,
           },
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             : undefined,
 
         // Copy addon sets
-        productAddOnSets:
+        ProductAddOnSet:
           originalProduct.productAddOnSets.length > 0
             ? {
                 create: originalProduct.productAddOnSets.map((pas) => ({
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             : undefined,
 
         // Copy turnaround time sets
-        productTurnaroundTimeSets:
+        ProductTurnaroundTimeSet:
           originalProduct.productTurnaroundTimeSets.length > 0
             ? {
                 create: originalProduct.productTurnaroundTimeSets.map((ptts) => ({
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             : undefined,
 
         // Copy product options
-        productOptions:
+        ProductOption:
           originalProduct.productOptions.length > 0
             ? {
                 create: originalProduct.productOptions.map((option) => ({
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             : undefined,
 
         // Copy product images (reference same images)
-        productImages:
+        ProductImage:
           originalProduct.productImages.length > 0
             ? {
                 create: originalProduct.productImages.map((img) => ({
@@ -204,22 +204,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             : undefined,
       },
       include: {
-        productCategory: true,
+        ProductCategory: true,
         productPaperStocks: {
           include: {
             PaperStock: true,
           },
         },
-        productImages: {
+        ProductImage: {
           include: {
             Image: true,
           },
         },
         _count: {
           select: {
-            productImages: true,
+            ProductImage: true,
             productPaperStocks: true,
-            productOptions: true,
+            ProductOption: true,
           },
         },
       },

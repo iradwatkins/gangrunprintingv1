@@ -99,6 +99,38 @@ export class OrderService {
       },
     })
 
+    // Update landing page metrics if order came from a landing page
+    if (order.sourceLandingPageId) {
+      try {
+        await prisma.cityLandingPage.update({
+          where: { id: order.sourceLandingPageId },
+          data: {
+            orders: { increment: 1 },
+            revenue: { increment: order.total }
+          }
+        })
+
+        // Recalculate conversion rate
+        const landingPage = await prisma.cityLandingPage.findUnique({
+          where: { id: order.sourceLandingPageId },
+          select: { organicViews: true, orders: true }
+        })
+
+        if (landingPage && landingPage.organicViews > 0) {
+          const conversionRate = (landingPage.orders / landingPage.organicViews) * 100
+          await prisma.cityLandingPage.update({
+            where: { id: order.sourceLandingPageId },
+            data: { conversionRate }
+          })
+        }
+
+        console.log(`[OrderService] Landing page metrics updated for order ${order.orderNumber}`)
+      } catch (metricsError) {
+        // Don't fail payment processing if metrics update fails
+        console.error('[OrderService] Failed to update landing page metrics:', metricsError)
+      }
+    }
+
     // Send confirmation email
     await this.sendOrderConfirmationEmail(order)
 

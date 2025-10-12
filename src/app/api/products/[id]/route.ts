@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { deleteProductImage } from '@/lib/minio-products'
 import { validateRequest } from '@/lib/auth'
 import { transformProductForFrontend } from '@/lib/data-transformers'
+import { randomUUID } from 'crypto'
 import {
   createSuccessResponse,
   createNotFoundErrorResponse,
@@ -16,14 +17,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        productCategory: true,
-        productImages: {
+        ProductCategory: true,
+        ProductImage: {
           include: {
             Image: true, // Include the Image relation to get URLs
           },
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -36,22 +37,22 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: true,
           },
         },
-        productSizeGroups: {
+        ProductSizeGroup: {
           include: {
             SizeGroup: true,
           },
         },
-        productAddOnSets: {
+        ProductAddOnSet: {
           include: {
             AddOnSet: true,
           },
         },
-        productTurnaroundTimeSets: {
+        ProductTurnaroundTimeSet: {
           include: {
             TurnaroundTimeSet: {
               include: {
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        productOptions: {
+        ProductOption: {
           include: {
             OptionValue: {
               orderBy: { sortOrder: 'asc' },
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           },
           orderBy: { sortOrder: 'asc' },
         },
-        pricingTiers: {
+        PricingTier: {
           orderBy: { minQuantity: 'asc' },
         },
       },
@@ -140,22 +141,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        productImages: {
+        ProductImage: {
           include: {
             Image: true, // Include Image relation to get URLs
           },
         },
-        productPaperStockSets: true,
-        productQuantityGroups: true,
-        productSizeGroups: true,
-        productTurnaroundTimeSets: true,
-        productAddOnSets: true,
-        productOptions: {
+        ProductPaperStockSet: true,
+        ProductQuantityGroup: true,
+        ProductSizeGroup: true,
+        ProductTurnaroundTimeSet: true,
+        ProductAddOnSet: true,
+        ProductOption: {
           include: {
             OptionValue: true,
           },
         },
-        pricingTiers: true,
+        PricingTier: true,
       },
     })
 
@@ -167,7 +168,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     console.log('[PUT Product] Found existing product, processing images...')
 
     // Delete removed images from MinIO
-    const existingImageUrls = existingProduct.productImages.map((img) => img.Image.url)
+    const existingImageUrls = existingProduct.ProductImage.map((img) => img.Image.url)
     const newImageUrls = images?.map((img: Record<string, unknown>) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
 
@@ -201,7 +202,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         data: {
           ...productData,
           // Recreate images - handle both imageId (existing) and full image data (new)
-          productImages:
+          ProductImage:
             images?.length > 0
               ? {
                   create: await Promise.all(
@@ -209,9 +210,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                       // If imageId is provided, use it directly
                       if (img.imageId || img.id) {
                         return {
+                          id: randomUUID(),
                           imageId: img.imageId || img.id,
                           sortOrder: index,
                           isPrimary: img.isPrimary || false,
+                          updatedAt: new Date(),
                         }
                       }
 
@@ -235,59 +238,71 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                       })
 
                       return {
+                        id: randomUUID(),
                         imageId: newImage.id,
                         sortOrder: index,
                         isPrimary: img.isPrimary || false,
+                        updatedAt: new Date(),
                       }
                     })
                   ),
                 }
               : undefined,
           // Recreate paper stock set association
-          productPaperStockSets: paperStockSetId
+          ProductPaperStockSet: paperStockSetId
             ? {
                 create: {
+                  id: randomUUID(),
                   paperStockSetId: paperStockSetId,
                   isDefault: true,
+                  updatedAt: new Date(),
                 },
               }
             : undefined,
           // Recreate quantity group association
-          productQuantityGroups: quantityGroupId
+          ProductQuantityGroup: quantityGroupId
             ? {
                 create: {
+                  id: randomUUID(),
                   quantityGroupId: quantityGroupId,
+                  updatedAt: new Date(),
                 },
               }
             : undefined,
           // Recreate size group association
-          productSizeGroups: sizeGroupId
+          ProductSizeGroup: sizeGroupId
             ? {
                 create: {
+                  id: randomUUID(),
                   sizeGroupId: sizeGroupId,
+                  updatedAt: new Date(),
                 },
               }
             : undefined,
           // Recreate turnaround time set association
-          productTurnaroundTimeSets: turnaroundTimeSetId
+          ProductTurnaroundTimeSet: turnaroundTimeSetId
             ? {
                 create: {
+                  id: randomUUID(),
                   turnaroundTimeSetId: turnaroundTimeSetId,
                   isDefault: true,
+                  updatedAt: new Date(),
                 },
               }
             : undefined,
           // Recreate addon set association
-          productAddOnSets: addOnSetId
+          ProductAddOnSet: addOnSetId
             ? {
                 create: {
+                  id: randomUUID(),
                   addOnSetId: addOnSetId,
                   isDefault: true,
+                  updatedAt: new Date(),
                 },
               }
             : undefined,
           // Recreate options with values
-          productOptions:
+          ProductOption:
             options?.length > 0
               ? {
                   create: options.map((opt: Record<string, unknown>, index: number) => ({
@@ -310,7 +325,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 }
               : undefined,
           // Recreate pricing tiers
-          pricingTiers:
+          PricingTier:
             pricingTiers?.length > 0
               ? {
                   create: pricingTiers.map((tier: Record<string, unknown>) => ({
@@ -323,13 +338,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               : undefined,
         },
         include: {
-          productCategory: true,
-          productImages: {
+          ProductCategory: true,
+          ProductImage: {
             include: {
               Image: true,
             },
           },
-          productPaperStockSets: {
+          ProductPaperStockSet: {
             include: {
               PaperStockSet: {
                 include: {
@@ -342,17 +357,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               },
             },
           },
-          productQuantityGroups: {
+          ProductQuantityGroup: {
             include: {
               QuantityGroup: true,
             },
           },
-          productSizeGroups: {
+          ProductSizeGroup: {
             include: {
               SizeGroup: true,
             },
           },
-          productTurnaroundTimeSets: {
+          ProductTurnaroundTimeSet: {
             include: {
               TurnaroundTimeSet: {
                 include: {
@@ -365,11 +380,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               },
             },
           },
-          productAddOnSets: {
+          ProductAddOnSet: {
             include: {
               AddOnSet: {
                 include: {
-                  addOnSetItems: {
+                  AddOnSetItem: {
                     include: {
                       AddOn: true,
                     },
@@ -378,12 +393,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               },
             },
           },
-          productOptions: {
+          ProductOption: {
             include: {
               OptionValue: true,
             },
           },
-          pricingTiers: true,
+          PricingTier: true,
         },
       })
     })
@@ -436,7 +451,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       where: { id },
       data,
       include: {
-        productCategory: true,
+        ProductCategory: true,
       },
     })
 
@@ -475,7 +490,11 @@ export async function DELETE(
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
-        productImages: true,
+        ProductImage: {
+          include: {
+            Image: true,
+          },
+        },
       },
     })
 
@@ -486,9 +505,9 @@ export async function DELETE(
 
     console.log('[DELETE Product] Found product, deleting images from MinIO...')
     // Delete images from MinIO
-    for (const image of product.productImages) {
+    for (const image of product.ProductImage) {
       try {
-        await deleteProductImage(image.url)
+        await deleteProductImage(image.Image.url)
       } catch (error) {
         console.error('[DELETE Product] Failed to delete image from MinIO:', error)
       }

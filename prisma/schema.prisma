@@ -56,6 +56,7 @@ model AddOnSet {
   updatedAt       DateTime
   AddOnSetItem    AddOnSetItem[]
   ProductAddOnSet ProductAddOnSet[]
+  LandingPageSet  LandingPageSet[]  // Landing page sets using this addon set
 }
 
 model AddOnSetItem {
@@ -550,24 +551,25 @@ model OptionValue {
 }
 
 model Order {
-  id                  String          @id
-  orderNumber         String          @unique
-  referenceNumber     String?         @unique
+  id                  String              @id
+  orderNumber         String              @unique
+  referenceNumber     String?             @unique
   userId              String?
   vendorId            String?
-  funnelId            String? // FUNNELKIT: Track which funnel generated this order
-  funnelStepId        String? // FUNNELKIT: Track which step converted
+  funnelId            String?             // FUNNELKIT: Track which funnel generated this order
+  funnelStepId        String?             // FUNNELKIT: Track which step converted
+  sourceLandingPageId String?             // LANDING PAGES: Track which city landing page generated this order
   subtotal            Float
   tax                 Float
   shipping            Float
   total               Float
   shippingMethod      String?
   trackingNumber      String?
-  createdAt           DateTime        @default(now())
+  createdAt           DateTime            @default(now())
   updatedAt           DateTime
   adminNotes          String?
   carrier             Carrier?
-  deleteAt            DateTime        @default(dbgenerated("(now() + '1 year'::interval)"))
+  deleteAt            DateTime            @default(dbgenerated("(now() + '1 year'::interval)"))
   email               String
   paidAt              DateTime?
   phone               String?
@@ -576,7 +578,7 @@ model Order {
   squareCustomerId    String?
   squareOrderId       String?
   squarePaymentId     String?
-  status              OrderStatus     @default(PENDING_PAYMENT)
+  status              OrderStatus         @default(PENDING_PAYMENT)
   shippingAddress     Json
   billingAddress      Json?
   packageDimensions   Json?
@@ -589,9 +591,9 @@ model Order {
   vendorNotifiedAt    DateTime?
   internalNotes       String?
   customerNotes       String?
-  rushOrder           Boolean         @default(false)
-  priorityLevel       Int             @default(3)
-  tags                String[]        @default([])
+  rushOrder           Boolean             @default(false)
+  priorityLevel       Int                 @default(3)
+  tags                String[]            @default([])
   productionDeadline  DateTime?
   estimatedCompletion DateTime?
   estimatedDelivery   DateTime?
@@ -604,18 +606,37 @@ model Order {
   pickupLocation      String?
   pickupInstructions  String?
   paymentMethod       String?
+
+  // INVOICE SYSTEM: Admin order creation tracking
+  createdByAdminId    String?             // Admin user who created this order
+  invoiceNumber       String?             @unique // e.g., "INV-2025-001234"
+  invoiceId           String?             @unique // Public UUID for customer payment link
+  invoiceSentAt       DateTime?           // When invoice email was sent
+  invoiceViewedAt     DateTime?           // When customer opened invoice
+  paymentDueDate      DateTime?           // Payment due date (default: 7 days from creation)
+  paymentMethodType   PaymentMethodType   @default(SQUARE_CHECKOUT)
+  paymentIntentId     String?             // Square payment intent ID for tracking
+
   File                File[]
   Notification        Notification[]
-  Airport             Airport?        @relation(fields: [selectedAirportId], references: [id])
-  User                User?           @relation(fields: [userId], references: [id])
-  Vendor              Vendor?         @relation(fields: [vendorId], references: [id])
-  Funnel              Funnel?         @relation(fields: [funnelId], references: [id])
+  Airport             Airport?            @relation(fields: [selectedAirportId], references: [id])
+  User                User?               @relation("OrderCustomer", fields: [userId], references: [id])
+  CreatedByAdmin      User?               @relation("OrderCreatedBy", fields: [createdByAdminId], references: [id])
+  Vendor              Vendor?             @relation(fields: [vendorId], references: [id])
+  Funnel              Funnel?             @relation(fields: [funnelId], references: [id])
+  CityLandingPage     CityLandingPage?    @relation(fields: [sourceLandingPageId], references: [id])
   OrderItem           OrderItem[]
   ShippingRate        ShippingRate[]
   StatusHistory       StatusHistory[]
 
   @@index([funnelId])
   @@index([funnelStepId])
+  @@index([sourceLandingPageId])
+  @@index([createdByAdminId])
+  @@index([invoiceNumber])
+  @@index([invoiceId])
+  @@index([paymentDueDate])
+  @@index([paymentMethodType])
 }
 
 model OrderItem {
@@ -701,6 +722,7 @@ model PaperStockSet {
   updatedAt            DateTime
   PaperStockSetItem    PaperStockSetItem[]
   ProductPaperStockSet ProductPaperStockSet[]
+  LandingPageSet       LandingPageSet[]       // Landing page sets using this paper stock
 }
 
 model PaperStockSetItem {
@@ -783,10 +805,15 @@ model Product {
   seoImageAltText          String?                    // Template for image alt text
   seoMetrics               Json?                      // SEO performance tracking (rankings, traffic, conversions)
 
+  // Landing Page System Integration (NEW)
+  isLandingPageProduct     Boolean    @default(false) // Hidden product for landing page sets
+  landingPageSetId         String?                    // Link to LandingPageSet if this is a landing page product
+
   // Relations for parent-child products
   ParentProduct            Product?                   @relation("ProductHierarchy", fields: [parentProductId], references: [id])
   ChildProducts            Product[]                  @relation("ProductHierarchy")
   City                     City?                      @relation(fields: [cityId], references: [id])
+  LandingPageSet           LandingPageSet?            @relation(fields: [landingPageSetId], references: [id])
   PricingTier              PricingTier[]
   ProductCategory          ProductCategory            @relation(fields: [categoryId], references: [id])
   ProductAddOn             ProductAddOn[]
@@ -810,6 +837,8 @@ model Product {
 
   @@index([categoryId])
   @@index([slug])
+  @@index([isLandingPageProduct])
+  @@index([landingPageSetId])
 }
 
 model ProductAddOn {
@@ -851,6 +880,7 @@ model ProductCategory {
   isActive         Boolean             @default(true)
   isHidden         Boolean             @default(false) // Hidden from navigation but products still searchable/SEO-friendly
   parentCategoryId String?
+  brokerDiscount   Int                 @default(0)     // Default broker discount percentage (0-100) for products in this category
   createdAt        DateTime            @default(now())
   updatedAt        DateTime
   Product          Product[]
@@ -1056,6 +1086,7 @@ model QuantityGroup {
   createdAt            DateTime               @default(now())
   updatedAt            DateTime
   ProductQuantityGroup ProductQuantityGroup[]
+  LandingPageSet       LandingPageSet[]       // Landing page sets using this quantity group
 }
 
 model Quote {
@@ -1164,6 +1195,7 @@ model SizeGroup {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime
   ProductSizeGroup ProductSizeGroup[]
+  LandingPageSet   LandingPageSet[]   // Landing page sets using this size group
 }
 
 model StandardQuantity {
@@ -1427,6 +1459,7 @@ model TurnaroundTimeSet {
   updatedAt                DateTime
   ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
   TurnaroundTimeSetItem    TurnaroundTimeSetItem[]
+  LandingPageSet           LandingPageSet[]           // Landing page sets using this turnaround time set
 
   @@index([isActive])
   @@index([sortOrder])
@@ -1467,7 +1500,8 @@ model User {
   Address           Address[]
   CampaignSend      CampaignSend[]
   CustomerJourney   CustomerJourney?
-  Order             Order[]
+  Order             Order[]             @relation("OrderCustomer")
+  OrdersCreated     Order[]             @relation("OrderCreatedBy")
   PushNotification  PushNotification[]
   PushSubscription  PushSubscription[]
   Quote             Quote[]
@@ -1745,6 +1779,17 @@ enum TranslationStatus {
 enum UserRole {
   CUSTOMER
   ADMIN
+}
+
+enum PaymentMethodType {
+  SQUARE_CHECKOUT      // Normal customer checkout
+  SQUARE_INVOICE       // Invoice sent to customer via Square
+  SQUARE_TERMINAL      // Admin swiped card in person
+  SQUARE_VIRTUAL       // Admin entered card info (phone order)
+  PAY_LATER           // Trusted customer, bill later
+  CHECK               // Check payment
+  WIRE_TRANSFER       // Bank transfer
+  CASH                // Cash payment
 }
 
 // ============================================
@@ -2138,38 +2183,159 @@ model City {
   @@index([priority])
 }
 
-// City-specific landing pages for products
-model CityLandingPage {
+// ============================================================================
+// LANDING PAGE SYSTEM - Template-based 200 city SEO pages
+// ============================================================================
+
+// Master template for landing page sets - create once, generate 200 cities
+model LandingPageSet {
   id          String   @id @default(cuid())
-  productId   String
-  cityId      String
-  slug        String   @unique // e.g., "postcards-4x6-new-york-ny"
+  name        String   // "Postcards 4x6 Landing Pages"
+  slug        String   @unique
+  status      String   @default("draft") // draft, generating, published, archived
 
-  // SEO Content (AI-generated)
-  title       String   // "4x6 Postcards in New York, NY | GangRun Printing"
-  metaDesc    String
-  h1          String
-  content     String   @db.Text // Full page content
-  faqSchema   Json     // FAQ structured data
+  // EXISTING product configuration (foreign keys to shared infrastructure)
+  paperStockSetId     String
+  quantityGroupId     String
+  sizeGroupId         String
+  addOnSetId          String?
+  turnaroundTimeSetId String?
 
-  // Status
-  status      String   @default("draft") // draft, published, needs_review
-  published   Boolean  @default(false)
-  publishedAt DateTime?
+  // Content templates (with city variables like [CITY], [STATE])
+  titleTemplate       String
+  metaDescTemplate    String
+  h1Template          String
+  contentTemplate     String  @db.Text
 
-  // Analytics
-  views       Int      @default(0)
-  conversions Int      @default(0)
+  // AI Generation Settings
+  aiGenerationPrompt  String?  @db.Text  // Custom prompt for content generation
+  generateIntro       Boolean  @default(true)
+  generateBenefits    Boolean  @default(true)
+  generateFAQs        Boolean  @default(true)
+  generateCaseStudy   Boolean  @default(false)
+
+  // SEO Settings
+  robotsIndex         Boolean  @default(true)
+  robotsFollow        Boolean  @default(true)
+  canonicalUrl        String?
+
+  // Conversion Optimization
+  urgencyEnabled      Boolean  @default(true)
+  discountEnabled     Boolean  @default(false)
+  discountPercent     Int?
+  chatWidgetEnabled   Boolean  @default(true)
 
   // Timestamps
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  City        City     @relation(fields: [cityId], references: [id])
+  // Relations
+  CityLandingPage     CityLandingPage[]
+  Product             Product[]         // Hidden products created for landing page sets
+
+  // Relations to EXISTING shared product configuration
+  PaperStockSet       PaperStockSet      @relation(fields: [paperStockSetId], references: [id])
+  QuantityGroup       QuantityGroup      @relation(fields: [quantityGroupId], references: [id])
+  SizeGroup           SizeGroup          @relation(fields: [sizeGroupId], references: [id])
+  AddOnSet            AddOnSet?          @relation(fields: [addOnSetId], references: [id])
+  TurnaroundTimeSet   TurnaroundTimeSet? @relation(fields: [turnaroundTimeSetId], references: [id])
+
+  @@index([status])
+  @@index([slug])
+}
+
+// City-specific landing pages - 200 unique pages generated from LandingPageSet template
+model CityLandingPage {
+  id                  String   @id @default(cuid())
+
+  // Link to parent template (CRITICAL)
+  landingPageSetId    String?  // Optional for backward compatibility with old pages
+
+  // Legacy fields (keep for old pages)
+  productId           String
+  cityId              String
+  slug                String   @unique // e.g., "postcards-4x6-new-york-ny"
+
+  // SEO Content (AI-generated with TRUE uniqueness per city)
+  title               String   // "4x6 Postcards in New York, NY | GangRun Printing"
+  metaDesc            String
+  h1                  String
+
+  // Multi-layer unique content (NEW)
+  aiIntro             String?  @db.Text  // AI-generated introduction (200 words, unique per city)
+  aiBenefits          String?  @db.Text  // AI-generated benefits section
+  aiCaseStudy         String?  @db.Text  // Optional case study
+
+  content             String   @db.Text // Full page content (legacy)
+  contentSections     Json?    // Array of {title, content} sections
+  faqSchema           Json     // City-specific FAQ structured data
+  schemaMarkup        Json?    // All 7 schema types combined (LocalBusiness, Product, FAQ, etc.)
+
+  // Manual edit protection
+  isManuallyEdited    Boolean  @default(false)
+  manualEdits         Json?    // Track what was manually changed
+
+  // Status
+  status              String   @default("draft") // draft, published, needs_review
+  published           Boolean  @default(false)
+  publishedAt         DateTime?
+
+  // SEO Performance Tracking
+  googleRanking       Int?
+  organicViews        Int      @default(0)
+  impressions         Int      @default(0)
+  avgPosition         Float?
+  lastCrawled         DateTime?
+
+  // Engagement Metrics
+  views               Int      @default(0)
+  bounceRate          Float?
+  avgTimeOnPage       Int?     // seconds
+  scrollDepth         Float?   // percentage
+
+  // Conversion Metrics
+  clicks              Int      @default(0)
+  quoteRequests       Int      @default(0)
+  addToCart           Int      @default(0)
+  orders              Int      @default(0)
+  revenue             Float    @default(0)
+  conversionRate      Float?
+  conversions         Int      @default(0) // Legacy
+
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  LandingPageSet      LandingPageSet? @relation(fields: [landingPageSetId], references: [id], onDelete: Cascade)
+  Product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  City                City     @relation(fields: [cityId], references: [id])
+  Order               Order[]  // Orders attributed to this landing page
 
   @@unique([productId, cityId])
+  @@index([landingPageSetId])
   @@index([slug])
   @@index([status])
   @@index([published])
+  @@index([googleRanking])
+  @@index([conversionRate])
+}
+
+// ============================================================================
+// SYSTEM SETTINGS - Integration configuration
+// ============================================================================
+
+model Settings {
+  id          String   @id @default(cuid())
+  key         String   @unique // "google_analytics_id", "resend_api_key", etc.
+  value       String?  // Encrypted sensitive values
+  category    String   // "integrations", "email", "analytics", "webhooks"
+  description String?
+  isEncrypted Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
 }

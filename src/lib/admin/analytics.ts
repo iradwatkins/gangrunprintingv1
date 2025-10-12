@@ -66,16 +66,8 @@ export class AnalyticsService {
           status: { notIn: ['CANCELLED', 'REFUNDED'] },
         },
         include: {
-          OrderItem: {
-            include: {
-              product: {
-                include: {
-                  ProductCategory: true,
-                },
-              },
-            },
-          },
-          user: true,
+          OrderItem: true,
+          User: true,
         },
       }),
       prisma.order.findMany({
@@ -102,7 +94,7 @@ export class AnalyticsService {
     const customerIds = new Set(currentOrders.map((order) => order.userId))
     const allCustomers = await prisma.user.findMany({
       where: { role: 'CUSTOMER' },
-      include: { orders: true },
+      include: { Order: true },
     })
 
     const newCustomers = allCustomers.filter(
@@ -110,7 +102,7 @@ export class AnalyticsService {
     ).length
 
     const returningCustomers = allCustomers.filter(
-      (customer) => customer.orders.length > 1 && customerIds.has(customer.id)
+      (customer) => customer.Order.length > 1 && customerIds.has(customer.id)
     ).length
 
     const previousCustomers = allCustomers.filter(
@@ -123,34 +115,20 @@ export class AnalyticsService {
 
     // Calculate product metrics
     const productSales = new Map<string, { name: string; revenue: number; quantity: number }>()
-    const categorySales = new Map<string, { revenue: number; orders: number }>()
 
     currentOrders.forEach((order) => {
       order.OrderItem.forEach((item) => {
-        if (item.product) {
-          const existing = productSales.get(item.product.id) || {
-            name: item.product.name,
-            revenue: 0,
-            quantity: 0,
-          }
-          productSales.set(item.product.id, {
-            ...existing,
-            revenue: existing.revenue + order.total / order.OrderItem.length, // Approximate revenue per item
-            quantity: existing.quantity + item.quantity,
-          })
-
-          // Category sales (if product has category)
-          if (item.product.categoryId) {
-            const categoryRevenue = categorySales.get(item.product.categoryId) || {
-              revenue: 0,
-              orders: 0,
-            }
-            categorySales.set(item.product.categoryId, {
-              revenue: categoryRevenue.revenue + order.total / order.OrderItem.length,
-              orders: categoryRevenue.orders + 1,
-            })
-          }
+        // Use productSku as unique identifier since we don't have product relation
+        const existing = productSales.get(item.productSku) || {
+          name: item.productName,
+          revenue: 0,
+          quantity: 0,
         }
+        productSales.set(item.productSku, {
+          ...existing,
+          revenue: existing.revenue + item.price, // Use actual item price
+          quantity: existing.quantity + item.quantity,
+        })
       })
     })
 
@@ -159,17 +137,9 @@ export class AnalyticsService {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10)
 
-    // Get category names
-    const categoryNames = await prisma.productCategory.findMany({
-      where: { id: { in: Array.from(categorySales.keys()) } },
-    })
-
-    const categories = Array.from(categorySales.entries())
-      .map(([id, data]) => ({
-        name: categoryNames.find((cat) => cat.id === id)?.name || 'Unknown',
-        ...data,
-      }))
-      .sort((a, b) => b.revenue - a.revenue)
+    // For now, return empty categories since we don't track product categories in order items
+    // In future, we could add categoryId/categoryName to OrderItem for better analytics
+    const categories: Array<{ name: string; revenue: number; orders: number }> = []
 
     // Calculate conversion metrics
     const completedOrders = currentOrders.filter(
@@ -182,7 +152,7 @@ export class AnalyticsService {
         : 0
 
     const customersWithMultipleOrders = allCustomers.filter(
-      (customer) => customer.orders.length > 1
+      (customer) => customer.Order.length > 1
     ).length
 
     const repeatCustomerRate =
@@ -216,7 +186,7 @@ export class AnalyticsService {
         })),
       },
       conversion: {
-        rate: 85, // Mock conversion rate - would need website analytics integration
+        rate: currentOrders.length > 0 ? (completedOrders.length / currentOrders.length) * 100 : 0,
         averageOrderValue: averageOrderValue / 100,
         repeatCustomerRate,
       },
@@ -234,7 +204,7 @@ export class AnalyticsService {
         createdAt: { gte: from, lte: to },
         status: { notIn: ['CANCELLED', 'REFUNDED'] },
       },
-      include: { user: true },
+      include: { User: true },
     })
 
     // Group data by date
@@ -302,7 +272,7 @@ export class AnalyticsService {
     const customers = await prisma.user.findMany({
       where: {
         role: 'CUSTOMER',
-        orders: {
+        Order: {
           some: {
             createdAt: { gte: from, lte: to },
             status: { notIn: ['CANCELLED', 'REFUNDED'] },
@@ -310,7 +280,7 @@ export class AnalyticsService {
         },
       },
       include: {
-        orders: {
+        Order: {
           where: {
             createdAt: { gte: from, lte: to },
             status: { notIn: ['CANCELLED', 'REFUNDED'] },
@@ -321,13 +291,13 @@ export class AnalyticsService {
 
     return customers
       .map((customer) => {
-        const totalSpent = customer.orders.reduce((sum, order) => sum + order.total, 0)
+        const totalSpent = customer.Order.reduce((sum, order) => sum + order.total, 0)
         return {
           id: customer.id,
           name: customer.name || 'Unknown',
           email: customer.email,
           totalSpent: totalSpent / 100,
-          orderCount: customer.orders.length,
+          orderCount: customer.Order.length,
         }
       })
       .sort((a, b) => b.totalSpent - a.totalSpent)

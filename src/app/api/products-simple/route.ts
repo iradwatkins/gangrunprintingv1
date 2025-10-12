@@ -22,14 +22,14 @@ export async function GET(request: NextRequest) {
         categoryId: true,
         createdAt: true,
         updatedAt: true,
-        productCategory: {
+        ProductCategory: {
           select: {
             id: true,
             name: true,
             slug: true,
           },
         },
-        productQuantityGroups: {
+        ProductQuantityGroup: {
           include: {
             QuantityGroup: {
               select: {
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               select: {
@@ -65,9 +65,9 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            productImages: true,
-            productQuantityGroups: true,
-            productPaperStockSets: true,
+            ProductImage: true,
+            ProductQuantityGroup: true,
+            ProductPaperStockSet: true,
             productAddOns: true,
           },
         },

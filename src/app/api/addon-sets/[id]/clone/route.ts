@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const originalAddOnSet = await prisma.addOnSet.findUnique({
       where: { id },
       include: {
-        addOnSetItems: {
+        AddOnSetItem: {
           orderBy: {
             sortOrder: 'asc',
           },
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
 
       // Clone all items
-      if (originalAddOnSet.addOnSetItems.length > 0) {
+      if (originalAddOnSet.AddOnSetItem.length > 0) {
         await tx.addOnSetItem.createMany({
-          data: originalAddOnSet.addOnSetItems.map((item) => ({
+          data: originalAddOnSet.AddOnSetItem.map((item) => ({
             id: randomUUID(),
             addOnSetId: newAddOnSet.id,
             addOnId: item.addOnId,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return await tx.addOnSet.findUnique({
         where: { id: newAddOnSet.id },
         include: {
-          addOnSetItems: {
+          AddOnSetItem: {
             include: {
               AddOn: true,
             },

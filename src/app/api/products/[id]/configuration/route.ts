@@ -366,12 +366,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 include: {
                   PaperStock: {
                     include: {
-                      paperStockCoatings: {
+                      PaperStockCoating: {
                         include: {
                           CoatingOption: true,
                         },
                       },
-                      paperStockSides: {
+                      PaperStockSide: {
                         include: {
                           SidesOption: true,
                         },
@@ -398,13 +398,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           weight: item.PaperStock.weight || 0.0009, // Weight per square inch (lbs/sq in) - CRITICAL FOR SHIPPING
           pricePerSqInch: item.PaperStock.pricePerSqInch || 0.05,
           isDefault: item.isDefault || false, // CRITICAL: Use isDefault from PaperStockSetItem
-          coatings: item.PaperStock.paperStockCoatings.map((psc: any) => ({
+          coatings: item.PaperStock.PaperStockCoating.map((psc: any) => ({
             id: `coating_${psc.CoatingOption.id}`,
             name: psc.CoatingOption.name,
             priceMultiplier: 1.0,
             isDefault: psc.isDefault || false,
           })),
-          sides: item.PaperStock.paperStockSides.map((pss: any) => ({
+          sides: item.PaperStock.PaperStockSide.map((pss: any) => ({
             id: `sides_${pss.SidesOption.id}`,
             name: pss.SidesOption.name,
             priceMultiplier: pss.priceMultiplier || 1.0,
@@ -478,7 +478,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           AddOnSet: {
             include: {
-              addOnSetItems: {
+              AddOnSetItem: {
                 include: {
                   AddOn: true,
                 },
@@ -522,7 +522,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         include: {
           AddOnSet: {
             include: {
-              addOnSetItems: {
+              AddOnSetItem: {
                 include: {
                   AddOn: true,
                 },
@@ -545,7 +545,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         // Process each addon set
         for (const productAddOnSet of productAddOnSetsForGrouping) {
-          for (const setItem of productAddOnSet.AddOnSet.addOnSetItems) {
+          for (const setItem of productAddOnSet.AddOnSet.AddOnSetItem) {
             const addon = setItem.AddOn
             const { price, priceDisplay } = calculatePriceDisplay(addon)
 

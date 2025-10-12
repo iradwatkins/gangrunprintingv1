@@ -13,11 +13,11 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         isActive: true,
       },
       include: {
-        productCategory: true,
-        productImages: {
+        ProductCategory: true,
+        ProductImage: {
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           include: {
             PaperStockSet: {
               include: {
@@ -46,11 +46,11 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
             AddOn: true,
           },
         },
-        productAddOnSets: {
+        ProductAddOnSet: {
           include: {
             AddOnSet: {
               include: {
-                addOnSetItems: {
+                AddOnSetItem: {
                   include: {
                     AddOn: true,
                   },

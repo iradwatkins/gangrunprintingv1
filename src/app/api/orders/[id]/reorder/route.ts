@@ -65,7 +65,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             isActive: true,
           },
           include: {
-            productImages: {
+            ProductImage: {
               where: { isPrimary: true },
               take: 1,
               include: {

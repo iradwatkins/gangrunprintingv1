@@ -123,7 +123,7 @@ export async function GET_OLD(request: NextRequest) {
         updatedAt: true,
 
         // Include only essential relations (max 2 levels deep)
-        productCategory: {
+        ProductCategory: {
           select: {
             id: true,
             name: true,
@@ -131,7 +131,7 @@ export async function GET_OLD(request: NextRequest) {
             description: true,
           },
         },
-        productImages: {
+        ProductImage: {
           select: {
             id: true,
             imageId: true,
@@ -150,7 +150,7 @@ export async function GET_OLD(request: NextRequest) {
           },
           orderBy: { sortOrder: 'asc' },
         },
-        productPaperStockSets: {
+        ProductPaperStockSet: {
           select: {
             id: true,
             paperStockSetId: true,
@@ -165,7 +165,7 @@ export async function GET_OLD(request: NextRequest) {
             },
           },
         },
-        productOptions: {
+        ProductOption: {
           select: {
             id: true,
             optionName: true,
@@ -178,7 +178,7 @@ export async function GET_OLD(request: NextRequest) {
           },
           orderBy: { sortOrder: 'asc' },
         },
-        pricingTiers: {
+        PricingTier: {
           select: {
             id: true,
             minQuantity: true,
@@ -189,11 +189,11 @@ export async function GET_OLD(request: NextRequest) {
         },
         _count: {
           select: {
-            productImages: true,
-            productPaperStockSets: true,
-            productOptions: true,
-            productQuantityGroups: true,
-            productSizeGroups: true,
+            ProductImage: true,
+            ProductPaperStockSet: true,
+            ProductOption: true,
+            ProductQuantityGroup: true,
+            ProductSizeGroup: true,
             productAddOns: true,
           },
         },
@@ -412,6 +412,7 @@ export async function POST(request: NextRequest) {
             rushAvailable,
             rushDays,
             rushFee,
+            updatedAt: new Date(),
           },
         })
 
@@ -422,9 +423,11 @@ export async function POST(request: NextRequest) {
         relationshipPromises.push(
           tx.productPaperStockSet.create({
             data: {
+              id: randomUUID(),
               productId: newProduct.id,
               paperStockSetId: paperStockSetId,
               isDefault: true,
+              updatedAt: new Date(),
             },
           })
         )
@@ -434,8 +437,10 @@ export async function POST(request: NextRequest) {
           relationshipPromises.push(
             tx.productQuantityGroup.create({
               data: {
+                id: randomUUID(),
                 productId: newProduct.id,
                 quantityGroupId: quantityGroupId,
+                updatedAt: new Date(),
               },
             })
           )
@@ -446,8 +451,10 @@ export async function POST(request: NextRequest) {
           relationshipPromises.push(
             tx.productSizeGroup.create({
               data: {
+                id: randomUUID(),
                 productId: newProduct.id,
                 sizeGroupId: sizeGroupId,
+                updatedAt: new Date(),
               },
             })
           )
@@ -458,9 +465,11 @@ export async function POST(request: NextRequest) {
           relationshipPromises.push(
             tx.productTurnaroundTimeSet.create({
               data: {
+                id: randomUUID(),
                 productId: newProduct.id,
                 turnaroundTimeSetId: turnaroundTimeSetId,
                 isDefault: true,
+                updatedAt: new Date(),
               },
             })
           )
@@ -471,9 +480,11 @@ export async function POST(request: NextRequest) {
           relationshipPromises.push(
             tx.productAddOnSet.create({
               data: {
+                id: randomUUID(),
                 productId: newProduct.id,
                 addOnSetId: addOnSetId,
                 isDefault: false,
+                updatedAt: new Date(),
               },
             })
           )
@@ -484,8 +495,10 @@ export async function POST(request: NextRequest) {
           relationshipPromises.push(
             tx.productAddOn.createMany({
               data: selectedAddOns.map((addOnId: string) => ({
+                id: randomUUID(),
                 productId: newProduct.id,
                 addOnId,
+                updatedAt: new Date(),
               })),
             })
           )
@@ -528,10 +541,12 @@ export async function POST(request: NextRequest) {
             relationshipPromises.push(
               tx.productImage.create({
                 data: {
+                  id: randomUUID(),
                   productId: newProduct.id,
                   imageId: imageId,
                   sortOrder: img.sortOrder !== undefined ? img.sortOrder : index,
                   isPrimary: img.isPrimary !== undefined ? img.isPrimary : index === 0,
+                  updatedAt: new Date(),
                 },
               })
             )
@@ -545,9 +560,9 @@ export async function POST(request: NextRequest) {
         return await tx.product.findUnique({
           where: { id: newProduct.id },
           include: {
-            productCategory: true,
-            productImages: true,
-            productPaperStockSets: {
+            ProductCategory: true,
+            ProductImage: true,
+            ProductPaperStockSet: {
               include: {
                 PaperStockSet: {
                   include: {
@@ -560,17 +575,17 @@ export async function POST(request: NextRequest) {
                 },
               },
             },
-            productQuantityGroups: {
+            ProductQuantityGroup: {
               include: {
                 QuantityGroup: true,
               },
             },
-            productSizeGroups: {
+            ProductSizeGroup: {
               include: {
                 SizeGroup: true,
               },
             },
-            productAddOns: {
+            ProductAddOn: {
               include: {
                 AddOn: true,
               },

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         id: { in: productIds },
       },
       include: {
-        productImages: true,
+        ProductImage: true,
       },
     })
 

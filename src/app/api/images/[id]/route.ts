@@ -24,10 +24,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       include: {
         _count: {
           select: {
-            productImages: true,
+            ProductImage: true,
           },
         },
-        productImages: {
+        ProductImage: {
           include: {
             Product: {
               select: {
@@ -99,7 +99,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       include: {
         _count: {
           select: {
-            productImages: true,
+            ProductImage: true,
           },
         },
       },
@@ -136,10 +136,10 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       include: {
         _count: {
           select: {
-            productImages: true,
+            ProductImage: true,
           },
         },
-        productImages: {
+        ProductImage: {
           include: {
             Product: {
               select: {
