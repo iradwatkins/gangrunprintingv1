@@ -47,6 +47,7 @@ import {
 } from 'lucide-react'
 import { BrokerDiscountButton } from '@/components/admin/broker-discount-button'
 import { BrokerDiscountDisplay } from '@/components/admin/broker-discount-display'
+import { EditCustomerButton } from '@/components/admin/edit-customer-button'
 import {
   Table,
   TableBody,
@@ -265,10 +266,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button disabled variant="outline">
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Profile
-          </Button>
+          <EditCustomerButton
+            customer={{
+              id: customer.id,
+              name: customer.name || '',
+              email: customer.email,
+              phoneNumber: customer.phoneNumber,
+            }}
+          />
           <Button disabled>
             <MessageSquare className="mr-2 h-4 w-4" />
             Send Message

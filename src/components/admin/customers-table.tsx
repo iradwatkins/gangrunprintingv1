@@ -21,17 +21,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye, Mail, Search, Filter, Download, UserCheck, UserX } from 'lucide-react'
+import { MoreHorizontal, Eye, Mail, Search, Filter, Download, Percent, Phone, Edit } from 'lucide-react'
+import { BrokerDiscountButton } from './broker-discount-button'
+import { EditCustomerModal } from './edit-customer-modal'
 
 interface Customer {
   id: string
   name: string
   email: string
+  phoneNumber?: string | null
   createdAt: Date
   totalOrders: number
   totalSpent: number
   lastOrderDate: Date | null
-  status: 'verified' | 'unverified'
+  isBroker?: boolean
+  brokerDiscounts?: Record<string, number> | null
 }
 
 interface CustomersTableProps {
@@ -43,6 +47,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<'name' | 'spent' | 'orders' | 'date'>('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
 
   // Ensure customers is always an array to prevent errors
   const safeCustomers = customers || []
@@ -169,7 +174,8 @@ export function CustomersTable({ customers }: CustomersTableProps) {
               >
                 Customer {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
               </TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Broker</TableHead>
               <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => handleSort('orders')}
@@ -195,7 +201,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
           <TableBody>
             {sortedCustomers.length === 0 ? (
               <TableRow>
-                <TableCell className="text-center py-8 text-muted-foreground" colSpan={8}>
+                <TableCell className="text-center py-8 text-muted-foreground" colSpan={9}>
                   No customers found
                 </TableCell>
               </TableRow>
@@ -213,21 +219,50 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{customer.name}</div>
-                      <div className="text-sm text-muted-foreground">{customer.email}</div>
+                      <Link
+                        className="font-medium hover:underline text-blue-600"
+                        href={`/admin/customers/${customer.id}`}
+                      >
+                        {customer.name}
+                      </Link>
+                      <div className="text-xs text-muted-foreground mt-0.5">ID: {customer.id.substring(0, 8)}</div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    {customer.status === 'verified' ? (
-                      <Badge className="gap-1" variant="default">
-                        <UserCheck className="h-3 w-3" />
-                        Verified
-                      </Badge>
+                    <div className="space-y-1">
+                      <a
+                        className="flex items-center gap-1.5 text-sm hover:underline text-blue-600"
+                        href={`mailto:${customer.email}`}
+                      >
+                        <Mail className="h-3 w-3" />
+                        {customer.email}
+                      </a>
+                      {customer.phoneNumber && (
+                        <a
+                          className="flex items-center gap-1.5 text-sm hover:underline text-blue-600"
+                          href={`tel:${customer.phoneNumber}`}
+                        >
+                          <Phone className="h-3 w-3" />
+                          {customer.phoneNumber}
+                        </a>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {customer.isBroker ? (
+                      <div className="flex flex-col gap-1">
+                        <Badge className="gap-1 w-fit" variant="default">
+                          <Percent className="h-3 w-3" />
+                          Broker
+                        </Badge>
+                        {customer.brokerDiscounts && Object.keys(customer.brokerDiscounts).length > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {Object.keys(customer.brokerDiscounts).length} categories
+                          </span>
+                        )}
+                      </div>
                     ) : (
-                      <Badge className="gap-1" variant="secondary">
-                        <UserX className="h-3 w-3" />
-                        Unverified
-                      </Badge>
+                      <Badge variant="outline">Regular</Badge>
                     )}
                   </TableCell>
                   <TableCell>{customer.totalOrders}</TableCell>
@@ -235,32 +270,44 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                   <TableCell>{formatDate(customer.lastOrderDate)}</TableCell>
                   <TableCell>{formatDate(customer.createdAt)}</TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button className="h-8 w-8 p-0" variant="ghost">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/customers/${customer.id}`}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Mail className="mr-2 h-4 w-4" />
-                          Send Email
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Orders</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          Delete Customer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center justify-end gap-2">
+                      <BrokerDiscountButton
+                        currentDiscounts={customer.brokerDiscounts || null}
+                        customerId={customer.id}
+                        customerName={customer.name}
+                        isBroker={customer.isBroker || false}
+                      />
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button className="h-8 w-8 p-0" variant="ghost">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/customers/${customer.id}`}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setEditingCustomer(customer)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Customer
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Mail className="mr-2 h-4 w-4" />
+                            Send Email
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>View Orders</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">
+                            Delete Customer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -284,6 +331,22 @@ export function CustomersTable({ customers }: CustomersTableProps) {
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Edit Customer Modal */}
+      {editingCustomer && (
+        <EditCustomerModal
+          open={!!editingCustomer}
+          onOpenChange={(open) => {
+            if (!open) setEditingCustomer(null)
+          }}
+          customer={{
+            id: editingCustomer.id,
+            name: editingCustomer.name,
+            email: editingCustomer.email,
+            phoneNumber: editingCustomer.phoneNumber,
+          }}
+        />
       )}
     </div>
   )

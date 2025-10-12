@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CustomersTable } from '@/components/admin/customers-table'
 import { Users, UserPlus, ShoppingCart, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AddCustomerButton } from '@/components/admin/customers-page-client'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -42,11 +43,13 @@ async function getCustomersData() {
       id: customer.id,
       name: customer.name || 'N/A',
       email: customer.email || 'N/A',
+      phoneNumber: customer.phoneNumber || null,
       createdAt: customer.createdAt,
       totalOrders: orders.length,
       totalSpent,
       lastOrderDate: lastOrderDate ? new Date(lastOrderDate) : null,
-      status: (customer.emailVerified ? 'verified' : 'unverified') as 'verified' | 'unverified',
+      isBroker: customer.isBroker || false,
+      brokerDiscounts: customer.brokerDiscounts as Record<string, number> | null,
     }
   })
 
@@ -95,10 +98,7 @@ export default async function CustomersPage() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline">Export CSV</Button>
-          <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Customer
-          </Button>
+          <AddCustomerButton />
         </div>
       </div>
 
