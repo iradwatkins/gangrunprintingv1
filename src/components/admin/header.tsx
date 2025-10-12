@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, Search, User, Menu, LogOut } from 'lucide-react'
+import { Search, User, Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter } from 'next/navigation'
+import { NotificationsDropdown } from './notifications-dropdown'
 
 interface AdminHeaderProps {
   onToggleDesktopSidebar?: () => void
@@ -112,12 +113,7 @@ export function AdminHeader({ onToggleDesktopSidebar, onToggleMobileSidebar }: A
       </div>
 
       <div className="flex items-center gap-4">
-        <Button className="relative" size="icon" variant="ghost">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
-            3
-          </span>
-        </Button>
+        <NotificationsDropdown />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

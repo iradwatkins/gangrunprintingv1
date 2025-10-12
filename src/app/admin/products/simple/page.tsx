@@ -29,6 +29,8 @@ export default function SimpleProductPage() {
   const [paperStocks, setPaperStocks] = useState([])
   const [quantityGroups, setQuantityGroups] = useState([])
   const [sizeGroups, setSizeGroups] = useState([])
+  const [turnaroundSets, setTurnaroundSets] = useState([])
+  const [addonSets, setAddonSets] = useState([])
 
   // Form data - simplified
   const [formData, setFormData] = useState({
@@ -41,6 +43,8 @@ export default function SimpleProductPage() {
     paperStockId: '',
     quantityGroupId: '',
     sizeGroupId: '',
+    turnaroundTimeSetId: '',
+    addOnSetId: '',
     basePrice: 0,
     setupFee: 0,
     productionTime: 3,
@@ -66,11 +70,13 @@ export default function SimpleProductPage() {
     try {
       setApiLoading(true)
 
-      const [catRes, paperRes, qtyRes, sizeRes] = await Promise.all([
+      const [catRes, paperRes, qtyRes, sizeRes, turnaroundRes, addonRes] = await Promise.all([
         fetch('/api/product-categories'),
-        fetch('/api/paper-stocks'),
-        fetch('/api/quantities'),
-        fetch('/api/sizes'),
+        fetch('/api/paper-stock-sets'),
+        fetch('/api/quantity-groups'),
+        fetch('/api/size-groups'),
+        fetch('/api/turnaround-time-sets'),
+        fetch('/api/addon-sets'),
       ])
 
       if (catRes.ok) {
@@ -91,6 +97,16 @@ export default function SimpleProductPage() {
       if (sizeRes.ok) {
         const data = await sizeRes.json()
         setSizeGroups(data)
+      }
+
+      if (turnaroundRes.ok) {
+        const data = await turnaroundRes.json()
+        setTurnaroundSets(data)
+      }
+
+      if (addonRes.ok) {
+        const data = await addonRes.json()
+        setAddonSets(data)
       }
     } catch (error) {
       toast.error('Failed to load form data')
@@ -291,6 +307,48 @@ export default function SimpleProductPage() {
                   {sizeGroups.map((group: Record<string, unknown>) => (
                     <SelectItem key={String(group.id)} value={String(group.id)}>
                       {String(group.name)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Turnaround Time Set */}
+            <div>
+              <Label htmlFor="turnaroundSet">Turnaround Time Options (optional)</Label>
+              <Select
+                value={formData.turnaroundTimeSetId}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, turnaroundTimeSetId: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select turnaround time set (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {turnaroundSets.map((set: Record<string, unknown>) => (
+                    <SelectItem key={String(set.id)} value={String(set.id)}>
+                      {String(set.name)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Add-On Set */}
+            <div>
+              <Label htmlFor="addonSet">Add-On Options (optional)</Label>
+              <Select
+                value={formData.addOnSetId}
+                onValueChange={(value) => setFormData({ ...formData, addOnSetId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select add-on set (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {addonSets.map((set: Record<string, unknown>) => (
+                    <SelectItem key={String(set.id)} value={String(set.id)}>
+                      {String(set.name)}
                     </SelectItem>
                   ))}
                 </SelectContent>
