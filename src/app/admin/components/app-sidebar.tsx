@@ -122,6 +122,14 @@ const data = {
           url: '/admin/addon-sets',
         },
         {
+          title: 'Design Options',
+          url: '/admin/design-options',
+        },
+        {
+          title: 'Design Sets',
+          url: '/admin/design-sets',
+        },
+        {
           title: 'Turnaround Times',
           url: '/admin/turnaround-times',
         },
