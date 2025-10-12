@@ -8,11 +8,15 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const withProducts = searchParams.get('withProducts') === 'true'
     const activeOnly = searchParams.get('active') === 'true'
+    const topLevelOnly = searchParams.get('topLevel') === 'true'
 
     // Build where clause
     const where: Record<string, unknown> = {}
     if (activeOnly) {
       where.isActive = true
+    }
+    if (topLevelOnly) {
+      where.parentCategoryId = null
     }
     if (withProducts) {
       where.Product = {
@@ -76,6 +80,7 @@ export async function POST(request: NextRequest) {
         isActive: data.isActive ?? true,
         isHidden: data.isHidden ?? false,
         parentCategoryId: data.parentCategoryId || null,
+        brokerDiscount: Math.min(100, Math.max(0, data.brokerDiscount || 0)),
         updatedAt: new Date(),
       },
     })

@@ -39,17 +39,43 @@ export function BrokerDiscountModal({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [discounts, setDiscounts] = useState<Record<string, number>>(currentDiscounts || {})
+  const [defaultDiscount, setDefaultDiscount] = useState<string>('')
   const [globalDiscount, setGlobalDiscount] = useState('')
 
   // Reset discounts when modal opens with new data
   useEffect(() => {
     if (open) {
       setDiscounts(currentDiscounts || {})
+      setDefaultDiscount(currentDiscounts?.['_default']?.toString() || '')
       setGlobalDiscount('')
       setError(null)
       setSuccess(false)
     }
   }, [open, currentDiscounts])
+
+  // Update master default discount
+  const handleDefaultDiscountChange = (value: string) => {
+    const numValue = parseFloat(value)
+
+    if (value === '' || value === null) {
+      // Remove default discount
+      const newDiscounts = { ...discounts }
+      delete newDiscounts['_default']
+      setDiscounts(newDiscounts)
+      setDefaultDiscount('')
+      return
+    }
+
+    if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+      return // Don't update with invalid values
+    }
+
+    setDefaultDiscount(value)
+    setDiscounts({
+      ...discounts,
+      _default: numValue,
+    })
+  }
 
   // Apply global discount to all categories
   const handleGlobalDiscount = () => {
@@ -121,14 +147,14 @@ export function BrokerDiscountModal({
     }
   }
 
-  const activeDiscountCount = Object.keys(discounts).length
+  const activeDiscountCount = Object.keys(discounts).filter(key => key !== '_default').length
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Configure Broker Discounts</DialogTitle>
-          <DialogDescription>Set category-specific discounts for {customerName}</DialogDescription>
+          <DialogTitle>Master Discount Pricing Configuration</DialogTitle>
+          <DialogDescription>Set default and category-specific discounts for {customerName}</DialogDescription>
         </DialogHeader>
 
         {error && (
@@ -147,10 +173,46 @@ export function BrokerDiscountModal({
           </Alert>
         )}
 
+        {/* Master Default Discount */}
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Percent className="h-4 w-4 text-blue-600" />
+              Master Default Discount
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label htmlFor="defaultDiscount" className="text-xs font-medium mb-1.5 block">
+                  Default Discount (%)
+                </Label>
+                <Input
+                  id="defaultDiscount"
+                  max="100"
+                  min="0"
+                  placeholder="0"
+                  step="0.5"
+                  type="number"
+                  value={defaultDiscount}
+                  onChange={(e) => handleDefaultDiscountChange(e.target.value)}
+                />
+              </div>
+              <Percent className="h-4 w-4 text-muted-foreground mb-2.5" />
+            </div>
+            <p className="text-xs text-blue-600 mt-2 font-medium">
+              This discount applies to all categories unless overridden below
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Categories without custom discounts will use this default value
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Global Discount */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Apply Global Discount</CardTitle>
+            <CardTitle className="text-sm">Quick Apply Discount</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-2">
@@ -170,7 +232,7 @@ export function BrokerDiscountModal({
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Set the same discount percentage for all product categories
+              Override all categories with the same discount percentage
             </p>
           </CardContent>
         </Card>
@@ -185,29 +247,40 @@ export function BrokerDiscountModal({
           </div>
 
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-            {categories.map((category) => (
-              <div key={category.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                <div className="flex-1">
-                  <Label className="text-sm font-medium" htmlFor={category.id}>
-                    {category.name}
-                  </Label>
+            {categories.map((category) => {
+              const hasCustomDiscount = category.name in discounts
+              const displayValue = hasCustomDiscount ? discounts[category.name] : ''
+              const placeholderText = discounts._default ? `${discounts._default} (default)` : '0'
+
+              return (
+                <div key={category.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <Label className="text-sm font-medium" htmlFor={category.id}>
+                      {category.name}
+                    </Label>
+                    {!hasCustomDiscount && discounts._default && (
+                      <p className="text-xs text-blue-600 mt-0.5">
+                        Using default: {discounts._default}%
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 w-32">
+                    <Input
+                      className={`text-right ${hasCustomDiscount ? 'border-green-500' : ''}`}
+                      id={category.id}
+                      max="100"
+                      min="0"
+                      placeholder={placeholderText}
+                      step="0.5"
+                      type="number"
+                      value={displayValue}
+                      onChange={(e) => handleCategoryDiscount(category.name, e.target.value)}
+                    />
+                    <Percent className="h-4 w-4 text-muted-foreground" />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 w-32">
-                  <Input
-                    className="text-right"
-                    id={category.id}
-                    max="100"
-                    min="0"
-                    placeholder="0"
-                    step="0.5"
-                    type="number"
-                    value={discounts[category.name] ?? ''}
-                    onChange={(e) => handleCategoryDiscount(category.name, e.target.value)}
-                  />
-                  <Percent className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 

@@ -32,9 +32,19 @@ export function BrokerDiscountButton({
   const fetchCategories = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/product-categories')
+      // Fetch active, non-hidden, top-level categories only
+      const response = await fetch('/api/product-categories?active=true&topLevel=true')
       const data = await response.json()
-      setCategories(data.categories || [])
+      // API returns array directly, not wrapped in categories property
+      const categoriesArray = Array.isArray(data) ? data : data.categories || []
+      // Filter out hidden categories and extract only needed fields
+      const filteredCategories = categoriesArray
+        .filter((cat: any) => !cat.isHidden && cat.isActive)
+        .map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+        }))
+      setCategories(filteredCategories)
     } catch (error) {
       console.error('Failed to fetch categories:', error)
     } finally {
