@@ -74,7 +74,6 @@ export default function VendorsPage() {
     contactEmail: '',
     orderEmail: '',
     phone: '',
-    website: '',
     address: {
       street: '',
       city: '',
@@ -82,12 +81,6 @@ export default function VendorsPage() {
       zip: '',
       country: 'USA',
     },
-    supportedCarriers: [] as string[],
-    turnaroundDays: 3,
-    minimumOrderAmount: 0,
-    shippingCostFormula: '',
-    n8nWebhookUrl: '',
-    notes: '',
     isActive: true,
   })
 
@@ -119,7 +112,6 @@ export default function VendorsPage() {
         contactEmail: vendor.contactEmail,
         orderEmail: vendor.orderEmail || '',
         phone: vendor.phone || '',
-        website: vendor.website || '',
         address: vendor.address || {
           street: '',
           city: '',
@@ -127,12 +119,6 @@ export default function VendorsPage() {
           zip: '',
           country: 'USA',
         },
-        supportedCarriers: vendor.supportedCarriers || [],
-        turnaroundDays: vendor.turnaroundDays,
-        minimumOrderAmount: vendor.minimumOrderAmount || 0,
-        shippingCostFormula: vendor.shippingCostFormula || '',
-        n8nWebhookUrl: vendor.n8nWebhookUrl || '',
-        notes: vendor.notes || '',
         isActive: vendor.isActive,
       })
     } else {
@@ -142,7 +128,6 @@ export default function VendorsPage() {
         contactEmail: '',
         orderEmail: '',
         phone: '',
-        website: '',
         address: {
           street: '',
           city: '',
@@ -150,12 +135,6 @@ export default function VendorsPage() {
           zip: '',
           country: 'USA',
         },
-        supportedCarriers: [],
-        turnaroundDays: 3,
-        minimumOrderAmount: 0,
-        shippingCostFormula: '',
-        n8nWebhookUrl: '',
-        notes: '',
         isActive: true,
       })
     }
@@ -205,15 +184,6 @@ export default function VendorsPage() {
     } catch (error) {
       toast.error('Failed to deactivate vendor')
     }
-  }
-
-  const toggleCarrier = (carrier: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      supportedCarriers: prev.supportedCarriers.includes(carrier)
-        ? prev.supportedCarriers.filter((c) => c !== carrier)
-        : [...prev.supportedCarriers, carrier],
-    }))
   }
 
   const filteredVendors = vendors.filter(
@@ -349,15 +319,7 @@ export default function VendorsPage() {
             <DialogDescription>Configure vendor details and integration settings</DialogDescription>
           </DialogHeader>
 
-          <Tabs className="w-full" defaultValue="general">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="shipping">Shipping</TabsTrigger>
-              <TabsTrigger value="integration">Integration</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-            </TabsList>
-
-            <TabsContent className="space-y-4" value="general">
+          <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Vendor Name *</Label>
@@ -379,7 +341,7 @@ export default function VendorsPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="orderEmail">Order Email (for n8n)</Label>
+                  <Label htmlFor="orderEmail">Order Email</Label>
                   <Input
                     id="orderEmail"
                     placeholder="orders@vendor.com"
@@ -396,20 +358,13 @@ export default function VendorsPage() {
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   />
                 </div>
-                <div className="col-span-2">
-                  <Label htmlFor="website">Website</Label>
-                  <Input
-                    id="website"
-                    placeholder="https://vendor-website.com"
-                    type="url"
-                    value={formData.website}
-                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  />
-                </div>
               </div>
 
               <div className="space-y-2">
-                <Label>Address</Label>
+                <Label>Shipping Address *</Label>
+                <p className="text-sm text-muted-foreground">
+                  This address will be used as the "Ship From" address for FedEx/carrier rates
+                </p>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     placeholder="Street Address"
@@ -462,103 +417,7 @@ export default function VendorsPage() {
                 />
                 <Label htmlFor="isActive">Active Vendor</Label>
               </div>
-            </TabsContent>
-
-            <TabsContent className="space-y-4" value="shipping">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="turnaroundDays">Turnaround Days</Label>
-                  <Input
-                    id="turnaroundDays"
-                    type="number"
-                    value={formData.turnaroundDays}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        turnaroundDays: parseInt(e.target.value) || 3,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="minimumOrderAmount">Minimum Order Amount</Label>
-                  <Input
-                    id="minimumOrderAmount"
-                    step="0.01"
-                    type="number"
-                    value={formData.minimumOrderAmount}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        minimumOrderAmount: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Supported Carriers</Label>
-                <div className="space-y-2 mt-2">
-                  {CARRIER_OPTIONS.map((carrier) => (
-                    <div key={carrier} className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={formData.supportedCarriers.includes(carrier)}
-                        id={carrier}
-                        onCheckedChange={() => toggleCarrier(carrier)}
-                      />
-                      <Label className="flex items-center gap-2" htmlFor={carrier}>
-                        <Truck className="h-4 w-4" />
-                        {carrier}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="shippingCostFormula">Shipping Cost Formula/Notes</Label>
-                <Textarea
-                  id="shippingCostFormula"
-                  placeholder="e.g., Base rate $10 + $0.50 per pound"
-                  rows={3}
-                  value={formData.shippingCostFormula}
-                  onChange={(e) =>
-                    setFormData({ ...formData, shippingCostFormula: e.target.value })
-                  }
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent className="space-y-4" value="integration">
-              <div>
-                <Label htmlFor="n8nWebhookUrl">n8n Webhook URL</Label>
-                <Input
-                  id="n8nWebhookUrl"
-                  placeholder="https://n8n.example.com/webhook/vendor-orders"
-                  type="url"
-                  value={formData.n8nWebhookUrl}
-                  onChange={(e) => setFormData({ ...formData, n8nWebhookUrl: e.target.value })}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  This URL will receive order notifications for automated fulfillment
-                </p>
-              </div>
-            </TabsContent>
-
-            <TabsContent className="space-y-4" value="notes">
-              <div>
-                <Label htmlFor="notes">Internal Notes</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Add any internal notes about this vendor..."
-                  rows={6}
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+            </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

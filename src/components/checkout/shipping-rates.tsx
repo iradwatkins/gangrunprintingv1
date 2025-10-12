@@ -120,6 +120,7 @@ export function ShippingRates({
     // Log each item's structure in detail
     items.forEach((item, index) => {
       console.log(`📦 Item ${index}:`, {
+        productId: item.productId,
         quantity: item.quantity,
         width: item.width,
         height: item.height,
@@ -138,9 +139,40 @@ export function ShippingRates({
 
     setLoading(true)
     setError(null)
+
+    // Fetch vendor address for the product (if productId exists)
+    let fromAddress: any = undefined
+    const firstProductId = items[0]?.productId
+
+    if (firstProductId) {
+      console.log('🏭 ShippingRates: Fetching vendor address for product:', firstProductId)
+      try {
+        const vendorResponse = await fetch(`/api/products/${firstProductId}/vendor-address`)
+        if (vendorResponse.ok) {
+          const vendorData = await vendorResponse.json()
+          if (vendorData.address && vendorData.vendorId) {
+            fromAddress = {
+              street: vendorData.address.street,
+              city: vendorData.address.city,
+              state: vendorData.address.state,
+              zipCode: vendorData.address.zip,
+              country: vendorData.address.country || 'US',
+              isResidential: false,
+            }
+            console.log('✅ ShippingRates: Using vendor address from', vendorData.vendorName + ':', fromAddress)
+          } else {
+            console.log('⚠️ ShippingRates: No vendor address found, using default')
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ ShippingRates: Could not fetch vendor address, using default:', error)
+      }
+    }
+
     console.log('✅ ShippingRates: Making API call with payload:', {
       toAddress,
       items,
+      fromAddress: fromAddress || 'default',
     })
 
     try {
@@ -155,6 +187,7 @@ export function ShippingRates({
         body: JSON.stringify({
           toAddress,
           items,
+          fromAddress, // Pass vendor address if found
         }),
         signal: controller.signal,
       })

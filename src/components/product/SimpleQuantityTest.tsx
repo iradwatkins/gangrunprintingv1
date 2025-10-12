@@ -269,12 +269,13 @@ export default function SimpleQuantityTest({
     if (turnaround.pricingModel === 'FLAT') {
       return basePrice + (turnaround.basePrice || 0)
     } else if (turnaround.pricingModel === 'PERCENTAGE') {
-      // PERCENTAGE: Base + (Base × Multiplier)
-      // Example: $100 base + ($100 × 0.3) = $130 (30% extra)
-      return basePrice + basePrice * (turnaround.priceMultiplier || 0)
+      // PERCENTAGE: Base × Multiplier (NOT Base + Base × Multiplier)
+      // Example: $100 base × 1.3 = $130 (30% markup total)
+      // Database stores TOTAL multiplier: 1.1 (10%), 1.3 (30%), 1.5 (50%), 2.0 (100%)
+      return basePrice * (turnaround.priceMultiplier || 1)
     } else if (turnaround.pricingModel === 'CUSTOM') {
-      // Custom model combines both: (Base + Percentage) + Flat Fee
-      return basePrice + basePrice * (turnaround.priceMultiplier || 0) + (turnaround.basePrice || 0)
+      // Custom model: (Base × Multiplier) + Flat Fee
+      return basePrice * (turnaround.priceMultiplier || 1) + (turnaround.basePrice || 0)
     }
     return basePrice
   }
