@@ -45,6 +45,7 @@ import {
 
 interface ProductImage {
   id?: string
+  imageId?: string
   url: string
   thumbnailUrl?: string
   largeUrl?: string
@@ -60,6 +61,8 @@ interface ProductImage {
   isBlobUrl?: boolean
   width?: number
   height?: number
+  fileSize?: number
+  mimeType?: string
 }
 
 interface ProductImageUploadProps {
@@ -259,44 +262,50 @@ export function ProductImageUpload({
           throw new Error('Invalid response from upload service')
         }
 
+        // FIX: Compute new array from images prop (not callback function)
         // Update the image with the uploaded URL and clean up blob
-        onImagesChange((prev) => {
-          const currentImages = Array.isArray(prev) ? prev : []
-          return currentImages.map((img, idx) => {
-            if (idx === safeImages.length + i) {
-              // Clean up blob URL if it exists
-              if (img.isBlobUrl && img.url.startsWith('blob:')) {
-                URL.revokeObjectURL(img.url)
-              }
-              return {
-                ...img,
-                url: uploadedUrl,
-                thumbnailUrl: data.data?.thumbnailUrl || data.thumbnailUrl || uploadedUrl,
-                largeUrl: data.data?.largeUrl || data.largeUrl,
-                mediumUrl: data.data?.mediumUrl || data.mediumUrl,
-                webpUrl: data.data?.webpUrl || data.webpUrl,
-                blurDataUrl: data.data?.blurDataUrl || data.blurDataUrl,
-                alt: data.data?.alt || data.alt,
-                width: data.data?.width || data.width,
-                height: data.data?.height || data.height,
-                uploading: false,
-                isBlobUrl: false,
-                file: undefined, // Remove file reference after upload
-              }
+        const currentImages = Array.isArray(images) ? images : []
+        const updatedImages = currentImages.map((img, idx) => {
+          if (idx === safeImages.length + i) {
+            // Clean up blob URL if it exists
+            if (img.isBlobUrl && img.url.startsWith('blob:')) {
+              URL.revokeObjectURL(img.url)
             }
-            return img
-          })
+            return {
+              ...img,
+              // CRITICAL: Include imageId from upload response
+              id: data.data?.id || data.id,
+              imageId: data.data?.imageId || data.imageId || data.data?.id || data.id,
+              url: uploadedUrl,
+              thumbnailUrl: data.data?.thumbnailUrl || data.thumbnailUrl || uploadedUrl,
+              largeUrl: data.data?.largeUrl || data.largeUrl,
+              mediumUrl: data.data?.mediumUrl || data.mediumUrl,
+              webpUrl: data.data?.webpUrl || data.webpUrl,
+              blurDataUrl: data.data?.blurDataUrl || data.blurDataUrl,
+              alt: data.data?.alt || data.alt,
+              width: data.data?.width || data.width,
+              height: data.data?.height || data.height,
+              fileSize: data.data?.fileSize || data.fileSize,
+              mimeType: data.data?.mimeType || data.mimeType,
+              uploading: false,
+              isBlobUrl: false,
+              file: undefined, // Remove file reference after upload
+            }
+          }
+          return img
         })
+        onImagesChange(updatedImages)
 
         toast.success(`Image ${i + 1} uploaded successfully`)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         toast.error(`Failed to upload image ${i + 1}: ${errorMessage}`)
+
+        // FIX: Compute new array from images prop (not callback function)
         // Remove the failed image safely
-        onImagesChange((prev) => {
-          const currentImages = Array.isArray(prev) ? prev : []
-          return currentImages.filter((_, idx) => idx !== safeImages.length + i)
-        })
+        const currentImages = Array.isArray(images) ? images : []
+        const filteredImages = currentImages.filter((_, idx) => idx !== safeImages.length + i)
+        onImagesChange(filteredImages)
       }
     }
   }

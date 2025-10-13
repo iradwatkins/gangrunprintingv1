@@ -49,6 +49,18 @@ export default function NewProductPage() {
   }, [])
 
   const handleSubmit = async () => {
+    // DEBUG: Log form state before validation to diagnose issues
+    console.log('[DEBUG] Product creation - Form state before submit:', {
+      name: formData.name,
+      categoryId: formData.categoryId,
+      images: formData.images,
+      imagesIsArray: Array.isArray(formData.images),
+      imagesLength: Array.isArray(formData.images) ? formData.images.length : 'NOT AN ARRAY',
+      hasBlobs: Array.isArray(formData.images)
+        ? formData.images.some((img) => img.url?.startsWith('blob:'))
+        : 'CANNOT CHECK',
+    })
+
     // Enhanced validation with specific error messages
     const validationErrors = []
     if (!formData.name) validationErrors.push('Product name is required')
@@ -106,6 +118,7 @@ export default function NewProductPage() {
 
       toast.success('Product created successfully')
       router.push('/admin/products')
+      router.refresh() // Force Next.js cache invalidation to show new product
     } catch (error) {
       const err = error as Error
       if (err.name === 'AbortError') {

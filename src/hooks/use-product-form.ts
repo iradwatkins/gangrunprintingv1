@@ -117,6 +117,18 @@ export function useProductForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.designSets])
 
+  // CRITICAL FIX: Safety check to prevent state corruption
+  // If images somehow becomes non-array, reset it to empty array
+  useEffect(() => {
+    if (!Array.isArray(formData.images)) {
+      console.error(
+        '[CRITICAL] formData.images is not an array, resetting to empty array. Value was:',
+        formData.images
+      )
+      setFormData((prev) => ({ ...prev, images: [] }))
+    }
+  }, [formData.images])
+
   const fetchOptions = async () => {
     try {
       setLoading(true)
@@ -209,7 +221,18 @@ export function useProductForm() {
   }
 
   const updateFormData = (updates: Partial<ProductFormData>) => {
-    setFormData((prev) => ({ ...prev, ...updates }))
+    setFormData((prev) => {
+      // CRITICAL FIX: Validate images array to prevent state corruption
+      if ('images' in updates) {
+        if (!Array.isArray(updates.images)) {
+          console.error('[CRITICAL] Attempted to set images to non-array:', updates.images)
+          // Force it to be an array to prevent crashes
+          updates.images = []
+        }
+      }
+
+      return { ...prev, ...updates }
+    })
   }
 
   const validateForm = (): boolean => {
@@ -243,6 +266,16 @@ export function useProductForm() {
     if (loading) {
       toast.error('Please wait for data to load before submitting')
       return false
+    }
+
+    // CRITICAL FIX: Check for blob URLs (images still uploading)
+    // Defensive check to prevent "images.some is not a function" error
+    if (Array.isArray(formData.images) && formData.images.length > 0) {
+      const hasBlobUrls = formData.images.some((img) => img.url?.startsWith('blob:'))
+      if (hasBlobUrls) {
+        toast.error('Please wait for all images to finish uploading before saving')
+        return false
+      }
     }
 
     return true
