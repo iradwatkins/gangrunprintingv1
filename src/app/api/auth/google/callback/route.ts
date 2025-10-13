@@ -177,28 +177,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Create session with enhanced cookie settings
-
     const session = await lucia.createSession(user.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
-
-    // Enhanced cookie attributes for better persistence
-    const enhancedAttributes = {
-      ...sessionCookie.attributes,
-      maxAge: 60 * 60 * 24 * 90, // 90 days
-      domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
-      sameSite: 'lax' as const,
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      path: '/',
-    }
-
-    // Set the session cookie - CRITICAL: must be done before redirect
-    const cookieStore = await cookies()
-    cookieStore.set(sessionCookie.name, sessionCookie.value, enhancedAttributes)
-
-    // Clear OAuth cookies
-    ;(await cookies()).delete('google_oauth_state')
-    ;(await cookies()).delete('google_oauth_code_verifier')
 
     // Redirect based on user role with improved logic
     const redirectPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard'
@@ -207,7 +187,36 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
 
-    return NextResponse.redirect(`${baseUrl}${redirectPath}`)
+    // CRITICAL FIX: Create response with redirect FIRST, then set cookie on the response
+    const response = NextResponse.redirect(`${baseUrl}${redirectPath}`)
+
+    // Build cookie string manually for Set-Cookie header (Next.js 15 requirement)
+    const cookieValue = `${sessionCookie.name}=${sessionCookie.value}`
+    const cookieAttributes = [
+      `Max-Age=${60 * 60 * 24 * 90}`, // 90 days
+      'Path=/',
+      'HttpOnly',
+      'SameSite=Lax',
+    ]
+
+    if (process.env.NODE_ENV === 'production') {
+      cookieAttributes.push('Secure')
+      cookieAttributes.push('Domain=gangrunprinting.com')
+    }
+
+    const cookieString = `${cookieValue}; ${cookieAttributes.join('; ')}`
+
+    // Set cookie on response object
+    response.headers.set('Set-Cookie', cookieString)
+
+    console.log('[Google OAuth] Session cookie set:', {
+      cookieName: sessionCookie.name,
+      cookieLength: sessionCookie.value.length,
+      domain: process.env.NODE_ENV === 'production' ? 'gangrunprinting.com' : 'localhost',
+      redirectTo: redirectPath,
+    })
+
+    return response
   } catch (error) {
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'

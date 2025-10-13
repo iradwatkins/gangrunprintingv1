@@ -41,10 +41,12 @@ interface Size {
 }
 
 /**
- * Parse a size string like "2x3.5" into width and height
+ * Parse a size string like "2x3.5" or "11×17" into width and height
+ * Supports: x, X, × (multiplication sign U+00D7), ×, ✕
  */
 function parseSizeDimensions(sizeStr: string): { width: number; height: number } | null {
-  const match = sizeStr.match(/^(\d+(?:\.\d+)?)\s*[xX]\s*(\d+(?:\.\d+)?)$/)
+  // Support multiple separators: x, X, ×, ×, ✕
+  const match = sizeStr.match(/^(\d+(?:\.\d+)?)\s*[xX××✕]\s*(\d+(?:\.\d+)?)$/)
   if (match) {
     return {
       width: parseFloat(match[1]),

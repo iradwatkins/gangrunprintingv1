@@ -295,6 +295,7 @@ export async function POST(request: NextRequest) {
       selectedAddOns,
       turnaroundTimeSetId,
       addOnSetId,
+      designSetId,
       productionTime,
       rushAvailable,
       rushDays,
@@ -490,6 +491,22 @@ export async function POST(request: NextRequest) {
           )
         }
 
+        // Design set (optional)
+        if (designSetId) {
+          relationshipPromises.push(
+            tx.productDesignSet.create({
+              data: {
+                id: randomUUID(),
+                productId: newProduct.id,
+                designSetId: designSetId,
+                isDefault: true,
+                sortOrder: 1,
+                updatedAt: new Date(),
+              },
+            })
+          )
+        }
+
         // Individual add-ons (optional, for backward compatibility)
         if (selectedAddOns.length > 0) {
           relationshipPromises.push(
@@ -520,9 +537,11 @@ export async function POST(request: NextRequest) {
             } else {
               console.log(`[${requestId}] Creating new Image record`)
 
-              // Create new Image record
+              // Create new Image record with required ID
+              const newImageId = randomUUID()
               const image = await tx.image.create({
                 data: {
+                  id: newImageId,
                   name: `${uniqueSlug}-${Date.now()}-${index}`,
                   url: img.url,
                   thumbnailUrl: img.thumbnailUrl || img.url,

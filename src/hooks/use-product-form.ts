@@ -33,6 +33,7 @@ export interface ProductFormData {
   selectedSizeGroup: string
   selectedAddOnSet: string
   selectedTurnaroundTimeSet: string
+  selectedDesignSet: string
 }
 
 export interface ProductFormOptions {
@@ -42,6 +43,7 @@ export interface ProductFormOptions {
   sizeGroups: Array<{ id: string; name: string }>
   addOnSets: Array<{ id: string; name: string }>
   turnaroundTimeSets: Array<{ id: string; name: string }>
+  designSets: Array<{ id: string; name: string }>
 }
 
 const initialFormData: ProductFormData = {
@@ -58,6 +60,7 @@ const initialFormData: ProductFormData = {
   selectedSizeGroup: '',
   selectedAddOnSet: '',
   selectedTurnaroundTimeSet: '',
+  selectedDesignSet: '',
 }
 
 export function useProductForm() {
@@ -69,6 +72,7 @@ export function useProductForm() {
     sizeGroups: [],
     addOnSets: [],
     turnaroundTimeSets: [],
+    designSets: [],
   })
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -89,19 +93,29 @@ export function useProductForm() {
     if (options.paperStockSets.length > 0 && !formData.selectedPaperStockSet) {
       setFormData((prev) => ({ ...prev, selectedPaperStockSet: options.paperStockSets[0].id }))
     }
-  }, [options.paperStockSets, formData.selectedPaperStockSet])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.paperStockSets])
 
   useEffect(() => {
     if (options.quantityGroups.length > 0 && !formData.selectedQuantityGroup) {
       setFormData((prev) => ({ ...prev, selectedQuantityGroup: options.quantityGroups[0].id }))
     }
-  }, [options.quantityGroups, formData.selectedQuantityGroup])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.quantityGroups])
 
   useEffect(() => {
     if (options.sizeGroups.length > 0 && !formData.selectedSizeGroup) {
       setFormData((prev) => ({ ...prev, selectedSizeGroup: options.sizeGroups[0].id }))
     }
-  }, [options.sizeGroups, formData.selectedSizeGroup])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.sizeGroups])
+
+  useEffect(() => {
+    if (options.designSets.length > 0 && !formData.selectedDesignSet) {
+      setFormData((prev) => ({ ...prev, selectedDesignSet: options.designSets[0].id }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.designSets])
 
   const fetchOptions = async () => {
     try {
@@ -113,6 +127,7 @@ export function useProductForm() {
         sizesRes,
         addOnSetsRes,
         turnaroundTimeSetsRes,
+        designSetsRes,
       ] = await Promise.all([
         fetch('/api/product-categories'),
         fetch('/api/paper-stock-sets'),
@@ -120,6 +135,7 @@ export function useProductForm() {
         fetch('/api/size-groups'),
         fetch('/api/addon-sets'),
         fetch('/api/turnaround-time-sets'),
+        fetch('/api/design-sets'),
       ])
 
       const newErrors: Record<string, string> = {}
@@ -130,6 +146,7 @@ export function useProductForm() {
         sizeGroups: [],
         addOnSets: [],
         turnaroundTimeSets: [],
+        designSets: [],
       }
 
       if (categoriesRes.ok) {
@@ -168,6 +185,12 @@ export function useProductForm() {
         newErrors.turnaroundTimeSets = 'Failed to load turnaround time sets'
       }
 
+      if (designSetsRes.ok) {
+        newOptions.designSets = await designSetsRes.json()
+      } else {
+        newErrors.designSets = 'Failed to load design sets'
+      }
+
       setOptions(newOptions)
       setErrors(newErrors)
     } catch (error) {
@@ -178,6 +201,7 @@ export function useProductForm() {
         sizeGroups: 'Network error',
         addOnSets: 'Network error',
         turnaroundTimeSets: 'Network error',
+        designSets: 'Network error',
       })
     } finally {
       setLoading(false)
@@ -256,6 +280,7 @@ export function useProductForm() {
       selectedAddOns: selectedAddOnIds,
       turnaroundTimeSetId: formData.selectedTurnaroundTimeSet,
       addOnSetId: formData.selectedAddOnSet,
+      designSetId: formData.selectedDesignSet || null,
       productionTime: 3,
       rushAvailable: false,
       rushDays: null,

@@ -683,14 +683,21 @@ model PaperException {
 }
 
 model PaperStock {
-  id                String              @id
-  name              String              @unique
-  pricePerSqInch    Float               @default(0.001)
-  tooltipText       String?
-  isActive          Boolean             @default(true)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  weight            Float               @default(0.0015)
+  id                   String                  @id
+  name                 String                  @unique
+  pricePerSqInch       Float                   @default(0.001) // CALCULATED: Final price used in pricing (vendor price + markup)
+  tooltipText          String?
+  isActive             Boolean                 @default(true)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime
+  weight               Float                   @default(0.0015)
+
+  // VENDOR PRICING & MARKUP SYSTEM
+  vendorPricePerSqInch Float?                  // Vendor's base price per square inch
+  markupType           PaperStockMarkupType?   @default(PERCENTAGE)
+  markupValue          Float?                  @default(0) // Percentage (e.g., 100) or dollar amount (e.g., 1.00)
+  profitMargin         Float?                  // Auto-calculated: pricePerSqInch - vendorPricePerSqInch
+
   OrderItem         OrderItem[]
   PaperException    PaperException?
   PaperStockCoating PaperStockCoating[]
@@ -834,6 +841,7 @@ model Product {
   Upsell                   Upsell[]
   Downsell                 Downsell[]
   CityLandingPage          CityLandingPage[]
+  ProductDesignSet         ProductDesignSet[]
 
   @@index([categoryId])
   @@index([slug])
@@ -1705,6 +1713,17 @@ enum PricingModel {
   CUSTOM
 }
 
+enum PaperStockMarkupType {
+  PERCENTAGE
+  FLAT
+}
+
+enum DesignPricingType {
+  FREE
+  FLAT
+  SIDE_BASED
+}
+
 enum QuoteStatus {
   DRAFT
   SENT
@@ -2338,4 +2357,80 @@ model Settings {
 
   @@index([category])
   @@index([isActive])
+}
+
+// ============================================================================
+// DESIGN SYSTEM - Following PaperStock/PaperStockSet Architecture
+// ============================================================================
+
+// Individual design options (like PaperStock)
+model DesignOption {
+  id                    String             @id
+  name                  String             @unique // "Upload Your Own Artwork"
+  code                  String             @unique // "upload_own"
+  description           String?
+  tooltipText           String?
+  pricingType           DesignPricingType  @default(FLAT)
+  requiresSideSelection Boolean            @default(false)
+  sideOnePrice          Float?             // For Standard/Rush one side
+  sideTwoPrice          Float?             // For Standard/Rush two sides
+  basePrice             Float              @default(0) // For Minor/Major or upload_own (0)
+  sortOrder             Int                @default(0)
+  isActive              Boolean            @default(true)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime
+  DesignSetItem         DesignSetItem[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// Groups of design options (like PaperStockSet)
+model DesignSet {
+  id               String             @id
+  name             String             @unique
+  description      String?
+  sortOrder        Int                @default(0)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  DesignSetItem    DesignSetItem[]
+  ProductDesignSet ProductDesignSet[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// Junction table: DesignSet ↔ DesignOption (like PaperStockSetItem)
+model DesignSetItem {
+  id             String       @id
+  designSetId    String
+  designOptionId String
+  isDefault      Boolean      @default(false)
+  sortOrder      Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime
+  DesignOption   DesignOption @relation(fields: [designOptionId], references: [id], onDelete: Cascade)
+  DesignSet      DesignSet    @relation(fields: [designSetId], references: [id], onDelete: Cascade)
+
+  @@unique([designSetId, designOptionId])
+  @@index([designOptionId])
+  @@index([designSetId])
+}
+
+// Junction table: Product ↔ DesignSet (like ProductPaperStockSet)
+model ProductDesignSet {
+  id          String    @id
+  productId   String
+  designSetId String
+  isDefault   Boolean   @default(false)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  DesignSet   DesignSet @relation(fields: [designSetId], references: [id], onDelete: Cascade)
+  Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, designSetId])
+  @@index([designSetId])
+  @@index([productId])
 }

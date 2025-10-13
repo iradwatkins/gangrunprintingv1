@@ -24,8 +24,8 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       httpOnly: true, // Ensure cookie is not accessible via JavaScript
-      // Set proper domain for production to work across subdomains
-      domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
+      // Set proper domain for production (without leading dot for better compatibility)
+      domain: process.env.NODE_ENV === 'production' ? 'gangrunprinting.com' : undefined,
       path: '/',
       // Add max age for better browser compatibility
       maxAge: 60 * 60 * 24 * 90, // 90 days in seconds
@@ -121,59 +121,13 @@ export const validateRequest = async (): Promise<
       validationTimeMs: validationTime,
     })
 
-    try {
-      if (result.session) {
-        // ALWAYS extend session for active users to prevent unexpected logouts
-        // This aggressive extension ensures users stay logged in during active use
-        const timeUntilExpiry = result.session.expiresAt.getTime() - Date.now()
-        const hoursUntilExpiry = Math.round(timeUntilExpiry / (1000 * 60 * 60))
-        const daysUntilExpiry = Math.round(timeUntilExpiry / (1000 * 60 * 60 * 24))
-
-        // Always extend session if user is active (visiting any page)
-        // This prevents the "logged out" issue
-        authLogger.info(`[${requestId}] Extending session ${result.session.id}`, {
-          requestId,
-          sessionId: result.session.id,
-          daysUntilExpiry,
-          hoursUntilExpiry,
-          wasFresh: result.session.fresh,
-          userId: result.user?.id,
-          userEmail: (result.user as any)?.email,
-        })
-
-        const sessionCookie = lucia.createSessionCookie(result.session.id)
-
-        // Ensure cookie attributes match the main configuration
-        const enhancedAttributes = {
-          ...sessionCookie.attributes,
-          maxAge: 60 * 60 * 24 * 90, // 90 days
-          domain: process.env.NODE_ENV === 'production' ? '.gangrunprinting.com' : undefined,
-        }
-
-        cookieJar.set(sessionCookie.name, sessionCookie.value, enhancedAttributes)
-
-        authLogger.debug(`[${requestId}] Session cookie set with extended lifetime`, {
-          requestId,
-          cookieName: sessionCookie.name,
-          cookieAttributes: enhancedAttributes,
-          hasValue: !!sessionCookie.value,
-          maxAge: enhancedAttributes.maxAge,
-        })
-      } else {
-        authLogger.warn(`[${requestId}] Invalid session, clearing cookie`, {
-          requestId,
-          originalSessionId: sessionId.substring(0, 8) + '...',
-        })
-        const sessionCookie = lucia.createBlankSessionCookie()
-        cookieJar.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-      }
-    } catch (cookieError) {
-      authLogger.error(`[${requestId}] Failed to set session cookie:`, {
-        requestId,
-        error: cookieError,
-        errorMessage: cookieError instanceof Error ? cookieError.message : String(cookieError),
-      })
-    }
+    // NOTE: Do NOT try to set cookies here!
+    // In Next.js 15, cookies can only be modified in:
+    // 1. Server Actions
+    // 2. Route Handlers (API routes)
+    // validateRequest() is called from server components and middleware,
+    // where cookie modification is not allowed.
+    // Session extension should be handled by the API routes themselves.
 
     const totalTime = Date.now() - startTime
     authLogger.debug(`[${requestId}] Session validation completed`, {

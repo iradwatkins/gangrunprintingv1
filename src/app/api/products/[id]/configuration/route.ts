@@ -371,7 +371,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                           CoatingOption: true,
                         },
                       },
-                      PaperStockSide: {
+                      PaperStockSides: {
                         include: {
                           SidesOption: true,
                         },
@@ -404,7 +404,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             priceMultiplier: 1.0,
             isDefault: psc.isDefault || false,
           })),
-          sides: item.PaperStock.PaperStockSide.map((pss: any) => ({
+          sides: item.PaperStock.PaperStockSides.map((pss: any) => ({
             id: `sides_${pss.SidesOption.id}`,
             name: pss.SidesOption.name,
             priceMultiplier: pss.priceMultiplier || 1.0,
@@ -506,6 +506,57 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       addons = transformLegacyAddons(SIMPLE_CONFIG.addons)
     }
 
+    // Try to fetch design options from product's linked design sets
+    let designOptions: any[] = []
+
+    try {
+      // Fetch the product's linked design sets
+      const productDesignSets = await prisma.productDesignSet.findMany({
+        where: {
+          productId: productId,
+        },
+        include: {
+          DesignSet: {
+            include: {
+              DesignSetItem: {
+                include: {
+                  DesignOption: true,
+                },
+                orderBy: {
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          sortOrder: 'asc',
+        },
+      })
+
+      if (productDesignSets.length > 0 && productDesignSets[0].DesignSet) {
+        const designSet = productDesignSets[0].DesignSet
+        designOptions = designSet.DesignSetItem.map((item: any) => ({
+          id: item.DesignOption.id,
+          code: item.DesignOption.code,
+          name: item.DesignOption.name,
+          description: item.DesignOption.description || '',
+          tooltipText: item.DesignOption.tooltipText || '',
+          pricingType: item.DesignOption.pricingType,
+          requiresSideSelection: item.DesignOption.requiresSideSelection,
+          sideOnePrice: item.DesignOption.sideOnePrice || null,
+          sideTwoPrice: item.DesignOption.sideTwoPrice || null,
+          basePrice: item.DesignOption.basePrice || 0,
+          isDefault: item.isDefault || false,
+          sortOrder: item.sortOrder,
+        }))
+        console.log('[Config API] Loaded design options:', designOptions.length)
+      }
+    } catch (dbError) {
+      console.error('[Config API] Error fetching design options:', dbError)
+      // Continue without design options
+    }
+
     // Build addonsGrouped for positioning (restore the unique AddOn Set feature)
     let addonsGrouped = {
       aboveDropdown: [],
@@ -587,7 +638,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
     } catch (groupingError) {}
 
-    // Build the configuration object with dynamic quantities, sizes, paper stocks, turnaround times, and addons
+    // Build the configuration object with dynamic quantities, sizes, paper stocks, turnaround times, addons, and design options
     const fallbackConfig = {
       ...SIMPLE_CONFIG,
       quantities,
@@ -596,6 +647,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       turnaroundTimes,
       addons,
       addonsGrouped,
+      designOptions,
     }
 
     // Update the defaults for quantities, sizes, addons and turnaround times
@@ -640,6 +692,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (turnaroundTimes.length > 0) {
       const defaultTurnaround = turnaroundTimes.find((t) => t.isDefault) || turnaroundTimes[0]
       updatedDefaults.turnaround = defaultTurnaround.id
+    }
+
+    if (designOptions.length > 0) {
+      // Find default design option (should be "upload_own")
+      const defaultDesign = designOptions.find((d) => d.isDefault) || designOptions[0]
+      updatedDefaults.design = defaultDesign.id
     }
 
     fallbackConfig.defaults = updatedDefaults

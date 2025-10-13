@@ -105,10 +105,33 @@ export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
   ], // Limited to Southwest's service area
 }
 
-// Real Southwest Cargo pricing based on actual rates
+// Real Southwest Cargo pricing based on actual rates from WooCommerce
 export const SOUTHWEST_CARGO_RATES = {
   pickup: {
-    // Southwest Cargo Pickup pricing (cheaper, slower)
+    // Southwest Cargo Pickup pricing (cheaper, slower, airport pickup)
+    weightTiers: [
+      {
+        maxWeight: 50,
+        baseRate: 80.0,
+        additionalPerPound: 0,
+        handlingFee: 0,
+      },
+      {
+        maxWeight: 100,
+        baseRate: 102.0,
+        additionalPerPound: 1.75,
+        handlingFee: 0,
+      },
+      {
+        maxWeight: Infinity,
+        baseRate: 133.0,
+        additionalPerPound: 1.75,
+        handlingFee: 10.0,
+      },
+    ],
+  },
+  dash: {
+    // Southwest Cargo Dash pricing (premium, faster, next available flight)
     weightTiers: [
       {
         maxWeight: 50,
@@ -127,23 +150,6 @@ export const SOUTHWEST_CARGO_RATES = {
         baseRate: 133.0,
         additionalPerPound: 1.75,
         handlingFee: 10.0,
-      },
-    ],
-  },
-  dash: {
-    // Southwest Cargo Dash pricing (premium, faster)
-    weightTiers: [
-      {
-        maxWeight: 50,
-        baseRate: 80.0,
-        additionalPerPound: 1.75,
-        handlingFee: 0,
-      },
-      {
-        maxWeight: Infinity,
-        baseRate: 102.0,
-        additionalPerPound: 1.75,
-        handlingFee: 0,
       },
     ],
   },

@@ -184,27 +184,41 @@ export async function POST(request: NextRequest) {
     let rates: unknown[] = []
 
     try {
+      console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
+
       const [fedexRates, southwestRates] = await Promise.race([
         Promise.all([
           shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages).catch((err) => {
-            console.error('[Shipping API] FedEx error:', err)
+            console.error('[Shipping API] ❌ FedEx error:', err.message || err)
+            console.error('[Shipping API] FedEx error stack:', err.stack)
             return []
           }),
           shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages).catch((err) => {
-            console.error('[Shipping API] Southwest error:', err)
+            console.error('[Shipping API] ❌ Southwest Cargo error:', err.message || err)
+            console.error('[Shipping API] Southwest Cargo error stack:', err.stack)
             return []
           }),
         ]),
         timeout,
       ])
 
-      console.log('[Shipping API] FedEx rates received:', fedexRates.length, 'rates')
-      console.log('[Shipping API] Southwest Cargo rates received:', southwestRates.length, 'rates')
+      console.log('[Shipping API] ✅ FedEx rates received:', fedexRates.length, 'rates')
+      if (fedexRates.length > 0) {
+        console.log('[Shipping API] FedEx rates:', JSON.stringify(fedexRates, null, 2))
+      }
+
+      console.log('[Shipping API] ✅ Southwest Cargo rates received:', southwestRates.length, 'rates')
+      if (southwestRates.length > 0) {
+        console.log('[Shipping API] Southwest Cargo rates:', JSON.stringify(southwestRates, null, 2))
+      } else {
+        console.log('[Shipping API] ⚠️ Southwest Cargo returned NO rates - check provider logs above')
+      }
 
       rates = [...fedexRates, ...southwestRates]
+      console.log('[Shipping API] 📊 Combined total rates:', rates.length)
       console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {
-      console.error('[Shipping API] Timeout error:', timeoutError)
+      console.error('[Shipping API] ❌ Timeout error:', timeoutError)
       // Empty rates array on timeout - UI will show "no shipping available"
       rates = []
     }

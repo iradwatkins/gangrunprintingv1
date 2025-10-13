@@ -1,13 +1,13 @@
 /**
  * Base Price Engine - Implements EXACT Pricing Formula
  *
- * Formula: Base Price = ((Base Paper Price × Sides Multiplier) × Size × Quantity)
+ * Formula: Base Price = Paper Stock × Sides Multiplier × Size × Quantity
  *
  * CRITICAL RULES:
  * 1. Size = Pre-calculated backend value for standard sizes OR width×height for custom
  * 2. Quantity = Calculation value for <5000 quantities OR exact for >=5000
- * 3. Sides Multiplier = 1.75 for exception papers (text) double-sided, 1.0 otherwise
- * 4. Formula structure ensures proper add-on integration
+ * 3. Sides Multiplier = From PaperStockSides.priceMultiplier (e.g., 1.75 for double-sided text)
+ * 4. Paper stock price includes markup set by admin (PaperStock.markupValue applied to vendorPricePerSqInch)
  */
 
 export interface StandardSize {
@@ -66,7 +66,7 @@ export interface BasePriceResult {
 export class BasePriceEngine {
   /**
    * Calculate base price using EXACT formula requirements
-   * Formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
+   * Formula: Paper Stock × Sides Multiplier × Size × Quantity
    */
   calculateBasePrice(input: PricingInput): BasePriceResult {
     const validation = this.validateInput(input)
@@ -78,8 +78,8 @@ export class BasePriceEngine {
           basePaperPrice: input.basePaperPrice,
           size: 0,
           quantity: 0,
-          sidesMultiplier: 0,
-          formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
+          sidesMultiplier: input.sidesMultiplier || 1,
+          formula: 'Paper Stock × Sides Multiplier × Size × Quantity',
           calculation: 'Invalid input',
         },
         validation,
@@ -92,13 +92,13 @@ export class BasePriceEngine {
     // Step 2: Calculate Quantity
     const quantity = this.calculateQuantity(input)
 
-    // Step 3: Use provided Sides Multiplier
+    // Step 3: Get Sides Multiplier
     const sidesMultiplier = input.sidesMultiplier
 
-    // Step 4: Apply EXACT formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
+    // Step 4: Apply EXACT formula: Paper Stock × Sides Multiplier × Size × Quantity
     const basePrice = input.basePaperPrice * sidesMultiplier * size * quantity
 
-    const calculation = `((${input.basePaperPrice} × ${sidesMultiplier}) × ${size} × ${quantity}) = ${basePrice}`
+    const calculation = `(${input.basePaperPrice} × ${sidesMultiplier} × ${size} × ${quantity}) = ${basePrice}`
 
     return {
       basePrice,
@@ -107,7 +107,7 @@ export class BasePriceEngine {
         size,
         quantity,
         sidesMultiplier,
-        formula: '((Base Paper Price × Sides Multiplier) × Size × Quantity)',
+        formula: 'Paper Stock × Sides Multiplier × Size × Quantity',
         calculation,
       },
       validation,
@@ -287,15 +287,14 @@ export class BasePriceEngine {
 
   /**
    * Quick price calculation for simple cases
-   * Formula: ((Base Paper Price × Sides Multiplier) × Size × Quantity)
+   * Formula: Paper Stock × Sides Multiplier × Size × Quantity
    */
   quickCalculatePrice(
     basePaperPrice: number,
     preCalculatedSize: number,
     calculationQuantity: number,
-    isDoubleSidedTextPaper: boolean = false
+    sidesMultiplier: number = 1.0
   ): number {
-    const sidesMultiplier = isDoubleSidedTextPaper ? 1.75 : 1.0
     return basePaperPrice * sidesMultiplier * preCalculatedSize * calculationQuantity
   }
 }

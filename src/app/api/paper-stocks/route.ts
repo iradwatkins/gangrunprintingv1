@@ -64,6 +64,11 @@ export async function GET(): Promise<unknown> {
         pricePerSqInch: stock.pricePerSqInch,
         tooltipText: stock.tooltipText,
         isActive: stock.isActive,
+        // Vendor pricing & markup fields
+        vendorPricePerSqInch: stock.vendorPricePerSqInch,
+        markupType: stock.markupType,
+        markupValue: stock.markupValue,
+        profitMargin: stock.profitMargin,
         paperStockCoatings: stock.PaperStockCoating.map((pc) => ({
           ...pc,
           coating: pc.CoatingOption, // Transform PascalCase to camelCase for frontend
@@ -90,10 +95,36 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, weight, pricePerSqInch, tooltipText, isActive, coatings, sidesOptions } = body
+    const {
+      name,
+      weight,
+      pricePerSqInch,
+      tooltipText,
+      isActive,
+      coatings,
+      sidesOptions,
+      vendorPricePerSqInch,
+      markupType,
+      markupValue,
+    } = body
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    }
+
+    // Calculate final pricePerSqInch and profitMargin if vendor price is provided
+    let finalPricePerSqInch = pricePerSqInch || 0
+    let profitMargin = null
+
+    if (vendorPricePerSqInch && markupValue !== null && markupValue !== undefined) {
+      if (markupType === 'PERCENTAGE') {
+        // Markup is a percentage (e.g., 100 for 100%)
+        finalPricePerSqInch = vendorPricePerSqInch * (1 + markupValue / 100)
+      } else {
+        // Markup is a flat dollar amount (e.g., 1.00)
+        finalPricePerSqInch = vendorPricePerSqInch + markupValue
+      }
+      profitMargin = finalPricePerSqInch - vendorPricePerSqInch
     }
 
     // Create the paper stock with relationships
@@ -102,10 +133,15 @@ export async function POST(request: NextRequest) {
         id: randomUUID(),
         name,
         weight: weight || 0,
-        pricePerSqInch: pricePerSqInch || 0,
+        pricePerSqInch: finalPricePerSqInch,
         tooltipText: tooltipText || null,
         isActive: isActive !== undefined ? isActive : true,
         updatedAt: new Date(),
+        // Vendor pricing & markup fields
+        vendorPricePerSqInch: vendorPricePerSqInch || null,
+        markupType: markupType || 'PERCENTAGE',
+        markupValue: markupValue !== undefined ? markupValue : 0,
+        profitMargin,
         // Add coating relationships
         PaperStockCoating: {
           create:

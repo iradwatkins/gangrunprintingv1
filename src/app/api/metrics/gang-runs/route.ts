@@ -30,11 +30,8 @@ export async function GET() {
       include: {
         OrderItem: {
           include: {
-            product: {
-              include: {
-                ProductCategory: true,
-              },
-            },
+            PaperStock: true,
+            OrderItemAddOn: true,
           },
         },
       },
@@ -48,27 +45,26 @@ export async function GET() {
 
     orders.forEach((order) => {
       order.OrderItem.forEach((item) => {
-        if (item.product) {
-          const categoryName = item.product.ProductCategory?.name || 'General'
-          const categoryId = item.product.categoryId || 'general'
+        // Use productName directly from OrderItem (it's a snapshot from order time)
+        const categoryName = item.productName || 'General'
+        const categoryId = item.productSku || 'general'
 
-          if (!categoryGroups.has(categoryId)) {
-            categoryGroups.set(categoryId, {
-              orders: [],
-              categoryName,
-              completed: 0,
-            })
-          }
+        if (!categoryGroups.has(categoryId)) {
+          categoryGroups.set(categoryId, {
+            orders: [],
+            categoryName,
+            completed: 0,
+          })
+        }
 
-          const group = categoryGroups.get(categoryId)!
-          if (!group.orders.find((o) => o.id === order.id)) {
-            group.orders.push(order)
-          }
+        const group = categoryGroups.get(categoryId)!
+        if (!group.orders.find((o) => o.id === order.id)) {
+          group.orders.push(order)
+        }
 
-          // Count completed orders in this batch
-          if (['SHIPPED', 'DELIVERED', 'PICKED_UP'].includes(order.status)) {
-            group.completed++
-          }
+        // Count completed orders in this batch
+        if (['SHIPPED', 'DELIVERED', 'PICKED_UP'].includes(order.status)) {
+          group.completed++
         }
       })
     })

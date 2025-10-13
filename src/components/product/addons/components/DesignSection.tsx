@@ -1,5 +1,6 @@
 /**
  * Design addon section component
+ * Handles professional design services only (no file uploads)
  */
 
 import { useState } from 'react'
@@ -14,45 +15,31 @@ import {
 } from '@/components/ui/select'
 import { HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import FileUploadZone from '../../FileUploadZone'
 
 interface DesignSectionProps {
   enabled: boolean
   selectedOption: string | null
   selectedSide?: 'oneSide' | 'twoSides' | null
-  uploadedFiles?: any[]
   disabled: boolean
   onToggle: (checked: boolean) => void
-  onOptionChange: (optionId: string | null, side?: string | null, files?: any[]) => void
-  onFilesUploaded?: (files: any[]) => void
+  onOptionChange: (optionId: string | null, side?: string | null) => void
 }
 
 export function DesignSection({
   enabled,
   selectedOption,
   selectedSide = null,
-  uploadedFiles = [],
   disabled,
   onToggle,
   onOptionChange,
-  onFilesUploaded,
 }: DesignSectionProps) {
   const [primarySelection, setPrimarySelection] = useState<string>(selectedOption || 'none')
   const [secondarySelection, setSecondarySelection] = useState<string>(selectedSide || '')
 
-  // Design options configuration
+  // Design service options (NO file upload - that's handled by ImageUploadSection)
   const designOptions = {
-    upload_artwork: {
-      id: 'upload_artwork',
-      name: 'Upload My Artwork',
-      tooltipText:
-        'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
-      basePrice: 0,
-      requiresFileUpload: true,
-      fileUploadOptional: true,
-    },
     standard_design: {
-      id: 'standard_design',
+      id: 'standard-design',
       name: 'Standard Custom Design',
       tooltipText: 'Our design team will create a custom design for your project',
       requiresSideSelection: true,
@@ -62,7 +49,7 @@ export function DesignSection({
       },
     },
     rush_design: {
-      id: 'rush_design',
+      id: 'rush-design',
       name: 'Rush Custom Design',
       tooltipText: 'Priority design service with faster turnaround',
       requiresSideSelection: true,
@@ -72,22 +59,16 @@ export function DesignSection({
       },
     },
     minor_changes: {
-      id: 'minor_changes',
+      id: 'minor-changes',
       name: 'Design Changes - Minor',
       tooltipText: 'Minor text changes, color adjustments, or small layout tweaks',
       basePrice: 22.5,
     },
     major_changes: {
-      id: 'major_changes',
+      id: 'major-changes',
       name: 'Design Changes - Major',
       tooltipText: 'Major redesign elements, layout changes, or extensive revisions',
       basePrice: 45,
-    },
-    upload_later: {
-      id: 'upload_later',
-      name: 'Will Upload Images Later',
-      tooltipText: 'You can email us your files after placing the order',
-      basePrice: 0,
     },
   }
 
@@ -98,29 +79,15 @@ export function DesignSection({
     setSecondarySelection('')
 
     if (value === 'none') {
-      onOptionChange(null, null, [])
+      onOptionChange(null, null)
     } else {
-      const option = designOptions[value as keyof typeof designOptions]
-      if (option) {
-        if (!option.requiresSideSelection) {
-          onOptionChange(value, null, uploadedFiles)
-        } else {
-          onOptionChange(value, null, uploadedFiles)
-        }
-      }
+      onOptionChange(value, null)
     }
   }
 
   const handleSecondaryChange = (value: string) => {
     setSecondarySelection(value)
-    onOptionChange(primarySelection, value, uploadedFiles)
-  }
-
-  const handleFilesUploaded = (files: any[]) => {
-    onFilesUploaded?.(files)
-    if (primarySelection !== 'none') {
-      onOptionChange(primarySelection, secondarySelection || null, files)
-    }
+    onOptionChange(primarySelection, value)
   }
 
   const formatPrice = (price: number) => {
@@ -152,7 +119,6 @@ export function DesignSection({
     return null
   }
 
-  const shouldShowFileUpload = primarySelection === 'upload_artwork'
   const shouldShowSecondaryDropdown = selectedDesignOption?.requiresSideSelection === true
   const shouldShowPrice =
     primarySelection === 'minor_changes' || primarySelection === 'major_changes'
@@ -249,35 +215,6 @@ export function DesignSection({
               </div>
             )}
 
-            {/* File Upload for "Upload My Artwork" Only */}
-            {shouldShowFileUpload && (
-              <div className="ml-6 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Upload Artwork (Optional)</Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      You can upload your files now or email them to us later
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <FileUploadZone
-                  disabled={disabled}
-                  maxFiles={5}
-                  maxFileSize={25}
-                  onFilesUploaded={handleFilesUploaded}
-                />
-
-                <p className="text-sm text-muted-foreground">
-                  Note: File upload is optional. You can email your files to us after placing your
-                  order.
-                </p>
-              </div>
-            )}
-
             {/* Static Price Display for Minor/Major Changes */}
             {shouldShowPrice && (
               <div className="ml-6 p-3 bg-muted/50 rounded-lg">
@@ -301,13 +238,6 @@ export function DesignSection({
                   {/* Show price if available */}
                   {getDisplayPrice() && (
                     <div className="font-medium text-primary">Total: {getDisplayPrice()}</div>
-                  )}
-
-                  {/* Show uploaded files count */}
-                  {shouldShowFileUpload && uploadedFiles.length > 0 && (
-                    <div className="text-muted-foreground">
-                      {uploadedFiles.length} file(s) uploaded
-                    </div>
                   )}
 
                   {/* Warning if Standard/Rush selected but no side chosen */}

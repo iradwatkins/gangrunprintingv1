@@ -62,6 +62,11 @@ interface PaperStock {
   pricePerSqInch: number
   tooltipText: string | null
   isActive: boolean
+  // Vendor pricing & markup fields
+  vendorPricePerSqInch?: number | null
+  markupType?: 'PERCENTAGE' | 'FLAT' | null
+  markupValue?: number | null
+  profitMargin?: number | null
   paperStockCoatings: (PaperStockCoatingRelation & { coating: CoatingOption })[]
   paperStockSides: (PaperStockSidesRelation & { sidesOption: SidesOption })[]
   productsCount?: number
@@ -86,6 +91,10 @@ export default function PaperStocksPage() {
     pricePerSqInch: 0,
     tooltipText: '',
     isActive: true,
+    // Vendor pricing & markup fields
+    vendorPricePerSqInch: 0,
+    markupType: 'PERCENTAGE' as 'PERCENTAGE' | 'FLAT',
+    markupValue: 0,
     selectedCoatings: [] as string[],
     defaultCoating: '' as string,
     selectedSides: [] as string[],
@@ -132,6 +141,11 @@ export default function PaperStocksPage() {
         pricePerSqInch: stock.pricePerSqInch || 0.0015,
         tooltipText: stock.tooltipText,
         isActive: stock.isActive,
+        // Vendor pricing & markup fields
+        vendorPricePerSqInch: stock.vendorPricePerSqInch,
+        markupType: stock.markupType,
+        markupValue: stock.markupValue,
+        profitMargin: stock.profitMargin,
         paperStockCoatings: stock.paperStockCoatings || [],
         paperStockSides: stock.paperStockSides || [],
         productsCount: stock.paperStockSetItems?.length || 0,
@@ -158,6 +172,10 @@ export default function PaperStocksPage() {
         pricePerSqInch: formData.pricePerSqInch,
         tooltipText: formData.tooltipText,
         isActive: formData.isActive,
+        // Vendor pricing & markup fields
+        vendorPricePerSqInch: formData.vendorPricePerSqInch || null,
+        markupType: formData.markupType,
+        markupValue: formData.markupValue,
         coatings: formData.selectedCoatings.map((coatingId) => ({
           id: coatingId,
           isDefault: coatingId === formData.defaultCoating,
@@ -213,6 +231,10 @@ export default function PaperStocksPage() {
       pricePerSqInch: stock.pricePerSqInch,
       tooltipText: stock.tooltipText || '',
       isActive: stock.isActive,
+      // Vendor pricing & markup fields
+      vendorPricePerSqInch: stock.vendorPricePerSqInch || 0,
+      markupType: stock.markupType || 'PERCENTAGE',
+      markupValue: stock.markupValue || 0,
       selectedCoatings,
       defaultCoating,
       selectedSides,
@@ -252,6 +274,10 @@ export default function PaperStocksPage() {
       pricePerSqInch: 0,
       tooltipText: '',
       isActive: true,
+      // Vendor pricing & markup fields
+      vendorPricePerSqInch: 0,
+      markupType: 'PERCENTAGE',
+      markupValue: 0,
       selectedCoatings: [],
       defaultCoating: '',
       selectedSides: [],
@@ -288,6 +314,10 @@ export default function PaperStocksPage() {
       pricePerSqInch: stock.pricePerSqInch,
       tooltipText: stock.tooltipText || '',
       isActive: stock.isActive,
+      // Vendor pricing & markup fields
+      vendorPricePerSqInch: stock.vendorPricePerSqInch || 0,
+      markupType: stock.markupType || 'PERCENTAGE',
+      markupValue: stock.markupValue || 0,
       selectedCoatings,
       defaultCoating,
       selectedSides,
@@ -429,6 +459,94 @@ export default function PaperStocksPage() {
                           </p>
                         </div>
                       </div>
+
+                      {/* Vendor Pricing & Markup Section */}
+                      <div className="border-t pt-4 space-y-4">
+                        <h4 className="font-semibold text-sm text-gray-700">Vendor Pricing & Markup (Optional)</h4>
+                        <div className="space-y-2">
+                          <Label htmlFor="vendorPricePerSqInch">Vendor Price per Square Inch ($)</Label>
+                          <Input
+                            id="vendorPricePerSqInch"
+                            min="0"
+                            step="0.0000001"
+                            type="number"
+                            value={formData.vendorPricePerSqInch}
+                            onChange={(e) => {
+                              const vendorPrice = parseFloat(e.target.value) || 0
+                              setFormData({ ...formData, vendorPricePerSqInch: vendorPrice })
+                            }}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            The base price from your vendor before markup
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="markupType">Markup Type</Label>
+                            <select
+                              id="markupType"
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              value={formData.markupType}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  markupType: e.target.value as 'PERCENTAGE' | 'FLAT',
+                                })
+                              }
+                            >
+                              <option value="PERCENTAGE">Percentage (%)</option>
+                              <option value="FLAT">Flat Amount ($)</option>
+                            </select>
+                            <p className="text-xs text-muted-foreground">
+                              How to calculate markup
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="markupValue">
+                              Markup Value {formData.markupType === 'PERCENTAGE' ? '(%)' : '($)'}
+                            </Label>
+                            <Input
+                              id="markupValue"
+                              min="0"
+                              step={formData.markupType === 'PERCENTAGE' ? '1' : '0.01'}
+                              type="number"
+                              value={formData.markupValue}
+                              onChange={(e) =>
+                                setFormData({ ...formData, markupValue: parseFloat(e.target.value) || 0 })
+                              }
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              {formData.markupType === 'PERCENTAGE'
+                                ? 'e.g., 100 for 100% markup (doubles price)'
+                                : 'e.g., 1.00 to add $1.00 per sq inch'}
+                            </p>
+                          </div>
+                        </div>
+                        {formData.vendorPricePerSqInch > 0 && formData.markupValue > 0 && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                            <p className="text-sm font-medium text-blue-900">Price Calculation Preview:</p>
+                            <p className="text-xs text-blue-700 mt-1">
+                              Vendor Price: ${formData.vendorPricePerSqInch.toFixed(7)} →{' '}
+                              {formData.markupType === 'PERCENTAGE'
+                                ? `+ ${formData.markupValue}% = $${(
+                                    formData.vendorPricePerSqInch *
+                                    (1 + formData.markupValue / 100)
+                                  ).toFixed(7)}`
+                                : `+ $${formData.markupValue.toFixed(7)} = $${(
+                                    formData.vendorPricePerSqInch + formData.markupValue
+                                  ).toFixed(7)}`}
+                            </p>
+                            <p className="text-xs text-blue-700 mt-1">
+                              Profit Margin: $
+                              {formData.markupType === 'PERCENTAGE'
+                                ? (formData.vendorPricePerSqInch * (formData.markupValue / 100)).toFixed(7)
+                                : formData.markupValue.toFixed(7)}{' '}
+                              per square inch
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="tooltipText">Description</Label>
                         <Textarea
@@ -694,6 +812,7 @@ export default function PaperStocksPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Weight (shipping)</TableHead>
                   <TableHead className="text-center">Price/sq in</TableHead>
+                  <TableHead className="text-center">Markup</TableHead>
                   <TableHead className="text-center">Coatings</TableHead>
                   <TableHead className="text-center">Sides</TableHead>
                   <TableHead className="text-center">Status</TableHead>
@@ -714,6 +833,27 @@ export default function PaperStocksPage() {
                     <TableCell>{stock.weight.toFixed(7)}</TableCell>
                     <TableCell className="text-center">
                       ${stock.pricePerSqInch.toFixed(7)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {stock.vendorPricePerSqInch ? (
+                        <div className="text-xs space-y-1">
+                          <div className="text-gray-600">
+                            Vendor: ${stock.vendorPricePerSqInch.toFixed(4)}
+                          </div>
+                          <div className="font-medium text-green-600">
+                            {stock.markupType === 'PERCENTAGE'
+                              ? `+${stock.markupValue}%`
+                              : `+$${stock.markupValue?.toFixed(4)}`}
+                          </div>
+                          {stock.profitMargin && (
+                            <div className="text-blue-600">
+                              Profit: ${stock.profitMargin.toFixed(4)}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">No markup</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex flex-wrap gap-1 justify-center">

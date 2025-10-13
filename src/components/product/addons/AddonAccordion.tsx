@@ -20,7 +20,7 @@ import { VariableDataSection } from './components/VariableDataSection'
 import { PerforationSection } from './components/PerforationSection'
 import { BandingSection } from './components/BandingSection'
 import { CornerRoundingSection } from './components/CornerRoundingSection'
-import { DesignSection } from './components/DesignSection'
+// REMOVED: import { DesignSection } from './components/DesignSection' - Design is now a primary dropdown
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { AddonCheckbox } from './components/AddonCheckbox'
 
@@ -51,22 +51,20 @@ export function AddonAccordion({
   const banding = useBanding(bandingConfig, onBandingChange)
   const cornerRounding = useCornerRounding(cornerRoundingConfig, onCornerRoundingChange)
 
-  // Design state (simplified since it's now a single addon)
-  const design = {
-    enabled: designConfig?.enabled || false,
-    selectedOption: designConfig?.selectedOption || null,
-    selectedSide: designConfig?.selectedSide || null,
-    uploadedFiles: designConfig?.uploadedFiles || [],
-    onToggle: (checked: boolean) => onDesignChange?.({ ...designConfig, enabled: checked }),
-    onOptionChange: (optionId: string | null, side?: string | null, files?: any[]) =>
-      onDesignChange?.({
-        ...designConfig,
-        selectedOption: optionId,
-        selectedSide: side,
-        uploadedFiles: files || [],
-      }),
-    onFilesUploaded: (files: any[]) => onDesignChange?.({ ...designConfig, uploadedFiles: files }),
-  }
+  // REMOVED: Design state - Design is now a primary dropdown in the main form
+  // Design state (professional design services only - no file uploads)
+  // const design = {
+  //   enabled: designConfig?.enabled || false,
+  //   selectedOption: designConfig?.selectedOption || null,
+  //   selectedSide: designConfig?.selectedSide || null,
+  //   onToggle: (checked: boolean) => onDesignChange?.({ ...designConfig, enabled: checked }),
+  //   onOptionChange: (optionId: string | null, side?: string | null) =>
+  //     onDesignChange?.({
+  //       ...designConfig,
+  //       selectedOption: optionId,
+  //       selectedSide: side,
+  //     }),
+  // }
 
   // Image Upload state
   const imageUpload = {
@@ -127,7 +125,7 @@ export function AddonAccordion({
             <div className="space-y-6">
               {/* Special Feature Sections */}
               <div className="space-y-4">
-                <DesignSection {...design} disabled={disabled} />
+                {/* REMOVED: DesignSection - Design is now a primary dropdown in the main form */}
 
                 <VariableDataSection {...variableData} disabled={disabled} quantity={quantity} />
 

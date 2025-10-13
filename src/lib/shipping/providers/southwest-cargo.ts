@@ -21,21 +21,39 @@ export class SouthwestCargoProvider implements ShippingProvider {
     toAddress: ShippingAddress,
     packages: ShippingPackage[]
   ): Promise<ShippingRate[]> {
+    console.log('🛫 [Southwest Cargo] getRates called')
+    console.log('   - Destination state:', toAddress.state)
+    console.log('   - Packages:', packages.length, 'packages')
+
     // Check if Southwest Cargo serves the destination state
     if (!this.isServiceAvailable(toAddress.state)) {
+      console.log('❌ [Southwest Cargo] Service NOT available for state:', toAddress.state)
+      console.log('   - Available states:', CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO].join(', '))
       return []
     }
+
+    console.log('✅ [Southwest Cargo] Service available for', toAddress.state)
 
     // Calculate total weight
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
 
+    console.log('📦 [Southwest Cargo] Weight calculation:')
+    console.log('   - Total weight:', totalWeight, 'lbs')
+    console.log('   - Billable weight:', billableWeight, 'lbs')
+
     // Calculate pickup and dash rates
     const pickupRate = this.calculatePickupRate(billableWeight)
     const dashRate = this.calculateDashRate(billableWeight)
 
+    console.log('💰 [Southwest Cargo] Rate calculation:')
+    console.log('   - Pickup rate (before markup):', pickupRate)
+    console.log('   - Dash rate (before markup):', dashRate)
+
     // Apply markup if configured
     const markup = 1 + (southwestCargoConfig.markupPercentage || 0) / 100
+    console.log('   - Markup percentage:', southwestCargoConfig.markupPercentage, '%')
+    console.log('   - Markup multiplier:', markup)
 
     const rates: ShippingRate[] = [
       {
@@ -57,6 +75,11 @@ export class SouthwestCargoProvider implements ShippingProvider {
         isGuaranteed: true,
       },
     ]
+
+    console.log('✅ [Southwest Cargo] Returning', rates.length, 'rates:')
+    rates.forEach((rate, index) => {
+      console.log(`   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`)
+    })
 
     return rates
   }
@@ -124,13 +147,13 @@ export class SouthwestCargoProvider implements ShippingProvider {
 
   /**
    * Calculate Southwest Cargo Pickup rate based on real pricing structure
+   * Formula: baseRate + (weight × additionalPerPound) + handlingFee
    */
   private calculatePickupRate(weight: number): number {
     const pickupTiers = SOUTHWEST_CARGO_RATES.pickup.weightTiers
 
     for (const tier of pickupTiers) {
       if (weight <= tier.maxWeight) {
-        // Pickup always has additional per-pound charge on total weight
         const additionalCost = weight * tier.additionalPerPound
         return tier.baseRate + additionalCost + tier.handlingFee
       }
@@ -144,32 +167,21 @@ export class SouthwestCargoProvider implements ShippingProvider {
 
   /**
    * Calculate Southwest Cargo Dash rate based on real pricing structure
+   * Formula: baseRate + (weight × additionalPerPound) + handlingFee
    */
   private calculateDashRate(weight: number): number {
     const dashTiers = SOUTHWEST_CARGO_RATES.dash.weightTiers
 
-    // Find the correct tier
-    for (let i = 0; i < dashTiers.length; i++) {
-      const tier = dashTiers[i]
-
+    for (const tier of dashTiers) {
       if (weight <= tier.maxWeight) {
-        // Base rate + handling fee + any additional per-pound charges
-        let additionalCost = 0
-
-        // For the 101+ lb tier, charge additional only for weight over 100 lbs
-        if (tier.additionalPerPound > 0 && i === dashTiers.length - 1 && weight > 100) {
-          const overageWeight = weight - 100
-          additionalCost = overageWeight * tier.additionalPerPound
-        }
-
+        const additionalCost = weight * tier.additionalPerPound
         return tier.baseRate + additionalCost + tier.handlingFee
       }
     }
 
-    // Fallback (shouldn't happen)
+    // Fallback (shouldn't happen with Infinity maxWeight)
     const lastTier = dashTiers[dashTiers.length - 1]
-    const overageWeight = Math.max(0, weight - 100)
-    const additionalCost = overageWeight * lastTier.additionalPerPound
+    const additionalCost = weight * lastTier.additionalPerPound
     return lastTier.baseRate + additionalCost + lastTier.handlingFee
   }
 

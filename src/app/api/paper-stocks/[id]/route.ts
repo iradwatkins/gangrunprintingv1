@@ -11,7 +11,33 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const body = await request.json()
-    const { name, weight, pricePerSqInch, tooltipText, isActive, coatings, sidesOptions } = body
+    const {
+      name,
+      weight,
+      pricePerSqInch,
+      tooltipText,
+      isActive,
+      coatings,
+      sidesOptions,
+      vendorPricePerSqInch,
+      markupType,
+      markupValue,
+    } = body
+
+    // Calculate final pricePerSqInch and profitMargin if vendor price is provided
+    let finalPricePerSqInch = pricePerSqInch || 0
+    let profitMargin = null
+
+    if (vendorPricePerSqInch && markupValue !== null && markupValue !== undefined) {
+      if (markupType === 'PERCENTAGE') {
+        // Markup is a percentage (e.g., 100 for 100%)
+        finalPricePerSqInch = vendorPricePerSqInch * (1 + markupValue / 100)
+      } else {
+        // Markup is a flat dollar amount (e.g., 1.00)
+        finalPricePerSqInch = vendorPricePerSqInch + markupValue
+      }
+      profitMargin = finalPricePerSqInch - vendorPricePerSqInch
+    }
 
     // Update paper stock and relationships in a transaction
     const paperStock = await prisma.$transaction(async (tx) => {
@@ -29,10 +55,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         data: {
           name,
           weight: weight || 0,
-          pricePerSqInch: pricePerSqInch || 0,
+          pricePerSqInch: finalPricePerSqInch,
           tooltipText: tooltipText || null,
           isActive: isActive !== undefined ? isActive : true,
           updatedAt: new Date(),
+          // Vendor pricing & markup fields
+          vendorPricePerSqInch: vendorPricePerSqInch || null,
+          markupType: markupType || 'PERCENTAGE',
+          markupValue: markupValue !== undefined ? markupValue : 0,
+          profitMargin,
           // Add new coating relationships
           PaperStockCoating: {
             create:

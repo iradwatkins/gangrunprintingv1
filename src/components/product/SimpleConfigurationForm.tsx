@@ -85,12 +85,24 @@ interface SimpleConfigData {
     restrictedCoatings: string[]
     isDefault: boolean
   }>
+  designOptions: Array<{
+    id: string
+    name: string
+    description: string
+    requiresSideSelection?: boolean
+    sideOptions?: {
+      oneSide: { label: string; price: number }
+      twoSides: { label: string; price: number }
+    }
+    basePrice?: number
+  }>
   defaults: {
     quantity: string
     size: string
     paper: string
     coating: string
     sides: string
+    design: string
     addons: string[]
     turnaround: string
   }
@@ -140,6 +152,8 @@ interface SimpleProductConfiguration {
   paper: string
   coating: string
   sides: string
+  design: string // Primary design option (upload_own, standard_design, rush_design, minor_changes, major_changes)
+  designSide?: 'oneSide' | 'twoSides' // For Standard/Rush design side selection
   turnaround: string
   uploadedFiles: UploadedFile[]
   selectedAddons: string[]
@@ -147,7 +161,7 @@ interface SimpleProductConfiguration {
   perforationConfig?: PerforationConfig // For Perforation add-on
   bandingConfig?: BandingConfig // For Banding add-on
   cornerRoundingConfig?: CornerRoundingConfig // For Corner Rounding add-on
-  designConfig?: DesignConfig // For Design add-on
+  designConfig?: DesignConfig // For Design add-on (DEPRECATED - use design field instead)
 }
 
 interface SimpleConfigurationFormProps {
@@ -174,6 +188,9 @@ export default function SimpleConfigurationForm({
   const [customHeightInput, setCustomHeightInput] = useState('')
   const [sizeError, setSizeError] = useState('')
 
+  // Design side selection state (for Standard/Rush design)
+  const [showDesignSideSelection, setShowDesignSideSelection] = useState(false)
+
   // Simple configuration state
   const [configuration, setConfiguration] = useState<SimpleProductConfiguration>({
     quantity: '',
@@ -182,6 +199,8 @@ export default function SimpleConfigurationForm({
     paper: '',
     coating: '',
     sides: '',
+    design: 'upload_own', // Default to "Upload Your Own Artwork"
+    designSide: undefined,
     turnaround: '',
     uploadedFiles: [],
     selectedAddons: [],
@@ -212,6 +231,17 @@ export default function SimpleConfigurationForm({
 
         const data: SimpleConfigData = await response.json()
 
+        // Ensure designOptions array exists (even if empty)
+        if (!data.designOptions) {
+          data.designOptions = []
+        }
+
+        // Set default design to first option or 'upload_own' if available
+        if (!data.defaults.design && data.designOptions.length > 0) {
+          const uploadOwnOption = data.designOptions.find((d) => d.id === 'design_upload_own')
+          data.defaults.design = uploadOwnOption ? uploadOwnOption.id : data.designOptions[0].id
+        }
+
         setConfigData(data)
 
         // Set defaults
@@ -222,6 +252,8 @@ export default function SimpleConfigurationForm({
           paper: data.defaults.paper || data.paperStocks[0]?.id || '',
           coating: data.defaults.coating || data.paperStocks[0]?.coatings[0]?.id || '',
           sides: data.defaults.sides || data.paperStocks[0]?.sides[0]?.id || '',
+          design: data.defaults.design || data.designOptions[0]?.id || '',
+          designSide: undefined,
           turnaround: data.defaults.turnaround || data.turnaroundTimes[0]?.id || '',
           uploadedFiles: [],
           selectedAddons: data.defaults.addons || [],
@@ -380,6 +412,22 @@ export default function SimpleConfigurationForm({
       addonCosts += cornerRoundingCost
     }
 
+    // Add Design cost from database-driven design options
+    let designCost = 0
+    if (config.design && configData.designOptions) {
+      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
+      if (selectedDesign) {
+        if (selectedDesign.requiresSideSelection && selectedDesign.sideOptions && config.designSide) {
+          // SIDE_BASED pricing (Standard/Rush design)
+          designCost = selectedDesign.sideOptions[config.designSide].price
+        } else if (selectedDesign.basePrice) {
+          // FLAT pricing (Minor/Major changes) or FREE (upload_own)
+          designCost = selectedDesign.basePrice
+        }
+      }
+    }
+    addonCosts += designCost
+
     const subtotalWithAddons = baseProductPrice + addonCosts
 
     // Calculate turnaround costs
@@ -499,7 +547,22 @@ export default function SimpleConfigurationForm({
       addonCosts += cornerRoundingCost
     }
 
-    // Calculate design addon costs
+    // Add Design cost from database-driven design options (new design system)
+    let designCost = 0
+    if (config.design && configData.designOptions) {
+      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
+      if (selectedDesign) {
+        if (selectedDesign.requiresSideSelection && selectedDesign.sideOptions && config.designSide) {
+          // SIDE_BASED pricing (Standard/Rush design)
+          designCost = selectedDesign.sideOptions[config.designSide].price
+        } else if (selectedDesign.basePrice) {
+          // FLAT pricing (Minor/Major changes) or FREE (upload_own)
+          designCost = selectedDesign.basePrice
+        }
+      }
+    }
+
+    // DEPRECATED: Calculate design addon costs (old design system - keep for backward compatibility)
     let designAddonCost = 0
     if (config.designConfig?.enabled && config.designConfig?.selectedOption) {
       // Find the single Design add-on
@@ -523,7 +586,7 @@ export default function SimpleConfigurationForm({
       }
     }
 
-    return baseProductPrice + addonCosts + designAddonCost
+    return baseProductPrice + addonCosts + designCost + designAddonCost
   }
 
   // Handle configuration changes
@@ -794,6 +857,38 @@ export default function SimpleConfigurationForm({
     onConfigurationChange?.(newConfig, price)
   }
 
+  // Handle design selection changes
+  const handleDesignOptionChange = (designId: string) => {
+    if (!configData || !configData.designOptions) return
+
+    const selectedDesign = configData.designOptions.find((d) => d.id === designId)
+
+    // Check if this design requires side selection
+    if (selectedDesign?.requiresSideSelection) {
+      setShowDesignSideSelection(true)
+      // Clear design side until user selects
+      const newConfig = { ...configuration, design: designId, designSide: undefined }
+      setConfiguration(newConfig)
+      const price = calculatePrice(newConfig)
+      onConfigurationChange?.(newConfig, price)
+    } else {
+      // No side selection needed
+      setShowDesignSideSelection(false)
+      const newConfig = { ...configuration, design: designId, designSide: undefined }
+      setConfiguration(newConfig)
+      const price = calculatePrice(newConfig)
+      onConfigurationChange?.(newConfig, price)
+    }
+  }
+
+  // Handle design side selection (for Standard/Rush design)
+  const handleDesignSideChange = (side: 'oneSide' | 'twoSides') => {
+    const newConfig = { ...configuration, designSide: side }
+    setConfiguration(newConfig)
+    const price = calculatePrice(newConfig)
+    onConfigurationChange?.(newConfig, price)
+  }
+
   // Loading state
   if (loading) {
     return <LoadingSkeleton count={5} />
@@ -1048,16 +1143,91 @@ export default function SimpleConfigurationForm({
           )
         })()}
 
-      {/* File Upload Section */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">Upload Your Design Files</Label>
-        <FileUploadZone
-          maxFiles={5}
-          maxFileSize={10}
-          maxTotalSize={50}
-          onFilesUploaded={handleFilesUploaded}
-        />
-      </div>
+      {/* Design Selection - Only show if designOptions are available */}
+      {configData.designOptions && configData.designOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-base font-medium" htmlFor="design">
+            Design
+          </Label>
+          <Select value={configuration.design} onValueChange={handleDesignOptionChange}>
+            <SelectTrigger id="design">
+              <SelectValue placeholder="Select design option" />
+            </SelectTrigger>
+            <SelectContent>
+              {configData.designOptions.map((designOption) => (
+                <SelectItem key={designOption.id} value={designOption.id}>
+                  {designOption.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+        {/* Side Selection for Standard/Rush Design */}
+        {showDesignSideSelection && (
+          <div className="ml-6 space-y-2 mt-3 p-3 border rounded-lg bg-gray-50">
+            <Label className="text-sm font-medium">Select Sides *</Label>
+            <Select
+              value={configuration.designSide || ''}
+              onValueChange={(value) => handleDesignSideChange(value as 'oneSide' | 'twoSides')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choose number of sides..." />
+              </SelectTrigger>
+              <SelectContent>
+                {(() => {
+                  const selectedDesign = configData.designOptions?.find(
+                    (d) => d.id === configuration.design
+                  )
+                  if (selectedDesign?.sideOptions) {
+                    return (
+                      <>
+                        <SelectItem value="oneSide">
+                          One Side: $
+                          {selectedDesign.sideOptions.oneSide.price.toFixed(2)}
+                        </SelectItem>
+                        <SelectItem value="twoSides">
+                          Two Sides: $
+                          {selectedDesign.sideOptions.twoSides.price.toFixed(2)}
+                        </SelectItem>
+                      </>
+                    )
+                  }
+                  return null
+                })()}
+              </SelectContent>
+            </Select>
+            {!configuration.designSide && (
+              <p className="text-sm text-orange-600">
+                ⚠️ Please select the number of sides for your design
+              </p>
+            )}
+          </div>
+        )}
+
+          {/* Info message for professional design options */}
+          {configuration.design && configuration.design !== 'design_upload_own' && (
+            <div className="ml-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                📧 <strong>After payment</strong> you will receive an email where you can upload
+                your design information and images.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* File Upload Section - Only show when "Upload Your Own Artwork" is selected */}
+      {configuration.design === 'design_upload_own' && (
+        <div className="space-y-3">
+          <Label className="text-base font-medium">Upload Your Design Files</Label>
+          <FileUploadZone
+            maxFiles={5}
+            maxFileSize={10}
+            maxTotalSize={50}
+            onFilesUploaded={handleFilesUploaded}
+          />
+        </div>
+      )}
 
       {/* Add-ons & Upgrades Section (with positioning support) */}
       <AddonAccordionWithVariable

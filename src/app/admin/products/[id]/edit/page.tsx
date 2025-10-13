@@ -59,6 +59,7 @@ function EditProductClient({ id }: { id: string }) {
   const [sizeGroups, setSizeGroups] = useState<any[]>([])
   const [addOnSets, setAddOnSets] = useState<any[]>([])
   const [turnaroundTimeSets, setTurnaroundTimeSets] = useState<any[]>([])
+  const [designSets, setDesignSets] = useState<any[]>([])
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -79,6 +80,7 @@ function EditProductClient({ id }: { id: string }) {
     selectedSizeGroup: '', // Single size group ID
     selectedAddOnSet: '', // Single addon set ID
     selectedTurnaroundTimeSet: '', // Single turnaround time set ID
+    selectedDesignSet: '', // Single design set ID
 
     // Turnaround
     productionTime: 3,
@@ -137,6 +139,10 @@ function EditProductClient({ id }: { id: string }) {
           data.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId ||
           data.productTurnaroundTimeSets?.[0]?.TurnaroundTimeSet?.id ||
           '',
+        selectedDesignSet:
+          data.productDesignSets?.[0]?.designSetId ||
+          data.productDesignSets?.[0]?.DesignSet?.id ||
+          '',
 
         // Turnaround times
         productionTime: data.productionTime || data.ProductionTime || 3,
@@ -168,14 +174,16 @@ function EditProductClient({ id }: { id: string }) {
   const fetchData = async () => {
     try {
       console.log('[Edit Product] Fetching configuration data...')
-      const [catRes, paperRes, qtyRes, sizeRes, addOnRes, turnaroundRes] = await Promise.all([
-        fetch('/api/product-categories'),
-        fetch('/api/paper-stock-sets'),
-        fetch('/api/quantities'),
-        fetch('/api/sizes'),
-        fetch('/api/addon-sets'),
-        fetch('/api/turnaround-time-sets'),
-      ])
+      const [catRes, paperRes, qtyRes, sizeRes, addOnRes, turnaroundRes, designRes] =
+        await Promise.all([
+          fetch('/api/product-categories'),
+          fetch('/api/paper-stock-sets'),
+          fetch('/api/quantities'),
+          fetch('/api/sizes'),
+          fetch('/api/addon-sets'),
+          fetch('/api/turnaround-time-sets'),
+          fetch('/api/design-sets'),
+        ])
 
       if (catRes.ok) {
         const cats = await catRes.json()
@@ -206,6 +214,11 @@ function EditProductClient({ id }: { id: string }) {
         const turnarounds = await turnaroundRes.json()
         console.log('[Edit Product] Loaded turnaround time sets:', turnarounds.length, turnarounds)
         setTurnaroundTimeSets(turnarounds)
+      }
+      if (designRes.ok) {
+        const designs = await designRes.json()
+        console.log('[Edit Product] Loaded design sets:', designs.length)
+        setDesignSets(designs)
       }
     } catch (error) {
       console.error('[Edit Product] Error fetching configuration data:', error)
@@ -242,6 +255,7 @@ function EditProductClient({ id }: { id: string }) {
         selectedSizeGroup,
         selectedAddOnSet,
         selectedTurnaroundTimeSet,
+        selectedDesignSet,
         ...otherFormData
       } = formData
 
@@ -252,6 +266,7 @@ function EditProductClient({ id }: { id: string }) {
         sizeGroupId: selectedSizeGroup,
         addOnSetId: selectedAddOnSet || null,
         turnaroundTimeSetId: selectedTurnaroundTimeSet,
+        designSetId: selectedDesignSet || null,
         options: [], // Add empty options array
         pricingTiers: [], // Add empty pricing tiers array
       }
@@ -689,6 +704,81 @@ function EditProductClient({ id }: { id: string }) {
                             <span className="text-xs opacity-70">
                               {item.turnaroundTime.basePrice > 0 &&
                                 `+$${item.turnaroundTime.basePrice}`}
+                              {item.isDefault && ' (default)'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Design Set - Single selection (Optional) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Design Services (Optional)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select a design set if you want to offer design services with this product. Design
+              services are optional and have their own pricing.
+            </p>
+            <div>
+              <Label htmlFor="design-set">Design Set</Label>
+              <Select
+                value={formData.selectedDesignSet || 'none'}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, selectedDesignSet: value === 'none' ? '' : value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="No design services" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No design services</SelectItem>
+                  {designSets.map((set) => (
+                    <SelectItem key={set.id} value={set.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{set.name}</span>
+                        {set.description && (
+                          <span className="text-xs text-muted-foreground">{set.description}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview selected design set */}
+            {formData.selectedDesignSet && (
+              <div className="border rounded-lg p-3 bg-muted/50">
+                {(() => {
+                  const selectedSet = designSets.find((s) => s.id === formData.selectedDesignSet)
+                  if (!selectedSet) return null
+
+                  return (
+                    <div>
+                      <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
+                      <div className="space-y-1">
+                        {selectedSet.designSetItems?.map((item: any) => (
+                          <div
+                            key={item.id}
+                            className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
+                              item.isDefault
+                                ? 'bg-purple-100 text-purple-900 font-medium border border-purple-300'
+                                : 'bg-background text-foreground border'
+                            }`}
+                          >
+                            <span>{item.designOption.name}</span>
+                            <span className="text-xs opacity-70">
+                              ${item.designOption.basePrice}
                               {item.isDefault && ' (default)'}
                             </span>
                           </div>

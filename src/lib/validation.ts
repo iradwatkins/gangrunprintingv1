@@ -36,6 +36,7 @@ export const createProductSchema = z.object({
   selectedAddOns: z.array(z.string().min(1)).default([]), // Accept both UUID and CUID formats
   turnaroundTimeSetId: z.string().optional().nullable(),
   addOnSetId: z.string().optional().nullable(),
+  designSetId: z.string().optional().nullable(),
   productionTime: z.number().int().min(1).max(365).default(3),
   rushAvailable: z.boolean().default(false),
   rushDays: z.number().int().min(1).max(30).optional().nullable(),
