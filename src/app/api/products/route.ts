@@ -304,8 +304,14 @@ export async function POST(request: NextRequest) {
       setupFee,
     } = data
 
+    // Auto-generate SKU from product name if not provided
+    const baseSku = sku || name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+
     // Check for duplicate SKU and generate unique one if needed
-    let uniqueSku = sku
+    let uniqueSku = baseSku
     let skuCounter = 1
     while (true) {
       const existingSku = await prisma.product.findUnique({
@@ -313,7 +319,7 @@ export async function POST(request: NextRequest) {
         select: { id: true },
       })
       if (!existingSku) break
-      uniqueSku = `${sku}-${skuCounter}`
+      uniqueSku = `${baseSku}-${skuCounter}`
       skuCounter++
       if (skuCounter > 100) {
         return createErrorResponse(

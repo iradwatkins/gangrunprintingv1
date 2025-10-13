@@ -6,10 +6,11 @@ export const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(255).trim(),
   sku: z
     .string()
-    .min(1, 'SKU is required')
     .max(100)
-    .regex(/^[a-z0-9-]+$/)
-    .trim(),
+    .regex(/^[a-z0-9-]*$/, 'SKU can only contain lowercase letters, numbers, and hyphens')
+    .trim()
+    .optional()
+    .default(''),
   categoryId: z.string().cuid('Category ID must be valid'),
   description: z.string().max(5000).optional().nullable(),
   shortDescription: z.string().max(500).optional().nullable(),

@@ -66,6 +66,45 @@ WHERE:
 
 ---
 
+## 🔒 MANDATORY UI PATTERN: CREATE PRODUCT PAGE (October 13, 2025)
+
+### **CRITICAL - THIS PATTERN IS LOCKED AND CANNOT BE CHANGED**
+
+**User Statement:** "this create a product interface is mandatory to be used. You cannot change from this type of create a product interface. It works perfectly. Put this as a mandatory, must visually look like this."
+
+### The Pattern
+
+**File:** `/src/app/admin/products/new/page.tsx`
+**Visual Reference:** `.aaaaaa/cargo/ilikethis.png` (✅ CORRECT)
+**Anti-Pattern:** `.aaaaaa/cargo/idontlikethis.png` (❌ NEVER USE)
+
+### Must Follow
+
+1. ✅ **Clean Card-based layout** - Each section in a `<Card>` component
+2. ✅ **Simple Select dropdowns** - For all configuration options
+3. ✅ **Inline preview badges/pills** - Show selected items immediately
+4. ✅ **Minimal text** - Concise helper text only
+5. ✅ **Match Edit Product page** - Visually identical to `/admin/products/[id]/edit`
+
+### Forbidden
+
+1. ❌ **Custom complex components** - No ProductSpecifications, ProductDesignOptions, ProductAdditionalOptions
+2. ❌ **Progress bars or workflow indicators** - No completion percentages or step circles
+3. ❌ **Configuration summary boxes** - No alert-style summary panels
+4. ❌ **"How it works" information boxes** - No verbose explanatory panels
+5. ❌ **Purple accent colors** - Use default primary (orange/coral)
+
+### If Asked To Modify
+
+1. **STOP** - Read `/docs/MANDATORY-CREATE-PRODUCT-UI-PATTERN.md` first
+2. **CHECK** - Does request violate the mandatory pattern?
+3. **ASK** - Get explicit user approval if deviation needed
+4. **DOCUMENT** - Update both docs if change approved
+
+**Full Documentation:** `/docs/MANDATORY-CREATE-PRODUCT-UI-PATTERN.md`
+
+---
+
 ## 🚫 ABSOLUTELY FORBIDDEN TECHNOLOGIES
 
 - **Dokploy** - Use Docker Compose instead

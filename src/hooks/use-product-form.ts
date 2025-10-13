@@ -27,7 +27,7 @@ export interface ProductFormData {
   isActive: boolean
   isFeatured: boolean
   imageUrl: string
-  imageData: ProductImage | null
+  images: ProductImage[]
   selectedPaperStockSet: string
   selectedQuantityGroup: string
   selectedSizeGroup: string
@@ -54,7 +54,7 @@ const initialFormData: ProductFormData = {
   isActive: true,
   isFeatured: false,
   imageUrl: '',
-  imageData: null,
+  images: [],
   selectedPaperStockSet: '',
   selectedQuantityGroup: '',
   selectedSizeGroup: '',
@@ -218,10 +218,7 @@ export function useProductForm() {
       return false
     }
 
-    if (!formData.sku?.trim()) {
-      toast.error('SKU is required')
-      return false
-    }
+    // SKU is optional - will be auto-generated if empty
 
     if (!formData.categoryId?.trim()) {
       toast.error('Please select a product category')
@@ -287,24 +284,18 @@ export function useProductForm() {
       rushFee: null,
       basePrice: 0,
       setupFee: 0,
-      images: formData.imageData
-        ? [
-            {
-              imageId: formData.imageData.imageId || formData.imageData.id,
-              url: formData.imageData.url,
-              ...(formData.imageData.thumbnailUrl && {
-                thumbnailUrl: formData.imageData.thumbnailUrl,
-              }),
-              alt: formData.imageData.alt || `${formData.name} product image`,
-              isPrimary: formData.imageData.isPrimary !== false,
-              sortOrder: formData.imageData.sortOrder || 0,
-              ...(formData.imageData.width && { width: formData.imageData.width }),
-              ...(formData.imageData.height && { height: formData.imageData.height }),
-              ...(formData.imageData.fileSize && { fileSize: formData.imageData.fileSize }),
-              ...(formData.imageData.mimeType && { mimeType: formData.imageData.mimeType }),
-            },
-          ]
-        : [],
+      images: formData.images.map((image, index) => ({
+        imageId: image.imageId || image.id,
+        url: image.url,
+        ...(image.thumbnailUrl && { thumbnailUrl: image.thumbnailUrl }),
+        alt: image.alt || `${formData.name} product image ${index + 1}`,
+        isPrimary: image.isPrimary !== false && index === 0, // First image is primary
+        sortOrder: image.sortOrder ?? index,
+        ...(image.width && { width: image.width }),
+        ...(image.height && { height: image.height }),
+        ...(image.fileSize && { fileSize: image.fileSize }),
+        ...(image.mimeType && { mimeType: image.mimeType }),
+      })),
     }
   }
 

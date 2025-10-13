@@ -224,6 +224,7 @@ export async function POST(request: NextRequest) {
             compressionRatio: uploadedImages.metadata.compressionRatio,
             temporary: !productId, // Flag as temporary if no productId
           },
+          updatedAt: new Date(),
         },
       })
 

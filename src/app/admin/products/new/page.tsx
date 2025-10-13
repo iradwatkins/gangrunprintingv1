@@ -303,7 +303,7 @@ export default function NewProductPage() {
             <Label>Product Images</Label>
             <div className="mt-2">
               <ProductImageUpload
-                images={formData.images || []}
+                images={formData.images}
                 onImagesChange={(images) => updateFormData({ images })}
               />
             </div>
