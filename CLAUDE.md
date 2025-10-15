@@ -10,6 +10,50 @@
 
 ---
 
+## 🔒 EXCLUSIVE PORT ALLOCATION (October 14, 2025)
+
+### **GANGRUNPRINTING.COM - 5 DEDICATED PORTS - DOCKER DEPLOYMENT**
+
+**🎯 YOUR EXCLUSIVE PORTS - LOCKED AND RESERVED PERMANENTLY:**
+
+| Port | Service | Purpose | Container Name | Status |
+|------|---------|---------|----------------|--------|
+| **3020** | Next.js App | Main website (external) | gangrunprinting_app | ✅ ACTIVE |
+| **5435** | PostgreSQL | Database | gangrunprinting-postgres | ✅ ACTIVE |
+| **6302** | Redis | Cache/Sessions | gangrunprinting-redis | ✅ ACTIVE |
+| **9002** | MinIO API | File storage | gangrunprinting-minio | ✅ ACTIVE |
+| **9102** | MinIO Console | Storage admin | gangrunprinting-minio | ✅ ACTIVE |
+
+**🐳 DOCKER PORT MAPPING:**
+- App container: `3020:3002` (external:internal)
+- Internal port 3002 stays the same inside container
+- Nginx proxies `gangrunprinting.com` → `localhost:3020`
+
+**🛡️ PROTECTION LEVEL: MAXIMUM**
+- These 5 ports are EXCLUSIVELY for gangrunprinting.com
+- NO other service can use these ports
+- Documented in `/root/PORT_MANAGEMENT_KEY.md`
+- Documented in `/root/GANGRUNPRINTING-EXCLUSIVE-PORTS.md`
+- Enforced via Docker Compose isolation
+
+**💡 DEPLOYMENT RULES:**
+- **ALWAYS** use these exact ports in docker-compose.yml
+- **ALWAYS** use these exact container names
+- **NEVER** share ports with other services
+- **NEVER** use port 3000 (globally forbidden)
+- Port 3002 on host has auto-restart conflict - use port 3020 instead
+
+**📋 Quick Reference:**
+```bash
+# View complete port allocation
+cat /root/GANGRUNPRINTING-EXCLUSIVE-PORTS.md
+
+# View system port registry
+cat /root/PORT_MANAGEMENT_KEY.md
+```
+
+---
+
 ## 💰 CRITICAL MEMORY NOTE - PRICING SYSTEM (October 5, 2025)
 
 ### 🚨 MANDATORY REFERENCE BEFORE ANY PRICING CHANGES
@@ -119,19 +163,20 @@ WHERE:
 - **Backend**: Next.js API routes with TypeScript
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: Lucia Auth with Prisma adapter
-- **File Storage**: MinIO
+- **File Storage**: MinIO (Docker container)
 - **Email**: Resend
-- **Deployment**: Docker Compose
-- **Port**: 3002 for gangrunprinting.com
+- **Deployment**: Docker Compose (October 14, 2025)
+- **Port**: 3020 external / 3002 internal for gangrunprinting.com
 
 ## 🔧 DEPLOYMENT METHOD
 
 ### **MANDATORY: Use Docker Compose for ALL deployments**
 
 - **ALWAYS** use docker-compose.yml for deployment
-- **ALWAYS** deploy on port 3002
-- **ALWAYS** use PostgreSQL database
+- **ALWAYS** deploy on port 3020 (external) / 3002 (internal container)
+- **ALWAYS** use PostgreSQL database (Docker container on port 5435)
 - **ALWAYS** use Lucia Auth for authentication
+- **ALWAYS** use MinIO for file storage (Docker container on ports 9002/9102)
 - **NEVER** use Dokploy, Clerk, Convex, or Supabase
 
 ## SERVER ACCESS RESTRICTIONS
@@ -163,21 +208,43 @@ WHERE:
 ### Deployment Method:
 
 - **MANDATORY: Use Docker Compose for deployment**
-- **MANDATORY: Deploy on port 3002**
-- **MANDATORY: Use existing PostgreSQL server for new database**
+- **MANDATORY: Deploy on port 3020 (external) / 3002 (internal)**
+- **MANDATORY: Use dedicated PostgreSQL Docker container on port 5435**
+- **MANDATORY: Use dedicated MinIO Docker container on ports 9002/9102**
 - Create isolated Docker containers via docker-compose
-- Use separate database instances
+- Use separate database instances (dedicated PostgreSQL container)
 - Configure unique ports to avoid conflicts
+- Test file uploads with: `node test-minio-docker.js`
 
 ## DEPLOYMENT CHECKLIST
 
-- [ ] Use Docker Compose deployment
-- [ ] Create new PostgreSQL database (do not use existing ones)
-- [ ] Configure MinIO bucket for GangRun Printing
+- [x] Use Docker Compose deployment ✅ (October 14, 2025)
+- [x] Create dedicated PostgreSQL container (port 5435) ✅
+- [x] Migrate data to new PostgreSQL ✅
+- [x] Configure MinIO bucket for GangRun Printing ✅
+- [x] Test file uploads (customer & product images) ✅
 - [ ] Set up N8N webhooks for automation
 - [ ] Configure Ollama for AI chat support
-- [ ] Ensure complete isolation from SteppersLife.com
-- [ ] Deploy on port 3002
+- [x] Ensure complete isolation from SteppersLife.com ✅
+- [x] Deploy on port 3020 (external) / 3002 (internal) ✅
+
+**Docker Deployment Commands:**
+```bash
+# Start all containers
+docker-compose up -d
+
+# Check container status
+docker ps | grep gangrun
+
+# View logs
+docker logs --tail=50 gangrunprinting_app
+
+# Test file uploads
+node test-minio-docker.js
+
+# Restart services
+docker-compose restart app
+```
 
 ## VPS CREDENTIALS
 
@@ -188,14 +255,17 @@ WHERE:
 
 ## SERVICE ARCHITECTURE
 
-- **GangRun Printing**: Isolated Docker Compose stack on port 3002
-  - Next.js application
-  - PostgreSQL database (new instance)
-  - MinIO file storage (new bucket)
-  - Redis for caching/sessions
+- **GangRun Printing**: Isolated Docker Compose stack (DEPLOYED October 14, 2025)
+  - Next.js application (port 3020 external / 3002 internal)
+  - PostgreSQL database (dedicated container on port 5435)
+  - MinIO file storage (dedicated container on ports 9002/9102)
+  - Redis for caching/sessions (dedicated container on port 6302)
+  - All services connected via `gangrun_network` bridge
+  - Data migrated successfully from stores-postgres
+  - File uploads tested and working ✅
 - **Shared Services**: Use existing services
-  - N8N (workflow automation)
-  - Ollama (AI services)
+  - N8N (workflow automation on port 5678)
+  - Ollama (AI services on port 11434)
 
 ## GITHUB REPOSITORY
 

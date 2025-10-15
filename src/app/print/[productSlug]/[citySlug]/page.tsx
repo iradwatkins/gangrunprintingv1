@@ -348,35 +348,53 @@ function generateSchemaMarkup(cityLandingPage: any) {
 /**
  * Static generation for top cities (improves performance)
  * Can pre-generate top 50 cities at build time
+ * Gracefully handles DB unavailability during Docker build
+ *
+ * NOTE: Disabled for Docker builds to avoid DB connection errors
+ * Pages will be generated on-demand at runtime (ISR)
  */
 export async function generateStaticParams() {
-  // Only pre-generate top 50 cities at build time
-  // Others will be generated on-demand (ISR)
-  const topCityPages = await prisma.cityLandingPage.findMany({
-    where: {
-      published: true,
-      City: {
-        rank: {
-          lte: 50
+  // Skip static generation during Docker builds (no DB available)
+  // Pages will be generated on-demand at runtime using ISR
+  if (process.env.DOCKER_BUILD === 'true' || !process.env.DATABASE_URL?.includes('localhost')) {
+    console.log('Skipping static generation - Docker build environment detected')
+    return []
+  }
+
+  try {
+    // Only pre-generate top 50 cities at build time
+    // Others will be generated on-demand (ISR)
+    const topCityPages = await prisma.cityLandingPage.findMany({
+      where: {
+        published: true,
+        City: {
+          rank: {
+            lte: 50
+          }
         }
+      },
+      select: {
+        slug: true
+      },
+      take: 50
+    })
+
+    return topCityPages.map(page => {
+      const parts = page.slug.split('-')
+      const citySlug = parts.slice(-2).join('-') // last 2 parts: "new-york" or "los-angeles"
+      const productSlug = parts.slice(0, -2).join('-') // everything before city
+
+      return {
+        productSlug,
+        citySlug
       }
-    },
-    select: {
-      slug: true
-    },
-    take: 50
-  })
-
-  return topCityPages.map(page => {
-    const parts = page.slug.split('-')
-    const citySlug = parts.slice(-2).join('-') // last 2 parts: "new-york" or "los-angeles"
-    const productSlug = parts.slice(0, -2).join('-') // everything before city
-
-    return {
-      productSlug,
-      citySlug
-    }
-  })
+    })
+  } catch (error) {
+    // DB not available during build - return empty array
+    // Pages will be generated on-demand at runtime (ISR)
+    console.warn('Database unavailable during build, skipping static generation:', error)
+    return []
+  }
 }
 
 // ISR: Revalidate every 24 hours
