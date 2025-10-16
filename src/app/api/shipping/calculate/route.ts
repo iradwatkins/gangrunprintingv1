@@ -207,16 +207,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
+    // If no product IDs were provided, allow all carriers
+    if (supportedCarriers.size === 0) {
+      supportedCarriers.add('FEDEX')
+      supportedCarriers.add('SOUTHWEST_CARGO')
+    }
+
+    console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
 
     // Get rates using module registry
-    // console.log('[Shipping API] Fetching rates from module registry...')
+    console.log('[Shipping API] Fetching rates from module registry...')
 
     const registry = getShippingRegistry()
     let rates: unknown[] = []
 
     try {
-      // console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
+      console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
 
       // Get enabled modules
       const enabledModules = registry.getEnabledModules()
@@ -227,7 +233,7 @@ export async function POST(request: NextRequest) {
         return supportedCarriers.has(carrierName) || supportedCarriers.has(module.carrier)
       })
 
-      // console.log('[Shipping API] Using modules:', modulesToUse.map(m => m.id).join(', '))
+      console.log('[Shipping API] Using modules:', modulesToUse.map(m => m.id).join(', '))
 
       // Fetch rates from each module with error handling
       const ratePromises = modulesToUse.map(module =>

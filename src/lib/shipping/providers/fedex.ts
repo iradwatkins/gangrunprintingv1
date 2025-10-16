@@ -679,12 +679,11 @@ export class FedExProviderEnhanced implements ShippingProvider {
     const rates: ShippingRate[] = []
 
     if (!needsFreight) {
-      // Standard parcel services
+      // Standard parcel services - Only show 3 services (Ground, 2Day, Overnight)
       const services = [
-        { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
-        { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
         { code: 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
-        { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
+        { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
+        { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
       ]
 
       services.forEach((svc) => {

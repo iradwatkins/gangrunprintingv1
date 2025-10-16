@@ -38,7 +38,7 @@ class ShippingModuleRegistry {
    * Initialize all shipping modules
    */
   private initializeModules() {
-    // FedEx Module - Only show 4 specific services
+    // FedEx Module - Shows 3 services: Ground, 2Day, Overnight
     this.register({
       id: 'fedex',
       name: 'FedEx',
@@ -50,12 +50,6 @@ class ShippingModuleRegistry {
         testMode: process.env.FEDEX_TEST_MODE === 'true' || !process.env.FEDEX_API_KEY,
         markupPercentage: 0,
         useIntelligentPacking: true,
-        // Only enable these 4 FedEx services
-        enabledServices: [
-          'FEDEX_GROUND',           // FedEx Ground / FedEx Home Delivery
-          'FEDEX_2_DAY',            // FedEx 2Day
-          'STANDARD_OVERNIGHT',     // FedEx Standard Overnight
-        ],
       }),
       config: {
         enabled: true, // Always enabled (falls back to test rates if no API keys)
