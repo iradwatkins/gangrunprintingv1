@@ -27,13 +27,15 @@ import {
 } from 'lucide-react'
 
 const navigationStructure = [
-  // Core Operations - Top Level
+  // OVERVIEW
   {
     title: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
     description: 'Overview & metrics',
   },
+
+  // CORE OPERATIONS
   {
     title: 'Orders',
     href: '/admin/orders',
@@ -48,7 +50,7 @@ const navigationStructure = [
     description: 'Customer management',
   },
 
-  // Products Management - Dropdown
+  // PRODUCT MANAGEMENT
   {
     title: 'Products Management',
     icon: Package,
@@ -67,12 +69,6 @@ const navigationStructure = [
         description: 'Product categories',
       },
       {
-        title: 'Material Types',
-        href: '/admin/paper-stocks',
-        icon: ScrollText,
-        description: 'Material management',
-      },
-      {
         title: 'Add-ons',
         href: '/admin/add-ons',
         icon: Palette,
@@ -85,10 +81,10 @@ const navigationStructure = [
         description: 'Manage add-on sets',
       },
       {
-        title: 'Master Discounts',
-        href: '/admin/master-discounts',
-        icon: Percent,
-        description: 'Default broker discounts',
+        title: 'Material Types',
+        href: '/admin/paper-stocks',
+        icon: ScrollText,
+        description: 'Material management',
       },
       {
         title: 'Quantities',
@@ -102,10 +98,16 @@ const navigationStructure = [
         icon: Ruler,
         description: 'Print sizes',
       },
+      {
+        title: 'Master Discounts',
+        href: '/admin/master-discounts',
+        icon: Percent,
+        description: 'Default broker discounts',
+      },
     ],
   },
 
-  // Marketing & Automation - Dropdown
+  // MARKETING & GROWTH
   {
     title: 'Marketing & Automation',
     icon: Mail,
@@ -150,7 +152,7 @@ const navigationStructure = [
     ],
   },
 
-  // Business Management - Dropdown
+  // INSIGHTS & CONFIGURATION
   {
     title: 'Business',
     icon: BarChart3,

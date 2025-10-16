@@ -21,11 +21,14 @@ import { Card, CardContent } from '@/components/ui/card'
 import NotificationToggle from '@/components/notifications/notification-toggle'
 
 const accountNavItems = [
+  // OVERVIEW
   {
     name: 'Dashboard',
     href: '/account/dashboard',
     icon: LayoutDashboard,
   },
+
+  // ACTIVITY
   {
     name: 'Orders',
     href: '/account/orders',
@@ -36,6 +39,13 @@ const accountNavItems = [
     href: '/account/downloads',
     icon: Download,
   },
+
+  // SETTINGS
+  {
+    name: 'Account Details',
+    href: '/account/details',
+    icon: User,
+  },
   {
     name: 'Addresses',
     href: '/account/addresses',
@@ -45,11 +55,6 @@ const accountNavItems = [
     name: 'Payment Methods',
     href: '/account/payment-methods',
     icon: CreditCard,
-  },
-  {
-    name: 'Account Details',
-    href: '/account/details',
-    icon: User,
   },
 ]
 

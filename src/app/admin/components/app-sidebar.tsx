@@ -63,12 +63,15 @@ const data = {
     },
   ],
   navMain: [
+    // OVERVIEW
     {
       title: 'Dashboard',
       url: '/admin',
       icon: Home,
       isActive: true,
     },
+
+    // CORE OPERATIONS
     {
       title: 'Orders',
       url: '/admin/orders',
@@ -79,6 +82,8 @@ const data = {
       url: '/admin/customers',
       icon: Users,
     },
+
+    // PRODUCT MANAGEMENT
     {
       title: 'Products',
       url: '/admin/products',
@@ -92,6 +97,14 @@ const data = {
         {
           title: 'Categories',
           url: '/admin/categories',
+        },
+        {
+          title: 'Add-ons',
+          url: '/admin/add-ons',
+        },
+        {
+          title: 'Add-on Sets',
+          url: '/admin/addon-sets',
         },
         {
           title: 'Paper Stocks',
@@ -108,14 +121,6 @@ const data = {
         {
           title: 'Sizes',
           url: '/admin/sizes',
-        },
-        {
-          title: 'Add-ons',
-          url: '/admin/add-ons',
-        },
-        {
-          title: 'Add-on Sets',
-          url: '/admin/addon-sets',
         },
         {
           title: 'Design Options',
@@ -135,11 +140,8 @@ const data = {
         },
       ],
     },
-    {
-      title: 'Analytics',
-      url: '/admin/analytics',
-      icon: BarChart3,
-    },
+
+    // MARKETING & GROWTH
     {
       title: 'Marketing & Automation',
       url: '/admin/marketing',
@@ -167,6 +169,15 @@ const data = {
         },
       ],
     },
+
+    // INSIGHTS
+    {
+      title: 'Analytics',
+      url: '/admin/analytics',
+      icon: BarChart3,
+    },
+
+    // CUSTOMIZATION
     {
       title: 'Design',
       url: '/admin/design',
@@ -178,6 +189,8 @@ const data = {
         },
       ],
     },
+
+    // CONFIGURATION
     {
       title: 'Settings',
       url: '/admin/settings',
