@@ -221,6 +221,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                       // Otherwise, create a new Image record first
                       const newImage = await tx.image.create({
                         data: {
+                          id: randomUUID(),
                           name: img.name || `product-${id}-${index}`,
                           url: img.url,
                           thumbnailUrl: img.thumbnailUrl,
@@ -234,6 +235,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                           fileSize: img.fileSize,
                           mimeType: img.mimeType,
                           category: 'product',
+                          updatedAt: new Date(),
                         },
                       })
 

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ProductImageUpload } from '@/components/admin/product-image-upload'
+import { ProductImageUpload } from '@/components/admin/product-image-upload' // Multi-image upload component
 import { useProductForm } from '@/hooks/use-product-form'
 import toast from '@/lib/toast'
 import {
@@ -87,6 +87,7 @@ export default function NewProductPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData),
+        credentials: 'include', // CRITICAL: Send auth cookies with request
         signal: controller.signal,
       })
 
@@ -207,9 +208,16 @@ export default function NewProductPage() {
       options.sizeGroups.length > 0 &&
       options.paperStockSets.length > 0
     ) {
+      // Find a visible category (not hidden) - prefer "Business Card" if available
+      const visibleCategory = options.categories.find((cat: any) =>
+        cat.name === 'Business Card' || cat.slug === 'business-card'
+      ) || options.categories.find((cat: any) =>
+        !cat.isHidden
+      ) || options.categories[0]
+
       updateFormData({
         name: 'Test Product ' + Date.now(),
-        categoryId: options.categories[0].id,
+        categoryId: visibleCategory.id,
         description: 'Test product description',
         selectedQuantityGroup: options.quantityGroups[0].id,
         selectedSizeGroup: options.sizeGroups[0].id,
@@ -217,8 +225,10 @@ export default function NewProductPage() {
         selectedAddOnSet: options.addOnSets.length > 0 ? options.addOnSets[0].id : '',
         selectedTurnaroundTimeSet:
           options.turnaroundTimeSets.length > 0 ? options.turnaroundTimeSets[0].id : '',
+        isActive: true,
+        isFeatured: false,
       })
-      toast.success('Form filled with test data')
+      toast.success(`Form filled with test data (Category: ${visibleCategory.name})`)
     } else {
       toast.error('Configuration options not loaded yet')
     }
@@ -317,7 +327,14 @@ export default function NewProductPage() {
             <div className="mt-2">
               <ProductImageUpload
                 images={formData.images}
-                onImagesChange={(images) => updateFormData({ images })}
+                onImagesChange={(imagesOrCallback) => {
+                  // Handle both array and callback forms
+                  if (typeof imagesOrCallback === 'function') {
+                    updateFormData((prev) => ({ images: imagesOrCallback(prev.images) }))
+                  } else {
+                    updateFormData({ images: imagesOrCallback })
+                  }
+                }}
               />
             </div>
           </div>
@@ -784,7 +801,7 @@ export default function NewProductPage() {
                             {item.addOn.name}
                           </div>
                         ))}
-                        {selectedSet.addOnSetItems?.length > 5 && (
+                        {selectedSet.addOnSetItems && selectedSet.addOnSetItems.length > 5 && (
                           <p className="text-xs text-muted-foreground">
                             +{selectedSet.addOnSetItems.length - 5} more add-ons
                           </p>

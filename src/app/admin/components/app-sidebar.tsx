@@ -90,10 +90,6 @@ const data = {
           url: '/admin/products',
         },
         {
-          title: 'Bulk Create Products',
-          url: '/admin/products/bulk-create',
-        },
-        {
           title: 'Categories',
           url: '/admin/categories',
         },

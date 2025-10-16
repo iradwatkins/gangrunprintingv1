@@ -24,6 +24,7 @@ import Link from 'next/link'
 
 interface ProductImage {
   id?: string
+  imageId?: string // ID of the underlying Image record
   url: string
   thumbnailUrl?: string
   largeUrl?: string
@@ -100,7 +101,9 @@ function EditProductClient({ id }: { id: string }) {
 
   const fetchProduct = async () => {
     try {
-      const res = await fetch(`/api/products/${id}`)
+      const res = await fetch(`/api/products/${id}`, {
+        credentials: 'include', // CRITICAL: Send auth cookies with request
+      })
       if (!res.ok) throw new Error('Failed to fetch product')
       const response = await res.json()
 
@@ -116,7 +119,21 @@ function EditProductClient({ id }: { id: string }) {
         shortDescription: data.shortDescription || data.ShortDescription || '',
         isActive: data.isActive ?? data.IsActive ?? true,
         isFeatured: data.isFeatured ?? data.IsFeatured ?? false,
-        images: data.productImages || data.ProductImages || [],
+        // FIX BUG #7: Transform ProductImages to flat array
+        images: (data.ProductImages || data.productImages || []).map((pi: any) => ({
+          id: pi.imageId || pi.ImageId,
+          imageId: pi.imageId || pi.ImageId,
+          url: pi.Image?.url || pi.Image?.Url || pi.url || pi.Url,
+          thumbnailUrl: pi.Image?.thumbnailUrl || pi.Image?.ThumbnailUrl || pi.thumbnailUrl,
+          largeUrl: pi.Image?.largeUrl || pi.Image?.LargeUrl || pi.largeUrl,
+          mediumUrl: pi.Image?.mediumUrl || pi.Image?.MediumUrl || pi.mediumUrl,
+          webpUrl: pi.Image?.webpUrl || pi.Image?.WebpUrl || pi.webpUrl,
+          blurDataUrl: pi.Image?.blurDataUrl || pi.Image?.BlurDataUrl || pi.blurDataUrl,
+          alt: pi.Image?.alt || pi.Image?.Alt || pi.alt || pi.Alt,
+          caption: pi.Image?.caption || pi.Image?.Caption || pi.caption,
+          isPrimary: pi.isPrimary ?? pi.IsPrimary ?? false,
+          sortOrder: pi.sortOrder ?? pi.SortOrder ?? 0,
+        })),
 
         // Map paper stock set
         selectedPaperStockSet:
@@ -259,6 +276,7 @@ function EditProductClient({ id }: { id: string }) {
         ...otherFormData
       } = formData
 
+      // FIX BUG #8: Include images in update payload
       const apiData = {
         ...otherFormData,
         paperStockSetId: selectedPaperStockSet,
@@ -269,6 +287,19 @@ function EditProductClient({ id }: { id: string }) {
         designSetId: selectedDesignSet || null,
         options: [], // Add empty options array
         pricingTiers: [], // Add empty pricing tiers array
+        images: formData.images.map((image, index) => ({
+          imageId: image.imageId || image.id,
+          url: image.url,
+          ...(image.thumbnailUrl && { thumbnailUrl: image.thumbnailUrl }),
+          ...(image.largeUrl && { largeUrl: image.largeUrl }),
+          ...(image.mediumUrl && { mediumUrl: image.mediumUrl }),
+          ...(image.webpUrl && { webpUrl: image.webpUrl }),
+          ...(image.blurDataUrl && { blurDataUrl: image.blurDataUrl }),
+          alt: image.alt || `${formData.name} product image ${index + 1}`,
+          caption: image.caption || null,
+          isPrimary: image.isPrimary !== false && index === 0,
+          sortOrder: image.sortOrder ?? index,
+        })),
       }
 
       console.log('[Edit Product] Sending update request with data:', apiData)
@@ -277,6 +308,7 @@ function EditProductClient({ id }: { id: string }) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiData),
+        credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
       console.log('[Edit Product] Response status:', response.status)
@@ -391,7 +423,14 @@ function EditProductClient({ id }: { id: string }) {
             <ProductImageUpload
               images={formData.images}
               productId={id}
-              onImagesChange={(images) => setFormData({ ...formData, images })}
+              onImagesChange={(imagesOrCallback) => {
+                // Handle both array and callback forms
+                if (typeof imagesOrCallback === 'function') {
+                  setFormData((prev) => ({ ...prev, images: imagesOrCallback(prev.images) }))
+                } else {
+                  setFormData({ ...formData, images: imagesOrCallback })
+                }
+              }}
             />
           </div>
 

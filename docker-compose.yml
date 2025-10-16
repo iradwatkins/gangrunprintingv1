@@ -89,6 +89,8 @@ services:
 
       # Redis - Use dedicated container
       - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
       # Auth (Lucia)
       - AUTH_SECRET=${AUTH_SECRET}
@@ -122,7 +124,7 @@ services:
       - MINIO_SECRET_KEY=gangrun_minio_secret_2024
       - MINIO_USE_SSL=false
       - MINIO_BUCKET_NAME=gangrun-uploads
-      - MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com
+      - MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio
 
       # Email (Resend)
       - RESEND_API_KEY=${RESEND_API_KEY}

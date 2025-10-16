@@ -42,27 +42,14 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+import type { ProductImage as HookProductImage } from '@/hooks/use-product-form'
 
-interface ProductImage {
-  id?: string
-  imageId?: string
-  url: string
-  thumbnailUrl?: string
-  largeUrl?: string
-  mediumUrl?: string
-  webpUrl?: string
-  blurDataUrl?: string
-  alt?: string
-  caption?: string
-  isPrimary: boolean
-  sortOrder: number
+// Extend the hook's ProductImage type with upload-specific properties
+interface ProductImage extends HookProductImage {
   file?: File
   uploading?: boolean
   isBlobUrl?: boolean
-  width?: number
-  height?: number
-  fileSize?: number
-  mimeType?: string
+  uploadId?: string // For tracking during upload
 }
 
 interface ProductImageUploadProps {
@@ -215,8 +202,11 @@ export function ProductImageUpload({
     const filesToProcess = Array.from(files).slice(0, remainingSlots)
 
     if (files.length > filesToProcess.length) {
-      toast.warning(`Only ${remainingSlots} image(s) can be added. Maximum is ${MAX_IMAGES} total.`)
+      toast.error(`Only ${remainingSlots} image(s) can be added. Maximum is ${MAX_IMAGES} total.`)
     }
+
+    // Generate unique uploadIds for tracking
+    const uploadIds = filesToProcess.map(() => crypto.randomUUID())
 
     const newImages: ProductImage[] = filesToProcess.map((file, index) => {
       const blobUrl = URL.createObjectURL(file)
@@ -228,7 +218,8 @@ export function ProductImageUpload({
         sortOrder: safeImages.length + index,
         uploading: false,
         isBlobUrl: true, // Mark as blob URL for cleanup
-      }
+        uploadId: uploadIds[index], // Add uploadId for tracking
+      } as ProductImage
     })
 
     onImagesChange([...safeImages, ...newImages])
@@ -247,6 +238,7 @@ export function ProductImageUpload({
         const res = await fetch('/api/products/upload-image', {
           method: 'POST',
           body: formData,
+          credentials: 'include', // CRITICAL: Send auth cookies with request
         })
 
         if (!res.ok) {
@@ -262,50 +254,52 @@ export function ProductImageUpload({
           throw new Error('Invalid response from upload service')
         }
 
-        // FIX: Compute new array from images prop (not callback function)
-        // Update the image with the uploaded URL and clean up blob
-        const currentImages = Array.isArray(images) ? images : []
-        const updatedImages = currentImages.map((img, idx) => {
-          if (idx === safeImages.length + i) {
-            // Clean up blob URL if it exists
-            if (img.isBlobUrl && img.url.startsWith('blob:')) {
-              URL.revokeObjectURL(img.url)
+        // FIX: Use callback form with uploadId to avoid race condition
+        const currentUploadId = uploadIds[i]
+        onImagesChange((prevImages) => {
+          return prevImages.map((img) => {
+            // Match by uploadId (more reliable than blob URL)
+            if ((img as any).uploadId === currentUploadId) {
+              // Clean up blob URL if it exists
+              if (img.isBlobUrl && img.url.startsWith('blob:')) {
+                URL.revokeObjectURL(img.url)
+              }
+              return {
+                ...img,
+                // CRITICAL: Include imageId from upload response
+                id: data.data?.id || data.id,
+                imageId: data.data?.imageId || data.imageId || data.data?.id || data.id,
+                url: uploadedUrl,
+                thumbnailUrl: data.data?.thumbnailUrl || data.thumbnailUrl || uploadedUrl,
+                largeUrl: data.data?.largeUrl || data.largeUrl,
+                mediumUrl: data.data?.mediumUrl || data.mediumUrl,
+                webpUrl: data.data?.webpUrl || data.webpUrl,
+                blurDataUrl: data.data?.blurDataUrl || data.blurDataUrl,
+                alt: data.data?.alt || data.alt,
+                width: data.data?.width || data.width,
+                height: data.data?.height || data.height,
+                fileSize: data.data?.fileSize || data.fileSize,
+                mimeType: data.data?.mimeType || data.mimeType,
+                uploading: false,
+                isBlobUrl: false,
+                file: undefined, // Remove file reference after upload
+                uploadId: undefined, // Clear uploadId after successful upload
+              }
             }
-            return {
-              ...img,
-              // CRITICAL: Include imageId from upload response
-              id: data.data?.id || data.id,
-              imageId: data.data?.imageId || data.imageId || data.data?.id || data.id,
-              url: uploadedUrl,
-              thumbnailUrl: data.data?.thumbnailUrl || data.thumbnailUrl || uploadedUrl,
-              largeUrl: data.data?.largeUrl || data.largeUrl,
-              mediumUrl: data.data?.mediumUrl || data.mediumUrl,
-              webpUrl: data.data?.webpUrl || data.webpUrl,
-              blurDataUrl: data.data?.blurDataUrl || data.blurDataUrl,
-              alt: data.data?.alt || data.alt,
-              width: data.data?.width || data.width,
-              height: data.data?.height || data.height,
-              fileSize: data.data?.fileSize || data.fileSize,
-              mimeType: data.data?.mimeType || data.mimeType,
-              uploading: false,
-              isBlobUrl: false,
-              file: undefined, // Remove file reference after upload
-            }
-          }
-          return img
+            return img
+          })
         })
-        onImagesChange(updatedImages)
 
         toast.success(`Image ${i + 1} uploaded successfully`)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         toast.error(`Failed to upload image ${i + 1}: ${errorMessage}`)
 
-        // FIX: Compute new array from images prop (not callback function)
-        // Remove the failed image safely
-        const currentImages = Array.isArray(images) ? images : []
-        const filteredImages = currentImages.filter((_, idx) => idx !== safeImages.length + i)
-        onImagesChange(filteredImages)
+        // FIX: Remove failed upload using callback form and uploadId
+        const currentUploadId = uploadIds[i]
+        onImagesChange((prevImages) => {
+          return prevImages.filter((img) => (img as any).uploadId !== currentUploadId)
+        })
       }
     }
   }
@@ -336,10 +330,10 @@ export function ProductImageUpload({
     handleFiles(files)
   }
 
-  const handleDragEnd = (event: { active: { id: string }; over: { id: string } }) => {
+  const handleDragEnd = (event: any) => {
     const { active, over } = event
 
-    if (active.id !== over.id) {
+    if (active && over && active.id !== over.id) {
       const safeImages = Array.isArray(images) ? images : []
       const oldIndex = safeImages.findIndex((img) => img.url === active.id)
       const newIndex = safeImages.findIndex((img) => img.url === over.id)
@@ -503,7 +497,6 @@ export function ProductImageUpload({
                   ? images.map((image, index) => (
                       <SortableImageItem
                         key={image.url}
-                        id={image.url}
                         image={image}
                         index={index}
                         onEdit={handleEdit}
