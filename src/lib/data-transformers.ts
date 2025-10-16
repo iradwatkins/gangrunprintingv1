@@ -57,7 +57,9 @@ export function transformProductForFrontend(product: Product): TransformedProduc
 
     // Relations
     ProductCategory: transformCategoryForFrontend(product.productCategory || product.category),
-    ProductImages: transformImagesForFrontend(product.productImages || product.images || []),
+    ProductImages: transformImagesForFrontend(
+      product.productImages || product.images || (product as any).ProductImage || []
+    ),
     ProductSizes: transformSizesForFrontend(product.productSizes || product.sizes || []),
     ProductQuantities: transformQuantitiesForFrontend(
       product.productQuantities || product.quantities || []
@@ -76,7 +78,7 @@ export function transformProductForFrontend(product: Product): TransformedProduc
 
     // Keep backward compatibility
     productCategory: product.productCategory,
-    productImages: product.productImages,
+    productImages: product.productImages || (product as any).ProductImage,
   }
 }
 
