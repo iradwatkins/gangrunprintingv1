@@ -21,39 +21,39 @@ export class SouthwestCargoProvider implements ShippingProvider {
     toAddress: ShippingAddress,
     packages: ShippingPackage[]
   ): Promise<ShippingRate[]> {
-    console.log('🛫 [Southwest Cargo] getRates called')
-    console.log('   - Destination state:', toAddress.state)
-    console.log('   - Packages:', packages.length, 'packages')
+    // console.log('🛫 [Southwest Cargo] getRates called')
+    // console.log('   - Destination state:', toAddress.state)
+    // console.log('   - Packages:', packages.length, 'packages')
 
     // Check if Southwest Cargo serves the destination state
     if (!this.isServiceAvailable(toAddress.state)) {
-      console.log('❌ [Southwest Cargo] Service NOT available for state:', toAddress.state)
-      console.log('   - Available states:', CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO].join(', '))
+      // console.log('❌ [Southwest Cargo] Service NOT available for state:', toAddress.state)
+      // console.log('   - Available states:', CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO].join(', '))
       return []
     }
 
-    console.log('✅ [Southwest Cargo] Service available for', toAddress.state)
+    // console.log('✅ [Southwest Cargo] Service available for', toAddress.state)
 
     // Calculate total weight
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
 
-    console.log('📦 [Southwest Cargo] Weight calculation:')
-    console.log('   - Total weight:', totalWeight, 'lbs')
-    console.log('   - Billable weight:', billableWeight, 'lbs')
+    // console.log('📦 [Southwest Cargo] Weight calculation:')
+    // console.log('   - Total weight:', totalWeight, 'lbs')
+    // console.log('   - Billable weight:', billableWeight, 'lbs')
 
     // Calculate pickup and dash rates
     const pickupRate = this.calculatePickupRate(billableWeight)
     const dashRate = this.calculateDashRate(billableWeight)
 
-    console.log('💰 [Southwest Cargo] Rate calculation:')
-    console.log('   - Pickup rate (before markup):', pickupRate)
-    console.log('   - Dash rate (before markup):', dashRate)
+    // console.log('💰 [Southwest Cargo] Rate calculation:')
+    // console.log('   - Pickup rate (before markup):', pickupRate)
+    // console.log('   - Dash rate (before markup):', dashRate)
 
     // Apply markup if configured
     const markup = 1 + (southwestCargoConfig.markupPercentage || 0) / 100
-    console.log('   - Markup percentage:', southwestCargoConfig.markupPercentage, '%')
-    console.log('   - Markup multiplier:', markup)
+    // console.log('   - Markup percentage:', southwestCargoConfig.markupPercentage, '%')
+    // console.log('   - Markup multiplier:', markup)
 
     const rates: ShippingRate[] = [
       {
@@ -76,9 +76,9 @@ export class SouthwestCargoProvider implements ShippingProvider {
       },
     ]
 
-    console.log('✅ [Southwest Cargo] Returning', rates.length, 'rates:')
+    // console.log('✅ [Southwest Cargo] Returning', rates.length, 'rates:')
     rates.forEach((rate, index) => {
-      console.log(`   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`)
+      // console.log(`   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`)
     })
 
     return rates

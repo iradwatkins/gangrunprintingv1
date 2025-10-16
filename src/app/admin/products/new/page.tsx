@@ -50,16 +50,16 @@ export default function NewProductPage() {
 
   const handleSubmit = async () => {
     // DEBUG: Log form state before validation to diagnose issues
-    console.log('[DEBUG] Product creation - Form state before submit:', {
-      name: formData.name,
-      categoryId: formData.categoryId,
-      images: formData.images,
-      imagesIsArray: Array.isArray(formData.images),
-      imagesLength: Array.isArray(formData.images) ? formData.images.length : 'NOT AN ARRAY',
-      hasBlobs: Array.isArray(formData.images)
-        ? formData.images.some((img) => img.url?.startsWith('blob:'))
-        : 'CANNOT CHECK',
-    })
+    // console.log('[DEBUG] Product creation - Form state before submit:', {
+    //   name: formData.name,
+    //   categoryId: formData.categoryId,
+    //   images: formData.images,
+    //   imagesIsArray: Array.isArray(formData.images),
+    //   imagesLength: Array.isArray(formData.images) ? formData.images.length : 'NOT AN ARRAY',
+    //   hasBlobs: Array.isArray(formData.images)
+    //     ? formData.images.some((img) => img.url?.startsWith('blob:'))
+    //     : 'CANNOT CHECK',
+    // })
 
     // Enhanced validation with specific error messages
     const validationErrors = []

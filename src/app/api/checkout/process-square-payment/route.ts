@@ -20,7 +20,7 @@ const squareEnvironment = SQUARE_ENVIRONMENT === 'production'
   ? SquareEnvironment.Production
   : SquareEnvironment.Sandbox
 
-console.log('[Square] Initializing client with environment:', SQUARE_ENVIRONMENT, '→', squareEnvironment)
+// console.log('[Square] Initializing client with environment:', SQUARE_ENVIRONMENT, '→', squareEnvironment)
 
 // Initialize Square client
 const client = new SquareClient({
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required payment details' }, { status: 400 })
     }
 
-    console.log('[Square Payment] Processing payment:', {
-      amount,
-      currency,
-      orderNumber,
-      hasSourceId: !!sourceId,
-    })
+    // console.log('[Square Payment] Processing payment:', {
+    //   amount,
+    //   currency,
+    //   orderNumber,
+    //   hasSourceId: !!sourceId,
+    // })
 
     // Validate location ID is available
     if (!SQUARE_LOCATION_ID) {
@@ -67,11 +67,11 @@ export async function POST(request: NextRequest) {
       referenceId: orderNumber,
     })
 
-    console.log('[Square Payment] Payment successful:', {
-      paymentId: result.payment?.id,
-      status: result.payment?.status,
-      orderNumber,
-    })
+    // console.log('[Square Payment] Payment successful:', {
+    //   paymentId: result.payment?.id,
+    //   status: result.payment?.status,
+    //   orderNumber,
+    // })
 
     return NextResponse.json({
       success: true,

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 // GET /api/products/by-slug/[slug] - Get product by slug or SKU with all related data
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    console.log('[API by-slug] Looking up product by slug/sku:', params.slug)
+    // console.log('[API by-slug] Looking up product by slug/sku:', params.slug)
 
     // Look up by slug OR SKU
     const product = await prisma.product.findFirst({

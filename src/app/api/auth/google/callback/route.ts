@@ -37,7 +37,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
       idToken = tokens.idToken()
     } catch (e) {
-      console.log('Failed to get idToken:', e)
+      // console.log('Failed to get idToken:', e)
     }
 
     try {
@@ -209,12 +209,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Set cookie on response object
     response.headers.set('Set-Cookie', cookieString)
 
-    console.log('[Google OAuth] Session cookie set:', {
-      cookieName: sessionCookie.name,
-      cookieLength: sessionCookie.value.length,
-      domain: process.env.NODE_ENV === 'production' ? 'gangrunprinting.com' : 'localhost',
-      redirectTo: redirectPath,
-    })
+    // console.log('[Google OAuth] Session cookie set:', {
+    //   cookieName: sessionCookie.name,
+    //   cookieLength: sessionCookie.value.length,
+    //   domain: process.env.NODE_ENV === 'production' ? 'gangrunprinting.com' : 'localhost',
+    //   redirectTo: redirectPath,
+    // })
 
     return response
   } catch (error) {

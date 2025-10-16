@@ -95,14 +95,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    console.log('[PUT Product] Starting update for product:', id)
+    // console.log('[PUT Product] Starting update for product:', id)
 
     const { user, session } = await validateRequest()
-    console.log('[PUT Product] Auth check:', {
-      hasSession: !!session,
-      hasUser: !!user,
-      role: user?.role,
-    })
+    // console.log('[PUT Product] Auth check:', {
+    //   hasSession: !!session,
+    //   hasUser: !!user,
+    //   role: user?.role,
+    // })
 
     if (!session || !user || user.role !== 'ADMIN') {
       console.error('[PUT Product] Unauthorized:', {
@@ -114,16 +114,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const data = await request.json()
-    console.log('[PUT Product] Received data:', {
-      hasImages: !!data.images,
-      paperStockSetId: data.paperStockSetId,
-      quantityGroupId: data.quantityGroupId,
-      sizeGroupId: data.sizeGroupId,
-      turnaroundTimeSetId: data.turnaroundTimeSetId,
-      addOnSetId: data.addOnSetId,
-      name: data.name,
-      sku: data.sku,
-    })
+    // console.log('[PUT Product] Received data:', {
+    //   hasImages: !!data.images,
+    //   paperStockSetId: data.paperStockSetId,
+    //   quantityGroupId: data.quantityGroupId,
+    //   sizeGroupId: data.sizeGroupId,
+    //   turnaroundTimeSetId: data.turnaroundTimeSetId,
+    //   addOnSetId: data.addOnSetId,
+    //   name: data.name,
+    //   sku: data.sku,
+    // })
 
     const {
       images,
@@ -185,14 +185,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    console.log('[PUT Product] Found existing product, processing images...')
+    // console.log('[PUT Product] Found existing product, processing images...')
 
     // Delete removed images from MinIO
     const existingImageUrls = existingProduct.ProductImage.map((img) => img.Image.url)
     const newImageUrls = images?.map((img: Record<string, unknown>) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
 
-    console.log('[PUT Product] Images to delete:', imagesToDelete.length)
+    // console.log('[PUT Product] Images to delete:', imagesToDelete.length)
 
     for (const url of imagesToDelete) {
       try {
@@ -202,7 +202,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       }
     }
 
-    console.log('[PUT Product] Starting database transaction...')
+    // console.log('[PUT Product] Starting database transaction...')
 
     // Update product using transaction
     const product = await prisma.$transaction(async (tx) => {
@@ -425,7 +425,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       })
     })
 
-    console.log('[PUT Product] Transaction completed successfully')
+    // console.log('[PUT Product] Transaction completed successfully')
     return NextResponse.json(product)
   } catch (error) {
     console.error('[PUT Product] Error occurred:', error)
@@ -490,14 +490,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    console.log('[DELETE Product] Attempting to delete product:', id)
+    // console.log('[DELETE Product] Attempting to delete product:', id)
 
     const { user, session } = await validateRequest()
-    console.log('[DELETE Product] Auth check:', {
-      hasSession: !!session,
-      hasUser: !!user,
-      role: user?.role,
-    })
+    // console.log('[DELETE Product] Auth check:', {
+    //   hasSession: !!session,
+    //   hasUser: !!user,
+    //   role: user?.role,
+    // })
 
     if (!session || !user || user.role !== 'ADMIN') {
       console.error('[DELETE Product] Unauthorized attempt:', {
@@ -525,7 +525,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    console.log('[DELETE Product] Found product, deleting images from MinIO...')
+    // console.log('[DELETE Product] Found product, deleting images from MinIO...')
     // Delete images from MinIO
     for (const image of product.ProductImage) {
       try {
@@ -535,13 +535,13 @@ export async function DELETE(
       }
     }
 
-    console.log('[DELETE Product] Deleting product from database...')
+    // console.log('[DELETE Product] Deleting product from database...')
     // Delete product (cascade will handle relations)
     await prisma.product.delete({
       where: { id },
     })
 
-    console.log('[DELETE Product] Product deleted successfully:', id)
+    // console.log('[DELETE Product] Product deleted successfully:', id)
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 })
   } catch (error) {
     console.error('[DELETE Product] Error deleting product:', error)

@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '1000', 10)
     const offset = parseInt(searchParams.get('offset') || '0', 10)
 
-    console.log(`[ChatGPT Feed API] Generating feed (limit: ${limit}, offset: ${offset})`)
+    // console.log(`[ChatGPT Feed API] Generating feed (limit: ${limit}, offset: ${offset})`)
 
     // Fetch active products
     const products = await prisma.product.findMany({
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
       return feedItem
     })
 
-    console.log(`[ChatGPT Feed API] Generated ${feedItems.length} products`)
+    // console.log(`[ChatGPT Feed API] Generated ${feedItems.length} products`)
 
     // Return JSON feed with proper headers
     return NextResponse.json(feedItems, {

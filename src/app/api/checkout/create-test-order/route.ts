@@ -124,9 +124,9 @@ export async function POST(request: NextRequest) {
     // Send confirmation email for test orders
     try {
       await OrderEmailService.sendOrderConfirmation(order)
-      console.log(
-        `[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`
-      )
+      // console.log(
+      //   `[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`
+      // )
     } catch (emailError) {
       console.error('[Test Order] Failed to send confirmation email:', emailError)
       // Don't fail the order creation if email fails

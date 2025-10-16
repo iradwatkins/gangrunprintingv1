@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest, { params }: { params: { carrier:
       },
     })
 
-    console.log(`[Carrier Settings] Updated ${carrier}:`, updated)
+    // console.log(`[Carrier Settings] Updated ${carrier}:`, updated)
 
     return NextResponse.json({
       success: true,

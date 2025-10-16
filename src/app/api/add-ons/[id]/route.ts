@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const addOn = await prisma.addOn.findUnique({
       where: { id },
       include: {
-        addOnSubOptions: {
+        AddOnSubOption: {
           orderBy: { displayOrder: 'asc' },
         },
         productAddOns: {
@@ -99,7 +99,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const updatedAddOn = await prisma.addOn.findUnique({
       where: { id },
       include: {
-        addOnSubOptions: {
+        AddOnSubOption: {
           orderBy: { displayOrder: 'asc' },
         },
       },

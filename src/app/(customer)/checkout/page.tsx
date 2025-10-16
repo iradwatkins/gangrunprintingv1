@@ -114,10 +114,10 @@ function CheckoutPageContent() {
   const SQUARE_ENVIRONMENT = (process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production'
 
   // Debug logging for Square environment
-  console.log('[Checkout] Square Environment:', {
-    raw: process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT,
-    resolved: SQUARE_ENVIRONMENT
-  })
+  // console.log('[Checkout] Square Environment:', {
+  //   raw: process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT,
+  //   resolved: SQUARE_ENVIRONMENT
+  // })
 
   // Get the single item (since we're doing one product at a time)
   const currentItem = items.length > 0 ? items[0] : null
@@ -210,17 +210,17 @@ function CheckoutPageContent() {
 
       // If no files uploaded, skip association
       if (allFiles.length === 0) {
-        console.log('[Checkout] No files to associate with order')
+        // console.log('[Checkout] No files to associate with order')
         return
       }
 
-      console.log(`[Checkout] Associating ${allFiles.length} files with order ${orderId}`)
+      // console.log(`[Checkout] Associating ${allFiles.length} files with order ${orderId}`)
 
       // Call service to associate files
       const result = await associateTemporaryFilesWithOrder(orderId, allFiles)
 
       if (result.success) {
-        console.log(`[Checkout] Successfully associated ${result.files?.length || 0} files with order`)
+        // console.log(`[Checkout] Successfully associated ${result.files?.length || 0} files with order`)
 
         // Clear uploaded files from sessionStorage
         for (const item of items) {

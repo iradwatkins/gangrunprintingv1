@@ -75,7 +75,7 @@ export async function POST(
       )
     }
 
-    console.log(`[PUBLISH] Generating ${cities.length} city landing pages for set: ${landingPageSet.name}`)
+    // console.log(`[PUBLISH] Generating ${cities.length} city landing pages for set: ${landingPageSet.name}`)
 
     // Extract product type from name (e.g., "Postcards 4x6 Landing Pages" -> "Postcards 4x6")
     const productType = landingPageSet.name.replace(/\s*landing\s*pages?$/i, '').trim()
@@ -86,7 +86,7 @@ export async function POST(
 
     for (const city of cities) {
       try {
-        console.log(`  Generating: ${city.name}, ${city.stateCode}...`)
+        // console.log(`  Generating: ${city.name}, ${city.stateCode}...`)
 
         // Generate unique content for this city
         const content = await generateCityContent(
@@ -115,7 +115,7 @@ export async function POST(
         })
 
         if (existing) {
-          console.log(`    ⚠️  Already exists, skipping: ${slug}`)
+          // console.log(`    ⚠️  Already exists, skipping: ${slug}`)
           generatedPages.push(existing.id)
           continue
         }
@@ -144,7 +144,7 @@ export async function POST(
         })
 
         generatedPages.push(cityLandingPage.id)
-        console.log(`    ✅ Created: ${slug}`)
+        // console.log(`    ✅ Created: ${slug}`)
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error'
         console.error(`    ❌ Error for ${city.name}, ${city.stateCode}:`, errorMsg)
@@ -161,7 +161,7 @@ export async function POST(
       data: { status: 'published' }
     })
 
-    console.log(`[PUBLISH] Complete! Generated ${generatedPages.length} pages, ${errors.length} errors`)
+    // console.log(`[PUBLISH] Complete! Generated ${generatedPages.length} pages, ${errors.length} errors`)
 
     return NextResponse.json({
       success: true,

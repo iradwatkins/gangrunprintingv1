@@ -308,7 +308,7 @@ export class FedExErrorHandler {
 
         // Token expired - refresh once and retry immediately
         if (lastError.code === ERROR_CODES.TOKEN_EXPIRED && !tokenRefreshed && onTokenRefresh) {
-          console.log(`[FedEx] Token expired, refreshing...`)
+          // console.log(`[FedEx] Token expired, refreshing...`)
           try {
             await onTokenRefresh()
             tokenRefreshed = true
@@ -334,7 +334,7 @@ export class FedExErrorHandler {
 
         // Calculate delay and wait
         const delay = this.calculateDelay(attempt)
-        console.log(`[FedEx] Retrying in ${delay}ms (attempt ${attempt}/${this.retryConfig.maxRetries})`)
+        // console.log(`[FedEx] Retrying in ${delay}ms (attempt ${attempt}/${this.retryConfig.maxRetries})`)
         await this.sleep(delay)
       }
     }

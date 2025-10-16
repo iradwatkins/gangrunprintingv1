@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 // Simple working products endpoint for testing
 export async function GET(request: NextRequest) {
   try {
-    console.log('📊 Fetching products...')
+    // console.log('📊 Fetching products...')
 
     const products = await prisma.product.findMany({
       take: 10,
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        productAddOns: {
+        ProductAddOn: {
           include: {
             AddOn: {
               select: {
@@ -68,14 +68,14 @@ export async function GET(request: NextRequest) {
             ProductImage: true,
             ProductQuantityGroup: true,
             ProductPaperStockSet: true,
-            productAddOns: true,
+            ProductAddOn: true,
           },
         },
       },
       orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
 
-    console.log(`✅ Found ${products.length} products`)
+    // console.log(`✅ Found ${products.length} products`)
 
     return NextResponse.json({
       success: true,

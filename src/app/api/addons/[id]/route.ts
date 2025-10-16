@@ -49,7 +49,7 @@ export async function PUT(
 
     const { id } = await params
     const data = await request.json()
-    console.log('[PUT /api/addons/[id]] Updating addon:', id)
+    // console.log('[PUT /api/addons/[id]] Updating addon:', id)
 
     // Check if addon exists
     const existing = await prisma.addOn.findUnique({ where: { id } })
@@ -85,7 +85,7 @@ export async function PUT(
       },
     })
 
-    console.log('[PUT /api/addons/[id]] Updated addon:', addon.id)
+    // console.log('[PUT /api/addons/[id]] Updated addon:', addon.id)
     return NextResponse.json(addon)
   } catch (error) {
     console.error('[PUT /api/addons/[id]] Error:', error)
@@ -120,7 +120,7 @@ export async function DELETE(
     }
 
     const { id } = await params
-    console.log('[DELETE /api/addons/[id]] Deleting addon:', id)
+    // console.log('[DELETE /api/addons/[id]] Deleting addon:', id)
 
     // Check if addon exists
     const addon = await prisma.addOn.findUnique({
@@ -152,7 +152,7 @@ export async function DELETE(
 
     await prisma.addOn.delete({ where: { id } })
 
-    console.log('[DELETE /api/addons/[id]] Deleted addon:', id)
+    // console.log('[DELETE /api/addons/[id]] Deleted addon:', id)
     return NextResponse.json({ message: 'Addon deleted successfully' })
   } catch (error) {
     console.error('[DELETE /api/addons/[id]] Error:', error)

@@ -38,15 +38,15 @@ export function getRedisClient(): Redis {
     })
 
     redisClient.on('connect', () => {
-      console.log('Redis Client Connected')
+      // console.log('Redis Client Connected')
     })
 
     redisClient.on('ready', () => {
-      console.log('Redis Client Ready')
+      // console.log('Redis Client Ready')
     })
 
     redisClient.on('reconnecting', () => {
-      console.log('Redis Client Reconnecting...')
+      // console.log('Redis Client Reconnecting...')
     })
   }
 

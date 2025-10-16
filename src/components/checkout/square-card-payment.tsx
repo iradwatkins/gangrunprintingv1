@@ -60,12 +60,12 @@ export function SquareCardPayment({
     // Set isLoading to false immediately so containers render
     setIsLoading(false)
 
-    console.log('[Square] Starting initialization process')
-    console.log('[Square] Environment check:', {
-      appId: applicationId?.substring(0, 20) + '...',
-      locationId,
-      hasSquareSDK: typeof window.Square !== 'undefined',
-    })
+    // console.log('[Square] Starting initialization process')
+    // console.log('[Square] Environment check:', {
+    //   appId: applicationId?.substring(0, 20) + '...',
+    //   locationId,
+    //   hasSquareSDK: typeof window.Square !== 'undefined',
+    // })
 
     const initializeSquare = async () => {
       try {
@@ -84,15 +84,15 @@ export function SquareCardPayment({
           throw new Error('Square Web Payments SDK failed to load - please refresh the page')
         }
 
-        console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
-        console.log('[Square] Creating payments instance...')
+        // console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
+        // console.log('[Square] Creating payments instance...')
 
         const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
         setPayments(paymentsInstance)
-        console.log('[Square] Payments instance created')
+        // console.log('[Square] Payments instance created')
 
         // Initialize card
-        console.log('[Square] Creating card instance...')
+        // console.log('[Square] Creating card instance...')
         const cardInstance = await paymentsInstance.card({
           style: {
             '.input-container': {
@@ -116,7 +116,7 @@ export function SquareCardPayment({
           },
         })
 
-        console.log('[Square] Waiting for card container...')
+        // console.log('[Square] Waiting for card container...')
         let containerAttempts = 0
         let container = document.getElementById('square-card-container')
         while (!container && containerAttempts < 30) {
@@ -129,14 +129,14 @@ export function SquareCardPayment({
           throw new Error('Card container element not found after 3 seconds')
         }
 
-        console.log('[Square] Container found, attaching card...')
+        // console.log('[Square] Container found, attaching card...')
         await cardInstance.attach('#square-card-container')
         setCard(cardInstance)
-        console.log('[Square] Card attached successfully')
+        // console.log('[Square] Card attached successfully')
 
         // Try to initialize Cash App Pay
         try {
-          console.log('[Cash App Pay] Attempting initialization...')
+          // console.log('[Cash App Pay] Attempting initialization...')
           const cashAppInstance = await paymentsInstance.cashAppPay({
             redirectURL: window.location.href,
             referenceId: `order-${Date.now()}`,
@@ -154,16 +154,16 @@ export function SquareCardPayment({
           if (cashAppContainer) {
             await cashAppInstance.attach('#square-cashapp-container')
             setCashAppPay(cashAppInstance)
-            console.log('[Cash App Pay] Initialized successfully')
+            // console.log('[Cash App Pay] Initialized successfully')
           } else {
             console.warn('[Cash App Pay] Container not found')
           }
         } catch (cashAppError: any) {
-          console.log('[Cash App Pay] Not available:', cashAppError.message)
+          // console.log('[Cash App Pay] Not available:', cashAppError.message)
         }
 
         setIsInitializing(false)
-        console.log('[Square] Initialization complete')
+        // console.log('[Square] Initialization complete')
       } catch (err) {
         console.error('[Square] Initialization error:', err)
         const errorMsg = err instanceof Error ? err.message : 'Unknown error'
@@ -201,23 +201,23 @@ export function SquareCardPayment({
   const loadSquareScript = () => {
     return new Promise((resolve, reject) => {
       if (window.Square) {
-        console.log('[Square] Square.js already loaded')
+        // console.log('[Square] Square.js already loaded')
         resolve(true)
         return
       }
 
-      console.log('[Square] Loading Square.js script...')
+      // console.log('[Square] Loading Square.js script...')
       const script = document.createElement('script')
       // Use correct environment URL based on SQUARE_ENVIRONMENT
       const sdkUrl = environment === 'production'
         ? 'https://web.squarecdn.com/v1/square.js'
         : 'https://sandbox.web.squarecdn.com/v1/square.js'
-      console.log(`[Square] Using ${environment} environment:`, sdkUrl)
+      // console.log(`[Square] Using ${environment} environment:`, sdkUrl)
       script.src = sdkUrl
       script.async = true
 
       script.onload = () => {
-        console.log('[Square] Square.js loaded successfully')
+        // console.log('[Square] Square.js loaded successfully')
         resolve(true)
       }
 
@@ -237,7 +237,7 @@ export function SquareCardPayment({
     setError(null)
 
     try {
-      console.log('[Square] Starting card payment process...')
+      // console.log('[Square] Starting card payment process...')
 
       const verificationDetails = {
         intent: 'CHARGE',
@@ -251,11 +251,11 @@ export function SquareCardPayment({
         sellerKeyedIn: false,
       }
 
-      console.log('[Square] Tokenizing card...')
+      // console.log('[Square] Tokenizing card...')
       const result = await card.tokenize(verificationDetails)
 
       if (result.status === 'OK') {
-        console.log('[Square] Tokenization successful')
+        // console.log('[Square] Tokenization successful')
 
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
@@ -272,7 +272,7 @@ export function SquareCardPayment({
         const paymentResult = await response.json()
 
         if (paymentResult.success) {
-          console.log('[Square] Payment successful')
+          // console.log('[Square] Payment successful')
           onPaymentSuccess(paymentResult)
         } else {
           throw new Error(paymentResult.error || 'Payment failed')
@@ -298,11 +298,11 @@ export function SquareCardPayment({
     setError(null)
 
     try {
-      console.log('[Cash App Pay] Starting payment...')
+      // console.log('[Cash App Pay] Starting payment...')
       const result = await cashAppPay.tokenize()
 
       if (result.status === 'OK') {
-        console.log('[Cash App Pay] Tokenization successful')
+        // console.log('[Cash App Pay] Tokenization successful')
 
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
@@ -319,7 +319,7 @@ export function SquareCardPayment({
         const paymentResult = await response.json()
 
         if (paymentResult.success) {
-          console.log('[Cash App Pay] Payment successful')
+          // console.log('[Cash App Pay] Payment successful')
           onPaymentSuccess(paymentResult)
         } else {
           throw new Error(paymentResult.error || 'Payment failed')

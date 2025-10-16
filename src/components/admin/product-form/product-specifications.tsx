@@ -37,7 +37,7 @@ export function ProductSpecifications({
   onUpdate,
 }: ProductSpecificationsProps) {
   // Debug logging to track data
-  console.log('ProductSpecifications loaded:', {
+  // console.log('ProductSpecifications loaded:', {
     quantityGroups: quantityGroups?.length || 0,
     sizeGroups: sizeGroups?.length || 0,
     paperStockSets: paperStockSets?.length || 0,
@@ -81,7 +81,7 @@ export function ProductSpecifications({
           <Select
             value={formData.selectedQuantityGroup || ''}
             onValueChange={(value) => {
-              console.log('Quantity selected:', value)
+              // console.log('Quantity selected:', value)
               onUpdate({ selectedQuantityGroup: value })
             }}
           >
@@ -122,7 +122,7 @@ export function ProductSpecifications({
           <Select
             value={formData.selectedSizeGroup || ''}
             onValueChange={(value) => {
-              console.log('Size selected:', value)
+              // console.log('Size selected:', value)
               onUpdate({ selectedSizeGroup: value })
             }}
           >
@@ -162,7 +162,7 @@ export function ProductSpecifications({
           <Select
             value={formData.selectedPaperStockSet || ''}
             onValueChange={(value) => {
-              console.log('Paper stock selected:', value)
+              // console.log('Paper stock selected:', value)
               onUpdate({ selectedPaperStockSet: value })
             }}
           >

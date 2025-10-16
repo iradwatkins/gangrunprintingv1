@@ -64,7 +64,7 @@ export function ProductDesignOptions({
           <Select
             value={formData.selectedDesignSet || 'none'}
             onValueChange={(value) => {
-              console.log('Design set selected:', value)
+              // console.log('Design set selected:', value)
               // If "none" is selected, set to empty string
               onUpdate({ selectedDesignSet: value === 'none' ? '' : value })
             }}

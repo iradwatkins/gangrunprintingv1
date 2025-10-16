@@ -317,11 +317,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })
 
       if (productQuantityGroup?.QuantityGroup) {
-        console.log('[Config API] Found quantity group:', productQuantityGroup.QuantityGroup.name)
+        // console.log('[Config API] Found quantity group:', productQuantityGroup.QuantityGroup.name)
         quantities = transformQuantityValues(productQuantityGroup.QuantityGroup)
-        console.log('[Config API] Transformed quantities:', quantities.length)
+        // console.log('[Config API] Transformed quantities:', quantities.length)
       } else {
-        console.log('[Config API] No quantity group found for product:', productId)
+        // console.log('[Config API] No quantity group found for product:', productId)
       }
     } catch (dbError) {
       console.error('[Config API] Error fetching quantities:', dbError)
@@ -411,7 +411,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             isDefault: pss.isEnabled || false,
           })),
         }))
-        console.log('[Config API] Loaded real paper stocks:', paperStocks.length)
+        // console.log('[Config API] Loaded real paper stocks:', paperStocks.length)
       }
     } catch (dbError) {
       console.error('[Config API] Error fetching paper stocks:', dbError)
@@ -459,7 +459,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           restrictedCoatings: [],
           isDefault: item.isDefault || false,
         }))
-        console.log('[Config API] Loaded real turnaround times:', turnaroundTimes.length)
+        // console.log('[Config API] Loaded real turnaround times:', turnaroundTimes.length)
       }
     } catch (dbError) {
       console.error('[Config API] Error fetching turnaround times:', dbError)
@@ -550,7 +550,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           isDefault: item.isDefault || false,
           sortOrder: item.sortOrder,
         }))
-        console.log('[Config API] Loaded design options:', designOptions.length)
+        // console.log('[Config API] Loaded design options:', designOptions.length)
       }
     } catch (dbError) {
       console.error('[Config API] Error fetching design options:', dbError)

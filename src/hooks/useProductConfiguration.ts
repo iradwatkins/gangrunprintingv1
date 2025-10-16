@@ -196,7 +196,7 @@ export function useProductConfiguration({
     try {
       clearErrors() // Clear any previous errors
 
-      console.log('[useProductConfiguration] Fetching config for product:', productId)
+      // console.log('[useProductConfiguration] Fetching config for product:', productId)
 
       const response = await fetch(`/api/products/${productId}/configuration`, {
         method: 'GET',
@@ -206,14 +206,14 @@ export function useProductConfiguration({
         },
       })
 
-      console.log('[useProductConfiguration] Response status:', response.status)
+      // console.log('[useProductConfiguration] Response status:', response.status)
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
       const data: SimpleConfigData = await response.json()
-      console.log('[useProductConfiguration] Data received:', {
+      // console.log('[useProductConfiguration] Data received:', {
         quantities: data.quantities?.length,
         sizes: data.sizes?.length,
         paperStocks: data.paperStocks?.length,

@@ -85,7 +85,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return NextResponse.json(
         {
           error: 'Validation error',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

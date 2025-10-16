@@ -37,13 +37,13 @@ export function CashAppPayment({
   const cashAppContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    console.log('[Cash App Pay] Starting initialization')
-    console.log('[Cash App Pay] Environment:', {
-      appId: applicationId?.substring(0, 20) + '...',
-      locationId,
-      amount: total,
-      hasSquareSDK: typeof window.Square !== 'undefined',
-    })
+    // console.log('[Cash App Pay] Starting initialization')
+    // console.log('[Cash App Pay] Environment:', {
+    //   appId: applicationId?.substring(0, 20) + '...',
+    //   locationId,
+    //   amount: total,
+    //   hasSquareSDK: typeof window.Square !== 'undefined',
+    // })
 
     // Safety timeout
     const timeout = setTimeout(() => {
@@ -56,7 +56,7 @@ export function CashAppPayment({
 
     const initializeCashApp = async () => {
       try {
-        console.log('[Cash App Pay] Waiting for Square SDK...')
+        // console.log('[Cash App Pay] Waiting for Square SDK...')
 
         // Wait for Square SDK
         let attempts = 0
@@ -70,12 +70,12 @@ export function CashAppPayment({
           throw new Error('Square Web Payments SDK failed to load')
         }
 
-        console.log('[Cash App Pay] Square SDK ready after', attempts * 100, 'ms')
+        // console.log('[Cash App Pay] Square SDK ready after', attempts * 100, 'ms')
 
         // Create payments instance
         const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
         setPayments(paymentsInstance)
-        console.log('[Cash App Pay] Payments instance created')
+        // console.log('[Cash App Pay] Payments instance created')
 
         // Create payment request
         const paymentRequest = paymentsInstance.paymentRequest({
@@ -87,23 +87,23 @@ export function CashAppPayment({
           },
         })
 
-        console.log('[Cash App Pay] Payment request created:', {
-          amount: total.toFixed(2),
-          currency: 'USD',
-        })
+        // console.log('[Cash App Pay] Payment request created:', {
+        //   amount: total.toFixed(2),
+        //   currency: 'USD',
+        // })
 
         // Initialize Cash App Pay
-        console.log('[Cash App Pay] Initializing Cash App Pay...')
+        // console.log('[Cash App Pay] Initializing Cash App Pay...')
         const cashAppInstance = await paymentsInstance.cashAppPay(paymentRequest, {
           redirectURL: window.location.href,
           referenceId: `order_${Date.now()}`,
         })
 
-        console.log('[Cash App Pay] Cash App Pay instance created')
+        // console.log('[Cash App Pay] Cash App Pay instance created')
 
         // Set up tokenization event listener
         cashAppInstance.addEventListener('ontokenization', async (event: any) => {
-          console.log('[Cash App Pay] Tokenization event:', event.detail)
+          // console.log('[Cash App Pay] Tokenization event:', event.detail)
           const { tokenResult } = event.detail
 
           if (tokenResult.status === 'OK') {
@@ -118,7 +118,7 @@ export function CashAppPayment({
         })
 
         // Wait for container
-        console.log('[Cash App Pay] Waiting for container...')
+        // console.log('[Cash App Pay] Waiting for container...')
         let containerAttempts = 0
         let container = document.getElementById('cash-app-container')
         while (!container && containerAttempts < 30) {
@@ -131,7 +131,7 @@ export function CashAppPayment({
           throw new Error('Cash App Pay container not found after 3 seconds')
         }
 
-        console.log('[Cash App Pay] Attaching to container...')
+        // console.log('[Cash App Pay] Attaching to container...')
         await cashAppInstance.attach('#cash-app-container', {
           size: 'medium',
           shape: 'semiround',
@@ -139,7 +139,7 @@ export function CashAppPayment({
         })
 
         setCashAppPay(cashAppInstance)
-        console.log('[Cash App Pay] Successfully attached and ready')
+        // console.log('[Cash App Pay] Successfully attached and ready')
         setIsLoading(false)
       } catch (err) {
         console.error('[Cash App Pay] Initialization error:', err)
@@ -164,7 +164,7 @@ export function CashAppPayment({
         try {
           cashAppPay.destroy()
         } catch (e) {
-          console.log('[Cash App Pay] Cleanup error:', e)
+          // console.log('[Cash App Pay] Cleanup error:', e)
         }
       }
     }
@@ -175,7 +175,7 @@ export function CashAppPayment({
     setError(null)
 
     try {
-      console.log('[Cash App Pay] Processing payment...')
+      // console.log('[Cash App Pay] Processing payment...')
 
       // Send token to backend
       const response = await fetch('/api/checkout/process-square-payment', {
@@ -193,7 +193,7 @@ export function CashAppPayment({
       const paymentResult = await response.json()
 
       if (paymentResult.success) {
-        console.log('[Cash App Pay] Payment successful')
+        // console.log('[Cash App Pay] Payment successful')
         onPaymentSuccess(paymentResult)
       } else {
         throw new Error(paymentResult.error || 'Payment failed')

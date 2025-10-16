@@ -301,7 +301,7 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                       : { aboveDropdown: [], inDropdown: [], belowDropdown: [] }
                   }
                   onAddonChange={(addonId: string, selected: boolean) => {
-                    console.log('Addon changed:', addonId, selected)
+                    // console.log('Addon changed:', addonId, selected)
                   }}
                 />
               ) : (

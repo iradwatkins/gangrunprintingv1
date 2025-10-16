@@ -455,20 +455,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Images (optional) - Link existing images or create new ones
-        console.log(`[${requestId}] Processing ${images.length} images for product`)
+        // console.log(`[${requestId}] Processing ${images.length} images for product`)
         if (images.length > 0) {
           for (let index = 0; index < images.length; index++) {
             const img = images[index]
-            console.log(`[${requestId}] Image ${index}:`, JSON.stringify(img))
+            // console.log(`[${requestId}] Image ${index}:`, JSON.stringify(img))
             let imageId: string
 
             // Check if imageId exists (image already created by upload API)
             if (img.imageId) {
               // Image already exists, just use its ID
-              console.log(`[${requestId}] Using existing image ID: ${img.imageId}`)
+              // console.log(`[${requestId}] Using existing image ID: ${img.imageId}`)
               imageId = img.imageId
             } else {
-              console.log(`[${requestId}] Creating new Image record`)
+              // console.log(`[${requestId}] Creating new Image record`)
 
               // Create new Image record with required ID and updatedAt
               const newImageId = randomUUID()

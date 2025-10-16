@@ -125,7 +125,7 @@ export class OrderService {
           })
         }
 
-        console.log(`[OrderService] Landing page metrics updated for order ${order.orderNumber}`)
+        // console.log(`[OrderService] Landing page metrics updated for order ${order.orderNumber}`)
       } catch (metricsError) {
         // Don't fail payment processing if metrics update fails
         console.error('[OrderService] Failed to update landing page metrics:', metricsError)
@@ -145,7 +145,7 @@ export class OrderService {
       items: order.OrderItem,
     })
 
-    console.log(`[OrderService] Payment processed for order ${order.orderNumber}`)
+    // console.log(`[OrderService] Payment processed for order ${order.orderNumber}`)
   }
 
   /**
@@ -228,7 +228,7 @@ export class OrderService {
       timestamp: new Date().toISOString(),
     })
 
-    console.log(`[OrderService] Status updated: ${order.orderNumber} ${fromStatus} → ${toStatus}`)
+    // console.log(`[OrderService] Status updated: ${order.orderNumber} ${fromStatus} → ${toStatus}`)
   }
 
   /**
@@ -293,7 +293,7 @@ export class OrderService {
       },
     })
 
-    console.log(`[OrderService] Vendor assigned: ${order.orderNumber} → ${vendor.name}`)
+    // console.log(`[OrderService] Vendor assigned: ${order.orderNumber} → ${vendor.name}`)
   }
 
   /**
@@ -356,9 +356,9 @@ export class OrderService {
       shippingAddress: order.shippingAddress,
     })
 
-    console.log(
-      `[OrderService] Order shipped: ${order.orderNumber} via ${carrier} (${trackingNumber})`
-    )
+    // console.log(
+    //   `[OrderService] Order shipped: ${order.orderNumber} via ${carrier} (${trackingNumber})`
+    // )
   }
 
   /**
@@ -408,7 +408,7 @@ export class OrderService {
       customerEmail: order.email,
     })
 
-    console.log(`[OrderService] Order picked up: ${order.orderNumber} by ${pickedUpBy}`)
+    // console.log(`[OrderService] Order picked up: ${order.orderNumber} by ${pickedUpBy}`)
   }
 
   /**
@@ -449,7 +449,7 @@ export class OrderService {
     // Send on-hold notification
     await this.sendOnHoldNotification(order, reason)
 
-    console.log(`[OrderService] Order on hold: ${order.orderNumber} - ${reason}`)
+    // console.log(`[OrderService] Order on hold: ${order.orderNumber} - ${reason}`)
   }
 
   /**
@@ -489,7 +489,7 @@ export class OrderService {
       },
     })
 
-    console.log(`[OrderService] Order resumed: ${order.orderNumber} → ${resumeStatus}`)
+    // console.log(`[OrderService] Order resumed: ${order.orderNumber} → ${resumeStatus}`)
   }
 
   /**

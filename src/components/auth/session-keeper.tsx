@@ -68,9 +68,9 @@ export function SessionKeeper() {
         const shouldRefresh = timeUntilExpiry < 30 * 24 * 60 * 60 * 1000
 
         if (shouldRefresh) {
-          console.log(
-            `Session refresh needed: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left)`
-          )
+          // console.log(
+          //   `Session refresh needed: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left)`
+          // )
 
           const refreshResponse = await fetch('/api/auth/session/refresh', {
             method: 'POST',
@@ -79,17 +79,17 @@ export function SessionKeeper() {
 
           if (refreshResponse.ok) {
             const refreshData = await refreshResponse.json()
-            console.log('Session refreshed successfully:', refreshData)
+            // console.log('Session refreshed successfully:', refreshData)
           } else {
-            console.log('Session refresh failed:', await refreshResponse.text())
+            // console.log('Session refresh failed:', await refreshResponse.text())
           }
         } else {
-          console.log(
-            `Session still valid: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left`
-          )
+          // console.log(
+          //   `Session still valid: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left`
+          // )
         }
       } catch (error) {
-        console.log('Session check error:', error)
+        // console.log('Session check error:', error)
       }
     }
 

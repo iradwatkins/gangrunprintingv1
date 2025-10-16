@@ -140,7 +140,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
         // Update authorization header
         this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken!.access_token}`
 
-        console.log('[FedEx] Successfully authenticated')
+        // console.log('[FedEx] Successfully authenticated')
       },
       undefined, // No token refresh callback for authentication itself
       'FedEx OAuth2 Authentication'
@@ -242,9 +242,9 @@ export class FedExProviderEnhanced implements ShippingProvider {
     // Convert back to ShippingPackage format
     const optimizedPackages = convertToShippingPackages(packingResult, packages[0]?.value)
 
-    console.log(
-      `[FedEx] Optimized ${packages.length} packages → ${optimizedPackages.length} boxes (estimated savings: ${((1 - optimizedPackages.length / packages.length) * 100).toFixed(0)}%)`
-    )
+    // console.log(
+    //   `[FedEx] Optimized ${packages.length} packages → ${optimizedPackages.length} boxes (estimated savings: ${((1 - optimizedPackages.length / packages.length) * 100).toFixed(0)}%)`
+    // )
 
     return optimizedPackages
   }

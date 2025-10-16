@@ -49,12 +49,12 @@ export class StatusChangeEmailService {
       })
 
       if (!targetStatus) {
-        console.log(`[StatusChangeEmail] Status not found: ${toStatusSlug}`)
+        // console.log(`[StatusChangeEmail] Status not found: ${toStatusSlug}`)
         return false
       }
 
       if (!targetStatus.sendEmailOnEnter) {
-        console.log(`[StatusChangeEmail] Email not enabled for status: ${targetStatus.name}`)
+        // console.log(`[StatusChangeEmail] Email not enabled for status: ${targetStatus.name}`)
         return false
       }
 
@@ -84,7 +84,7 @@ export class StatusChangeEmailService {
         await this.sendDefaultStatusEmail(order, targetStatus)
       }
 
-      console.log(`[StatusChangeEmail] Email sent for order ${order.orderNumber} → ${targetStatus.name}`)
+      // console.log(`[StatusChangeEmail] Email sent for order ${order.orderNumber} → ${targetStatus.name}`)
       return true
     } catch (error) {
       console.error('[StatusChangeEmail] Failed to send email:', error)
@@ -142,7 +142,7 @@ export class StatusChangeEmailService {
         text,
       })
 
-      console.log(`[StatusChangeEmail] Custom template sent: ${template.name}`)
+      // console.log(`[StatusChangeEmail] Custom template sent: ${template.name}`)
     } catch (error) {
       console.error('[StatusChangeEmail] Failed to send custom template:', error)
       // Fallback to default email
@@ -172,7 +172,7 @@ export class StatusChangeEmailService {
       text: emailContent.text,
     })
 
-    console.log(`[StatusChangeEmail] Default email sent for status: ${status.name}`)
+    // console.log(`[StatusChangeEmail] Default email sent for status: ${status.name}`)
   }
 
   /**

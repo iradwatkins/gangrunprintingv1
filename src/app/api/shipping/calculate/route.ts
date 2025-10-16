@@ -37,17 +37,17 @@ const calculateRequestSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  console.log('='.repeat(80))
-  console.log('[Shipping API] 🚀 REQUEST RECEIVED at', new Date().toISOString())
-  console.log('='.repeat(80))
+  // console.log('='.repeat(80))
+  // console.log('[Shipping API] 🚀 REQUEST RECEIVED at', new Date().toISOString())
+  // console.log('='.repeat(80))
   try {
     const rawBody = await request.text()
-    console.log('[Shipping API] Raw body (first 500 chars):', rawBody.substring(0, 500))
+    // console.log('[Shipping API] Raw body (first 500 chars):', rawBody.substring(0, 500))
 
     const body = JSON.parse(rawBody)
-    console.log('[Shipping API] Parsed body:', JSON.stringify(body, null, 2))
-    console.log('[Shipping API] toAddress exists?', !!body.toAddress)
-    console.log('[Shipping API] items exists?', !!body.items)
+    // console.log('[Shipping API] Parsed body:', JSON.stringify(body, null, 2))
+    // console.log('[Shipping API] toAddress exists?', !!body.toAddress)
+    // console.log('[Shipping API] items exists?', !!body.items)
 
     const validation = calculateRequestSchema.safeParse(body)
 
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
           const metadata = product.metadata as { freeShipping?: boolean }
           if (metadata.freeShipping === true) {
             hasFreeShipping = true
-            console.log('[Shipping API] ✅ Product has FREE SHIPPING:', item.productId)
+            // console.log('[Shipping API] ✅ Product has FREE SHIPPING:', item.productId)
             break
           }
         }
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     // If free shipping, return immediately with $0 rate
     if (hasFreeShipping) {
-      console.log('[Shipping API] 🎉 FREE SHIPPING APPLIED - Returning $0 rate')
+      // console.log('[Shipping API] 🎉 FREE SHIPPING APPLIED - Returning $0 rate')
       return NextResponse.json({
         success: true,
         rates: [
@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
       isResidential: false,
     }
 
-    console.log('[Shipping API] Ship from:', shipFrom)
-    console.log('[Shipping API] Ship to:', toAddress)
+    // console.log('[Shipping API] Ship from:', shipFrom)
+    // console.log('[Shipping API] Ship to:', toAddress)
 
     // Calculate weight for each item
     const packages: ShippingPackage[] = []
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
           height: item.height,
           quantity: item.quantity,
         })
-        console.log('[Shipping API] Calculated weight from paperStockWeight:', weight, 'lbs')
+        // console.log('[Shipping API] Calculated weight from paperStockWeight:', weight, 'lbs')
       }
       // Otherwise, look up the paper stock
       else if (item.paperStockId) {
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
             height: item.height,
             quantity: item.quantity,
           })
-          console.log('[Shipping API] Calculated weight from DB paperStock:', weight, 'lbs')
+          // console.log('[Shipping API] Calculated weight from DB paperStock:', weight, 'lbs')
         }
       }
       // Default weight if no paper stock info (using typical 60lb offset = 0.0009)
@@ -155,20 +155,20 @@ export async function POST(request: NextRequest) {
           height: item.height,
           quantity: item.quantity,
         })
-        console.log('[Shipping API] Calculated weight from default (60lb offset):', weight, 'lbs')
+        // console.log('[Shipping API] Calculated weight from default (60lb offset):', weight, 'lbs')
       }
 
       totalWeight += weight
     }
 
-    console.log('[Shipping API] Total product weight:', totalWeight, 'lbs')
+    // console.log('[Shipping API] Total product weight:', totalWeight, 'lbs')
 
     // Split into boxes using standard box dimensions and 36lb max weight
     const boxes = splitIntoBoxes(totalWeight)
     const boxSummary = getBoxSplitSummary(boxes)
 
-    console.log('[Shipping API] Box split:', boxSummary)
-    console.log('[Shipping API] Boxes created:', JSON.stringify(boxes, null, 2))
+    // console.log('[Shipping API] Box split:', boxSummary)
+    // console.log('[Shipping API] Boxes created:', JSON.stringify(boxes, null, 2))
 
     // Use the split boxes for rating
     packages.push(...boxes)
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
         const product = await prisma.product.findUnique({
           where: { id: item.productId },
           select: {
-            productCategory: {
+            ProductCategory: {
               select: {
                 Vendor: {
                   select: {
@@ -193,23 +193,23 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        if (product?.productCategory?.Vendor?.supportedCarriers) {
-          const carriers = product.productCategory.Vendor.supportedCarriers
-          console.log('[Shipping API] 📦 Product', item.productId, 'vendor supports:', carriers)
+        if (product?.ProductCategory?.Vendor?.supportedCarriers) {
+          const carriers = product.ProductCategory.Vendor.supportedCarriers
+          // console.log('[Shipping API] 📦 Product', item.productId, 'vendor supports:', carriers)
           carriers.forEach((carrier: string) => supportedCarriers.add(carrier.toUpperCase()))
         } else {
           // If no vendor or no supported carriers, allow all carriers (default behavior)
-          console.log('[Shipping API] ⚠️ Product', item.productId, 'has no vendor - using all carriers')
+          // console.log('[Shipping API] ⚠️ Product', item.productId, 'has no vendor - using all carriers')
           supportedCarriers.add('FEDEX')
           supportedCarriers.add('SOUTHWEST_CARGO')
         }
       }
     }
 
-    console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
+    // console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
 
     // Get rates from supported carriers with timeout protection
-    console.log('[Shipping API] Fetching rates from supported carriers...')
+    // console.log('[Shipping API] Fetching rates from supported carriers...')
 
     // Create timeout promise (10 seconds)
     const timeout = new Promise<never>((_, reject) =>
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
     let rates: unknown[] = []
 
     try {
-      console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
+      // console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
 
       const ratePromises = []
 
@@ -247,15 +247,15 @@ export async function POST(request: NextRequest) {
 
       allRates.forEach((carrierRates, index) => {
         const carrierName = index === 0 ? 'FedEx' : 'Southwest Cargo'
-        console.log(`[Shipping API] ✅ ${carrierName} rates received:`, carrierRates.length, 'rates')
+        // console.log(`[Shipping API] ✅ ${carrierName} rates received:`, carrierRates.length, 'rates')
         if (carrierRates.length > 0) {
-          console.log(`[Shipping API] ${carrierName} rates:`, JSON.stringify(carrierRates, null, 2))
+          // console.log(`[Shipping API] ${carrierName} rates:`, JSON.stringify(carrierRates, null, 2))
         }
       })
 
       rates = allRates.flat()
-      console.log('[Shipping API] 📊 Combined total rates:', rates.length)
-      console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
+      // console.log('[Shipping API] 📊 Combined total rates:', rates.length)
+      // console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {
       console.error('[Shipping API] ❌ Timeout error:', timeoutError)
       // Empty rates array on timeout - UI will show "no shipping available"

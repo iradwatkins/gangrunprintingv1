@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json()
-    console.log('[POST /api/addons] Creating addon:', data)
+    // console.log('[POST /api/addons] Creating addon:', data)
 
     const {
       name,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('[POST /api/addons] Created addon:', addon.id)
+    // console.log('[POST /api/addons] Created addon:', addon.id)
     return NextResponse.json(addon, { status: 201 })
   } catch (error) {
     console.error('[POST /api/addons] Error:', error)

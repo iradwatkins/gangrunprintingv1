@@ -172,12 +172,12 @@ function EditProductClient({ id }: { id: string }) {
         setupFee: data.setupFee || data.SetupFee || 0,
       }
 
-      console.log('[Edit Product] Form data mapped:', {
-        selectedPaperStockSet: mappedData.selectedPaperStockSet,
-        selectedTurnaroundTimeSet: mappedData.selectedTurnaroundTimeSet,
-        selectedQuantityGroup: mappedData.selectedQuantityGroup,
-        selectedSizeGroup: mappedData.selectedSizeGroup,
-      })
+      // console.log('[Edit Product] Form data mapped:', {
+      //   selectedPaperStockSet: mappedData.selectedPaperStockSet,
+      //   selectedTurnaroundTimeSet: mappedData.selectedTurnaroundTimeSet,
+      //   selectedQuantityGroup: mappedData.selectedQuantityGroup,
+      //   selectedSizeGroup: mappedData.selectedSizeGroup,
+      // })
 
       setFormData(mappedData)
     } catch (error) {
@@ -190,7 +190,7 @@ function EditProductClient({ id }: { id: string }) {
 
   const fetchData = async () => {
     try {
-      console.log('[Edit Product] Fetching configuration data...')
+      // console.log('[Edit Product] Fetching configuration data...')
       const [catRes, paperRes, qtyRes, sizeRes, addOnRes, turnaroundRes, designRes] =
         await Promise.all([
           fetch('/api/product-categories'),
@@ -204,37 +204,37 @@ function EditProductClient({ id }: { id: string }) {
 
       if (catRes.ok) {
         const cats = await catRes.json()
-        console.log('[Edit Product] Loaded categories:', cats.length)
+        // console.log('[Edit Product] Loaded categories:', cats.length)
         setCategories(cats)
       }
       if (paperRes.ok) {
         const papers = await paperRes.json()
-        console.log('[Edit Product] Loaded paper stock sets:', papers.length, papers)
+        // console.log('[Edit Product] Loaded paper stock sets:', papers.length, papers)
         setPaperStockSets(papers)
       }
       if (qtyRes.ok) {
         const qtys = await qtyRes.json()
-        console.log('[Edit Product] Loaded quantity groups:', qtys.length)
+        // console.log('[Edit Product] Loaded quantity groups:', qtys.length)
         setQuantityGroups(qtys)
       }
       if (sizeRes.ok) {
         const sizes = await sizeRes.json()
-        console.log('[Edit Product] Loaded size groups:', sizes.length)
+        // console.log('[Edit Product] Loaded size groups:', sizes.length)
         setSizeGroups(sizes)
       }
       if (addOnRes.ok) {
         const addons = await addOnRes.json()
-        console.log('[Edit Product] Loaded addon sets:', addons.length)
+        // console.log('[Edit Product] Loaded addon sets:', addons.length)
         setAddOnSets(addons)
       }
       if (turnaroundRes.ok) {
         const turnarounds = await turnaroundRes.json()
-        console.log('[Edit Product] Loaded turnaround time sets:', turnarounds.length, turnarounds)
+        // console.log('[Edit Product] Loaded turnaround time sets:', turnarounds.length, turnarounds)
         setTurnaroundTimeSets(turnarounds)
       }
       if (designRes.ok) {
         const designs = await designRes.json()
-        console.log('[Edit Product] Loaded design sets:', designs.length)
+        // console.log('[Edit Product] Loaded design sets:', designs.length)
         setDesignSets(designs)
       }
     } catch (error) {
@@ -302,7 +302,7 @@ function EditProductClient({ id }: { id: string }) {
         })),
       }
 
-      console.log('[Edit Product] Sending update request with data:', apiData)
+      // console.log('[Edit Product] Sending update request with data:', apiData)
 
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
@@ -311,7 +311,7 @@ function EditProductClient({ id }: { id: string }) {
         credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
-      console.log('[Edit Product] Response status:', response.status)
+      // console.log('[Edit Product] Response status:', response.status)
 
       if (response.ok) {
         toast.success('Product updated successfully')

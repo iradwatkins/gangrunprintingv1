@@ -11,7 +11,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const original = await prisma.addOn.findUnique({
       where: { id },
       include: {
-        addOnSubOptions: {
+        AddOnSubOption: {
           orderBy: {
             displayOrder: 'asc',
           },
@@ -55,9 +55,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
 
       // Copy all add-on sub-options
-      if (original.addOnSubOptions.length > 0) {
+      if (original.AddOnSubOption.length > 0) {
         await tx.addOnSubOption.createMany({
-          data: original.addOnSubOptions.map((subOption) => ({
+          data: original.AddOnSubOption.map((subOption) => ({
             id: createId(),
             addOnId: newAddOn.id,
             name: subOption.name,
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return await tx.addOn.findUnique({
         where: { id: newAddOn.id },
         include: {
-          addOnSubOptions: {
+          AddOnSubOption: {
             orderBy: {
               displayOrder: 'asc',
             },
