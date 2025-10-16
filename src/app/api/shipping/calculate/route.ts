@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { shippingCalculator, type ShippingAddress, type ShippingPackage } from '@/lib/shipping'
+import { type ShippingAddress, type ShippingPackage } from '@/lib/shipping'
+import { getShippingRegistry } from '@/lib/shipping/module-registry'
 import { prisma } from '@/lib/prisma'
 import { calculateWeight } from '@/lib/shipping/weight-calculator'
 import { splitIntoBoxes, getBoxSplitSummary } from '@/lib/shipping/box-splitter'
@@ -208,52 +209,47 @@ export async function POST(request: NextRequest) {
 
     // console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
 
-    // Get rates from supported carriers with timeout protection
-    // console.log('[Shipping API] Fetching rates from supported carriers...')
+    // Get rates using module registry
+    // console.log('[Shipping API] Fetching rates from module registry...')
 
-    // Create timeout promise (10 seconds)
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Shipping rate calculation timed out')), 10000)
-    )
-
+    const registry = getShippingRegistry()
     let rates: unknown[] = []
 
     try {
       // console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
 
-      const ratePromises = []
+      // Get enabled modules
+      const enabledModules = registry.getEnabledModules()
 
-      if (supportedCarriers.has('FEDEX')) {
-        ratePromises.push(
-          shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages).catch((err) => {
-            console.error('[Shipping API] ❌ FedEx error:', err.message || err)
-            console.error('[Shipping API] FedEx error stack:', err.stack)
-            return []
-          })
-        )
-      }
-
-      if (supportedCarriers.has('SOUTHWEST_CARGO') || supportedCarriers.has('SOUTHWEST CARGO')) {
-        ratePromises.push(
-          shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages).catch((err) => {
-            console.error('[Shipping API] ❌ Southwest Cargo error:', err.message || err)
-            console.error('[Shipping API] Southwest Cargo error stack:', err.stack)
-            return []
-          })
-        )
-      }
-
-      const allRates = await Promise.race([Promise.all(ratePromises), timeout])
-
-      allRates.forEach((carrierRates, index) => {
-        const carrierName = index === 0 ? 'FedEx' : 'Southwest Cargo'
-        // console.log(`[Shipping API] ✅ ${carrierName} rates received:`, carrierRates.length, 'rates')
-        if (carrierRates.length > 0) {
-          // console.log(`[Shipping API] ${carrierName} rates:`, JSON.stringify(carrierRates, null, 2))
-        }
+      // Filter by supported carriers if specified
+      const modulesToUse = enabledModules.filter(module => {
+        const carrierName = module.carrier.toUpperCase().replace(/\s+/g, '_')
+        return supportedCarriers.has(carrierName) || supportedCarriers.has(module.carrier)
       })
 
+      // console.log('[Shipping API] Using modules:', modulesToUse.map(m => m.id).join(', '))
+
+      // Fetch rates from each module with error handling
+      const ratePromises = modulesToUse.map(module =>
+        module.provider.getRates(shipFrom, toAddress, packages)
+          .then(moduleRates => {
+            // console.log(`[Shipping API] ✅ ${module.name} returned ${moduleRates.length} rates`)
+            return moduleRates
+          })
+          .catch(err => {
+            console.error(`[Shipping API] ❌ ${module.name} error:`, err.message || err)
+            return []
+          })
+      )
+
+      // Create timeout promise (10 seconds)
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Shipping rate calculation timed out')), 10000)
+      )
+
+      const allRates = await Promise.race([Promise.all(ratePromises), timeout])
       rates = allRates.flat()
+
       // console.log('[Shipping API] 📊 Combined total rates:', rates.length)
       // console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {

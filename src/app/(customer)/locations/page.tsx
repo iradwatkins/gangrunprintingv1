@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +24,7 @@ import {
   Package,
   Truck,
   Info,
+  Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -59,266 +60,59 @@ const retailLocations = [
   },
 ]
 
-// Air cargo locations data (abbreviated for space - full list would include all locations)
-const airCargoLocations = [
-  {
-    id: 'albany',
-    code: 'ALB',
-    name: 'Albany',
-    carrier: 'Southwest Airlines Cargo',
-    operator: 'Mobile Air Transport',
-    address: '46 Kelly Rd',
-    city: 'Latham',
-    state: 'NY',
-    zip: '12110',
-    hours: {
-      'Mon-Fri': '5:00am-9:00pm',
-      'Sat-Sun': 'Closed',
-    },
-  },
-  {
-    id: 'atlanta',
-    code: 'ATL',
-    name: 'Atlanta',
-    carrier: 'Southwest Airlines Cargo',
-    address: '3400 Interloop Rd, Space G2-Cargo',
-    city: 'Atlanta',
-    state: 'GA',
-    zip: '30354',
-    hours: {
-      'Mon-Fri': '5:00am-12:00am',
-      'Sat-Sun': '5:00am-11:00pm',
-    },
-  },
-  {
-    id: 'austin',
-    code: 'AUS',
-    name: 'Austin',
-    carrier: 'Southwest Airlines Cargo',
-    address: '3400 Spirit of Texas Dr Ste 250',
-    city: 'Austin',
-    state: 'TX',
-    zip: '78719',
-    hours: {
-      'Mon-Fri': '4:30am-1:30am',
-      Sat: '5:30am-9:00pm',
-      Sun: '4:30am-9:00pm',
-    },
-  },
-  {
-    id: 'boston',
-    code: 'BOS',
-    name: 'Boston',
-    carrier: 'Southwest Airlines Cargo',
-    address: '112 Harborside Dr South Cargo Bldg 63',
-    city: 'Boston',
-    state: 'MA',
-    zip: '02128',
-    hours: {
-      'Mon-Fri': '4:30am-12:00am',
-      Sat: '5:00am-7:00pm',
-      Sun: '5:00am-5:00pm',
-    },
-  },
-  {
-    id: 'chicago-mdw',
-    code: 'MDW',
-    name: 'Chicago Midway',
-    carrier: 'Southwest Airlines Cargo',
-    address: '5600 S Cicero Ave',
-    city: 'Chicago',
-    state: 'IL',
-    zip: '60638',
-    hours: {
-      'Mon-Fri': '4:30am-12:00am',
-      Sat: '5:00am-10:00pm',
-      Sun: '5:00am-10:00pm',
-    },
-  },
-  {
-    id: 'dallas',
-    code: 'DAL',
-    name: 'Dallas',
-    carrier: 'Southwest Airlines Cargo',
-    address: '7510 Aviation Place Ste 110',
-    city: 'Dallas',
-    state: 'TX',
-    zip: '75235',
-    hours: {
-      'Mon-Fri': '4:30am-1:30am',
-      Sat: '4:30am-12:00am',
-      Sun: '4:30am-1:30am',
-    },
-  },
-  {
-    id: 'denver',
-    code: 'DEN',
-    name: 'Denver',
-    carrier: 'Southwest Airlines Cargo',
-    address: '7640 N Undergrove St (Suite E)',
-    city: 'Denver',
-    state: 'CO',
-    zip: '80249',
-    hours: {
-      'Mon-Sat': '4:30am-12:00am',
-      Sun: '5:00am-12:00am',
-    },
-  },
-  {
-    id: 'houston-hobby',
-    code: 'HOU',
-    name: 'Houston Hobby',
-    carrier: 'Southwest Airlines Cargo',
-    address: '7910 Airport Blvd',
-    city: 'Houston',
-    state: 'TX',
-    zip: '77061',
-    hours: {
-      Mon: '4:00am-12:00am',
-      'Tue-Fri': 'Open 24 hours',
-      Sat: '12:00am-12:00am',
-      Sun: '5:00am-12:00am',
-    },
-  },
-  {
-    id: 'las-vegas',
-    code: 'LAS',
-    name: 'Las Vegas',
-    carrier: 'Southwest Airlines Cargo',
-    address: '6055 Surrey St Ste 121',
-    city: 'Las Vegas',
-    state: 'NV',
-    zip: '89119',
-    hours: {
-      'Mon-Fri': '4:30am-11:30pm',
-      'Sat-Sun': '6:00am-9:30pm',
-    },
-  },
-  {
-    id: 'los-angeles',
-    code: 'LAX',
-    name: 'Los Angeles',
-    carrier: 'Southwest Airlines Cargo',
-    address: '5600 W Century Blvd',
-    city: 'Los Angeles',
-    state: 'CA',
-    zip: '90045',
-    hours: {
-      Mon: '4:30am-12:00am',
-      'Tue-Fri': 'Open 24 hours',
-      Sat: '12:00am-12:00am',
-      Sun: '5:00am-12:00am',
-    },
-  },
-  {
-    id: 'miami',
-    code: 'MIA',
-    name: 'Miami',
-    carrier: 'Southwest Airlines Cargo',
-    operator: 'Swissport Cargo Services',
-    address: '1851 NW 68th Avenue, Cargo Building 706 STE 225',
-    city: 'Miami',
-    state: 'FL',
-    zip: '33126',
-    hours: {
-      'Mon-Sun': '6:00am-6:00pm',
-    },
-  },
-  {
-    id: 'new-york-lga',
-    code: 'LGA',
-    name: 'New York LaGuardia',
-    carrier: 'Southwest Airlines Cargo',
-    operator: 'JetStream Ground Services, Inc.',
-    address: 'Cargo Building Hangar 5A',
-    city: 'Flushing',
-    state: 'NY',
-    zip: '11371',
-    hours: {
-      Mon: '5:00am-12:00am',
-      'Tue-Thu': 'Open 24 hours',
-      Fri: '12:00am-12:00am',
-      'Sat-Sun': '5:00am-11:00pm',
-    },
-  },
-  {
-    id: 'orlando',
-    code: 'MCO',
-    name: 'Orlando',
-    carrier: 'Southwest Airlines Cargo',
-    address: '8835 Bear Rd',
-    city: 'Orlando',
-    state: 'FL',
-    zip: '32827',
-    hours: {
-      'Mon-Fri': '5:00am-1:00am',
-      'Sat-Sun': '6:00am-11:00pm',
-    },
-  },
-  {
-    id: 'philadelphia',
-    code: 'PHL',
-    name: 'Philadelphia',
-    carrier: 'Southwest Airlines Cargo',
-    address: 'Philadelphia International Airport, Cargo City Bldg C-2 Doors 16-18',
-    city: 'Philadelphia',
-    state: 'PA',
-    zip: '19153',
-    hours: {
-      'Mon-Fri': '5:00am-1:00am',
-      'Sat-Sun': '6:00am-2:00pm',
-    },
-  },
-  {
-    id: 'phoenix',
-    code: 'PHX',
-    name: 'Phoenix',
-    carrier: 'Southwest Airlines Cargo',
-    address: '1251 S 25th PIace Ste 16',
-    city: 'Phoenix',
-    state: 'AZ',
-    zip: '85034',
-    hours: {
-      'Mon-Fri': '4:15am-1:30am',
-      Sat: '5:00am-12:45am',
-      Sun: '5:00am-1:30am',
-    },
-  },
-  {
-    id: 'san-francisco',
-    code: 'SFO',
-    name: 'San Francisco',
-    carrier: 'Southwest Airlines Cargo',
-    address: 'San Francisco International Airport, 606 N.McDonnell Rd',
-    city: 'San Francisco',
-    state: 'CA',
-    zip: '94128',
-    hours: {
-      'Mon-Fri': '5:30am-12:00am',
-      Sat: '5:30am-9:00pm',
-      Sun: '10:00am-6:00pm',
-    },
-  },
-  {
-    id: 'seattle',
-    code: 'SEA',
-    name: 'Seattle/Tacoma',
-    carrier: 'Southwest Airlines Cargo',
-    address: '16215 Air Cargo Rd',
-    city: 'Seattle',
-    state: 'WA',
-    zip: '98158',
-    hours: {
-      'Mon-Fri': '5:00am-12:00am',
-      'Sat-Sun': '6:00am-10:00pm',
-    },
-  },
-]
+interface AirCargoLocation {
+  id: string
+  code: string
+  name: string
+  carrier: string
+  operator?: string
+  address: string
+  city: string
+  state: string
+  zip: string
+  hours: Record<string, string>
+}
 
 export default function LocationsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedState, setSelectedState] = useState('all')
   const [activeTab, setActiveTab] = useState('retail')
+  const [airCargoLocations, setAirCargoLocations] = useState<AirCargoLocation[]>([])
+  const [isLoadingAirports, setIsLoadingAirports] = useState(true)
+
+  // Fetch all airports from API
+  useEffect(() => {
+    const fetchAirports = async () => {
+      try {
+        const response = await fetch('/api/airports')
+        const data = await response.json()
+
+        if (data.success && data.airports) {
+          // Transform API data to match our component format
+          const transformedAirports = data.airports.map((airport: any) => ({
+            id: airport.id,
+            code: airport.code,
+            name: airport.name,
+            carrier: 'Southwest Airlines Cargo',
+            operator: airport.operator || undefined,
+            address: airport.address,
+            city: airport.city,
+            state: airport.state,
+            zip: airport.zip,
+            hours: airport.hours,
+          }))
+
+          setAirCargoLocations(transformedAirports)
+        }
+      } catch (error) {
+        console.error('Failed to fetch airports:', error)
+      } finally {
+        setIsLoadingAirports(false)
+      }
+    }
+
+    fetchAirports()
+  }, [])
 
   // Get unique states from all locations
   const states = useMemo(() => {
@@ -565,7 +359,17 @@ export default function LocationsPage() {
           </TabsContent>
 
           <TabsContent className="mt-8" value="cargo">
-            {filteredAirCargoLocations.length === 0 ? (
+            {isLoadingAirports ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Loader2 className="h-12 w-12 text-primary mx-auto mb-4 animate-spin" />
+                  <p className="text-lg font-medium mb-2">Loading air cargo locations...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Fetching all Southwest Cargo pickup locations
+                  </p>
+                </CardContent>
+              </Card>
+            ) : filteredAirCargoLocations.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <Plane className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -583,19 +387,18 @@ export default function LocationsPage() {
                   ))}
                 </div>
 
-                {/* Note about more locations */}
+                {/* Summary banner */}
                 <Card className="bg-primary/5 border-primary/20">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Info className="h-5 w-5" />
-                      Additional Air Cargo Locations Available
+                      All {airCargoLocations.length} Southwest Airlines Cargo Locations
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">
-                      We partner with Southwest Airlines Cargo to offer pickup at over 100 locations
-                      nationwide. This is a sample of available locations. For a complete list or to
-                      find the location nearest to you, please contact our customer service team.
+                      We partner with Southwest Airlines Cargo to offer affordable air cargo pickup at all {airCargoLocations.length} locations
+                      nationwide. Ship for as little as $1 per pound with same-day or next-day availability!
                     </p>
                     <div className="flex gap-3">
                       <Button asChild>

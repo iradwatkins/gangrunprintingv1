@@ -1,8 +1,7 @@
-import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { generateRequestId } from '@/lib/api-response'
-import { FedExProviderEnhanced } from '@/lib/shipping/providers/fedex'
+import { getShippingRegistry } from '@/lib/shipping/module-registry'
 
 // Request validation schema
 const RateRequestSchema = z.object({
@@ -38,7 +37,7 @@ const RateRequestSchema = z.object({
       })
     )
     .optional(),
-  providers: z.array(z.enum(['fedex', 'southwest-dash'])).default(['fedex', 'southwest-dash']),
+  providers: z.array(z.enum(['fedex', 'southwest-cargo'])).optional(), // Made optional - will use all enabled if not specified
 })
 
 // Default origin (Gang Run Printing warehouse)
@@ -49,23 +48,6 @@ const DEFAULT_ORIGIN = {
   zipCode: '60173',
   country: 'US',
   isResidential: false,
-}
-
-// Initialize FedEx Enhanced Provider (singleton)
-let fedexProvider: FedExProviderEnhanced | null = null
-
-function getFedExProvider(): FedExProviderEnhanced {
-  if (!fedexProvider) {
-    fedexProvider = new FedExProviderEnhanced({
-      clientId: process.env.FEDEX_API_KEY || '',
-      clientSecret: process.env.FEDEX_SECRET_KEY || '',
-      accountNumber: process.env.FEDEX_ACCOUNT_NUMBER || '',
-      testMode: process.env.FEDEX_TEST_MODE === 'true' || !process.env.FEDEX_API_KEY,
-      markupPercentage: 0, // No markup
-      useIntelligentPacking: true, // Enable 15-30% savings
-    })
-  }
-  return fedexProvider
 }
 
 export async function POST(request: NextRequest) {
@@ -86,29 +68,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { destination, package: pkg, packages, providers } = validation.data
+    const { destination, package: pkg, packages, providers: requestedProviders } = validation.data
 
     // Build packages array (support single package or multiple)
     const packagesToShip = packages || [pkg]
 
-    // All rates collected here
+    // Get shipping registry
+    const registry = getShippingRegistry()
+
+    // Determine which modules to use
+    let modulesToUse = registry.getEnabledModules()
+
+    // Filter by requested providers if specified
+    if (requestedProviders && requestedProviders.length > 0) {
+      modulesToUse = modulesToUse.filter((module) => requestedProviders.includes(module.id))
+    }
+
+    // Build destination address
+    const destinationAddress = {
+      street: destination.street || '123 Main St',
+      city: destination.city,
+      state: destination.state,
+      zipCode: destination.zipCode,
+      country: destination.countryCode,
+      isResidential: destination.isResidential,
+    }
+
+    // Collect rates from all enabled modules
     const allRates = []
+    const errors: Record<string, string> = {}
 
-    // FedEx rates (using enhanced provider)
-    if (providers.includes('fedex')) {
+    for (const module of modulesToUse) {
       try {
-        const fedex = getFedExProvider()
+        console.log(`[Shipping API] Fetching rates from ${module.name} (${module.id})`)
 
-        const fedexRates = await fedex.getRates(
+        const moduleRates = await module.provider.getRates(
           DEFAULT_ORIGIN,
-          {
-            street: destination.street || '123 Main St',
-            city: destination.city,
-            state: destination.state,
-            zipCode: destination.zipCode,
-            country: destination.countryCode,
-            isResidential: destination.isResidential,
-          },
+          destinationAddress,
           packagesToShip.map((p) => ({
             weight: p.weight,
             dimensions: p.dimensions,
@@ -116,12 +112,13 @@ export async function POST(request: NextRequest) {
         )
 
         // Transform to API response format
-        fedexRates.forEach((rate) => {
+        moduleRates.forEach((rate) => {
           allRates.push({
-            provider: 'fedex',
+            provider: module.id,
             providerName: rate.serviceName,
             serviceType: rate.serviceCode,
             serviceCode: rate.serviceCode,
+            carrier: module.carrier,
             rate: {
               amount: rate.rateAmount,
               currency: rate.currency,
@@ -137,29 +134,14 @@ export async function POST(request: NextRequest) {
             },
           })
         })
-      } catch (error) {
-        console.error('[FedEx API Error]', error)
-        // Don't fail entire request if FedEx fails
-        // Fallback to test rates handled by provider
-      }
-    }
 
-    // Southwest DASH rates (legacy simple calculation)
-    if (providers.includes('southwest-dash')) {
-      const totalWeight = packagesToShip.reduce((sum, p) => sum + p.weight, 0)
-      allRates.push({
-        provider: 'southwest-dash',
-        providerName: 'Southwest Cargo DASH',
-        serviceType: 'EXPRESS',
-        rate: {
-          amount: calculateSouthwestRate(totalWeight),
-          currency: 'USD',
-        },
-        delivery: {
-          estimatedDays: { min: 1, max: 2 },
-          text: '1-2 business days',
-        },
-      })
+        console.log(`[Shipping API] ${module.name} returned ${moduleRates.length} rates`)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        console.error(`[Shipping API] ${module.name} error:`, errorMessage)
+        errors[module.id] = errorMessage
+        // Continue with other providers
+      }
     }
 
     return NextResponse.json({
@@ -170,7 +152,9 @@ export async function POST(request: NextRequest) {
         origin: DEFAULT_ORIGIN,
         packagesCount: packagesToShip.length,
         totalWeight: packagesToShip.reduce((sum, p) => sum + p.weight, 0),
-        fedexEnhanced: providers.includes('fedex'),
+        modulesUsed: modulesToUse.map((m) => m.id),
+        moduleStatus: registry.getStatus(),
+        errors: Object.keys(errors).length > 0 ? errors : undefined,
       },
     })
   } catch (error) {
@@ -184,11 +168,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-function calculateSouthwestRate(weight: number): number {
-  // Southwest DASH rate calculation
-  const baseRate = 24.99
-  const weightRate = weight * 0.75
-  return Math.round((baseRate + weightRate) * 100) / 100
 }
