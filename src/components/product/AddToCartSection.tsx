@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/cart-context'
+import { useRouter } from 'next/navigation'
 import toast from '@/lib/toast'
 import type { SimpleProductConfiguration, UploadedFile } from '@/hooks/useProductConfiguration'
 
@@ -35,18 +36,13 @@ export function AddToCartSection({
   getQuantityValue,
   className = '',
 }: AddToCartSectionProps) {
-  const { addItem, openCart } = useCart()
+  const { addItem } = useCart()
+  const router = useRouter()
 
-  const hasUploadedFiles = configuration.uploadedFiles && configuration.uploadedFiles.length > 0
   const quantity = getQuantityValue(configuration)
 
   const handleAddToCart = () => {
-    // Validation
-    if (!hasUploadedFiles) {
-      toast.error('Please upload your design file')
-      return
-    }
-
+    // Validation - only check configuration completeness
     if (!isConfigurationComplete) {
       toast.error('Please complete your product configuration')
       return
@@ -57,10 +53,7 @@ export function AddToCartSection({
       return
     }
 
-    // Get the uploaded file info
-    const uploadedFile = configuration.uploadedFiles[0]
-
-    // Build cart item
+    // Build cart item WITHOUT file upload requirement
     const cartItem = {
       productId: product.id,
       productName: product.name,
@@ -82,16 +75,15 @@ export function AddToCartSection({
             ? `${configuration.customWidth}" × ${configuration.customHeight}"`
             : undefined,
       },
-      fileUrl: uploadedFile?.thumbnailUrl || '',
-      fileName: uploadedFile?.originalName || '',
-      fileSize: uploadedFile?.size || 0,
       image: getPrimaryImage(product.images),
     }
 
     try {
       addItem(cartItem)
       toast.success('Product added to cart!')
-      openCart()
+
+      // Redirect to artwork upload page instead of opening cart
+      router.push('/cart/upload-artwork')
     } catch (error) {
       toast.error('Failed to add product to cart')
       console.error('Add to cart error:', error)
@@ -128,7 +120,7 @@ export function AddToCartSection({
       {/* Add to Cart Button */}
       <Button
         className="w-full"
-        disabled={!hasUploadedFiles || !isConfigurationComplete}
+        disabled={!isConfigurationComplete || quantity <= 0}
         size="lg"
         onClick={handleAddToCart}
       >
@@ -138,18 +130,18 @@ export function AddToCartSection({
 
       {/* Validation Messages */}
       <div className="mt-2 space-y-1">
-        {!hasUploadedFiles && (
-          <p className="text-sm text-destructive text-center">
-            Please upload your design file before adding to cart
-          </p>
-        )}
-        {!isConfigurationComplete && hasUploadedFiles && (
+        {!isConfigurationComplete && (
           <p className="text-sm text-destructive text-center">
             Please complete your product configuration
           </p>
         )}
         {quantity <= 0 && (
           <p className="text-sm text-destructive text-center">Please select a valid quantity</p>
+        )}
+        {isConfigurationComplete && quantity > 0 && (
+          <p className="text-sm text-muted-foreground text-center">
+            You'll upload your artwork files on the next page
+          </p>
         )}
       </div>
     </div>

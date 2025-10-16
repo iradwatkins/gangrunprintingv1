@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { CustomerProofApproval } from '@/components/customer/proofs/customer-proof-approval'
 import {
   Package,
   Truck,
@@ -56,6 +57,12 @@ async function getOrderDetails(orderNumber: string) {
       StatusHistory: {
         orderBy: {
           createdAt: 'desc',
+        },
+      },
+      OrderFile: {
+        where: {
+          fileType: 'ADMIN_PROOF',
+          isVisible: true,
         },
       },
     },
@@ -151,6 +158,9 @@ export default async function OrderTrackingPage({ params }: OrderTrackingPagePro
           )}
         </CardContent>
       </Card>
+
+      {/* Proof Approval Section */}
+      <CustomerProofApproval orderId={order.id} />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Order Details */}

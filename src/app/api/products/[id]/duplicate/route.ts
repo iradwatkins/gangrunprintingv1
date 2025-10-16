@@ -1,64 +1,50 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 
 // POST /api/products/[id]/duplicate
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
-    // Fetch the original product with all relationships
+    // Fetch the original product with all relationships using SET architecture
     const originalProduct = await prisma.product.findUnique({
       where: { id },
       include: {
-        productPaperStocks: {
+        ProductCategory: true,
+        ProductPaperStockSet: {
           include: {
-            PaperStock: true,
+            PaperStockSet: true,
           },
         },
-        productQuantities: {
+        ProductQuantityGroup: {
           include: {
-            StandardQuantity: true,
+            QuantityGroup: true,
           },
         },
-        productSizes: {
+        ProductSizeGroup: {
           include: {
-            StandardSize: true,
+            SizeGroup: true,
           },
         },
         ProductAddOnSet: {
           include: {
-            AddOnSet: {
-              include: {
-                AddOnSetItem: {
-                  include: {
-                    AddOn: true,
-                  },
-                },
-              },
-            },
+            AddOnSet: true,
           },
         },
         ProductTurnaroundTimeSet: {
           include: {
-            TurnaroundTimeSet: {
-              include: {
-                TurnaroundTimeSetItem: {
-                  include: {
-                    TurnaroundTime: true,
-                  },
-                },
-              },
-            },
+            TurnaroundTimeSet: true,
+          },
+        },
+        ProductDesignSet: {
+          include: {
+            DesignSet: true,
           },
         },
         ProductImage: {
           include: {
             Image: true,
-          },
-        },
-        ProductOption: {
-          include: {
-            OptionValue: true,
           },
         },
       },
@@ -77,6 +63,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Create the duplicated product
     const duplicatedProduct = await prisma.product.create({
       data: {
+        id: randomUUID(),
         // Basic fields
         name: newName,
         slug: newSlug,
@@ -88,8 +75,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         // Gang run fields
         gangRunEligible: originalProduct.gangRunEligible,
-        maxGangQuantity: originalProduct.maxGangQuantity,
-        minGangQuantity: originalProduct.minGangQuantity,
 
         // Rush order fields
         rushAvailable: originalProduct.rushAvailable,
@@ -99,115 +84,109 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         // Other fields
         setupFee: originalProduct.setupFee,
         productionTime: originalProduct.productionTime,
-        metadata: originalProduct.metadata as any,
 
         // Set to inactive by default for review
         isActive: false,
         isFeatured: false,
 
-        // Copy paper stocks
-        productPaperStocks:
-          originalProduct.productPaperStocks.length > 0
+        updatedAt: new Date(),
+
+        // Copy paper stock sets
+        ProductPaperStockSet:
+          originalProduct.ProductPaperStockSet && originalProduct.ProductPaperStockSet.length > 0
             ? {
-                create: originalProduct.productPaperStocks.map((ps) => ({
-                  paperStockId: ps.paperStockId,
-                  isDefault: ps.isDefault,
-                  additionalCost: ps.additionalCost,
+                create: originalProduct.ProductPaperStockSet.map((pss) => ({
+                  id: randomUUID(),
+                  paperStockSetId: pss.paperStockSetId,
+                  isDefault: pss.isDefault,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
-        // Copy quantities
-        productQuantities:
-          originalProduct.productQuantities.length > 0
+        // Copy quantity groups
+        ProductQuantityGroup:
+          originalProduct.ProductQuantityGroup && originalProduct.ProductQuantityGroup.length > 0
             ? {
-                create: originalProduct.productQuantities.map((pq) => ({
-                  standardQuantityId: pq.standardQuantityId,
-                  isDefault: pq.isDefault,
-                  isActive: pq.isActive,
+                create: originalProduct.ProductQuantityGroup.map((pqg) => ({
+                  id: randomUUID(),
+                  quantityGroupId: pqg.quantityGroupId,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
-        // Copy sizes
-        productSizes:
-          originalProduct.productSizes.length > 0
+        // Copy size groups
+        ProductSizeGroup:
+          originalProduct.ProductSizeGroup && originalProduct.ProductSizeGroup.length > 0
             ? {
-                create: originalProduct.productSizes.map((ps) => ({
-                  standardSizeId: ps.standardSizeId,
-                  isDefault: ps.isDefault,
-                  isActive: ps.isActive,
+                create: originalProduct.ProductSizeGroup.map((psg) => ({
+                  id: randomUUID(),
+                  sizeGroupId: psg.sizeGroupId,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
         // Copy addon sets
         ProductAddOnSet:
-          originalProduct.productAddOnSets.length > 0
+          originalProduct.ProductAddOnSet && originalProduct.ProductAddOnSet.length > 0
             ? {
-                create: originalProduct.productAddOnSets.map((pas) => ({
+                create: originalProduct.ProductAddOnSet.map((pas) => ({
+                  id: randomUUID(),
                   addOnSetId: pas.addOnSetId,
                   isDefault: pas.isDefault,
-                  sortOrder: pas.sortOrder,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
         // Copy turnaround time sets
         ProductTurnaroundTimeSet:
-          originalProduct.productTurnaroundTimeSets.length > 0
+          originalProduct.ProductTurnaroundTimeSet && originalProduct.ProductTurnaroundTimeSet.length > 0
             ? {
-                create: originalProduct.productTurnaroundTimeSets.map((ptts) => ({
+                create: originalProduct.ProductTurnaroundTimeSet.map((ptts) => ({
+                  id: randomUUID(),
                   turnaroundTimeSetId: ptts.turnaroundTimeSetId,
                   isDefault: ptts.isDefault,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
-        // Copy product options
-        ProductOption:
-          originalProduct.productOptions.length > 0
+        // Copy design sets
+        ProductDesignSet:
+          originalProduct.ProductDesignSet && originalProduct.ProductDesignSet.length > 0
             ? {
-                create: originalProduct.productOptions.map((option) => ({
-                  name: option.name,
-                  type: option.type,
-                  required: option.required,
-                  sortOrder: option.sortOrder,
-                  OptionValue:
-                    option.OptionValue.length > 0
-                      ? {
-                          create: option.OptionValue.map((value) => ({
-                            value: value.value,
-                            displayName: value.displayName,
-                            additionalCost: value.additionalCost,
-                            isDefault: value.isDefault,
-                            sortOrder: value.sortOrder,
-                            width: value.width,
-                            height: value.height,
-                          })),
-                        }
-                      : undefined,
+                create: originalProduct.ProductDesignSet.map((pds) => ({
+                  id: randomUUID(),
+                  designSetId: pds.designSetId,
+                  isDefault: pds.isDefault,
+                  sortOrder: pds.sortOrder || 1,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
 
         // Copy product images (reference same images)
         ProductImage:
-          originalProduct.productImages.length > 0
+          originalProduct.ProductImage && originalProduct.ProductImage.length > 0
             ? {
-                create: originalProduct.productImages.map((img) => ({
+                create: originalProduct.ProductImage.map((img) => ({
+                  id: randomUUID(),
                   imageId: img.imageId,
                   isPrimary: img.isPrimary,
                   sortOrder: img.sortOrder,
+                  updatedAt: new Date(),
                 })),
               }
             : undefined,
       },
       include: {
         ProductCategory: true,
-        productPaperStocks: {
+        ProductPaperStockSet: {
           include: {
-            PaperStock: true,
+            PaperStockSet: true,
           },
         },
         ProductImage: {
@@ -218,8 +197,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         _count: {
           select: {
             ProductImage: true,
-            productPaperStocks: true,
-            ProductOption: true,
+            ProductPaperStockSet: true,
+            ProductQuantityGroup: true,
+            ProductSizeGroup: true,
+            ProductAddOnSet: true,
+            ProductTurnaroundTimeSet: true,
+            ProductDesignSet: true,
           },
         },
       },
@@ -232,6 +215,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     })
   } catch (error) {
     console.error('Error duplicating product:', error)
-    return NextResponse.json({ error: 'Failed to duplicate product' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to duplicate product', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 })
   }
 }

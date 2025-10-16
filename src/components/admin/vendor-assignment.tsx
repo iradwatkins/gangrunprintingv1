@@ -30,7 +30,13 @@ interface VendorAssignmentProps {
 }
 
 export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
-  const [selectedVendorId, setSelectedVendorId] = useState(order.vendorId || '')
+  // Auto-populate vendor from product category if not already assigned
+  const suggestedVendorId =
+    order.categoryVendors && order.categoryVendors.length > 0 ? order.categoryVendors[0].id : ''
+  const suggestedVendor =
+    order.categoryVendors && order.categoryVendors.length > 0 ? order.categoryVendors[0] : null
+
+  const [selectedVendorId, setSelectedVendorId] = useState(order.vendorId || suggestedVendorId || '')
   const [isAssigning, setIsAssigning] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [notes, setNotes] = useState('')
@@ -179,13 +185,34 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
         </>
       ) : (
         <div className="space-y-3">
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>No vendor assigned yet</AlertDescription>
-          </Alert>
-          <Button className="w-full" size="sm" onClick={() => setIsDialogOpen(true)}>
-            Assign Vendor
-          </Button>
+          {suggestedVendor ? (
+            <>
+              <Alert>
+                <Factory className="h-4 w-4" />
+                <AlertDescription>
+                  <div>
+                    <strong>Suggested:</strong> {suggestedVendor.name}
+                    <div className="text-xs text-muted-foreground mt-1">
+                      From product category
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+              <Button className="w-full" size="sm" onClick={() => setIsDialogOpen(true)}>
+                Assign {suggestedVendor.name}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>No vendor assigned yet</AlertDescription>
+              </Alert>
+              <Button className="w-full" size="sm" onClick={() => setIsDialogOpen(true)}>
+                Assign Vendor
+              </Button>
+            </>
+          )}
         </div>
       )}
 
@@ -199,6 +226,15 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
           </DialogHeader>
 
           <div className="space-y-4">
+            {suggestedVendor && !currentVendor && (
+              <Alert>
+                <Factory className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  <strong>{suggestedVendor.name}</strong> is suggested based on the product category
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div>
               <Label htmlFor="vendor">Select Vendor</Label>
               <Select value={selectedVendorId} onValueChange={setSelectedVendorId}>
@@ -209,7 +245,12 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
                   {vendors.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
                       <div className="flex items-center justify-between w-full">
-                        <span>{vendor.name}</span>
+                        <span>
+                          {vendor.name}
+                          {suggestedVendorId === vendor.id && !currentVendor && (
+                            <span className="ml-2 text-xs text-primary">(Suggested)</span>
+                          )}
+                        </span>
                         <span className="text-xs text-muted-foreground ml-2">
                           {vendor.turnaroundDays} days
                         </span>

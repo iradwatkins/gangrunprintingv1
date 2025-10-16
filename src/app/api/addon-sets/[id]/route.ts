@@ -47,7 +47,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Addon set not found' }, { status: 404 })
     }
 
-    return NextResponse.json(addOnSet)
+    // Transform PascalCase to camelCase
+    const transformed = {
+      ...addOnSet,
+      addOnSetItems: addOnSet.AddOnSetItem.map((item: any) => ({
+        ...item,
+        addOn: item.AddOn,
+        AddOn: undefined,
+      })),
+      productAddOnSets: addOnSet.ProductAddOnSet,
+      _count: {
+        addOnSetItems: addOnSet._count.AddOnSetItem,
+        productAddOnSets: addOnSet._count.ProductAddOnSet,
+      },
+      AddOnSetItem: undefined,
+      ProductAddOnSet: undefined,
+    }
+
+    return NextResponse.json(transformed)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch addon set' }, { status: 500 })
   }
@@ -117,11 +134,34 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               sortOrder: 'asc',
             },
           },
+          _count: {
+            select: {
+              AddOnSetItem: true,
+              ProductAddOnSet: true,
+            },
+          },
         },
       })
     })
 
-    return NextResponse.json(result)
+    // Transform PascalCase to camelCase
+    const transformed = result
+      ? {
+          ...result,
+          addOnSetItems: result.AddOnSetItem.map((item: any) => ({
+            ...item,
+            addOn: item.AddOn,
+            AddOn: undefined,
+          })),
+          _count: {
+            addOnSetItems: result._count.AddOnSetItem,
+            productAddOnSets: result._count.ProductAddOnSet,
+          },
+          AddOnSetItem: undefined,
+        }
+      : null
+
+    return NextResponse.json(transformed)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update addon set' }, { status: 500 })
   }

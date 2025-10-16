@@ -36,6 +36,8 @@ interface Product {
   ProductImages?: Array<{
     Id: string
     Url: string
+    ThumbnailUrl?: string
+    AltText?: string
     IsPrimary: boolean
   }>
   ProductPaperStocks?: Array<{
@@ -60,6 +62,7 @@ interface Product {
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [totalCount, setTotalCount] = useState(0) // Track total count from API
 
   useEffect(() => {
     fetchProducts()
@@ -67,20 +70,25 @@ export default function ProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products')
+      // FIXED: Fetch more products (increased limit to 1000) and get total count
+      const response = await fetch('/api/products?limit=1000')
       if (response.ok) {
         const result = await response.json()
         // Handle both {data: [...]} and direct array responses
         const productsData = Array.isArray(result) ? result : result.data || []
         // Ensure it's always an array
         setProducts(Array.isArray(productsData) ? productsData : [])
+        // Set total count from API metadata (if available)
+        setTotalCount(result.meta?.totalCount || productsData.length)
       } else {
         toast.error('Failed to load products')
         setProducts([]) // Set empty array on error
+        setTotalCount(0)
       }
     } catch (error) {
       toast.error('Failed to load products')
       setProducts([]) // Set empty array on error
+      setTotalCount(0)
     } finally {
       setLoading(false)
     }
@@ -93,6 +101,7 @@ export default function ProductsPage() {
       console.log('[Admin] Deleting product:', productId)
       const response = await fetch(`/api/products/${productId}`, {
         method: 'DELETE',
+        credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
       console.log('[Admin] Delete response status:', response.status)
@@ -119,6 +128,7 @@ export default function ProductsPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !isActive }),
+        credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
       if (response.ok) {
@@ -138,6 +148,7 @@ export default function ProductsPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFeatured: !isFeatured }),
+        credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
       if (response.ok) {
@@ -155,6 +166,7 @@ export default function ProductsPage() {
     try {
       const response = await fetch(`/api/products/${id}/duplicate`, {
         method: 'POST',
+        credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
       if (response.ok) {
@@ -177,20 +189,12 @@ export default function ProductsPage() {
           <h1 className="text-3xl font-bold">Product Management</h1>
           <p className="text-muted-foreground">Manage your print products and configurations</p>
         </div>
-        <div className="flex gap-2">
-          <Link href="/admin/products/simple">
-            <Button variant="outline">
-              <Plus className="mr-2 h-4 w-4" />
-              Simple Create
-            </Button>
-          </Link>
-          <Link href="/admin/products/new">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Full Create
-            </Button>
-          </Link>
-        </div>
+        <Link href="/admin/products/new">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Product
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Cards */}
@@ -201,7 +205,7 @@ export default function ProductsPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
+            <div className="text-2xl font-bold">{totalCount}</div>
             <p className="text-xs text-muted-foreground">
               {products.filter((p) => p.IsActive).length} active
             </p>
@@ -284,7 +288,7 @@ export default function ProductsPage() {
                   <TableRow key={product.Id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {(product.ProductImages?.length || 0) > 0 ? (
+                        {(product.ProductImages?.length || 0) > 0 && product.ProductImages ? (
                           <img
                             alt={product.ProductImages[0].AltText || product.Name}
                             className="w-10 h-10 rounded object-cover bg-gray-100"
@@ -359,11 +363,23 @@ export default function ProductsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Link href={`/products/${product.Slug}`} target="_blank">
-                          <Button size="sm" title="View Product" variant="ghost">
+                        {product.IsActive ? (
+                          <Link href={`/products/${product.Slug}`} target="_blank">
+                            <Button size="sm" title="View Product" variant="ghost">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button
+                            size="sm"
+                            title="Product is inactive - activate it first to view publicly"
+                            variant="ghost"
+                            disabled
+                            className="opacity-50 cursor-not-allowed"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
-                        </Link>
+                        )}
                         <Link href={`/admin/products/${product.id}/edit`}>
                           <Button size="sm" title="Edit Product" variant="ghost">
                             <Edit className="h-4 w-4" />

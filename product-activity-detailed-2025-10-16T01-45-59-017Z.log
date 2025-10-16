@@ -1,0 +1,239 @@
+[2025-10-16T01:45:59.020Z] [INFO] === MONITORING STARTED ===
+[2025-10-16T01:45:59.020Z] [INFO] Waiting for activity...
+[2025-10-16T01:45:59.021Z] [INFO] 
+[2025-10-16T01:48:23.072Z] [stderr] ⚠️  [STDERR] [DELETE Product] Product not found: 03bd92eb-4e87-418b-9403-6b66737bdbe0
+[2025-10-16T01:49:27.404Z] [error] ❌ [error] prisma:error 
+[2025-10-16T01:49:27.405Z] [database_operation] 💾 [database_operation] Invalid `prisma.product.findUnique()` invocation:
+[2025-10-16T01:49:27.411Z] [stderr] ⚠️  [STDERR] Error duplicating product: Error [PrismaClientValidationError]: 
+[2025-10-16T01:49:27.411Z] [stderr] ⚠️  [STDERR] Invalid `prisma.product.findUnique()` invocation:
+[2025-10-16T01:49:27.411Z] [stderr] ⚠️  [STDERR] {
+[2025-10-16T01:49:27.411Z] [stderr] ⚠️  [STDERR]   where: {
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]     id: "da43f0a4-f01c-410d-9c5d-4f28435743ff"
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]   },
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]   include: {
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]     productPaperStocks: {
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]     ~~~~~~~~~~~~~~~~~~
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]         PaperStock: true
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.412Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]     productQuantities: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]         StandardQuantity: true
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]     productSizes: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]         StandardSize: true
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]     ProductAddOnSet: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]         AddOnSet: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]           include: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]             AddOnSetItem: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]               include: {
+[2025-10-16T01:49:27.413Z] [stderr] ⚠️  [STDERR]                 AddOn: true
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]               }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]             }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]           }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]         }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]     ProductTurnaroundTimeSet: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]         TurnaroundTimeSet: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]           include: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]             TurnaroundTimeSetItem: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]               include: {
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]                 TurnaroundTime: true
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]               }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]             }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]           }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]         }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.414Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]     ProductImage: {
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]         Image: true
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]     ProductOption: {
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]         OptionValue: true
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ParentProduct?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ChildProducts?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   City?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   LandingPageSet?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   PricingTier?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ProductCategory?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ProductAddOn?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ProductPaperStock?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ProductPaperStockSet?: true,
+[2025-10-16T01:49:27.415Z] [stderr] ⚠️  [STDERR] ?   ProductPricingConfig?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   ProductQuantity?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   ProductQuantityGroup?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   ProductSize?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   ProductSizeGroup?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   VendorProduct?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   FunnelStepProduct?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   OrderBump?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   Upsell?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   Downsell?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   CityLandingPage?: true,
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] ?   ProductDesignSet?: true
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR]   }
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] }
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR]     at async w (.next/server/app/api/products/[id]/duplicate/route.js:1:745)
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR]     at async k (.next/server/app/api/products/[id]/duplicate/route.js:1:6314) {
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR]   clientVersion: '6.16.3'
+[2025-10-16T01:49:27.416Z] [stderr] ⚠️  [STDERR] }
+[2025-10-16T01:49:28.264Z] [error] ❌ [error] prisma:error 
+[2025-10-16T01:49:28.264Z] [database_operation] 💾 [database_operation] Invalid `prisma.product.findUnique()` invocation:
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR] Error duplicating product: Error [PrismaClientValidationError]: 
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR] Invalid `prisma.product.findUnique()` invocation:
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR] {
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]   where: {
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]     id: "da43f0a4-f01c-410d-9c5d-4f28435743ff"
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]   },
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]   include: {
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]     productPaperStocks: {
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]     ~~~~~~~~~~~~~~~~~~
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]         PaperStock: true
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.265Z] [stderr] ⚠️  [STDERR]     productQuantities: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]         StandardQuantity: true
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     productSizes: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]         StandardSize: true
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     ProductAddOnSet: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]         AddOnSet: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]           include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]             AddOnSetItem: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]               include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]                 AddOn: true
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]               }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]             }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]           }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]         }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]     ProductTurnaroundTimeSet: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]         TurnaroundTimeSet: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]           include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]             TurnaroundTimeSetItem: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]               include: {
+[2025-10-16T01:49:28.266Z] [stderr] ⚠️  [STDERR]                 TurnaroundTime: true
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]               }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]             }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]           }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]         }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]     ProductImage: {
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]         Image: true
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]     ProductOption: {
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]       include: {
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]         OptionValue: true
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]       }
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR]     },
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ParentProduct?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ChildProducts?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   City?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   LandingPageSet?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   PricingTier?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductCategory?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductAddOn?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductPaperStock?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductPaperStockSet?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductPricingConfig?: true,
+[2025-10-16T01:49:28.267Z] [stderr] ⚠️  [STDERR] ?   ProductQuantity?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   ProductQuantityGroup?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   ProductSize?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   ProductSizeGroup?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   VendorProduct?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   FunnelStepProduct?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   OrderBump?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   Upsell?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   Downsell?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   CityLandingPage?: true,
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] ?   ProductDesignSet?: true
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR]   }
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] }
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR]     at async w (.next/server/app/api/products/[id]/duplicate/route.js:1:745)
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR]     at async k (.next/server/app/api/products/[id]/duplicate/route.js:1:6314) {
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR]   clientVersion: '6.16.3'
+[2025-10-16T01:49:28.268Z] [stderr] ⚠️  [STDERR] }
+[2025-10-16T01:49:37.370Z] [INFO] 
+=== MONITORING STOPPED ===
+[2025-10-16T01:49:37.377Z] [INFO] Docker logs process exited with code 143
+[2025-10-16T01:49:37.377Z] [REPORT] 
+========================================
+[2025-10-16T01:49:37.377Z] [REPORT] 📊 ACTIVITY SUMMARY
+[2025-10-16T01:49:37.377Z] [REPORT] ========================================
+[2025-10-16T01:49:37.377Z] [REPORT] Total Events Captured: 341
+[2025-10-16T01:49:37.377Z] [REPORT] Total API Calls: 0
+[2025-10-16T01:49:37.377Z] [REPORT] Total Errors: 4
+[2025-10-16T01:49:37.377Z] [REPORT] 
+[2025-10-16T01:49:37.377Z] [REPORT] 🔨 PRODUCT CREATION:
+[2025-10-16T01:49:37.377Z] [REPORT]   Attempts: 0
+[2025-10-16T01:49:37.377Z] [REPORT]   Successes: 0
+[2025-10-16T01:49:37.377Z] [REPORT]   Failures: 0
+[2025-10-16T01:49:37.377Z] [REPORT] 
+[2025-10-16T01:49:37.377Z] [REPORT] 🖼️  IMAGE UPLOADS:
+[2025-10-16T01:49:37.377Z] [REPORT]   Attempts: 0
+[2025-10-16T01:49:37.378Z] [REPORT]   Successes: 0
+[2025-10-16T01:49:37.378Z] [REPORT]   Failures: 0
+[2025-10-16T01:49:37.378Z] [REPORT] 
+[2025-10-16T01:49:37.378Z] [REPORT] ❌ ERRORS DETECTED:
+[2025-10-16T01:49:37.378Z] [REPORT]   database_error: 4 occurrence(s)
+[2025-10-16T01:49:37.378Z] [REPORT]     - prisma:error 
+[2025-10-16T01:49:37.378Z] [REPORT]     - duplicating product: Error [PrismaClientValidationError]:
+[2025-10-16T01:49:37.378Z] [REPORT]     - prisma:error 
+[2025-10-16T01:49:37.378Z] [REPORT] 
+[2025-10-16T01:49:37.378Z] [REPORT] ========================================
+[2025-10-16T01:49:37.378Z] [REPORT] 💾 Full analysis saved to: product-activity-analysis-2025-10-16T01-45-59-018Z.json
+[2025-10-16T01:49:37.379Z] [REPORT] ========================================
+[2025-10-16T01:49:38.371Z] [REPORT] 
+========================================
+[2025-10-16T01:49:38.371Z] [REPORT] 📊 ACTIVITY SUMMARY
+[2025-10-16T01:49:38.371Z] [REPORT] ========================================
+[2025-10-16T01:49:38.371Z] [REPORT] Total Events Captured: 341
+[2025-10-16T01:49:38.371Z] [REPORT] Total API Calls: 0
+[2025-10-16T01:49:38.371Z] [REPORT] Total Errors: 4
+[2025-10-16T01:49:38.371Z] [REPORT] 
+[2025-10-16T01:49:38.371Z] [REPORT] 🔨 PRODUCT CREATION:
+[2025-10-16T01:49:38.371Z] [REPORT]   Attempts: 0
+[2025-10-16T01:49:38.372Z] [REPORT]   Successes: 0
+[2025-10-16T01:49:38.372Z] [REPORT]   Failures: 0
+[2025-10-16T01:49:38.372Z] [REPORT] 
+[2025-10-16T01:49:38.372Z] [REPORT] 🖼️  IMAGE UPLOADS:
+[2025-10-16T01:49:38.372Z] [REPORT]   Attempts: 0
+[2025-10-16T01:49:38.372Z] [REPORT]   Successes: 0
+[2025-10-16T01:49:38.372Z] [REPORT]   Failures: 0
+[2025-10-16T01:49:38.372Z] [REPORT] 
+[2025-10-16T01:49:38.372Z] [REPORT] ❌ ERRORS DETECTED:
+[2025-10-16T01:49:38.372Z] [REPORT]   database_error: 4 occurrence(s)
+[2025-10-16T01:49:38.372Z] [REPORT]     - prisma:error 
+[2025-10-16T01:49:38.372Z] [REPORT]     - duplicating product: Error [PrismaClientValidationError]:
+[2025-10-16T01:49:38.372Z] [REPORT]     - prisma:error 
+[2025-10-16T01:49:38.372Z] [REPORT] 
+[2025-10-16T01:49:38.372Z] [REPORT] ========================================
+[2025-10-16T01:49:38.372Z] [REPORT] 💾 Full analysis saved to: product-activity-analysis-2025-10-16T01-45-59-018Z.json
+[2025-10-16T01:49:38.372Z] [REPORT] ========================================

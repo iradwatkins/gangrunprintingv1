@@ -1,0 +1,20 @@
+schema: 1
+story: 'product-image-upload-fix'
+gate: CONCERNS
+status_reason: 'MinIO connection fixed and React state race condition resolved, but requires user testing to verify image persistence in production environment.'
+reviewer: 'Claude Code'
+updated: '2025-10-16T00:45:00Z'
+top_issues:
+  - id: 'TEST-001'
+    severity: high
+    finding: 'Image upload fix not verified by end-user in production environment'
+    suggested_action: 'User should test image upload at /admin/products/new and confirm images persist after upload'
+  - id: 'ARCH-001'
+    severity: medium
+    finding: 'Docker Dockerfile required modification to copy all node_modules instead of selective modules'
+    suggested_action: 'Consider optimizing Docker image size by using Next.js standalone mode correctly or documenting required modules'
+  - id: 'MNT-001'
+    severity: low
+    finding: 'Multiple Docker rebuilds required during debugging session'
+    suggested_action: 'Add development documentation about when rebuilds are necessary vs restarts'
+waiver: { active: false }

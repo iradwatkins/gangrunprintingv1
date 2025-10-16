@@ -96,9 +96,9 @@ export async function getMinioClient(): Promise<Minio.Client> {
   for (let attempt = 1; attempt <= CONNECTION_RETRY_ATTEMPTS; attempt++) {
     try {
       minioClient = new Minio.Client({
-        endPoint: 'localhost',
+        endPoint: process.env.MINIO_ENDPOINT || 'minio',
         port: parseInt(process.env.MINIO_PORT || '9000'),
-        useSSL: false,
+        useSSL: process.env.MINIO_USE_SSL === 'true',
         accessKey: process.env.MINIO_ACCESS_KEY || process.env.MINIO_ROOT_USER || 'minioadmin',
         secretKey: process.env.MINIO_SECRET_KEY || process.env.MINIO_ROOT_PASSWORD || 'minioadmin',
       })

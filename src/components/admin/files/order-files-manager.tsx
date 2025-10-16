@@ -1,0 +1,547 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+  Upload,
+  FileText,
+  Image as ImageIcon,
+  Download,
+  Trash2,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  AlertCircle,
+  ThumbsUp,
+  ThumbsDown,
+} from 'lucide-react';
+import { FileUploadDialog } from './file-upload-dialog';
+import { FileMessageDialog } from './file-message-dialog';
+import toast from '@/lib/toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+
+interface OrderFile {
+  id: string;
+  filename: string;
+  fileUrl: string;
+  fileSize?: number;
+  mimeType?: string;
+  thumbnailUrl?: string;
+  fileType: 'CUSTOMER_ARTWORK' | 'ADMIN_PROOF' | 'PRODUCTION_FILE' | 'REFERENCE' | 'ATTACHMENT';
+  label?: string;
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
+  uploadedByRole: 'CUSTOMER' | 'ADMIN' | 'VENDOR' | 'SYSTEM';
+  createdAt: string;
+  FileMessage: Array<{
+    id: string;
+    message: string;
+    authorRole: string;
+    authorName: string;
+    createdAt: string;
+  }>;
+}
+
+interface Props {
+  orderId: string;
+}
+
+const fileTypeLabels = {
+  CUSTOMER_ARTWORK: 'Customer Artwork',
+  ADMIN_PROOF: 'Proof',
+  PRODUCTION_FILE: 'Production File',
+  REFERENCE: 'Reference',
+  ATTACHMENT: 'Attachment',
+};
+
+const approvalStatusConfig = {
+  WAITING: {
+    label: 'Awaiting Approval',
+    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+    icon: Clock,
+  },
+  APPROVED: {
+    label: 'Approved',
+    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+    icon: CheckCircle,
+  },
+  REJECTED: {
+    label: 'Rejected',
+    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+    icon: XCircle,
+  },
+  NOT_REQUIRED: {
+    label: 'No Approval Needed',
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+    icon: FileText,
+  },
+};
+
+export function OrderFilesManager({ orderId }: Props) {
+  // This component is admin-only, so always show admin features
+  const isAdmin = true;
+
+  const [files, setFiles] = useState<OrderFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<OrderFile | null>(null);
+
+  // Approval dialog state
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
+  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
+  const [approvalMessage, setApprovalMessage] = useState('');
+  const [fileToApprove, setFileToApprove] = useState<OrderFile | null>(null);
+  const [isApproving, setIsApproving] = useState(false);
+
+  const fetchFiles = async () => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}/files`);
+      if (response.ok) {
+        const data = await response.json();
+        setFiles(data.files || []);
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, [orderId]);
+
+  const handleDelete = async (fileId: string) => {
+    if (!confirm('Are you sure you want to delete this file?')) return;
+
+    try {
+      const response = await fetch(`/api/orders/${orderId}/files/${fileId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setFiles(files.filter((f) => f.id !== fileId));
+      } else {
+        alert('Failed to delete file');
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Failed to delete file');
+    }
+  };
+
+  const handleApprovalClick = (file: OrderFile, action: 'APPROVED' | 'REJECTED') => {
+    setFileToApprove(file);
+    setApprovalAction(action);
+    setApprovalMessage('');
+    setApprovalDialogOpen(true);
+  };
+
+  const handleApprovalConfirm = async () => {
+    if (!fileToApprove) return;
+
+    setIsApproving(true);
+    try {
+      const response = await fetch(`/api/orders/${orderId}/files/${fileToApprove.id}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: approvalAction,
+          message: approvalMessage || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(
+          approvalAction === 'APPROVED'
+            ? 'File approved successfully'
+            : 'File rejected successfully'
+        );
+        // Refresh files list
+        await fetchFiles();
+        setApprovalDialogOpen(false);
+        setFileToApprove(null);
+        setApprovalMessage('');
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to process approval');
+      }
+    } catch (error) {
+      console.error('Error processing approval:', error);
+      toast.error('Failed to process approval');
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return 'Unknown size';
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(2)} MB`;
+  };
+
+  const getFileIcon = (mimeType?: string) => {
+    if (!mimeType) return FileText;
+    if (mimeType.startsWith('image/')) return ImageIcon;
+    return FileText;
+  };
+
+  const customerArtwork = files.filter((f) => f.fileType === 'CUSTOMER_ARTWORK');
+  const adminProofs = files.filter((f) => f.fileType === 'ADMIN_PROOF');
+  const otherFiles = files.filter(
+    (f) => !['CUSTOMER_ARTWORK', 'ADMIN_PROOF'].includes(f.fileType)
+  );
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Order Files</CardTitle>
+          <CardDescription>Loading files...</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Order Files</CardTitle>
+              <CardDescription>
+                {files.length} file{files.length !== 1 ? 's' : ''} uploaded
+              </CardDescription>
+            </div>
+            <Button onClick={() => setUploadDialogOpen(true)} size="sm">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload File
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {files.length === 0 ? (
+            <div className="text-center py-12 border-2 border-dashed rounded-lg">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
+              <Button onClick={() => setUploadDialogOpen(true)} variant="outline" size="sm">
+                <Upload className="h-4 w-4 mr-2" />
+                Upload First File
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Customer Artwork Section */}
+              {customerArtwork.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" />
+                    Customer Artwork ({customerArtwork.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {customerArtwork.map((file) => (
+                      <FileListItem
+                        key={file.id}
+                        file={file}
+                        onDelete={handleDelete}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
+                        onApprove={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'APPROVED')
+                            : undefined
+                        }
+                        onReject={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'REJECTED')
+                            : undefined
+                        }
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {customerArtwork.length > 0 && adminProofs.length > 0 && <Separator />}
+
+              {/* Admin Proofs Section */}
+              {adminProofs.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    Proofs for Approval ({adminProofs.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {adminProofs.map((file) => (
+                      <FileListItem
+                        key={file.id}
+                        file={file}
+                        onDelete={handleDelete}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
+                        onApprove={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'APPROVED')
+                            : undefined
+                        }
+                        onReject={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'REJECTED')
+                            : undefined
+                        }
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {otherFiles.length > 0 && (adminProofs.length > 0 || customerArtwork.length > 0) && (
+                <Separator />
+              )}
+
+              {/* Other Files Section */}
+              {otherFiles.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Other Files ({otherFiles.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {otherFiles.map((file) => (
+                      <FileListItem
+                        key={file.id}
+                        file={file}
+                        onDelete={handleDelete}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
+                        onApprove={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'APPROVED')
+                            : undefined
+                        }
+                        onReject={
+                          isAdmin && file.approvalStatus === 'WAITING'
+                            ? (file) => handleApprovalClick(file, 'REJECTED')
+                            : undefined
+                        }
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <FileUploadDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        orderId={orderId}
+        onSuccess={() => {
+          fetchFiles();
+          setUploadDialogOpen(false);
+        }}
+      />
+
+      {selectedFile && (
+        <FileMessageDialog
+          open={messageDialogOpen}
+          onOpenChange={setMessageDialogOpen}
+          orderId={orderId}
+          file={selectedFile}
+          onMessageSent={fetchFiles}
+        />
+      )}
+
+      {/* Approval Dialog */}
+      <AlertDialog open={approvalDialogOpen} onOpenChange={setApprovalDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {approvalAction === 'APPROVED' ? 'Approve File' : 'Reject File'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {approvalAction === 'APPROVED'
+                ? 'This will approve the file and allow production to proceed.'
+                : 'This will reject the file and request changes from the customer.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-4 py-4">
+            {fileToApprove && (
+              <div className="text-sm">
+                <p className="font-medium">{fileToApprove.label || fileToApprove.filename}</p>
+                <p className="text-muted-foreground">
+                  {fileTypeLabels[fileToApprove.fileType]}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="approval-message">
+                {approvalAction === 'APPROVED' ? 'Approval Note (Optional)' : 'Rejection Reason'}
+              </Label>
+              <Textarea
+                id="approval-message"
+                value={approvalMessage}
+                onChange={(e) => setApprovalMessage(e.target.value)}
+                placeholder={
+                  approvalAction === 'APPROVED'
+                    ? 'Add a note for the team...'
+                    : 'Explain what needs to be changed...'
+                }
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isApproving}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleApprovalConfirm();
+              }}
+              disabled={isApproving}
+              className={
+                approvalAction === 'REJECTED'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                  : ''
+              }
+            >
+              {isApproving
+                ? 'Processing...'
+                : approvalAction === 'APPROVED'
+                  ? 'Approve File'
+                  : 'Reject File'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+function FileListItem({
+  file,
+  onDelete,
+  onViewMessages,
+  onApprove,
+  onReject,
+  formatFileSize,
+  getFileIcon,
+}: {
+  file: OrderFile;
+  onDelete: (id: string) => void;
+  onViewMessages: (file: OrderFile) => void;
+  onApprove?: (file: OrderFile) => void;
+  onReject?: (file: OrderFile) => void;
+  formatFileSize: (bytes?: number) => string;
+  getFileIcon: (mimeType?: string) => any;
+}) {
+  const FileIcon = getFileIcon(file.mimeType);
+  const statusConfig = approvalStatusConfig[file.approvalStatus];
+  const StatusIcon = statusConfig.icon;
+
+  return (
+    <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+      <div className="rounded-md bg-muted p-2">
+        <FileIcon className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium truncate">{file.label || file.filename}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatFileSize(file.fileSize)} • {new Date(file.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          <Badge className={`${statusConfig.color} gap-1 px-2 py-0.5 text-xs flex-shrink-0`}>
+            <StatusIcon className="h-3 w-3" />
+            {statusConfig.label}
+          </Badge>
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <Badge variant="outline" className="text-xs">
+            {fileTypeLabels[file.fileType]}
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            {file.uploadedByRole}
+          </Badge>
+          {file.FileMessage.length > 0 && (
+            <Badge variant="outline" className="text-xs gap-1">
+              <MessageSquare className="h-3 w-3" />
+              {file.FileMessage.length}
+            </Badge>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-1 flex-shrink-0">
+        {/* Approval buttons (admin only, WAITING status only) */}
+        {onApprove && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onApprove(file)}
+            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+            title="Approve file"
+          >
+            <ThumbsUp className="h-4 w-4" />
+          </Button>
+        )}
+        {onReject && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onReject(file)}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            title="Reject file"
+          >
+            <ThumbsDown className="h-4 w-4" />
+          </Button>
+        )}
+        <Button variant="ghost" size="icon" onClick={() => window.open(file.fileUrl, '_blank')}>
+          <Download className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onViewMessages(file)}>
+          <MessageSquare className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onDelete(file.id)}>
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
+      </div>
+    </div>
+  );
+}

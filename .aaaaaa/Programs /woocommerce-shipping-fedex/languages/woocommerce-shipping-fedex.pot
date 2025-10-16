@@ -1,0 +1,695 @@
+# Copyright (C) 2025 WooCommerce
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce FedEx Shipping 4.4.6\n"
+"Report-Msgid-Bugs-To: "
+"https://wordpress.org/support/plugin/woocommerce-shipping-fedex\n"
+"POT-Creation-Date: 2025-09-15 15:27:46+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: node-wp-i18n 1.2.7\n"
+
+#: includes/api/legacy/class-fedex-legacy-api.php:398
+#: includes/api/rest/class-fedex-rest-api.php:526
+#. translators: 1: FedEx service name 2: currency for the rate 3: store's
+#. currency
+msgid "[FedEx] Rate for %1$s is in %2$s but store currency is %3$s."
+msgstr ""
+
+#: includes/class-product-editor.php:47
+msgid "Additional FedEx Services"
+msgstr ""
+
+#: includes/class-product-editor.php:48
+#: includes/class-wc-shipping-fedex-admin.php:39
+#: includes/class-wc-shipping-fedex-admin.php:71
+msgid "FedEx Liftgate Delivery"
+msgstr ""
+
+#: includes/class-product-editor.php:50
+#: includes/class-wc-shipping-fedex-admin.php:40
+#: includes/class-wc-shipping-fedex-admin.php:72
+msgid "Add lift service at delivery"
+msgstr ""
+
+#: includes/class-product-editor.php:63
+#: includes/class-wc-shipping-fedex-admin.php:48
+#: includes/class-wc-shipping-fedex-admin.php:83
+msgid "FedEx Liftgate Pickup"
+msgstr ""
+
+#: includes/class-product-editor.php:65
+#: includes/class-wc-shipping-fedex-admin.php:49
+#: includes/class-wc-shipping-fedex-admin.php:84
+msgid "Add lift service at pickup"
+msgstr ""
+
+#: includes/class-wc-fedex-freight-mapping.php:74
+msgid "FedEx Freight Class"
+msgstr ""
+
+#: includes/class-wc-fedex-freight-mapping.php:86
+msgid "Default"
+msgstr ""
+
+#: includes/class-wc-fedex-privacy.php:20
+msgid "Fedex"
+msgstr ""
+
+#: includes/class-wc-fedex-privacy.php:28
+#. translators: %s is plugin documentation URL.
+msgid ""
+"By using this extension, you may be storing personal data or sharing data "
+"with an external service. <a href=\"%s\" target=\"_blank\">Learn more about "
+"how this works, including what you may want to include in your privacy "
+"policy.</a>"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:66
+msgid ""
+"Your server does not provide SOAP support which is required functionality "
+"for communicating with FedEx SOAP Service. SOAP Service is deprecated "
+"method for communicating with FedEx API. Please switch to the REST API."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:115
+msgid "WooCommerce currency is set to US Dollars or CA Dollars"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:120
+msgid "Base country/region is set to United States or Canada"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:125
+#. translators: %s is messages.
+msgid "FedEx requires that %s"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:126
+msgid " and "
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:226
+msgid "Settings"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:227
+msgid "Support"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:228
+msgid "Docs"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:239
+#. translators: %s: WooCommerce link
+msgid "WooCommerce FedEx Shipping requires %s to be installed and active."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex-init.php:316
+#. translators: %1$s: Shipping zones link start, %2$s: Link end
+msgid ""
+"FedEx now supports shipping zones. The zone settings were added to a new "
+"FedEx method on the \"Rest of the World\" Zone. See the zones %1$shere%2$s "
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:377 includes/data/data-settings.php:21
+msgid "FedEx"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:378
+msgid ""
+"The FedEx extension obtains rates dynamically from the FedEx API during "
+"cart/checkout."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:781
+#. translators: %1$s - line break markup, %2$s - store origin country.
+msgid ""
+"FedEx One Rate is only available for shipments with an origin within the "
+"United States.%1$sYour store origin country: %2$s"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:793
+msgid "API Settings"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:795
+msgid ""
+"Your API access details are obtained from the FedEx website. After you <a "
+"href=\"https://www.fedex.com/register/#/contact\" target=\"_blank\">create "
+"a FedEx account</a>, follow the <a "
+"href=\"https://woocommerce.com/document/fedex/#h-api-debug\" "
+"target=\"_blank\">instructions for obtaining test and production keys</a>."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:798
+msgid "API Type"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:801
+msgid "Select whether to use the legacy SOAP API or the new REST API."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:806
+msgid "REST"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:807
+msgid "SOAP (legacy)"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:811
+msgid "Shipping Account Number"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:814
+msgid ""
+"Can be obtained under account management in your FedEx profile when using "
+"the SOAP API or in your FedEx Project settings when using the REST API."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:818
+msgid "Meter Number"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:820
+#: includes/class-wc-shipping-fedex.php:844
+msgid "Obtained from FedEx after creating a legacy test or production key."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:826
+msgid "REST API Key"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:828
+#: includes/class-wc-shipping-fedex.php:836
+msgid "Obtained from FedEx after creating a Project in the FedEx Developer Portal."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:834
+msgid "REST API Secret"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:842
+msgid "Web Services Key"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:853
+msgid "Web Services Password"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:855
+msgid ""
+"Web Services password related with Shipping Account Number. Obtained from "
+"FedEx after creating a legacy test or production key."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:864
+msgid "REST API Status"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:866
+msgid "Displays the current FedEx REST API authorization status."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:871
+msgid "Production Key"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:872
+msgid "This is a production key"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:876
+msgid "If this is a production API key and not a developer key, check this box."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:879
+msgid "Box Packer Library"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:884
+msgid "Speed Packer"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:885
+msgid "Accurate Packer"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:887
+msgid ""
+"Speed Packer packs items by volume, Accurate Packer check each dimension "
+"allowing more accurate packing but might be slow when you sell items in "
+"large quantities."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:890
+msgid "LTL Freight"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:892
+msgid ""
+"If your account supports Freight, we need some additional details to get "
+"LTL rates. Note: These rates require the customers CITY so won't display "
+"until checkout."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:895
+msgid "Enable"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:896
+msgid "Enable Freight"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:901
+msgid "Freight Account Number"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:905
+msgid "Defaults to your main account number"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:908
+#: includes/class-wc-shipping-fedex.php:913
+msgid "Billing Street Address"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:918
+msgid "Billing City"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:923
+msgid "Billing State Code"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:928
+msgid "Billing ZIP / Postcode"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:933
+msgid "Billing Country Code"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:938
+msgid "Shipper Street Address"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:943
+msgid "Shipper Street Address 2"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:948
+msgid "Shipper City"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:953
+msgid "Shipper State Code"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:958
+msgid "Shipper ZIP / Postcode"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:963
+msgid "Shipper Country Code"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:968 includes/data/data-settings.php:65
+msgid "Residential"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:969
+msgid "Shipper Address is Residential?"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:973
+msgid "Applied only to Freight shipments."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:976
+msgid "Default Freight Class"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:978
+#. translators: %s is a link to set the shipping class.
+msgid ""
+"This is the default freight class for shipments. This can be overridden "
+"using <a href=\"%s\">shipping classes</a>"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:984
+msgid "Debug Mode"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:985
+msgid "Enable debug mode"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:989
+msgid "Enable debug mode to show debugging information on the cart/checkout."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1040
+#. translators: %1$s a link opening tag, %2$s link closing tag.
+msgid ""
+"NOTICE! Effective May 15, 2024, the FedEx SOAP API will be deprecated. "
+"Immediate action is required to transition to the REST API for "
+"uninterrupted service. To learn how to setup FedEx APIs integration, please "
+"visit %1$sWoo FedEx Shipping Method documentation%2$s."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1534
+msgid ""
+"Your items has exceeded the FedEx limit of 9999. Please decrease the "
+"quantity of your cart."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1609
+msgid "Business Address"
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1885
+msgid ""
+"Fedex Ground Economy rate can't be obtained. Fedex Ground Economy Hub is "
+"not set. Go to shipping zone settings and select Ground Economy Hub."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1893
+msgid ""
+"Fedex Ground Economy rate can't be obtained. Insurance is enabled and total "
+"cart value exceeds $100 (maximum allowed value)."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:1899
+msgid ""
+"Fedex Ground Economy rate can't be obtained. Package total weight exceeds "
+"70 LBS."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2094
+msgid ""
+"FEDEX debug mode is on - to hide these messages, turn debug mode off in the "
+"settings."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2304
+#. translators: %s: Product name.
+msgid "Product \"%s\" is virtual. Skipping."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2316
+#. translators: %s: Product name.
+msgid ""
+"Product \"%1$s\" is missing dimensions and weight. Please %2$sremove "
+"product%3$s to continue, or contact our support."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2323
+#: includes/class-wc-shipping-fedex.php:2337
+#. translators: %s: Product name.
+msgid "Product name: %1$s id: %2$s is missing dimensions."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2330
+#. translators: %s: Product name.
+msgid ""
+"Product \"%1$s\" is missing dimensions. Please %2$sremove product%3$s to "
+"continue, or contact our support."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2344
+#. translators: %s: Product name.
+msgid ""
+"Product \"%1$s\" is missing weight. Please %2$sremove product%3$s to "
+"continue, or contact our support."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2351
+#. translators: %s: Product name.
+msgid "Product name: %1$s id: %2$s is missing weight."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2433
+msgid "We're sorry, we can't calculate shipping rates."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2793
+#. translators: %1$s is package type.
+msgid "Switching PackagingType from: %1$s to: YOUR_PACKAGING."
+msgstr ""
+
+#: includes/class-wc-shipping-fedex.php:2807
+#. translators: %1$s is all package types and %2$d is the total number of
+#. package types.
+msgid ""
+"Grouping packages by PackagingType (GROUPED: %1$s) resulting in %2$d API "
+"requests."
+msgstr ""
+
+#: includes/data/data-settings.php:13
+msgid "N/A"
+msgstr ""
+
+#: includes/data/data-settings.php:18
+msgid "Method Title"
+msgstr ""
+
+#: includes/data/data-settings.php:20
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: includes/data/data-settings.php:25
+msgid "Origin Postcode"
+msgstr ""
+
+#: includes/data/data-settings.php:27
+msgid "Enter the postcode for the <strong>sender</strong>."
+msgstr ""
+
+#: includes/data/data-settings.php:32
+msgid "Tax Status"
+msgstr ""
+
+#: includes/data/data-settings.php:37
+msgid "Taxable"
+msgstr ""
+
+#: includes/data/data-settings.php:38
+msgid "None"
+msgstr ""
+
+#: includes/data/data-settings.php:42
+msgid "Packages"
+msgstr ""
+
+#: includes/data/data-settings.php:44
+msgid ""
+"The following settings determine how items are packed before being sent to "
+"FedEx."
+msgstr ""
+
+#: includes/data/data-settings.php:47
+msgid "Parcel Packing Method"
+msgstr ""
+
+#: includes/data/data-settings.php:52
+msgid "Default: Pack items individually"
+msgstr ""
+
+#: includes/data/data-settings.php:53
+msgid "Recommended: Pack into boxes with weights and dimensions"
+msgstr ""
+
+#: includes/data/data-settings.php:60
+msgid "Rates and Services"
+msgstr ""
+
+#: includes/data/data-settings.php:62
+msgid "The following settings determine the rates you offer your customers."
+msgstr ""
+
+#: includes/data/data-settings.php:66
+msgid "Default to residential delivery"
+msgstr ""
+
+#: includes/data/data-settings.php:69
+msgid ""
+"Enabling this feature will set address classification to RESIDENTIAL when "
+"delivery address classification is UNKNOWN or MIXED."
+msgstr ""
+
+#: includes/data/data-settings.php:73
+msgid "Insurance"
+msgstr ""
+
+#: includes/data/data-settings.php:74
+msgid "Enable Insurance"
+msgstr ""
+
+#: includes/data/data-settings.php:78
+msgid "Sends the package value to FedEx for insurance."
+msgstr ""
+
+#: includes/data/data-settings.php:81
+msgid "Fedex One"
+msgstr ""
+
+#: includes/data/data-settings.php:83
+#. translators: %1$s is an anchor opener with a URL. %2$s is a anchor closer.
+msgid "Enable %1$sFedex One Rates%2$s"
+msgstr ""
+
+#: includes/data/data-settings.php:87
+msgid ""
+"Fedex One Rates will be offered if the items are packed into a valid Fedex "
+"One box, and the origin and destination is the US."
+msgstr ""
+
+#: includes/data/data-settings.php:90
+msgid "Request Type"
+msgstr ""
+
+#: includes/data/data-settings.php:96
+msgid "List rates"
+msgstr ""
+
+#: includes/data/data-settings.php:97
+msgid "Account rates"
+msgstr ""
+
+#: includes/data/data-settings.php:99
+msgid "Choose whether to return List or Account (discounted) rates from the API."
+msgstr ""
+
+#: includes/data/data-settings.php:102
+msgid "Fedex Ground Economy Hub"
+msgstr ""
+
+#: includes/data/data-settings.php:104
+msgid "Only required if using Ground Economy."
+msgstr ""
+
+#: includes/data/data-settings.php:110
+msgid "Offer Rates"
+msgstr ""
+
+#: includes/data/data-settings.php:115
+msgid "Offer the customer all returned rates"
+msgstr ""
+
+#: includes/data/data-settings.php:116
+msgid "Offer the customer the cheapest rate only, anonymously"
+msgstr ""
+
+#: includes/views/html-box-packing.php:11
+msgid "Box Sizes"
+msgstr ""
+
+#: includes/views/html-box-packing.php:14
+msgid ""
+"Items will be packed into these boxes depending on item dimensions and "
+"volume. Dimensions will be passed to FedEx and used for packing. Items not "
+"fitting into boxes will be packed individually."
+msgstr ""
+
+#: includes/views/html-box-packing.php:18 includes/views/html-services.php:16
+msgid "Name"
+msgstr ""
+
+#: includes/views/html-box-packing.php:19
+msgid "Length (in)"
+msgstr ""
+
+#: includes/views/html-box-packing.php:20
+msgid "Width (in)"
+msgstr ""
+
+#: includes/views/html-box-packing.php:21
+msgid "Height (in)"
+msgstr ""
+
+#: includes/views/html-box-packing.php:22
+msgid "Weight of Box (lbs)"
+msgstr ""
+
+#: includes/views/html-box-packing.php:23
+msgid "Max Weight (lbs)"
+msgstr ""
+
+#: includes/views/html-box-packing.php:23
+msgid "Maximum weight for [Account Rates / FedEx One Rate]"
+msgstr ""
+
+#: includes/views/html-box-packing.php:24
+msgid "Packaging type"
+msgstr ""
+
+#: includes/views/html-box-packing.php:25 includes/views/html-services.php:17
+msgid "Enabled"
+msgstr ""
+
+#: includes/views/html-box-packing.php:111
+msgid "Add Box"
+msgstr ""
+
+#: includes/views/html-box-packing.php:112
+msgid "Remove selected box(es)"
+msgstr ""
+
+#: includes/views/html-oauth-status.php:19
+msgid "Authenticated"
+msgstr ""
+
+#: includes/views/html-oauth-status.php:21
+msgid "Not Authenticated."
+msgstr ""
+
+#: includes/views/html-oauth-status.php:22
+msgid ""
+"Enter your FedEx Client ID and FedEx Client Secret and click \"Save "
+"changes\"."
+msgstr ""
+
+#: includes/views/html-services.php:10
+msgid "Services"
+msgstr ""
+
+#: includes/views/html-services.php:15
+msgid "Service Code"
+msgstr ""
+
+#: includes/views/html-services.php:19
+#. translators: %s is currency symbol.
+msgid "Price Adjustment (%s)"
+msgstr ""
+
+#: includes/views/html-services.php:20
+msgid "Price Adjustment (%)"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce FedEx Shipping"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://woocommerce.com/products/fedex-shipping-module/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Obtain shipping rates dynamically via the FedEx API for your orders."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "WooCommerce"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://woocommerce.com"
+msgstr ""

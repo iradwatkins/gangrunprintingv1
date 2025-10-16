@@ -1,0 +1,174 @@
+{
+  "timestamp": "2025-10-16T16:01:48.849Z",
+  "iterations": [
+    {
+      "iteration": 1,
+      "timestamp": "2025-10-16T16:01:48.851Z",
+      "steps": [
+        {
+          "step": 1,
+          "name": "Navigate to products",
+          "passed": true
+        },
+        {
+          "step": 2,
+          "name": "Navigate to product detail",
+          "passed": true
+        },
+        {
+          "step": 3,
+          "name": "Product configuration loaded",
+          "passed": true
+        },
+        {
+          "step": 4,
+          "name": "Add to cart clicked",
+          "passed": false,
+          "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add to Cart\")').first()\u001b[22m\n"
+        },
+        {
+          "step": 5,
+          "name": "Redirect to upload page",
+          "passed": false,
+          "error": "Unexpected URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        },
+        {
+          "step": 8,
+          "name": "Verify checkout page",
+          "passed": false,
+          "error": "Wrong URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        }
+      ],
+      "passed": true,
+      "error": null
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-10-16T16:02:02.594Z",
+      "steps": [
+        {
+          "step": 1,
+          "name": "Navigate to products",
+          "passed": true
+        },
+        {
+          "step": 2,
+          "name": "Navigate to product detail",
+          "passed": true
+        },
+        {
+          "step": 3,
+          "name": "Product configuration loaded",
+          "passed": true
+        },
+        {
+          "step": 4,
+          "name": "Add to cart clicked",
+          "passed": false,
+          "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add to Cart\")').first()\u001b[22m\n"
+        },
+        {
+          "step": 5,
+          "name": "Redirect to upload page",
+          "passed": false,
+          "error": "Unexpected URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        },
+        {
+          "step": 8,
+          "name": "Verify checkout page",
+          "passed": false,
+          "error": "Wrong URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        }
+      ],
+      "passed": true,
+      "error": null
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-10-16T16:02:16.299Z",
+      "steps": [
+        {
+          "step": 1,
+          "name": "Navigate to products",
+          "passed": true
+        },
+        {
+          "step": 2,
+          "name": "Navigate to product detail",
+          "passed": true
+        },
+        {
+          "step": 3,
+          "name": "Product configuration loaded",
+          "passed": true
+        },
+        {
+          "step": 4,
+          "name": "Add to cart clicked",
+          "passed": false,
+          "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add to Cart\")').first()\u001b[22m\n"
+        },
+        {
+          "step": 5,
+          "name": "Redirect to upload page",
+          "passed": false,
+          "error": "Unexpected URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        },
+        {
+          "step": 8,
+          "name": "Verify checkout page",
+          "passed": false,
+          "error": "Wrong URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        }
+      ],
+      "passed": true,
+      "error": null
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-10-16T16:02:29.998Z",
+      "steps": [
+        {
+          "step": 1,
+          "name": "Navigate to products",
+          "passed": true
+        },
+        {
+          "step": 2,
+          "name": "Navigate to product detail",
+          "passed": true
+        },
+        {
+          "step": 3,
+          "name": "Product configuration loaded",
+          "passed": true
+        },
+        {
+          "step": 4,
+          "name": "Add to cart clicked",
+          "passed": false,
+          "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add to Cart\")').first()\u001b[22m\n"
+        },
+        {
+          "step": 5,
+          "name": "Redirect to upload page",
+          "passed": false,
+          "error": "Unexpected URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        },
+        {
+          "step": 8,
+          "name": "Verify checkout page",
+          "passed": false,
+          "error": "Wrong URL: http://localhost:3020/products/2c2bc530-8b74-4845-ad35-6ee36b289595"
+        }
+      ],
+      "passed": true,
+      "error": null
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  }
+}

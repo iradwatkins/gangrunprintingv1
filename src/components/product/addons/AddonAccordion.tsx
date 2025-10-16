@@ -21,7 +21,7 @@ import { PerforationSection } from './components/PerforationSection'
 import { BandingSection } from './components/BandingSection'
 import { CornerRoundingSection } from './components/CornerRoundingSection'
 // REMOVED: import { DesignSection } from './components/DesignSection' - Design is now a primary dropdown
-import { ImageUploadSection } from './components/ImageUploadSection'
+// REMOVED: import { ImageUploadSection } from './components/ImageUploadSection' - File upload moved to post-cart flow
 import { AddonCheckbox } from './components/AddonCheckbox'
 
 export function AddonAccordion({
@@ -66,22 +66,22 @@ export function AddonAccordion({
   //     }),
   // }
 
-  // Image Upload state
-  const imageUpload = {
-    enabled: imageUploadConfig?.enabled || false,
-    selectedOption: imageUploadConfig?.selectedOption || null,
-    uploadedFiles: imageUploadConfig?.uploadedFiles || [],
-    onToggle: (checked: boolean) =>
-      onImageUploadChange?.({ ...imageUploadConfig, enabled: checked }),
-    onOptionChange: (optionId: string | null, files?: any[]) =>
-      onImageUploadChange?.({
-        ...imageUploadConfig,
-        selectedOption: optionId,
-        uploadedFiles: files || [],
-      }),
-    onFilesUploaded: (files: any[]) =>
-      onImageUploadChange?.({ ...imageUploadConfig, uploadedFiles: files }),
-  }
+  // REMOVED: Image Upload state - File upload moved to post-cart flow
+  // const imageUpload = {
+  //   enabled: imageUploadConfig?.enabled || false,
+  //   selectedOption: imageUploadConfig?.selectedOption || null,
+  //   uploadedFiles: imageUploadConfig?.uploadedFiles || [],
+  //   onToggle: (checked: boolean) =>
+  //     onImageUploadChange?.({ ...imageUploadConfig, enabled: checked }),
+  //   onOptionChange: (optionId: string | null, files?: any[]) =>
+  //     onImageUploadChange?.({
+  //       ...imageUploadConfig,
+  //       selectedOption: optionId,
+  //       uploadedFiles: files || [],
+  //     }),
+  //   onFilesUploaded: (files: any[]) =>
+  //     onImageUploadChange?.({ ...imageUploadConfig, uploadedFiles: files }),
+  // }
 
   const handleAddonToggle = (addonId: string, checked: boolean) => {
     if (disabled) return
@@ -120,7 +120,7 @@ export function AddonAccordion({
       {/* Main Accordion for IN dropdown items and special features */}
       <Accordion collapsible className="w-full" type="single">
         <AccordionItem value="addons">
-          <AccordionTrigger className="text-lg font-semibold">Additional Options</AccordionTrigger>
+          <AccordionTrigger className="text-lg font-semibold">Options</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-6">
               {/* Special Feature Sections */}
@@ -139,7 +139,8 @@ export function AddonAccordion({
                   quantity={quantity}
                 />
 
-                <ImageUploadSection {...imageUpload} disabled={disabled} />
+                {/* REMOVED: ImageUploadSection - File upload moved to post-cart flow */}
+                {/* <ImageUploadSection {...imageUpload} disabled={disabled} /> */}
               </div>
 
               {/* Standard Addons IN Dropdown */}

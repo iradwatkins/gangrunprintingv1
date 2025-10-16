@@ -10,23 +10,16 @@ import type {
   Notification as PrismaNotification,
 } from '@prisma/client'
 
-declare global {
-  // Cart Types
-  interface CartItem {
-    id: string
-    productId: string
-    productName: string
-    productSku: string
-    quantity: number
-    price: number
-    options?: Record<string, any>
-    paperStockId?: string
-    paperStock?: PaperStock
-    addons?: CartAddon[]
-    dimensions?: ProductDimensions
-    weight?: number
-  }
+// Import CartItem and related types from the canonical source
+import type { CartItem, CartState, CartContextType, TurnaroundTimeOption } from '@/lib/cart-types'
 
+declare global {
+  // Re-export CartItem to global scope (from canonical source)
+  // NOTE: CartItem is now imported from @/lib/cart-types.ts - DO NOT redefine here
+  type GlobalCartItem = CartItem
+  type GlobalTurnaroundTimeOption = TurnaroundTimeOption
+
+  // Legacy CartAddon for backward compatibility (deprecated - use CartItem.options.addOns)
   interface CartAddon {
     addOnId: string
     addOnName: string

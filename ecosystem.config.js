@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'gangrunprinting',
-      script: 'npm',
-      args: 'start',
+      script: 'node_modules/.bin/next',
+      args: 'start -p 3002',
       cwd: '/root/websites/gangrunprinting',
       instances: 1,
       exec_mode: 'fork',
@@ -36,7 +36,7 @@ module.exports = {
 
         // Database Configuration
         DATABASE_URL:
-          'postgresql://gangrun_user:GangRun2024Secure@172.22.0.1:5432/gangrun_db?schema=public',
+          'postgresql://gangrun_user:GangRun2024Secure@localhost:5434/gangrun_db?schema=public',
 
         // Authentication
         AUTH_SECRET: 'gangrun_super_secret_auth_key_2024_production_ready',

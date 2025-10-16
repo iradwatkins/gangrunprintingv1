@@ -35,7 +35,24 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(addOnSets)
+    // Transform PascalCase Prisma fields to camelCase for frontend
+    const transformedSets = addOnSets.map((set) => ({
+      ...set,
+      addOnSetItems: set.AddOnSetItem
+        ? set.AddOnSetItem.map((item: any) => ({
+            ...item,
+            addOn: item.AddOn,
+            AddOn: undefined, // Remove PascalCase field
+          }))
+        : [],
+      _count: {
+        addOnSetItems: set._count.AddOnSetItem,
+        productAddOnSets: set._count.ProductAddOnSet,
+      },
+      AddOnSetItem: undefined, // Remove PascalCase field
+    }))
+
+    return NextResponse.json(transformedSets)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch addon sets' }, { status: 500 })
   }
@@ -90,10 +107,33 @@ export async function POST(request: NextRequest) {
             sortOrder: 'asc',
           },
         },
+        _count: {
+          select: {
+            AddOnSetItem: true,
+            ProductAddOnSet: true,
+          },
+        },
       },
     })
 
-    return NextResponse.json(completeAddOnSet, { status: 201 })
+    // Transform PascalCase to camelCase
+    const transformed = completeAddOnSet
+      ? {
+          ...completeAddOnSet,
+          addOnSetItems: completeAddOnSet.AddOnSetItem.map((item: any) => ({
+            ...item,
+            addOn: item.AddOn,
+            AddOn: undefined,
+          })),
+          _count: {
+            addOnSetItems: completeAddOnSet._count.AddOnSetItem,
+            productAddOnSets: completeAddOnSet._count.ProductAddOnSet,
+          },
+          AddOnSetItem: undefined,
+        }
+      : null
+
+    return NextResponse.json(transformed, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create addon set' }, { status: 500 })
   }

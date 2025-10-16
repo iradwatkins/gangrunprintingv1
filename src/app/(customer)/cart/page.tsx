@@ -48,7 +48,7 @@ function CartPageContent() {
       toast.error('Your cart is empty')
       return
     }
-    router.push('/checkout')
+    router.push('/cart/upload-artwork')
   }
 
   if (cartItems.length === 0) {
@@ -194,10 +194,13 @@ function CartPageContent() {
             </div>
 
             <Button className="w-full" size="lg" onClick={handleCheckout}>
-              Proceed to Checkout
+              Next: Upload Your Design Files
             </Button>
 
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Next step: Upload your artwork files (drag & drop)
+              </p>
               <p className="text-sm text-muted-foreground">Secure checkout powered by Square</p>
             </div>
           </div>

@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
 
         if (product) {
           productName = product.name
-          categoryName = product.productCategory.name
-          imageCount = product.productImages.length + 1
+          categoryName = product.ProductCategory.name
+          imageCount = product.ProductImage.length + 1
 
           // Enforce maximum of 4 images per product (1 primary + 3 additional)
           if (imageCount > 4) {

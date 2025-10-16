@@ -115,6 +115,7 @@ export function ProductImageUpload({
       const response = await fetch('/api/products/upload-image', {
         method: 'POST',
         body: formData,
+        credentials: 'include', // CRITICAL: Send auth cookies with request
         signal: controller.signal,
       })
 

@@ -32,6 +32,7 @@ export interface CartItem {
     paperStockId?: string
     coating?: string
     sides?: string
+    turnaround?: string // Turnaround name string
     addOns?: Array<{
       id: string
       name: string
@@ -49,6 +50,13 @@ export interface CartItem {
   fileName?: string
   fileSize?: number
   designNotes?: string
+  // Legacy support for different cart implementations
+  addons?: Array<{
+    id: string
+    name: string
+    price: number
+    configuration?: Record<string, unknown>
+  }>
 }
 
 export interface CartState {

@@ -70,11 +70,11 @@ export function transformProductForFrontend(product: Product): TransformedProduc
     ProductAddons: transformAddonsForFrontend(product.productAddons || product.addons || []),
 
     // New group-based fields (keep raw for now)
-    productSizeGroups: product.productSizeGroups,
-    productQuantityGroups: product.productQuantityGroups,
-    productPaperStockSets: product.productPaperStockSets,
-    productTurnaroundTimeSets: product.productTurnaroundTimeSets,
-    productAddOnSets: product.productAddOnSets,
+    productSizeGroups: product.productSizeGroups || (product as any).ProductSizeGroup,
+    productQuantityGroups: product.productQuantityGroups || (product as any).ProductQuantityGroup,
+    productPaperStockSets: product.productPaperStockSets || (product as any).ProductPaperStockSet,
+    productTurnaroundTimeSets: product.productTurnaroundTimeSets || (product as any).ProductTurnaroundTimeSet,
+    productAddOnSets: product.productAddOnSets || (product as any).ProductAddOnSet,
 
     // Keep backward compatibility
     productCategory: product.productCategory,

@@ -1,5 +1,17 @@
+/**
+ * Enhanced FedEx Provider - Production Ready
+ * Based on WooCommerce FedEx Plugin 4.4.6 with Next.js optimizations
+ *
+ * Features:
+ * - 30+ service types (Express, Ground, Freight, SmartPost, International)
+ * - Intelligent box packing (14 FedEx box types, 3D bin packing)
+ * - Enterprise error handling (retry, token refresh, exponential backoff)
+ * - Freight support (LTL, NMFC classes, pallet calculations)
+ * - SmartPost support (27 US hubs, USPS last-mile)
+ * - Multi-rate-type support (LIST/ACCOUNT/PREFERRED)
+ */
+
 import axios, { type AxiosInstance } from 'axios'
-import axiosRetry from 'axios-retry'
 import { Carrier } from '@prisma/client'
 import {
   type ShippingAddress,
@@ -10,26 +22,75 @@ import {
   type TrackingInfo,
   type TrackingEvent,
 } from '../interfaces'
-import { fedexConfig, FEDEX_SERVICE_CODES, SERVICE_NAMES } from '../config'
 import { roundWeight } from '../weight-calculator'
 
-interface FedExAuthToken {
-  access_token: string
-  token_type: string
-  expires_in: number
-  scope: string
+// Enhanced modules
+import {
+  FEDEX_SERVICES,
+  getServiceByCode,
+  getDomesticServices,
+  getInternationalServices,
+  getServicesForWeight,
+  type FedExService,
+} from '../fedex/services'
+import { packItems, convertToShippingPackages, type PackItem } from '../fedex/box-packer'
+import { FedExErrorHandler, FedExError, withRetry } from '../fedex/error-handler'
+import {
+  findNearestHub,
+  isStateServedBySmartPost,
+  type SmartPostHub,
+} from '../fedex/smartpost-hubs'
+import {
+  requiresFreight,
+  buildFreightShipmentDetail,
+  getFreightClassForPackage,
+  calculatePallets,
+  estimateFreightCost,
+  isResidentialFreightAvailable,
+  calculateResidentialFreightSurcharge,
+} from '../fedex/freight'
+import type {
+  FedExAuthToken,
+  FedExRateRequest,
+  FedExRateResponse,
+  RateCalculationOptions,
+} from '../fedex/types'
+
+interface FedExProviderConfig {
+  clientId: string
+  clientSecret: string
+  accountNumber: string
+  testMode: boolean
+  markupPercentage: number
+  useIntelligentPacking: boolean
+  enabledServices?: string[] // Specific services to enable
+  rateTypes?: Array<'LIST' | 'ACCOUNT' | 'PREFERRED'>
 }
 
-export class FedExProvider implements ShippingProvider {
+export class FedExProviderEnhanced implements ShippingProvider {
   carrier = Carrier.FEDEX
   private client: AxiosInstance
   private authToken: FedExAuthToken | null = null
   private tokenExpiry: Date | null = null
+  private errorHandler: FedExErrorHandler
+  private config: FedExProviderConfig
 
-  constructor() {
-    const baseURL = fedexConfig.testMode
+  constructor(config?: Partial<FedExProviderConfig>) {
+    // Load configuration from environment or provided config
+    this.config = {
+      clientId: config?.clientId || process.env.FEDEX_API_KEY || '',
+      clientSecret: config?.clientSecret || process.env.FEDEX_SECRET_KEY || '',
+      accountNumber: config?.accountNumber || process.env.FEDEX_ACCOUNT_NUMBER || '',
+      testMode: config?.testMode ?? (process.env.FEDEX_TEST_MODE === 'true' || !process.env.FEDEX_API_KEY),
+      markupPercentage: config?.markupPercentage ?? 0,
+      useIntelligentPacking: config?.useIntelligentPacking ?? true,
+      enabledServices: config?.enabledServices,
+      rateTypes: config?.rateTypes || ['LIST', 'ACCOUNT'],
+    }
+
+    const baseURL = this.config.testMode
       ? 'https://apis-sandbox.fedex.com'
-      : process.env.FEDEX_API_ENDPOINT || 'https://apis.fedex.com'
+      : 'https://apis.fedex.com'
 
     this.client = axios.create({
       baseURL,
@@ -39,169 +100,368 @@ export class FedExProvider implements ShippingProvider {
       },
     })
 
-    // Add retry logic for failed requests
-    axiosRetry(this.client, {
-      retries: 3,
-      retryDelay: axiosRetry.exponentialDelay,
-      retryCondition: (error) => {
-        return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response?.status === 429
-      },
+    this.errorHandler = new FedExErrorHandler({
+      maxRetries: 3,
+      baseDelay: 1000,
+      maxDelay: 10000,
+      useExponentialBackoff: true,
+      useJitter: true,
     })
   }
 
   /**
-   * Get OAuth2 token for FedEx API
+   * OAuth2 authentication with automatic refresh
    */
   private async authenticate(): Promise<void> {
     if (this.authToken && this.tokenExpiry && this.tokenExpiry > new Date()) {
-      return // Token is still valid
+      return // Token still valid
     }
 
-    try {
-      const response = await axios.post(
-        `${this.client.defaults.baseURL}/oauth/token`,
-        new URLSearchParams({
-          grant_type: 'client_credentials',
-          client_id: process.env.FEDEX_API_KEY || '',
-          client_secret: process.env.FEDEX_SECRET_KEY || '',
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      )
+    await withRetry(
+      async () => {
+        const response = await axios.post(
+          `${this.client.defaults.baseURL}/oauth/token`,
+          new URLSearchParams({
+            grant_type: 'client_credentials',
+            client_id: this.config.clientId,
+            client_secret: this.config.clientSecret,
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        )
 
-      this.authToken = response.data
-      // Set token expiry with 5-minute buffer
-      this.tokenExpiry = new Date(Date.now() + (this.authToken.expires_in - 300) * 1000)
+        this.authToken = response.data
+        // Set token expiry with 5-minute buffer
+        this.tokenExpiry = new Date(Date.now() + (this.authToken!.expires_in - 300) * 1000)
 
-      // Update default headers with auth token
-      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
-    } catch (error) {
-      throw new Error('Failed to authenticate with FedEx API')
-    }
+        // Update authorization header
+        this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken!.access_token}`
+
+        console.log('[FedEx] Successfully authenticated')
+      },
+      undefined, // No token refresh callback for authentication itself
+      'FedEx OAuth2 Authentication'
+    )
   }
 
   /**
-   * Get shipping rates from FedEx
+   * Get shipping rates with intelligent box packing
    */
   async getRates(
     fromAddress: ShippingAddress,
     toAddress: ShippingAddress,
-    packages: ShippingPackage[]
+    packages: ShippingPackage[],
+    options?: RateCalculationOptions
   ): Promise<ShippingRate[]> {
-    // If no API key, return test/estimated rates
-    if (!process.env.FEDEX_API_KEY) {
-      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode)
+    // If no API credentials, return test rates
+    if (!this.config.clientId || !this.config.accountNumber) {
+      console.warn('[FedEx] No API credentials, returning test rates')
+      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
     }
 
-    await this.authenticate()
-
     try {
-      const requestBody = {
-        accountNumber: {
-          value: process.env.FEDEX_ACCOUNT_NUMBER,
-        },
-        requestedShipment: {
-          shipper: {
-            address: this.formatAddress(fromAddress),
-          },
-          recipient: {
-            address: this.formatAddress(toAddress),
-          },
-          shipDateStamp: new Date().toISOString().split('T')[0],
-          pickupType: 'DROPOFF_AT_FEDEX_LOCATION',
-          rateRequestType: ['LIST', 'ACCOUNT'],
-          requestedPackageLineItems: packages.map((pkg, index) => ({
-            sequenceNumber: index + 1,
-            weight: {
-              units: 'LB',
-              value: roundWeight(pkg.weight),
-            },
-            dimensions: pkg.dimensions
-              ? {
-                  length: Math.ceil(pkg.dimensions.length || 10),
-                  width: Math.ceil(pkg.dimensions.width),
-                  height: Math.ceil(pkg.dimensions.height),
-                  units: 'IN',
-                }
-              : undefined,
-          })),
-        },
+      await this.authenticate()
+
+      // Determine if freight is needed
+      const needsFreight = requiresFreight(packages)
+
+      // Use intelligent box packing for parcel shipments
+      let optimizedPackages = packages
+      if (this.config.useIntelligentPacking && !needsFreight) {
+        optimizedPackages = this.optimizePackaging(packages)
       }
 
-      const response = await this.client.post('/rate/v1/rates/quotes', requestBody)
+      // Determine which service types to request
+      const isInternational = toAddress.country && toAddress.country !== 'US'
+      const serviceCategories = this.determineServiceCategories(needsFreight, isInternational, toAddress.state!)
 
-      if (!response.data.output?.rateReplyDetails) {
-        return []
-      }
+      // Fetch rates for each category in parallel
+      const ratePromises = serviceCategories.map((category) =>
+        this.getRatesForCategory(category, fromAddress, toAddress, optimizedPackages, options)
+      )
 
-      const rates: ShippingRate[] = response.data.output.rateReplyDetails
-        .filter((detail: Record<string, unknown>) => {
-          // Only include services we actually use
-          const allowedServices = Object.values(FEDEX_SERVICE_CODES)
-          return allowedServices.includes(detail.serviceType)
-        })
-        .map((detail: Record<string, unknown>) => {
-          const ratedShipmentDetail = detail.ratedShipmentDetails?.[0]
-          const totalCharge =
-            ratedShipmentDetail?.totalNetCharge || ratedShipmentDetail?.totalNetFedExCharge
+      const results = await Promise.allSettled(ratePromises)
 
-          // Use Ground Home Delivery name for residential ground shipments
-          const serviceCode = detail.serviceType
-          let serviceName = SERVICE_NAMES[detail.serviceType as keyof typeof SERVICE_NAMES]
+      // Combine successful results
+      const allRates: ShippingRate[] = []
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          allRates.push(...result.value)
+        } else {
+          console.warn(`[FedEx] Failed to get rates for ${serviceCategories[index]}:`, result.reason)
+        }
+      })
 
-          if (detail.serviceType === 'FEDEX_GROUND' && toAddress.isResidential) {
-            serviceName = 'FedEx Home Delivery'
-          }
+      // Filter by enabled services
+      const filteredRates = this.filterByEnabledServices(allRates)
 
-          // Calculate actual transit days from FedEx API response
-          let estimatedDays = this.getEstimatedDays(
-            detail.serviceType,
-            fromAddress.zipCode,
-            toAddress.zipCode
-          )
-          if (detail.deliveryTimestamp || detail.commit?.dateDetail) {
-            const deliveryDate = detail.deliveryTimestamp
-              ? new Date(detail.deliveryTimestamp)
-              : detail.commit?.dateDetail?.dayOfWeek
-                ? new Date(detail.commit.dateDetail.dayOfWeek)
-                : null
-
-            if (deliveryDate) {
-              const today = new Date()
-              const diffTime = deliveryDate.getTime() - today.getTime()
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-              if (diffDays > 0) {
-                estimatedDays = diffDays
-              }
-            }
-          }
-
-          const markup = 1 + (fedexConfig.markupPercentage || 0) / 100
-
-          return {
-            carrier: this.carrier,
-            serviceCode,
-            serviceName,
-            rateAmount: roundWeight(totalCharge * markup, 2),
-            currency: 'USD',
-            estimatedDays,
-            deliveryDate: detail.deliveryTimestamp ? new Date(detail.deliveryTimestamp) : undefined,
-            isGuaranteed: detail.commit?.dateDetail?.dayOfWeek !== undefined,
-          }
-        })
-
-      return rates
+      // Apply markup
+      return this.applyMarkup(filteredRates)
     } catch (error) {
-      // If API call fails, return test rates with zip-based transit estimates
-      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode)
+      console.error('[FedEx] Rate fetch failed:', error)
+      // Fallback to test rates
+      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
     }
   }
 
   /**
-   * Create a shipping label with FedEx
+   * Optimize packaging using intelligent box packer
+   */
+  private optimizePackaging(packages: ShippingPackage[]): ShippingPackage[] {
+    // Convert to PackItem format
+    const items: PackItem[] = packages.flatMap((pkg, index) =>
+      pkg.items?.map((item) => ({
+        name: item.name,
+        length: item.dimensions?.length || pkg.dimensions?.length || 12,
+        width: item.dimensions?.width || pkg.dimensions?.width || 12,
+        height: item.dimensions?.height || pkg.dimensions?.height || 2,
+        weight: item.weight,
+        quantity: item.quantity,
+      })) || [
+        {
+          name: `Package ${index + 1}`,
+          length: pkg.dimensions?.length || 12,
+          width: pkg.dimensions?.width || 12,
+          height: pkg.dimensions?.height || 2,
+          weight: pkg.weight,
+          quantity: 1,
+        },
+      ]
+    )
+
+    // Pack items intelligently
+    const packingResult = packItems(items, {
+      allowCustomBoxes: true,
+      preferFewerBoxes: false, // Optimize for cost, not box count
+      maxBoxes: 50,
+    })
+
+    // Convert back to ShippingPackage format
+    const optimizedPackages = convertToShippingPackages(packingResult, packages[0]?.value)
+
+    console.log(
+      `[FedEx] Optimized ${packages.length} packages → ${optimizedPackages.length} boxes (estimated savings: ${((1 - optimizedPackages.length / packages.length) * 100).toFixed(0)}%)`
+    )
+
+    return optimizedPackages
+  }
+
+  /**
+   * Determine which service categories to request
+   */
+  private determineServiceCategories(
+    needsFreight: boolean,
+    isInternational: boolean,
+    destinationState: string
+  ): Array<'express' | 'ground' | 'freight' | 'smartpost' | 'international'> {
+    const categories: Array<'express' | 'ground' | 'freight' | 'smartpost' | 'international'> = []
+
+    if (isInternational) {
+      categories.push('international')
+    } else {
+      // Domestic shipment
+      categories.push('express', 'ground')
+
+      // Add freight if needed
+      if (needsFreight) {
+        categories.push('freight')
+      }
+
+      // Add SmartPost if destination is served
+      if (isStateServedBySmartPost(destinationState)) {
+        categories.push('smartpost')
+      }
+    }
+
+    return categories
+  }
+
+  /**
+   * Get rates for specific service category
+   */
+  private async getRatesForCategory(
+    category: 'express' | 'ground' | 'freight' | 'smartpost' | 'international',
+    fromAddress: ShippingAddress,
+    toAddress: ShippingAddress,
+    packages: ShippingPackage[],
+    options?: RateCalculationOptions
+  ): Promise<ShippingRate[]> {
+    const requestBody = this.buildRateRequest(category, fromAddress, toAddress, packages, options)
+
+    return withRetry(
+      async () => {
+        const endpoint = category === 'freight' ? '/rate/v1/freight/rates/quotes' : '/rate/v1/rates/quotes'
+
+        const response = await this.client.post<FedExRateResponse>(endpoint, requestBody)
+
+        if (!response.data.output?.rateReplyDetails || response.data.output.rateReplyDetails.length === 0) {
+          return []
+        }
+
+        return this.parseRateResponse(response.data, toAddress.isResidential)
+      },
+      () => this.authenticate(), // Token refresh callback
+      `FedEx ${category} rates`
+    )
+  }
+
+  /**
+   * Build FedEx API rate request
+   */
+  private buildRateRequest(
+    category: 'express' | 'ground' | 'freight' | 'smartpost' | 'international',
+    fromAddress: ShippingAddress,
+    toAddress: ShippingAddress,
+    packages: ShippingPackage[],
+    options?: RateCalculationOptions
+  ): FedExRateRequest {
+    const baseRequest: FedExRateRequest = {
+      accountNumber: {
+        value: this.config.accountNumber,
+      },
+      rateRequestControlParameters: {
+        returnTransitTimes: true,
+        servicesNeededOnRateFailure: true,
+        rateSortOrder: 'SERVICENAMETRADITIONAL',
+      },
+      requestedShipment: {
+        shipper: {
+          address: this.formatAddress(fromAddress),
+        },
+        recipient: {
+          address: this.formatAddress(toAddress),
+        },
+        shipDateStamp: new Date().toISOString().split('T')[0],
+        pickupType: 'DROPOFF_AT_FEDEX_LOCATION',
+        rateRequestType: options?.rateTypes || this.config.rateTypes,
+        requestedPackageLineItems: packages.map((pkg, index) => ({
+          sequenceNumber: index + 1,
+          weight: {
+            units: 'LB',
+            value: roundWeight(pkg.weight),
+          },
+          dimensions: pkg.dimensions
+            ? {
+                length: Math.ceil(pkg.dimensions.length),
+                width: Math.ceil(pkg.dimensions.width),
+                height: Math.ceil(pkg.dimensions.height),
+                units: 'IN',
+              }
+            : undefined,
+        })),
+      },
+    }
+
+    // Add carrier codes based on category
+    if (category === 'express') {
+      baseRequest.carrierCodes = ['FDXE']
+    } else if (category === 'ground') {
+      baseRequest.carrierCodes = ['FDXG']
+    } else if (category === 'smartpost') {
+      baseRequest.carrierCodes = ['FXSP']
+      // Add SmartPost-specific details
+      const hubId = findNearestHub(toAddress.state!)
+      baseRequest.requestedShipment.smartPostInfoDetail = {
+        indicia: 'PARCEL_SELECT',
+        hubId: hubId || undefined,
+      }
+    } else if (category === 'freight') {
+      // Add freight-specific details
+      baseRequest.requestedShipment.freightShipmentDetail = buildFreightShipmentDetail(
+        packages,
+        options?.customsValue || 1000
+      )
+    }
+
+    return baseRequest
+  }
+
+  /**
+   * Parse FedEx API rate response
+   */
+  private parseRateResponse(response: FedExRateResponse, isResidential?: boolean): ShippingRate[] {
+    if (!response.output?.rateReplyDetails) {
+      return []
+    }
+
+    return response.output.rateReplyDetails
+      .map((detail) => {
+        const serviceCode = detail.serviceType
+        const serviceInfo = getServiceByCode(serviceCode)
+
+        if (!serviceInfo) {
+          console.warn(`[FedEx] Unknown service type: ${serviceCode}`)
+          return null
+        }
+
+        // Get rate amounts
+        const ratedShipmentDetail = detail.ratedShipmentDetails?.[0]
+        if (!ratedShipmentDetail) return null
+
+        const accountRate = ratedShipmentDetail.totalNetCharge
+        const listRate = detail.ratedShipmentDetails?.find((d) => d.rateType === 'LIST')?.totalNetCharge
+
+        // Parse delivery date
+        let estimatedDays = serviceInfo.estimatedDaysMin
+        let deliveryDate: Date | undefined
+        if (detail.deliveryTimestamp) {
+          deliveryDate = new Date(detail.deliveryTimestamp)
+          const today = new Date()
+          estimatedDays = Math.ceil((deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+        }
+
+        // Adjust service name for residential ground
+        let serviceName = serviceInfo.displayName
+        if (serviceCode === 'FEDEX_GROUND' && isResidential) {
+          serviceName = 'FedEx Ground Home Delivery'
+        }
+
+        return {
+          carrier: this.carrier,
+          serviceCode,
+          serviceName,
+          rateAmount: accountRate || listRate || 0,
+          currency: 'USD',
+          estimatedDays: Math.max(estimatedDays, 1),
+          deliveryDate,
+          isGuaranteed: serviceInfo.isGuaranteed,
+        } as ShippingRate
+      })
+      .filter((rate): rate is ShippingRate => rate !== null)
+  }
+
+  /**
+   * Filter rates by enabled services configuration
+   */
+  private filterByEnabledServices(rates: ShippingRate[]): ShippingRate[] {
+    if (!this.config.enabledServices || this.config.enabledServices.length === 0) {
+      return rates // All services enabled
+    }
+
+    return rates.filter((rate) => this.config.enabledServices!.includes(rate.serviceCode))
+  }
+
+  /**
+   * Apply markup to rates
+   */
+  private applyMarkup(rates: ShippingRate[]): ShippingRate[] {
+    if (this.config.markupPercentage === 0) {
+      return rates
+    }
+
+    const markup = 1 + this.config.markupPercentage / 100
+
+    return rates.map((rate) => ({
+      ...rate,
+      rateAmount: roundWeight(rate.rateAmount * markup, 2),
+    }))
+  }
+
+  /**
+   * Create shipping label (existing implementation)
    */
   async createLabel(
     fromAddress: ShippingAddress,
@@ -211,125 +471,127 @@ export class FedExProvider implements ShippingProvider {
   ): Promise<ShippingLabel> {
     await this.authenticate()
 
-    try {
-      const requestBody = {
-        accountNumber: {
-          value: process.env.FEDEX_ACCOUNT_NUMBER,
-        },
-        requestedShipment: {
-          shipper: {
-            address: this.formatAddress(fromAddress),
-            contact: {
-              personName: 'Shipping Department',
-              phoneNumber: '1234567890',
-              companyName: 'GangRun Printing',
-            },
+    return withRetry(
+      async () => {
+        const requestBody = {
+          accountNumber: {
+            value: this.config.accountNumber,
           },
-          recipient: {
-            address: this.formatAddress(toAddress),
-            contact: {
-              personName: toAddress.street2 || 'Recipient',
-              phoneNumber: '1234567890',
+          requestedShipment: {
+            shipper: {
+              address: this.formatAddress(fromAddress),
+              contact: {
+                personName: 'Shipping Department',
+                phoneNumber: '1234567890',
+                companyName: 'GangRun Printing',
+              },
             },
-          },
-          shipDateStamp: new Date().toISOString().split('T')[0],
-          serviceType: serviceCode,
-          packagingType: 'YOUR_PACKAGING',
-          pickupType: 'DROPOFF_AT_FEDEX_LOCATION',
-          blockInsightVisibility: false,
-          labelSpecification: {
-            labelFormatType: 'COMMON2D',
-            imageType: 'PDF',
-            labelStockType: 'PAPER_4X6',
-          },
-          requestedPackageLineItems: packages.map((pkg, index) => ({
-            sequenceNumber: index + 1,
-            weight: {
-              units: 'LB',
-              value: roundWeight(pkg.weight),
+            recipient: {
+              address: this.formatAddress(toAddress),
+              contact: {
+                personName: toAddress.name || 'Recipient',
+                phoneNumber: toAddress.phone || '1234567890',
+              },
             },
-            dimensions: pkg.dimensions
-              ? {
-                  length: Math.ceil(pkg.dimensions.length || 10),
-                  width: Math.ceil(pkg.dimensions.width),
-                  height: Math.ceil(pkg.dimensions.height),
-                  units: 'IN',
-                }
-              : undefined,
-          })),
-        },
-      }
+            shipDateStamp: new Date().toISOString().split('T')[0],
+            serviceType: serviceCode,
+            packagingType: packages[0].packagingType || 'YOUR_PACKAGING',
+            pickupType: 'DROPOFF_AT_FEDEX_LOCATION',
+            blockInsightVisibility: false,
+            labelSpecification: {
+              labelFormatType: 'COMMON2D',
+              imageType: 'PDF',
+              labelStockType: 'PAPER_4X6',
+            },
+            requestedPackageLineItems: packages.map((pkg, index) => ({
+              sequenceNumber: index + 1,
+              weight: {
+                units: 'LB',
+                value: roundWeight(pkg.weight),
+              },
+              dimensions: pkg.dimensions
+                ? {
+                    length: Math.ceil(pkg.dimensions.length),
+                    width: Math.ceil(pkg.dimensions.width),
+                    height: Math.ceil(pkg.dimensions.height),
+                    units: 'IN',
+                  }
+                : undefined,
+            })),
+          },
+        }
 
-      const response = await this.client.post('/ship/v1/shipments', requestBody)
+        const response = await this.client.post('/ship/v1/shipments', requestBody)
 
-      const output = response.data.output
-      const completedPackage =
-        output.transactionShipments[0].completedShipmentDetail.completedPackageDetails[0]
+        const output = response.data.output
+        const completedPackage =
+          output.transactionShipments[0].completedShipmentDetail.completedPackageDetails[0]
 
-      return {
-        trackingNumber: completedPackage.trackingIds[0].trackingNumber,
-        labelUrl: completedPackage.label.url || '',
-        labelFormat: 'PDF',
-        carrier: this.carrier,
-      }
-    } catch (error) {
-      throw new Error('Failed to create FedEx shipping label')
-    }
+        return {
+          trackingNumber: completedPackage.trackingIds[0].trackingNumber,
+          labelUrl: completedPackage.label.url || '',
+          labelFormat: 'PDF',
+          carrier: this.carrier,
+        }
+      },
+      () => this.authenticate(),
+      'FedEx label creation'
+    )
   }
 
   /**
-   * Track a FedEx shipment
+   * Track shipment (existing implementation)
    */
   async track(trackingNumber: string): Promise<TrackingInfo> {
     await this.authenticate()
 
-    try {
-      const requestBody = {
-        trackingInfo: [
-          {
-            trackingNumberInfo: {
-              trackingNumber,
+    return withRetry(
+      async () => {
+        const requestBody = {
+          trackingInfo: [
+            {
+              trackingNumberInfo: {
+                trackingNumber,
+              },
             },
-          },
-        ],
-        includeDetailedScans: true,
-      }
+          ],
+          includeDetailedScans: true,
+        }
 
-      const response = await this.client.post('/track/v1/trackingnumbers', requestBody)
+        const response = await this.client.post('/track/v1/trackingnumbers', requestBody)
 
-      const trackResult = response.data.output.completeTrackResults[0].trackResults[0]
+        const trackResult = response.data.output.completeTrackResults[0].trackResults[0]
 
-      const events: TrackingEvent[] = (trackResult.scanEvents || []).map(
-        (event: Record<string, unknown>) => ({
+        const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: any) => ({
           timestamp: new Date(event.date),
           location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
           status: event.derivedStatus || event.eventType,
           description: event.eventDescription,
-        })
-      )
+        }))
 
-      const status = this.mapTrackingStatus(trackResult.latestStatusDetail?.code)
+        const status = this.mapTrackingStatus(trackResult.latestStatusDetail?.code)
 
-      return {
-        trackingNumber,
-        carrier: this.carrier,
-        status,
-        currentLocation: trackResult.latestStatusDetail?.scanLocation?.city,
-        estimatedDelivery: trackResult.estimatedDeliveryTimestamp
-          ? new Date(trackResult.estimatedDeliveryTimestamp)
-          : undefined,
-        actualDelivery: trackResult.actualDeliveryTimestamp
-          ? new Date(trackResult.actualDeliveryTimestamp)
-          : undefined,
-        events,
-      }
-    } catch (error) {
-      throw new Error('Failed to track FedEx shipment')
-    }
+        return {
+          trackingNumber,
+          carrier: this.carrier,
+          status,
+          currentLocation: trackResult.latestStatusDetail?.scanLocation?.city,
+          estimatedDelivery: trackResult.estimatedDeliveryTimestamp
+            ? new Date(trackResult.estimatedDeliveryTimestamp)
+            : undefined,
+          actualDelivery: trackResult.actualDeliveryTimestamp
+            ? new Date(trackResult.actualDeliveryTimestamp)
+            : undefined,
+          events,
+        }
+      },
+      () => this.authenticate(),
+      'FedEx tracking'
+    )
   }
 
   /**
-   * Validate address with FedEx
+   * Validate address
    */
   async validateAddress(address: ShippingAddress): Promise<boolean> {
     await this.authenticate()
@@ -353,7 +615,7 @@ export class FedExProvider implements ShippingProvider {
   }
 
   /**
-   * Cancel a FedEx shipment
+   * Cancel shipment
    */
   async cancelShipment(trackingNumber: string): Promise<boolean> {
     await this.authenticate()
@@ -361,7 +623,7 @@ export class FedExProvider implements ShippingProvider {
     try {
       const requestBody = {
         accountNumber: {
-          value: process.env.FEDEX_ACCOUNT_NUMBER,
+          value: this.config.accountNumber,
         },
         trackingNumber,
       }
@@ -376,7 +638,7 @@ export class FedExProvider implements ShippingProvider {
   /**
    * Format address for FedEx API
    */
-  private formatAddress(address: ShippingAddress): Record<string, unknown> {
+  private formatAddress(address: ShippingAddress): any {
     return {
       streetLines: [address.street, address.street2].filter(Boolean),
       city: address.city,
@@ -388,49 +650,7 @@ export class FedExProvider implements ShippingProvider {
   }
 
   /**
-   * Calculate estimated transit days based on zip code distance
-   * More accurate than hardcoded values for sandbox/test mode
-   */
-  private calculateTransitDays(fromZip: string, toZip: string, serviceType: string): number {
-    // Service-specific transit times
-    if (serviceType === 'STANDARD_OVERNIGHT') return 1
-    if (serviceType === 'FEDEX_2_DAY') return 2
-
-    // Ground service: estimate based on zip code proximity
-    const from = parseInt(fromZip.substring(0, 3))
-    const to = parseInt(toZip.substring(0, 3))
-    const zipDiff = Math.abs(from - to)
-
-    // Ground delivery estimates based on zip code zones
-    if (zipDiff <= 50) return 1 // Same region (e.g., IL 601xx to IN 463xx)
-    if (zipDiff <= 150) return 2 // Adjacent regions
-    if (zipDiff <= 300) return 3 // 2-3 states away
-    if (zipDiff <= 500) return 4 // Cross-country partial
-    return 5 // Coast-to-coast
-  }
-
-  /**
-   * Get estimated days for service type
-   * Fallback when API doesn't provide delivery dates
-   */
-  private getEstimatedDays(serviceType: string, fromZip?: string, toZip?: string): number {
-    // If we have zip codes, calculate based on distance
-    if (fromZip && toZip) {
-      return this.calculateTransitDays(fromZip, toZip, serviceType)
-    }
-
-    // Conservative fallback estimates
-    const estimates: Record<string, number> = {
-      FEDEX_GROUND: 3,
-      GROUND_HOME_DELIVERY: 3,
-      FEDEX_2_DAY: 2,
-      STANDARD_OVERNIGHT: 1,
-    }
-    return estimates[serviceType] || 3
-  }
-
-  /**
-   * Map FedEx tracking status to our status
+   * Map FedEx tracking status
    */
   private mapTrackingStatus(fedexStatus: string): TrackingInfo['status'] {
     const statusMap: Record<string, TrackingInfo['status']> = {
@@ -445,46 +665,57 @@ export class FedExProvider implements ShippingProvider {
   }
 
   /**
-   * Get test/estimated rates when API is not configured
+   * Get test/estimated rates (enhanced with more services)
    */
   private getTestRates(
     packages: ShippingPackage[],
     fromZip?: string,
-    toZip?: string
+    toZip?: string,
+    isResidential?: boolean
   ): ShippingRate[] {
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
-    const markup = 1 + (fedexConfig.markupPercentage || 0) / 100
+    const needsFreight = requiresFreight(packages)
 
-    // Estimated rates based on typical FedEx pricing
-    const baseRates = [
-      {
-        serviceCode: FEDEX_SERVICE_CODES.FEDEX_GROUND,
-        serviceName: SERVICE_NAMES.FEDEX_GROUND,
-        baseRate: 12.0 + totalWeight * 0.85,
-        serviceType: 'FEDEX_GROUND',
-      },
-      {
-        serviceCode: FEDEX_SERVICE_CODES.FEDEX_2_DAY,
-        serviceName: SERVICE_NAMES.FEDEX_2_DAY,
-        baseRate: 25.0 + totalWeight * 1.5,
-        serviceType: 'FEDEX_2_DAY',
-      },
-      {
-        serviceCode: FEDEX_SERVICE_CODES.STANDARD_OVERNIGHT,
-        serviceName: SERVICE_NAMES.STANDARD_OVERNIGHT,
-        baseRate: 45.0 + totalWeight * 2.0,
-        serviceType: 'STANDARD_OVERNIGHT',
-      },
-    ]
+    const rates: ShippingRate[] = []
 
-    return baseRates.map((rate) => ({
-      carrier: this.carrier,
-      serviceCode: rate.serviceCode,
-      serviceName: rate.serviceName,
-      rateAmount: roundWeight(rate.baseRate * markup, 2),
-      currency: 'USD',
-      estimatedDays: this.getEstimatedDays(rate.serviceType, fromZip, toZip),
-      isGuaranteed: false,
-    }))
+    if (!needsFreight) {
+      // Standard parcel services
+      const services = [
+        { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
+        { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
+        { code: 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
+        { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
+      ]
+
+      services.forEach((svc) => {
+        rates.push({
+          carrier: this.carrier,
+          serviceCode: svc.code,
+          serviceName: svc.name,
+          rateAmount: roundWeight(svc.base + totalWeight * svc.perLb, 2),
+          currency: 'USD',
+          estimatedDays: svc.days,
+          isGuaranteed: svc.days === 1,
+        })
+      })
+    } else {
+      // Freight services
+      const freightCost = estimateFreightCost(packages, fromZip || '60173', toZip || '90001', {
+        liftgateRequired: isResidential,
+      })
+
+      rates.push({
+        carrier: this.carrier,
+        serviceCode: 'FEDEX_FREIGHT_ECONOMY',
+        serviceName: 'FedEx Freight Economy',
+        rateAmount: roundWeight(freightCost, 2),
+        currency: 'USD',
+        estimatedDays: 5,
+        isGuaranteed: false,
+      })
+    }
+
+    return rates
   }
 }
+export { FedExProviderEnhanced as FedExProvider }

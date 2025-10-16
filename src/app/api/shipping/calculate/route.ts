@@ -173,8 +173,43 @@ export async function POST(request: NextRequest) {
     // Use the split boxes for rating
     packages.push(...boxes)
 
-    // Get rates from both FedEx and Southwest Cargo with timeout protection
-    console.log('[Shipping API] Fetching rates from FedEx and Southwest Cargo...')
+    // Determine supported carriers based on product categories' vendors
+    const supportedCarriers = new Set<string>()
+
+    for (const item of items) {
+      if (item.productId) {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId },
+          select: {
+            productCategory: {
+              select: {
+                Vendor: {
+                  select: {
+                    supportedCarriers: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+
+        if (product?.productCategory?.Vendor?.supportedCarriers) {
+          const carriers = product.productCategory.Vendor.supportedCarriers
+          console.log('[Shipping API] 📦 Product', item.productId, 'vendor supports:', carriers)
+          carriers.forEach((carrier: string) => supportedCarriers.add(carrier.toUpperCase()))
+        } else {
+          // If no vendor or no supported carriers, allow all carriers (default behavior)
+          console.log('[Shipping API] ⚠️ Product', item.productId, 'has no vendor - using all carriers')
+          supportedCarriers.add('FEDEX')
+          supportedCarriers.add('SOUTHWEST_CARGO')
+        }
+      }
+    }
+
+    console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
+
+    // Get rates from supported carriers with timeout protection
+    console.log('[Shipping API] Fetching rates from supported carriers...')
 
     // Create timeout promise (10 seconds)
     const timeout = new Promise<never>((_, reject) =>
@@ -186,35 +221,39 @@ export async function POST(request: NextRequest) {
     try {
       console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
 
-      const [fedexRates, southwestRates] = await Promise.race([
-        Promise.all([
+      const ratePromises = []
+
+      if (supportedCarriers.has('FEDEX')) {
+        ratePromises.push(
           shippingCalculator.getCarrierRates('FEDEX', shipFrom, toAddress, packages).catch((err) => {
             console.error('[Shipping API] ❌ FedEx error:', err.message || err)
             console.error('[Shipping API] FedEx error stack:', err.stack)
             return []
-          }),
+          })
+        )
+      }
+
+      if (supportedCarriers.has('SOUTHWEST_CARGO') || supportedCarriers.has('SOUTHWEST CARGO')) {
+        ratePromises.push(
           shippingCalculator.getCarrierRates('SOUTHWEST_CARGO', shipFrom, toAddress, packages).catch((err) => {
             console.error('[Shipping API] ❌ Southwest Cargo error:', err.message || err)
             console.error('[Shipping API] Southwest Cargo error stack:', err.stack)
             return []
-          }),
-        ]),
-        timeout,
-      ])
-
-      console.log('[Shipping API] ✅ FedEx rates received:', fedexRates.length, 'rates')
-      if (fedexRates.length > 0) {
-        console.log('[Shipping API] FedEx rates:', JSON.stringify(fedexRates, null, 2))
+          })
+        )
       }
 
-      console.log('[Shipping API] ✅ Southwest Cargo rates received:', southwestRates.length, 'rates')
-      if (southwestRates.length > 0) {
-        console.log('[Shipping API] Southwest Cargo rates:', JSON.stringify(southwestRates, null, 2))
-      } else {
-        console.log('[Shipping API] ⚠️ Southwest Cargo returned NO rates - check provider logs above')
-      }
+      const allRates = await Promise.race([Promise.all(ratePromises), timeout])
 
-      rates = [...fedexRates, ...southwestRates]
+      allRates.forEach((carrierRates, index) => {
+        const carrierName = index === 0 ? 'FedEx' : 'Southwest Cargo'
+        console.log(`[Shipping API] ✅ ${carrierName} rates received:`, carrierRates.length, 'rates')
+        if (carrierRates.length > 0) {
+          console.log(`[Shipping API] ${carrierName} rates:`, JSON.stringify(carrierRates, null, 2))
+        }
+      })
+
+      rates = allRates.flat()
       console.log('[Shipping API] 📊 Combined total rates:', rates.length)
       console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {

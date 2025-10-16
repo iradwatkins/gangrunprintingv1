@@ -22,6 +22,7 @@ import { format } from '@/lib/date'
 import { TrackingButton, TrackingLink } from '@/components/tracking/tracking-button'
 import { formatTrackingNumber, getCarrierName } from '@/lib/tracking'
 import toast from '@/lib/toast'
+import { CustomerOrderFiles } from '@/components/customer/order-files'
 
 interface OrderDetail {
   id: string
@@ -297,6 +298,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </CardContent>
         </Card>
       )}
+
+      {/* Files & Artwork */}
+      <CustomerOrderFiles orderId={resolvedParams.id} />
 
       {/* Order Items */}
       <Card className="mb-6">

@@ -1,84 +1,36 @@
 'use client'
 
-import { useState } from 'react'
-import { type OrderStatus } from '@prisma/client'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
-import {
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Package,
-  Truck,
-  DollarSign,
-  type LucideIcon,
-} from 'lucide-react'
+import * as Icons from 'lucide-react'
 
-// Status configuration with colors and icons - GangRun Printing Workflow
-const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  CONFIRMATION: {
-    label: 'Confirmation',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: AlertCircle,
-  },
-  PRODUCTION: {
-    label: 'Production',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Package,
-  },
-  SHIPPED: {
-    label: 'Shipped',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: Truck,
-  },
-  ON_THE_WAY: {
-    label: 'On The Way',
-    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
-    icon: Truck,
-  },
-  DELIVERED: {
-    label: 'Delivered',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: CheckCircle,
-  },
-  READY_FOR_PICKUP: {
-    label: 'Ready for Pickup',
-    color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
-    icon: Package,
-  },
-  PICKED_UP: {
-    label: 'Has Been Picked Up',
-    color: 'bg-green-200 text-green-900 dark:bg-green-800/20 dark:text-green-300',
-    icon: CheckCircle,
-  },
-  ON_HOLD: {
-    label: 'On Hold',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: AlertCircle,
-  },
-  CANCELLED: {
-    label: 'Cancelled',
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
-    icon: XCircle,
-  },
-  REFUNDED: {
-    label: 'Refunded',
-    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-    icon: DollarSign,
-  },
+interface StatusDetails {
+  id: string
+  name: string
+  slug: string
+  icon: string
+  color: string
+  badgeColor: string
+  isPaid: boolean
+}
+
+interface ValidNextState extends StatusDetails {
+  requiresPayment: boolean
+  requiresAdmin: boolean
 }
 
 interface OrderStatusDropdownProps {
   orderId: string
-  currentStatus: OrderStatus
+  currentStatus: string
   onStatusChange?: () => void
 }
 
@@ -89,8 +41,33 @@ export function OrderStatusDropdown({
 }: OrderStatusDropdownProps) {
   const [status, setStatus] = useState(currentStatus)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentStatusDetails, setCurrentStatusDetails] = useState<StatusDetails | null>(null)
+  const [validNextStates, setValidNextStates] = useState<ValidNextState[]>([])
 
-  const handleStatusChange = async (newStatus: OrderStatus) => {
+  // Fetch status details and valid transitions
+  useEffect(() => {
+    async function fetchStatusInfo() {
+      try {
+        const response = await fetch(`/api/orders/${orderId}/status`)
+        if (response.ok) {
+          const data = await response.json()
+          setCurrentStatusDetails(data.currentStatusDetails)
+          setValidNextStates(data.validNextStates || [])
+        } else {
+          console.error('Failed to fetch status info')
+        }
+      } catch (error) {
+        console.error('Error fetching status info:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchStatusInfo()
+  }, [orderId, status])
+
+  const handleStatusChange = async (newStatus: string) => {
     if (newStatus === status) return
 
     setIsUpdating(true)
@@ -102,110 +79,141 @@ export function OrderStatusDropdown({
         },
         body: JSON.stringify({
           toStatus: newStatus,
-          notes: `Status updated from ${status} to ${newStatus}`,
+          notes: `Status updated via dropdown`,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update status')
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to update status')
       }
 
+      const result = await response.json()
       setStatus(newStatus)
-      toast.success(`Order status updated to ${statusConfig[newStatus]?.label || newStatus}`)
+
+      // Find the new status details
+      const newStatusDetails = validNextStates.find(s => s.slug === newStatus)
+      toast.success(`Order status updated to ${newStatusDetails?.name || newStatus}`)
 
       // Call the callback if provided
       onStatusChange?.()
     } catch (error) {
       console.error('Error updating status:', error)
-      toast.error('Failed to update order status')
+      toast.error(error instanceof Error ? error.message : 'Failed to update order status')
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const currentConfig = statusConfig[status] || {
-    label: status,
-    color: 'bg-gray-100 text-gray-800',
-    icon: AlertCircle,
+  // Get icon component from string
+  const getIconComponent = (iconName: string) => {
+    const IconComponent = (Icons as any)[iconName]
+    return IconComponent || Icons.Circle
   }
-  const StatusIcon = currentConfig.icon
+
+  if (isLoading || !currentStatusDetails) {
+    return (
+      <Button
+        className="h-9 w-9 rounded-full bg-gray-300 hover:bg-gray-400 p-0"
+        disabled
+        size="sm"
+        variant="ghost"
+      >
+        <Icons.Loader2 className="h-4 w-4 animate-spin text-white" />
+      </Button>
+    )
+  }
+
+  const CurrentIcon = getIconComponent(currentStatusDetails.icon)
+
+  // Determine button color based on status
+  const getStatusColor = (statusSlug: string) => {
+    switch (statusSlug) {
+      case 'PENDING_PAYMENT':
+      case 'PAYMENT_DECLINED':
+      case 'PAYMENT_FAILED':
+        return 'bg-orange-500 hover:bg-orange-600'
+      case 'PAID':
+      case 'CONFIRMATION':
+        return 'bg-blue-500 hover:bg-blue-600'
+      case 'ON_HOLD':
+        return 'bg-yellow-500 hover:bg-yellow-600'
+      case 'PROCESSING':
+      case 'PRINTING':
+      case 'PRODUCTION':
+        return 'bg-purple-500 hover:bg-purple-600'
+      case 'SHIPPED':
+      case 'ON_THE_WAY':
+        return 'bg-indigo-500 hover:bg-indigo-600'
+      case 'READY_FOR_PICKUP':
+      case 'PICKED_UP':
+      case 'DELIVERED':
+        return 'bg-green-500 hover:bg-green-600'
+      case 'REPRINT':
+        return 'bg-amber-500 hover:bg-amber-600'
+      case 'CANCELLED':
+      case 'REFUNDED':
+        return 'bg-red-500 hover:bg-red-600'
+      default:
+        return 'bg-blue-500 hover:bg-blue-600'
+    }
+  }
 
   return (
-    <Select
-      disabled={isUpdating}
-      value={status}
-      onValueChange={(value) => handleStatusChange(value as OrderStatus)}
-    >
-      <SelectTrigger className="w-[180px] border-0 p-0 h-auto">
-        <SelectValue>
-          <Badge className={`${currentConfig.color} gap-1`}>
-            <StatusIcon className="h-3 w-3" />
-            {currentConfig.label}
-          </Badge>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="CONFIRMATION">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
-            Confirmation
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          className={`h-9 w-9 rounded-full ${getStatusColor(status)} p-0 transition-all ${
+            isUpdating ? 'opacity-50' : ''
+          }`}
+          disabled={isUpdating}
+          size="sm"
+          title={currentStatusDetails.name}
+        >
+          <CurrentIcon className="h-4 w-4 text-white" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuLabel className="flex items-center gap-2">
+          <CurrentIcon className="h-4 w-4" />
+          {currentStatusDetails.name}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {validNextStates.length === 0 ? (
+          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+            No status changes available
           </div>
-        </SelectItem>
-        <SelectItem value="PRODUCTION">
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4" />
-            Production
-          </div>
-        </SelectItem>
-        <SelectItem value="SHIPPED">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            Shipped
-          </div>
-        </SelectItem>
-        <SelectItem value="ON_THE_WAY">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            On The Way
-          </div>
-        </SelectItem>
-        <SelectItem value="DELIVERED">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
-            Delivered
-          </div>
-        </SelectItem>
-        <SelectItem value="READY_FOR_PICKUP">
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4" />
-            Ready for Pickup
-          </div>
-        </SelectItem>
-        <SelectItem value="PICKED_UP">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
-            Has Been Picked Up
-          </div>
-        </SelectItem>
-        <SelectItem value="ON_HOLD">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            On Hold (Issue)
-          </div>
-        </SelectItem>
-        <SelectItem value="CANCELLED">
-          <div className="flex items-center gap-2">
-            <XCircle className="h-4 w-4" />
-            Cancelled
-          </div>
-        </SelectItem>
-        <SelectItem value="REFUNDED">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
-            Refunded
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
+        ) : (
+          <>
+            <div className="px-2 py-1.5 text-xs text-muted-foreground">Change status to:</div>
+            {validNextStates.map((nextState) => {
+              const NextIcon = getIconComponent(nextState.icon)
+              return (
+                <DropdownMenuItem
+                  key={nextState.slug}
+                  className="cursor-pointer"
+                  onClick={() => handleStatusChange(nextState.slug)}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <div
+                      className={`h-6 w-6 rounded-full ${getStatusColor(nextState.slug)} flex items-center justify-center`}
+                    >
+                      <NextIcon className="h-3 w-3 text-white" />
+                    </div>
+                    <span className="flex-1">{nextState.name}</span>
+                    {nextState.requiresPayment && (
+                      <Icons.CreditCard className="h-3 w-3 text-muted-foreground" title="Requires payment" />
+                    )}
+                    {nextState.requiresAdmin && (
+                      <Icons.Shield className="h-3 w-3 text-muted-foreground" title="Requires admin" />
+                    )}
+                  </div>
+                </DropdownMenuItem>
+              )
+            })}
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

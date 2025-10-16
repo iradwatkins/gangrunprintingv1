@@ -47,6 +47,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
+    // ADMIN OVERRIDE: Admins can change to any status (no transition validation)
+    // This allows quick status updates without being restricted by workflow rules
+    console.log(`[Status Update] Admin ${user.email} changing order ${id} from ${order.status} to ${toStatus}`)
+
     // Update status via service
     await OrderService.updateStatus({
       orderId: id,
@@ -115,7 +119,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 /**
  * GET /api/orders/[id]/status
  *
- * Get order status history
+ * Get order status history with valid next states from database
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -145,10 +149,50 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
+    // ADMIN OVERRIDE: Return ALL active statuses for quick status changes
+    // Get all active statuses instead of just valid transitions
+    const allStatuses = await prisma.customOrderStatus.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        icon: true,
+        color: true,
+        badgeColor: true,
+        isPaid: true,
+      },
+    })
+
+    // Get current status details
+    const currentStatusDetails = await prisma.customOrderStatus.findUnique({
+      where: { slug: order.status },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        icon: true,
+        color: true,
+        badgeColor: true,
+        isPaid: true,
+      },
+    })
+
+    // Convert all statuses to validNextStates format (exclude current status)
+    const validNextStates = allStatuses
+      .filter(s => s.slug !== order.status)
+      .map((s) => ({
+        ...s,
+        requiresPayment: false,
+        requiresAdmin: false,
+      }))
+
     return NextResponse.json({
       currentStatus: order.status,
+      currentStatusDetails,
       history: order.StatusHistory,
-      validNextStates: getValidNextStates(order.status),
+      validNextStates,
     })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 })
@@ -156,30 +200,82 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 /**
- * Get valid next states for current status
+ * Validate if a status transition is allowed (ORDER STATUS MANAGER)
  */
-function getValidNextStates(currentStatus: OrderStatus): OrderStatus[] {
-  const validTransitions: Partial<Record<OrderStatus, OrderStatus[]>> = {
-    PENDING_PAYMENT: ['CONFIRMATION', 'PAYMENT_DECLINED', 'CANCELLED'] as OrderStatus[],
-    PAYMENT_DECLINED: ['PENDING_PAYMENT', 'CANCELLED'] as OrderStatus[],
-    CONFIRMATION: ['PRODUCTION', 'ON_HOLD', 'CANCELLED'] as OrderStatus[],
-    ON_HOLD: ['CONFIRMATION', 'PRODUCTION', 'CANCELLED'] as OrderStatus[],
-    PRODUCTION: [
-      'SHIPPED',
-      'READY_FOR_PICKUP',
-      'ON_THE_WAY',
-      'ON_HOLD',
-      'REPRINT',
-    ] as OrderStatus[],
-    SHIPPED: ['DELIVERED', 'REPRINT'] as OrderStatus[],
-    READY_FOR_PICKUP: ['PICKED_UP', 'REPRINT'] as OrderStatus[],
-    ON_THE_WAY: ['PICKED_UP', 'REPRINT'] as OrderStatus[],
-    PICKED_UP: ['REPRINT'] as OrderStatus[],
-    DELIVERED: ['REPRINT'] as OrderStatus[],
-    REPRINT: ['PRODUCTION'] as OrderStatus[],
-    CANCELLED: [] as OrderStatus[],
-    REFUNDED: [] as OrderStatus[],
-  }
+async function validateStatusTransition(fromStatusSlug: string, toStatusSlug: string): Promise<boolean> {
+  // Allow same-status transitions
+  if (fromStatusSlug === toStatusSlug) return true
 
-  return validTransitions[currentStatus] || []
+  try {
+    // Look up both statuses by slug
+    const [fromStatus, toStatus] = await Promise.all([
+      prisma.customOrderStatus.findUnique({ where: { slug: fromStatusSlug } }),
+      prisma.customOrderStatus.findUnique({ where: { slug: toStatusSlug } }),
+    ])
+
+    if (!fromStatus || !toStatus) {
+      console.error('[Status Validation] Status not found:', { fromStatusSlug, toStatusSlug })
+      return false
+    }
+
+    // Check if transition exists in database
+    const transition = await prisma.statusTransition.findUnique({
+      where: {
+        fromStatusId_toStatusId: {
+          fromStatusId: fromStatus.id,
+          toStatusId: toStatus.id,
+        },
+      },
+    })
+
+    return !!transition
+  } catch (error) {
+    console.error('[Status Validation] Error validating transition:', error)
+    return false
+  }
+}
+
+/**
+ * Get valid next states from database (ORDER STATUS MANAGER)
+ */
+async function getValidNextStatesFromDb(currentStatusSlug: string) {
+  try {
+    // Get current status
+    const currentStatus = await prisma.customOrderStatus.findUnique({
+      where: { slug: currentStatusSlug },
+    })
+
+    if (!currentStatus) {
+      return []
+    }
+
+    // Get valid transitions
+    const transitions = await prisma.statusTransition.findMany({
+      where: {
+        fromStatusId: currentStatus.id,
+      },
+      include: {
+        ToStatus: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            icon: true,
+            color: true,
+            badgeColor: true,
+            isPaid: true,
+          },
+        },
+      },
+    })
+
+    return transitions.map((t) => ({
+      ...t.ToStatus,
+      requiresPayment: t.requiresPayment,
+      requiresAdmin: t.requiresAdmin,
+    }))
+  } catch (error) {
+    console.error('[Status API] Failed to get valid next states:', error)
+    return []
+  }
 }

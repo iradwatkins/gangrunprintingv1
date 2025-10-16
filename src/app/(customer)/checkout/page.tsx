@@ -34,6 +34,7 @@ import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import SquareDebugger from '@/components/debug/SquareDebugger'
+import { associateTemporaryFilesWithOrder, getUploadedFilesFromSession, clearUploadedFilesFromSession } from '@/lib/services/order-file-service'
 
 interface PayPalOrderDetails {
   paymentID: string
@@ -192,6 +193,50 @@ function CheckoutPageContent() {
     })
   }
 
+  /**
+   * Associate temporary uploaded files with order after successful payment
+   * Converts temporary files to permanent OrderFile records with CUSTOMER_ARTWORK type
+   */
+  const associateFilesWithOrder = async (orderId: string) => {
+    try {
+      // Get all uploaded files from sessionStorage for all cart items
+      const allFiles: any[] = []
+      for (const item of items) {
+        const filesForProduct = getUploadedFilesFromSession(item.productId)
+        if (filesForProduct.length > 0) {
+          allFiles.push(...filesForProduct)
+        }
+      }
+
+      // If no files uploaded, skip association
+      if (allFiles.length === 0) {
+        console.log('[Checkout] No files to associate with order')
+        return
+      }
+
+      console.log(`[Checkout] Associating ${allFiles.length} files with order ${orderId}`)
+
+      // Call service to associate files
+      const result = await associateTemporaryFilesWithOrder(orderId, allFiles)
+
+      if (result.success) {
+        console.log(`[Checkout] Successfully associated ${result.files?.length || 0} files with order`)
+
+        // Clear uploaded files from sessionStorage
+        for (const item of items) {
+          clearUploadedFilesFromSession(item.productId)
+        }
+      } else {
+        console.error('[Checkout] Failed to associate files:', result.error)
+        // Don't block order completion if file association fails
+        // Files are already uploaded to temp storage, admin can manually associate if needed
+      }
+    } catch (error) {
+      console.error('[Checkout] Error associating files with order:', error)
+      // Don't block order completion
+    }
+  }
+
   const handleNextStep = () => {
     const stepIndex = STEPS.findIndex((s) => s.id === currentStep)
     if (stepIndex < STEPS.length - 1) {
@@ -312,6 +357,11 @@ function CheckoutPageContent() {
       if (result.success) {
         // Simulate a successful payment (for testing purposes)
         toast.success('🧪 Test payment successful!')
+
+        // Associate uploaded files with order
+        if (result.orderId) {
+          await associateFilesWithOrder(result.orderId)
+        }
 
         // Store order info in sessionStorage
         sessionStorage.setItem(
@@ -439,12 +489,17 @@ function CheckoutPageContent() {
     }
   }
 
-  const handleCardPaymentSuccess = (result: {
+  const handleCardPaymentSuccess = async (result: {
     paymentId?: string
     orderId?: string
     orderNumber?: string
   }) => {
     toast.success('Payment processed successfully!')
+
+    // Associate uploaded files with order
+    if (result.orderId) {
+      await associateFilesWithOrder(result.orderId)
+    }
 
     // Store success info
     const checkoutData = createCheckoutData()
@@ -495,6 +550,11 @@ function CheckoutPageContent() {
       const result = await response.json()
 
       if (result.success) {
+        // Associate uploaded files with order
+        if (result.orderId) {
+          await associateFilesWithOrder(result.orderId)
+        }
+
         sessionStorage.setItem(
           'lastOrder',
           JSON.stringify({
@@ -671,21 +731,21 @@ function CheckoutPageContent() {
                                 <span className="font-medium">{currentItem.options.coating}</span>
                               </div>
                             )}
-                            {currentItem.options.turnaround && (
+                            {currentItem.turnaround && (
                               <div>
                                 <span className="text-gray-500 uppercase text-xs font-medium">Turnaround:</span>{' '}
-                                <span className="font-medium">{currentItem.options.turnaround}</span>
+                                <span className="font-medium">{currentItem.turnaround.displayName}</span>
                               </div>
                             )}
                           </div>
 
                           {/* Addons */}
-                          {currentItem.addons && currentItem.addons.length > 0 && (
+                          {(currentItem.options.addOns || currentItem.addons) && (currentItem.options.addOns || currentItem.addons)!.length > 0 && (
                             <div className="mt-3 pt-3 border-t border-gray-200">
                               <div className="text-sm">
                                 <span className="text-gray-500 uppercase text-xs font-medium">Addons:</span>{' '}
                                 <span className="font-medium">
-                                  {currentItem.addons.map((a: any) => a.name).join(', ')}
+                                  {(currentItem.options.addOns || currentItem.addons)!.map((a: any) => a.name).join(', ')}
                                 </span>
                               </div>
                             </div>
@@ -732,7 +792,7 @@ function CheckoutPageContent() {
                           <Check className="h-4 w-4 text-green-600" />
                           Design Files Uploaded ({uploadedImages.length})
                         </p>
-                        <div className="grid grid-cols-4 gap-3">
+                        <div className="grid grid-cols-2 gap-3">
                           {uploadedImages.map((img) => (
                             <div
                               key={img.id}
@@ -1192,7 +1252,7 @@ function CheckoutPageContent() {
                           {currentItem.options.size && <div>Size: {currentItem.options.size}</div>}
                           {currentItem.options.paperStock && <div>Paper: {currentItem.options.paperStock}</div>}
                           {currentItem.options.coating && <div>Coating: {currentItem.options.coating}</div>}
-                          {currentItem.options.turnaround && <div>Turnaround: {currentItem.options.turnaround}</div>}
+                          {currentItem.turnaround && <div>Turnaround: {currentItem.turnaround.displayName}</div>}
                         </div>
                         <div className="mt-3 pt-3 border-t space-y-1">
                           <div className="flex justify-between"><span>Subtotal:</span><span>${subtotal.toFixed(2)}</span></div>

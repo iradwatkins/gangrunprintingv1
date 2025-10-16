@@ -162,7 +162,8 @@ async function getProductConfiguration(productId: string) {
     const { GET } = await import('@/app/api/products/[id]/configuration/route')
 
     // Create a mock request and params object
-    const mockRequest = new Request('http://localhost/api/products/' + productId + '/configuration')
+    const { NextRequest } = await import('next/server')
+    const mockRequest = new NextRequest('http://localhost/api/products/' + productId + '/configuration')
     const mockParams = Promise.resolve({ id: productId })
 
     // Call the API handler directly
@@ -205,9 +206,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const transformedProduct = {
     ...product,
     id: product.id, // Explicitly include ID
-    ProductCategory: product.productCategory || { id: '', name: 'Uncategorized' },
-    // Transform productImages to flatten the nested Image data
-    ProductImage: (product.productImages || []).map((pi: PrismaProductImage) => ({
+    ProductCategory: product.ProductCategory || { id: '', name: 'Uncategorized' },
+    // Transform ProductImage to flatten the nested Image data
+    ProductImage: (product.ProductImage || []).map((pi) => ({
       id: pi.Image?.id || pi.id,
       url: pi.Image?.url || '',
       thumbnailUrl: pi.Image?.thumbnailUrl || pi.Image?.url || '',

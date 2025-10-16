@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import {
@@ -35,76 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { OrderQuickActions } from '@/components/admin/orders/order-quick-actions'
-import { OrderStatusDropdown } from '@/components/admin/orders/order-status-dropdown'
+import { StatusFilter } from '@/components/admin/orders/status-filter'
+import { OrdersTableWithBulkActions } from '@/components/admin/orders/orders-table-with-bulk-actions'
 
 // Force dynamic rendering for real-time data
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-
-// Status configuration with colors and icons (GangRun Printing Workflow)
-const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  PAYMENT_DECLINED: {
-    label: 'Payment Declined',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: XCircle,
-  },
-  CONFIRMATION: {
-    label: 'Confirmation',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-    icon: CheckCircle,
-  },
-  ON_HOLD: {
-    label: 'On Hold',
-    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-    icon: AlertCircle,
-  },
-  PRODUCTION: {
-    label: 'Production',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-    icon: Package,
-  },
-  SHIPPED: {
-    label: 'Shipped',
-    color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400',
-    icon: Truck,
-  },
-  READY_FOR_PICKUP: {
-    label: 'Ready for Pickup',
-    color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400',
-    icon: Package,
-  },
-  ON_THE_WAY: {
-    label: 'On the Way',
-    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
-    icon: Truck,
-  },
-  PICKED_UP: {
-    label: 'Picked Up',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-    icon: CheckCircle,
-  },
-  DELIVERED: {
-    label: 'Delivered',
-    color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-    icon: CheckCircle,
-  },
-  REPRINT: {
-    label: 'Reprint',
-    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-    icon: AlertCircle,
-  },
-  CANCELLED: {
-    label: 'Cancelled',
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
-    icon: XCircle,
-  },
-  REFUNDED: {
-    label: 'Refunded',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-    icon: DollarSign,
-  },
-}
 
 interface OrdersPageProps {
   searchParams?: Promise<{
@@ -140,8 +75,28 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
     const [orders, totalCount] = await Promise.all([
       prisma.order.findMany({
         where,
-        include: {
-          OrderItem: true,
+        select: {
+          id: true,
+          orderNumber: true,
+          email: true,
+          phone: true,
+          total: true,
+          subtotal: true,
+          status: true,
+          createdAt: true,
+          trackingNumber: true,
+          carrier: true,
+          OrderItem: {
+            select: {
+              productName: true,
+            },
+          },
+          File: {
+            select: {
+              fileUrl: true,
+              filename: true,
+            },
+          },
           _count: {
             select: {
               OrderItem: true,
@@ -189,10 +144,10 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
             <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
             <p className="text-muted-foreground mt-2">Manage and track all printing orders</p>
           </div>
-          <Button disabled>
-            <Plus className="mr-2 h-4 w-4" />
+          <div className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground opacity-50 pointer-events-none">
+            <Plus className="h-4 w-4" />
             New Order
-          </Button>
+          </div>
         </div>
 
         {/* Statistics Cards */}
@@ -277,122 +232,23 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                   />
                 </form>
               </div>
-              <form>
-                <Select defaultValue={statusFilter} name="status">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    {Object.entries(statusConfig).map(([value, config]) => (
-                      <SelectItem key={value} value={value}>
-                        {config.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </form>
-              <Button disabled variant="outline">
-                <Filter className="mr-2 h-4 w-4" />
+              <StatusFilter />
+              <div className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 rounded-md text-sm font-medium border border-input bg-background opacity-50 pointer-events-none">
+                <Filter className="h-4 w-4" />
                 More Filters
-              </Button>
-              <Button disabled variant="outline">
-                <Download className="mr-2 h-4 w-4" />
+              </div>
+              <div className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 rounded-md text-sm font-medium border border-input bg-background opacity-50 pointer-events-none">
+                <Download className="h-4 w-4" />
                 Export
-              </Button>
+              </div>
             </div>
 
-            {/* Orders Table */}
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Products</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orders.length === 0 ? (
-                    <TableRow>
-                      <TableCell className="text-center py-8" colSpan={7}>
-                        {searchQuery || statusFilter !== 'all'
-                          ? 'No orders found matching your filters'
-                          : 'No orders yet. Orders will appear here when customers place them.'}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    orders.map((order) => {
-                      return (
-                        <TableRow key={order.id}>
-                          <TableCell className="font-medium">
-                            <Link className="hover:underline" href={`/admin/orders/${order.id}`}>
-                              {order.orderNumber}
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{order.email || 'Guest'}</p>
-                              {order.phone && (
-                                <p className="text-sm text-muted-foreground">{order.phone}</p>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{order._count.OrderItem} items</p>
-                              {order.OrderItem[0] && (
-                                <p className="text-sm text-muted-foreground">
-                                  {order.OrderItem[0].productName}
-                                  {order.OrderItem.length > 1 &&
-                                    ` +${order.OrderItem.length - 1} more`}
-                                </p>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-medium">${order.total.toFixed(2)}</TableCell>
-                          <TableCell>
-                            <OrderStatusDropdown currentStatus={order.status} orderId={order.id} />
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="text-sm">
-                                {new Date(order.createdAt).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                })}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(order.createdAt).toLocaleTimeString('en-US', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Link href={`/admin/orders/${order.id}`}>
-                                <Button size="sm" variant="ghost">
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  View
-                                </Button>
-                              </Link>
-                              <OrderQuickActions order={order} />
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            {/* Orders Table with Bulk Actions */}
+            <OrdersTableWithBulkActions
+              orders={orders}
+              searchQuery={searchQuery}
+              statusFilter={statusFilter}
+            />
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -402,13 +258,18 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                   {totalCount} orders
                 </p>
                 <div className="flex gap-2">
-                  <Link
-                    href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-                  >
-                    <Button disabled={page <= 1} size="sm" variant="outline">
+                  {page > 1 ? (
+                    <Link
+                      className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                      href={`/admin/orders?page=${Math.max(1, page - 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+                    >
                       Previous
-                    </Button>
-                  </Link>
+                    </Link>
+                  ) : (
+                    <div className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-input bg-background opacity-50 pointer-events-none">
+                      Previous
+                    </div>
+                  )}
                   <div className="flex items-center gap-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const pageNum = page <= 3 ? i + 1 : page + i - 2
@@ -416,22 +277,30 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                       return (
                         <Link
                           key={pageNum}
+                          className={`inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium transition-colors ${
+                            pageNum === page
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                              : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
+                          }`}
                           href={`/admin/orders?page=${pageNum}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                         >
-                          <Button size="sm" variant={pageNum === page ? 'default' : 'outline'}>
-                            {pageNum}
-                          </Button>
+                          {pageNum}
                         </Link>
                       )
                     })}
                   </div>
-                  <Link
-                    href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-                  >
-                    <Button disabled={page >= totalPages} size="sm" variant="outline">
+                  {page < totalPages ? (
+                    <Link
+                      className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                      href={`/admin/orders?page=${Math.min(totalPages, page + 1)}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+                    >
                       Next
-                    </Button>
-                  </Link>
+                    </Link>
+                  ) : (
+                    <div className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-input bg-background opacity-50 pointer-events-none">
+                      Next
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -440,6 +309,10 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
       </div>
     )
   } catch (error) {
+    console.error('[Orders Page] Error loading orders:', error)
+    console.error('[Orders Page] Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('[Orders Page] Error message:', error instanceof Error ? error.message : String(error))
+
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
@@ -457,7 +330,15 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
                 There was an error loading the orders. Please check your database connection and try
                 again.
               </p>
-              <Button onClick={() => window.location.reload()}>Try Again</Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                {error instanceof Error ? error.message : String(error)}
+              </p>
+              <a
+                className="inline-flex items-center justify-center h-10 px-4 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
+                href="/admin/orders"
+              >
+                Try Again
+              </a>
             </div>
           </CardContent>
         </Card>

@@ -1,6 +1,6 @@
-// Minimal next-intl plugin setup - disabled for now
-// import createNextIntlPlugin from 'next-intl/plugin'
-// const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
+// Minimal next-intl plugin setup
+import createNextIntlPlugin from 'next-intl/plugin'
+const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
 // Sentry configuration - Phase 3 Enterprise Enhancement
 import { withSentryConfig } from '@sentry/nextjs'
@@ -252,11 +252,7 @@ const nextConfig = {
 }
 
 // Apply plugins in order
-let config = nextConfig
-// config = withNextIntl(config)
-
-// Apply plugins in order
-let finalConfig = nextConfig
+let finalConfig = withNextIntl(nextConfig)
 
 // Add Sentry if DSN is configured
 if (process.env.NEXT_PUBLIC_SENTRY_DSN) {

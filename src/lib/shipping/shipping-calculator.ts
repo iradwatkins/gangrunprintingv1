@@ -1,5 +1,5 @@
 import { Carrier } from '@prisma/client'
-import { FedExProvider } from './providers/fedex'
+import { FedExProviderEnhanced } from './providers/fedex-enhanced'
 import { UPSProvider } from './providers/ups'
 import { SouthwestCargoProvider } from './providers/southwest-cargo'
 import {
@@ -22,7 +22,7 @@ export class ShippingCalculator {
 
     // Initialize enabled providers
     if (fedexConfig.enabled) {
-      this.providers.set(Carrier.FEDEX, new FedExProvider())
+      this.providers.set(Carrier.FEDEX, new FedExProviderEnhanced())
     }
     if (upsConfig.enabled) {
       this.providers.set(Carrier.UPS, new UPSProvider())

@@ -43,6 +43,14 @@ export async function GET(request: NextRequest) {
             slug: true,
           },
         },
+        Vendor: {
+          select: {
+            id: true,
+            name: true,
+            contactEmail: true,
+            phone: true,
+          },
+        },
       },
     })
 
@@ -80,6 +88,7 @@ export async function POST(request: NextRequest) {
         isActive: data.isActive ?? true,
         isHidden: data.isHidden ?? false,
         parentCategoryId: data.parentCategoryId || null,
+        vendorId: data.vendorId || null,
         brokerDiscount: Math.min(100, Math.max(0, data.brokerDiscount || 0)),
         updatedAt: new Date(),
       },

@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-10-16T02:49:48.612Z",
+  "rounds": [
+    {
+      "round": 1,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.695Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.706Z",
+          "imageCount": 2,
+          "imageIds": [
+            "21de5c1b-d2b2-462c-adce-39f8275151a6",
+            "a433d4cb-d085-4bf4-bb7c-585a4e7ab3f4"
+          ]
+        },
+        {
+          "testName": "Create Product",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:48.709Z",
+          "error": "\nInvalid `prisma.product.create()` invocation:\n\n{\n  data: {\n    name: \"UltraTest Product Round 1 1760582988695\",\n    sku: \"ultratest-1-1760582988706\",\n    slug: \"ultratest-product-1-1760582988706\",\n    categoryId: \"cat_flyer\",\n    description: \"Test product for round 1 - Created by UltraThink test\",\n    shortDescription: \"Round 1 test product\",\n    isActive: true,\n    isFeatured: false,\n    basePrice: 99.99,\n    setupFee: 0,\n    productionTime: 3,\n    rushAvailable: false,\n+   id: String\n  }\n}\n\nArgument `id` is missing."
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.712Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.715Z",
+          "imageCount": 2,
+          "imageIds": [
+            "0400cafe-4456-4640-8e3f-d06eb20669b0",
+            "c1c74149-59a1-43ac-a73a-2124b7e2b068"
+          ]
+        },
+        {
+          "testName": "Create Product",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:48.717Z",
+          "error": "\nInvalid `prisma.product.create()` invocation:\n\n{\n  data: {\n    name: \"UltraTest Product Round 2 1760582988712\",\n    sku: \"ultratest-2-1760582988715\",\n    slug: \"ultratest-product-2-1760582988715\",\n    categoryId: \"cat_flyer\",\n    description: \"Test product for round 2 - Created by UltraThink test\",\n    shortDescription: \"Round 2 test product\",\n    isActive: true,\n    isFeatured: false,\n    basePrice: 99.99,\n    setupFee: 0,\n    productionTime: 3,\n    rushAvailable: false,\n+   id: String\n  }\n}\n\nArgument `id` is missing."
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.719Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:48.721Z",
+          "imageCount": 2,
+          "imageIds": [
+            "31abef51-58e6-4078-88ed-98763bc72f60",
+            "9a1f269c-cade-4656-bd2c-ddc1b85a67e8"
+          ]
+        },
+        {
+          "testName": "Create Product",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:48.722Z",
+          "error": "\nInvalid `prisma.product.create()` invocation:\n\n{\n  data: {\n    name: \"UltraTest Product Round 3 1760582988719\",\n    sku: \"ultratest-3-1760582988721\",\n    slug: \"ultratest-product-3-1760582988721\",\n    categoryId: \"cat_flyer\",\n    description: \"Test product for round 3 - Created by UltraThink test\",\n    shortDescription: \"Round 3 test product\",\n    isActive: true,\n    isFeatured: false,\n    basePrice: 99.99,\n    setupFee: 0,\n    productionTime: 3,\n    rushAvailable: false,\n+   id: String\n  }\n}\n\nArgument `id` is missing."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalTests": 9,
+    "passed": 6,
+    "failed": 3,
+    "warnings": 3
+  }
+}

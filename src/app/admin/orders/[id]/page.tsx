@@ -1,8 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -41,6 +39,8 @@ import {
   UserCheck,
 } from 'lucide-react'
 import { VendorAssignment } from '@/components/admin/vendor-assignment'
+import { OrderFilesManager } from '@/components/admin/files/order-files-manager'
+import { CollapsibleSection } from '@/components/admin/collapsible-section'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -64,6 +64,39 @@ async function getOrder(id: string) {
       },
     },
   })
+
+  // Get product category vendors for automatic assignment
+  if (order && order.OrderItem.length > 0) {
+    const productSkus = order.OrderItem.map((item) => item.productSku)
+    const products = await prisma.product.findMany({
+      where: {
+        sku: { in: productSkus },
+      },
+      select: {
+        sku: true,
+        ProductCategory: {
+          select: {
+            vendorId: true,
+            Vendor: {
+              select: {
+                id: true,
+                name: true,
+                contactEmail: true,
+                phone: true,
+                turnaroundDays: true,
+                supportedCarriers: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // Attach category vendor info to order
+    ;(order as any).categoryVendors = products
+      .filter((p) => p.ProductCategory?.Vendor)
+      .map((p) => p.ProductCategory?.Vendor)
+  }
 
   return order
 }
@@ -222,10 +255,11 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin/orders">
-            <Button size="icon" variant="ghost">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+          <Link
+            href="/admin/orders"
+            className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Order {order.orderNumber}</h1>
@@ -243,18 +277,18 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button disabled size="sm" variant="outline">
+          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
             <Download className="h-4 w-4 mr-2" />
             Download Invoice
-          </Button>
-          <Button disabled size="sm" variant="outline">
+          </div>
+          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
             <Printer className="h-4 w-4 mr-2" />
             Print Order
-          </Button>
-          <Button disabled size="sm" variant="outline">
+          </div>
+          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
             <Edit className="h-4 w-4 mr-2" />
             Edit Order
-          </Button>
+          </div>
         </div>
       </div>
 
@@ -273,12 +307,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         {/* Left Column - Order Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Items</CardTitle>
-              <CardDescription>Products in this order</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <CollapsibleSection
+            title="Order Items"
+            description="Products in this order"
+            icon={<Package className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -350,15 +385,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <span>${(order.total / 100).toFixed(2)}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
 
           {/* Customer Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <CollapsibleSection
+            title="Customer Information"
+            icon={<User className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">Customer</p>
@@ -367,11 +403,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <span>{order.User?.name || 'Guest Customer'}</span>
                   </div>
                   {order.User && (
-                    <Link className="inline-block mt-2" href={`/admin/customers/${order.User.id}`}>
-                      <Button size="sm" variant="outline">
-                        View Profile
-                        <ChevronRight className="h-3 w-3 ml-1" />
-                      </Button>
+                    <Link
+                      href={`/admin/customers/${order.User.id}`}
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors mt-2"
+                    >
+                      View Profile
+                      <ChevronRight className="h-3 w-3 ml-1" />
                     </Link>
                   )}
                 </div>
@@ -433,62 +470,69 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
+
+          {/* Order Files */}
+          <CollapsibleSection
+            title="Order Files & Artwork"
+            description="Manage customer artwork and production files"
+            icon={<FileText className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <OrderFilesManager orderId={order.id} />
+          </CollapsibleSection>
 
           {/* Order Notes */}
           {order.adminNotes && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Admin Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{order.adminNotes}</p>
-              </CardContent>
-            </Card>
+            <CollapsibleSection
+              title="Admin Notes"
+              icon={<MessageSquare className="h-5 w-5" />}
+              defaultOpen={true}
+            >
+              <p className="text-sm">{order.adminNotes}</p>
+            </CollapsibleSection>
           )}
         </div>
 
         {/* Right Column - Status and Timeline */}
         <div className="space-y-6">
           {/* Order Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <CollapsibleSection
+            title="Order Status"
+            icon={<CheckCircle className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Badge className={`${status.color} gap-1 px-3 py-1`}>
                   <StatusIcon className="h-4 w-4" />
                   {status.label}
                 </Badge>
-                <Button disabled size="sm" variant="outline">
+                <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                   <RefreshCw className="h-3 w-3 mr-1" />
                   Update
-                </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
 
           {/* Vendor Assignment */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Factory className="h-5 w-5" />
-                Vendor Assignment
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <VendorAssignment order={order} vendors={vendors} />
-            </CardContent>
-          </Card>
+          <CollapsibleSection
+            title="Vendor Assignment"
+            icon={<Factory className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <VendorAssignment order={order} vendors={vendors} />
+          </CollapsibleSection>
 
           {/* Payment Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <CollapsibleSection
+            title="Payment Information"
+            icon={<CreditCard className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Method</span>
                 <span className="text-sm font-medium">{'Credit Card'}</span>
@@ -508,16 +552,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
 
           {/* Order Timeline */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+          <CollapsibleSection
+            title="Order Timeline"
+            icon={<Clock className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-4">
                 {timeline.map((event, index) => {
                   const EventIcon = event.icon
                   return (
@@ -555,36 +599,36 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     </div>
                   )
                 })}
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
 
           {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button disabled className="w-full justify-start" variant="outline">
+          <CollapsibleSection
+            title="Quick Actions"
+            icon={<Truck className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-2">
+              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                 <Mail className="h-4 w-4 mr-2" />
                 Send Email to Customer
-              </Button>
-              <Button disabled className="w-full justify-start" variant="outline">
+              </div>
+              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Invoice
-              </Button>
-              <Button disabled className="w-full justify-start" variant="outline">
+              </div>
+              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                 <Truck className="h-4 w-4 mr-2" />
                 Update Tracking
-              </Button>
+              </div>
               {order.status !== 'CANCELLED' && order.status !== 'REFUNDED' && (
-                <Button disabled className="w-full justify-start" variant="outline">
+                <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                   <XCircle className="h-4 w-4 mr-2" />
                   Cancel Order
-                </Button>
+                </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </CollapsibleSection>
         </div>
       </div>
     </div>

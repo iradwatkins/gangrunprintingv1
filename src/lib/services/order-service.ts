@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma'
 import { type OrderStatus, type Carrier } from '@prisma/client'
 import { N8NIntegration } from '@/lib/n8n/integration'
 import { OrderEmailService } from '@/lib/email/order-email-service'
+import { StatusChangeEmailService } from '@/lib/email/status-change-email-service'
 
 export interface StatusTransition {
   orderId: string
@@ -207,8 +208,15 @@ export class OrderService {
       data: updateData,
     })
 
-    // Send status-specific notifications
+    // Send status-specific notifications (legacy hardcoded emails)
     await this.handleStatusChange(order, toStatus, notes)
+
+    // ORDER STATUS MANAGER: Send automated email if configured
+    await StatusChangeEmailService.sendStatusChangeEmail(orderId, toStatus, {
+      notes,
+      changedBy,
+      metadata,
+    })
 
     // Trigger N8N webhook
     await N8NIntegration.triggerWebhook('order_status_changed', {

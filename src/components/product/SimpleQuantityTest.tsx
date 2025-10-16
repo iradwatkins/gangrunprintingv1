@@ -15,6 +15,7 @@ import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/cart-context'
 import { useRouter } from 'next/navigation'
 import toast from '@/lib/toast'
+import { AddonAccordion } from './addons/AddonAccordion'
 
 interface ProductImage {
   id: string
@@ -31,16 +32,31 @@ interface ProductInfo {
   ProductImage: ProductImage[]
 }
 
+interface Addon {
+  id: string
+  name: string
+  description?: string
+  priceType: 'FLAT' | 'PERCENTAGE' | 'CUSTOM'
+  price: number
+  pricePercentage?: number
+  isRequired: boolean
+  isMultiple: boolean
+}
+
 interface SimpleQuantityTestProps {
   productId: string
   product: ProductInfo
   initialConfiguration?: any // Pre-fetched configuration from server
+  addons?: Addon[] // Optional addons to display
+  onAddonChange?: (addonId: string, selected: boolean) => void
 }
 
 export default function SimpleQuantityTest({
   productId,
   product,
   initialConfiguration,
+  addons = [],
+  onAddonChange,
 }: SimpleQuantityTestProps) {
   // Cart and routing hooks
   const { addItem, openCart, clearCart } = useCart()
@@ -62,6 +78,7 @@ export default function SimpleQuantityTest({
   const [customHeight, setCustomHeight] = useState('')
   const [loading, setLoading] = useState(!initialConfiguration) // Start loaded if we have initial data
   const [error, setError] = useState('')
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]) // Track selected addon IDs
 
   useEffect(() => {
     console.log(
@@ -280,15 +297,37 @@ export default function SimpleQuantityTest({
     return basePrice
   }
 
-  // Calculate TOTAL price including selected turnaround time
-  const calculateTotalPrice = () => {
+  // Calculate addon prices
+  const calculateAddonPrice = () => {
+    if (selectedAddons.length === 0) return 0
+
+    let addonTotal = 0
     const basePrice = calculatedPrice
 
-    // If no turnaround time selected, just return base price
-    if (!selectedTurnaroundObj) return basePrice
+    selectedAddons.forEach(addonId => {
+      const addon = addons.find(a => a.id === addonId)
+      if (!addon) return
 
-    // Add turnaround time pricing to base price
-    return calculateTurnaroundPrice(selectedTurnaroundObj)
+      if (addon.priceType === 'FLAT') {
+        addonTotal += addon.price || 0
+      } else if (addon.priceType === 'PERCENTAGE') {
+        addonTotal += basePrice * ((addon.pricePercentage || 0) / 100)
+      }
+    })
+
+    return addonTotal
+  }
+
+  // Calculate TOTAL price including selected turnaround time and addons
+  const calculateTotalPrice = () => {
+    const basePrice = calculatedPrice
+    const addonPrice = calculateAddonPrice()
+
+    // If no turnaround time selected, return base + addons
+    if (!selectedTurnaroundObj) return basePrice + addonPrice
+
+    // Add turnaround time pricing to base price, then add addons
+    return calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice
   }
 
   const totalPrice = calculateTotalPrice()
@@ -394,9 +433,7 @@ export default function SimpleQuantityTest({
   }
 
   return (
-    <div className="space-y-4 p-4 border border-green-500 rounded">
-      <div className="text-green-600 font-bold">✅ Configuration Loading!</div>
-
+    <div className="space-y-4">
       {/* Quantity */}
       <div>
         <Label className="text-sm font-semibold uppercase">QUANTITY</Label>
@@ -566,6 +603,29 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
+      {/* Additional Options & Add-ons - BEFORE turnaround */}
+      {addons.length > 0 && (
+        <div className="mt-6">
+          <AddonAccordion
+            addons={addons}
+            disabled={false}
+            selectedAddons={selectedAddons}
+            onAddonChange={(addonId: string, selected: boolean) => {
+              // Update local state for price calculation
+              setSelectedAddons(prev =>
+                selected
+                  ? [...prev, addonId]
+                  : prev.filter(id => id !== addonId)
+              )
+              // Also call parent handler if provided
+              if (onAddonChange) {
+                onAddonChange(addonId, selected)
+              }
+            }}
+          />
+        </div>
+      )}
+
       {/* Turnaround Time */}
       {memoizedTurnaroundTimes.length > 0 && (
         <div>
@@ -611,45 +671,28 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
-      {/* Price Summary */}
-      <div className="border-t-2 border-green-600 pt-4">
-        <div className="text-lg font-bold text-green-700 mb-3">
-          Total Price: ${totalPrice.toFixed(2)}
-        </div>
-        <div className="text-sm text-gray-600 p-3 bg-gray-50 rounded space-y-1">
-          <div>
-            <strong>Quantity:</strong> {finalQuantity || 'Not set'}
-          </div>
-          <div>
-            <strong>Size:</strong> {finalSize || 'Not set'}
-          </div>
-          <div>
-            <strong>Paper:</strong> {finalPaper}
-          </div>
-          <div>
-            <strong>Coating:</strong> {finalCoating}
-          </div>
-          <div>
-            <strong>Sides:</strong> {finalSides}
-          </div>
-          <div>
-            <strong>Turnaround:</strong> {finalTurnaround}
+      {/* Price Display */}
+      {isConfigurationComplete && (
+        <div className="border-t pt-4 mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-lg font-semibold">Total Price:</span>
+            <span className="text-2xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Add to Cart Button */}
       {isConfigurationComplete ? (
         <Button
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-lg py-6"
+          className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6"
           size="lg"
           onClick={handleAddToCart}
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
-          Add to Cart - ${totalPrice.toFixed(2)}
+          Add to Cart
         </Button>
       ) : (
-        <div className="w-full p-4 text-center text-sm text-gray-500 bg-gray-100 rounded border border-gray-300">
+        <div className="w-full p-4 text-center text-sm text-muted-foreground bg-muted rounded border">
           Please complete all configuration options above to add this product to your cart
         </div>
       )}

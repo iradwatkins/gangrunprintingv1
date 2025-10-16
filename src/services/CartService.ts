@@ -1,28 +1,5 @@
 import { type PrismaClient } from '@prisma/client'
-
-export interface CartItem {
-  productId: string
-  productName: string
-  productSlug: string
-  sku: string
-  price: number
-  quantity: number
-  turnaround: string
-  options: {
-    size: string
-    paperStock: string
-    paperStockId: string
-    sides: string
-    coating: string
-    turnaround?: string
-    addons?: string[]
-    customDimensions?: string
-  }
-  fileUrl: string
-  fileName: string
-  fileSize: number
-  image: string
-}
+import type { CartItem } from '@/lib/cart-types'
 
 export interface OrderSummary {
   subtotal: number

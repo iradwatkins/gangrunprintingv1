@@ -18,60 +18,8 @@ import { transformProductsForFrontend, transformProductForFrontend } from '@/lib
 import type { Product } from '@/types/product'
 
 // GET /api/products - List all products
+// TEMPORARY: Using old implementation until ProductService relation names are fixed
 export async function GET(request: NextRequest) {
-  // Apply rate limiting for API endpoints
-  const rateLimitResponse = await withRateLimit(request, {
-    ...RateLimitPresets.api,
-    prefix: 'products-get',
-  })
-  if (rateLimitResponse) return rateLimitResponse
-
-  const requestId = generateRequestId()
-  const startTime = Date.now()
-
-  try {
-    const { searchParams } = new URL(request.url)
-    const categoryId = searchParams.get('categoryId') || undefined
-    const isActive = searchParams.get('isActive')
-    const gangRunEligible = searchParams.get('gangRunEligible')
-    const page = parseInt(searchParams.get('page') || '1', 10)
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
-
-    // Use ProductService for better architecture and caching
-    const result = await ProductService.listProducts({
-      categoryId,
-      isActive: isActive ? isActive === 'true' : undefined,
-      gangRunEligible: gangRunEligible ? gangRunEligible === 'true' : undefined,
-      page,
-      limit,
-    })
-
-    const responseTime = Date.now() - startTime
-
-    // Transform to match frontend expectations (PascalCase property names)
-    const transformedProducts = transformProductsForFrontend(result.data)
-
-    return createSuccessResponse(
-      transformedProducts,
-      200,
-      {
-        ...result.pagination,
-        count: transformedProducts.length,
-        responseTime,
-      },
-      requestId
-    )
-  } catch (error) {
-    const responseTime = Date.now() - startTime
-    console.error(`[${requestId}] Error:`, error)
-
-    return createDatabaseErrorResponse(error, requestId)
-  }
-}
-
-// Keep the original implementation as a fallback
-// TODO: Remove once service layer is fully tested
-export async function GET_OLD(request: NextRequest) {
   const requestId = generateRequestId()
   const startTime = Date.now()
 
@@ -165,36 +113,15 @@ export async function GET_OLD(request: NextRequest) {
             },
           },
         },
-        ProductOption: {
-          select: {
-            id: true,
-            optionName: true,
-            optionType: true,
-            isRequired: true,
-            sortOrder: true,
-            _count: {
-              select: { OptionValue: true },
-            },
-          },
-          orderBy: { sortOrder: 'asc' },
-        },
-        PricingTier: {
-          select: {
-            id: true,
-            minQuantity: true,
-            maxQuantity: true,
-            price: true,
-          },
-          orderBy: { minQuantity: 'asc' },
-        },
         _count: {
           select: {
             ProductImage: true,
             ProductPaperStockSet: true,
-            ProductOption: true,
             ProductQuantityGroup: true,
             ProductSizeGroup: true,
-            productAddOns: true,
+            ProductAddOnSet: true,
+            ProductTurnaroundTimeSet: true,
+            ProductDesignSet: true,
           },
         },
       },
@@ -543,7 +470,7 @@ export async function POST(request: NextRequest) {
             } else {
               console.log(`[${requestId}] Creating new Image record`)
 
-              // Create new Image record with required ID
+              // Create new Image record with required ID and updatedAt
               const newImageId = randomUUID()
               const image = await tx.image.create({
                 data: {
@@ -557,6 +484,7 @@ export async function POST(request: NextRequest) {
                   fileSize: img.fileSize,
                   mimeType: img.mimeType,
                   category: 'product',
+                  updatedAt: new Date(), // REQUIRED: Image table requires updatedAt field
                 },
               })
               imageId = image.id
@@ -619,8 +547,8 @@ export async function POST(request: NextRequest) {
         })
       },
       {
-        timeout: 15000, // Reduced timeout for faster failure
-        maxWait: 3000,
+        timeout: 45000, // FIX BUG #3: Increased from 15s to 45s for image processing
+        maxWait: 5000,  // Increased from 3s to 5s
       }
     )
 

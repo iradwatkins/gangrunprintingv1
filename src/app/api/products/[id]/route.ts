@@ -132,10 +132,30 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       sizeGroupId,
       turnaroundTimeSetId,
       addOnSetId,
+      designSetId,
       options,
       pricingTiers,
-      ...productData
+      ...rest
     } = data
+
+    // Only include valid Product model fields
+    const productData = {
+      name: rest.name,
+      sku: rest.sku,
+      slug: rest.slug || rest.sku?.toLowerCase().replace(/\s+/g, '-'),
+      categoryId: rest.categoryId,
+      description: rest.description,
+      shortDescription: rest.shortDescription,
+      basePrice: rest.basePrice,
+      setupFee: rest.setupFee,
+      isActive: rest.isActive,
+      isFeatured: rest.isFeatured,
+      productionTime: rest.productionTime,
+      rushAvailable: rest.rushAvailable,
+      rushDays: rest.rushDays,
+      rushFee: rest.rushFee,
+      updatedAt: new Date(),
+    }
 
     // Get existing product to compare images
     const existingProduct = await prisma.product.findUnique({

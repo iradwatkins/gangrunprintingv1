@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { ProductImageGallery } from './ProductImageGallery'
 import SimpleQuantityTest from './SimpleQuantityTest'
+import { AddonAccordion } from './addons/AddonAccordion'
 import { TechnicalSpecsTable, getDefaultSpecs } from './TechnicalSpecsTable'
 import { HowItWorksSection } from './HowItWorksSection'
 import { TrustBadgesSection, TrustBadgesCompact } from './TrustBadgesSection'
@@ -246,6 +247,62 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                     ProductImage: product.ProductImage,
                   }}
                   productId={product.id}
+                  addons={
+                    configuration?.addons
+                      ? configuration.addons.filter((addon: any) => {
+                          const addonId = addon.id?.toLowerCase() || ''
+                          const addonName = addon.name?.toLowerCase() || ''
+
+                          // Exclude ONLY file upload and artwork addons, KEEP design addons
+                          return !(
+                            addonId.includes('upload') ||
+                            addonId.includes('file') ||
+                            addonId.includes('artwork') ||
+                            addonName.includes('upload') ||
+                            addonName.includes('file') ||
+                            addonName.includes('artwork')
+                          )
+                        })
+                      : []
+                  }
+                  addonsGrouped={
+                    configuration?.addons
+                      ? (() => {
+                          const filtered = configuration.addons.filter((addon: any) => {
+                            const addonId = addon.id?.toLowerCase() || ''
+                            const addonName = addon.name?.toLowerCase() || ''
+
+                            // Exclude ONLY file upload and artwork addons, KEEP design addons
+                            return !(
+                              addonId.includes('upload') ||
+                              addonId.includes('file') ||
+                              addonId.includes('artwork') ||
+                              addonName.includes('upload') ||
+                              addonName.includes('file') ||
+                              addonName.includes('artwork')
+                            )
+                          })
+
+                          // Group by displayPosition from database configuration
+                          return {
+                            aboveDropdown: filtered.filter(
+                              (addon: any) => addon.displayPosition === 'ABOVE_DROPDOWN'
+                            ),
+                            inDropdown: filtered.filter(
+                              (addon: any) =>
+                                !addon.displayPosition ||
+                                addon.displayPosition === 'IN_DROPDOWN'
+                            ),
+                            belowDropdown: filtered.filter(
+                              (addon: any) => addon.displayPosition === 'BELOW_DROPDOWN'
+                            ),
+                          }
+                        })()
+                      : { aboveDropdown: [], inDropdown: [], belowDropdown: [] }
+                  }
+                  onAddonChange={(addonId: string, selected: boolean) => {
+                    console.log('Addon changed:', addonId, selected)
+                  }}
                 />
               ) : (
                 <div className="p-4 text-red-500">

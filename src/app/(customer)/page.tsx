@@ -21,60 +21,8 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-
-const productCategories = [
-  {
-    title: 'Business Cards',
-    description: 'Premium quality cards that make lasting impressions',
-    image: '/images/products/business-cards.jpg',
-    href: '/products?category=business-cards',
-    popular: true,
-  },
-  {
-    title: 'Flyers & Brochures',
-    description: 'Eye-catching marketing materials for your campaigns',
-    image: '/images/products/flyers.jpg',
-    href: '/products?category=flyers',
-    popular: false,
-  },
-  {
-    title: 'Banners & Signs',
-    description: 'Large format printing for maximum visibility',
-    image: '/images/products/banners.jpg',
-    href: '/products?category=banners',
-    popular: false,
-  },
-  {
-    title: 'Stickers & Labels',
-    description: 'Custom die-cut stickers for any purpose',
-    image: '/images/products/stickers.jpg',
-    href: '/products?category=stickers',
-    popular: true,
-  },
-  {
-    title: 'Apparel',
-    description: 'Custom printed t-shirts and merchandise',
-    image: '/images/products/apparel.jpg',
-    href: '/products?category=apparel',
-    popular: false,
-  },
-  {
-    title: 'Postcards',
-    description: 'Direct mail and promotional postcards',
-    image: '/images/products/postcards.jpg',
-    href: '/products?category=postcards',
-    popular: false,
-  },
-]
-
-const featuredProducts = [
-  { name: 'Business Cards', price: 'Starting at $19.99', badge: 'Most Popular' },
-  { name: 'Flyers', price: 'Starting at $24.99', badge: 'Sale' },
-  { name: 'Banners', price: 'Starting at $39.99', badge: 'Premium' },
-  { name: 'Stickers', price: 'Starting at $14.99', badge: 'New' },
-  { name: 'T-Shirts', price: 'Starting at $12.99', badge: 'Custom' },
-  { name: 'Postcards', price: 'Starting at $29.99', badge: 'Bulk Deal' },
-]
+import { prisma } from '@/lib/prisma'
+import Image from 'next/image'
 
 const testimonials = [
   {
@@ -106,7 +54,118 @@ const testimonials = [
   },
 ]
 
-export default function Home() {
+export default async function Home() {
+  // Fetch real product categories from database (excluding hidden ones)
+  const productCategories = await prisma.productCategory.findMany({
+    where: {
+      isActive: true,
+      isHidden: false, // Don't show hidden categories like "Landing Page Folder"
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      sortOrder: true,
+      _count: {
+        select: {
+          Product: {
+            where: {
+              isActive: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      sortOrder: 'asc',
+    },
+    take: 6, // Show first 6 categories on homepage
+  })
+
+  // Fetch featured products from database
+  const featuredProducts = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      isFeatured: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      basePrice: true,
+      shortDescription: true,
+      ProductImage: {
+        select: {
+          Image: {
+            select: {
+              url: true,
+              thumbnailUrl: true,
+              alt: true,
+            },
+          },
+          isPrimary: true,
+        },
+        orderBy: {
+          sortOrder: 'asc',
+        },
+        take: 1,
+      },
+      ProductCategory: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+    take: 6,
+  })
+
+  // If no featured products, get latest products
+  const displayProducts =
+    featuredProducts.length > 0
+      ? featuredProducts
+      : await prisma.product.findMany({
+          where: {
+            isActive: true,
+            ProductCategory: {
+              isHidden: false,
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            basePrice: true,
+            shortDescription: true,
+            ProductImage: {
+              select: {
+                Image: {
+                  select: {
+                    url: true,
+                    thumbnailUrl: true,
+                    alt: true,
+                  },
+                },
+                isPrimary: true,
+              },
+              orderBy: {
+                sortOrder: 'asc',
+              },
+              take: 1,
+            },
+            ProductCategory: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 6,
+        })
+
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -183,7 +242,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Categories */}
+      {/* Product Categories - Now with REAL data */}
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
@@ -195,10 +254,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {productCategories.map((category) => (
-              <Link key={category.title} href={category.href}>
+              <Link key={category.id} href={`/products?category=${category.slug}`}>
                 <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer overflow-hidden">
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
-                    {category.popular && (
+                    {category._count.Product > 10 && (
                       <Badge
                         className="absolute top-3 right-3 z-10 bg-primary/10 text-primary border-primary/20"
                         variant="secondary"
@@ -210,16 +269,20 @@ export default function Home() {
                       <div className="w-full h-full bg-white/50 rounded-lg shadow-sm flex items-center justify-center">
                         <div className="text-center">
                           <Package className="h-16 w-16 text-primary/40 mx-auto mb-2" />
-                          <span className="text-xs text-muted-foreground">Sample Image</span>
+                          <span className="text-xs text-muted-foreground">
+                            {category._count.Product} products
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                   <CardHeader>
                     <CardTitle className="group-hover:text-primary transition-colors">
-                      {category.title}
+                      {category.name}
                     </CardTitle>
-                    <CardDescription>{category.description}</CardDescription>
+                    <CardDescription>
+                      {category.description || `Browse our ${category.name.toLowerCase()} products`}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center text-primary">
@@ -231,10 +294,16 @@ export default function Home() {
               </Link>
             ))}
           </div>
+          {productCategories.length === 0 && (
+            <div className="text-center py-12">
+              <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No product categories available yet.</p>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Featured Products Carousel */}
+      {/* Featured Products Carousel - Now with REAL data */}
       <section className="py-12 sm:py-16 lg:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -243,31 +312,65 @@ export default function Home() {
               Our most popular products with competitive pricing and fast delivery
             </p>
           </div>
-          <Carousel className="max-w-5xl mx-auto">
-            <CarouselContent className="-ml-4">
-              {featuredProducts.map((product, index) => (
-                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Card className="overflow-hidden">
-                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative">
-                      <Badge className="absolute top-4 right-4 z-10">{product.badge}</Badge>
-                      <div className="flex items-center justify-center h-full">
-                        <Package className="h-20 w-20 text-primary/30" />
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                      <p className="text-primary font-bold">{product.price}</p>
-                      <Button asChild className="w-full mt-4" variant="outline">
-                        <Link href="/products">View Details</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          {displayProducts.length > 0 ? (
+            <Carousel className="max-w-5xl mx-auto">
+              <CarouselContent className="-ml-4">
+                {displayProducts.map((product) => {
+                  const primaryImage = product.ProductImage?.[0]?.Image
+                  return (
+                    <CarouselItem key={product.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <Link href={`/products/${product.slug}`}>
+                        <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer">
+                          <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative">
+                            <Badge className="absolute top-4 right-4 z-10 bg-primary text-primary-foreground">
+                              Featured
+                            </Badge>
+                            <div className="flex items-center justify-center h-full relative">
+                              {primaryImage ? (
+                                <Image
+                                  fill
+                                  alt={primaryImage.alt || product.name}
+                                  className="object-cover"
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  src={primaryImage.thumbnailUrl || primaryImage.url}
+                                />
+                              ) : (
+                                <Package className="h-20 w-20 text-primary/30" />
+                              )}
+                            </div>
+                          </div>
+                          <CardContent className="p-4">
+                            <h3 className="font-semibold text-lg mb-2 line-clamp-1">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-2">
+                              {product.ProductCategory?.name || 'Products'}
+                            </p>
+                            <p className="text-primary font-bold">
+                              Starting at ${product.basePrice.toFixed(2)}
+                            </p>
+                            <Button asChild className="w-full mt-4" size="sm" variant="outline">
+                              <span>View Details</span>
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </CarouselItem>
+                  )
+                })}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          ) : (
+            <div className="text-center py-12">
+              <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No featured products available yet.</p>
+              <Button asChild variant="outline">
+                <Link href="/products">Browse All Products</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

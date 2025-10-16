@@ -1,0 +1,2158 @@
+{
+  "startTime": "2025-10-16T01:45:59.018Z",
+  "events": [
+    {
+      "timestamp": "2025-10-16T01:48:23.071Z",
+      "raw": "[DELETE Product] Product not found: 03bd92eb-4e87-418b-9403-6b66737bdbe0",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.404Z",
+      "raw": "prisma:error ",
+      "type": "error",
+      "parsed": {
+        "message": "prisma:error ",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "{",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "  where: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    id: \"da43f0a4-f01c-410d-9c5d-4f28435743ff\"",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "  },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "  include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    productPaperStocks: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    ~~~~~~~~~~~~~~~~~~",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        PaperStock: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    productQuantities: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        StandardQuantity: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    productSizes: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        StandardSize: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    ProductAddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        AddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "            AddOnSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "                AddOn: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    ProductTurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        TurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "            TurnaroundTimeSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "                TurnaroundTime: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    ProductImage: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        Image: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    ProductOption: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "        OptionValue: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ParentProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ChildProducts?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   City?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   LandingPageSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   PricingTier?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductCategory?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductAddOn?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductPaperStock?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductPaperStockSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductPricingConfig?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductQuantity?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductQuantityGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductSize?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductSizeGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   VendorProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   FunnelStepProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   OrderBump?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   Upsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   Downsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   CityLandingPage?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "?   ProductDesignSet?: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "  }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "Error duplicating product: Error [PrismaClientValidationError]: ",
+      "type": "error",
+      "parsed": {
+        "message": "duplicating product: Error [PrismaClientValidationError]:",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "{",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "  where: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "    id: \"da43f0a4-f01c-410d-9c5d-4f28435743ff\"",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "  },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "  include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "    productPaperStocks: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "    ~~~~~~~~~~~~~~~~~~",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "        PaperStock: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.412Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "    productQuantities: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "        StandardQuantity: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "    productSizes: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "        StandardSize: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "    ProductAddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "        AddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "            AddOnSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.413Z",
+      "raw": "                AddOn: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "    ProductTurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "        TurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "            TurnaroundTimeSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "                TurnaroundTime: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.414Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "    ProductImage: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "        Image: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "    ProductOption: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "        OptionValue: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ParentProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ChildProducts?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   City?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   LandingPageSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   PricingTier?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ProductCategory?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ProductAddOn?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ProductPaperStock?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ProductPaperStockSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.415Z",
+      "raw": "?   ProductPricingConfig?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   ProductQuantity?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   ProductQuantityGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   ProductSize?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   ProductSizeGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   VendorProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   FunnelStepProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   OrderBump?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   Upsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   Downsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   CityLandingPage?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "?   ProductDesignSet?: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "  }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "    at async w (.next/server/app/api/products/[id]/duplicate/route.js:1:745)",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "    at async k (.next/server/app/api/products/[id]/duplicate/route.js:1:6314) {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "  clientVersion: '6.16.3'",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.416Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "prisma:error ",
+      "type": "error",
+      "parsed": {
+        "message": "prisma:error ",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "{",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "  where: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    id: \"da43f0a4-f01c-410d-9c5d-4f28435743ff\"",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "  },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "  include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    productPaperStocks: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    ~~~~~~~~~~~~~~~~~~",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "        PaperStock: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    productQuantities: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "        StandardQuantity: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    productSizes: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        StandardSize: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    ProductAddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        AddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "            AddOnSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "                AddOn: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    ProductTurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        TurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "            TurnaroundTimeSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "                TurnaroundTime: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    ProductImage: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        Image: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    ProductOption: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        OptionValue: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ParentProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ChildProducts?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   City?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   LandingPageSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   PricingTier?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductCategory?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductAddOn?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductPaperStock?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductPaperStockSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductPricingConfig?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductQuantity?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductQuantityGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductSize?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductSizeGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   VendorProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   FunnelStepProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   OrderBump?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   Upsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   Downsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   CityLandingPage?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "?   ProductDesignSet?: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "  }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "Error duplicating product: Error [PrismaClientValidationError]: ",
+      "type": "error",
+      "parsed": {
+        "message": "duplicating product: Error [PrismaClientValidationError]:",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "{",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "  where: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    id: \"da43f0a4-f01c-410d-9c5d-4f28435743ff\"",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "  },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "  include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    productPaperStocks: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    ~~~~~~~~~~~~~~~~~~",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "        PaperStock: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "    productQuantities: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "        StandardQuantity: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    productSizes: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "        StandardSize: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    ProductAddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "        AddOnSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "            AddOnSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "                AddOn: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "    ProductTurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "        TurnaroundTimeSet: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "          include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "            TurnaroundTimeSetItem: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "              include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.266Z",
+      "raw": "                TurnaroundTime: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "              }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "            }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "          }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "        }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "    ProductImage: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "        Image: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "    ProductOption: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "      include: {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "        OptionValue: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "      }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "    },",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ParentProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ChildProducts?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   City?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   LandingPageSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   PricingTier?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductCategory?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductAddOn?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductPaperStock?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductPaperStockSet?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductPricingConfig?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.267Z",
+      "raw": "?   ProductQuantity?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   ProductQuantityGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   ProductSize?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   ProductSizeGroup?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   VendorProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   FunnelStepProduct?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   OrderBump?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   Upsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   Downsell?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   CityLandingPage?: true,",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "?   ProductDesignSet?: true",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "  }",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "Unknown field `productPaperStocks` for include statement on model `Product`. Available options are marked with ?.",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "    at async w (.next/server/app/api/products/[id]/duplicate/route.js:1:745)",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "    at async k (.next/server/app/api/products/[id]/duplicate/route.js:1:6314) {",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "  clientVersion: '6.16.3'",
+      "type": "unknown",
+      "parsed": {}
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.268Z",
+      "raw": "}",
+      "type": "unknown",
+      "parsed": {}
+    }
+  ],
+  "apiCalls": [],
+  "errors": [
+    {
+      "timestamp": "2025-10-16T01:49:27.404Z",
+      "raw": "prisma:error ",
+      "type": "error",
+      "parsed": {
+        "message": "prisma:error ",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "Error duplicating product: Error [PrismaClientValidationError]: ",
+      "type": "error",
+      "parsed": {
+        "message": "duplicating product: Error [PrismaClientValidationError]:",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "prisma:error ",
+      "type": "error",
+      "parsed": {
+        "message": "prisma:error ",
+        "category": "database_error"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "Error duplicating product: Error [PrismaClientValidationError]: ",
+      "type": "error",
+      "parsed": {
+        "message": "duplicating product: Error [PrismaClientValidationError]:",
+        "category": "database_error"
+      }
+    }
+  ],
+  "imageUploads": [],
+  "authEvents": [],
+  "databaseOps": [
+    {
+      "timestamp": "2025-10-16T01:49:27.405Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:27.411Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.264Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    },
+    {
+      "timestamp": "2025-10-16T01:49:28.265Z",
+      "raw": "Invalid `prisma.product.findUnique()` invocation:",
+      "type": "database_operation",
+      "parsed": {
+        "operation": "query"
+      }
+    }
+  ],
+  "summary": {
+    "totalEvents": 341,
+    "totalApiCalls": 0,
+    "totalErrors": 4,
+    "totalImageUploads": 0,
+    "productCreationAttempts": 0,
+    "productCreationSuccesses": 0,
+    "productCreationFailures": 0,
+    "imageUploadAttempts": 0,
+    "imageUploadSuccesses": 0,
+    "imageUploadFailures": 0
+  }
+}

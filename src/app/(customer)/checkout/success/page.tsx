@@ -237,7 +237,7 @@ function SuccessContent() {
                                 <ImageIcon className="h-4 w-4" />
                                 Uploaded Design Files
                               </p>
-                              <div className="grid grid-cols-4 gap-2">
+                              <div className="grid grid-cols-2 gap-2">
                                 {orderInfo.uploadedImages.slice(0, 4).map((img) => (
                                   <div
                                     key={img.id}

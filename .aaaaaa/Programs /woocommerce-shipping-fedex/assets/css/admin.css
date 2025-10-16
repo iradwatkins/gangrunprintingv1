@@ -1,0 +1,73 @@
+.fedex_boxes .description {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.fedex_boxes .max-width {
+   max-width: 71px;
+   display: block;
+   text-align: right;
+}
+
+.fedex_boxes .text-align-right {
+    text-align: right;
+}
+
+.fedex_boxes td {
+    vertical-align: middle;
+    padding: 8px 7px;
+}
+
+.fedex_services td {
+    vertical-align: middle;
+    padding: 4px 7px;
+}
+
+.fedex_boxes td {
+    border-bottom: solid #eee 1px;
+}
+
+.fedex_boxes .custom td {
+    padding: 2px 7px;
+}
+
+.fedex_services th, .fedex_boxes th {
+    padding: 9px 7px;
+}
+
+.fedex_boxes td input {
+    margin-right: 4px;
+}
+
+.fedex_boxes .check-column {
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 7px;
+}
+
+.fedex_boxes .check-column input {
+    margin: 0 0 0 4px;
+}
+
+.fedex_services th.sort {
+    width: 16px;
+    padding: 0 16px;
+}
+
+.fedex_services td.sort {
+    cursor: move;
+    width: 16px;
+    padding: 0 16px;
+    cursor: move;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHUlEQVQYV2O8f//+fwY8gJGgAny6QXKETRgEVgAAXxAVsa5Xr3QAAAAASUVORK5CYII=) no-repeat center;
+}
+
+#woocommerce_fedex_api ~ .form-table tr:has(input[type="hidden"]) {
+	display: none;
+}
+
+#woocommerce_fedex_freight ~ .form-table tr:has(#woocommerce_fedex_freight_enabled:not(:checked)) ~ tr:has([name*="freight"]) {
+	display: none;
+}

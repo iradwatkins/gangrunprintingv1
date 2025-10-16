@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-10-16T02:49:35.414Z",
+  "rounds": [
+    {
+      "round": 1,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:35.496Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:35.499Z",
+          "error": "\nInvalid `prisma.image.create()` invocation:\n\n{\n  data: {\n    id: \"f964ba94-2ad9-4eaa-a898-76b16de22ac9\",\n    name: \"test-image-UltraTest Product Round 1 1760582975496-1-1760582975497\",\n    url: \"https://gangrunprinting.com/test-images/product-1.jpg\",\n    thumbnailUrl: \"https://gangrunprinting.com/test-images/product-1-thumb.jpg\",\n    alt: \"Test image 1 for UltraTest Product Round 1 1760582975496\",\n    width: 800,\n    height: 600,\n    fileSize: 150000,\n    mimeType: \"image/jpeg\",\n    category: \"product\",\n+   updatedAt: DateTime\n  }\n}\n\nArgument `updatedAt` is missing."
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:35.502Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:35.503Z",
+          "error": "\nInvalid `prisma.image.create()` invocation:\n\n{\n  data: {\n    id: \"a336d1a6-f71f-4ba4-beae-5749ed09b97b\",\n    name: \"test-image-UltraTest Product Round 2 1760582975502-1-1760582975502\",\n    url: \"https://gangrunprinting.com/test-images/product-1.jpg\",\n    thumbnailUrl: \"https://gangrunprinting.com/test-images/product-1-thumb.jpg\",\n    alt: \"Test image 1 for UltraTest Product Round 2 1760582975502\",\n    width: 800,\n    height: 600,\n    fileSize: 150000,\n    mimeType: \"image/jpeg\",\n    category: \"product\",\n+   updatedAt: DateTime\n  }\n}\n\nArgument `updatedAt` is missing."
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "tests": [
+        {
+          "testName": "Get Test Data",
+          "passed": true,
+          "timestamp": "2025-10-16T02:49:35.505Z",
+          "category": "Flyer",
+          "paperStockSet": "Gangrun General paper stock",
+          "quantityGroup": "Standard Size",
+          "sizeGroup": "Rip Door Hanger",
+          "turnaroundTimeSet": "Standard Turnaround Options"
+        },
+        {
+          "testName": "Create Test Images",
+          "passed": false,
+          "timestamp": "2025-10-16T02:49:35.506Z",
+          "error": "\nInvalid `prisma.image.create()` invocation:\n\n{\n  data: {\n    id: \"109b2d7b-778a-46c3-b10f-af524ac9a465\",\n    name: \"test-image-UltraTest Product Round 3 1760582975505-1-1760582975505\",\n    url: \"https://gangrunprinting.com/test-images/product-1.jpg\",\n    thumbnailUrl: \"https://gangrunprinting.com/test-images/product-1-thumb.jpg\",\n    alt: \"Test image 1 for UltraTest Product Round 3 1760582975505\",\n    width: 800,\n    height: 600,\n    fileSize: 150000,\n    mimeType: \"image/jpeg\",\n    category: \"product\",\n+   updatedAt: DateTime\n  }\n}\n\nArgument `updatedAt` is missing."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalTests": 6,
+    "passed": 3,
+    "failed": 3,
+    "warnings": 3
+  }
+}

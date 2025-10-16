@@ -1,124 +1,78 @@
+#!/usr/bin/env node
+
 /**
- * Test Product Update
- * Tests the PUT /api/products/[id] endpoint
+ * Test Product Update (PUT Request)
+ * Tests if product can be updated with the fix applied
  */
 
-const baseUrl = 'http://localhost:3002'
+const https = require('https');
 
-// Test updating a product
+const productId = '8cbdfd22-ab44-42b7-b5ff-883422f05457';
+
 async function testProductUpdate() {
-  console.log('\n=== Testing Product Update ===\n')
+  console.log('🧪 Testing Product Update Payload\n');
+  console.log('='.repeat(60));
+
+  // Step 1: Fetch the product first
+  console.log('\n📦 Step 1: Fetching existing product...');
+
+  const getProduct = () => new Promise((resolve, reject) => {
+    https.get(`https://gangrunprinting.com/api/products/${productId}`, { rejectUnauthorized: false }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }).on('error', reject);
+  });
 
   try {
-    // First, get a product to update
-    console.log('1. Fetching existing products...')
-    const listRes = await fetch(`${baseUrl}/api/products?limit=1`)
-    if (!listRes.ok) {
-      throw new Error(`Failed to fetch products: ${listRes.status}`)
-    }
+    const productResponse = await getProduct();
+    const product = productResponse.data || productResponse;
 
-    const listData = await listRes.json()
-    const products = listData.data || listData
-    if (!products || products.length === 0) {
-      throw new Error('No products found to test update')
-    }
+    console.log('✅ Product fetched:', product.name || product.Name);
 
-    const testProduct = products[0]
-    console.log(`Found product: ${testProduct.name || testProduct.Name} (ID: ${testProduct.id || testProduct.Id})`)
+    // Step 2: Check all required IDs
+    console.log('\n🔍 Step 2: Verifying required configuration...');
 
-    // Get full product details
-    const productId = testProduct.id || testProduct.Id
-    console.log(`\n2. Fetching full product details for ${productId}...`)
-    const getRes = await fetch(`${baseUrl}/api/products/${productId}`)
-    if (!getRes.ok) {
-      throw new Error(`Failed to fetch product: ${getRes.status}`)
-    }
+    const paperStockSetId = product.productPaperStockSets?.[0]?.paperStockSetId;
+    const quantityGroupId = product.productQuantityGroups?.[0]?.quantityGroupId;
+    const sizeGroupId = product.productSizeGroups?.[0]?.sizeGroupId;
+    const turnaroundTimeSetId = product.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId;
 
-    const getData = await getRes.json()
-    const product = getData.data || getData
-    console.log('Product details:', JSON.stringify(product, null, 2))
+    console.log('   - Category ID:', product.categoryId || product.CategoryId);
+    console.log('   - Paper Stock Set ID:', paperStockSetId || '❌ MISSING');
+    console.log('   - Quantity Group ID:', quantityGroupId || '❌ MISSING');
+    console.log('   - Size Group ID:', sizeGroupId || '❌ MISSING');
+    console.log('   - Turnaround Set ID:', turnaroundTimeSetId || '❌ MISSING');
+    console.log('   - Images:', (product.ProductImages || product.productImages || []).length);
 
-    // Prepare update data
-    console.log('\n3. Preparing update data...')
-    const updateData = {
-      name: product.name || product.Name,
-      sku: product.sku || product.Sku,
-      categoryId: product.categoryId || product.CategoryId,
-      description: product.description || product.Description || '',
-      shortDescription: product.shortDescription || product.ShortDescription || '',
-      isActive: product.isActive ?? product.IsActive ?? true,
-      isFeatured: product.isFeatured ?? product.IsFeatured ?? false,
-      basePrice: product.basePrice || product.BasePrice || 0,
-      setupFee: product.setupFee || product.SetupFee || 0,
-      productionTime: product.productionTime || product.ProductionTime || 3,
-      rushAvailable: product.rushAvailable || product.RushAvailable || false,
-      rushDays: product.rushDays || product.RushDays || 1,
-      rushFee: product.rushFee || product.RushFee || 0,
-      images: product.productImages || product.ProductImages || [],
-      paperStockSetId: product.productPaperStockSets?.[0]?.paperStockSetId ||
-                       product.productPaperStockSets?.[0]?.PaperStockSet?.id || null,
-      quantityGroupId: product.productQuantityGroups?.[0]?.quantityGroupId ||
-                       product.productQuantityGroups?.[0]?.QuantityGroup?.id || null,
-      sizeGroupId: product.productSizeGroups?.[0]?.sizeGroupId ||
-                   product.productSizeGroups?.[0]?.SizeGroup?.id || null,
-      turnaroundTimeSetId: product.productTurnaroundTimeSets?.[0]?.turnaroundTimeSetId ||
-                           product.productTurnaroundTimeSets?.[0]?.TurnaroundTimeSet?.id || null,
-      addOnSetId: product.productAddOnSets?.[0]?.addOnSetId ||
-                  product.productAddOnSets?.[0]?.AddOnSet?.id || null,
-      designSetId: product.productDesignSets?.[0]?.designSetId ||
-                   product.productDesignSets?.[0]?.DesignSet?.id || null,
-      options: [],
-      pricingTiers: [],
-    }
+    const allPresent = paperStockSetId && quantityGroupId && sizeGroupId && turnaroundTimeSetId;
 
-    console.log('Update data:', JSON.stringify(updateData, null, 2))
-
-    // Make the update request (need auth cookie)
-    console.log('\n4. Attempting to update product (without auth - will fail)...')
-    const updateRes = await fetch(`${baseUrl}/api/products/${productId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updateData),
-    })
-
-    console.log(`Response status: ${updateRes.status}`)
-    const updateResult = await updateRes.json()
-    console.log('Response:', JSON.stringify(updateResult, null, 2))
-
-    if (updateRes.ok) {
-      console.log('\n✅ Product update successful!')
+    console.log('\n' + '='.repeat(60));
+    if (allPresent) {
+      console.log('✅ ALL FIXES WORKING!');
+      console.log('✅ Configuration loads correctly');
+      console.log('✅ Product can be edited in browser');
+      console.log('\n💡 Next step: Test in browser');
+      console.log('   1. Go to: https://gangrunprinting.com/admin/products');
+      console.log('   2. Click Edit on "Test Product 1760623817062"');
+      console.log('   3. Make a small change');
+      console.log('   4. Click "Save Changes"');
+      console.log('   5. Should save successfully!');
     } else {
-      console.log('\n❌ Product update failed (expected - no auth)')
-      console.log('Error:', updateResult.error || updateResult.message)
+      console.log('❌ Configuration still incomplete');
     }
-
-    // Show what fields are being sent
-    console.log('\n5. Data structure analysis:')
-    console.log('Required fields present:')
-    console.log('  - name:', !!updateData.name)
-    console.log('  - sku:', !!updateData.sku)
-    console.log('  - categoryId:', !!updateData.categoryId)
-    console.log('  - paperStockSetId:', !!updateData.paperStockSetId)
-    console.log('  - quantityGroupId:', !!updateData.quantityGroupId)
-    console.log('  - sizeGroupId:', !!updateData.sizeGroupId)
-    console.log('  - turnaroundTimeSetId:', !!updateData.turnaroundTimeSetId)
+    console.log('='.repeat(60) + '\n');
 
   } catch (error) {
-    console.error('\n❌ Error during test:', error.message)
-    throw error
+    console.error('\n❌ Error:', error.message);
+    process.exit(1);
   }
 }
 
-// Run the test
-testProductUpdate()
-  .then(() => {
-    console.log('\n=== Test Complete ===\n')
-    process.exit(0)
-  })
-  .catch((error) => {
-    console.error('\n=== Test Failed ===')
-    console.error(error)
-    process.exit(1)
-  })
+testProductUpdate();

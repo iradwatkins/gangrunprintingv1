@@ -1,0 +1,236 @@
+
+================================================================================
+🔬 ULTRA-THINK CRUD VERIFICATION TEST - RUNNING 3 ROUNDS
+================================================================================
+
+[2025-10-16T02:49:35.415Z] 🧪 
+
+################################################################################
+[2025-10-16T02:49:35.415Z] 🧪 STARTING TEST CYCLE 1 OF 3
+[2025-10-16T02:49:35.415Z] 🧪 ################################################################################
+[2025-10-16T02:49:35.416Z] 🧪 
+================================================================================
+[2025-10-16T02:49:35.416Z] 🧪 TEST ROUND 1: CREATE PRODUCT WITH IMAGES
+[2025-10-16T02:49:35.416Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.416Z] 🧪 
+Step 1: Gathering test data...
+[2025-10-16T02:49:35.416Z] 🗄️ Getting test category...
+[2025-10-16T02:49:35.418Z] 🗄️ Getting test paper stock set...
+[2025-10-16T02:49:35.418Z] 🗄️ Getting test quantity group...
+[2025-10-16T02:49:35.418Z] 🗄️ Getting test size group...
+[2025-10-16T02:49:35.419Z] 🗄️ Getting test turnaround time set...
+[2025-10-16T02:49:35.486Z] ✅ Using turnaround time set: Standard Turnaround Options (cmg46sc7u001k12ymd9w3p9uk)
+[2025-10-16T02:49:35.492Z] ✅ Using quantity group: Standard Size (cmg5i6poy000094pu856umjxa)
+[2025-10-16T02:49:35.492Z] ✅ Using paper stock set: Gangrun General paper stock (5f35fd87-5e0c-4c1a-a484-c04191143763)
+[2025-10-16T02:49:35.493Z] ✅ Using category: Flyer (cat_flyer)
+[2025-10-16T02:49:35.496Z] ✅ Using size group: Rip Door Hanger (e09178db-2371-40df-8faf-1a29b6c21675)
+[2025-10-16T02:49:35.496Z] 🧪 
+Step 2: Creating test images...
+[2025-10-16T02:49:35.496Z] 🖼️ Creating test image 1 for UltraTest Product Round 1 1760582975496...
+[2025-10-16T02:49:35.499Z] ❌ Failed to create image: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "f964ba94-2ad9-4eaa-a898-76b16de22ac9",
+    name: "test-image-UltraTest Product Round 1 1760582975496-1-1760582975497",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 1 1760582975496",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.499Z] ❌ Failed to create test images: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "f964ba94-2ad9-4eaa-a898-76b16de22ac9",
+    name: "test-image-UltraTest Product Round 1 1760582975496-1-1760582975497",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 1 1760582975496",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.499Z] ❌ 
+Test cycle 1 failed at creation - skipping edit and delete
+[2025-10-16T02:49:35.499Z] 🧪 
+
+################################################################################
+[2025-10-16T02:49:35.499Z] 🧪 STARTING TEST CYCLE 2 OF 3
+[2025-10-16T02:49:35.499Z] 🧪 ################################################################################
+[2025-10-16T02:49:35.499Z] 🧪 
+================================================================================
+[2025-10-16T02:49:35.499Z] 🧪 TEST ROUND 2: CREATE PRODUCT WITH IMAGES
+[2025-10-16T02:49:35.499Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.499Z] 🧪 
+Step 1: Gathering test data...
+[2025-10-16T02:49:35.499Z] 🗄️ Getting test category...
+[2025-10-16T02:49:35.499Z] 🗄️ Getting test paper stock set...
+[2025-10-16T02:49:35.499Z] 🗄️ Getting test quantity group...
+[2025-10-16T02:49:35.499Z] 🗄️ Getting test size group...
+[2025-10-16T02:49:35.499Z] 🗄️ Getting test turnaround time set...
+[2025-10-16T02:49:35.501Z] ✅ Using category: Flyer (cat_flyer)
+[2025-10-16T02:49:35.501Z] ✅ Using paper stock set: Gangrun General paper stock (5f35fd87-5e0c-4c1a-a484-c04191143763)
+[2025-10-16T02:49:35.502Z] ✅ Using quantity group: Standard Size (cmg5i6poy000094pu856umjxa)
+[2025-10-16T02:49:35.502Z] ✅ Using size group: Rip Door Hanger (e09178db-2371-40df-8faf-1a29b6c21675)
+[2025-10-16T02:49:35.502Z] ✅ Using turnaround time set: Standard Turnaround Options (cmg46sc7u001k12ymd9w3p9uk)
+[2025-10-16T02:49:35.502Z] 🧪 
+Step 2: Creating test images...
+[2025-10-16T02:49:35.502Z] 🖼️ Creating test image 1 for UltraTest Product Round 2 1760582975502...
+[2025-10-16T02:49:35.503Z] ❌ Failed to create image: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "a336d1a6-f71f-4ba4-beae-5749ed09b97b",
+    name: "test-image-UltraTest Product Round 2 1760582975502-1-1760582975502",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 2 1760582975502",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.503Z] ❌ Failed to create test images: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "a336d1a6-f71f-4ba4-beae-5749ed09b97b",
+    name: "test-image-UltraTest Product Round 2 1760582975502-1-1760582975502",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 2 1760582975502",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.503Z] ❌ 
+Test cycle 2 failed at creation - skipping edit and delete
+[2025-10-16T02:49:35.503Z] 🧪 
+
+################################################################################
+[2025-10-16T02:49:35.503Z] 🧪 STARTING TEST CYCLE 3 OF 3
+[2025-10-16T02:49:35.503Z] 🧪 ################################################################################
+[2025-10-16T02:49:35.503Z] 🧪 
+================================================================================
+[2025-10-16T02:49:35.503Z] 🧪 TEST ROUND 3: CREATE PRODUCT WITH IMAGES
+[2025-10-16T02:49:35.503Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.503Z] 🧪 
+Step 1: Gathering test data...
+[2025-10-16T02:49:35.503Z] 🗄️ Getting test category...
+[2025-10-16T02:49:35.503Z] 🗄️ Getting test paper stock set...
+[2025-10-16T02:49:35.503Z] 🗄️ Getting test quantity group...
+[2025-10-16T02:49:35.503Z] 🗄️ Getting test size group...
+[2025-10-16T02:49:35.503Z] 🗄️ Getting test turnaround time set...
+[2025-10-16T02:49:35.504Z] ✅ Using paper stock set: Gangrun General paper stock (5f35fd87-5e0c-4c1a-a484-c04191143763)
+[2025-10-16T02:49:35.504Z] ✅ Using size group: Rip Door Hanger (e09178db-2371-40df-8faf-1a29b6c21675)
+[2025-10-16T02:49:35.505Z] ✅ Using quantity group: Standard Size (cmg5i6poy000094pu856umjxa)
+[2025-10-16T02:49:35.505Z] ✅ Using category: Flyer (cat_flyer)
+[2025-10-16T02:49:35.505Z] ✅ Using turnaround time set: Standard Turnaround Options (cmg46sc7u001k12ymd9w3p9uk)
+[2025-10-16T02:49:35.505Z] 🧪 
+Step 2: Creating test images...
+[2025-10-16T02:49:35.505Z] 🖼️ Creating test image 1 for UltraTest Product Round 3 1760582975505...
+[2025-10-16T02:49:35.506Z] ❌ Failed to create image: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "109b2d7b-778a-46c3-b10f-af524ac9a465",
+    name: "test-image-UltraTest Product Round 3 1760582975505-1-1760582975505",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 3 1760582975505",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.506Z] ❌ Failed to create test images: 
+Invalid `prisma.image.create()` invocation:
+
+{
+  data: {
+    id: "109b2d7b-778a-46c3-b10f-af524ac9a465",
+    name: "test-image-UltraTest Product Round 3 1760582975505-1-1760582975505",
+    url: "https://gangrunprinting.com/test-images/product-1.jpg",
+    thumbnailUrl: "https://gangrunprinting.com/test-images/product-1-thumb.jpg",
+    alt: "Test image 1 for UltraTest Product Round 3 1760582975505",
+    width: 800,
+    height: 600,
+    fileSize: 150000,
+    mimeType: "image/jpeg",
+    category: "product",
++   updatedAt: DateTime
+  }
+}
+
+Argument `updatedAt` is missing.
+[2025-10-16T02:49:35.506Z] ❌ 
+Test cycle 3 failed at creation - skipping edit and delete
+[2025-10-16T02:49:35.506Z] 🧪 
+
+================================================================================
+[2025-10-16T02:49:35.506Z] 🧪 📊 FINAL TEST RESULTS
+[2025-10-16T02:49:35.506Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.506Z] 📝 
+Total Tests Run: 6
+[2025-10-16T02:49:35.506Z] ✅ ✅ Passed: 3
+[2025-10-16T02:49:35.506Z] ❌ ❌ Failed: 3
+[2025-10-16T02:49:35.506Z] ⚠️ ⚠️  Warnings: 3
+[2025-10-16T02:49:35.506Z] ⚠️ 
+Success Rate: 50.00%
+[2025-10-16T02:49:35.506Z] ✅ 
+Detailed results saved to: ./test-results-ultrathink-1760582975506.json
+[2025-10-16T02:49:35.506Z] 🧪 
+================================================================================
+[2025-10-16T02:49:35.506Z] 🧪 ROUND-BY-ROUND SUMMARY
+[2025-10-16T02:49:35.506Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.507Z] ⚠️ 
+Round 1 - CREATE: 1/2 tests passed
+[2025-10-16T02:49:35.507Z] ⚠️ 
+Round 1 - EDIT: 1/2 tests passed
+[2025-10-16T02:49:35.507Z] ⚠️ 
+Round 1 - DELETE: 1/2 tests passed
+[2025-10-16T02:49:35.507Z] 🧪 
+================================================================================
+[2025-10-16T02:49:35.507Z] 🧪 🎯 FINAL ASSESSMENT
+[2025-10-16T02:49:35.507Z] 🧪 ================================================================================
+[2025-10-16T02:49:35.507Z] ⚠️ 
+⚠️  SOME TESTS FAILED - Review details above
+[2025-10-16T02:49:35.507Z] ❌ Failed tests: 3
+[2025-10-16T02:49:35.507Z] ✅ 
+Test execution complete

@@ -55,6 +55,7 @@ interface Category {
   isActive: boolean
   isHidden: boolean
   parentCategoryId: string | null
+  vendorId: string | null
   brokerDiscount: number
   createdAt: string
   updatedAt: string
@@ -67,10 +68,25 @@ interface Category {
     name: string
     slug: string
   } | null
+  Vendor?: {
+    id: string
+    name: string
+    contactEmail: string
+    phone: string | null
+  } | null
+}
+
+interface Vendor {
+  id: string
+  name: string
+  contactEmail: string
+  phone: string | null
+  supportedCarriers: string[]
 }
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -88,11 +104,13 @@ export default function CategoriesPage() {
     isActive: true,
     isHidden: false,
     parentCategoryId: '',
+    vendorId: '',
     brokerDiscount: 0,
   })
 
   useEffect(() => {
     fetchCategories()
+    fetchVendors()
   }, [])
 
   const fetchCategories = async () => {
@@ -106,6 +124,17 @@ export default function CategoriesPage() {
       toast.error('Failed to fetch categories')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchVendors = async () => {
+    try {
+      const response = await fetch('/api/vendors')
+      if (!response.ok) throw new Error('Failed to fetch vendors')
+      const data = await response.json()
+      setVendors(data)
+    } catch (error) {
+      console.error('Failed to fetch vendors:', error)
     }
   }
 
@@ -181,6 +210,7 @@ export default function CategoriesPage() {
       isActive: true,
       isHidden: false,
       parentCategoryId: '',
+      vendorId: '',
       brokerDiscount: 0,
     })
     setEditingCategory(null)
@@ -196,6 +226,7 @@ export default function CategoriesPage() {
       isActive: category.isActive,
       isHidden: category.isHidden,
       parentCategoryId: category.parentCategoryId || '',
+      vendorId: category.vendorId || '',
       brokerDiscount: category.brokerDiscount || 0,
     })
     setDialogOpen(true)
@@ -456,6 +487,35 @@ export default function CategoriesPage() {
                     ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="vendorId">
+                Vendor
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={formData.vendorId || 'none'}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, vendorId: value === 'none' ? '' : value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select vendor (determines shipping options)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No vendor (use default shipping)</SelectItem>
+                    {vendors.map((vendor) => (
+                      <SelectItem key={vendor.id} value={vendor.id}>
+                        {vendor.name} {vendor.supportedCarriers.length > 0 && `- ${vendor.supportedCarriers.join(', ')}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  Vendor determines which shipping carriers are available at checkout
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">

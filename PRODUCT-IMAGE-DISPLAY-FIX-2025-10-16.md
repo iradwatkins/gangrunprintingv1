@@ -252,7 +252,7 @@ For data transformation issues:
 
 ## 📝 Git Commit Information
 
-**Commit Hash:** [Will be added after commit]
+**Commit Hash:** `9d0c574b`
 **Commit Message:** "✅ FIX: Product images now display on listing page - Data transformer fix"
 
 **Files Changed:**
