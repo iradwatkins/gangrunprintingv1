@@ -246,7 +246,6 @@ export default async function DashboardPage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* ACTIVITY */}
                 <Link href="/dashboard/upcoming">
                   <Button className="w-full justify-start" variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
@@ -265,8 +264,6 @@ export default async function DashboardPage() {
                     Payment History
                   </Button>
                 </Link>
-
-                {/* SETTINGS */}
                 <Link href="/dashboard/notifications">
                   <Button className="w-full justify-start" variant="outline">
                     <Bell className="h-4 w-4 mr-2" />
