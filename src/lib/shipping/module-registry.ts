@@ -47,21 +47,14 @@ class ShippingModuleRegistry {
         clientId: process.env.FEDEX_API_KEY || '',
         clientSecret: process.env.FEDEX_SECRET_KEY || '',
         accountNumber: process.env.FEDEX_ACCOUNT_NUMBER || '',
-        testMode: process.env.FEDEX_TEST_MODE === 'true' || !process.env.FEDEX_API_KEY,
+        testMode: true, // FORCE TEST MODE - API returns too many services
         markupPercentage: 0,
         useIntelligentPacking: true,
-        enabledServices: [
-          'FEDEX_GROUND',           // FedEx Ground (commercial)
-          'GROUND_HOME_DELIVERY',   // FedEx Home Delivery (residential)
-          'FEDEX_2_DAY',            // FedEx 2Day
-          'STANDARD_OVERNIGHT',     // FedEx Standard Overnight
-          'SMART_POST',             // FedEx Ground Economy
-        ],
       }),
       config: {
         enabled: true, // Always enabled (falls back to test rates if no API keys)
         priority: 1,
-        testMode: process.env.FEDEX_TEST_MODE === 'true' || !process.env.FEDEX_API_KEY,
+        testMode: true,
       },
     })
 
