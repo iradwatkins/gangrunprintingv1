@@ -156,6 +156,12 @@ export class FedExProviderEnhanced implements ShippingProvider {
     packages: ShippingPackage[],
     options?: RateCalculationOptions
   ): Promise<ShippingRate[]> {
+    // If test mode is forced, return test rates immediately
+    if (this.config.testMode) {
+      console.log('[FedEx] Test mode enabled, returning test rates')
+      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+    }
+
     // If no API credentials, return test rates
     if (!this.config.clientId || !this.config.accountNumber) {
       console.warn('[FedEx] No API credentials, returning test rates')
