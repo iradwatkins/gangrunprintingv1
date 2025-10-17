@@ -435,13 +435,26 @@ export class FedExProviderEnhanced implements ShippingProvider {
 
   /**
    * Filter rates by enabled services configuration
+   * Also deduplicates by keeping only the cheapest rate for each service code
    */
   private filterByEnabledServices(rates: ShippingRate[]): ShippingRate[] {
     if (!this.config.enabledServices || this.config.enabledServices.length === 0) {
       return rates // All services enabled
     }
 
-    return rates.filter((rate) => this.config.enabledServices!.includes(rate.serviceCode))
+    // Filter by enabled services
+    const filteredRates = rates.filter((rate) => this.config.enabledServices!.includes(rate.serviceCode))
+
+    // Deduplicate: keep only the cheapest rate for each service code
+    const ratesByService = new Map<string, ShippingRate>()
+    filteredRates.forEach((rate) => {
+      const existing = ratesByService.get(rate.serviceCode)
+      if (!existing || rate.rateAmount < existing.rateAmount) {
+        ratesByService.set(rate.serviceCode, rate)
+      }
+    })
+
+    return Array.from(ratesByService.values())
   }
 
   /**
@@ -679,11 +692,12 @@ export class FedExProviderEnhanced implements ShippingProvider {
     const rates: ShippingRate[] = []
 
     if (!needsFreight) {
-      // Standard parcel services - Only show 3 services (Ground, 2Day, Overnight)
+      // Standard parcel services - Show 4 services (Ground/Home, 2Day, Overnight, Ground Economy)
       const services = [
         { code: 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
         { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
         { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
+        { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
       ]
 
       services.forEach((svc) => {
