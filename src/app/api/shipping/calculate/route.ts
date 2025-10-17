@@ -256,8 +256,15 @@ export async function POST(request: NextRequest) {
       const allRates = await Promise.race([Promise.all(ratePromises), timeout])
       rates = allRates.flat()
 
+      // Sort rates by price (lowest to highest)
+      rates.sort((a: any, b: any) => {
+        const priceA = typeof a.cost === 'number' ? a.cost : a.rateAmount || 0
+        const priceB = typeof b.cost === 'number' ? b.cost : b.rateAmount || 0
+        return priceA - priceB
+      })
+
       // console.log('[Shipping API] 📊 Combined total rates:', rates.length)
-      // console.log('[Shipping API] Combined rates:', JSON.stringify(rates, null, 2))
+      // console.log('[Shipping API] Combined rates (sorted):', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {
       console.error('[Shipping API] ❌ Timeout error:', timeoutError)
       // Empty rates array on timeout - UI will show "no shipping available"
