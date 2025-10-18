@@ -117,22 +117,20 @@ export function CashAppPayment({
           }
         })
 
-        // Wait for container
+        // Wait for container using ref (more reliable than DOM query)
         // console.log('[Cash App Pay] Waiting for container...')
         let containerAttempts = 0
-        let container = document.getElementById('cash-app-container')
-        while (!container && containerAttempts < 30) {
+        while (!cashAppContainerRef.current && containerAttempts < 30) {
           await new Promise((resolve) => setTimeout(resolve, 100))
-          container = document.getElementById('cash-app-container')
           containerAttempts++
         }
 
-        if (!container) {
+        if (!cashAppContainerRef.current) {
           throw new Error('Cash App Pay container not found after 3 seconds')
         }
 
         // console.log('[Cash App Pay] Attaching to container...')
-        await cashAppInstance.attach('#cash-app-container', {
+        await cashAppInstance.attach(cashAppContainerRef.current, {
           size: 'medium',
           shape: 'semiround',
           width: 'full',
