@@ -67,12 +67,15 @@ export default function SimpleQuantityTest({
   const [sizes, setSizes] = useState<any[]>([])
   const [paperStocks, setPaperStocks] = useState<any[]>([])
   const [turnaroundTimes, setTurnaroundTimes] = useState<any[]>([])
+  const [addonsList, setAddonsList] = useState<any[]>([]) // Addons from API
+  const [designOptions, setDesignOptions] = useState<any[]>([]) // Design options from API
   const [selectedQuantity, setSelectedQuantity] = useState('')
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedPaper, setSelectedPaper] = useState('')
   const [selectedCoating, setSelectedCoating] = useState('')
   const [selectedSides, setSelectedSides] = useState('')
   const [selectedTurnaround, setSelectedTurnaround] = useState('')
+  const [selectedDesign, setSelectedDesign] = useState('') // Selected design option
   const [customQuantity, setCustomQuantity] = useState('')
   const [customWidth, setCustomWidth] = useState('')
   const [customHeight, setCustomHeight] = useState('')
@@ -99,12 +102,15 @@ export default function SimpleQuantityTest({
       setSizes(data.sizes || [])
       setPaperStocks(data.paperStocks || [])
       setTurnaroundTimes(data.turnaroundTimes || [])
+      setAddonsList(data.addons || []) // Save addons from API
+      setDesignOptions(data.designOptions || []) // Save design options from API
       setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
       setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
       setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
       setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
       setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
+      setSelectedDesign(data.defaults?.design || data.designOptions?.[0]?.id || '') // Set default design
 
       setLoading(false)
       console.log(
@@ -165,12 +171,15 @@ export default function SimpleQuantityTest({
         setSizes(data.sizes || [])
         setPaperStocks(data.paperStocks || [])
         setTurnaroundTimes(data.turnaroundTimes || [])
+        setAddonsList(data.addons || []) // Save addons from API
+        setDesignOptions(data.designOptions || []) // Save design options from API
         setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
         setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
         setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
         setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
         setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
         setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
+        setSelectedDesign(data.defaults?.design || data.designOptions?.[0]?.id || '') // Set default design
 
         console.log('[SimpleQuantityTest] State updated, setting loading to false')
         setLoading(false)
@@ -603,11 +612,45 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
+      {/* Design Options */}
+      {designOptions.length > 0 && (
+        <div>
+          <Label className="text-sm font-semibold uppercase">DESIGN OPTIONS</Label>
+          <Select value={selectedDesign} onValueChange={setSelectedDesign}>
+            <SelectTrigger className="w-full mt-2 text-foreground">
+              <SelectValue className="text-foreground" placeholder="Select design option" />
+            </SelectTrigger>
+            <SelectContent className="bg-background">
+              {designOptions.map((design) => (
+                <SelectItem key={design.id} className="text-foreground" value={design.id}>
+                  <div>
+                    <div className="font-medium">{design.name}</div>
+                    {design.description && (
+                      <div className="text-xs text-muted-foreground">{design.description}</div>
+                    )}
+                    {design.pricingType !== 'FREE' && design.basePrice && (
+                      <div className="text-xs text-primary font-semibold">
+                        ${design.basePrice.toFixed(2)}
+                      </div>
+                    )}
+                    {design.pricingType === 'SIDE_BASED' && (
+                      <div className="text-xs text-muted-foreground">
+                        Side 1: ${design.sideOnePrice} | Side 2: ${design.sideTwoPrice}
+                      </div>
+                    )}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* Additional Options & Add-ons - BEFORE turnaround */}
-      {addons.length > 0 && (
+      {addonsList.length > 0 && (
         <div className="mt-6">
           <AddonAccordion
-            addons={addons}
+            addons={addonsList}
             disabled={false}
             selectedAddons={selectedAddons}
             onAddonChange={(addonId: string, selected: boolean) => {
