@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { CartProvider } from '@/contexts/cart-context'
-import { CartDrawer } from '@/components/cart/cart-drawer'
 import { SessionKeeper } from '@/components/auth/session-keeper'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -29,7 +28,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <CartProvider>
           <SessionKeeper />
           {children}
-          <CartDrawer />
           <PWAInstallPrompt />
         </CartProvider>
       </ThemeProvider>

@@ -32,7 +32,8 @@ export interface ProductConfiguration {
     inDropdown: AddonOption[]
     belowDropdown: AddonOption[]
   }
-  designOptions: DesignOption[]
+  designSets: DesignSetOption[] // Changed from flat designOptions to grouped designSets
+  designOptions: DesignOption[] // Kept for backward compatibility
   defaults: ConfigurationDefaults
 }
 
@@ -110,6 +111,15 @@ export interface AddonOption {
   displayPosition?: string
 }
 
+export interface DesignSetOption {
+  id: string
+  name: string
+  description: string | null
+  sortOrder: number
+  isDefault: boolean
+  options: DesignOption[] // Design options within this set
+}
+
 export interface DesignOption {
   id: string
   code: string
@@ -160,6 +170,7 @@ export class ProductConfigurationService {
         turnaroundTimes,
         addons,
         addonsGrouped,
+        designSets,
         designOptions,
       ] = await Promise.all([
         this.fetchQuantities(productId),
@@ -168,6 +179,7 @@ export class ProductConfigurationService {
         this.fetchTurnaroundTimes(productId),
         this.fetchAddons(productId),
         this.fetchAddonsGrouped(productId),
+        this.fetchDesignSets(productId),
         this.fetchDesignOptions(productId),
       ])
 
@@ -188,6 +200,7 @@ export class ProductConfigurationService {
         turnaroundTimes,
         addons,
         addonsGrouped,
+        designSets,
         designOptions,
         defaults,
       }
@@ -471,9 +484,9 @@ export class ProductConfigurationService {
   }
 
   /**
-   * Fetch design options for product
+   * Fetch design sets (grouped) for product
    */
-  private async fetchDesignOptions(productId: string): Promise<DesignOption[]> {
+  private async fetchDesignSets(productId: string): Promise<DesignSetOption[]> {
     try {
       const productDesignSets = await prisma.productDesignSet.findMany({
         where: { productId },
@@ -490,25 +503,49 @@ export class ProductConfigurationService {
         orderBy: { sortOrder: 'asc' },
       })
 
-      if (productDesignSets.length > 0 && productDesignSets[0].DesignSet) {
-        const designSet = productDesignSets[0].DesignSet
-        return designSet.DesignSetItem.map((item: any) => ({
-          id: item.DesignOption.id,
-          code: item.DesignOption.code,
-          name: item.DesignOption.name,
-          description: item.DesignOption.description || '',
-          tooltipText: item.DesignOption.tooltipText || '',
-          pricingType: item.DesignOption.pricingType,
-          requiresSideSelection: item.DesignOption.requiresSideSelection,
-          sideOnePrice: item.DesignOption.sideOnePrice || null,
-          sideTwoPrice: item.DesignOption.sideTwoPrice || null,
-          basePrice: item.DesignOption.basePrice || 0,
-          isDefault: item.isDefault || false,
-          sortOrder: item.sortOrder,
+      return productDesignSets
+        .filter((pds) => pds.DesignSet)
+        .map((pds) => ({
+          id: pds.DesignSet.id,
+          name: pds.DesignSet.name,
+          description: pds.DesignSet.description,
+          sortOrder: pds.sortOrder,
+          isDefault: pds.isDefault,
+          options: pds.DesignSet.DesignSetItem.map((item: any) => ({
+            id: item.DesignOption.id,
+            code: item.DesignOption.code,
+            name: item.DesignOption.name,
+            description: item.DesignOption.description || '',
+            tooltipText: item.DesignOption.tooltipText || '',
+            pricingType: item.DesignOption.pricingType,
+            requiresSideSelection: item.DesignOption.requiresSideSelection,
+            sideOnePrice: item.DesignOption.sideOnePrice || null,
+            sideTwoPrice: item.DesignOption.sideTwoPrice || null,
+            basePrice: item.DesignOption.basePrice || 0,
+            isDefault: item.isDefault || false,
+            sortOrder: item.sortOrder,
+          })),
         }))
-      }
-
+    } catch (error) {
+      console.error('[ProductConfigurationService] Error fetching design sets:', error)
       return []
+    }
+  }
+
+  /**
+   * Fetch design options for product (flat list - backward compatibility)
+   */
+  private async fetchDesignOptions(productId: string): Promise<DesignOption[]> {
+    try {
+      const designSets = await this.fetchDesignSets(productId)
+
+      // Flatten all options from all sets
+      const allOptions: DesignOption[] = []
+      designSets.forEach((set) => {
+        allOptions.push(...set.options)
+      })
+
+      return allOptions
     } catch (error) {
       console.error('[ProductConfigurationService] Error fetching design options:', error)
       return []
@@ -672,6 +709,7 @@ export class ProductConfigurationService {
         inDropdown: [],
         belowDropdown: [],
       },
+      designSets: [],
       designOptions: [],
       defaults: {
         quantity: 'qty_2',

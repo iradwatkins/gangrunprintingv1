@@ -3,9 +3,11 @@
 import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/contexts/cart-context'
+import { useRouter } from 'next/navigation'
 
 export function CartButton() {
-  const { itemCount, openCart } = useCart()
+  const { itemCount } = useCart()
+  const router = useRouter()
 
   return (
     <Button
@@ -13,7 +15,7 @@ export function CartButton() {
       className="relative"
       size="icon"
       variant="ghost"
-      onClick={openCart}
+      onClick={() => router.push('/cart')}
     >
       <ShoppingBag className="h-5 w-5" />
       {itemCount > 0 && (

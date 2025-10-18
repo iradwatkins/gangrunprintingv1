@@ -59,7 +59,7 @@ export default function SimpleQuantityTest({
   onAddonChange,
 }: SimpleQuantityTestProps) {
   // Cart and routing hooks
-  const { addItem, openCart, clearCart } = useCart()
+  const { addItem, clearCart } = useCart()
   const router = useRouter()
 
   // State for configuration options
@@ -68,14 +68,16 @@ export default function SimpleQuantityTest({
   const [paperStocks, setPaperStocks] = useState<any[]>([])
   const [turnaroundTimes, setTurnaroundTimes] = useState<any[]>([])
   const [addonsList, setAddonsList] = useState<any[]>([]) // Addons from API
-  const [designOptions, setDesignOptions] = useState<any[]>([]) // Design options from API
+  const [designSets, setDesignSets] = useState<any[]>([]) // Design sets from API (grouped)
+  const [designOptions, setDesignOptions] = useState<any[]>([]) // Design options from API (flat - backward compat)
   const [selectedQuantity, setSelectedQuantity] = useState('')
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedPaper, setSelectedPaper] = useState('')
   const [selectedCoating, setSelectedCoating] = useState('')
   const [selectedSides, setSelectedSides] = useState('')
   const [selectedTurnaround, setSelectedTurnaround] = useState('')
-  const [selectedDesign, setSelectedDesign] = useState('') // Selected design option
+  const [selectedDesignSet, setSelectedDesignSet] = useState('') // Selected design set
+  const [selectedDesignOption, setSelectedDesignOption] = useState('') // Selected design option within set
   const [customQuantity, setCustomQuantity] = useState('')
   const [customWidth, setCustomWidth] = useState('')
   const [customHeight, setCustomHeight] = useState('')
@@ -103,14 +105,18 @@ export default function SimpleQuantityTest({
       setPaperStocks(data.paperStocks || [])
       setTurnaroundTimes(data.turnaroundTimes || [])
       setAddonsList(data.addons || []) // Save addons from API
-      setDesignOptions(data.designOptions || []) // Save design options from API
+      setDesignSets(data.designSets || []) // Save design sets from API (grouped)
+      setDesignOptions(data.designOptions || []) // Save design options from API (flat - backward compat)
       setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
       setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
       setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
       setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
       setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
-      setSelectedDesign(data.defaults?.design || data.designOptions?.[0]?.id || '') // Set default design
+      // Set default design set and option
+      const defaultSet = data.designSets?.find((s: any) => s.isDefault) || data.designSets?.[0]
+      setSelectedDesignSet(defaultSet?.id || '')
+      setSelectedDesignOption(defaultSet?.options?.[0]?.id || '')
 
       setLoading(false)
       console.log(
@@ -172,14 +178,18 @@ export default function SimpleQuantityTest({
         setPaperStocks(data.paperStocks || [])
         setTurnaroundTimes(data.turnaroundTimes || [])
         setAddonsList(data.addons || []) // Save addons from API
-        setDesignOptions(data.designOptions || []) // Save design options from API
+        setDesignSets(data.designSets || []) // Save design sets from API (grouped)
+        setDesignOptions(data.designOptions || []) // Save design options from API (flat - backward compat)
         setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
         setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
         setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
         setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
         setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
         setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
-        setSelectedDesign(data.defaults?.design || data.designOptions?.[0]?.id || '') // Set default design
+        // Set default design set and option
+        const defaultSet = data.designSets?.find((s: any) => s.isDefault) || data.designSets?.[0]
+        setSelectedDesignSet(defaultSet?.id || '')
+        setSelectedDesignOption(defaultSet?.options?.[0]?.id || '')
 
         console.log('[SimpleQuantityTest] State updated, setting loading to false')
         setLoading(false)
@@ -353,9 +363,23 @@ export default function SimpleQuantityTest({
 
   // Calculate selected design price for total
   const getSelectedDesignPrice = () => {
-    if (!selectedDesign) return 0
-    const design = designOptions.find(d => d.id === selectedDesign)
-    return calculateDesignPrice(design)
+    if (!selectedDesignOption) return 0
+
+    // Find the option across all sets
+    let selectedOption = null
+    for (const set of designSets) {
+      selectedOption = set.options?.find((opt: any) => opt.id === selectedDesignOption)
+      if (selectedOption) break
+    }
+
+    return calculateDesignPrice(selectedOption)
+  }
+
+  // Get current design set options based on selected set
+  const getCurrentDesignOptions = () => {
+    if (!selectedDesignSet) return []
+    const set = designSets.find((s: any) => s.id === selectedDesignSet)
+    return set?.options || []
   }
 
   // Calculate TOTAL price including selected turnaround time, addons, and design
@@ -383,7 +407,7 @@ export default function SimpleQuantityTest({
     selectedTurnaround
   )
 
-  // Handle Add to Cart
+  // Handle Add to Cart - Navigate to upload page instead of opening cart drawer
   const handleAddToCart = () => {
     if (!isConfigurationComplete) {
       toast.error('Please complete your product configuration')
@@ -465,8 +489,10 @@ export default function SimpleQuantityTest({
       clearCart()
       // Add new item
       addItem(cartItem)
-      toast.success('Product added to cart!')
-      openCart()
+      toast.success('Product configured! Proceeding to upload artwork...')
+
+      // Navigate to upload artwork page instead of opening cart drawer
+      router.push('/cart/upload-artwork')
     } catch (error) {
       toast.error('Failed to add product to cart')
       console.error('Add to cart error:', error)
@@ -644,44 +670,66 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
-      {/* Design Options */}
-      {designOptions.length > 0 && (
-        <div>
-          <Label className="text-sm font-semibold uppercase mb-3 block">DESIGN OPTIONS</Label>
-          <div className="space-y-2">
-            {designOptions.map((design) => {
-              const designPrice = calculateDesignPrice(design)
-              return (
-                <label
-                  key={design.id}
-                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  <input
-                    checked={selectedDesign === design.id}
-                    className="w-4 h-4 text-primary focus:ring-2 focus:ring-primary"
-                    name="design"
-                    type="radio"
-                    value={design.id}
-                    onChange={(e) => setSelectedDesign(e.target.value)}
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">{design.name}</div>
-                    {design.description && (
-                      <div className="text-sm text-gray-600">{design.description}</div>
-                    )}
-                    {design.pricingType === 'SIDE_BASED' && design.sideOnePrice && design.sideTwoPrice && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        Side 1: ${design.sideOnePrice.toFixed(2)} | Side 2: ${design.sideTwoPrice.toFixed(2)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="font-bold text-primary">
-                    {designPrice > 0 ? `+$${designPrice.toFixed(2)}` : 'FREE'}
-                  </div>
-                </label>
-              )
-            })}
+      {/* Design Sets - Dropdown with Sub-Dropdowns */}
+      {designSets.length > 0 && (
+        <div className="space-y-4">
+          {/* Design Set Dropdown */}
+          <div>
+            <Label className="text-sm font-semibold uppercase">DESIGN SET</Label>
+            <Select
+              value={selectedDesignSet}
+              onValueChange={(value) => {
+                setSelectedDesignSet(value)
+                // Reset design option when set changes
+                const set = designSets.find((s: any) => s.id === value)
+                setSelectedDesignOption(set?.options?.[0]?.id || '')
+              }}
+            >
+              <SelectTrigger className="w-full mt-2">
+                <SelectValue placeholder="Select design set" />
+              </SelectTrigger>
+              <SelectContent>
+                {designSets.map((set: any) => (
+                  <SelectItem key={set.id} value={set.id}>
+                    {set.name}
+                    {set.description && <span className="text-xs text-gray-500"> - {set.description}</span>}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Design Option Dropdown (Sub-Dropdown) */}
+          {selectedDesignSet && getCurrentDesignOptions().length > 0 && (
+            <div>
+              <Label className="text-sm font-semibold uppercase">DESIGN OPTION</Label>
+              <Select value={selectedDesignOption} onValueChange={setSelectedDesignOption}>
+                <SelectTrigger className="w-full mt-2">
+                  <SelectValue placeholder="Select design option" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getCurrentDesignOptions().map((option: any) => {
+                    const price = calculateDesignPrice(option)
+                    return (
+                      <SelectItem key={option.id} value={option.id}>
+                        <div className="flex justify-between items-center w-full">
+                          <span>
+                            {option.name}
+                            {option.description && (
+                              <span className="text-xs text-gray-500"> - {option.description}</span>
+                            )}
+                          </span>
+                          <span className="ml-2 font-semibold text-primary">
+                            {price > 0 ? `+$${price.toFixed(2)}` : 'FREE'}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       )}
 
@@ -755,7 +803,7 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
-      {/* Add to Cart Button */}
+      {/* Continue to Upload Button */}
       {isConfigurationComplete ? (
         <Button
           className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6"
@@ -763,11 +811,11 @@ export default function SimpleQuantityTest({
           onClick={handleAddToCart}
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
-          Add to Cart
+          Continue to Upload Artwork
         </Button>
       ) : (
         <div className="w-full p-4 text-center text-sm text-muted-foreground bg-muted rounded border">
-          Please complete all configuration options above to add this product to your cart
+          Please complete all configuration options above to continue
         </div>
       )}
     </div>
