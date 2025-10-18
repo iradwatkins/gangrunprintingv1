@@ -154,30 +154,37 @@ async function getProduct(slug: string) {
   }
 }
 
-// Helper function to fetch product configuration - calls the API endpoint internally
+// Helper function to fetch product configuration - calls the API endpoint via HTTP
 async function getProductConfiguration(productId: string) {
   try {
-    // Since we're on the server, we can call the API route handler directly
-    // Import the GET function from the API route
-    const { GET } = await import('@/app/api/products/[id]/configuration/route')
+    console.log('[ProductPage] Fetching configuration for product:', productId)
 
-    // Create a mock request and params object
-    const { NextRequest } = await import('next/server')
-    const mockRequest = new NextRequest('http://localhost/api/products/' + productId + '/configuration')
-    const mockParams = Promise.resolve({ id: productId })
+    // Use fetch to call the API endpoint
+    // In Docker, use internal port; works in both dev and production
+    const apiUrl = `http://localhost:3002/api/products/${productId}/configuration`
 
-    // Call the API handler directly
-    const response = await GET(mockRequest, { params: mockParams })
+    console.log('[ProductPage] API URL:', apiUrl)
+
+    const response = await fetch(apiUrl, {
+      cache: 'no-store', // Don't cache during SSR
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    console.log('[ProductPage] API Response status:', response.status)
 
     if (!response.ok) {
+      console.error('[ProductPage] API returned error status:', response.status)
       return null
     }
 
     const configuration = await response.json()
+    console.log('[ProductPage] Configuration fetched successfully. Quantities:', configuration?.quantities?.length || 0)
 
     return configuration
   } catch (error) {
-    // Error fetching configuration
+    console.error('[ProductPage] Error fetching configuration:', error)
     return null
   }
 }
@@ -198,8 +205,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
-  // Fetch product configuration on the server (CRITICAL FIX for hydration issue)
-  const configuration = await getProductConfiguration(product.id)
+  // Product configuration will be fetched client-side in SimpleQuantityTest component
+  // This avoids SSR/hydration issues and Docker networking problems with server-side fetch
+  const configuration = null
 
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data

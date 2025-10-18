@@ -1,7 +1,7 @@
 import { Carrier } from '@prisma/client'
 import { FedExProviderEnhanced } from './providers/fedex-enhanced'
 import { UPSProvider } from './providers/ups'
-import { SouthwestCargoProvider } from './providers/southwest-cargo'
+import { SouthwestCargoProvider } from './modules/southwest-cargo'
 import {
   type ShippingAddress,
   type ShippingPackage,
@@ -10,7 +10,8 @@ import {
   type ShippingProvider,
   type TrackingInfo,
 } from './interfaces'
-import { fedexConfig, upsConfig, southwestCargoConfig } from './config'
+import { fedexConfig, upsConfig } from './config'
+import { SOUTHWEST_CARGO_CONFIG as southwestCargoConfig } from './modules/southwest-cargo/config'
 import { prisma } from '@/lib/prisma'
 import redis from '@/lib/redis'
 
