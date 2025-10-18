@@ -2,7 +2,12 @@ import { z } from 'zod'
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/api/auth'
-import { successResponse, handleApiError, commonErrors } from '@/lib/api/responses'
+import {
+  createSuccessResponse,
+  createErrorResponse,
+  createDatabaseErrorResponse,
+  createServerErrorResponse,
+} from '@/lib/api-response'
 import { randomUUID } from 'crypto'
 
 // Add-on creation schema
@@ -25,20 +30,9 @@ export async function GET(request: NextRequest) {
       orderBy: { sortOrder: 'asc' },
     })
 
-    // Return data wrapped in { data: [...] } format for consistency
-    return new Response(JSON.stringify({ data: addOns }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    return createSuccessResponse(addOns)
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch add-ons' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    return createServerErrorResponse('Failed to fetch add-ons')
   }
 }
 
@@ -51,7 +45,7 @@ export const POST = withAuth(
 
       if (!validation.success) {
         const errors = validation.error.issues.map((err) => `${err.path.join('.')}: ${err.message}`)
-        return commonErrors.validationError(`Validation failed: ${errors.join(', ')}`)
+        return createErrorResponse(`Validation failed: ${errors.join(', ')}`, 400)
       }
 
       const addOn = await prisma.addOn.create({
@@ -62,9 +56,12 @@ export const POST = withAuth(
         },
       })
 
-      return successResponse(addOn, 201)
+      return createSuccessResponse(addOn, 201)
     } catch (error) {
-      return handleApiError(error as Error, 'Failed to create add-on')
+      if (error instanceof Error && 'code' in error && typeof error.code === 'string' && error.code.startsWith('P')) {
+        return createDatabaseErrorResponse(error)
+      }
+      return createServerErrorResponse('Failed to create add-on')
     }
   },
   { requireAdmin: true }

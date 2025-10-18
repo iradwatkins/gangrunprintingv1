@@ -63,4 +63,4 @@ prisma/migrations/
 postgres_data/
 minio_data/
 postgres_dev_data/
-minio_dev_data/
+minio_dev_data/.git-rewrite/

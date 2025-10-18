@@ -6,12 +6,8 @@ import { N8NWorkflows } from '@/lib/n8n'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmationWithFiles, sendAdminOrderNotification } from '@/lib/resend'
 import { createOrUpdateSquareCustomer, createSquareCheckout, createSquareOrder } from '@/lib/square'
-
-function generateOrderNumber(): string {
-  const timestamp = Date.now().toString(36).toUpperCase()
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase()
-  return `GRP-${timestamp}-${random}`
-}
+import { OrderService } from '@/services/OrderService'
+import type { CreateOrderInput } from '@/types/service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,9 +51,8 @@ export async function POST(request: NextRequest) {
     // Calculate total
     const total = subtotal + tax + shipping
 
-    // Generate order number
-    const orderNumber = generateOrderNumber()
-    const referenceNumber = orderNumber // Use same for now
+    // Generate temporary order reference for Square (OrderService will generate final order number)
+    const tempOrderRef = `TMP-${Date.now().toString(36).toUpperCase()}`
 
     // Create or update Square customer
     let squareCustomerId: string | undefined
@@ -92,7 +87,7 @@ export async function POST(request: NextRequest) {
       })
 
       const squareOrderResult = await createSquareOrder({
-        referenceId: orderNumber,
+        referenceId: tempOrderRef,
         customerId: squareCustomerId,
         lineItems: squareLineItems,
         taxes: [
@@ -108,50 +103,70 @@ export async function POST(request: NextRequest) {
       // Continue without Square order ID
     }
 
-    // Create order in database
-    const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(7)}`
-    const order = await prisma.order.create({
-      data: {
-        id: orderId,
-        orderNumber,
-        referenceNumber,
-        updatedAt: new Date(),
-        email,
+    // Create order using OrderService
+    const orderService = new OrderService({
+      requestId: `checkout_${Date.now()}`,
+      userId: user?.id,
+      userRole: user?.role,
+      timestamp: new Date(),
+    })
+
+    const orderInput: CreateOrderInput = {
+      userId: user?.id || '',
+      email,
+      items: orderItems.map((item: Record<string, unknown>) => ({
+        productSku: item.productSku as string,
+        productName: item.productName as string,
+        quantity: item.quantity as number,
+        price: item.price as number,
+        options: item.options as Record<string, any>,
+      })),
+      shippingAddress: {
+        name,
+        address1: shippingAddress.address1 || shippingAddress.street,
+        address2: shippingAddress.address2,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zip: shippingAddress.zip || shippingAddress.zipCode,
+        country: shippingAddress.country || 'US',
         phone,
-        userId: user?.id || null,
+      },
+      billingAddress: billingAddress
+        ? {
+            name,
+            address1: billingAddress.address1 || billingAddress.street,
+            address2: billingAddress.address2,
+            city: billingAddress.city,
+            state: billingAddress.state,
+            zip: billingAddress.zip || billingAddress.zipCode,
+            country: billingAddress.country || 'US',
+            phone,
+          }
+        : undefined,
+      shippingMethod,
+      totals: {
         subtotal,
         tax,
         shipping,
         total,
-        shippingMethod,
-        shippingAddress,
-        billingAddress: billingAddress || shippingAddress,
+      },
+      metadata: {
         squareCustomerId,
         squareOrderId,
-        status: 'PENDING_PAYMENT',
-        sourceLandingPageId: landingPageSource, // Attribution tracking for landing pages
-        OrderItem: {
-          create: orderItems.map((item: Record<string, unknown>) => ({
-            id: `${orderNumber}-${Math.random().toString(36).substring(7)}`,
-            productName: item.productName,
-            productSku: item.productSku,
-            quantity: item.quantity,
-            price: item.price,
-            options: item.options,
-          })),
-        },
-        StatusHistory: {
-          create: {
-            id: `${orderNumber}-status-${Date.now()}`,
-            toStatus: 'PENDING_PAYMENT',
-            changedBy: email,
-          },
-        },
+        landingPageSource,
       },
-      include: {
-        OrderItem: true,
-      },
-    })
+    }
+
+    const orderResult = await orderService.createOrder(orderInput)
+
+    if (!orderResult.success || !orderResult.data) {
+      return NextResponse.json(
+        { error: orderResult.error || 'Failed to create order' },
+        { status: 500 }
+      )
+    }
+
+    const order = orderResult.data
 
     // Trigger N8N workflow for order creation
     try {
@@ -160,6 +175,12 @@ export async function POST(request: NextRequest) {
       // Don't fail the order if N8N fails
     }
 
+    // Fetch order with items for emails
+    const orderWithItems = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: { OrderItem: true },
+    })
+
     // Send enhanced order confirmation email to customer
     try {
       await sendOrderConfirmationWithFiles({
@@ -167,12 +188,12 @@ export async function POST(request: NextRequest) {
         orderNumber: order.orderNumber,
         customerName: name,
         customerEmail: email,
-        items: order.OrderItem.map((item: Record<string, unknown>) => ({
+        items: orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
           name: item.productName,
           quantity: item.quantity,
           price: item.price,
           options: item.options,
-        })),
+        })) || [],
         subtotal,
         tax,
         shipping,
@@ -191,12 +212,12 @@ export async function POST(request: NextRequest) {
         customerName: name,
         customerEmail: email,
         customerPhone: phone,
-        items: order.OrderItem.map((item: Record<string, unknown>) => ({
+        items: orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
           name: item.productName,
           quantity: item.quantity,
           price: item.price,
           options: item.options,
-        })),
+        })) || [],
         subtotal,
         tax,
         shipping,

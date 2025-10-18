@@ -541,16 +541,100 @@ try {
 - [ ] Check React DevTools for hydration status
 - [ ] Verify no console errors on product pages
 
+## 🎓 CODE QUALITY PRINCIPLES (October 18, 2025)
+
+### **DRY (Don't Repeat Yourself) + SoC (Separation of Concerns)**
+
+**MANDATORY: Apply these principles to ALL new code**
+
+**DRY Principle:**
+- ✅ Extract shared logic into utilities/base classes
+- ✅ Single source of truth for all functionality
+- ❌ Never duplicate code across components
+- ❌ Never copy-paste without extracting to shared function
+
+**SoC Principle:**
+- ✅ Separate business logic from UI components
+- ✅ Separate provider-specific logic from infrastructure (error handling, logging)
+- ✅ Each module has ONE clear responsibility
+- ❌ Never mix concerns (e.g., API calls + UI rendering in same file)
+
+**Reference Documentation:**
+- [BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md](docs/BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md)
+- [CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md](CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md)
+
+---
+
+## 🚨 CRITICAL: SQUARE PAYMENT CONFIGURATION (October 18, 2025)
+
+### **Cash App Pay + Square Card - Environment Variables**
+
+**MANDATORY: All Square integrations require BOTH backend + frontend variables**
+
+**Backend Only (NO NEXT_PUBLIC_ prefix):**
+```bash
+SQUARE_ACCESS_TOKEN=EAAAxxxxxxxxx          # Secret - server-side only
+SQUARE_WEBHOOK_SIGNATURE=wh_xxxxxx        # Secret - webhook verification
+```
+
+**Frontend Required (MUST have NEXT_PUBLIC_ prefix):**
+```bash
+NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-xxxxxxxxx
+NEXT_PUBLIC_SQUARE_LOCATION_ID=Lxxxxxxxxx
+NEXT_PUBLIC_SQUARE_ENVIRONMENT=sandbox
+```
+
+**Why This Matters:**
+- Next.js ONLY exposes `NEXT_PUBLIC_*` variables to browser
+- Cash App Pay runs in browser, not server
+- Missing `NEXT_PUBLIC_` prefix = undefined values = integration fails
+- Symptom: "Cash App Pay is not available for this merchant"
+
+**Reference:** [BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md](docs/BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md)
+
+---
+
+## 🚨 CRITICAL: SOUTHWEST CARGO SHIPPING (October 18, 2025)
+
+### **Southwest Cargo - Database-Driven Architecture**
+
+**MANDATORY: Southwest Cargo uses DATABASE for airport data**
+
+**Correct Implementation:**
+- ✅ **Active File:** `/src/lib/shipping/modules/southwest-cargo/provider.ts`
+- ✅ **Airport Data:** Database table `Airport` (82 airports)
+- ✅ **Seed Script:** `npx tsx src/scripts/seed-southwest-airports.ts`
+- ✅ **API Endpoint:** `/api/airports` (returns all active airports)
+
+**FORBIDDEN:**
+- ❌ **Dead Code Removed:** `~/src/lib/shipping/providers/southwest-cargo.ts~` (DELETED October 18, 2025)
+- ❌ **Never use hardcoded arrays** for airport data
+- ❌ **Never create duplicate provider files**
+
+**If Southwest "repeatedly has problems":**
+1. Check for duplicate files in `/src/lib/shipping/providers/`
+2. Verify imports use `/modules/southwest-cargo` not `/providers/`
+3. Verify airports seeded: `SELECT COUNT(*) FROM "Airport" WHERE operator='Southwest Cargo'` (should return 82)
+4. Run seed if needed: `npx tsx src/scripts/seed-southwest-airports.ts`
+
+**Reference:** [FIX-SOUTHWEST-AIRPORTS-NOT-DISPLAYING.md](FIX-SOUTHWEST-AIRPORTS-NOT-DISPLAYING.md)
+
+---
+
 ## REMEMBER
 
 - **NEVER** touch SteppersLife.com or any of its resources
 - **NEVER** use Dokploy, Clerk, Convex, or Supabase
 - **NEVER** ask about or suggest 200 City Products until all else complete (see Critical Priority Rules)
+- **NEVER** duplicate code - apply DRY principle (see Code Quality Principles above)
 - **ALWAYS** use Docker Compose for deployments
 - **ALWAYS** use the existing Lucia Auth implementation
 - **ALWAYS** ensure isolation from existing applications
 - **ALWAYS** follow server component pattern for data fetching
 - **ALWAYS** use validateRequest() for authentication
+- **ALWAYS** apply DRY + SoC principles to new code (see Code Quality Principles above)
+- **ALWAYS** use database-driven Southwest Cargo provider (see Southwest Cargo section above)
+- **ALWAYS** add `NEXT_PUBLIC_` prefix for browser-accessible env vars (see Square Payment Configuration above)
 - **ALWAYS** test in real browser before deploying (see [Deployment Checklist](./DEPLOYMENT-PREVENTION-CHECKLIST-BMAD.md))
 - **ALWAYS** verify React hydration with Chrome DevTools
 - **ALWAYS** run E2E test suite before production deployments ([test-e2e-customer-journey.js](./test-e2e-customer-journey.js))
@@ -558,7 +642,38 @@ try {
 
 ## 🔍 TROUBLESHOOTING CHECKLIST - CHECK THIS FIRST!
 
-### 0. Upload Errors (ERR_CONNECTION_CLOSED)
+### 0. Cash App Pay Not Working (October 18, 2025)
+
+- **SYMPTOM**: Cash App button never appears / shows error "not available for this merchant"
+- **CHECK**: Are `NEXT_PUBLIC_SQUARE_*` variables set in `.env`?
+- **CHECK**: Run `grep NEXT_PUBLIC_SQUARE .env` - should show 3 variables
+- **FIX**: Add to `.env`:
+  ```bash
+  NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-YOUR_APP_ID
+  NEXT_PUBLIC_SQUARE_LOCATION_ID=LYOUR_LOCATION_ID
+  NEXT_PUBLIC_SQUARE_ENVIRONMENT=sandbox
+  ```
+- **TEST**: Restart dev server, go to `/checkout`, verify Cash App button appears
+- **DOCS**: See [BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md](docs/BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md)
+
+### 1. Southwest Cargo Unreliable / "Repeatedly Having Problems" (October 18, 2025)
+
+- **SYMPTOM**: Southwest shipping rates intermittently fail or don't appear
+- **CHECK**: Are there duplicate provider files? `ls src/lib/shipping/providers/southwest*`
+- **FIX**: Should return "No such file" (duplicates deleted October 18, 2025)
+- **CHECK**: Is import correct? `grep "from.*southwest" src/lib/shipping/module-registry.ts`
+- **FIX**: Should import from `./modules/southwest-cargo` NOT `./providers/southwest-cargo`
+- **DOCS**: See [CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md](CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md)
+
+### 2. Southwest Airport Selector - No Airports Displaying (October 18, 2025)
+
+- **SYMPTOM**: Airport dropdown shows "No airport pickup locations are currently available"
+- **CHECK**: Are airports seeded? `psql $DATABASE_URL -c "SELECT COUNT(*) FROM \"Airport\""`
+- **FIX**: Should return 82. If not, run: `npx tsx src/scripts/seed-southwest-airports.ts`
+- **TEST**: API should return airports: `curl http://localhost:3020/api/airports | jq .count`
+- **DOCS**: See [FIX-SOUTHWEST-AIRPORTS-NOT-DISPLAYING.md](FIX-SOUTHWEST-AIRPORTS-NOT-DISPLAYING.md)
+
+### 3. Upload Errors (ERR_CONNECTION_CLOSED)
 
 - **SYMPTOM**: File uploads fail immediately with connection closed
 - **CHECK**: Is PM2 configured with 2G memory? `pm2 show gangrunprinting | grep max_memory`
@@ -568,20 +683,20 @@ try {
 - **TEST**: Run `node test-upload.js` to verify
 - **DOCS**: See `/docs/CRITICAL-FIX-UPLOAD-ERR-CONNECTION-CLOSED.md`
 
-### 1. Page Not Loading / 404 Errors
+### 4. Page Not Loading / 404 Errors
 
 - **CHECK**: Are there backup/debug files in the route directory?
 - **ACTION**: Remove ALL files except `page.tsx` from `/app/` route directories
 - **FILES TO DELETE**: `*-backup.tsx`, `*-debug.tsx`, `*-broken.tsx`, `*-fixed.tsx`
 - **NEVER**: Leave multiple `.tsx` files in route directories
 
-### 2. Before Creating New Pages
+### 5. Before Creating New Pages
 
 - **FIRST**: Check if existing page just needs cleanup
 - **INVESTIGATE**: Look for duplicate files causing conflicts
 - **CLEAN**: Remove backup files before diagnosing "broken" pages
 
-### 3. Next.js Route Conflicts
+### 6. Next.js Route Conflicts
 
 - **SYMPTOM**: Page returns 404 but file exists
 - **CAUSE**: Multiple `.tsx` files in same route directory

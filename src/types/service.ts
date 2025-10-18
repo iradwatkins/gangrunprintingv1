@@ -51,6 +51,12 @@ export interface CreateOrderInput {
   shippingAddress: ShippingAddress
   billingAddress?: ShippingAddress
   shippingMethod?: string
+  totals?: {
+    subtotal: number
+    tax: number
+    shipping: number
+    total: number
+  }
   metadata?: Record<string, any>
   adminNotes?: string
 }

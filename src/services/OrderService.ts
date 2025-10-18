@@ -40,8 +40,10 @@ export class OrderService {
         // Generate order number
         const orderNumber = this.generateOrderNumber()
 
-        // Calculate totals
-        const { subtotal, tax, shipping, total } = await this.calculateOrderTotals(input, tx)
+        // Calculate totals (use provided totals if available, otherwise calculate)
+        const { subtotal, tax, shipping, total } = input.totals
+          ? input.totals
+          : await this.calculateOrderTotals(input, tx)
 
         // Create the order
         const order = await tx.order.create({

@@ -5,7 +5,7 @@
 
 import { Carrier } from '@prisma/client'
 import type { ShippingProvider } from './interfaces'
-import { FedExProviderEnhanced } from './providers/fedex'
+import { FedExProviderEnhanced } from './providers/fedex-enhanced'
 import { SouthwestCargoProvider, SOUTHWEST_CARGO_CONFIG } from './modules/southwest-cargo'
 
 export interface ShippingModuleConfig {
