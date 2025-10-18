@@ -205,8 +205,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
-  // Product configuration will be fetched client-side in SimpleQuantityTest component
-  // This avoids SSR/hydration issues and Docker networking problems with server-side fetch
+  // TEMPORARY FIX (Oct 18, 2025): Server-side fetch doesn't work in Docker (localhost:3002 unreachable)
+  // Reverting to client-side fetch - component has robust fallback with 10s timeout
+  // See: docs/CRITICAL-REACT-HYDRATION-FIX-2025-10-18.md
   const configuration = null
 
   // Transform the product data to match client component expectations

@@ -37,12 +37,14 @@ export function ProductSpecifications({
   onUpdate,
 }: ProductSpecificationsProps) {
   // Debug logging to track data
-  // console.log('ProductSpecifications loaded:', {
+  /*
+  console.log('ProductSpecifications loaded:', {
     quantityGroups: quantityGroups?.length || 0,
     sizeGroups: sizeGroups?.length || 0,
     paperStockSets: paperStockSets?.length || 0,
     currentSelections: formData,
   })
+  */
 
   const hasData = quantityGroups.length > 0 && sizeGroups.length > 0 && paperStockSets.length > 0
 

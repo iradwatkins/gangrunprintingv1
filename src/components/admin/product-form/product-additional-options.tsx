@@ -34,11 +34,13 @@ export function ProductAdditionalOptions({
   onUpdate,
 }: ProductAdditionalOptionsProps) {
   // Debug logging
-  // console.log('ProductAdditionalOptions loaded:', {
+  /*
+  console.log('ProductAdditionalOptions loaded:', {
     addOnSets: addOnSets?.length || 0,
     turnaroundTimeSets: turnaroundTimeSets?.length || 0,
     currentSelections: formData,
   })
+  */
 
   return (
     <Card className="border-2 border-gray-200">

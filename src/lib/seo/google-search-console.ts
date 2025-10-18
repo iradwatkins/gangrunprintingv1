@@ -213,9 +213,11 @@ export async function trackAllProductsSEO() {
         alerts: result.alerts.length,
       })
 
-      // console.log(
+      /*
+      console.log(
         `✅ ${product.name}: ${result.rankings.length} keywords, ${result.alerts.length} alerts`
       )
+      */
 
       // Rate limit: Wait 1 second between requests
       await new Promise((resolve) => setTimeout(resolve, 1000))

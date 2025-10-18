@@ -166,9 +166,11 @@ export async function compressImageForAPI(
   const originalWidth = metadata.width || 0
   const originalHeight = metadata.height || 0
 
-  // console.log(
+  /*
+  console.log(
     `📊 Original image: ${originalWidth}x${originalHeight}, ${(buffer.length / 1024 / 1024).toFixed(2)} MB`
   )
+  */
 
   // Check if resizing is needed
   const needsResize = originalWidth > maxDimension || originalHeight > maxDimension
@@ -239,9 +241,11 @@ export async function compressImageForAPI(
     const base64 = compressedBuffer.toString('base64')
     const base64Size = Buffer.byteLength(base64, 'utf8')
 
-    // console.log(
+    /*
+    console.log(
       `🔄 Attempt ${attempts}: Quality ${quality}%, Size: ${(base64Size / 1024 / 1024).toFixed(2)} MB`
     )
+    */
 
     if (base64Size <= maxBase64Size) {
       // Success! Size is acceptable

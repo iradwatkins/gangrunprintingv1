@@ -213,11 +213,13 @@ export function useProductConfiguration({
       }
 
       const data: SimpleConfigData = await response.json()
-      // console.log('[useProductConfiguration] Data received:', {
+      /*
+      console.log('[useProductConfiguration] Data received:', {
         quantities: data.quantities?.length,
         sizes: data.sizes?.length,
         paperStocks: data.paperStocks?.length,
       })
+      */
 
       // Set defaults
       const defaultConfig: SimpleProductConfiguration = {
