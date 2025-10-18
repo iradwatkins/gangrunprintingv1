@@ -314,29 +314,61 @@ export default function SimpleQuantityTest({
     const basePrice = calculatedPrice
 
     selectedAddons.forEach(addonId => {
-      const addon = addons.find(a => a.id === addonId)
+      const addon = addonsList.find(a => a.id === addonId)
       if (!addon) return
 
-      if (addon.priceType === 'FLAT') {
+      if (addon.pricingModel === 'FIXED_FEE') {
         addonTotal += addon.price || 0
-      } else if (addon.priceType === 'PERCENTAGE') {
-        addonTotal += basePrice * ((addon.pricePercentage || 0) / 100)
+      } else if (addon.pricingModel === 'PERCENTAGE') {
+        addonTotal += basePrice * (addon.price || 0)
       }
     })
 
     return addonTotal
   }
 
-  // Calculate TOTAL price including selected turnaround time and addons
+  // Calculate design option price
+  const calculateDesignPrice = (design: any) => {
+    if (!design) return 0
+
+    // FREE design option
+    if (design.pricingType === 'FREE') {
+      return 0
+    }
+
+    // FLAT pricing (single fixed price)
+    if (design.pricingType === 'FLAT' && design.basePrice) {
+      return design.basePrice
+    }
+
+    // SIDE_BASED pricing (different prices for side 1 and side 2)
+    if (design.pricingType === 'SIDE_BASED') {
+      // For now, default to side 1 price
+      // TODO: Add UI for user to select which side(s) they want designed
+      return design.sideOnePrice || 0
+    }
+
+    return 0
+  }
+
+  // Calculate selected design price for total
+  const getSelectedDesignPrice = () => {
+    if (!selectedDesign) return 0
+    const design = designOptions.find(d => d.id === selectedDesign)
+    return calculateDesignPrice(design)
+  }
+
+  // Calculate TOTAL price including selected turnaround time, addons, and design
   const calculateTotalPrice = () => {
     const basePrice = calculatedPrice
     const addonPrice = calculateAddonPrice()
+    const designPrice = getSelectedDesignPrice()
 
-    // If no turnaround time selected, return base + addons
-    if (!selectedTurnaroundObj) return basePrice + addonPrice
+    // If no turnaround time selected, return base + addons + design
+    if (!selectedTurnaroundObj) return basePrice + addonPrice + designPrice
 
-    // Add turnaround time pricing to base price, then add addons
-    return calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice
+    // Add turnaround time pricing to base price, then add addons and design
+    return calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice + designPrice
   }
 
   const totalPrice = calculateTotalPrice()
@@ -615,34 +647,41 @@ export default function SimpleQuantityTest({
       {/* Design Options */}
       {designOptions.length > 0 && (
         <div>
-          <Label className="text-sm font-semibold uppercase">DESIGN OPTIONS</Label>
-          <Select value={selectedDesign} onValueChange={setSelectedDesign}>
-            <SelectTrigger className="w-full mt-2 text-foreground">
-              <SelectValue className="text-foreground" placeholder="Select design option" />
-            </SelectTrigger>
-            <SelectContent className="bg-background">
-              {designOptions.map((design) => (
-                <SelectItem key={design.id} className="text-foreground" value={design.id}>
-                  <div>
+          <Label className="text-sm font-semibold uppercase mb-3 block">DESIGN OPTIONS</Label>
+          <div className="space-y-2">
+            {designOptions.map((design) => {
+              const designPrice = calculateDesignPrice(design)
+              return (
+                <label
+                  key={design.id}
+                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <input
+                    checked={selectedDesign === design.id}
+                    className="w-4 h-4 text-primary focus:ring-2 focus:ring-primary"
+                    name="design"
+                    type="radio"
+                    value={design.id}
+                    onChange={(e) => setSelectedDesign(e.target.value)}
+                  />
+                  <div className="flex-1">
                     <div className="font-medium">{design.name}</div>
                     {design.description && (
-                      <div className="text-xs text-muted-foreground">{design.description}</div>
+                      <div className="text-sm text-gray-600">{design.description}</div>
                     )}
-                    {design.pricingType !== 'FREE' && design.basePrice && (
-                      <div className="text-xs text-primary font-semibold">
-                        ${design.basePrice.toFixed(2)}
-                      </div>
-                    )}
-                    {design.pricingType === 'SIDE_BASED' && (
-                      <div className="text-xs text-muted-foreground">
-                        Side 1: ${design.sideOnePrice} | Side 2: ${design.sideTwoPrice}
+                    {design.pricingType === 'SIDE_BASED' && design.sideOnePrice && design.sideTwoPrice && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Side 1: ${design.sideOnePrice.toFixed(2)} | Side 2: ${design.sideTwoPrice.toFixed(2)}
                       </div>
                     )}
                   </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  <div className="font-bold text-primary">
+                    {designPrice > 0 ? `+$${designPrice.toFixed(2)}` : 'FREE'}
+                  </div>
+                </label>
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -653,17 +692,9 @@ export default function SimpleQuantityTest({
             addons={addonsList}
             disabled={false}
             selectedAddons={selectedAddons}
-            onAddonChange={(addonId: string, selected: boolean) => {
+            onAddonChange={(newSelectedAddons: string[]) => {
               // Update local state for price calculation
-              setSelectedAddons(prev =>
-                selected
-                  ? [...prev, addonId]
-                  : prev.filter(id => id !== addonId)
-              )
-              // Also call parent handler if provided
-              if (onAddonChange) {
-                onAddonChange(addonId, selected)
-              }
+              setSelectedAddons(newSelectedAddons)
             }}
           />
         </div>

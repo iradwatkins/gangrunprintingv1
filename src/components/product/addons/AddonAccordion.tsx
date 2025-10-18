@@ -118,7 +118,7 @@ export function AddonAccordion({
       )}
 
       {/* Main Accordion for IN dropdown items and special features */}
-      <Accordion collapsible className="w-full" type="single">
+      <Accordion collapsible className="w-full" type="single" defaultValue="addons">
         <AccordionItem value="addons">
           <AccordionTrigger className="text-lg font-semibold">Options</AccordionTrigger>
           <AccordionContent>
