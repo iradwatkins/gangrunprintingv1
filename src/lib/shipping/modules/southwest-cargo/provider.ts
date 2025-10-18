@@ -1,66 +1,73 @@
+/**
+ * Southwest Cargo Shipping Provider
+ * Handles rate calculation for 82 airports nationwide
+ */
+
 import { Carrier } from '@prisma/client'
-import {
-  type ShippingAddress,
-  type ShippingPackage,
-  type ShippingRate,
-  type ShippingLabel,
-  type ShippingProvider,
-  type TrackingInfo,
-} from '../interfaces'
-import { SOUTHWEST_CARGO_RATES, CARRIER_AVAILABILITY, southwestCargoConfig } from '../config'
-import { roundWeight, ensureMinimumWeight } from '../weight-calculator'
+import type {
+  ShippingAddress,
+  ShippingPackage,
+  ShippingRate,
+  ShippingLabel,
+  ShippingProvider,
+  TrackingInfo,
+} from '../../interfaces'
+import { SOUTHWEST_CARGO_RATES, SOUTHWEST_CARGO_CONFIG } from './config'
+import { isStateAvailable } from './airport-availability'
+import { roundWeight, ensureMinimumWeight } from '../../weight-calculator'
 
 export class SouthwestCargoProvider implements ShippingProvider {
   carrier = Carrier.SOUTHWEST_CARGO
 
   /**
-   * Calculate shipping rates based on real Southwest Cargo pricing
+   * Calculate shipping rates based on 82 airports
    */
   async getRates(
     _fromAddress: ShippingAddress,
     toAddress: ShippingAddress,
     packages: ShippingPackage[]
   ): Promise<ShippingRate[]> {
-    // console.log('🛫 [Southwest Cargo] getRates called')
-    // console.log('   - Destination state:', toAddress.state)
-    // console.log('   - Packages:', packages.length, 'packages')
+    console.log('🛫 [Southwest Cargo] getRates called for 82 airports network')
+    console.log('   - Destination state:', toAddress.state)
+    console.log('   - Packages:', packages.length, 'packages')
 
-    // Check if Southwest Cargo serves the destination state
-    if (!this.isServiceAvailable(toAddress.state)) {
-      // console.log('❌ [Southwest Cargo] Service NOT available for state:', toAddress.state)
-      // console.log('   - Available states:', CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO].join(', '))
+    // Check if destination has Southwest Cargo airport (from 82 airports)
+    const hasAirport = await isStateAvailable(toAddress.state)
+
+    if (!hasAirport) {
+      console.log('❌ [Southwest Cargo] No airport available in state:', toAddress.state)
       return []
     }
 
-    // console.log('✅ [Southwest Cargo] Service available for', toAddress.state)
+    console.log('✅ [Southwest Cargo] Airport available in', toAddress.state)
 
     // Calculate total weight
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
 
-    // console.log('📦 [Southwest Cargo] Weight calculation:')
-    // console.log('   - Total weight:', totalWeight, 'lbs')
-    // console.log('   - Billable weight:', billableWeight, 'lbs')
+    console.log('📦 [Southwest Cargo] Weight calculation:')
+    console.log('   - Total weight:', totalWeight, 'lbs')
+    console.log('   - Billable weight:', billableWeight, 'lbs')
 
     // Calculate pickup and dash rates
     const pickupRate = this.calculatePickupRate(billableWeight)
     const dashRate = this.calculateDashRate(billableWeight)
 
-    // console.log('💰 [Southwest Cargo] Rate calculation:')
-    // console.log('   - Pickup rate (before markup):', pickupRate)
-    // console.log('   - Dash rate (before markup):', dashRate)
+    console.log('💰 [Southwest Cargo] Rate calculation:')
+    console.log('   - Pickup rate (before markup):', pickupRate)
+    console.log('   - Dash rate (before markup):', dashRate)
 
     // Apply markup if configured
-    const markup = 1 + (southwestCargoConfig.markupPercentage || 0) / 100
-    // console.log('   - Markup percentage:', southwestCargoConfig.markupPercentage, '%')
-    // console.log('   - Markup multiplier:', markup)
+    const markup = 1 + (SOUTHWEST_CARGO_CONFIG.markupPercentage || 0) / 100
+    console.log('   - Markup percentage:', SOUTHWEST_CARGO_CONFIG.markupPercentage, '%')
+    console.log('   - Markup multiplier:', markup)
 
     const rates: ShippingRate[] = [
       {
         carrier: this.carrier,
         serviceCode: 'SOUTHWEST_CARGO_PICKUP',
         serviceName: 'Southwest Cargo Pickup',
-        rateAmount: roundWeight(pickupRate * markup, 2), // FIXED: Use pickup rate for pickup service
+        rateAmount: roundWeight(pickupRate * markup, 2),
         currency: 'USD',
         estimatedDays: 3, // Standard pickup delivery time
         isGuaranteed: false,
@@ -69,23 +76,25 @@ export class SouthwestCargoProvider implements ShippingProvider {
         carrier: this.carrier,
         serviceCode: 'SOUTHWEST_CARGO_DASH',
         serviceName: 'Southwest Cargo Dash',
-        rateAmount: roundWeight(dashRate * markup, 2), // FIXED: Use dash rate for dash service
+        rateAmount: roundWeight(dashRate * markup, 2),
         currency: 'USD',
         estimatedDays: 1, // Dash delivery (next available flight)
         isGuaranteed: true,
       },
     ]
 
-    // console.log('✅ [Southwest Cargo] Returning', rates.length, 'rates:')
+    console.log('✅ [Southwest Cargo] Returning', rates.length, 'rates:')
     rates.forEach((rate, index) => {
-      // console.log(`   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`)
+      console.log(
+        `   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`
+      )
     })
 
     return rates
   }
 
   /**
-   * Create a shipping label (manual process for Southwest Cargo)
+   * Create a shipping label
    */
   async createLabel(
     _fromAddress: ShippingAddress,
@@ -93,12 +102,8 @@ export class SouthwestCargoProvider implements ShippingProvider {
     _packages: ShippingPackage[],
     _serviceCode: string
   ): Promise<ShippingLabel> {
-    // Generate a mock tracking number for Southwest Cargo
-    // In production, this would be obtained from Southwest's system
     const trackingNumber = this.generateTrackingNumber()
 
-    // Southwest Cargo typically uses manual label creation
-    // This would integrate with their system in production
     return {
       trackingNumber,
       labelUrl: `/api/shipping/label/southwest/${trackingNumber}`,
@@ -108,11 +113,9 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Track a shipment (manual process for Southwest Cargo)
+   * Track a shipment
    */
   async track(trackingNumber: string): Promise<TrackingInfo> {
-    // Southwest Cargo tracking is typically manual
-    // This would integrate with their system if available
     return {
       trackingNumber,
       carrier: this.carrier,
@@ -130,23 +133,14 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Validate an address (basic validation for Southwest Cargo)
+   * Validate an address (checks if airport exists in destination)
    */
   async validateAddress(address: ShippingAddress): Promise<boolean> {
-    // Basic validation - check if state is in service area
-    return this.isServiceAvailable(address.state)
+    return isStateAvailable(address.state)
   }
 
   /**
-   * Check if Southwest Cargo serves a state
-   */
-  private isServiceAvailable(state: string): boolean {
-    const serviceArea = CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO]
-    return serviceArea.length === 0 || serviceArea.includes(state.toUpperCase())
-  }
-
-  /**
-   * Calculate Southwest Cargo Pickup rate based on real pricing structure
+   * Calculate Southwest Cargo Pickup rate
    * Formula: baseRate + (weight × additionalPerPound) + handlingFee
    */
   private calculatePickupRate(weight: number): number {
@@ -166,7 +160,7 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Calculate Southwest Cargo Dash rate based on real pricing structure
+   * Calculate Southwest Cargo Dash rate
    * Formula: baseRate + (weight × additionalPerPound) + handlingFee
    */
   private calculateDashRate(weight: number): number {
@@ -186,7 +180,7 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Generate a tracking number for Southwest Cargo
+   * Generate a tracking number
    */
   private generateTrackingNumber(): string {
     const timestamp = Date.now().toString(36).toUpperCase()

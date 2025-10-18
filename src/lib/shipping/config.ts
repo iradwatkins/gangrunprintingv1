@@ -21,15 +21,8 @@ export const upsConfig: ShippingConfiguration = {
   markupPercentage: 10,
 }
 
-// Southwest Cargo configuration
-export const southwestCargoConfig: ShippingConfiguration = {
-  enabled: true, // ENABLED: Southwest Cargo is active
-  testMode: false,
-  defaultPackaging: {
-    weight: 1.0, // Heavier packaging for freight
-  },
-  markupPercentage: 5, // Lower markup for freight
-}
+// Southwest Cargo configuration moved to modular implementation
+// See: src/lib/shipping/modules/southwest-cargo/config.ts
 
 // Service codes mapping - ALL FedEx services (30+ services)
 export const FEDEX_SERVICE_CODES = {
@@ -139,79 +132,13 @@ export const DEFAULT_SENDER_ADDRESS = {
 }
 
 // Carrier availability by state
+// NOTE: Southwest Cargo availability is now dynamically determined from 82 airports in database
+// See: src/lib/shipping/modules/southwest-cargo/airport-availability.ts
 export const CARRIER_AVAILABILITY: Record<Carrier, string[]> = {
   FEDEX: [], // Available in all states
   UPS: [], // Available in all states
-  SOUTHWEST_CARGO: [
-    'TX',
-    'OK',
-    'NM',
-    'AR',
-    'LA',
-    'AZ',
-    'CA',
-    'NV',
-    'CO',
-    'UT',
-    'FL',
-    'GA',
-    'AL',
-    'TN',
-    'MS',
-    'SC',
-    'NC',
-    'KY',
-    'MO',
-    'KS',
-  ], // Limited to Southwest's service area
+  SOUTHWEST_CARGO: [], // Dynamically loaded from 82 airports in database
 }
 
-// Real Southwest Cargo pricing based on actual rates from WooCommerce
-export const SOUTHWEST_CARGO_RATES = {
-  pickup: {
-    // Southwest Cargo Pickup pricing (cheaper, slower, airport pickup)
-    weightTiers: [
-      {
-        maxWeight: 50,
-        baseRate: 80.0,
-        additionalPerPound: 0,
-        handlingFee: 0,
-      },
-      {
-        maxWeight: 100,
-        baseRate: 102.0,
-        additionalPerPound: 1.75,
-        handlingFee: 0,
-      },
-      {
-        maxWeight: Infinity,
-        baseRate: 133.0,
-        additionalPerPound: 1.75,
-        handlingFee: 10.0,
-      },
-    ],
-  },
-  dash: {
-    // Southwest Cargo Dash pricing (premium, faster, next available flight)
-    weightTiers: [
-      {
-        maxWeight: 50,
-        baseRate: 85.0,
-        additionalPerPound: 0,
-        handlingFee: 10.0,
-      },
-      {
-        maxWeight: 100,
-        baseRate: 133.0,
-        additionalPerPound: 0,
-        handlingFee: 10.0,
-      },
-      {
-        maxWeight: Infinity,
-        baseRate: 133.0,
-        additionalPerPound: 1.75,
-        handlingFee: 10.0,
-      },
-    ],
-  },
-}
+// Southwest Cargo pricing moved to modular implementation
+// See: src/lib/shipping/modules/southwest-cargo/config.ts

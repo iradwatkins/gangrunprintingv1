@@ -6,7 +6,7 @@
 import { Carrier } from '@prisma/client'
 import type { ShippingProvider } from './interfaces'
 import { FedExProviderEnhanced } from './providers/fedex'
-import { SouthwestCargoProvider } from './providers/southwest-cargo'
+import { SouthwestCargoProvider, SOUTHWEST_CARGO_CONFIG } from './modules/southwest-cargo'
 
 export interface ShippingModuleConfig {
   enabled: boolean
@@ -58,16 +58,16 @@ class ShippingModuleRegistry {
       },
     })
 
-    // Southwest Cargo Module
+    // Southwest Cargo Module - 82 airports nationwide
     this.register({
       id: 'southwest-cargo',
       name: 'Southwest Cargo',
       carrier: Carrier.SOUTHWEST_CARGO,
       provider: new SouthwestCargoProvider(),
       config: {
-        enabled: true, // Enable Southwest Cargo
-        priority: 2,
-        testMode: false,
+        enabled: SOUTHWEST_CARGO_CONFIG.enabled,
+        priority: SOUTHWEST_CARGO_CONFIG.priority,
+        testMode: SOUTHWEST_CARGO_CONFIG.testMode,
       },
     })
   }
