@@ -68,16 +68,15 @@ export default function SimpleQuantityTest({
   const [paperStocks, setPaperStocks] = useState<any[]>([])
   const [turnaroundTimes, setTurnaroundTimes] = useState<any[]>([])
   const [addonsList, setAddonsList] = useState<any[]>([]) // Addons from API
-  const [designSets, setDesignSets] = useState<any[]>([]) // Design sets from API (grouped)
-  const [designOptions, setDesignOptions] = useState<any[]>([]) // Design options from API (flat - backward compat)
+  const [designOptions, setDesignOptions] = useState<any[]>([]) // Design options from API (flat array)
   const [selectedQuantity, setSelectedQuantity] = useState('')
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedPaper, setSelectedPaper] = useState('')
   const [selectedCoating, setSelectedCoating] = useState('')
   const [selectedSides, setSelectedSides] = useState('')
   const [selectedTurnaround, setSelectedTurnaround] = useState('')
-  const [selectedDesignSet, setSelectedDesignSet] = useState('') // Selected design set
-  const [selectedDesignOption, setSelectedDesignOption] = useState('') // Selected design option within set
+  const [selectedDesignOption, setSelectedDesignOption] = useState('') // Selected design option
+  const [selectedDesignSide, setSelectedDesignSide] = useState<'oneSide' | 'twoSides' | ''>('') // Selected side for design (Standard/Rush)
   const [customQuantity, setCustomQuantity] = useState('')
   const [customWidth, setCustomWidth] = useState('')
   const [customHeight, setCustomHeight] = useState('')
@@ -105,18 +104,16 @@ export default function SimpleQuantityTest({
       setPaperStocks(data.paperStocks || [])
       setTurnaroundTimes(data.turnaroundTimes || [])
       setAddonsList(data.addons || []) // Save addons from API
-      setDesignSets(data.designSets || []) // Save design sets from API (grouped)
-      setDesignOptions(data.designOptions || []) // Save design options from API (flat - backward compat)
+      setDesignOptions(data.designOptions || []) // Save design options from API (flat array)
       setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
       setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
       setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
       setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
       setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
-      // Set default design set and option
-      const defaultSet = data.designSets?.find((s: any) => s.isDefault) || data.designSets?.[0]
-      setSelectedDesignSet(defaultSet?.id || '')
-      setSelectedDesignOption(defaultSet?.options?.[0]?.id || '')
+      // Set default design option (first one marked as default, or first in list)
+      const defaultOption = data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
+      setSelectedDesignOption(defaultOption?.id || '')
 
       setLoading(false)
       console.log(
@@ -178,18 +175,16 @@ export default function SimpleQuantityTest({
         setPaperStocks(data.paperStocks || [])
         setTurnaroundTimes(data.turnaroundTimes || [])
         setAddonsList(data.addons || []) // Save addons from API
-        setDesignSets(data.designSets || []) // Save design sets from API (grouped)
-        setDesignOptions(data.designOptions || []) // Save design options from API (flat - backward compat)
+        setDesignOptions(data.designOptions || []) // Save design options from API (flat array)
         setSelectedQuantity(data.defaults?.quantity || data.quantities?.[0]?.id || '')
         setSelectedSize(data.defaults?.size || data.sizes?.[0]?.id || '')
         setSelectedPaper(data.defaults?.paper || data.paperStocks?.[0]?.id || '')
         setSelectedCoating(data.defaults?.coating || data.paperStocks?.[0]?.coatings?.[0]?.id || '')
         setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
         setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
-        // Set default design set and option
-        const defaultSet = data.designSets?.find((s: any) => s.isDefault) || data.designSets?.[0]
-        setSelectedDesignSet(defaultSet?.id || '')
-        setSelectedDesignOption(defaultSet?.options?.[0]?.id || '')
+        // Set default design option (first one marked as default, or first in list)
+        const defaultOption = data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
+        setSelectedDesignOption(defaultOption?.id || '')
 
         console.log('[SimpleQuantityTest] State updated, setting loading to false')
         setLoading(false)
@@ -341,6 +336,13 @@ export default function SimpleQuantityTest({
   const calculateDesignPrice = (design: any) => {
     if (!design) return 0
 
+    console.log('[calculateDesignPrice] Design option:', design)
+    console.log('[calculateDesignPrice] Pricing type:', design.pricingType)
+    console.log('[calculateDesignPrice] Base price:', design.basePrice)
+    console.log('[calculateDesignPrice] Side one price:', design.sideOnePrice)
+    console.log('[calculateDesignPrice] Side two price:', design.sideTwoPrice)
+    console.log('[calculateDesignPrice] Selected design side:', selectedDesignSide)
+
     // FREE design option
     if (design.pricingType === 'FREE') {
       return 0
@@ -348,16 +350,27 @@ export default function SimpleQuantityTest({
 
     // FLAT pricing (single fixed price)
     if (design.pricingType === 'FLAT' && design.basePrice) {
-      return design.basePrice
+      const price = design.basePrice
+      console.log('[calculateDesignPrice] FLAT price:', price)
+      return price
     }
 
     // SIDE_BASED pricing (different prices for side 1 and side 2)
     if (design.pricingType === 'SIDE_BASED') {
-      // For now, default to side 1 price
-      // TODO: Add UI for user to select which side(s) they want designed
-      return design.sideOnePrice || 0
+      if (selectedDesignSide === 'oneSide') {
+        const price = design.sideOnePrice || 0
+        console.log('[calculateDesignPrice] SIDE_BASED oneSide price:', price)
+        return price
+      } else if (selectedDesignSide === 'twoSides') {
+        const price = design.sideTwoPrice || 0
+        console.log('[calculateDesignPrice] SIDE_BASED twoSides price:', price)
+        return price
+      }
+      console.log('[calculateDesignPrice] SIDE_BASED but no side selected')
+      return 0 // No side selected yet
     }
 
+    console.log('[calculateDesignPrice] No matching pricing type, returning 0')
     return 0
   }
 
@@ -365,21 +378,21 @@ export default function SimpleQuantityTest({
   const getSelectedDesignPrice = () => {
     if (!selectedDesignOption) return 0
 
-    // Find the option across all sets
-    let selectedOption = null
-    for (const set of designSets) {
-      selectedOption = set.options?.find((opt: any) => opt.id === selectedDesignOption)
-      if (selectedOption) break
-    }
+    // Find the option from flat designOptions array
+    const selectedOption = designOptions.find((opt: any) => opt.id === selectedDesignOption)
 
     return calculateDesignPrice(selectedOption)
   }
 
-  // Get current design set options based on selected set
-  const getCurrentDesignOptions = () => {
-    if (!selectedDesignSet) return []
-    const set = designSets.find((s: any) => s.id === selectedDesignSet)
-    return set?.options || []
+  // Determine if current design option requires side selection
+  const requiresSideSelection = () => {
+    const selectedOption = designOptions.find((opt: any) => opt.id === selectedDesignOption)
+    return selectedOption?.requiresSideSelection === true
+  }
+
+  // Handle design side selection (oneSide or twoSides)
+  const handleDesignSideChange = (side: 'oneSide' | 'twoSides') => {
+    setSelectedDesignSide(side)
   }
 
   // Calculate TOTAL price including selected turnaround time, addons, and design
@@ -388,11 +401,22 @@ export default function SimpleQuantityTest({
     const addonPrice = calculateAddonPrice()
     const designPrice = getSelectedDesignPrice()
 
+    console.log('[calculateTotalPrice] Base price:', basePrice)
+    console.log('[calculateTotalPrice] Addon price:', addonPrice)
+    console.log('[calculateTotalPrice] Design price:', designPrice)
+    console.log('[calculateTotalPrice] Selected turnaround:', selectedTurnaroundObj)
+
     // If no turnaround time selected, return base + addons + design
-    if (!selectedTurnaroundObj) return basePrice + addonPrice + designPrice
+    if (!selectedTurnaroundObj) {
+      const total = basePrice + addonPrice + designPrice
+      console.log('[calculateTotalPrice] Total (no turnaround):', total)
+      return total
+    }
 
     // Add turnaround time pricing to base price, then add addons and design
-    return calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice + designPrice
+    const total = calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice + designPrice
+    console.log('[calculateTotalPrice] Total (with turnaround):', total)
+    return total
   }
 
   const totalPrice = calculateTotalPrice()
@@ -670,64 +694,93 @@ export default function SimpleQuantityTest({
         </div>
       )}
 
-      {/* Design Sets - Dropdown with Sub-Dropdowns */}
-      {designSets.length > 0 && (
-        <div className="space-y-4">
-          {/* Design Set Dropdown */}
-          <div>
-            <Label className="text-sm font-semibold uppercase">DESIGN SET</Label>
-            <Select
-              value={selectedDesignSet}
-              onValueChange={(value) => {
-                setSelectedDesignSet(value)
-                // Reset design option when set changes
-                const set = designSets.find((s: any) => s.id === value)
-                setSelectedDesignOption(set?.options?.[0]?.id || '')
-              }}
-            >
-              <SelectTrigger className="w-full mt-2">
-                <SelectValue placeholder="Select design set" />
-              </SelectTrigger>
-              <SelectContent>
-                {designSets.map((set: any) => (
-                  <SelectItem key={set.id} value={set.id}>
-                    {set.name}
-                    {set.description && <span className="text-xs text-gray-500"> - {set.description}</span>}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* Design Options - Single Dropdown */}
+      {designOptions.length > 0 && (
+        <div>
+          <Label className="text-sm font-semibold uppercase">DESIGN OPTIONS</Label>
+          <Select
+            value={selectedDesignOption}
+            onValueChange={(value) => {
+              setSelectedDesignOption(value)
+              // Clear side selection if new option doesn't require it
+              const newOption = designOptions.find((opt: any) => opt.id === value)
+              if (!newOption?.requiresSideSelection) {
+                setSelectedDesignSide('')
+              }
+            }}
+          >
+            <SelectTrigger className="w-full mt-2">
+              <SelectValue placeholder="Select design option" />
+            </SelectTrigger>
+            <SelectContent>
+              {designOptions.map((option: any) => {
+                // Format label based on design option type - match exact specification
+                let label = option.name
+                let price = calculateDesignPrice(option)
 
-          {/* Design Option Dropdown (Sub-Dropdown) */}
-          {selectedDesignSet && getCurrentDesignOptions().length > 0 && (
-            <div>
-              <Label className="text-sm font-semibold uppercase">DESIGN OPTION</Label>
-              <Select value={selectedDesignOption} onValueChange={setSelectedDesignOption}>
-                <SelectTrigger className="w-full mt-2">
-                  <SelectValue placeholder="Select design option" />
+                // Add price to Minor/Major changes in dropdown label
+                if (option.id === 'design_minor_changes') {
+                  label = 'Design Changes - Minor 25'
+                } else if (option.id === 'design_major_changes') {
+                  label = 'Design Changes - Major 75.00'
+                }
+
+                return (
+                  <SelectItem key={option.id} value={option.id}>
+                    <div className="flex justify-between items-center w-full">
+                      <span>{label}</span>
+                      {/* Don't show price labels - all prices are either in option label or sub-dropdown */}
+                      {option.id !== 'design_minor_changes' &&
+                       option.id !== 'design_major_changes' &&
+                       option.id !== 'design_standard' &&
+                       option.id !== 'design_rush' &&
+                       option.id !== 'design_upload_own' && (
+                        <span className="ml-2 font-semibold text-primary">
+                          {price > 0 ? `+$${price.toFixed(2)}` : 'FREE'}
+                        </span>
+                      )}
+                    </div>
+                  </SelectItem>
+                )
+              })}
+            </SelectContent>
+          </Select>
+
+          {/* Side Selection Sub-Dropdown for Standard/Rush Custom Design */}
+          {requiresSideSelection() && (
+            <div className="ml-6 space-y-2 mt-3 p-3 border rounded-lg bg-gray-50">
+              <Label className="text-sm font-medium">Select Sides *</Label>
+              <Select
+                value={selectedDesignSide}
+                onValueChange={handleDesignSideChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose number of sides..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {getCurrentDesignOptions().map((option: any) => {
-                    const price = calculateDesignPrice(option)
-                    return (
-                      <SelectItem key={option.id} value={option.id}>
-                        <div className="flex justify-between items-center w-full">
-                          <span>
-                            {option.name}
-                            {option.description && (
-                              <span className="text-xs text-gray-500"> - {option.description}</span>
-                            )}
-                          </span>
-                          <span className="ml-2 font-semibold text-primary">
-                            {price > 0 ? `+$${price.toFixed(2)}` : 'FREE'}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    )
-                  })}
+                  {(() => {
+                    const selectedDesign = designOptions.find((d: any) => d.id === selectedDesignOption)
+                    if (selectedDesign?.sideOptions) {
+                      return (
+                        <>
+                          <SelectItem value="oneSide">
+                            One Side Price ($) {selectedDesign.sideOptions.oneSide.price.toFixed(0)}
+                          </SelectItem>
+                          <SelectItem value="twoSides">
+                            Two Sides Price ($) {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
+                          </SelectItem>
+                        </>
+                      )
+                    }
+                    return null
+                  })()}
                 </SelectContent>
               </Select>
+              {!selectedDesignSide && (
+                <p className="text-sm text-orange-600">
+                  ⚠️ Please select the number of sides for your design
+                </p>
+              )}
             </div>
           )}
         </div>
