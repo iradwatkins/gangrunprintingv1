@@ -127,9 +127,9 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
           <div className="relative aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center">
             {proof.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
               <img
-                src={proof.fileUrl}
                 alt={proof.label || proof.filename}
                 className="object-contain w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+                src={proof.fileUrl}
                 onClick={() => setPreviewOpen(true)}
               />
             ) : (
@@ -143,19 +143,19 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
           {/* Action Buttons */}
           <div className="flex gap-2">
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPreviewOpen(true)}
               className="flex-1"
+              size="sm"
+              variant="outline"
+              onClick={() => setPreviewOpen(true)}
             >
               <Eye className="h-4 w-4 mr-2" />
               View Large
             </Button>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.open(proof.fileUrl, '_blank')}
               className="flex-1"
+              size="sm"
+              variant="outline"
+              onClick={() => window.open(proof.fileUrl, '_blank')}
             >
               <Download className="h-4 w-4 mr-2" />
               Download
@@ -168,18 +168,18 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
               <p className="text-sm font-medium">Review this proof and provide your feedback:</p>
               <div className="flex gap-2">
                 <Button
-                  onClick={() => openApprovalDialog('APPROVED')}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                   disabled={submitting}
+                  onClick={() => openApprovalDialog('APPROVED')}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Approve
                 </Button>
                 <Button
-                  onClick={() => openApprovalDialog('REJECTED')}
-                  variant="destructive"
                   className="flex-1"
                   disabled={submitting}
+                  variant="destructive"
+                  onClick={() => openApprovalDialog('REJECTED')}
                 >
                   <XCircle className="h-4 w-4 mr-2" />
                   Request Changes
@@ -199,7 +199,7 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
                 {proof.FileMessage.map((msg) => (
                   <div key={msg.id} className="bg-muted rounded-lg p-3 text-sm">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         {msg.authorRole}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
@@ -227,14 +227,14 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
           <div className="overflow-auto max-h-[75vh]">
             {proof.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
               <img
-                src={proof.fileUrl}
                 alt={proof.label || proof.filename}
                 className="w-full h-auto"
+                src={proof.fileUrl}
               />
             ) : proof.fileUrl.match(/\.pdf$/i) ? (
               <iframe
-                src={proof.fileUrl}
                 className="w-full h-[70vh]"
+                src={proof.fileUrl}
                 title={proof.label || proof.filename}
               />
             ) : (
@@ -271,36 +271,36 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
               </Label>
               <Textarea
                 id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
                 placeholder={
                   approvalAction === 'APPROVED'
                     ? 'Add a comment (optional)...'
                     : 'Please describe the changes you need...'
                 }
-                rows={4}
                 required={approvalAction === 'REJECTED'}
+                rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
               />
             </div>
           </div>
           <div className="flex gap-2">
             <Button
+              className="flex-1"
+              disabled={submitting}
               variant="outline"
               onClick={() => setApprovalDialogOpen(false)}
-              disabled={submitting}
-              className="flex-1"
             >
               Cancel
             </Button>
             <Button
-              onClick={handleApproval}
-              disabled={submitting || (approvalAction === 'REJECTED' && !message.trim())}
               className={
                 approvalAction === 'APPROVED'
                   ? 'flex-1 bg-green-600 hover:bg-green-700'
                   : 'flex-1'
               }
+              disabled={submitting || (approvalAction === 'REJECTED' && !message.trim())}
               variant={approvalAction === 'REJECTED' ? 'destructive' : 'default'}
+              onClick={handleApproval}
             >
               {submitting ? (
                 <>

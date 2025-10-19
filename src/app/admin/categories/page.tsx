@@ -555,10 +555,10 @@ export default function CategoriesPage() {
               <div className="col-span-3">
                 <Input
                   id="brokerDiscount"
+                  max="100"
+                  min="0"
                   placeholder="0"
                   type="number"
-                  min="0"
-                  max="100"
                   value={formData.brokerDiscount}
                   onChange={(e) =>
                     setFormData({

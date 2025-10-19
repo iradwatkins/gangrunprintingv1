@@ -278,11 +278,15 @@ async function main() {
     try {
       await prisma.airport.upsert({
         where: { code: airport.code },
-        update: airport,
+        update: {
+          ...airport,
+          updatedAt: new Date(),
+        },
         create: {
           id: `airport_${airport.code.toLowerCase()}`,
           ...airport,
           isActive: true,
+          updatedAt: new Date(),
         },
       })
       console.log(`✅ ${airport.name} (${airport.code})`)

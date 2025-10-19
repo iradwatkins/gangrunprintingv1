@@ -23,6 +23,7 @@ import {
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const SLACK_WEBHOOK_URL = process.env.SEO_SLACK_WEBHOOK_URL
 
 async function sendSEOAlertEmail(report: any) {
   const criticalCount = report.criticalIssues
@@ -166,6 +167,107 @@ async function sendSEOAlertEmail(report: any) {
   }
 }
 
+async function sendSlackAlert(report: any) {
+  if (!SLACK_WEBHOOK_URL) {
+    console.log('⚠️  Slack webhook not configured - skipping Slack notification')
+    return
+  }
+
+  const criticalCount = report.criticalIssues
+  const highCount = report.highIssues
+  const totalIssues = criticalCount + highCount
+
+  if (totalIssues === 0) {
+    return // No alerts needed
+  }
+
+  const criticalProducts = report.productReports
+    .filter((p: any) => p.alerts.some((a: any) => a.severity === 'CRITICAL'))
+    .slice(0, 3)
+
+  const message = {
+    text: `🚨 SEO Alert: ${criticalCount} critical, ${highCount} high priority issues`,
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: '🚨 Daily SEO Health Report',
+          emoji: true,
+        },
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*Critical Issues:*\n${criticalCount}`,
+          },
+          {
+            type: 'mrkdwn',
+            text: `*High Priority:*\n${highCount}`,
+          },
+          {
+            type: 'mrkdwn',
+            text: `*Improvements:*\n${report.improvements} ✅`,
+          },
+          {
+            type: 'mrkdwn',
+            text: `*Total Products:*\n${report.totalProducts}`,
+          },
+        ],
+      },
+      ...(criticalProducts.length > 0
+        ? [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `*🔴 Top Issues:*\n${criticalProducts
+                  .map((p: any) => {
+                    const alert = p.alerts.find((a: any) => a.severity === 'CRITICAL')
+                    return `• *${p.productName}*: ${alert?.suggestion}`
+                  })
+                  .join('\n')}`,
+              },
+            },
+          ]
+        : []),
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'View Full Report',
+              emoji: true,
+            },
+            url: 'https://gangrunprinting.com/admin/seo/performance',
+            style: 'primary',
+          },
+        ],
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(message),
+    })
+
+    if (response.ok) {
+      console.log('✅ Slack alert sent successfully')
+    } else {
+      console.error('❌ Slack alert failed:', await response.text())
+    }
+  } catch (error) {
+    console.error('❌ Failed to send Slack alert:', error)
+  }
+}
+
 async function main() {
   console.log('🔍 Starting daily SEO health check...')
   console.log(`📅 Date: ${new Date().toISOString()}`)
@@ -203,12 +305,12 @@ async function main() {
     console.log(`   - Medium issues: ${report.mediumIssues}`)
     console.log(`   - Improvements: ${report.improvements}`)
 
-    // Send email if action needed
+    // Send notifications if action needed
     if (report.criticalIssues > 0 || report.highIssues > 0) {
-      console.log('\n📧 Sending alert email...')
-      await sendSEOAlertEmail(report)
+      console.log('\n📧 Sending notifications...')
+      await Promise.all([sendSEOAlertEmail(report), sendSlackAlert(report)])
     } else {
-      console.log('\n✅ No critical issues - email not sent')
+      console.log('\n✅ No critical issues - notifications not sent')
     }
 
     console.log('\n✨ Daily SEO check complete!')

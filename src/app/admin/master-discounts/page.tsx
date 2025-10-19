@@ -138,7 +138,7 @@ export default function MasterDiscountsPage() {
                 have custom discounts on their account page.
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="text-sm">
+            <Badge className="text-sm" variant="secondary">
               {totalWithDiscounts} of {categories.length} with discounts
             </Badge>
           </div>
@@ -187,7 +187,7 @@ export default function MasterDiscountsPage() {
                           <div className="flex items-center gap-2">
                             {category.name}
                             {edited && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge className="text-xs" variant="outline">
                                 Unsaved
                               </Badge>
                             )}
@@ -201,24 +201,24 @@ export default function MasterDiscountsPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.5"
-                              value={currentDiscount}
-                              onChange={(e) => handleDiscountChange(category.id, e.target.value)}
                               className={`w-24 text-right ${edited ? 'border-orange-500' : ''}`}
                               disabled={isSaving}
+                              max="100"
+                              min="0"
+                              step="0.5"
+                              type="number"
+                              value={currentDiscount}
+                              onChange={(e) => handleDiscountChange(category.id, e.target.value)}
                             />
                             <Percent className="h-4 w-4 text-muted-foreground" />
                           </div>
                         </TableCell>
                         <TableCell>
                           <Button
+                            disabled={isSaving || !edited}
                             size="sm"
                             variant={edited ? 'default' : 'outline'}
                             onClick={() => handleSave(category)}
-                            disabled={isSaving || !edited}
                           >
                             {isSaving ? (
                               <Loader2 className="h-4 w-4 animate-spin" />

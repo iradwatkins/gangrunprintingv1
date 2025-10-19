@@ -41,6 +41,7 @@ import {
 import { VendorAssignment } from '@/components/admin/vendor-assignment'
 import { OrderFilesManager } from '@/components/admin/files/order-files-manager'
 import { CollapsibleSection } from '@/components/admin/collapsible-section'
+import { EditableTracking } from '@/components/admin/orders/editable-tracking'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -64,6 +65,17 @@ async function getOrder(id: string) {
       },
     },
   })
+
+  // Fetch airport if selectedAirportId exists
+  let airport = null
+  if (order?.selectedAirportId) {
+    airport = await prisma.airport.findUnique({
+      where: { id: order.selectedAirportId },
+    })
+  }
+
+  // Attach airport to order
+  ;(order as any).Airport = airport
 
   // Get product category vendors for automatic assignment
   if (order && order.OrderItem.length > 0) {
@@ -256,8 +268,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href="/admin/orders"
             className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+            href="/admin/orders"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -308,10 +320,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <CollapsibleSection
-            title="Order Items"
+            defaultOpen={true}
             description="Products in this order"
             icon={<Package className="h-5 w-5" />}
-            defaultOpen={true}
+            title="Order Items"
           >
             <div>
               <Table>
@@ -390,9 +402,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Customer Information */}
           <CollapsibleSection
-            title="Customer Information"
-            icon={<User className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<User className="h-5 w-5" />}
+            title="Customer Information"
           >
             <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -404,8 +416,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   </div>
                   {order.User && (
                     <Link
-                      href={`/admin/customers/${order.User.id}`}
                       className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors mt-2"
+                      href={`/admin/customers/${order.User.id}`}
                     >
                       View Profile
                       <ChevronRight className="h-3 w-3 ml-1" />
@@ -475,10 +487,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Order Files */}
           <CollapsibleSection
-            title="Order Files & Artwork"
+            defaultOpen={true}
             description="Manage customer artwork and production files"
             icon={<FileText className="h-5 w-5" />}
-            defaultOpen={true}
+            title="Order Files & Artwork"
           >
             <OrderFilesManager orderId={order.id} />
           </CollapsibleSection>
@@ -486,9 +498,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           {/* Order Notes */}
           {order.adminNotes && (
             <CollapsibleSection
-              title="Admin Notes"
-              icon={<MessageSquare className="h-5 w-5" />}
               defaultOpen={true}
+              icon={<MessageSquare className="h-5 w-5" />}
+              title="Admin Notes"
             >
               <p className="text-sm">{order.adminNotes}</p>
             </CollapsibleSection>
@@ -499,9 +511,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="space-y-6">
           {/* Order Status */}
           <CollapsibleSection
-            title="Order Status"
-            icon={<CheckCircle className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<CheckCircle className="h-5 w-5" />}
+            title="Order Status"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -519,18 +531,18 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Vendor Assignment */}
           <CollapsibleSection
-            title="Vendor Assignment"
-            icon={<Factory className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<Factory className="h-5 w-5" />}
+            title="Vendor Assignment"
           >
             <VendorAssignment order={order} vendors={vendors} />
           </CollapsibleSection>
 
           {/* Payment Information */}
           <CollapsibleSection
-            title="Payment Information"
-            icon={<CreditCard className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<CreditCard className="h-5 w-5" />}
+            title="Payment Information"
           >
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -555,11 +567,71 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </div>
           </CollapsibleSection>
 
+          {/* Shipping & Tracking Information */}
+          <CollapsibleSection
+            defaultOpen={true}
+            icon={<Truck className="h-5 w-5" />}
+            title="Shipping & Tracking"
+          >
+            <div className="space-y-4">
+              {/* Shipping Method */}
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Shipping Method</span>
+                <span className="text-sm font-medium">
+                  {order.shippingMethod || 'Not specified'}
+                </span>
+              </div>
+
+              {/* Carrier */}
+              {order.carrier && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Carrier</span>
+                  <span className="text-sm font-medium">{order.carrier}</span>
+                </div>
+              )}
+
+              {/* Airport Pickup Location */}
+              {(order as any).Airport && (
+                <>
+                  <Separator />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Airport Pickup Location</span>
+                    </div>
+                    <div className="pl-6 space-y-1">
+                      <p className="text-sm font-medium">
+                        {(order as any).Airport.name} ({(order as any).Airport.code})
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {(order as any).Airport.city}, {(order as any).Airport.state}
+                      </p>
+                      {(order as any).Airport.address && (
+                        <p className="text-xs text-muted-foreground">
+                          {(order as any).Airport.address}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <Separator />
+
+              {/* Editable Tracking Number */}
+              <EditableTracking
+                orderId={order.id}
+                initialTrackingNumber={order.trackingNumber}
+                carrier={order.carrier}
+              />
+            </div>
+          </CollapsibleSection>
+
           {/* Order Timeline */}
           <CollapsibleSection
-            title="Order Timeline"
-            icon={<Clock className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<Clock className="h-5 w-5" />}
+            title="Order Timeline"
           >
             <div className="space-y-4">
                 {timeline.map((event, index) => {
@@ -604,9 +676,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Quick Actions */}
           <CollapsibleSection
-            title="Quick Actions"
-            icon={<Truck className="h-5 w-5" />}
             defaultOpen={true}
+            icon={<Truck className="h-5 w-5" />}
+            title="Quick Actions"
           >
             <div className="space-y-2">
               <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
@@ -616,10 +688,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Invoice
-              </div>
-              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-                <Truck className="h-4 w-4 mr-2" />
-                Update Tracking
               </div>
               {order.status !== 'CANCELLED' && order.status !== 'REFUNDED' && (
                 <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Eye } from 'lucide-react'
+import { Eye, Download, FileArchive } from 'lucide-react'
 import Link from 'next/link'
 import { OrderQuickActions } from './order-quick-actions'
 import { OrderStatusDropdown } from './order-status-dropdown'
@@ -200,21 +201,21 @@ export function OrdersTableWithBulkActions({
                     {/* Uploads (customer files) */}
                     <TableCell>
                       {customerFiles.length > 0 ? (
-                        <div className="flex flex-col gap-1">
-                          {customerFiles.map((file, idx) => (
-                            <a
-                              key={idx}
-                              className="text-xs text-blue-600 hover:underline flex items-center gap-1"
-                              download
-                              href={file.fileUrl || '#'}
-                              target="_blank"
-                              title={file.filename}
-                            >
-                              <Eye className="h-3 w-3" />
-                              {file.filename || `File ${idx + 1}`}
-                            </a>
-                          ))}
-                        </div>
+                        <Button
+                          asChild
+                          className="h-7 px-2 gap-1 cursor-pointer"
+                          size="sm"
+                          variant="outline"
+                        >
+                          <a
+                            download
+                            href={`/api/admin/orders/${order.id}/download-files`}
+                            title={`Download ${customerFiles.length} file${customerFiles.length > 1 ? 's' : ''}`}
+                          >
+                            <FileArchive className="h-3 w-3" />
+                            {customerFiles.length} {customerFiles.length === 1 ? 'file' : 'files'}
+                          </a>
+                        </Button>
                       ) : (
                         <span className="text-xs text-muted-foreground">No files</span>
                       )}

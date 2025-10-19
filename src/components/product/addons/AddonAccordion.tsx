@@ -16,13 +16,9 @@ import { useVariableData } from './hooks/useVariableData'
 import { usePerforation } from './hooks/usePerforation'
 import { useBanding } from './hooks/useBanding'
 import { useCornerRounding } from './hooks/useCornerRounding'
-import { VariableDataSection } from './components/VariableDataSection'
-import { PerforationSection } from './components/PerforationSection'
-import { BandingSection } from './components/BandingSection'
-import { CornerRoundingSection } from './components/CornerRoundingSection'
-// REMOVED: import { DesignSection } from './components/DesignSection' - Design is now a primary dropdown
-// REMOVED: import { ImageUploadSection } from './components/ImageUploadSection' - File upload moved to post-cart flow
-import { AddonCheckbox } from './components/AddonCheckbox'
+import { AddonRenderer } from './components/AddonRenderer'
+// Special section components (VariableDataSection, PerforationSection, etc.)
+// are now rendered via AddonRenderer based on displayPosition
 
 export function AddonAccordion({
   addons,
@@ -102,57 +98,101 @@ export function AddonAccordion({
 
   return (
     <div className="w-full space-y-4">
-      {/* Addons positioned ABOVE dropdown - always visible */}
+      {/* Addons positioned ABOVE dropdown - always visible (ALL addon types) */}
       {displayAddons.aboveDropdown.length > 0 && (
         <div className="space-y-2">
           {displayAddons.aboveDropdown.map((addon) => (
-            <AddonCheckbox
+            <AddonRenderer
               key={addon.id}
               addon={addon}
-              checked={selectedAddons.includes(addon.id)}
+              bandingConfig={{
+                enabled: banding.enabled,
+                bandingType: banding.bandingType,
+                itemsPerBundle: banding.itemsPerBundle,
+              }}
+              cornerRoundingConfig={{
+                enabled: cornerRounding.enabled,
+                cornerType: cornerRounding.cornerType,
+              }}
               disabled={disabled}
-              onToggle={handleAddonToggle}
+              perforationConfig={{
+                enabled: perforation.enabled,
+                verticalCount: perforation.verticalCount,
+                verticalPosition: perforation.verticalPosition,
+                horizontalCount: perforation.horizontalCount,
+                horizontalPosition: perforation.horizontalPosition,
+              }}
+              quantity={quantity}
+              selectedAddons={selectedAddons}
+              variableDataConfig={{
+                enabled: variableData.enabled,
+                locationsCount: variableData.locationsCount,
+                locations: variableData.locations,
+              }}
+              onAddonToggle={handleAddonToggle}
+              onBandingItemsPerBundleChange={banding.handleItemsPerBundleChange}
+              onBandingToggle={banding.handleToggle}
+              onBandingTypeChange={banding.handleBandingTypeChange}
+              onCornerRoundingToggle={cornerRounding.handleToggle}
+              onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
+              onPerforationToggle={perforation.handleToggle}
+              onPerforationUpdateConfig={perforation.handleUpdateConfig}
+              onVariableDataLocationsChange={variableData.handleLocationsChange}
+              onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
+              onVariableDataToggle={variableData.handleToggle}
             />
           ))}
         </div>
       )}
 
       {/* Main Accordion for IN dropdown items and special features */}
-      <Accordion collapsible className="w-full" type="single" defaultValue="addons">
+      <Accordion collapsible className="w-full" type="single">
         <AccordionItem value="addons">
-          <AccordionTrigger className="text-lg font-semibold">Options</AccordionTrigger>
+          <AccordionTrigger className="text-lg font-semibold">Additional Add-ons</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-6">
-              {/* Special Feature Sections */}
-              <div className="space-y-4">
-                {/* REMOVED: DesignSection - Design is now a primary dropdown in the main form */}
-
-                <VariableDataSection {...variableData} disabled={disabled} quantity={quantity} />
-
-                <PerforationSection {...perforation} disabled={disabled} quantity={quantity} />
-
-                <BandingSection {...banding} disabled={disabled} quantity={quantity} />
-
-                <CornerRoundingSection
-                  {...cornerRounding}
-                  disabled={disabled}
-                  quantity={quantity}
-                />
-
-                {/* REMOVED: ImageUploadSection - File upload moved to post-cart flow */}
-                {/* <ImageUploadSection {...imageUpload} disabled={disabled} /> */}
-              </div>
-
-              {/* Standard Addons IN Dropdown */}
+              {/* ALL Addons IN Dropdown - includes special feature sections and standard addons */}
               {displayAddons.inDropdown.length > 0 && (
-                <div className="space-y-2 border-t pt-4">
+                <div className="space-y-4">
                   {displayAddons.inDropdown.map((addon) => (
-                    <AddonCheckbox
+                    <AddonRenderer
                       key={addon.id}
                       addon={addon}
-                      checked={selectedAddons.includes(addon.id)}
+                      bandingConfig={{
+                        enabled: banding.enabled,
+                        bandingType: banding.bandingType,
+                        itemsPerBundle: banding.itemsPerBundle,
+                      }}
+                      cornerRoundingConfig={{
+                        enabled: cornerRounding.enabled,
+                        cornerType: cornerRounding.cornerType,
+                      }}
                       disabled={disabled}
-                      onToggle={handleAddonToggle}
+                      perforationConfig={{
+                        enabled: perforation.enabled,
+                        verticalCount: perforation.verticalCount,
+                        verticalPosition: perforation.verticalPosition,
+                        horizontalCount: perforation.horizontalCount,
+                        horizontalPosition: perforation.horizontalPosition,
+                      }}
+                      quantity={quantity}
+                      selectedAddons={selectedAddons}
+                      variableDataConfig={{
+                        enabled: variableData.enabled,
+                        locationsCount: variableData.locationsCount,
+                        locations: variableData.locations,
+                      }}
+                      onAddonToggle={handleAddonToggle}
+                      onBandingItemsPerBundleChange={banding.handleItemsPerBundleChange}
+                      onBandingToggle={banding.handleToggle}
+                      onBandingTypeChange={banding.handleBandingTypeChange}
+                      onCornerRoundingToggle={cornerRounding.handleToggle}
+                      onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
+                      onPerforationToggle={perforation.handleToggle}
+                      onPerforationUpdateConfig={perforation.handleUpdateConfig}
+                      onVariableDataLocationsChange={variableData.handleLocationsChange}
+                      onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
+                      onVariableDataToggle={variableData.handleToggle}
                     />
                   ))}
                 </div>
@@ -172,16 +212,48 @@ export function AddonAccordion({
         </AccordionItem>
       </Accordion>
 
-      {/* Addons positioned BELOW dropdown - always visible */}
+      {/* Addons positioned BELOW dropdown - always visible (ALL addon types) */}
       {displayAddons.belowDropdown.length > 0 && (
         <div className="space-y-2">
           {displayAddons.belowDropdown.map((addon) => (
-            <AddonCheckbox
+            <AddonRenderer
               key={addon.id}
               addon={addon}
-              checked={selectedAddons.includes(addon.id)}
+              bandingConfig={{
+                enabled: banding.enabled,
+                bandingType: banding.bandingType,
+                itemsPerBundle: banding.itemsPerBundle,
+              }}
+              cornerRoundingConfig={{
+                enabled: cornerRounding.enabled,
+                cornerType: cornerRounding.cornerType,
+              }}
               disabled={disabled}
-              onToggle={handleAddonToggle}
+              perforationConfig={{
+                enabled: perforation.enabled,
+                verticalCount: perforation.verticalCount,
+                verticalPosition: perforation.verticalPosition,
+                horizontalCount: perforation.horizontalCount,
+                horizontalPosition: perforation.horizontalPosition,
+              }}
+              quantity={quantity}
+              selectedAddons={selectedAddons}
+              variableDataConfig={{
+                enabled: variableData.enabled,
+                locationsCount: variableData.locationsCount,
+                locations: variableData.locations,
+              }}
+              onAddonToggle={handleAddonToggle}
+              onBandingItemsPerBundleChange={banding.handleItemsPerBundleChange}
+              onBandingToggle={banding.handleToggle}
+              onBandingTypeChange={banding.handleBandingTypeChange}
+              onCornerRoundingToggle={cornerRounding.handleToggle}
+              onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
+              onPerforationToggle={perforation.handleToggle}
+              onPerforationUpdateConfig={perforation.handleUpdateConfig}
+              onVariableDataLocationsChange={variableData.handleLocationsChange}
+              onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
+              onVariableDataToggle={variableData.handleToggle}
             />
           ))}
         </div>

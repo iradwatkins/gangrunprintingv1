@@ -336,15 +336,15 @@ export function CustomersTable({ customers }: CustomersTableProps) {
       {/* Edit Customer Modal */}
       {editingCustomer && (
         <EditCustomerModal
-          open={!!editingCustomer}
-          onOpenChange={(open) => {
-            if (!open) setEditingCustomer(null)
-          }}
           customer={{
             id: editingCustomer.id,
             name: editingCustomer.name,
             email: editingCustomer.email,
             phoneNumber: editingCustomer.phoneNumber,
+          }}
+          open={!!editingCustomer}
+          onOpenChange={(open) => {
+            if (!open) setEditingCustomer(null)
           }}
         />
       )}

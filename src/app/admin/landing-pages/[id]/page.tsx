@@ -221,7 +221,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       <div className="container mx-auto py-6">
         <div className="text-center">
           <p className="text-gray-500">Landing page set not found</p>
-          <Button onClick={() => router.push('/admin/landing-pages')} className="mt-4">
+          <Button className="mt-4" onClick={() => router.push('/admin/landing-pages')}>
             Back to Landing Pages
           </Button>
         </div>
@@ -253,9 +253,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
         <div className="flex items-center gap-2">
           {landingPageSet.status === 'draft' && (
             <Button
-              onClick={handlePublish}
               disabled={publishing}
               size="lg"
+              onClick={handlePublish}
             >
               {publishing ? (
                 <>
@@ -271,17 +271,17 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
             </Button>
           )}
           <Button
+            disabled={landingPageSet.status === 'published'}
             variant="outline"
             onClick={() => router.push(`/admin/landing-pages/${params.id}/edit`)}
-            disabled={landingPageSet.status === 'published'}
           >
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
           <Button
+            disabled={deleting}
             variant="destructive"
             onClick={handleDelete}
-            disabled={deleting}
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />

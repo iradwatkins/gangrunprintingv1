@@ -35,7 +35,7 @@ export function TeamSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <Link href="/" className="block">
+        <Link className="block" href="/">
           <SidebarMenuButton
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer"
             size="lg"

@@ -192,7 +192,12 @@ export function generateOrganizationSchema(siteUrl: string = 'https://gangrunpri
       addressCountry: 'US',
     },
     sameAs: [
-      // Add social media URLs here when available
+      'https://www.facebook.com/gangrunprinting',
+      'https://twitter.com/gangrunprinting',
+      'https://www.instagram.com/gangrunprinting',
+      'https://www.linkedin.com/company/gangrun-printing',
+      'https://wa.me/18774264786', // WhatsApp business
+      'sms:+18774264786', // SMS for mobile sharing
     ],
   }
 }

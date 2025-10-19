@@ -322,7 +322,7 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
 
                 <div className="space-y-2">
                   <Label htmlFor="slug">Slug *</Label>
-                  <Input required disabled id="slug" value={formData.slug} />
+                  <Input disabled required id="slug" value={formData.slug} />
                   <p className="text-xs text-muted-foreground">Cannot be changed after creation</p>
                 </div>
               </div>

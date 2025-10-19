@@ -7,7 +7,7 @@
  * Supports both existing customers and creating new customer accounts.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateRequest } from '@/lib/auth';
 import { randomBytes } from 'crypto';

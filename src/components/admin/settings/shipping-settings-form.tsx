@@ -294,7 +294,7 @@ export function ShippingSettingsForm() {
                 Configure 30+ FedEx services with intelligent packing and automatic freight detection
               </CardDescription>
             </div>
-            <Badge variant={hasApiKeys ? 'default' : 'secondary'} className="gap-1">
+            <Badge className="gap-1" variant={hasApiKeys ? 'default' : 'secondary'}>
               {hasApiKeys ? (
                 <>
                   <CheckCircle className="h-3 w-3" />
@@ -314,7 +314,7 @@ export function ShippingSettingsForm() {
             <span className="text-muted-foreground">
               {enabledCount} of {totalServices} services enabled
             </span>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button disabled={saving} onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" />
               {saving ? 'Saving...' : 'Save All Changes'}
             </Button>
@@ -355,12 +355,12 @@ export function ShippingSettingsForm() {
             <Label htmlFor="markup">Price Markup Percentage</Label>
             <Input
               id="markup"
-              type="number"
-              min="0"
               max="100"
+              min="0"
+              placeholder="0"
+              type="number"
               value={markupPercentage}
               onChange={(e) => setMarkupPercentage(Number(e.target.value))}
-              placeholder="0"
             />
             <p className="text-sm text-muted-foreground">
               Add a percentage markup to all FedEx rates (default: 0%)
@@ -392,8 +392,8 @@ export function ShippingSettingsForm() {
                   </div>
                 </div>
                 <Button
-                  variant="outline"
                   size="sm"
+                  variant="outline"
                   onClick={() => handleToggleCategory(category)}
                 >
                   {categoryEnabledCount === services.length ? 'Disable All' : 'Enable All'}
@@ -410,7 +410,7 @@ export function ShippingSettingsForm() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="font-medium">{service.name}</p>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           {service.days}
                         </Badge>
                       </div>
@@ -441,7 +441,7 @@ export function ShippingSettingsForm() {
                 <CardDescription>Airport pickup shipping (82 locations)</CardDescription>
               </div>
             </div>
-            <Badge variant="default" className="gap-1">
+            <Badge className="gap-1" variant="default">
               <CheckCircle className="h-3 w-3" />
               Enabled
             </Badge>
@@ -476,7 +476,7 @@ export function ShippingSettingsForm() {
                 <p className="text-sm text-blue-800">
                   Southwest Cargo serves 82 airports across 20+ states. Customers can pick up orders at
                   any Southwest Cargo location. View all locations at{' '}
-                  <a href="/locations" className="underline font-medium">
+                  <a className="underline font-medium" href="/locations">
                     /locations
                   </a>
                 </p>
@@ -503,7 +503,7 @@ export function ShippingSettingsForm() {
                     'MO',
                     'KS',
                   ].map((state) => (
-                    <Badge key={state} variant="secondary" className="text-xs">
+                    <Badge key={state} className="text-xs" variant="secondary">
                       {state}
                     </Badge>
                   ))}

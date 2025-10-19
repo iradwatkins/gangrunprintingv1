@@ -208,10 +208,10 @@ export default function CreateOrderPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Customer Selection */}
           <CustomerSelector
-            selectedCustomer={selectedCustomer}
             newCustomer={newCustomer}
-            onSelectExisting={setSelectedCustomer}
+            selectedCustomer={selectedCustomer}
             onCreateNew={setNewCustomer}
+            onSelectExisting={setSelectedCustomer}
           />
 
           {/* Shipping Address */}
@@ -226,8 +226,8 @@ export default function CreateOrderPage() {
             <CardContent>
               <AddressForm
                 data={shippingAddress}
-                onChange={setShippingAddress}
                 title="shipping"
+                onChange={setShippingAddress}
               />
             </CardContent>
           </Card>
@@ -242,10 +242,10 @@ export default function CreateOrderPage() {
               <CardDescription>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
-                    type="checkbox"
                     checked={useSameAddress}
-                    onChange={(e) => setUseSameAddress(e.target.checked)}
                     className="h-4 w-4"
+                    type="checkbox"
+                    onChange={(e) => setUseSameAddress(e.target.checked)}
                   />
                   Same as shipping address
                 </label>
@@ -255,8 +255,8 @@ export default function CreateOrderPage() {
               <CardContent>
                 <AddressForm
                   data={billingAddress}
-                  onChange={setBillingAddress}
                   title="billing"
+                  onChange={setBillingAddress}
                 />
               </CardContent>
             )}
@@ -309,7 +309,7 @@ export default function CreateOrderPage() {
                     ))}
                   </div>
                 )}
-                <Button variant="outline" className="w-full" disabled>
+                <Button disabled className="w-full" variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Product (Coming Soon)
                 </Button>
@@ -330,20 +330,20 @@ export default function CreateOrderPage() {
                 <Label htmlFor="adminNotes">Admin Notes (Internal Only)</Label>
                 <Textarea
                   id="adminNotes"
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Internal notes about this order..."
                   rows={3}
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
                 />
               </div>
               <div>
                 <Label htmlFor="customerNotes">Customer Notes (Visible to Customer)</Label>
                 <Textarea
                   id="customerNotes"
-                  value={customerNotes}
-                  onChange={(e) => setCustomerNotes(e.target.value)}
                   placeholder="Special instructions or notes for the customer..."
                   rows={3}
+                  value={customerNotes}
+                  onChange={(e) => setCustomerNotes(e.target.value)}
                 />
               </div>
             </CardContent>
@@ -400,11 +400,11 @@ export default function CreateOrderPage() {
                 <Label htmlFor="paymentDueDays">Payment Due (Days)</Label>
                 <Input
                   id="paymentDueDays"
+                  max={90}
+                  min={1}
                   type="number"
                   value={paymentDueDays}
                   onChange={(e) => setPaymentDueDays(parseInt(e.target.value) || 30)}
-                  min={1}
-                  max={90}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Payment will be due {paymentDueDays} days from order date
@@ -414,10 +414,10 @@ export default function CreateOrderPage() {
                 <Label htmlFor="customMessage">Custom Message (Optional)</Label>
                 <Textarea
                   id="customMessage"
-                  value={customMessage}
-                  onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="Add a custom message to the invoice email..."
                   rows={3}
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
                 />
               </div>
             </CardContent>
@@ -427,9 +427,9 @@ export default function CreateOrderPage() {
           <div className="space-y-3 sticky top-6">
             <Button
               className="w-full"
+              disabled={isSendingInvoice || isTakingPayment || orderItems.length === 0}
               size="lg"
               onClick={handleSendInvoice}
-              disabled={isSendingInvoice || isTakingPayment || orderItems.length === 0}
             >
               {isSendingInvoice ? (
                 <>
@@ -445,10 +445,10 @@ export default function CreateOrderPage() {
             </Button>
             <Button
               className="w-full"
+              disabled={isSendingInvoice || isTakingPayment || orderItems.length === 0}
               size="lg"
               variant="outline"
               onClick={handleTakePayment}
-              disabled={isSendingInvoice || isTakingPayment || orderItems.length === 0}
             >
               {isTakingPayment ? (
                 <>

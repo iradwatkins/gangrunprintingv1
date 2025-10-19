@@ -274,10 +274,10 @@ function CustomerFileItem({
               </p>
             </div>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.open(file.fileUrl, '_blank')}
               className="flex-shrink-0"
+              size="sm"
+              variant="ghost"
+              onClick={() => window.open(file.fileUrl, '_blank')}
             >
               <Download className="h-4 w-4 mr-2" />
               Download

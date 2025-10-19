@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Clock, Check } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { ProductImageGallery } from './ProductImageGallery'
@@ -13,6 +15,7 @@ import { HowItWorksSection } from './HowItWorksSection'
 import { TrustBadgesSection, TrustBadgesCompact } from './TrustBadgesSection'
 import { CitySpecificSection, getDefaultCityData } from './CitySpecificSection'
 import { ComparisonTable, getCategoryComparison } from './ComparisonTable'
+import { logViewItem } from '@/components/GoogleAnalytics'
 
 interface ProductImage {
   id: string
@@ -172,8 +175,17 @@ export default function ProductDetailClient({ product, configuration }: ProductD
     quantitiesCount: configuration?.quantities?.length || 0,
   })
 
-  // All cart logic is now handled inside SimpleQuantityTest component
-  // No state management needed in parent - cleaner architecture
+  // Track product view in Google Analytics
+  useEffect(() => {
+    if (product) {
+      logViewItem({
+        item_id: product.id,
+        item_name: product.name,
+        price: product.basePrice / 100,
+        category: product.ProductCategory?.name || 'Uncategorized',
+      })
+    }
+  }, [product])
 
   // Generate technical specs (use metadata if exists, otherwise use defaults)
   const technicalSpecs = product.metadata?.technicalSpecs
@@ -245,15 +257,6 @@ export default function ProductDetailClient({ product, configuration }: ProductD
             <TabsContent className="space-y-6" value="customize">
               {product.id ? (
                 <SimpleQuantityTest
-                  initialConfiguration={configuration}
-                  product={{
-                    id: product.id,
-                    name: product.name,
-                    slug: product.slug,
-                    productionTime: product.productionTime,
-                    ProductImage: product.ProductImage,
-                  }}
-                  productId={product.id}
                   addons={
                     configuration?.addons
                       ? configuration.addons.filter((addon: any) => {
@@ -307,6 +310,15 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                         })()
                       : { aboveDropdown: [], inDropdown: [], belowDropdown: [] }
                   }
+                  initialConfiguration={configuration}
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    productionTime: product.productionTime,
+                    ProductImage: product.ProductImage,
+                  }}
+                  productId={product.id}
                   onAddonChange={(addonId: string, selected: boolean) => {
                     // console.log('Addon changed:', addonId, selected)
                   }}

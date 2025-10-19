@@ -130,12 +130,12 @@ export function AddCustomerModal({ open, onOpenChange }: AddCustomerModalProps) 
                 Full Name <span className="text-red-500">*</span>
               </Label>
               <Input
+                required
+                disabled={loading || success}
                 id="name"
                 placeholder="John Doe"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                disabled={loading || success}
-                required
               />
             </div>
 
@@ -144,39 +144,39 @@ export function AddCustomerModal({ open, onOpenChange }: AddCustomerModalProps) 
                 Email <span className="text-red-500">*</span>
               </Label>
               <Input
+                required
+                disabled={loading || success}
                 id="email"
-                type="email"
                 placeholder="john@example.com"
+                type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={loading || success}
-                required
               />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
               <Input
+                disabled={loading || success}
                 id="phoneNumber"
-                type="tel"
                 placeholder="+1 (555) 123-4567"
+                type="tel"
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                disabled={loading || success}
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button
+              disabled={loading || success}
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              disabled={loading || success}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || success}>
+            <Button disabled={loading || success} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Customer
             </Button>

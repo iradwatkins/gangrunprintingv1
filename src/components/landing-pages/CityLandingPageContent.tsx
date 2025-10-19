@@ -56,8 +56,8 @@ export function CityLandingPageContent({
             🎉 Special {landingPageSet.discountPercent}% Discount for {city.name} Customers - Limited Time!
           </p>
           <button
-            onClick={() => setShowDiscount(false)}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-200"
+            onClick={() => setShowDiscount(false)}
           >
             ✕
           </button>
@@ -71,9 +71,9 @@ export function CityLandingPageContent({
             <div>
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                <a href="/" className="hover:text-blue-600">Home</a>
+                <a className="hover:text-blue-600" href="/">Home</a>
                 <span>/</span>
-                <a href="/products" className="hover:text-blue-600">Products</a>
+                <a className="hover:text-blue-600" href="/products">Products</a>
                 <span>/</span>
                 <span className="text-gray-900">{city.name}, {city.stateCode}</span>
               </div>
@@ -114,16 +114,16 @@ export function CityLandingPageContent({
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
-                  size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg"
+                  size="lg"
                   onClick={handleOrderNow}
                 >
                   Get Started - Order Now
                 </Button>
                 <Button
+                  className="px-8 py-6 text-lg"
                   size="lg"
                   variant="outline"
-                  className="px-8 py-6 text-lg"
                   onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Learn More
@@ -259,7 +259,7 @@ export function CityLandingPageContent({
 
       {/* FAQ Section */}
       {cityLandingPage.faqSchema && Array.isArray(cityLandingPage.faqSchema) && cityLandingPage.faqSchema.length > 0 && (
-        <section id="faq" className="py-12 px-4 bg-white">
+        <section className="py-12 px-4 bg-white" id="faq">
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
               Frequently Asked Questions
@@ -269,8 +269,8 @@ export function CityLandingPageContent({
                 <Card key={index} className="border-2 hover:border-blue-200 transition-colors">
                   <CardContent className="p-6">
                     <button
-                      onClick={() => setOpenFaq(openFaq === index ? null : index)}
                       className="w-full flex items-center justify-between text-left"
+                      onClick={() => setOpenFaq(openFaq === index ? null : index)}
                     >
                       <h3 className="text-lg font-bold text-gray-900 pr-4">
                         {faq.question}
@@ -304,8 +304,8 @@ export function CityLandingPageContent({
             Order your professional printing today and see the difference quality makes
           </p>
           <Button
-            size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 text-xl"
+            size="lg"
             onClick={handleOrderNow}
           >
             Order Now - Fast & Easy

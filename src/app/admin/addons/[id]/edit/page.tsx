@@ -278,8 +278,8 @@ export default function EditAddonPage({ params }: { params: Promise<{ id: string
                     <Label htmlFor="percentage">Percentage (%)</Label>
                     <Input
                       id="percentage"
-                      min="-100"
                       max="100"
+                      min="-100"
                       step="0.1"
                       type="number"
                       value={formData.percentage}

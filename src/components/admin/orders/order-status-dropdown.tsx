@@ -114,8 +114,8 @@ export function OrderStatusDropdown({
   if (isLoading || !currentStatusDetails) {
     return (
       <Button
-        className="h-9 w-9 rounded-full bg-gray-300 hover:bg-gray-400 p-0"
         disabled
+        className="h-9 w-9 rounded-full bg-gray-300 hover:bg-gray-400 p-0"
         size="sm"
         variant="ghost"
       >

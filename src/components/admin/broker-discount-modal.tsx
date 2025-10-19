@@ -184,7 +184,7 @@ export function BrokerDiscountModal({
           <CardContent>
             <div className="flex gap-2 items-end">
               <div className="flex-1">
-                <Label htmlFor="defaultDiscount" className="text-xs font-medium mb-1.5 block">
+                <Label className="text-xs font-medium mb-1.5 block" htmlFor="defaultDiscount">
                   Default Discount (%)
                 </Label>
                 <Input

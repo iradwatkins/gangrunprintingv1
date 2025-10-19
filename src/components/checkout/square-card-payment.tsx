@@ -361,25 +361,25 @@ export function SquareCardPayment({
               <label className="block text-sm font-medium">Select Payment Method</label>
               <div className="grid grid-cols-2 gap-4">
                 <button
-                  onClick={() => setPaymentMethod('card')}
-                  disabled={!card}
                   className={`p-4 border-2 rounded-lg font-semibold transition-all ${
                     paymentMethod === 'card'
                       ? 'border-blue-600 bg-blue-50 text-blue-700'
                       : 'border-gray-300 hover:border-gray-400'
                   } ${!card ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={!card}
+                  onClick={() => setPaymentMethod('card')}
                 >
                   <CreditCard className="h-5 w-5 mx-auto mb-2" />
                   Credit Card
                 </button>
                 <button
-                  onClick={() => setPaymentMethod('cashapp')}
-                  disabled={!cashAppPay}
                   className={`p-4 border-2 rounded-lg font-semibold transition-all ${
                     paymentMethod === 'cashapp'
                       ? 'border-green-600 bg-green-50 text-green-700'
                       : 'border-gray-300 hover:border-gray-400'
                   } ${!cashAppPay ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={!cashAppPay}
+                  onClick={() => setPaymentMethod('cashapp')}
                 >
                   💚 Cash App Pay
                 </button>

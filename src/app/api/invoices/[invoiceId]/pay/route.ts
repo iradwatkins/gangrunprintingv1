@@ -6,7 +6,7 @@
  * Creates Square payment link for invoice payment
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createSquareCheckout } from '@/lib/square';
 

@@ -139,6 +139,20 @@ const data = {
       title: 'Analytics',
       url: '/admin/analytics',
       icon: BarChart3,
+      items: [
+        {
+          title: 'Overview',
+          url: '/admin/analytics',
+        },
+        {
+          title: 'SEO Performance',
+          url: '/admin/seo/performance',
+        },
+        {
+          title: '🤖 Crawler Activity',
+          url: '/admin/seo/crawlers',
+        },
+      ],
     },
     {
       title: 'Marketing & Automation',

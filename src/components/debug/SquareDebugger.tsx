@@ -64,8 +64,8 @@ export default function SquareDebugger() {
       <div className="flex justify-between items-start mb-2">
         <div className="font-bold text-lg">🔍 Square Debug</div>
         <button
-          onClick={() => setShowDetails(!showDetails)}
           className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600"
+          onClick={() => setShowDetails(!showDetails)}
         >
           {showDetails ? 'Hide' : 'Show'}
         </button>
@@ -110,6 +110,7 @@ export default function SquareDebugger() {
 
           <div className="mt-3 pt-3 border-t border-gray-700">
             <button
+              className="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
               onClick={() => {
                 console.log('[Square Debug] Manual check triggered')
                 console.log('window.Square:', window.Square)
@@ -120,7 +121,6 @@ export default function SquareDebugger() {
                 })
                 alert('Check browser console for detailed logs')
               }}
-              className="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
             >
               📋 Log Details to Console
             </button>

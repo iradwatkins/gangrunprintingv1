@@ -123,8 +123,8 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
               <div className="flex items-center justify-between">
                 <span className="font-medium">{file.label || file.filename}</span>
                 <Button
-                  variant="ghost"
                   size="sm"
+                  variant="ghost"
                   onClick={() => window.open(file.fileUrl, '_blank')}
                 >
                   <Download className="h-4 w-4 mr-1" />
@@ -165,7 +165,7 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">{message.authorName}</span>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge className="text-xs" variant="outline">
                       {message.authorRole}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
@@ -184,11 +184,11 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
         {/* New Message Input */}
         <div className="space-y-2 pt-4">
           <Textarea
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            disabled={sending}
             placeholder="Type your message..."
             rows={3}
-            disabled={sending}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.ctrlKey) {
                 handleSendMessage();
@@ -197,7 +197,7 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
           />
           <div className="flex justify-between items-center">
             <p className="text-xs text-muted-foreground">Press Ctrl+Enter to send</p>
-            <Button onClick={handleSendMessage} disabled={!newMessage.trim() || sending} size="sm">
+            <Button disabled={!newMessage.trim() || sending} size="sm" onClick={handleSendMessage}>
               <Send className="h-4 w-4 mr-2" />
               Send
             </Button>

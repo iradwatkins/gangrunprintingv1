@@ -136,12 +136,12 @@ export function EditCustomerModal({ open, onOpenChange, customer }: EditCustomer
                 Full Name <span className="text-red-500">*</span>
               </Label>
               <Input
+                required
+                disabled={loading || success}
                 id="edit-name"
                 placeholder="John Doe"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                disabled={loading || success}
-                required
               />
             </div>
 
@@ -150,13 +150,13 @@ export function EditCustomerModal({ open, onOpenChange, customer }: EditCustomer
                 Email <span className="text-red-500">*</span>
               </Label>
               <Input
+                required
+                disabled={loading || success}
                 id="edit-email"
-                type="email"
                 placeholder="john@example.com"
+                type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={loading || success}
-                required
               />
               <p className="text-xs text-muted-foreground">
                 Changing email will require the customer to re-verify their account
@@ -166,26 +166,26 @@ export function EditCustomerModal({ open, onOpenChange, customer }: EditCustomer
             <div className="grid gap-2">
               <Label htmlFor="edit-phoneNumber">Phone Number (Optional)</Label>
               <Input
+                disabled={loading || success}
                 id="edit-phoneNumber"
-                type="tel"
                 placeholder="+1 (555) 123-4567"
+                type="tel"
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                disabled={loading || success}
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button
+              disabled={loading || success}
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={loading || success}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || success}>
+            <Button disabled={loading || success} type="submit">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </Button>

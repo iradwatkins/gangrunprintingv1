@@ -278,7 +278,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
               <>
                 <Separator />
                 <div className="text-center space-y-4 pt-4">
-                  <PayInvoiceButton invoiceId={invoiceId} amount={invoice.order.total} />
+                  <PayInvoiceButton amount={invoice.order.total} invoiceId={invoiceId} />
                   <p className="text-xs text-muted-foreground">
                     Secure payment powered by Square
                   </p>
@@ -292,7 +292,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         <div className="text-center text-sm text-muted-foreground space-y-2">
           <p>
             Questions? Contact us at{' '}
-            <a href="mailto:billing@gangrunprinting.com" className="text-primary hover:underline">
+            <a className="text-primary hover:underline" href="mailto:billing@gangrunprinting.com">
               billing@gangrunprinting.com
             </a>
           </p>

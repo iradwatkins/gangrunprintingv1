@@ -3,7 +3,7 @@
  * Comprehensive types for enhanced FedEx integration
  */
 
-import { Carrier } from '@prisma/client'
+import { type Carrier } from '@prisma/client'
 import type { FedExService } from './services'
 import type { FedExBox } from './box-definitions'
 

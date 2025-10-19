@@ -318,12 +318,12 @@ export default function EmailPreviewClient() {
       </div>
 
       {/* Category Tabs */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
+      <Tabs className="mb-8" value={selectedCategory} onValueChange={setSelectedCategory}>
         <TabsList className="grid w-full grid-cols-5">
           {categories.map((cat) => (
-            <TabsTrigger key={cat.value} value={cat.value} className="flex items-center gap-2">
+            <TabsTrigger key={cat.value} className="flex items-center gap-2" value={cat.value}>
               {cat.label}
-              <Badge variant="secondary" className="ml-1">
+              <Badge className="ml-1" variant="secondary">
                 {cat.count}
               </Badge>
             </TabsTrigger>
@@ -345,7 +345,7 @@ export default function EmailPreviewClient() {
               <CardDescription>{template.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={() => handlePreview(template)} className="w-full">
+              <Button className="w-full" onClick={() => handlePreview(template)}>
                 Preview Email
               </Button>
             </CardContent>
@@ -362,10 +362,10 @@ export default function EmailPreviewClient() {
           </DialogHeader>
           <div className="mt-4 border rounded-lg overflow-hidden">
             <iframe
-              srcDoc={previewHtml}
               className="w-full min-h-[600px]"
-              title="Email Preview"
+              srcDoc={previewHtml}
               style={{ border: 'none' }}
+              title="Email Preview"
             />
           </div>
         </DialogContent>

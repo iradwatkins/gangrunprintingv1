@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { CityLandingPageContent } from '@/components/landing-pages/CityLandingPageContent'
@@ -158,15 +158,15 @@ export default async function CityLandingPage({ params }: PageProps) {
     <>
       {/* Schema Markup - Critical for Google Rich Results */}
       <script
-        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+        type="application/ld+json"
       />
 
       {/* Main Content */}
       <CityLandingPageContent
+        city={cityLandingPage.City}
         cityLandingPage={cityLandingPage}
         landingPageSet={cityLandingPage.LandingPageSet!}
-        city={cityLandingPage.City}
       />
     </>
   )

@@ -143,9 +143,9 @@ export function IntegrationSettingsForm() {
               onChange={(e) => setSettings({ ...settings, resendApiKey: e.target.value })}
             />
             <Button
+              size="icon"
               type="button"
               variant="outline"
-              size="icon"
               onClick={() => setShowResendKey(!showResendKey)}
             >
               {showResendKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

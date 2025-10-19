@@ -455,10 +455,56 @@ The project is on track to meet its objectives of creating a comprehensive, scal
 
 ---
 
-_Last Updated_: September 15, 2025
+_Last Updated_: October 19, 2025
 _Architecture Review Completed_: September 15, 2025
 _Next Review_: After Epic 5 & 6 completion
 _BMad Method Compliance_: 100%
+
+---
+
+## Recent Updates
+
+### 2025-10-19: Dedicated Cart Page with Artwork Upload
+
+**Change**: Created dedicated `/cart` page with drag-and-drop file upload
+**Files Created**:
+- `/src/app/(customer)/cart/page.tsx` - Full cart page with upload section
+
+**Files Modified**:
+- `/src/components/product/AddToCartSection.tsx` - Redirect to /cart instead of opening drawer
+- `/src/contexts/cart-context.tsx` - Removed auto-open drawer on ADD_ITEM action
+
+**New Flow**:
+```
+Product Page → Add to Cart → /cart Page (with upload) → Checkout
+```
+
+**Features Implemented**:
+- ✅ Full cart page with responsive layout
+- ✅ Drag & drop artwork upload section (ArtworkUpload component)
+- ✅ Cart items display with quantity controls
+- ✅ Shipping rate preview and selection
+- ✅ Order summary (subtotal, tax, shipping, total)
+- ✅ sessionStorage integration for uploaded files
+- ✅ "Proceed to Checkout" button
+- ✅ Empty cart state with "Browse Products" CTA
+
+**Reason**: Better UX for file uploads - drawer too small for drag-and-drop interface
+**Impact**: Improved upload experience, clearer order review process, standard e-commerce pattern
+
+**Deployment**:
+- ✅ Build Status: Successful (no TypeScript errors)
+- ✅ Route Created: `/cart` - 7.64 kB (First Load: 137 kB)
+- ✅ Deployed to Production: 2025-10-19 15:10 CST
+- ✅ Docker Container: gangrunprinting_app restarted successfully
+- ✅ Live URL: https://gangrunprinting.com/cart
+
+### 2025-10-19: Cart Drawer UX Enhancement
+
+**Change**: Reordered shipping estimate to display above checkout button
+**File Modified**: `/src/components/cart/cart-drawer.tsx`
+**Reason**: Improved user experience - shipping cost visibility before checkout decision
+**Impact**: Better conversion rates expected due to transparent pricing flow
 
 ## Quick Links
 

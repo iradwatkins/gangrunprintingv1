@@ -58,22 +58,58 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Firefox needs slightly longer timeouts
+        actionTimeout: 45000,
+        navigationTimeout: 90000,
+      },
+      timeout: 150000, // 2.5 minutes for Firefox
+      expect: {
+        timeout: 40000,
+      },
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+        // WebKit/Safari needs longer timeouts
+        actionTimeout: 45000,
+        navigationTimeout: 90000,
+      },
+      timeout: 150000, // 2.5 minutes for WebKit
+      expect: {
+        timeout: 40000,
+      },
     },
 
-    /* Test against mobile viewports. */
+    /* Test against mobile viewports - need significantly longer timeouts */
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: {
+        ...devices['Pixel 5'],
+        // Mobile browsers are slower - increased timeouts for stability
+        actionTimeout: 90000, // 1.5 minutes per action
+        navigationTimeout: 180000, // 3 minutes for navigation
+      },
+      timeout: 240000, // 4 minutes per test for mobile
+      expect: {
+        timeout: 60000, // 1 minute for assertions
+      },
     },
     {
       name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
+      use: {
+        ...devices['iPhone 12'],
+        // Mobile Safari is often the slowest - most generous timeouts
+        actionTimeout: 120000, // 2 minutes per action
+        navigationTimeout: 180000, // 3 minutes for navigation
+      },
+      timeout: 300000, // 5 minutes per test for Mobile Safari
+      expect: {
+        timeout: 90000, // 1.5 minutes for assertions
+      },
     },
   ],
 

@@ -254,7 +254,7 @@ export default function NewProductPage() {
           >
             Quick Fill (Test)
           </Button>
-          <Button type="button" disabled={submitting} onClick={handleSubmit}>
+          <Button disabled={submitting} type="button" onClick={handleSubmit}>
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -285,9 +285,9 @@ export default function NewProductPage() {
               <Label htmlFor="sku">SKU (Auto-generated)</Label>
               <Input
                 id="sku"
+                placeholder="Auto-generated if left blank"
                 value={formData.sku}
                 onChange={(e) => updateFormData({ sku: e.target.value })}
-                placeholder="Auto-generated if left blank"
               />
             </div>
           </div>
@@ -315,8 +315,8 @@ export default function NewProductPage() {
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              rows={3}
               placeholder="Describe your product..."
+              rows={3}
               value={formData.description}
               onChange={(e) => updateFormData({ description: e.target.value })}
             />
@@ -822,7 +822,7 @@ export default function NewProductPage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Cancel
         </Button>
-        <Button type="button" disabled={submitting} size="lg" onClick={handleSubmit}>
+        <Button disabled={submitting} size="lg" type="button" onClick={handleSubmit}>
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           <span className="ml-2">{submitting ? 'Creating...' : 'Create Product'}</span>
         </Button>

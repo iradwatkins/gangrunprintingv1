@@ -49,10 +49,12 @@ interface SimpleQuantityTestProps {
   initialConfiguration?: any // Pre-fetched configuration from server
   addons?: Addon[] // Optional addons to display
   onAddonChange?: (addonId: string, selected: boolean) => void
+  uploadedFiles?: any[] // Artwork files uploaded by user
 }
 
 export default function SimpleQuantityTest({
   productId,
+  uploadedFiles = [],
   product,
   initialConfiguration,
   addons = [],
@@ -138,7 +140,7 @@ export default function SimpleQuantityTest({
     const timeoutId = setTimeout(() => {
       if (mounted && loading) {
         console.error('[SimpleQuantityTest] TIMEOUT - fetch took too long')
-        setError('Request timed out after 10 seconds')
+        setError('Request timed out after 10 seconds. The server may be experiencing high load. Please try again.')
         setLoading(false)
       }
     }, 10000) // 10 second timeout
@@ -193,7 +195,22 @@ export default function SimpleQuantityTest({
         if (!mounted) return
 
         console.error('[SimpleQuantityTest] FETCH ERROR:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load configuration')
+
+        // Provide more specific error messages
+        let errorMessage = 'Failed to load product configuration'
+        if (err instanceof Error) {
+          if (err.name === 'AbortError') {
+            errorMessage = 'Request timed out. The server took too long to respond.'
+          } else if (err.message.includes('HTTP')) {
+            errorMessage = `Server error: ${err.message}. Please try again.`
+          } else if (err.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error. Please check your internet connection.'
+          } else {
+            errorMessage = err.message
+          }
+        }
+
+        setError(errorMessage)
         setLoading(false)
         clearTimeout(timeoutId)
       }
@@ -215,11 +232,50 @@ export default function SimpleQuantityTest({
   const memoizedTurnaroundTimes = useMemo(() => turnaroundTimes, [turnaroundTimes.length])
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading quantities...</div>
+    return <div className="p-4 text-gray-500" data-testid="product-configuration-loading">Loading quantities...</div>
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>
+    return (
+      <div className="p-6 border border-red-200 rounded-lg bg-red-50" data-testid="product-configuration-error">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-medium text-red-800">Unable to Load Product Configuration</h3>
+            <p className="mt-1 text-sm text-red-700">{error}</p>
+            <div className="mt-2 text-xs text-red-600">
+              {error.includes('timed out') && (
+                <p>The server is taking longer than expected. This may be due to high traffic.</p>
+              )}
+              {error.includes('Network error') && (
+                <p>Please check your internet connection and try again.</p>
+              )}
+              {error.includes('Server error') && (
+                <p>Our server encountered an issue. Please try again in a moment.</p>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setError('')
+                setLoading(true)
+                window.location.reload()
+              }}
+              className="mt-3 inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              data-testid="retry-button"
+            >
+              <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (memoizedQuantities.length === 0) {
@@ -431,7 +487,7 @@ export default function SimpleQuantityTest({
     selectedTurnaround
   )
 
-  // Handle Add to Cart - Navigate to upload page instead of opening cart drawer
+  // Handle Add to Cart - Navigate to /cart page instead of opening drawer
   const handleAddToCart = () => {
     if (!isConfigurationComplete) {
       toast.error('Please complete your product configuration')
@@ -463,6 +519,8 @@ export default function SimpleQuantityTest({
       sku: `${product.slug}-${selectedQuantity || customQuantity}-${Date.now()}`,
       price: totalPrice / (finalQuantity || 1), // Price PER UNIT (cart will multiply by quantity)
       quantity: finalQuantity || 1,
+      categoryId: product.ProductCategory?.id || undefined,
+      categoryName: product.ProductCategory?.name || undefined,
       turnaround: selectedTurnaroundObj
         ? {
             id: selectedTurnaroundObj.id,
@@ -506,17 +564,23 @@ export default function SimpleQuantityTest({
       },
       paperStockWeight: paperWeight,
       image: imageUrl,
+      // Artwork files
+      artworkFiles: uploadedFiles.map(file => ({
+        id: file.id,
+        name: file.file.name,
+        preview: file.preview,
+        url: file.url,
+        type: file.file.type,
+        size: file.file.size
+      }))
     }
 
     try {
-      // Clear cart first (single product model)
-      clearCart()
-      // Add new item
+      // Add item to cart (supports multiple products)
       addItem(cartItem)
-      toast.success('Product configured! Proceeding to upload artwork...')
-
-      // Navigate to upload artwork page instead of opening cart drawer
-      router.push('/cart/upload-artwork')
+      toast.success('Product added to cart!')
+      // Navigate to checkout page
+      router.push('/checkout')
     } catch (error) {
       toast.error('Failed to add product to cart')
       console.error('Add to cart error:', error)
@@ -524,7 +588,7 @@ export default function SimpleQuantityTest({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="product-configuration">
       {/* Quantity */}
       <div>
         <Label className="text-sm font-semibold uppercase">QUANTITY</Label>
@@ -535,7 +599,7 @@ export default function SimpleQuantityTest({
             setCustomQuantity('') // Reset custom when changing selection
           }}
         >
-          <SelectTrigger className="w-full mt-2">
+          <SelectTrigger className="w-full mt-2" data-testid="quantity-select">
             <SelectValue placeholder="Select quantity" />
           </SelectTrigger>
           <SelectContent>
@@ -579,7 +643,7 @@ export default function SimpleQuantityTest({
               setCustomHeight('')
             }}
           >
-            <SelectTrigger className="w-full mt-2">
+            <SelectTrigger className="w-full mt-2" data-testid="size-select">
               <SelectValue placeholder="Select size" />
             </SelectTrigger>
             <SelectContent>
@@ -634,6 +698,7 @@ export default function SimpleQuantityTest({
           <Label className="text-sm font-semibold uppercase">PAPER STOCK</Label>
           <Select
             value={selectedPaper}
+            data-testid="paper-stock-select"
             onValueChange={(value) => {
               setSelectedPaper(value)
               // Reset coating and sides when paper changes
@@ -661,7 +726,7 @@ export default function SimpleQuantityTest({
         <div>
           <Label className="text-sm font-semibold uppercase">COATING</Label>
           <Select value={selectedCoating} onValueChange={setSelectedCoating}>
-            <SelectTrigger className="w-full mt-2 text-foreground">
+            <SelectTrigger className="w-full mt-2 text-foreground" data-testid="coating-select">
               <SelectValue className="text-foreground" placeholder="Select coating" />
             </SelectTrigger>
             <SelectContent className="bg-background">
@@ -680,7 +745,7 @@ export default function SimpleQuantityTest({
         <div>
           <Label className="text-sm font-semibold uppercase">SIDES</Label>
           <Select value={selectedSides} onValueChange={setSelectedSides}>
-            <SelectTrigger className="w-full mt-2 text-foreground">
+            <SelectTrigger className="w-full mt-2 text-foreground" data-testid="sides-select">
               <SelectValue className="text-foreground" placeholder="Select sides" />
             </SelectTrigger>
             <SelectContent className="bg-background">
@@ -716,7 +781,7 @@ export default function SimpleQuantityTest({
               {designOptions.map((option: any) => {
                 // Format label based on design option type - match exact specification
                 let label = option.name
-                let price = calculateDesignPrice(option)
+                const price = calculateDesignPrice(option)
 
                 // Add price to Minor/Major changes in dropdown label
                 if (option.id === 'design_minor_changes') {
@@ -805,9 +870,12 @@ export default function SimpleQuantityTest({
       {memoizedTurnaroundTimes.length > 0 && (
         <div>
           <Label className="text-sm font-semibold uppercase mb-3 block">TURNAROUND TIME</Label>
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="turnaround-select">
             {memoizedTurnaroundTimes.map((turnaround) => {
               const turnaroundPrice = calculateTurnaroundPrice(turnaround)
+              const addonPrice = calculateAddonPrice()
+              const designPrice = getSelectedDesignPrice()
+              const totalWithAddonsAndDesign = turnaroundPrice + addonPrice + designPrice
               return (
                 <label
                   key={turnaround.id}
@@ -816,6 +884,7 @@ export default function SimpleQuantityTest({
                   <input
                     checked={selectedTurnaround === turnaround.id}
                     className="w-4 h-4 text-primary focus:ring-2 focus:ring-primary"
+                    data-testid="turnaround-option"
                     name="turnaround"
                     type="radio"
                     value={turnaround.id}
@@ -831,7 +900,7 @@ export default function SimpleQuantityTest({
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-lg text-green-700">
-                      ${turnaroundPrice.toFixed(2)}
+                      ${totalWithAddonsAndDesign.toFixed(2)}
                     </div>
                     {turnaround.priceMultiplier !== 1 || turnaround.basePrice > 0 ? (
                       <div className="text-xs text-gray-500">
@@ -862,6 +931,7 @@ export default function SimpleQuantityTest({
           className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6"
           size="lg"
           onClick={handleAddToCart}
+          data-testid="add-to-cart-button"
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
           Continue to Upload Artwork

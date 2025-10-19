@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       await initializeBuckets().catch(console.error)
     }
 
+    // Get user session if available (but don't require it for customer uploads)
     const { user, session } = await validateRequest()
 
     // Get form data
@@ -85,14 +86,29 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Generate file ID and URLs for response
+    const fileId = randomUUID()
+    const baseUrl = process.env.MINIO_PUBLIC_ENDPOINT || `http://localhost:9002`
+    const fileUrl = `${baseUrl}/${BUCKETS.UPLOADS}/${objectPath}`
+    const thumbnailUrl = file.type.startsWith('image/') ? fileUrl : null
+
     return NextResponse.json({
       success: true,
-      path: objectPath,
-      filename: file.name,
+      fileId,
+      url: fileUrl,
+      thumbnailUrl,
+      fileName: file.name,
       size: file.size,
+      mimeType: file.type,
+      path: objectPath,
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
+    console.error('Upload error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({
+      error: 'Failed to upload file',
+      details: errorMessage
+    }, { status: 500 })
   }
 }
 

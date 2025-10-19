@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     icon: '/favicon-100x100.png',
     apple: '/gangrunprinting_logo_new_1448921366__42384-200x200.png',
   },
+  verification: {
+    other: {
+      'msvalidate.01': '19980A99065099539727B74085BF9DB9',
+    },
+  },
 }
 
 export const viewport: Viewport = {
@@ -50,6 +55,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script
           src={squareSdkUrl}
           strategy="beforeInteractive"
+        />
+
+        {/* Ahrefs Web Analytics - Track backlinks, LLM traffic, and referrers */}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="xmoVXl4/lDVkojG39HWDvQ"
+          strategy="afterInteractive"
         />
       </head>
       <body className={`${inter.variable} font-sans`}>

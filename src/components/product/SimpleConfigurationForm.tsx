@@ -1154,11 +1154,23 @@ export default function SimpleConfigurationForm({
               <SelectValue placeholder="Select design option" />
             </SelectTrigger>
             <SelectContent>
-              {configData.designOptions.map((designOption) => (
-                <SelectItem key={designOption.id} value={designOption.id}>
-                  {designOption.name}
-                </SelectItem>
-              ))}
+              {configData.designOptions.map((designOption) => {
+                // Format label based on design option type - match exact specification
+                let label = designOption.name
+
+                // Add price to Minor/Major changes in dropdown label
+                if (designOption.id === 'design_minor_changes') {
+                  label = 'Design Changes - Minor 25'
+                } else if (designOption.id === 'design_major_changes') {
+                  label = 'Design Changes - Major 75.00'
+                }
+
+                return (
+                  <SelectItem key={designOption.id} value={designOption.id}>
+                    {label}
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
 
@@ -1182,12 +1194,10 @@ export default function SimpleConfigurationForm({
                     return (
                       <>
                         <SelectItem value="oneSide">
-                          One Side: $
-                          {selectedDesign.sideOptions.oneSide.price.toFixed(2)}
+                          One Side Price ($) {selectedDesign.sideOptions.oneSide.price.toFixed(0)}
                         </SelectItem>
                         <SelectItem value="twoSides">
-                          Two Sides: $
-                          {selectedDesign.sideOptions.twoSides.price.toFixed(2)}
+                          Two Sides Price ($) {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
                         </SelectItem>
                       </>
                     )

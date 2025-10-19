@@ -36,20 +36,20 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
             Full Name <span className="text-destructive">*</span>
           </Label>
           <Input
+            required
             id={`${title}-name`}
+            placeholder="John Doe"
             value={data.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="John Doe"
-            required
           />
         </div>
         <div>
           <Label htmlFor={`${title}-company`}>Company (Optional)</Label>
           <Input
             id={`${title}-company`}
+            placeholder="Company Name"
             value={data.company || ''}
             onChange={(e) => handleChange('company', e.target.value)}
-            placeholder="Company Name"
           />
         </div>
       </div>
@@ -59,11 +59,11 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
           Street Address <span className="text-destructive">*</span>
         </Label>
         <Input
+          required
           id={`${title}-street`}
+          placeholder="123 Main St"
           value={data.street}
           onChange={(e) => handleChange('street', e.target.value)}
-          placeholder="123 Main St"
-          required
         />
       </div>
 
@@ -71,9 +71,9 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
         <Label htmlFor={`${title}-street2`}>Apt, Suite, etc. (Optional)</Label>
         <Input
           id={`${title}-street2`}
+          placeholder="Apt 4B"
           value={data.street2 || ''}
           onChange={(e) => handleChange('street2', e.target.value)}
-          placeholder="Apt 4B"
         />
       </div>
 
@@ -83,11 +83,11 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
             City <span className="text-destructive">*</span>
           </Label>
           <Input
+            required
             id={`${title}-city`}
+            placeholder="New York"
             value={data.city}
             onChange={(e) => handleChange('city', e.target.value)}
-            placeholder="New York"
-            required
           />
         </div>
         <div>
@@ -95,12 +95,12 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
             State <span className="text-destructive">*</span>
           </Label>
           <Input
+            required
             id={`${title}-state`}
+            maxLength={2}
+            placeholder="NY"
             value={data.state}
             onChange={(e) => handleChange('state', e.target.value)}
-            placeholder="NY"
-            required
-            maxLength={2}
           />
         </div>
         <div>
@@ -108,11 +108,11 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
             ZIP Code <span className="text-destructive">*</span>
           </Label>
           <Input
+            required
             id={`${title}-zipCode`}
+            placeholder="10001"
             value={data.zipCode}
             onChange={(e) => handleChange('zipCode', e.target.value)}
-            placeholder="10001"
-            required
           />
         </div>
       </div>
@@ -123,21 +123,21 @@ export function AddressForm({ data, onChange, title }: AddressFormProps) {
             Country <span className="text-destructive">*</span>
           </Label>
           <Input
+            required
             id={`${title}-country`}
+            placeholder="United States"
             value={data.country}
             onChange={(e) => handleChange('country', e.target.value)}
-            placeholder="United States"
-            required
           />
         </div>
         <div>
           <Label htmlFor={`${title}-phone`}>Phone (Optional)</Label>
           <Input
             id={`${title}-phone`}
+            placeholder="(555) 123-4567"
             type="tel"
             value={data.phone || ''}
             onChange={(e) => handleChange('phone', e.target.value)}
-            placeholder="(555) 123-4567"
           />
         </div>
       </div>

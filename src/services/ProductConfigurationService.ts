@@ -133,6 +133,11 @@ export interface DesignOption {
   basePrice: number
   isDefault: boolean
   sortOrder: number
+  // Frontend expects sideOptions in this format
+  sideOptions?: {
+    oneSide: { label: string; price: number }
+    twoSides: { label: string; price: number }
+  }
 }
 
 export interface ConfigurationDefaults {
@@ -534,15 +539,36 @@ export class ProductConfigurationService {
 
   /**
    * Fetch design options for product (flat list - backward compatibility)
+   * Transforms database format to frontend-expected format with sideOptions
    */
   private async fetchDesignOptions(productId: string): Promise<DesignOption[]> {
     try {
       const designSets = await this.fetchDesignSets(productId)
 
-      // Flatten all options from all sets
+      // Flatten all options from all sets and transform for frontend
       const allOptions: DesignOption[] = []
       designSets.forEach((set) => {
-        allOptions.push(...set.options)
+        set.options.forEach((option) => {
+          // Transform to frontend format
+          const transformedOption: DesignOption = {
+            ...option,
+            // Add sideOptions structure if this option requires side selection
+            sideOptions:
+              option.requiresSideSelection && option.sideOnePrice && option.sideTwoPrice
+                ? {
+                    oneSide: {
+                      label: 'One Side',
+                      price: option.sideOnePrice,
+                    },
+                    twoSides: {
+                      label: 'Two Sides',
+                      price: option.sideTwoPrice,
+                    },
+                  }
+                : undefined,
+          }
+          allOptions.push(transformedOption)
+        })
       })
 
       return allOptions

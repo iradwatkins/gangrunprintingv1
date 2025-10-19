@@ -19,6 +19,7 @@ import {
   AlertCircle,
   ThumbsUp,
   ThumbsDown,
+  FileArchive,
 } from 'lucide-react';
 import { FileUploadDialog } from './file-upload-dialog';
 import { FileMessageDialog } from './file-message-dialog';
@@ -35,6 +36,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import Image from 'next/image';
 
 interface OrderFile {
   id: string;
@@ -232,10 +234,24 @@ export function OrderFilesManager({ orderId }: Props) {
                 {files.length} file{files.length !== 1 ? 's' : ''} uploaded
               </CardDescription>
             </div>
-            <Button onClick={() => setUploadDialogOpen(true)} size="sm">
-              <Upload className="h-4 w-4 mr-2" />
-              Upload File
-            </Button>
+            <div className="flex items-center gap-2">
+              {files.length > 0 && (
+                <Button size="sm" variant="outline" asChild>
+                  <a
+                    download
+                    href={`/api/admin/orders/${orderId}/download-files`}
+                    title={`Download all ${files.length} files as ZIP`}
+                  >
+                    <FileArchive className="h-4 w-4 mr-2" />
+                    Download All
+                  </a>
+                </Button>
+              )}
+              <Button size="sm" onClick={() => setUploadDialogOpen(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload File
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -243,7 +259,7 @@ export function OrderFilesManager({ orderId }: Props) {
             <div className="text-center py-12 border-2 border-dashed rounded-lg">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
-              <Button onClick={() => setUploadDialogOpen(true)} variant="outline" size="sm">
+              <Button size="sm" variant="outline" onClick={() => setUploadDialogOpen(true)}>
                 <Upload className="h-4 w-4 mr-2" />
                 Upload First File
               </Button>
@@ -262,23 +278,23 @@ export function OrderFilesManager({ orderId }: Props) {
                       <FileListItem
                         key={file.id}
                         file={file}
-                        onDelete={handleDelete}
-                        onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
-                        }}
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
                         onApprove={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'APPROVED')
                             : undefined
                         }
+                        onDelete={handleDelete}
                         onReject={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'REJECTED')
                             : undefined
                         }
-                        formatFileSize={formatFileSize}
-                        getFileIcon={getFileIcon}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -299,23 +315,23 @@ export function OrderFilesManager({ orderId }: Props) {
                       <FileListItem
                         key={file.id}
                         file={file}
-                        onDelete={handleDelete}
-                        onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
-                        }}
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
                         onApprove={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'APPROVED')
                             : undefined
                         }
+                        onDelete={handleDelete}
                         onReject={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'REJECTED')
                             : undefined
                         }
-                        formatFileSize={formatFileSize}
-                        getFileIcon={getFileIcon}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -338,23 +354,23 @@ export function OrderFilesManager({ orderId }: Props) {
                       <FileListItem
                         key={file.id}
                         file={file}
-                        onDelete={handleDelete}
-                        onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
-                        }}
+                        formatFileSize={formatFileSize}
+                        getFileIcon={getFileIcon}
                         onApprove={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'APPROVED')
                             : undefined
                         }
+                        onDelete={handleDelete}
                         onReject={
                           isAdmin && file.approvalStatus === 'WAITING'
                             ? (file) => handleApprovalClick(file, 'REJECTED')
                             : undefined
                         }
-                        formatFileSize={formatFileSize}
-                        getFileIcon={getFileIcon}
+                        onViewMessages={(file) => {
+                          setSelectedFile(file);
+                          setMessageDialogOpen(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -367,8 +383,8 @@ export function OrderFilesManager({ orderId }: Props) {
 
       <FileUploadDialog
         open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
         orderId={orderId}
+        onOpenChange={setUploadDialogOpen}
         onSuccess={() => {
           fetchFiles();
           setUploadDialogOpen(false);
@@ -377,11 +393,11 @@ export function OrderFilesManager({ orderId }: Props) {
 
       {selectedFile && (
         <FileMessageDialog
-          open={messageDialogOpen}
-          onOpenChange={setMessageDialogOpen}
-          orderId={orderId}
           file={selectedFile}
+          open={messageDialogOpen}
+          orderId={orderId}
           onMessageSent={fetchFiles}
+          onOpenChange={setMessageDialogOpen}
         />
       )}
 
@@ -415,14 +431,14 @@ export function OrderFilesManager({ orderId }: Props) {
               </Label>
               <Textarea
                 id="approval-message"
-                value={approvalMessage}
-                onChange={(e) => setApprovalMessage(e.target.value)}
                 placeholder={
                   approvalAction === 'APPROVED'
                     ? 'Add a note for the team...'
                     : 'Explain what needs to be changed...'
                 }
                 rows={3}
+                value={approvalMessage}
+                onChange={(e) => setApprovalMessage(e.target.value)}
               />
             </div>
           </div>
@@ -430,16 +446,16 @@ export function OrderFilesManager({ orderId }: Props) {
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isApproving}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleApprovalConfirm();
-              }}
-              disabled={isApproving}
               className={
                 approvalAction === 'REJECTED'
                   ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
                   : ''
               }
+              disabled={isApproving}
+              onClick={(e) => {
+                e.preventDefault();
+                handleApprovalConfirm();
+              }}
             >
               {isApproving
                 ? 'Processing...'
@@ -475,10 +491,27 @@ function FileListItem({
   const statusConfig = approvalStatusConfig[file.approvalStatus];
   const StatusIcon = statusConfig.icon;
 
+  const isImage = file.mimeType?.startsWith('image/')
+  const thumbnailUrl = file.thumbnailUrl || (isImage ? file.fileUrl : null)
+
   return (
     <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-      <div className="rounded-md bg-muted p-2">
-        <FileIcon className="h-5 w-5 text-muted-foreground" />
+      <div className="rounded-md bg-muted overflow-hidden flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+        {thumbnailUrl ? (
+          <div className="relative w-full h-full">
+            <Image
+              alt={file.label || file.filename}
+              className="object-cover"
+              fill
+              sizes="80px"
+              src={thumbnailUrl}
+            />
+          </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center p-2">
+            <FileIcon className="h-8 w-8 text-muted-foreground" />
+          </div>
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
@@ -494,14 +527,14 @@ function FileListItem({
           </Badge>
         </div>
         <div className="flex items-center gap-2 mt-2">
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {fileTypeLabels[file.fileType]}
           </Badge>
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {file.uploadedByRole}
           </Badge>
           {file.FileMessage.length > 0 && (
-            <Badge variant="outline" className="text-xs gap-1">
+            <Badge className="text-xs gap-1" variant="outline">
               <MessageSquare className="h-3 w-3" />
               {file.FileMessage.length}
             </Badge>
@@ -512,33 +545,33 @@ function FileListItem({
         {/* Approval buttons (admin only, WAITING status only) */}
         {onApprove && (
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onApprove(file)}
             className="text-green-600 hover:text-green-700 hover:bg-green-50"
+            size="icon"
             title="Approve file"
+            variant="ghost"
+            onClick={() => onApprove(file)}
           >
             <ThumbsUp className="h-4 w-4" />
           </Button>
         )}
         {onReject && (
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onReject(file)}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            size="icon"
             title="Reject file"
+            variant="ghost"
+            onClick={() => onReject(file)}
           >
             <ThumbsDown className="h-4 w-4" />
           </Button>
         )}
-        <Button variant="ghost" size="icon" onClick={() => window.open(file.fileUrl, '_blank')}>
+        <Button size="icon" variant="ghost" onClick={() => window.open(file.fileUrl, '_blank')}>
           <Download className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onViewMessages(file)}>
+        <Button size="icon" variant="ghost" onClick={() => onViewMessages(file)}>
           <MessageSquare className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onDelete(file.id)}>
+        <Button size="icon" variant="ghost" onClick={() => onDelete(file.id)}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>

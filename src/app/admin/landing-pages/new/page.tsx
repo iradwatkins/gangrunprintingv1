@@ -143,13 +143,13 @@ export default function NewLandingPageSetPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="container mx-auto py-6 max-w-4xl">
+    <form className="container mx-auto py-6 max-w-4xl" onSubmit={handleSubmit}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Button
-            type="button"
             size="sm"
+            type="button"
             variant="ghost"
             onClick={() => router.push('/admin/landing-pages')}
           >
@@ -158,7 +158,7 @@ export default function NewLandingPageSetPage() {
           </Button>
           <h1 className="text-3xl font-bold">Create Landing Page Set</h1>
         </div>
-        <Button type="submit" disabled={loading}>
+        <Button disabled={loading} type="submit">
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
           ) : (
@@ -178,11 +178,11 @@ export default function NewLandingPageSetPage() {
           <div>
             <Label htmlFor="name">Campaign Name *</Label>
             <Input
+              required
               id="name"
               placeholder="e.g., Postcards 4x6 Landing Pages"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
             />
             <p className="text-sm text-gray-500 mt-1">
               This will be used to create the product name for each city
@@ -309,42 +309,42 @@ export default function NewLandingPageSetPage() {
           <div>
             <Label htmlFor="titleTemplate">Page Title Template *</Label>
             <Input
+              required
               id="titleTemplate"
               value={formData.titleTemplate}
               onChange={(e) => setFormData({ ...formData, titleTemplate: e.target.value })}
-              required
             />
           </div>
 
           <div>
             <Label htmlFor="metaDescTemplate">Meta Description Template *</Label>
             <Textarea
+              required
               id="metaDescTemplate"
+              rows={2}
               value={formData.metaDescTemplate}
               onChange={(e) => setFormData({ ...formData, metaDescTemplate: e.target.value })}
-              rows={2}
-              required
             />
           </div>
 
           <div>
             <Label htmlFor="h1Template">H1 Heading Template *</Label>
             <Input
+              required
               id="h1Template"
               value={formData.h1Template}
               onChange={(e) => setFormData({ ...formData, h1Template: e.target.value })}
-              required
             />
           </div>
 
           <div>
             <Label htmlFor="contentTemplate">Content Template *</Label>
             <Textarea
+              required
               id="contentTemplate"
+              rows={4}
               value={formData.contentTemplate}
               onChange={(e) => setFormData({ ...formData, contentTemplate: e.target.value })}
-              rows={4}
-              required
             />
           </div>
         </CardContent>
@@ -362,32 +362,32 @@ export default function NewLandingPageSetPage() {
         <CardContent className="space-y-3">
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="generateIntro"
               checked={formData.generateIntro}
+              id="generateIntro"
               onCheckedChange={(checked) => setFormData({ ...formData, generateIntro: checked as boolean })}
             />
             <Label htmlFor="generateIntro">Generate unique introduction (200 words per city)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="generateBenefits"
               checked={formData.generateBenefits}
+              id="generateBenefits"
               onCheckedChange={(checked) => setFormData({ ...formData, generateBenefits: checked as boolean })}
             />
             <Label htmlFor="generateBenefits">Generate benefits section</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="generateFAQs"
               checked={formData.generateFAQs}
+              id="generateFAQs"
               onCheckedChange={(checked) => setFormData({ ...formData, generateFAQs: checked as boolean })}
             />
             <Label htmlFor="generateFAQs">Generate city-specific FAQs (5 questions)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="generateCaseStudy"
               checked={formData.generateCaseStudy}
+              id="generateCaseStudy"
               onCheckedChange={(checked) => setFormData({ ...formData, generateCaseStudy: checked as boolean })}
             />
             <Label htmlFor="generateCaseStudy">Generate case studies (optional)</Label>
@@ -404,7 +404,7 @@ export default function NewLandingPageSetPage() {
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={loading}>
+        <Button disabled={loading} type="submit">
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
           ) : (

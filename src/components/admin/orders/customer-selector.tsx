@@ -110,7 +110,7 @@ export function CustomerSelector({
           </TabsList>
 
           {/* Existing Customer Tab */}
-          <TabsContent value="existing" className="space-y-4">
+          <TabsContent className="space-y-4" value="existing">
             {selectedCustomer ? (
               <div className="rounded-lg border bg-muted/50 p-4">
                 <div className="flex items-start justify-between">
@@ -186,7 +186,7 @@ export function CustomerSelector({
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{customer.name}</span>
                               {customer.isBroker && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge className="text-xs" variant="outline">
                                   <Briefcase className="h-2 w-2 mr-1" />
                                   Broker
                                 </Badge>
@@ -209,7 +209,7 @@ export function CustomerSelector({
           </TabsContent>
 
           {/* New Customer Tab */}
-          <TabsContent value="new" className="space-y-4">
+          <TabsContent className="space-y-4" value="new">
             <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="new-customer-email">
@@ -217,8 +217,8 @@ export function CustomerSelector({
                 </Label>
                 <Input
                   id="new-customer-email"
-                  type="email"
                   placeholder="customer@example.com"
+                  type="email"
                   value={newCustomerForm.email}
                   onChange={(e) =>
                     setNewCustomerForm({ ...newCustomerForm, email: e.target.value })
@@ -244,8 +244,8 @@ export function CustomerSelector({
                 <Label htmlFor="new-customer-phone">Phone (Optional)</Label>
                 <Input
                   id="new-customer-phone"
-                  type="tel"
                   placeholder="(555) 123-4567"
+                  type="tel"
                   value={newCustomerForm.phone}
                   onChange={(e) =>
                     setNewCustomerForm({ ...newCustomerForm, phone: e.target.value })

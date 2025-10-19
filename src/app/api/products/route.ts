@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId')
     const isActive = searchParams.get('isActive')
     const gangRunEligible = searchParams.get('gangRunEligible')
+    const includeSEOMetrics = searchParams.get('includeSEOMetrics') === 'true'
 
     // Pagination parameters
     const page = parseInt(searchParams.get('page') || '1', 10)
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
         categoryId: true,
         createdAt: true,
         updatedAt: true,
+        ...(includeSEOMetrics ? { seoMetrics: true } : {}),
 
         // Include only essential relations (max 2 levels deep)
         ProductCategory: {

@@ -142,12 +142,12 @@ export function CustomerProofApproval({ orderId }: Props) {
             </div>
             <div className="flex gap-2">
               {waitingProofs.length > 0 && (
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300" variant="outline">
                   {waitingProofs.length} Waiting
                 </Badge>
               )}
               {approvedProofs.length > 0 && (
-                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                <Badge className="bg-green-100 text-green-800 border-green-300" variant="outline">
                   {approvedProofs.length} Approved
                 </Badge>
               )}

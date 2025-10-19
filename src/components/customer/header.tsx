@@ -44,12 +44,12 @@ const navigation = [
     icon: Package,
     children: [
       { name: 'All Products', href: '/products' },
-      { name: 'Business Cards', href: '/products?category=business-cards' },
-      { name: 'Flyers & Brochures', href: '/products?category=flyers' },
-      { name: 'Banners & Signs', href: '/products?category=banners' },
-      { name: 'Stickers & Labels', href: '/products?category=stickers' },
-      { name: 'Apparel', href: '/products?category=apparel' },
-      { name: 'Postcards', href: '/products?category=postcards' },
+      { name: 'Business Cards', href: '/products?category=business-card' },
+      { name: 'Flyers', href: '/products?category=flyer' },
+      { name: 'Postcards', href: '/products?category=postcard' },
+      { name: 'Signs', href: '/products?category=poster' },
+      { name: 'Banners', href: '/products?category=banner' },
+      { name: 'Turf Signs', href: '/products?category=poster' },
     ],
   },
   { name: 'About', href: '/about', icon: Info },
@@ -60,26 +60,34 @@ const navigation = [
 const productCategories = [
   {
     name: 'Business Cards',
-    href: '/products?category=business-cards',
+    href: '/products?category=business-card',
     description: 'Premium quality cards',
   },
   {
-    name: 'Flyers & Brochures',
-    href: '/products?category=flyers',
-    description: 'Marketing materials',
+    name: 'Flyers',
+    href: '/products?category=flyer',
+    description: 'Marketing flyers',
   },
   {
-    name: 'Banners & Signs',
-    href: '/products?category=banners',
-    description: 'Large format printing',
+    name: 'Postcards',
+    href: '/products?category=postcard',
+    description: 'Direct mail postcards',
   },
   {
-    name: 'Stickers & Labels',
-    href: '/products?category=stickers',
-    description: 'Custom die-cut stickers',
+    name: 'Signs',
+    href: '/products?category=poster',
+    description: 'Poster signs',
   },
-  { name: 'Apparel', href: '/products?category=apparel', description: 'Custom printed t-shirts' },
-  { name: 'Postcards', href: '/products?category=postcards', description: 'Direct mail postcards' },
+  {
+    name: 'Banners',
+    href: '/products?category=banner',
+    description: 'Large format banners',
+  },
+  {
+    name: 'Turf Signs',
+    href: '/products?category=poster',
+    description: 'Yard signs',
+  },
 ]
 
 export default function Header() {

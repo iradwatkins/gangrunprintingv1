@@ -480,10 +480,10 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={updating}>
+            <Button disabled={updating} variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" disabled={updating} onClick={handleDeleteOrder}>
+            <Button disabled={updating} variant="destructive" onClick={handleDeleteOrder}>
               <Trash2 className="mr-2 h-4 w-4" />
               {updating ? 'Deleting...' : 'Delete Order'}
             </Button>

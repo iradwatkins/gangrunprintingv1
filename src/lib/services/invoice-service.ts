@@ -9,7 +9,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { Prisma, PaymentMethodType } from '@prisma/client';
+import { Prisma, type PaymentMethodType } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
 // ============================================================================

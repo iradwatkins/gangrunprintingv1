@@ -15,6 +15,15 @@ export interface TurnaroundTimeOption {
   pricePerUnit: number // Calculated price per unit
 }
 
+export interface UploadedArtworkFile {
+  id: string
+  name: string
+  preview?: string
+  url?: string
+  type?: string
+  size?: number
+}
+
 export interface CartItem {
   id: string
   productId: string
@@ -25,6 +34,8 @@ export interface CartItem {
   quantity: number
   subtotal: number
   image?: string
+  categoryId?: string // For analytics
+  categoryName?: string // For analytics
   turnaround: TurnaroundTimeOption
   options: {
     size?: string
@@ -46,6 +57,8 @@ export interface CartItem {
     height: number
   }
   paperStockWeight?: number
+  // Artwork files
+  artworkFiles?: UploadedArtworkFile[]
   fileUrl?: string
   fileName?: string
   fileSize?: number

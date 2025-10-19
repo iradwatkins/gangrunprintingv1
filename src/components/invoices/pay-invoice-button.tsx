@@ -42,10 +42,10 @@ export function PayInvoiceButton({ invoiceId, amount }: PayInvoiceButtonProps) {
 
   return (
     <Button
-      size="lg"
       className="w-full md:w-auto min-w-[200px]"
-      onClick={handlePayment}
       disabled={isProcessing}
+      size="lg"
+      onClick={handlePayment}
     >
       {isProcessing ? (
         <>

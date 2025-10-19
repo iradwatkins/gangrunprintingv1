@@ -1,15 +1,42 @@
 'use client'
 
-import { ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { ShoppingBag, Plus, Minus, Trash2, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/contexts/cart-context'
 import { CartItemImages } from './cart-item-images'
+import { ShippingPreview } from './shipping-preview'
+import { FileThumbnails } from '../product/FileThumbnails'
+import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import toast from '@/lib/toast'
+
+interface ShippingRate {
+  provider: string
+  providerName: string
+  serviceType: string
+  carrier: string
+  rate: {
+    amount: number
+    currency: string
+  }
+  delivery: {
+    estimatedDays: {
+      min: number
+      max: number
+    }
+    text: string
+    guaranteed: boolean
+  }
+}
 
 export function CartDrawer() {
+  const router = useRouter()
   const {
     items,
     isOpen,
@@ -23,6 +50,8 @@ export function CartDrawer() {
     shipping,
     total,
   } = useCart()
+
+  const [selectedShipping, setSelectedShipping] = useState<ShippingRate | null>(null)
 
   return (
     <Sheet open={isOpen} onOpenChange={closeCart}>
@@ -74,6 +103,12 @@ export function CartDrawer() {
                           {item.options.sides && <p>Sides: {item.options.sides}</p>}
                           {item.fileName && <p>File: {item.fileName}</p>}
                         </div>
+                        {/* Artwork Files */}
+                        {item.artworkFiles && item.artworkFiles.length > 0 && (
+                          <div className="mt-2">
+                            <FileThumbnails files={item.artworkFiles} size="sm" maxDisplay={3} />
+                          </div>
+                        )}
                       </div>
                       <Button
                         className="h-8 w-8"
@@ -102,32 +137,61 @@ export function CartDrawer() {
               </div>
             </ScrollArea>
 
+            <Separator className="my-4" />
+
             <div className="border-t pt-4 space-y-4">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
+                {selectedShipping && (
+                  <div className="flex justify-between">
+                    <span>Shipping</span>
+                    <span>${selectedShipping.rate.amount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span>Tax</span>
+                  <span>Tax (estimated)</span>
                   <span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold text-base">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>${((selectedShipping?.rate.amount || 0) + total).toFixed(2)}</span>
                 </div>
               </div>
 
+              {/* Shipping Preview Section - Moved above checkout button */}
+              <div className="px-2">
+                <ShippingPreview
+                  cartItems={items}
+                  selectedShipping={selectedShipping}
+                  onShippingSelected={setSelectedShipping}
+                />
+              </div>
+
               <div className="space-y-2">
-                <Button asChild className="w-full" size="lg">
-                  <Link href="/checkout" onClick={closeCart}>
-                    Proceed to Checkout
-                  </Link>
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={() => {
+                    if (items.length === 0) {
+                      toast.error('Your cart is empty')
+                      return
+                    }
+
+                    // Store selected shipping for checkout
+                    if (selectedShipping) {
+                      localStorage.setItem('selected_shipping', JSON.stringify(selectedShipping))
+                    }
+
+                    closeCart()
+                    router.push('/checkout')
+                  }}
+                >
+                  Proceed to Checkout
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 {items.length > 0 && items[0].productSlug && (
                   <Button asChild className="w-full" variant="outline">
@@ -136,6 +200,13 @@ export function CartDrawer() {
                     </Link>
                   </Button>
                 )}
+              </div>
+
+              {/* Trust Badge */}
+              <div className="text-center">
+                <p className="text-xs text-muted-foreground">
+                  Secure checkout powered by Square
+                </p>
               </div>
             </div>
           </>

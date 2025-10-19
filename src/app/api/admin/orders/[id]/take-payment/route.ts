@@ -6,7 +6,7 @@
  * Allows admin to record immediate payment for an order (phone orders, in-person, manual methods)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';

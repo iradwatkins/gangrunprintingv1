@@ -25,9 +25,9 @@ export function EditCustomerButton({ customer }: EditCustomerButtonProps) {
       </Button>
 
       <EditCustomerModal
+        customer={customer}
         open={showModal}
         onOpenChange={setShowModal}
-        customer={customer}
       />
     </>
   )

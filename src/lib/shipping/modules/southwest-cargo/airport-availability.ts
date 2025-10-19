@@ -25,7 +25,7 @@ async function getAvailableStates(): Promise<Set<string>> {
     // Query database for all active Southwest Cargo airports
     const airports = await prisma.airport.findMany({
       where: {
-        operator: 'Southwest Cargo',
+        carrier: 'SOUTHWEST_CARGO',
         isActive: true,
       },
       select: {

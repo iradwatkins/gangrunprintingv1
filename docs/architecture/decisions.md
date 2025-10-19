@@ -742,6 +742,275 @@ export async function uploadFile(file: File, bucket: string) {
 
 ---
 
+---
+
+## ADR-009: Cart Drawer Shipping Display Order
+
+### Status
+
+✅ Accepted and Implemented (2025-10-19)
+
+### Context
+
+Users were unable to see shipping costs clearly before making the decision to proceed to checkout. The shipping estimate was positioned below the total price summary, requiring users to scroll past the checkout button to view shipping options.
+
+### Decision
+
+Reorder the cart drawer layout to display the **Shipping Preview** component immediately above the "Proceed to Checkout" button.
+
+### Rationale
+
+1. **Transparency First**: Users should see all costs (including shipping) before clicking checkout
+2. **Reduced Cart Abandonment**: Unexpected shipping costs at checkout are a major cause of abandonment
+3. **Better UX Flow**: Natural reading order from top to bottom: Items → Totals → Shipping → Checkout
+4. **Mobile Optimization**: On mobile devices, keeping shipping visible before CTA is critical
+
+### Implementation
+
+```typescript
+// New layout order in cart-drawer.tsx
+<div className="border-t pt-4 space-y-4">
+  {/* 1. Price Summary (Subtotal, Tax, Total) */}
+  <div className="space-y-2 text-sm">...</div>
+
+  {/* 2. Shipping Preview - Moved here */}
+  <div className="px-2">
+    <ShippingPreview
+      cartItems={items}
+      selectedShipping={selectedShipping}
+      onShippingSelected={setSelectedShipping}
+    />
+  </div>
+
+  {/* 3. Checkout Button - Now below shipping */}
+  <div className="space-y-2">
+    <Button onClick={() => router.push('/checkout')}>
+      Proceed to Checkout
+    </Button>
+  </div>
+</div>
+```
+
+### Layout Flow
+
+**Before:**
+```
+Items
+---
+Subtotal: $X
+Shipping: $Y  (if selected)
+Tax: $Z
+Total: $XYZ
+---
+[Proceed to Checkout]
+---
+Shipping Preview (below button) ❌
+```
+
+**After:**
+```
+Items
+---
+Subtotal: $X
+Shipping: $Y  (if selected)
+Tax: $Z
+Total: $XYZ
+---
+Shipping Preview (above button) ✅
+---
+[Proceed to Checkout]
+```
+
+### Consequences
+
+✅ **Positive**:
+- Users see shipping costs before checkout decision
+- Reduced surprise at checkout page
+- Better mobile experience
+- Improved conversion rate (expected)
+- More transparent pricing
+
+⚠️ **Negative**:
+- Checkout button pushed slightly lower (requires minimal scroll)
+- Slightly more vertical space used
+
+### Metrics to Monitor
+
+- Cart abandonment rate (target: reduce by 5-10%)
+- Checkout button click-through rate
+- Average time spent in cart drawer
+- Shipping selection rate before checkout
+
+### Related Files
+
+- `/src/components/cart/cart-drawer.tsx:165-172`
+- `/src/components/cart/shipping-preview.tsx`
+
+---
+
+## ADR-010: Dedicated Cart Page with Artwork Upload
+
+### Status
+
+✅ Accepted and Implemented (2025-10-19)
+
+### Context
+
+Users needed a way to upload artwork files for their print orders. The cart drawer (side panel) was too small and cramped for a proper drag-and-drop file upload interface. Additionally, users expected a standard e-commerce cart page experience for reviewing their order before checkout.
+
+### Decision
+
+Create a **dedicated `/cart` page** that includes:
+1. Full cart review with item details and quantity controls
+2. Drag-and-drop artwork upload section
+3. Shipping preview and selection
+4. Order summary before checkout
+
+**Customer Flow:**
+```
+Product Page → Add to Cart → /cart Page → Upload Artwork → Checkout
+```
+
+### Rationale
+
+1. **Better Upload UX**: Full-page layout provides adequate space for drag-and-drop zones, file previews, and upload progress
+2. **Standard E-commerce Pattern**: Users expect a dedicated cart page in online stores
+3. **Mobile-Friendly**: Full page is more usable than side drawer on mobile devices
+4. **Order Review**: Dedicated space for reviewing items, uploading files, and selecting shipping before committing to checkout
+5. **Cart Drawer Limitations**: Side drawer (320-400px wide) insufficient for multi-file upload interface
+
+### Implementation
+
+**Files Created:**
+```typescript
+// /src/app/(customer)/cart/page.tsx
+export default function CartPage() {
+  // Full cart page with:
+  // - Cart items list with quantity controls
+  // - ArtworkUpload component (drag & drop)
+  // - ShippingPreview component
+  // - Order summary
+  // - Proceed to Checkout button
+}
+```
+
+**Files Modified:**
+
+1. **AddToCartSection.tsx** - Changed behavior on add to cart:
+```typescript
+// Before:
+addItem(cartItem)
+// Cart drawer opens automatically (isOpen: true)
+
+// After:
+addItem(cartItem)
+router.push('/cart') // Redirect to cart page
+```
+
+2. **cart-context.tsx** - Removed auto-open drawer:
+```typescript
+// Before:
+case 'ADD_ITEM':
+  return { ...state, items: [...], isOpen: true }
+
+// After:
+case 'ADD_ITEM':
+  return { ...state, items: [...] } // No auto-open
+```
+
+### Cart Page Layout
+
+```
+┌─────────────────────────────────────────────┐
+│  Shopping Cart (Header)                     │
+│  [N items] [Clear All]                      │
+├──────────────────┬──────────────────────────┤
+│  Cart Items      │  Order Summary (Sticky)  │
+│  ├─ Item 1       │  ├─ Subtotal: $XX.XX    │
+│  ├─ Item 2       │  ├─ Shipping: $XX.XX    │
+│  └─ Quantity     │  ├─ Tax: $XX.XX         │
+│                  │  └─ Total: $XXX.XX      │
+├──────────────────┤                          │
+│  Upload Artwork  │  [Shipping Preview]     │
+│  [Drag & Drop]   │                          │
+│  • PDF, JPG, PNG │  [Proceed to Checkout]  │
+│  • Max 10 files  │  [Continue Shopping]    │
+│  • 50MB each     │                          │
+└──────────────────┴──────────────────────────┘
+```
+
+### File Upload Integration
+
+**Storage Strategy:**
+- Files uploaded to temporary storage via `/api/upload/temporary`
+- File metadata stored in `sessionStorage` with key `cart_artwork_files`
+- Files associated with order after payment completion in checkout
+- Temporary files cleaned up after 24 hours if not associated
+
+**Supported Formats:**
+- PDF, JPG, JPEG, PNG, GIF
+- AI, EPS, SVG (design files)
+- Max 10 files per order
+- Max 50MB per file
+
+### Cart Drawer vs. Cart Page
+
+**Cart Drawer** (still available):
+- Quick view from header cart icon
+- Limited to displaying items and quick actions
+- No longer auto-opens on "Add to Cart"
+- Optional "View Cart" button to navigate to full page
+
+**Cart Page** (new primary):
+- Full order review before checkout
+- Artwork upload capability
+- Shipping method selection
+- Better mobile experience
+
+### Consequences
+
+✅ **Positive**:
+- Professional file upload experience
+- Standard e-commerce cart page pattern
+- Better mobile and desktop UX
+- Room for future enhancements (promo codes, gift messages, etc.)
+- Clearer customer journey: Product → Cart → Checkout
+
+⚠️ **Negative**:
+- One extra page in checkout flow (but expected by users)
+- Cart drawer less prominent (now secondary feature)
+- Slightly more complex routing logic
+
+⚠️ **Trade-offs**:
+- Users must navigate to separate page (not instant drawer)
+- However, file upload requires full page anyway
+
+### Metrics to Monitor
+
+- Cart page bounce rate
+- Upload completion rate
+- Time spent on cart page
+- Cart-to-checkout conversion rate
+- File upload success rate
+
+### Related Files
+
+- `/src/app/(customer)/cart/page.tsx` - Main cart page
+- `/src/components/product/AddToCartSection.tsx:82-85` - Add to cart redirect
+- `/src/contexts/cart-context.tsx:40-63` - Cart state management
+- `/src/components/product/ArtworkUpload.tsx` - Upload component
+- `/src/components/cart/shipping-preview.tsx` - Shipping selection
+
+### Future Enhancements
+
+- [ ] Promo code input on cart page
+- [ ] Saved carts for logged-in users
+- [ ] Bulk upload from previous orders
+- [ ] File requirement checking (bleed, resolution, etc.)
+- [ ] Real-time file validation feedback
+
+---
+
 **Maintained by**: Engineering Team
-**Last Review**: 2025-09-27
+**Last Review**: 2025-10-19
 **Next Review**: 2025-12-27

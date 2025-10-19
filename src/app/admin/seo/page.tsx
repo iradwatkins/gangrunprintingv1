@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Copy, ExternalLink, CheckCircle2 } from 'lucide-react'
+import { Copy, ExternalLink, CheckCircle2, BarChart3, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 import toast from '@/lib/toast'
 
 export default function SEOPage() {
@@ -104,6 +105,58 @@ export default function SEOPage() {
           Manage sitemaps and submit your website to search engines
         </p>
       </div>
+
+      {/* SEO Performance Dashboard - NEW */}
+      <Card className="mb-6 border-2 border-blue-500 bg-blue-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-6 w-6 text-blue-600" />
+            SEO Performance Dashboard
+            <span className="ml-auto text-xs bg-blue-500 text-white px-2 py-1 rounded">
+              NEW
+            </span>
+          </CardTitle>
+          <CardDescription>
+            Monitor Google rankings, traffic changes, and receive automated SEO alerts
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-white rounded-lg p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-green-500" />
+              <span className="font-medium">
+                Real-time SEO Monitoring & Alerts
+              </span>
+            </div>
+            <div className="text-sm text-gray-600 space-y-1">
+              <p>✅ Daily Google Search Console ranking checks</p>
+              <p>✅ Automated email & Slack alerts for ranking drops</p>
+              <p>✅ Product-level keyword tracking</p>
+              <p>✅ Traffic and CTR monitoring</p>
+              <p>✅ Actionable suggestions for improvement</p>
+            </div>
+          </div>
+
+          <Button asChild className="w-full" size="lg" variant="default">
+            <Link href="/admin/seo/performance">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View SEO Performance Dashboard
+            </Link>
+          </Button>
+
+          <div className="text-xs text-gray-500 space-y-1">
+            <p>
+              <strong>Monitoring:</strong> Daily at 2:00 AM (America/Chicago)
+            </p>
+            <p>
+              <strong>Alerts:</strong> Email + Slack for critical issues
+            </p>
+            <p>
+              <strong>Data Source:</strong> Google Search Console API
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* ChatGPT Shopping Feed - PRIORITY */}
       <Card className="mb-6 border-2 border-green-500 bg-green-50">

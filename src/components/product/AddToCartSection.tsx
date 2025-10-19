@@ -81,9 +81,8 @@ export function AddToCartSection({
     try {
       addItem(cartItem)
       toast.success('Product added to cart!')
-
-      // Redirect to artwork upload page instead of opening cart
-      router.push('/cart/upload-artwork')
+      // Redirect to checkout page for artwork upload and review
+      router.push('/checkout')
     } catch (error) {
       toast.error('Failed to add product to cart')
       console.error('Add to cart error:', error)
@@ -140,7 +139,7 @@ export function AddToCartSection({
         )}
         {isConfigurationComplete && quantity > 0 && (
           <p className="text-sm text-muted-foreground text-center">
-            You'll upload your artwork files on the next page
+            Review cart, select shipping, and proceed to checkout
           </p>
         )}
       </div>

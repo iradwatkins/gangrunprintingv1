@@ -371,11 +371,11 @@ export default function ProductsPage() {
                           </Link>
                         ) : (
                           <Button
+                            disabled
+                            className="opacity-50 cursor-not-allowed"
                             size="sm"
                             title="Product is inactive - activate it first to view publicly"
                             variant="ghost"
-                            disabled
-                            className="opacity-50 cursor-not-allowed"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

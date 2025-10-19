@@ -106,6 +106,8 @@ export async function POST(request: NextRequest) {
             productSku: item.sku,
             quantity: item.quantity,
             price: item.price,
+            categoryId: item.categoryId || null,
+            categoryName: item.categoryName || null,
             options: {
               ...item.options,
               fileName: item.fileName,

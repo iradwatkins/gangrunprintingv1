@@ -6,7 +6,7 @@
  * Generates invoice for an order and sends email to customer.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { createInvoice } from '@/lib/services/invoice-service';
 import { sendInvoiceEmail } from '@/lib/email/invoice-email';

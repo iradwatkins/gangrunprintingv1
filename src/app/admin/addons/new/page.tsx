@@ -206,8 +206,8 @@ export default function NewAddonPage() {
                     <Label htmlFor="percentage">Percentage (%)</Label>
                     <Input
                       id="percentage"
-                      min="-100"
                       max="100"
+                      min="-100"
                       step="0.1"
                       type="number"
                       value={formData.percentage}

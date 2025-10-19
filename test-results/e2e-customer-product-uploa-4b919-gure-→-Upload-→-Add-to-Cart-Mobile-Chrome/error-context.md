@@ -1,0 +1,259 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - link "GangRun Printing" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "GangRun Printing" [ref=e8]
+        - generic [ref=e9]:
+          - button "Shopping cart total $0.00" [ref=e10] [cursor=pointer]:
+            - img
+          - button [ref=e11] [cursor=pointer]:
+            - img
+    - main [ref=e12]:
+      - main [ref=e13]:
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic [ref=e19]:
+              - img [ref=e20]
+              - text: Same Day Printing Available
+            - heading "Professional Printing Made Simple" [level=1] [ref=e22]
+            - paragraph [ref=e23]: High-quality printing services with fast turnaround times. From business cards to banners, we bring your ideas to life.
+            - generic [ref=e24]:
+              - link "Start Your Order" [ref=e25] [cursor=pointer]:
+                - /url: /products
+                - img
+                - text: Start Your Order
+                - img
+              - link "Track Order" [ref=e26] [cursor=pointer]:
+                - /url: /track
+          - generic [ref=e29]:
+            - paragraph [ref=e32]: Business Cards
+            - paragraph [ref=e35]: Flyers
+            - paragraph [ref=e38]: Banners
+            - paragraph [ref=e41]: Stickers
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - generic [ref=e46]: 10K+
+            - generic [ref=e47]: Happy Customers
+          - generic [ref=e48]:
+            - generic [ref=e49]: 24hr
+            - generic [ref=e50]: Fast Turnaround
+          - generic [ref=e51]:
+            - generic [ref=e52]: 100%
+            - generic [ref=e53]: Quality Guarantee
+          - generic [ref=e54]:
+            - generic [ref=e55]: 50+
+            - generic [ref=e56]: Product Types
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - heading "Choose Your Product" [level=2] [ref=e60]
+            - paragraph [ref=e61]: Select from our wide range of printing products. Each category offers multiple customization options.
+          - generic [ref=e62]:
+            - link "0 products Banner Banner printing services Get Started" [ref=e63] [cursor=pointer]:
+              - /url: /products?category=banner
+              - generic [ref=e64]:
+                - generic [ref=e68]:
+                  - img [ref=e69]
+                  - generic [ref=e73]: 0 products
+                - generic [ref=e74]:
+                  - generic [ref=e75]: Banner
+                  - generic [ref=e76]: Banner printing services
+                - generic [ref=e78]:
+                  - generic [ref=e79]: Get Started
+                  - img [ref=e80]
+            - link "0 products Booklet Booklet printing services Get Started" [ref=e82] [cursor=pointer]:
+              - /url: /products?category=booklet
+              - generic [ref=e83]:
+                - generic [ref=e87]:
+                  - img [ref=e88]
+                  - generic [ref=e92]: 0 products
+                - generic [ref=e93]:
+                  - generic [ref=e94]: Booklet
+                  - generic [ref=e95]: Booklet printing services
+                - generic [ref=e97]:
+                  - generic [ref=e98]: Get Started
+                  - img [ref=e99]
+            - link "0 products Bookmark Bookmark printing services Get Started" [ref=e101] [cursor=pointer]:
+              - /url: /products?category=bookmark
+              - generic [ref=e102]:
+                - generic [ref=e106]:
+                  - img [ref=e107]
+                  - generic [ref=e111]: 0 products
+                - generic [ref=e112]:
+                  - generic [ref=e113]: Bookmark
+                  - generic [ref=e114]: Bookmark printing services
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Get Started
+                  - img [ref=e118]
+            - link "0 products Brochure Brochure printing services Get Started" [ref=e120] [cursor=pointer]:
+              - /url: /products?category=brochure
+              - generic [ref=e121]:
+                - generic [ref=e125]:
+                  - img [ref=e126]
+                  - generic [ref=e130]: 0 products
+                - generic [ref=e131]:
+                  - generic [ref=e132]: Brochure
+                  - generic [ref=e133]: Brochure printing services
+                - generic [ref=e135]:
+                  - generic [ref=e136]: Get Started
+                  - img [ref=e137]
+            - link "0 products Bumper Sticker Bumper Sticker printing services Get Started" [ref=e139] [cursor=pointer]:
+              - /url: /products?category=bumper-sticker
+              - generic [ref=e140]:
+                - generic [ref=e144]:
+                  - img [ref=e145]
+                  - generic [ref=e149]: 0 products
+                - generic [ref=e150]:
+                  - generic [ref=e151]: Bumper Sticker
+                  - generic [ref=e152]: Bumper Sticker printing services
+                - generic [ref=e154]:
+                  - generic [ref=e155]: Get Started
+                  - img [ref=e156]
+            - link "0 products Business Card Business Card printing services Get Started" [ref=e158] [cursor=pointer]:
+              - /url: /products?category=business-card
+              - generic [ref=e159]:
+                - generic [ref=e163]:
+                  - img [ref=e164]
+                  - generic [ref=e168]: 0 products
+                - generic [ref=e169]:
+                  - generic [ref=e170]: Business Card
+                  - generic [ref=e171]: Business Card printing services
+                - generic [ref=e173]:
+                  - generic [ref=e174]: Get Started
+                  - img [ref=e175]
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - heading "Featured Products" [level=2] [ref=e180]
+            - paragraph [ref=e181]: Our most popular products with competitive pricing and fast delivery
+          - region [ref=e182]:
+            - group [ref=e185]:
+              - link "Featured Product - Print - Primary Product Image - High Quality Print 4x6 Flyers - 9pt Card Stock Flyer Starting at $0.00 View Details" [ref=e186] [cursor=pointer]:
+                - /url: /products/4x6-flyers-9pt-card-stock
+                - generic [ref=e187]:
+                  - generic [ref=e188]:
+                    - generic [ref=e189]: Featured
+                    - img "Product - Print - Primary Product Image - High Quality Print" [ref=e191]
+                  - generic [ref=e192]:
+                    - heading "4x6 Flyers - 9pt Card Stock" [level=3] [ref=e193]
+                    - paragraph [ref=e194]: Flyer
+                    - paragraph [ref=e195]: Starting at $0.00
+                    - generic [ref=e196]: View Details
+            - button "Previous slide" [disabled]:
+              - img
+              - generic: Previous slide
+            - button "Next slide" [disabled]:
+              - img
+              - generic: Next slide
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - heading "Why Choose GangRun Printing?" [level=2] [ref=e200]
+            - paragraph [ref=e201]: We combine quality, speed, and service to deliver exceptional printing solutions
+          - generic [ref=e202]:
+            - generic [ref=e203]:
+              - img [ref=e205]
+              - heading "Fast Turnaround" [level=3] [ref=e208]
+              - paragraph [ref=e209]: Same-day and next-day printing options available
+            - generic [ref=e210]:
+              - img [ref=e212]
+              - heading "Quality Guarantee" [level=3] [ref=e214]
+              - paragraph [ref=e215]: 100% satisfaction or we'll reprint for free
+            - generic [ref=e216]:
+              - img [ref=e218]
+              - heading "Expert Support" [level=3] [ref=e223]
+              - paragraph [ref=e224]: Free design consultation and file review
+            - generic [ref=e225]:
+              - img [ref=e227]
+              - heading "Business Growth" [level=3] [ref=e230]
+              - paragraph [ref=e231]: Solutions that scale with your business
+        - generic [ref=e233]:
+          - generic [ref=e234]:
+            - heading "What Our Customers Say" [level=2] [ref=e235]
+            - paragraph [ref=e236]: Don't just take our word for it - hear from our satisfied customers
+          - generic [ref=e237]:
+            - generic [ref=e239]:
+              - generic [ref=e240]:
+                - img [ref=e241]
+                - img [ref=e243]
+                - img [ref=e245]
+                - img [ref=e247]
+                - img [ref=e249]
+              - paragraph [ref=e251]: "\"The quality of printing exceeded our expectations. Fast delivery and excellent customer service!\""
+              - generic [ref=e252]:
+                - generic [ref=e254]: SJ
+                - generic [ref=e255]:
+                  - paragraph [ref=e256]: Sarah Johnson
+                  - paragraph [ref=e257]: Marketing Manager, Tech Startup
+            - generic [ref=e259]:
+              - generic [ref=e260]:
+                - img [ref=e261]
+                - img [ref=e263]
+                - img [ref=e265]
+                - img [ref=e267]
+                - img [ref=e269]
+              - paragraph [ref=e271]: "\"We've been using GangRun for all our printing needs. Consistently great results and competitive pricing.\""
+              - generic [ref=e272]:
+                - generic [ref=e274]: MC
+                - generic [ref=e275]:
+                  - paragraph [ref=e276]: Mike Chen
+                  - paragraph [ref=e277]: Owner, Local Restaurant
+            - generic [ref=e279]:
+              - generic [ref=e280]:
+                - img [ref=e281]
+                - img [ref=e283]
+                - img [ref=e285]
+                - img [ref=e287]
+                - img [ref=e289]
+              - paragraph [ref=e291]: "\"Their rush printing service saved our event! Professional quality delivered on time, every time.\""
+              - generic [ref=e292]:
+                - generic [ref=e294]: ED
+                - generic [ref=e295]:
+                  - paragraph [ref=e296]: Emily Davis
+                  - paragraph [ref=e297]: Event Planner, Davis Events
+        - generic [ref=e301]:
+          - heading "Ready to Get Started?" [level=2] [ref=e302]
+          - paragraph [ref=e303]: Upload your design and receive your custom printed products in as little as 24 hours
+          - generic [ref=e304]:
+            - link "Browse Products" [ref=e305] [cursor=pointer]:
+              - /url: /products
+              - text: Browse Products
+              - img
+            - link "Get a Quote" [ref=e306] [cursor=pointer]:
+              - /url: /quote
+          - generic [ref=e307]:
+            - generic [ref=e308]:
+              - img [ref=e309]
+              - generic [ref=e312]: Free Design Review
+            - generic [ref=e313]:
+              - img [ref=e314]
+              - generic [ref=e317]: No Setup Fees
+            - generic [ref=e318]:
+              - img [ref=e319]
+              - generic [ref=e322]: 100% Satisfaction
+    - contentinfo [ref=e323]:
+      - generic [ref=e326]:
+        - generic [ref=e327]:
+          - heading "Subscribe to Our Newsletter" [level=3] [ref=e328]
+          - paragraph [ref=e329]: Get exclusive deals and printing tips delivered to your inbox
+        - generic [ref=e330]:
+          - textbox "Enter your email" [ref=e331]
+          - button "Subscribe" [ref=e332] [cursor=pointer]
+      - button "Footer Links" [ref=e335] [cursor=pointer]:
+        - generic [ref=e336]: Footer Links
+        - img [ref=e337]
+      - generic [ref=e341]:
+        - paragraph [ref=e342]: © 2024 GangRun Printing. All rights reserved.
+        - generic [ref=e343]:
+          - link "1-800-PRINTING" [ref=e344] [cursor=pointer]:
+            - /url: tel:1-800-PRINTING
+          - generic [ref=e345]: "|"
+          - link "Contact" [ref=e346] [cursor=pointer]:
+            - /url: /contact
+          - generic [ref=e347]: "|"
+          - link "Track Order" [ref=e348] [cursor=pointer]:
+            - /url: /track
+  - alert [ref=e349]
+```

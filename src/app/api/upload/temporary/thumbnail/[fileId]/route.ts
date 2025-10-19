@@ -1,5 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getMinioClient, BUCKETS } from '@/lib/minio-client'
+import sharp from 'sharp'
+
+// Create a placeholder thumbnail (1x1 gray pixel)
+const PLACEHOLDER_THUMBNAIL = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+  'base64'
+)
 
 export async function GET(
   request: NextRequest,
@@ -9,19 +16,22 @@ export async function GET(
     const { fileId } = await params
 
     if (!fileId) {
-      return NextResponse.json({ error: 'File ID required' }, { status: 400 })
+      console.error('[Thumbnail API] No file ID provided')
+      // Return placeholder instead of JSON error
+      return new NextResponse(PLACEHOLDER_THUMBNAIL, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'no-cache',
+        },
+      })
     }
-
-    // Get session ID from request
-    const sessionHeader = request.headers.get('x-session-id')
-    const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown'
-    const sessionId = sessionHeader || `session_${ip.replace(/\./g, '_')}_`
 
     // Try to find the thumbnail for this file ID
     const client = getMinioClient()
 
     // List objects to find the thumbnail path
+    console.log(`[Thumbnail API] Searching for thumbnail: ${fileId}`)
     const objectsStream = client.listObjectsV2(BUCKETS.UPLOADS, `temp/`, true)
 
     let thumbnailPath = null
@@ -29,12 +39,21 @@ export async function GET(
     for await (const obj of objectsStream) {
       if (obj.name?.includes(`thumbnails/${fileId}.jpg`)) {
         thumbnailPath = obj.name
+        console.log(`[Thumbnail API] Found thumbnail at: ${thumbnailPath}`)
         break
       }
     }
 
     if (!thumbnailPath) {
-      return NextResponse.json({ error: 'Thumbnail not found' }, { status: 404 })
+      console.log(`[Thumbnail API] Thumbnail not found for: ${fileId}`)
+      // Return placeholder instead of JSON error
+      return new NextResponse(PLACEHOLDER_THUMBNAIL, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'no-cache',
+        },
+      })
     }
 
     // Get the thumbnail object
@@ -47,6 +66,8 @@ export async function GET(
     }
     const buffer = Buffer.concat(chunks)
 
+    console.log(`[Thumbnail API] Serving thumbnail: ${fileId} (${buffer.length} bytes)`)
+
     // Return the thumbnail with appropriate headers
     return new NextResponse(buffer, {
       status: 200,
@@ -57,6 +78,14 @@ export async function GET(
       },
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to serve thumbnail' }, { status: 500 })
+    console.error('[Thumbnail API] Error:', error)
+    // Return placeholder instead of JSON error
+    return new NextResponse(PLACEHOLDER_THUMBNAIL, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'no-cache',
+      },
+    })
   }
 }

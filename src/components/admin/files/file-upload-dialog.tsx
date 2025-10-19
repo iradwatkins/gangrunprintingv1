@@ -112,11 +112,11 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
           <div className="space-y-2">
             <Label htmlFor="file">File</Label>
             <Input
+              accept=".pdf,.jpg,.jpeg,.png,.ai,.psd,.eps"
+              disabled={uploading}
               id="file"
               type="file"
               onChange={handleFileSelect}
-              accept=".pdf,.jpg,.jpeg,.png,.ai,.psd,.eps"
-              disabled={uploading}
             />
             {selectedFile && (
               <p className="text-sm text-muted-foreground">
@@ -127,7 +127,7 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
 
           <div className="space-y-2">
             <Label htmlFor="fileType">File Type</Label>
-            <Select value={fileType} onValueChange={setFileType} disabled={uploading}>
+            <Select disabled={uploading} value={fileType} onValueChange={setFileType}>
               <SelectTrigger id="fileType">
                 <SelectValue />
               </SelectTrigger>
@@ -145,9 +145,9 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
             <div className="space-y-2">
               <Label htmlFor="approvalStatus">Approval Status</Label>
               <Select
+                disabled={uploading}
                 value={approvalStatus}
                 onValueChange={setApprovalStatus}
-                disabled={uploading}
               >
                 <SelectTrigger id="approvalStatus">
                   <SelectValue />
@@ -163,32 +163,32 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
           <div className="space-y-2">
             <Label htmlFor="label">Label (optional)</Label>
             <Input
+              disabled={uploading}
               id="label"
+              placeholder="e.g., Final Proof V2"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g., Final Proof V2"
-              disabled={uploading}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="message">Message (optional)</Label>
             <Textarea
+              disabled={uploading}
               id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
               placeholder="Add a note about this file..."
               rows={3}
-              disabled={uploading}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={uploading}>
+          <Button disabled={uploading} variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleUpload} disabled={!selectedFile || uploading}>
+          <Button disabled={!selectedFile || uploading} onClick={handleUpload}>
             {uploading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

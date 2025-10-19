@@ -2,6 +2,7 @@
 
 import { MAX_FILE_SIZE, TAX_RATE, DEFAULT_WAREHOUSE_ZIP } from '@/lib/constants'
 import type { CartItem, CartState, CartContextType } from '@/lib/cart-types'
+import { logAddToCart, logEvent } from '@/components/GoogleAnalytics'
 
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
 
@@ -29,12 +30,35 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   const updatedState = (() => {
     switch (action.type) {
       case 'ADD_ITEM': {
-        // SINGLE PRODUCT MODEL: Replace existing cart item with new one
-        // Users can only order one product at a time
+        // Check if exact same product configuration already exists
+        const existingIndex = state.items.findIndex(
+          (item) =>
+            item.productId === action.payload.productId &&
+            JSON.stringify(item.options) === JSON.stringify(action.payload.options)
+        )
+
+        if (existingIndex >= 0) {
+          // Update quantity of existing item
+          return {
+            ...state,
+            items: state.items.map((item, index) =>
+              index === existingIndex
+                ? {
+                    ...item,
+                    quantity: item.quantity + action.payload.quantity,
+                    subtotal: item.price * (item.quantity + action.payload.quantity),
+                  }
+                : item
+            ),
+            lastUpdated: new Date().toISOString(),
+          }
+        }
+
+        // Add new item to cart (support multiple products)
+        // Note: Drawer no longer auto-opens on add - user redirected to /cart page
         return {
           ...state,
-          items: [action.payload], // Replace entire cart with just this item
-          isOpen: true,
+          items: [...state.items, action.payload],
           lastUpdated: new Date().toISOString(),
         }
       }
@@ -163,6 +187,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const id = `${item.productId}-${JSON.stringify(item.options)}-${Date.now()}`
     const subtotal = item.price * item.quantity
 
+    // Track add to cart in Google Analytics
+    logAddToCart({
+      item_id: item.productId || item.sku || id,
+      item_name: item.name,
+      price: item.price / 100,
+      quantity: item.quantity,
+      category: item.categoryName || 'Uncategorized',
+    })
+
     dispatch({
       type: 'ADD_ITEM',
       payload: { ...item, id, subtotal },
@@ -174,8 +207,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const removeItem = useCallback((id: string) => {
+    // Find the item before removing for analytics
+    const item = state.items.find((i) => i.id === id)
+
+    if (item) {
+      // Track remove from cart in Google Analytics
+      logEvent('remove_from_cart', 'Ecommerce', item.name, item.quantity)
+    }
+
     dispatch({ type: 'REMOVE_ITEM', payload: id })
-  }, [])
+  }, [state.items])
 
   const clearCart = useCallback(() => {
     dispatch({ type: 'CLEAR_CART' })

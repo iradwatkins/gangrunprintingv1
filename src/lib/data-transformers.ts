@@ -55,8 +55,13 @@ export function transformProductForFrontend(product: Product): TransformedProduc
     CreatedAt: product.createdAt || product.created_at,
     UpdatedAt: product.updatedAt || product.updated_at,
 
+    // SEO Metrics (JSONB field from database)
+    seoMetrics: product.seoMetrics || (product as any).seo_metrics,
+
     // Relations
-    ProductCategory: transformCategoryForFrontend(product.productCategory || product.category),
+    ProductCategory: transformCategoryForFrontend(
+      (product as any).ProductCategory || product.productCategory || product.category
+    ),
     ProductImages: transformImagesForFrontend(
       product.productImages || product.images || (product as any).ProductImage || []
     ),

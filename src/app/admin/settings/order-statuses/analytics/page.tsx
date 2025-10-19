@@ -201,21 +201,21 @@ export default function OrderStatusAnalyticsPage() {
         <CardContent>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
-              <Label htmlFor="startDate" className="text-sm text-muted-foreground">From:</Label>
+              <Label className="text-sm text-muted-foreground" htmlFor="startDate">From:</Label>
               <Input
+                className="w-[180px]"
                 id="startDate"
                 type="date"
-                className="w-[180px]"
                 value={startDate ? startDate.toISOString().split('T')[0] : ''}
                 onChange={(e) => setStartDate(new Date(e.target.value))}
               />
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="endDate" className="text-sm text-muted-foreground">To:</Label>
+              <Label className="text-sm text-muted-foreground" htmlFor="endDate">To:</Label>
               <Input
+                className="w-[180px]"
                 id="endDate"
                 type="date"
-                className="w-[180px]"
                 value={endDate ? endDate.toISOString().split('T')[0] : ''}
                 onChange={(e) => setEndDate(new Date(e.target.value))}
               />

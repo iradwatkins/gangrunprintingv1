@@ -137,9 +137,29 @@ export class AnalyticsService {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10)
 
-    // For now, return empty categories since we don't track product categories in order items
-    // In future, we could add categoryId/categoryName to OrderItem for better analytics
-    const categories: Array<{ name: string; revenue: number; orders: number }> = []
+    // Calculate category metrics from order items
+    const categoryMap = new Map<string, { revenue: number; orderIds: Set<string> }>()
+
+    currentOrders.forEach((order) => {
+      order.OrderItem.forEach((item) => {
+        if (item.categoryName) {
+          const existing = categoryMap.get(item.categoryName) || {
+            revenue: 0,
+            orderIds: new Set<string>(),
+          }
+          categoryMap.set(item.categoryName, {
+            revenue: existing.revenue + item.price,
+            orderIds: existing.orderIds.add(order.id),
+          })
+        }
+      })
+    })
+
+    const categories = Array.from(categoryMap.entries()).map(([name, data]) => ({
+      name,
+      revenue: data.revenue,
+      orders: data.orderIds.size,
+    }))
 
     // Calculate conversion metrics
     const completedOrders = currentOrders.filter(

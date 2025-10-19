@@ -739,6 +739,8 @@ model OrderItem {
   calculatedWeight Float?
   dimensions       Json?
   paperStockId     String?
+  categoryId       String?          // For analytics - product category ID
+  categoryName     String?          // For analytics - product category name
   Order            Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
   PaperStock       PaperStock?      @relation(fields: [paperStockId], references: [id])
   OrderItemAddOn   OrderItemAddOn[]

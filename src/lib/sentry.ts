@@ -153,8 +153,13 @@ export function captureMessage(
 }
 
 export function recordMetric(name: string, value: number, tags?: Record<string, string>) {
-  if (SENTRY_ENABLED && Sentry.metrics) {
-    Sentry.metrics.gauge(name, value, { tags })
+  if (SENTRY_ENABLED) {
+    // Metrics API not available in this Sentry version
+    // Use custom event instead
+    Sentry.captureMessage(`Metric: ${name}`, {
+      level: 'info',
+      tags: { ...tags, metric_name: name, metric_value: value.toString() },
+    })
   }
   logger.info('Metric recorded:', { name, value, tags })
 }
@@ -162,7 +167,10 @@ export function recordMetric(name: string, value: number, tags?: Record<string, 
 // New enterprise features
 export function startTransaction(name: string, op: string) {
   if (SENTRY_ENABLED) {
-    return Sentry.startTransaction({ name, op })
+    // startTransaction deprecated in newer Sentry versions
+    // Using span instead
+    Sentry.startSpan({ name, op }, () => {})
+    return null
   }
   return null
 }

@@ -373,11 +373,11 @@ export default function DesignSetsPage() {
                           <div key={item.id} className="p-2 bg-muted rounded text-sm">
                             <div className="font-medium">{item.designOption?.name}</div>
                             <div className="flex gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
+                              <Badge className="text-xs" variant="outline">
                                 {item.designOption?.pricingType}
                               </Badge>
                               {item.isDefault && (
-                                <Badge variant="default" className="text-xs">
+                                <Badge className="text-xs" variant="default">
                                   Default
                                 </Badge>
                               )}
