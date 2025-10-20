@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { N8NWorkflows } from '@/lib/n8n'
+import { WebhookService } from '@/lib/services/webhook-service'
 import crypto from 'crypto'
 
 // Verify Square webhook signature
@@ -116,6 +117,9 @@ async function handlePaymentCreated(data: Record<string, unknown>) {
         },
       })
     })
+
+    // Trigger post-purchase thank you email via N8N
+    await WebhookService.triggerOrderCreated(order.id)
 
     // Trigger N8N workflow for payment received
     try {
@@ -241,6 +245,11 @@ async function handleFulfillmentUpdated(data: Record<string, unknown>) {
           },
         })
       })
+
+      // Trigger webhook for order delivered status
+      if (newStatus === 'DELIVERED') {
+        await WebhookService.triggerOrderDelivered(order.id)
+      }
     }
   }
 }
