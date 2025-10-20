@@ -1,0 +1,76 @@
+{
+  "name": "SEO Brain: Sitemap Submitter (Weekly)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1
+            }
+          ]
+        }
+      },
+      "name": "Schedule: Weekly",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.google.com/ping?sitemap=https://gangrunprinting.com/sitemap.xml",
+        "authentication": "none"
+      },
+      "name": "Ping Google",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://www.bing.com/ping?sitemap=https://gangrunprinting.com/sitemap.xml",
+        "authentication": "none"
+      },
+      "name": "Ping Bing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "🗺️ *Sitemap Submitted*\\n\\nSitemap pinged to Google and Bing successfully.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Complete",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [650, 250],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule: Weekly": {
+      "main": [[
+        {"node": "Ping Google", "type": "main", "index": 0},
+        {"node": "Ping Bing", "type": "main", "index": 0}
+      ]]
+    },
+    "Ping Google": {
+      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+    },
+    "Ping Bing": {
+      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "tags": [{"name": "SEO Brain"}]
+}

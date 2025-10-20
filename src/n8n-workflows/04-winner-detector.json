@@ -1,0 +1,221 @@
+{
+  "name": "SEO Brain: Winner Detector",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "detect-winners",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook: Detect Winners",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const campaignId = $input.item.json.body.campaignId;\nconst topCount = $input.item.json.body.topCount || 10;\n\nreturn {\n  json: { campaignId, topCount }\n};"
+      },
+      "name": "Extract Parameters",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/analyze-winners",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $json.campaignId }}"
+            },
+            {
+              "name": "topCount",
+              "value": "={{ $json.topCount }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Analyze Winners",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.success }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Pattern Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "🏆 *Winner Pattern Detected*\\n\\n*Pattern:* {{ $json.pattern.patternName }}\\n*Source Cities:* {{ $json.sourceCities.slice(0, 3).join(', ') }} (+{{ $json.sourceCities.length - 3 }} more)\\n*Avg Score:* {{ Math.round($json.avgScore) }}/100\\n\\n*Key Elements:*\\n- Intro: {{ $json.pattern.contentStructure.introLength }}\\n- Benefits: {{ $json.pattern.contentStructure.benefitsCount }}\\n- FAQs: {{ $json.pattern.contentStructure.faqCount }}\\n- Keyword Density: {{ $json.pattern.seoStructure.keywordDensity }}\\n\\nReady to apply to underperformers?",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Pattern Found",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"SEOBrainAlert\" (id, \"campaignId\", \"alertType\", message, severity, \"telegramSent\", \"createdAt\")\nVALUES ($1, $2, 'WINNER_PATTERN_FOUND', $3, 'INFO', true, NOW())",
+        "additionalFields": {
+          "queryParameters": "={{ [`alert-${Date.now()}`, $node[\"Extract Parameters\"].json.campaignId, `Winner pattern '${$json.pattern.patternName}' detected with ${$json.avgScore.toFixed(1)} avg score`] }}"
+        }
+      },
+      "name": "Log Pattern Discovery",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1250, 200],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "❌ *Winner Detection Failed*\\n\\nCampaign: {{ $node[\"Extract Parameters\"].json.campaignId }}\\n\\nNo clear winner pattern found. Try again after more traffic data.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Failure",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Analyze Winners\"].json }}",
+        "options": {}
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Detect Winners": {
+      "main": [
+        [
+          {
+            "node": "Extract Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Parameters": {
+      "main": [
+        [
+          {
+            "node": "Analyze Winners",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Winners": {
+      "main": [
+        [
+          {
+            "node": "Pattern Found?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pattern Found?": {
+      "main": [
+        [
+          {
+            "node": "Notify Pattern Found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Pattern Found": {
+      "main": [
+        [
+          {
+            "node": "Log Pattern Discovery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "tags": [
+    {
+      "name": "SEO Brain"
+    }
+  ]
+}

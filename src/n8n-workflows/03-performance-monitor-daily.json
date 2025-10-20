@@ -1,0 +1,267 @@
+{
+  "name": "SEO Brain: Performance Monitor (Daily)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "name": "Schedule: Every 24 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, \"productName\" FROM \"ProductCampaignQueue\" WHERE status = 'COMPLETED' ORDER BY \"generationCompletedAt\" DESC LIMIT 5",
+        "options": {}
+      },
+      "name": "Get Active Campaigns",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Loop Campaigns",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/performance",
+        "authentication": "none",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Get Performance Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"CityPerformanceSnapshot\" (id, \"cityLandingPageId\", timestamp, views, conversions, revenue, \"conversionRate\", \"avgOrderValue\", \"performanceScore\")\nSELECT \n  'snapshot-' || clp.id || '-' || EXTRACT(EPOCH FROM NOW())::text,\n  clp.id,\n  NOW(),\n  clp.views,\n  (SELECT COUNT(*) FROM \"Order\" WHERE \"cityLandingPageId\" = clp.id),\n  clp.revenue,\n  clp.\"conversionRate\",\n  CASE WHEN (SELECT COUNT(*) FROM \"Order\" WHERE \"cityLandingPageId\" = clp.id) > 0 \n    THEN clp.revenue / (SELECT COUNT(*) FROM \"Order\" WHERE \"cityLandingPageId\" = clp.id)\n    ELSE 0 \n  END,\n  0\nFROM \"CityLandingPage\" clp\nWHERE clp.\"landingPageSetId\" = $1",
+        "additionalFields": {
+          "queryParameters": "={{ [$json.id] }}"
+        }
+      },
+      "name": "Create Performance Snapshots",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1050, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Check if any pages need attention\nconst performance = $node[\"Get Performance Data\"].json;\n\nconst needsAttention = performance.bottomPerformers.filter(p => p.views > 50 && p.conversionRate < 0.01);\n\nif (needsAttention.length > 0) {\n  return {\n    json: {\n      campaignId: $json.id,\n      productName: $json.productName,\n      needsAttention: needsAttention.length,\n      shouldAlert: true\n    }\n  };\n}\n\nreturn { json: { shouldAlert: false } };"
+      },
+      "name": "Check if Alert Needed",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.shouldAlert }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Alert Needed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "⚠️ *Performance Alert*\\n\\nCampaign: {{ $json.productName }}\\nPages needing attention: {{ $json.needsAttention }}\\n\\nThese pages have 50+ views but <1% conversion.\\n\\nRun analysis: /analyze {{ $json.campaignId }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1650, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"SEOBrainAlert\" (id, \"campaignId\", \"alertType\", message, severity, \"telegramSent\", \"createdAt\")\nVALUES ($1, $2, 'LOW_PERFORMANCE', $3, 'MEDIUM', true, NOW())",
+        "additionalFields": {
+          "queryParameters": "={{ [`alert-${Date.now()}`, $json.campaignId, `${$json.needsAttention} pages with low conversion rates`] }}"
+        }
+      },
+      "name": "Log Alert",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1850, 200],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule: Every 24 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Active Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Loop Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Get Performance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Performance Data": {
+      "main": [
+        [
+          {
+            "node": "Create Performance Snapshots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Performance Snapshots": {
+      "main": [
+        [
+          {
+            "node": "Check if Alert Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Alert Needed": {
+      "main": [
+        [
+          {
+            "node": "Alert Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Needed?": {
+      "main": [
+        [
+          {
+            "node": "Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Alert": {
+      "main": [
+        [
+          {
+            "node": "Log Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Alert": {
+      "main": [
+        [
+          {
+            "node": "Loop Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "tags": [
+    {
+      "name": "SEO Brain"
+    }
+  ]
+}

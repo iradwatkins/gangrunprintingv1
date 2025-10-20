@@ -1,0 +1,81 @@
+{
+  "name": "SEO Brain: Decision Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "execute-decision",
+        "responseMode": "responseNode"
+      },
+      "name": "Webhook: Execute Decision",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/approve-decision",
+        "authentication": "none",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "decisionId",
+              "value": "={{ $json.body.decisionId }}"
+            },
+            {
+              "name": "selectedOption",
+              "value": "={{ $json.body.selectedOption }}"
+            }
+          ]
+        }
+      },
+      "name": "Execute Decision",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "✅ *Decision Executed*\\n\\nOption {{ $json.body.selectedOption }} applied successfully.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Complete",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: true } }}"
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Execute Decision": {
+      "main": [[{"node": "Execute Decision", "type": "main", "index": 0}]]
+    },
+    "Execute Decision": {
+      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+    },
+    "Notify Complete": {
+      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "tags": [{"name": "SEO Brain"}]
+}

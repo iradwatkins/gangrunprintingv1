@@ -1,0 +1,280 @@
+{
+  "name": "SEO Brain: Product → 200 Cities Orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "seo-brain-start",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook: Start Campaign",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract product data from webhook\nconst productData = $input.item.json.body;\n\nreturn {\n  json: {\n    campaignId: `campaign-${Date.now()}`,\n    productName: productData.productName,\n    productSpec: productData,\n    totalCities: 200,\n    batchSize: 10,\n    currentBatch: 0\n  }\n};"
+      },
+      "name": "Initialize Campaign",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"ProductCampaignQueue\" (id, \"productName\", \"productSpec\", status, \"citiesGenerated\", \"generationStartedAt\")\nVALUES ($1, $2, $3, 'GENERATING', 0, NOW())\nRETURNING *",
+        "additionalFields": {
+          "queryParameters": "={{ [$node[\"Initialize Campaign\"].json[\"campaignId\"], $node[\"Initialize Campaign\"].json[\"productName\"], JSON.stringify($node[\"Initialize Campaign\"].json[\"productSpec\"])] }}"
+        }
+      },
+      "name": "Create Campaign Record",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [650, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $node[\"Initialize Campaign\"].json[\"currentBatch\"] }}",
+              "operation": "smaller",
+              "value2": "={{ $node[\"Initialize Campaign\"].json[\"totalCities\"] / $node[\"Initialize Campaign\"].json[\"batchSize\"] }}"
+            }
+          ]
+        }
+      },
+      "name": "More Batches?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/generate-batch",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $node[\"Initialize Campaign\"].json[\"campaignId\"] }}"
+            },
+            {
+              "name": "batchNumber",
+              "value": "={{ $node[\"Initialize Campaign\"].json[\"currentBatch\"] }}"
+            },
+            {
+              "name": "batchSize",
+              "value": "={{ $node[\"Initialize Campaign\"].json[\"batchSize\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate City Batch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "name": "Wait 2 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Increment batch counter\nconst data = $node[\"Initialize Campaign\"].json;\ndata.currentBatch += 1;\n\nreturn { json: data };"
+      },
+      "name": "Increment Batch",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "🎉 *Campaign Complete!*\\n\\nProduct: {{ $node[\"Initialize Campaign\"].json[\"productName\"] }}\\nCities Generated: 200\\nTime: {{ Math.round((Date.now() - $node[\"Initialize Campaign\"].json[\"startTime\"]) / 1000 / 60) }} minutes\\n\\nReady for optimization analysis.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Complete",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1050, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"ProductCampaignQueue\" SET status = 'COMPLETED', \"generationCompletedAt\" = NOW(), \"citiesGenerated\" = 200 WHERE id = $1",
+        "additionalFields": {
+          "queryParameters": "={{ [$node[\"Initialize Campaign\"].json[\"campaignId\"]] }}"
+        }
+      },
+      "name": "Mark Campaign Complete",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1250, 400],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: true, campaignId: $node[\"Initialize Campaign\"].json[\"campaignId\"], message: \"Campaign started - generating 200 cities\" } }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 500]
+    }
+  ],
+  "connections": {
+    "Webhook: Start Campaign": {
+      "main": [
+        [
+          {
+            "node": "Initialize Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Campaign": {
+      "main": [
+        [
+          {
+            "node": "Create Campaign Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Campaign Record": {
+      "main": [
+        [
+          {
+            "node": "More Batches?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More Batches?": {
+      "main": [
+        [
+          {
+            "node": "Generate City Batch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate City Batch": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Increment Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Batch": {
+      "main": [
+        [
+          {
+            "node": "More Batches?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Complete": {
+      "main": [
+        [
+          {
+            "node": "Mark Campaign Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true
+  },
+  "tags": [
+    {
+      "name": "SEO Brain"
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+{
+  "name": "SEO Brain: City Page Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-city-page",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook: Generate City",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const data = $input.item.json.body;\n\nreturn {\n  json: {\n    campaignId: data.campaignId,\n    city: data.city,\n    state: data.state,\n    productSpec: data.productSpec,\n    mainProductImageUrl: data.mainProductImageUrl\n  }\n};"
+      },
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/generate",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "deepseek-r1:32b"
+            },
+            {
+              "name": "prompt",
+              "value": "Generate a 500-word introduction for {{ $node[\"Extract Data\"].json[\"city\"] }}, {{ $node[\"Extract Data\"].json[\"state\"] }} flyer printing. Include 5+ local references."
+            },
+            {
+              "name": "stream",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate Intro (Ollama)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/generate",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "deepseek-r1:32b"
+            },
+            {
+              "name": "prompt",
+              "value": "Generate 10 benefits for flyer printing in {{ $node[\"Extract Data\"].json[\"city\"] }}. Each 20-30 words with local context."
+            },
+            {
+              "name": "stream",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate Benefits (Ollama)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/generate",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "deepseek-r1:32b"
+            },
+            {
+              "name": "prompt",
+              "value": "Generate 15 FAQs (question + 60-100 word answer) for {{ $node[\"Extract Data\"].json[\"city\"] }} flyer printing. Include local delivery, ZIP codes."
+            },
+            {
+              "name": "stream",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate FAQs (Ollama)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/imagen-4:predict",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "instances",
+              "value": "={{ [{ prompt: `Professional printing business in ${$node[\"Extract Data\"].json[\"city\"]}, ${$node[\"Extract Data\"].json[\"state\"]} with local landmarks` }] }}"
+            },
+            {
+              "name": "parameters",
+              "value": "={{ { sampleCount: 1 } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate City Hero Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 500]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Combine all generated content\nconst intro = $node[\"Generate Intro (Ollama)\"].json.response;\nconst benefits = $node[\"Generate Benefits (Ollama)\"].json.response;\nconst faqs = $node[\"Generate FAQs (Ollama)\"].json.response;\nconst cityImage = $node[\"Generate City Hero Image\"].json.predictions[0].bytesBase64Encoded;\n\nreturn {\n  json: {\n    campaignId: $node[\"Extract Data\"].json.campaignId,\n    city: $node[\"Extract Data\"].json.city,\n    state: $node[\"Extract Data\"].json.state,\n    slug: `${$node[\"Extract Data\"].json.city.toLowerCase()}-${$node[\"Extract Data\"].json.state.toLowerCase()}`,\n    title: `5000 4x6 Flyers in ${$node[\"Extract Data\"].json.city}, ${$node[\"Extract Data\"].json.state} | 3-4 Day Turnaround | $179`,\n    aiIntro: intro,\n    aiBenefits: benefits,\n    faqSchema: JSON.parse(faqs),\n    mainProductImageUrl: $node[\"Extract Data\"].json.mainProductImageUrl,\n    cityHeroImageBase64: cityImage\n  }\n};"
+      },
+      "name": "Combine Content",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"CityLandingPage\" (id, \"landingPageSetId\", slug, title, \"aiIntro\", \"aiBenefits\", \"faqSchema\", \"mainProductImageUrl\", \"cityHeroImageUrl\", views, revenue, \"conversionRate\", \"createdAt\")\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 0, 0, 0, NOW())\nRETURNING *",
+        "additionalFields": {
+          "queryParameters": "={{ [`page-${Date.now()}`, $node[\"Combine Content\"].json.campaignId, $node[\"Combine Content\"].json.slug, $node[\"Combine Content\"].json.title, $node[\"Combine Content\"].json.aiIntro, $node[\"Combine Content\"].json.aiBenefits, JSON.stringify($node[\"Combine Content\"].json.faqSchema), $node[\"Combine Content\"].json.mainProductImageUrl, `data:image/png;base64,${$node[\"Combine Content\"].json.cityHeroImageBase64}`] }}"
+        }
+      },
+      "name": "Save City Page",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1050, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: true, city: $node[\"Combine Content\"].json.city, slug: $node[\"Combine Content\"].json.slug } }}",
+        "options": {}
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Generate City": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Intro (Ollama)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Benefits (Ollama)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate FAQs (Ollama)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate City Hero Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Intro (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Combine Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Benefits (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Combine Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate FAQs (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Combine Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate City Hero Image": {
+      "main": [
+        [
+          {
+            "node": "Combine Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Content": {
+      "main": [
+        [
+          {
+            "node": "Save City Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save City Page": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "tags": [
+    {
+      "name": "SEO Brain"
+    }
+  ]
+}

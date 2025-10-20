@@ -1,0 +1,341 @@
+{
+  "name": "SEO Brain: Loser Improver (Decision Generator)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "improve-losers",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook: Improve Losers",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const campaignId = $input.item.json.body.campaignId;\n\nreturn { json: { campaignId } };"
+      },
+      "name": "Extract Campaign ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/performance",
+        "authentication": "none",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $json.campaignId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Get Performance Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM \"CityWinnerPattern\" WHERE \"productType\" = 'flyers' ORDER BY \"avgPerformanceScore\" DESC LIMIT 1",
+        "options": {}
+      },
+      "name": "Get Winner Pattern",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [850, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Get bottom performers\nconst losers = $node[\"Get Performance Data\"].json.bottomPerformers || [];\nconst pattern = $node[\"Get Winner Pattern\"].json[0];\n\nif (losers.length === 0 || !pattern) {\n  return { json: { hasLosers: false } };\n}\n\n// Take first loser for decision generation\nconst targetLoser = losers[0];\n\nreturn {\n  json: {\n    hasLosers: true,\n    loserCity: targetLoser.city,\n    loserPageId: targetLoser.pageId,\n    loserScore: targetLoser.performanceScore,\n    winnerPattern: pattern.pattern,\n    campaignId: $node[\"Extract Campaign ID\"].json.campaignId\n  }\n};"
+      },
+      "name": "Select Target Loser",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasLosers }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Has Losers?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/generate",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "deepseek-r1:32b"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ `Generate 3 improvement options (A: Conservative, B: Moderate, C: Aggressive) for city page '${$json.loserCity}' with score ${$json.loserScore}/100. Winner pattern: ${JSON.stringify($json.winnerPattern)}. Return JSON with optionA, optionB, optionC, each with: action, pros (array), cons (array), confidence (1-100), estimatedImpact (string).` }}"
+            },
+            {
+              "name": "stream",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate Options (Ollama)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse Ollama JSON response\nconst response = $input.item.json.response;\nconst jsonMatch = response.match(/\\{[\\s\\S]*\\}/);\nconst options = JSON.parse(jsonMatch[0]);\n\nreturn {\n  json: {\n    optionA: options.optionA,\n    optionB: options.optionB,\n    optionC: options.optionC\n  }\n};"
+      },
+      "name": "Parse Options",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1650, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"SEOBrainDecision\" (id, \"campaignId\", \"decisionType\", title, description, context, options, status, \"createdAt\")\nVALUES ($1, $2, 'IMPROVE_LOSER', $3, $4, $5, $6, 'PENDING', NOW())\nRETURNING *",
+        "additionalFields": {
+          "queryParameters": "={{ [`decision-${Date.now()}`, $node[\"Select Target Loser\"].json.campaignId, `Improve ${$node[\"Select Target Loser\"].json.loserCity} (Score: ${$node[\"Select Target Loser\"].json.loserScore})`, 'This city page is underperforming. Choose an improvement option.', JSON.stringify({ loserPageId: $node[\"Select Target Loser\"].json.loserPageId, loserCity: $node[\"Select Target Loser\"].json.loserCity, currentScore: $node[\"Select Target Loser\"].json.loserScore }), JSON.stringify({ A: $json.optionA, B: $json.optionB, C: $json.optionC })] }}"
+        }
+      },
+      "name": "Create Decision Record",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1850, 200],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "={{ `🔧 *Decision Needed: Improve ${$node[\"Select Target Loser\"].json.loserCity}*\\n\\n*Current Score:* ${$node[\"Select Target Loser\"].json.loserScore}/100\\n\\n*Option A (Conservative):*\\n${$json.optionA.action}\\n👍 ${$json.optionA.pros.join(', ')}\\n👎 ${$json.optionA.cons.join(', ')}\\nConfidence: ${$json.optionA.confidence}%\\nImpact: ${$json.optionA.estimatedImpact}\\n\\n*Option B (Moderate):*\\n${$json.optionB.action}\\n👍 ${$json.optionB.pros.join(', ')}\\n👎 ${$json.optionB.cons.join(', ')}\\nConfidence: ${$json.optionB.confidence}%\\nImpact: ${$json.optionB.estimatedImpact}\\n\\n*Option C (Aggressive):*\\n${$json.optionC.action}\\n👍 ${$json.optionC.pros.join(', ')}\\n👎 ${$json.optionC.cons.join(', ')}\\nConfidence: ${$json.optionC.confidence}%\\nImpact: ${$json.optionC.estimatedImpact}\\n\\nReply: A, B, or C` }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Decision Request",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [2050, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env[\"TELEGRAM_ADMIN_CHAT_ID\"] }}",
+        "text": "✅ *No Losers Found*\\n\\nAll city pages are performing well!",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "No Losers",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1450, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: $json.hasLosers, message: $json.hasLosers ? 'Decision sent to Telegram' : 'No losers found' } }}",
+        "options": {}
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Improve Losers": {
+      "main": [
+        [
+          {
+            "node": "Extract Campaign ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Campaign ID": {
+      "main": [
+        [
+          {
+            "node": "Get Performance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Performance Data": {
+      "main": [
+        [
+          {
+            "node": "Get Winner Pattern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Winner Pattern": {
+      "main": [
+        [
+          {
+            "node": "Select Target Loser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Target Loser": {
+      "main": [
+        [
+          {
+            "node": "Has Losers?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Losers?": {
+      "main": [
+        [
+          {
+            "node": "Generate Options (Ollama)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Losers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Options (Ollama)": {
+      "main": [
+        [
+          {
+            "node": "Parse Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Options": {
+      "main": [
+        [
+          {
+            "node": "Create Decision Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Decision Record": {
+      "main": [
+        [
+          {
+            "node": "Send Decision Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Decision Request": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Losers": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveExecutionProgress": true
+  },
+  "tags": [
+    {
+      "name": "SEO Brain"
+    }
+  ]
+}

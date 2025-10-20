@@ -1,0 +1,100 @@
+{
+  "name": "SEO Brain: Daily Optimizer",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24,
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "name": "Schedule: 3 AM Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id FROM \"ProductCampaignQueue\" WHERE status = 'COMPLETED' AND \"generationCompletedAt\" > NOW() - INTERVAL '30 days' ORDER BY \"generationCompletedAt\" DESC"
+      },
+      "name": "Get Recent Campaigns",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "GangRun PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/webhook/detect-winners",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "name": "Analyze Winners",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "name": "Wait 5s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/webhook/improve-losers",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "campaignId",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "name": "Improve Losers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Schedule: 3 AM Daily": {
+      "main": [[{"node": "Get Recent Campaigns", "type": "main", "index": 0}]]
+    },
+    "Get Recent Campaigns": {
+      "main": [[{"node": "Analyze Winners", "type": "main", "index": 0}]]
+    },
+    "Analyze Winners": {
+      "main": [[{"node": "Wait 5s", "type": "main", "index": 0}]]
+    },
+    "Wait 5s": {
+      "main": [[{"node": "Improve Losers", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "tags": [{"name": "SEO Brain"}]
+}

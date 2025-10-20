@@ -1,0 +1,77 @@
+{
+  "name": "SEO Brain: Telegram Response Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"]
+      },
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "seo-brain-telegram",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "SEO Brain Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const text = $input.item.json.message.text.trim().toUpperCase();\n\nif (['A', 'B', 'C'].includes(text)) {\n  return { json: { isDecision: true, option: text } };\n}\n\nreturn { json: { isDecision: false } };"
+      },
+      "name": "Parse Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isDecision }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Is Decision?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3020/api/seo-brain/webhook",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $node[\"Telegram Trigger\"].json.message }}"
+            }
+          ]
+        }
+      },
+      "name": "Forward to API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [[{"node": "Parse Response", "type": "main", "index": 0}]]
+    },
+    "Parse Response": {
+      "main": [[{"node": "Is Decision?", "type": "main", "index": 0}]]
+    },
+    "Is Decision?": {
+      "main": [[{"node": "Forward to API", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "tags": [{"name": "SEO Brain"}]
+}

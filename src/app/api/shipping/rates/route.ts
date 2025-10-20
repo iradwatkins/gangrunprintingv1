@@ -22,7 +22,7 @@ const RateRequestSchema = z.object({
         height: z.number(),
       })
       .optional(),
-  }),
+  }).optional(),
   packages: z
     .array(
       z.object({
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const { destination, package: pkg, packages, providers: requestedProviders } = validation.data
 
     // Build packages array (support single package or multiple)
-    const packagesToShip = packages || [pkg]
+    const packagesToShip = packages || (pkg ? [pkg] : [{ weight: 1 }]) // Default to 1 lb if neither provided
 
     // Get shipping registry
     const registry = getShippingRegistry()
