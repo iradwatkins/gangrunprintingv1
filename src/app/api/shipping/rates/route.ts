@@ -55,9 +55,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
+
+    // Log the incoming request for debugging
+    console.log('[Shipping API] Incoming request:', JSON.stringify(body, null, 2))
+
     const validation = RateRequestSchema.safeParse(body)
 
     if (!validation.success) {
+      console.error('[Shipping API] Validation failed:', validation.error.issues)
       return NextResponse.json(
         {
           error: 'Invalid request',

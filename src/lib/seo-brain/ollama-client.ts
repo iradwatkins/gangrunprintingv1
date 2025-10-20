@@ -5,10 +5,11 @@
  */
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'deepseek-r1:32b'
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen2.5:32b'
 
 export interface OllamaGenerateOptions {
   prompt: string
+  system?: string
   model?: string
   temperature?: number
   maxTokens?: number
@@ -29,18 +30,25 @@ export class OllamaClient {
    */
   async generate(options: OllamaGenerateOptions): Promise<string> {
     try {
+      const requestBody: any = {
+        model: options.model || this.defaultModel,
+        prompt: options.prompt,
+        stream: options.stream || false,
+        options: {
+          temperature: options.temperature || 0.7,
+          num_predict: options.maxTokens || 2000,
+        },
+      }
+
+      // Add system prompt if provided
+      if (options.system) {
+        requestBody.system = options.system
+      }
+
       const response = await fetch(`${this.baseUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: options.model || this.defaultModel,
-          prompt: options.prompt,
-          stream: options.stream || false,
-          options: {
-            temperature: options.temperature || 0.7,
-            num_predict: options.maxTokens || 2000,
-          },
-        }),
+        body: JSON.stringify(requestBody),
       })
 
       if (!response.ok) {

@@ -39,8 +39,9 @@ export default function ShippingPage() {
   }, [items, router])
 
   // Calculate package weights from cart items
+  // Ensure weight is at least 0.1 lbs (API minimum) and default to 1 lb if not set
   const packages = items.map((item) => ({
-    weight: item.paperStockWeight || 1, // Default 1 lb if no weight
+    weight: item.paperStockWeight && item.paperStockWeight >= 0.1 ? item.paperStockWeight : 1,
     dimensions: item.dimensions,
   }))
 

@@ -152,6 +152,10 @@ const data = {
           title: '🤖 Crawler Activity',
           url: '/admin/seo/crawlers',
         },
+        {
+          title: '🧠 AI Content Generator',
+          url: '/admin/seo/generate',
+        },
       ],
     },
     {

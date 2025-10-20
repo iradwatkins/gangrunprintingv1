@@ -5,6 +5,7 @@ import ProductDetailClient from '@/components/product/product-detail-client'
 import { type Metadata } from 'next'
 import { generateAllProductSchemas } from '@/lib/schema-generators'
 import { type PrismaProductImage } from '@/types/product'
+import { getApprovedProductSEO, generateProductMetaTags } from '@/lib/seo-brain/generate-product-seo'
 
 // Force dynamic rendering to prevent chunk loading issues
 export const dynamic = 'force-dynamic'
@@ -29,9 +30,23 @@ export async function generateMetadata({
         isActive: true,
       },
       select: {
+        id: true,
         name: true,
         description: true,
         shortDescription: true,
+        seoMetaTitle: true,
+        seoMetaDescription: true,
+        ProductCategory: {
+          select: {
+            name: true,
+          },
+        },
+        City: {
+          select: {
+            name: true,
+            stateCode: true,
+          },
+        },
       },
     })
 
@@ -42,12 +57,34 @@ export async function generateMetadata({
       }
     }
 
-    return {
-      title: `${product.name} | GangRun Printing`,
-      description:
-        product.shortDescription ||
-        product.description ||
-        `Order ${product.name} from GangRun Printing`,
+    // Try to use AI-generated meta tags if available
+    try {
+      const metaTags = await generateProductMetaTags({
+        productName: product.name,
+        productCategory: product.ProductCategory?.name,
+        city: product.City?.name,
+        state: product.City?.stateCode,
+      })
+
+      return {
+        title: product.seoMetaTitle || metaTags.title,
+        description: product.seoMetaDescription || metaTags.description,
+        openGraph: {
+          title: product.seoMetaTitle || metaTags.title,
+          description: metaTags.ogDescription,
+        },
+      }
+    } catch (aiError) {
+      // Fallback to manual meta tags if AI generation fails
+      console.warn('[SEO Brain] Failed to generate meta tags, using fallback:', aiError)
+      return {
+        title: product.seoMetaTitle || `${product.name} | GangRun Printing`,
+        description:
+          product.seoMetaDescription ||
+          product.shortDescription ||
+          product.description ||
+          `Order ${product.name} from GangRun Printing`,
+      }
     }
   } catch (error) {
     console.error('Error generating metadata:', error)
@@ -210,6 +247,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // See: docs/CRITICAL-REACT-HYDRATION-FIX-2025-10-18.md
   const configuration = null
 
+  // Try to get AI-generated SEO content (with timeout/fallback)
+  let seoContent: string | null = null
+  try {
+    seoContent = await getApprovedProductSEO(
+      product.id,
+      product.City?.name,
+      product.City?.stateCode
+    )
+  } catch (error) {
+    console.warn('[ProductPage] Failed to fetch SEO content:', error)
+  }
+
   // Transform the product data to match client component expectations
   // Add defensive checks for all nested data
   const transformedProduct = {
@@ -237,7 +286,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     basePrice: product.basePrice ?? 0,
     setupFee: product.setupFee ?? 0,
     productionTime: product.productionTime ?? 5,
-    description: product.description || '',
+    // Use AI-generated SEO content if available, otherwise fallback to database description
+    description: seoContent || product.description || '',
     shortDescription: product.shortDescription || '',
   }
 

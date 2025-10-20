@@ -15,6 +15,8 @@ interface UploadedFile {
   preview?: string
   progress: number
   status: 'uploading' | 'completed' | 'error'
+  uploadedBytes?: number
+  startTime?: number
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -23,6 +25,22 @@ const formatFileSize = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+}
+
+const calculateTimeRemaining = (file: UploadedFile): string => {
+  if (!file.startTime || !file.uploadedBytes || file.uploadedBytes === 0) {
+    return 'Calculating...'
+  }
+
+  const elapsedTime = (Date.now() - file.startTime) / 1000 // in seconds
+  const uploadSpeed = file.uploadedBytes / elapsedTime // bytes per second
+  const remainingBytes = file.size - file.uploadedBytes
+  const remainingSeconds = remainingBytes / uploadSpeed
+
+  if (remainingSeconds < 1) return 'Almost done...'
+  if (remainingSeconds < 60) return `${Math.round(remainingSeconds)}s left`
+  if (remainingSeconds < 3600) return `${Math.round(remainingSeconds / 60)}m left`
+  return `${Math.round(remainingSeconds / 3600)}h left`
 }
 
 export default function UploadPage() {
@@ -39,11 +57,13 @@ export default function UploadPage() {
       preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
       progress: 0,
       status: 'uploading' as const,
+      uploadedBytes: 0,
+      startTime: Date.now(),
     }))
 
     setFiles((prev) => [...prev, ...newFiles])
 
-    // Upload files to the API
+    // Upload files to the API with real progress tracking
     newFiles.forEach(async (uploadFile, index) => {
       try {
         const file = Array.from(fileList)[index]
@@ -51,31 +71,80 @@ export default function UploadPage() {
         formData.append('file', file)
         formData.append('fileType', 'design')
 
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
+        // Use XMLHttpRequest to track upload progress
+        const xhr = new XMLHttpRequest()
+
+        // Track upload progress
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100)
+            setFiles((prev) =>
+              prev.map((f) =>
+                f.id === uploadFile.id
+                  ? { ...f, progress: percentComplete, uploadedBytes: e.loaded }
+                  : f
+              )
+            )
+          }
         })
 
-        if (response.ok) {
-          const result = await response.json()
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === uploadFile.id ? { ...f, progress: 100, status: 'completed' } : f
-            )
-          )
-          toast.success(`${file.name} uploaded successfully!`)
-        } else {
-          const error = await response.json()
+        // Handle completion
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 200) {
+            try {
+              const result = JSON.parse(xhr.responseText)
+              setFiles((prev) =>
+                prev.map((f) =>
+                  f.id === uploadFile.id ? { ...f, progress: 100, status: 'completed' } : f
+                )
+              )
+              toast.success(`${file.name} uploaded successfully!`)
+            } catch (error) {
+              setFiles((prev) =>
+                prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+              )
+              toast.error(`Failed to upload ${file.name}: Invalid response`)
+            }
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText)
+              setFiles((prev) =>
+                prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+              )
+              toast.error(`Failed to upload ${file.name}: ${error.error || 'Unknown error'}`)
+            } catch {
+              setFiles((prev) =>
+                prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+              )
+              toast.error(`Failed to upload ${file.name}: Server error`)
+            }
+          }
+        })
+
+        // Handle network errors
+        xhr.addEventListener('error', () => {
           setFiles((prev) =>
             prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
           )
-          toast.error(`Failed to upload ${file.name}: ${error.error || 'Unknown error'}`)
-        }
+          toast.error(`Failed to upload ${uploadFile.name}: Network error`)
+        })
+
+        // Handle abort
+        xhr.addEventListener('abort', () => {
+          setFiles((prev) =>
+            prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
+          )
+          toast.error(`Upload cancelled: ${uploadFile.name}`)
+        })
+
+        // Send the request
+        xhr.open('POST', '/api/upload')
+        xhr.send(formData)
       } catch (error) {
         setFiles((prev) =>
           prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error' } : f))
         )
-        toast.error(`Failed to upload ${uploadFile.name}: Network error`)
+        toast.error(`Failed to upload ${uploadFile.name}: Unexpected error`)
       }
     })
   }
@@ -162,7 +231,15 @@ export default function UploadPage() {
                     </div>
 
                     {file.status === 'uploading' && (
-                      <Progress className="h-1 mt-2" value={file.progress} />
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-600">
+                            {formatFileSize(file.uploadedBytes || 0)} / {formatFileSize(file.size)} • {calculateTimeRemaining(file)}
+                          </span>
+                          <span className="text-xs font-medium text-primary">{file.progress}%</span>
+                        </div>
+                        <Progress className="h-2" value={file.progress} />
+                      </div>
                     )}
 
                     {file.status === 'completed' && (

@@ -932,11 +932,32 @@ model Product {
   Downsell                 Downsell[]
   CityLandingPage          CityLandingPage[]
   ProductDesignSet         ProductDesignSet[]
+  ProductSEOContent        ProductSEOContent[]
 
   @@index([categoryId])
   @@index([slug])
   @@index([isLandingPageProduct])
   @@index([landingPageSetId])
+}
+
+model ProductSEOContent {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  city        String?
+  state       String?
+  content     String   @db.Text
+  wordCount   Int
+  generatedAt DateTime @default(now())
+  model       String   // "qwen2.5:32b"
+  approved    Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([approved])
+  @@index([city, state])
 }
 
 model ProductAddOn {
