@@ -608,6 +608,59 @@ model N8NWebhookLog {
   @@index([webhookId])
 }
 
+model CartSession {
+  id             String   @id
+  sessionId      String   @unique
+  userId         String?
+  email          String?
+  phone          String?
+  items          Json // Array of cart items with product info
+  subtotal       Float
+  tax            Float    @default(0)
+  shipping       Float    @default(0)
+  total          Float
+  shippingMethod String?
+  lastActivity   DateTime @default(now())
+  abandoned      Boolean  @default(false)
+  abandonedAt    DateTime?
+  recovered      Boolean  @default(false)
+  recoveredAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+  User           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([email])
+  @@index([abandoned])
+  @@index([lastActivity])
+  @@index([createdAt])
+}
+
+model Coupon {
+  id          String    @id
+  code        String    @unique
+  type        String // "PERCENTAGE" | "FIXED_AMOUNT"
+  value       Float // Percentage (0-100) or dollar amount in cents
+  description String?
+  minPurchase Float? // Minimum cart value to use coupon (in cents)
+  maxDiscount Float? // Maximum discount amount (in cents) for percentage coupons
+  usageLimit  Int       @default(1) // How many times this coupon can be used
+  usageCount  Int       @default(0) // How many times it's been used
+  userId      String? // If tied to specific customer
+  expiresAt   DateTime? // 7-day expiration from creation
+  isActive    Boolean   @default(true)
+  metadata    Json? // Store campaign info (e.g., "winback", "abandoned_cart")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  User        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([code])
+  @@index([userId])
+  @@index([isActive])
+  @@index([expiresAt])
+}
+
 model Notification {
   id        String           @id
   orderId   String
@@ -725,6 +778,8 @@ model Order {
   @@index([paymentDueDate])
   @@index([paymentMethodType])
   @@index([status]) // ORDER STATUS MANAGER: Index for efficient status lookups
+  @@index([userId, createdAt]) // MARKETING AUTOMATION: Efficient anniversary queries
+  @@index([createdAt, status]) // MARKETING AUTOMATION: Efficient win-back queries
 }
 
 model OrderItem {
@@ -1638,6 +1693,8 @@ model User {
   Funnel            Funnel[]
   FunnelVisit       FunnelVisit[]
   PageTemplate      PageTemplate[]
+  CartSession       CartSession[]
+  Coupon            Coupon[]
 }
 
 model Vendor {

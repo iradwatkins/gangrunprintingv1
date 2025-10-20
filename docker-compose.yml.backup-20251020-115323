@@ -1,0 +1,187 @@
+version: '3.8'
+services:
+  # PostgreSQL Database - Dedicated instance for gangrunprinting
+  postgres:
+    image: postgres:16-alpine
+    container_name: gangrunprinting-postgres
+    ports:
+      - '5435:5432'  # External access on port 5435
+    environment:
+      - POSTGRES_USER=gangrun_user
+      - POSTGRES_PASSWORD=GangRun2024Secure
+      - POSTGRES_DB=gangrun_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gangrun_user -d gangrun_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO Object Storage - For customer uploads and product images
+  minio:
+    image: minio/minio:latest
+    container_name: gangrunprinting-minio
+    ports:
+      - '9002:9000'  # API port
+      - '9102:9001'  # Console port
+    environment:
+      - MINIO_ROOT_USER=gangrun_minio_access
+      - MINIO_ROOT_PASSWORD=gangrun_minio_secret_2024
+      - MINIO_BROWSER_REDIRECT_URL=https://gangrunprinting.com/minio
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Redis - For sessions and job queues
+  redis:
+    image: redis:7-alpine
+    container_name: gangrunprinting-redis
+    ports:
+      - '6302:6379'  # External access on 6302
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - gangrun_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    image: gangrunprinting:v1
+    container_name: gangrunprinting_app
+    ports:
+      - '3020:3002'  # External port 3020, internal port 3002
+    env_file:
+      - .env
+    environment:
+      # Node.js settings
+      - NODE_ENV=production
+      - PORT=3002  # Internal container port (stays 3002)
+      - HOSTNAME=0.0.0.0
+      - TZ=America/Chicago
+
+      # Database - Use dedicated PostgreSQL container
+      - DATABASE_URL=postgresql://gangrun_user:GangRun2024Secure@postgres:5432/gangrun_db?schema=public
+
+      # Redis - Use dedicated container
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+      # Auth (Lucia)
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://gangrunprinting.com}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://gangrunprinting.com}
+      - AUTH_TRUST_HOST=true
+
+      # OAuth Providers
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Admin
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-iradwatkins@gmail.com}
+
+      # Square Payments
+      - SQUARE_ACCESS_TOKEN=${SQUARE_ACCESS_TOKEN}
+      - SQUARE_ENVIRONMENT=${SQUARE_ENVIRONMENT:-production}
+      - SQUARE_LOCATION_ID=${SQUARE_LOCATION_ID}
+      - SQUARE_APPLICATION_ID=${SQUARE_APPLICATION_ID}
+      - SQUARE_WEBHOOK_SIGNATURE_KEY=${SQUARE_WEBHOOK_SIGNATURE_KEY}
+      - NEXT_PUBLIC_SQUARE_APPLICATION_ID=${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+      - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+      - NEXT_PUBLIC_SQUARE_ENVIRONMENT=${NEXT_PUBLIC_SQUARE_ENVIRONMENT:-production}
+
+      # MinIO Storage - CRITICAL FOR FILE UPLOADS
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=gangrun_minio_access
+      - MINIO_SECRET_KEY=gangrun_minio_secret_2024
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET_NAME=gangrun-uploads
+      - MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio
+
+      # Email (Resend)
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-noreply@gangrunprinting.com}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME:-GangRun Printing}
+
+      # PWA
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:support@gangrunprinting.com}
+
+      # Bull Queue
+      - BULL_REDIS_HOST=redis
+      - BULL_REDIS_PORT=6379
+    volumes:
+      - uploads:/app/uploads
+      - print_files:/app/print-files
+      - ./public:/app/public
+      - ./prisma:/app/prisma:ro
+    networks:
+      - gangrun_network
+      - web_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - '--no-verbose'
+        - '--tries=1'
+        - '--spider'
+        - http://127.0.0.1:3002/api/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads:
+    driver: local
+  print_files:
+    driver: local
+  minio_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  gangrun_network:
+    driver: bridge
+  web_network:
+    external: true

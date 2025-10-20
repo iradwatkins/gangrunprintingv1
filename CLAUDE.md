@@ -28,6 +28,9 @@
 - App container: `3020:3002` (external:internal)
 - Internal port 3002 stays the same inside container
 - Nginx proxies `gangrunprinting.com` → `localhost:3020`
+- **CRITICAL: Port 3002 on host CANNOT be used** - Docker containers exit immediately (status 0) when mapped to host port 3002
+- **Verified Issue (Oct 20, 2025)**: Unknown conflict on host port 3002 causes container instability
+- **Port 3020 is MANDATORY** - Do NOT attempt to change this mapping to 3002:3002
 
 **🛡️ PROTECTION LEVEL: MAXIMUM**
 - These 5 ports are EXCLUSIVELY for gangrunprinting.com
