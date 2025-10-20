@@ -50,14 +50,23 @@ export default function CartPage() {
       return
     }
 
+    // Store cart data in session storage for payment page
+    const checkoutData = {
+      items,
+      subtotal,
+      tax,
+      shipping,
+      total,
+    }
+    sessionStorage.setItem('checkout_cart_data', JSON.stringify(checkoutData))
+
     // Store uploaded files
     if (uploadedFiles.length > 0) {
       sessionStorage.setItem('cart_artwork_files', JSON.stringify(uploadedFiles))
     }
 
-    // TODO: Implement payment flow
-    toast.success('Proceeding to payment...')
-    // For now, just show a message
+    // Navigate to payment page
+    router.push('/checkout/payment')
   }
 
   // Empty cart state
