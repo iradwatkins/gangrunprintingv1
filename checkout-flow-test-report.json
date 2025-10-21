@@ -1,0 +1,59 @@
+{
+  "testDate": "2025-10-21T15:02:14.598Z",
+  "total": 3,
+  "successful": 0,
+  "failed": 3,
+  "results": [
+    {
+      "order": "Order 1: Business Cards - Residential Delivery",
+      "success": false,
+      "steps": {
+        "productPageLoaded": true
+      },
+      "screenshots": [
+        "test-screenshots/order1-step1-product-page-2025-10-21T15-01-58-208Z.png",
+        "test-screenshots/order1-step2-configured-2025-10-21T15-01-59-343Z.png",
+        "test-screenshots/order1-error-2025-10-21T15-01-59-471Z.png"
+      ],
+      "fedexRatesFound": 0,
+      "selectedShippingService": "",
+      "errors": [
+        "Could not find \"Add to Cart\" button"
+      ]
+    },
+    {
+      "order": "Order 2: Flyers - Business Delivery",
+      "success": false,
+      "steps": {
+        "productPageLoaded": true
+      },
+      "screenshots": [
+        "test-screenshots/order2-step1-product-page-2025-10-21T15-02-05-725Z.png",
+        "test-screenshots/order2-step2-configured-2025-10-21T15-02-06-832Z.png",
+        "test-screenshots/order2-error-2025-10-21T15-02-06-922Z.png"
+      ],
+      "fedexRatesFound": 0,
+      "selectedShippingService": "",
+      "errors": [
+        "Could not find \"Add to Cart\" button"
+      ]
+    },
+    {
+      "order": "Order 3: Brochures - Residential Delivery",
+      "success": false,
+      "steps": {
+        "productPageLoaded": true
+      },
+      "screenshots": [
+        "test-screenshots/order3-step1-product-page-2025-10-21T15-02-13-090Z.png",
+        "test-screenshots/order3-step2-configured-2025-10-21T15-02-14-236Z.png",
+        "test-screenshots/order3-error-2025-10-21T15-02-14-379Z.png"
+      ],
+      "fedexRatesFound": 0,
+      "selectedShippingService": "",
+      "errors": [
+        "Could not find \"Add to Cart\" button"
+      ]
+    }
+  ]
+}

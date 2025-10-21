@@ -1,0 +1,113 @@
+
+🚀 Starting Complete Checkout Flow Test
+================================================================================
+Testing 3 complete orders
+
+
+================================================================================
+🛒 Order 1: Business Cards - Residential Delivery
+================================================================================
+
+📍 Step 1: Navigating to product page...
+   📸 Screenshot saved: test-screenshots/order1-step1-product-page-2025-10-21T15-01-58-208Z.png
+   ✅ Product page loaded
+
+📍 Step 2: Configuring product...
+   📸 Screenshot saved: test-screenshots/order1-step2-configured-2025-10-21T15-01-59-343Z.png
+
+📍 Step 3: Adding to cart...
+
+❌ Error in order 1: Could not find "Add to Cart" button
+   📸 Screenshot saved: test-screenshots/order1-error-2025-10-21T15-01-59-471Z.png
+
+⏳ Waiting 3 seconds before next order...
+
+
+================================================================================
+🛒 Order 2: Flyers - Business Delivery
+================================================================================
+
+📍 Step 1: Navigating to product page...
+   📸 Screenshot saved: test-screenshots/order2-step1-product-page-2025-10-21T15-02-05-725Z.png
+   ✅ Product page loaded
+
+📍 Step 2: Configuring product...
+   📸 Screenshot saved: test-screenshots/order2-step2-configured-2025-10-21T15-02-06-832Z.png
+
+📍 Step 3: Adding to cart...
+
+❌ Error in order 2: Could not find "Add to Cart" button
+   📸 Screenshot saved: test-screenshots/order2-error-2025-10-21T15-02-06-922Z.png
+
+⏳ Waiting 3 seconds before next order...
+
+
+================================================================================
+🛒 Order 3: Brochures - Residential Delivery
+================================================================================
+
+📍 Step 1: Navigating to product page...
+   📸 Screenshot saved: test-screenshots/order3-step1-product-page-2025-10-21T15-02-13-090Z.png
+   ✅ Product page loaded
+
+📍 Step 2: Configuring product...
+   📸 Screenshot saved: test-screenshots/order3-step2-configured-2025-10-21T15-02-14-236Z.png
+
+📍 Step 3: Adding to cart...
+
+❌ Error in order 3: Could not find "Add to Cart" button
+   📸 Screenshot saved: test-screenshots/order3-error-2025-10-21T15-02-14-379Z.png
+
+
+================================================================================
+📊 FINAL TEST REPORT
+================================================================================
+
+SUMMARY
+-------
+Total Orders: 3
+Successful: 0
+Failed: 3
+Success Rate: 0.0%
+
+DETAILED RESULTS
+----------------
+
+1. Order 1: Business Cards - Residential Delivery
+   Status: ❌ FAILED
+   FedEx Rates Found: 0
+   Expected Service: 
+   Steps Completed:
+     ✅ productPageLoaded
+   Errors:
+     - Could not find "Add to Cart" button
+   Screenshots: 3
+
+2. Order 2: Flyers - Business Delivery
+   Status: ❌ FAILED
+   FedEx Rates Found: 0
+   Expected Service: 
+   Steps Completed:
+     ✅ productPageLoaded
+   Errors:
+     - Could not find "Add to Cart" button
+   Screenshots: 3
+
+3. Order 3: Brochures - Residential Delivery
+   Status: ❌ FAILED
+   FedEx Rates Found: 0
+   Expected Service: 
+   Steps Completed:
+     ✅ productPageLoaded
+   Errors:
+     - Could not find "Add to Cart" button
+   Screenshots: 3
+
+CONCLUSION
+----------
+❌ SOME ORDERS FAILED - Review details above
+
+================================================================================
+
+📁 Report saved: checkout-flow-test-report.json
+

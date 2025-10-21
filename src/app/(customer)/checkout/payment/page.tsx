@@ -8,10 +8,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, CreditCard, ArrowLeft, CheckCircle } from 'lucide-react'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
 import { PayPalButton } from '@/components/checkout/paypal-button'
+import { CashAppQRPayment } from '@/components/checkout/cashapp-qr-payment'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 
-type PaymentMethod = 'square' | 'paypal' | null
+type PaymentMethod = 'square' | 'paypal' | 'cashapp' | null
 
 export default function PaymentPage() {
   const router = useRouter()
@@ -179,10 +180,10 @@ export default function PaymentPage() {
                     </div>
                   </button>
 
-                  {/* Cash App Pay (via Square) */}
+                  {/* Cash App Pay - QR Code */}
                   <button
                     className="w-full p-6 border-2 rounded-lg hover:border-primary hover:bg-accent transition-all text-left group"
-                    onClick={() => setSelectedMethod('square')}
+                    onClick={() => setSelectedMethod('cashapp')}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -190,9 +191,9 @@ export default function PaymentPage() {
                           <span className="text-2xl">💚</span>
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg">Cash App Pay</h3>
+                          <h3 className="font-semibold text-lg">Cash App - Scan QR Code</h3>
                           <p className="text-sm text-muted-foreground">
-                            Fast and secure payment with Cash App
+                            Scan with your phone to pay securely
                           </p>
                         </div>
                       </div>
@@ -277,6 +278,16 @@ export default function PaymentPage() {
                   </CardContent>
                 </Card>
               </div>
+            )}
+
+            {/* Cash App QR Payment Component */}
+            {selectedMethod === 'cashapp' && (
+              <CashAppQRPayment
+                total={total}
+                onBack={() => setSelectedMethod(null)}
+                onPaymentError={handlePaymentError}
+                onPaymentSuccess={handlePaymentSuccess}
+              />
             )}
 
             {/* Missing Configuration Warning */}

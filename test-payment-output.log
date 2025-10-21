@@ -1,0 +1,33 @@
+
+🧪 Testing Payment Methods
+
+================================================================================
+
+📍 Step 1: Navigating to payment page...
+❌ Browser Error: Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+❌ Browser Error: Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+❌ Browser Error: Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+❌ Browser Error: Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+✅ Payment page loaded
+
+📍 Step 2: Checking PayPal client ID in browser...
+   PayPal Client ID: NOT FOUND - Check .e...
+
+📍 Step 3: Looking for PayPal payment option...
+✅ PayPal option text found on page
+
+📍 Step 4: Attempting to select PayPal...
+✅ Found PayPal button
+❌ Error selecting PayPal: Cannot read properties of null (reading 'click')
+
+📍 Step 5: Looking for Cash App option...
+❌ Cash App option NOT found
+
+📍 Step 6: Checking for network errors...
+
+❌ Test failed: TypeError: page.waitForTimeout is not a function
+    at testPaymentMethods (/root/websites/gangrunprinting/test-payment-methods.js:170:16)
