@@ -38,6 +38,39 @@ export default function ShippingPage() {
     }
   }, [items, router])
 
+  // Load previously entered shipping data from sessionStorage (if customer navigates back)
+  useEffect(() => {
+    const loadSavedData = () => {
+      try {
+        const savedAddress = sessionStorage.getItem('checkout_shipping_address')
+        const savedMethod = sessionStorage.getItem('checkout_shipping_method')
+        const savedAirport = sessionStorage.getItem('checkout_airport_id')
+
+        if (savedAddress) {
+          const parsed = JSON.parse(savedAddress)
+          setShippingAddress(parsed)
+          console.log('[Shipping] Restored saved address from previous session')
+        }
+
+        if (savedMethod) {
+          const parsed = JSON.parse(savedMethod)
+          setSelectedShippingMethod(parsed)
+          console.log('[Shipping] Restored saved shipping method from previous session')
+        }
+
+        if (savedAirport) {
+          setSelectedAirportId(savedAirport)
+          console.log('[Shipping] Restored saved airport from previous session')
+        }
+      } catch (error) {
+        console.error('[Shipping] Error loading saved data:', error)
+        // Don't show error to user - just start fresh
+      }
+    }
+
+    loadSavedData()
+  }, []) // Run only once on mount
+
   // ============================================================================
   // 🚨 CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION - DO NOT MODIFY 🚨
   // ============================================================================

@@ -28,22 +28,27 @@ export default function PaymentPage() {
     const loadOrderData = () => {
       try {
         // Load shipping information from new flow
-        const shippingAddress = sessionStorage.getItem('checkout_shipping_address')
-        const shippingMethod = sessionStorage.getItem('checkout_shipping_method')
+        const shippingAddressData = sessionStorage.getItem('checkout_shipping_address')
+        const shippingMethodData = sessionStorage.getItem('checkout_shipping_method')
+        const airportIdData = sessionStorage.getItem('checkout_airport_id')
         const artworkFiles = sessionStorage.getItem('cart_artwork_files')
 
         // If no shipping data, redirect back to shipping page
-        if (!shippingAddress || !shippingMethod) {
+        if (!shippingAddressData || !shippingMethodData) {
           toast.error('Please complete shipping information first.')
           router.push('/checkout/shipping')
           return
         }
 
-        const parsedMethod = JSON.parse(shippingMethod)
+        // Parse and set the state
+        const parsedAddress = JSON.parse(shippingAddressData)
+        const parsedMethod = JSON.parse(shippingMethodData)
         const parsedFiles = artworkFiles ? JSON.parse(artworkFiles) : []
 
-        // We'll get cart items from the cart context (via useCart hook)
-        // For now, just mark as loaded
+        setShippingAddress(parsedAddress)
+        setShippingMethod(parsedMethod)
+        setAirportId(airportIdData || undefined)
+        setUploadedFiles(parsedFiles)
         setIsLoading(false)
       } catch (error) {
         console.error('[Payment] Error loading order data:', error)
