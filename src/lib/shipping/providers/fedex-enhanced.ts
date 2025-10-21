@@ -156,6 +156,14 @@ export class FedExProviderEnhanced implements ShippingProvider {
     packages: ShippingPackage[],
     options?: RateCalculationOptions
   ): Promise<ShippingRate[]> {
+    // PERFORMANCE: If test mode enabled, return instant test rates (< 50ms)
+    if (this.config.testMode) {
+      console.log('[FedEx] Test mode enabled, returning instant test rates')
+      const testRates = this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+      const filteredRates = this.filterByEnabledServices(testRates)
+      return this.applyMarkup(filteredRates)
+    }
+
     // If no API credentials, return test rates
     if (!this.config.clientId || !this.config.accountNumber) {
       console.warn('[FedEx] No API credentials, returning test rates')
@@ -712,9 +720,8 @@ export class FedExProviderEnhanced implements ShippingProvider {
       const services = [
         { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
         { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
-        // FIX: Use GROUND_HOME_DELIVERY for residential (allowsResidential: true), FEDEX_GROUND for business
+        // FIX: Use GROUND_HOME_DELIVERY for residential, FEDEX_GROUND for business (only ONE ground service based on address type)
         { code: isResidential ? 'GROUND_HOME_DELIVERY' : 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
-        { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
       ]
 
       services.forEach((svc) => {
@@ -725,7 +732,8 @@ export class FedExProviderEnhanced implements ShippingProvider {
           rateAmount: roundWeight(svc.base + totalWeight * svc.perLb, 2),
           currency: 'USD',
           estimatedDays: svc.days,
-          isGuaranteed: svc.days === 1,
+          // STANDARD_OVERNIGHT is not guaranteed (user request October 21, 2025)
+          isGuaranteed: svc.days === 1 && svc.code !== 'STANDARD_OVERNIGHT',
         })
       })
     } else {

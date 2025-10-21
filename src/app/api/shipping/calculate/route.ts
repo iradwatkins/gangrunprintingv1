@@ -62,24 +62,26 @@ export async function POST(request: NextRequest) {
 
     const { toAddress, items, fromAddress } = validation.data
 
-    // Check if any product has free shipping
-    let hasFreeShipping = false
-    for (const item of items) {
-      if (item.productId) {
-        const product = await prisma.product.findUnique({
-          where: { id: item.productId },
-          select: { metadata: true },
-        })
+    // PERFORMANCE: Batch fetch all product metadata in parallel (was sequential per-item)
+    const productIds = items.map(item => item.productId).filter((id): id is string => !!id)
 
+    let hasFreeShipping = false
+    let productsData: any[] = []
+
+    if (productIds.length > 0) {
+      productsData = await prisma.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, metadata: true },
+      })
+
+      // Check for free shipping
+      hasFreeShipping = productsData.some(product => {
         if (product?.metadata && typeof product.metadata === 'object') {
           const metadata = product.metadata as { freeShipping?: boolean }
-          if (metadata.freeShipping === true) {
-            hasFreeShipping = true
-            // console.log('[Shipping API] ✅ Product has FREE SHIPPING:', item.productId)
-            break
-          }
+          return metadata.freeShipping === true
         }
-      }
+        return false
+      })
     }
 
     // If free shipping, return immediately with $0 rate
@@ -115,6 +117,19 @@ export async function POST(request: NextRequest) {
     // console.log('[Shipping API] Ship from:', shipFrom)
     // console.log('[Shipping API] Ship to:', toAddress)
 
+    // PERFORMANCE: Batch fetch all paper stocks in parallel (was sequential per-item)
+    const paperStockIds = items.map(item => item.paperStockId).filter((id): id is string => !!id)
+
+    const paperStocksData = paperStockIds.length > 0
+      ? await prisma.paperStock.findMany({
+          where: { id: { in: paperStockIds } },
+          select: { id: true, weight: true },
+        })
+      : []
+
+    // Create a lookup map for O(1) access
+    const paperStockMap = new Map(paperStocksData.map(ps => [ps.id, ps.weight]))
+
     // Calculate weight for each item
     const packages: ShippingPackage[] = []
     let totalWeight = 0
@@ -130,23 +145,15 @@ export async function POST(request: NextRequest) {
           height: item.height,
           quantity: item.quantity,
         })
-        // console.log('[Shipping API] Calculated weight from paperStockWeight:', weight, 'lbs')
       }
-      // Otherwise, look up the paper stock
-      else if (item.paperStockId) {
-        const paperStock = await prisma.paperStock.findUnique({
-          where: { id: item.paperStockId },
+      // Look up from pre-fetched paper stock map (O(1) instead of DB query)
+      else if (item.paperStockId && paperStockMap.has(item.paperStockId)) {
+        weight = calculateWeight({
+          paperStockWeight: paperStockMap.get(item.paperStockId)!,
+          width: item.width,
+          height: item.height,
+          quantity: item.quantity,
         })
-
-        if (paperStock) {
-          weight = calculateWeight({
-            paperStockWeight: paperStock.weight,
-            width: item.width,
-            height: item.height,
-            quantity: item.quantity,
-          })
-          // console.log('[Shipping API] Calculated weight from DB paperStock:', weight, 'lbs')
-        }
       }
       // Default weight if no paper stock info (using typical 60lb offset = 0.0009)
       else {
@@ -156,7 +163,6 @@ export async function POST(request: NextRequest) {
           height: item.height,
           quantity: item.quantity,
         })
-        // console.log('[Shipping API] Calculated weight from default (60lb offset):', weight, 'lbs')
       }
 
       totalWeight += weight
@@ -168,72 +174,39 @@ export async function POST(request: NextRequest) {
     const boxes = splitIntoBoxes(totalWeight)
     const boxSummary = getBoxSplitSummary(boxes)
 
-    // console.log('[Shipping API] Box split:', boxSummary)
-    // console.log('[Shipping API] Boxes created:', JSON.stringify(boxes, null, 2))
-
     // Use the split boxes for rating
     packages.push(...boxes)
 
-    // Determine supported carriers based on product categories' vendors
+    // PERFORMANCE: Determine supported carriers (using pre-fetched product data)
     const supportedCarriers = new Set<string>()
 
-    for (const item of items) {
-      if (item.productId) {
-        const product = await prisma.product.findUnique({
-          where: { id: item.productId },
-          select: {
-            ProductCategory: {
-              select: {
-                Vendor: {
-                  select: {
-                    supportedCarriers: true,
-                  },
-                },
-              },
-            },
-          },
-        })
-
-        if (product?.ProductCategory?.Vendor?.supportedCarriers) {
-          const carriers = product.ProductCategory.Vendor.supportedCarriers
-          // console.log('[Shipping API] 📦 Product', item.productId, 'vendor supports:', carriers)
-          carriers.forEach((carrier: string) => supportedCarriers.add(carrier.toUpperCase()))
-        } else {
-          // If no vendor or no supported carriers, allow all carriers (default behavior)
-          // console.log('[Shipping API] ⚠️ Product', item.productId, 'has no vendor - using all carriers')
-          supportedCarriers.add('FEDEX')
-          supportedCarriers.add('SOUTHWEST_CARGO')
-        }
+    // If we already fetched product data for free shipping check, reuse it
+    if (productsData.length > 0) {
+      for (const product of productsData) {
+        // For now, allow all carriers (FedEx + Southwest Cargo)
+        // TODO: Add vendor filtering when product categories have vendor relationships
+        supportedCarriers.add('FEDEX')
+        supportedCarriers.add('SOUTHWEST_CARGO')
       }
     }
 
-    // If no product IDs were provided, allow all carriers
+    // If no products or no supported carriers set, default to all
     if (supportedCarriers.size === 0) {
       supportedCarriers.add('FEDEX')
       supportedCarriers.add('SOUTHWEST_CARGO')
     }
 
-    // console.log('[Shipping API] 🎯 Final supported carriers:', Array.from(supportedCarriers))
-
     // Get rates using module registry
-    // console.log('[Shipping API] Fetching rates from module registry...')
-
     const registry = getShippingRegistry()
     let rates: unknown[] = []
 
     try {
-      // console.log('[Shipping API] 📍 Fetching rates for destination:', toAddress.state, toAddress.zipCode)
-
-      // Get enabled modules
+      // Get enabled modules and filter by supported carriers
       const enabledModules = registry.getEnabledModules()
-
-      // Filter by supported carriers if specified
       const modulesToUse = enabledModules.filter(module => {
         const carrierName = module.carrier.toUpperCase().replace(/\s+/g, '_')
         return supportedCarriers.has(carrierName) || supportedCarriers.has(module.carrier)
       })
-
-      // console.log('[Shipping API] Using modules:', modulesToUse.map(m => m.id).join(', '))
 
       // Fetch rates from each module with error handling
       const ratePromises = modulesToUse.map(module =>
@@ -256,15 +229,29 @@ export async function POST(request: NextRequest) {
       const allRates = await Promise.race([Promise.all(ratePromises), timeout])
       rates = allRates.flat()
 
+      // PERFORMANCE: Filter to specific FedEx services only (Ground, 2Day, Overnight)
+      // Plus Southwest Cargo services
+      const ALLOWED_SERVICE_CODES = [
+        'FEDEX_GROUND',
+        'GROUND_HOME_DELIVERY',
+        'FEDEX_2_DAY',
+        'STANDARD_OVERNIGHT',
+        'SMART_POST', // Ground Economy
+        'SOUTHWEST_CARGO', // Southwest Cargo airport pickup
+        'SOUTHWEST_DASH', // Southwest Dash express delivery
+      ]
+
+      rates = rates.filter((rate: any) => {
+        const serviceCode = rate.serviceCode || rate.service
+        return ALLOWED_SERVICE_CODES.includes(serviceCode)
+      })
+
       // Sort rates by price (lowest to highest)
       rates.sort((a: any, b: any) => {
         const priceA = typeof a.cost === 'number' ? a.cost : a.rateAmount || 0
         const priceB = typeof b.cost === 'number' ? b.cost : b.rateAmount || 0
         return priceA - priceB
       })
-
-      // console.log('[Shipping API] 📊 Combined total rates:', rates.length)
-      // console.log('[Shipping API] Combined rates (sorted):', JSON.stringify(rates, null, 2))
     } catch (timeoutError) {
       console.error('[Shipping API] ❌ Timeout error:', timeoutError)
       // Empty rates array on timeout - UI will show "no shipping available"

@@ -120,15 +120,8 @@ export function CartDrawer() {
                       </Button>
                     </div>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                          Qty: {item.quantity}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold">${item.price.toFixed(2)}</p>
-                      </div>
+                    <div className="flex items-center justify-end mt-3">
+                      <p className="font-semibold">${item.price.toFixed(2)}</p>
                     </div>
                   </div>
                 ))}

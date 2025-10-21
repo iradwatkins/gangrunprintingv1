@@ -113,7 +113,7 @@ export const FEDEX_SERVICES: Record<string, FedExService> = {
     international: false,
     estimatedDaysMin: 1,
     estimatedDaysMax: 1,
-    isGuaranteed: true,
+    isGuaranteed: false,
     maxWeightLbs: 150,
     requiresSignature: false,
     allowsResidential: true,

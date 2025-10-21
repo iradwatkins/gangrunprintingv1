@@ -17,14 +17,9 @@ export function CartButton() {
     >
       <Link href="/checkout">
         <ShoppingBag className="h-5 w-5" />
-        <span className="hidden sm:inline font-semibold">
+        <span className="font-semibold">
           {total > 0 ? `$${total.toFixed(2)}` : 'Cart'}
         </span>
-        {itemCount > 0 && (
-          <span className="sm:hidden absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center font-semibold">
-            {itemCount > 99 ? '99+' : itemCount}
-          </span>
-        )}
       </Link>
     </Button>
   )

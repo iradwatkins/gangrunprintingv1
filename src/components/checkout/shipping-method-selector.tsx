@@ -34,13 +34,13 @@ interface ShippingMethodSelectorProps {
     state: string
     zipCode: string
   }
-  packages: Array<{
-    weight: number
-    dimensions?: {
-      length: number
-      width: number
-      height: number
-    }
+  items: Array<{
+    productId: string
+    quantity: number
+    width: number
+    height: number
+    paperStockId?: string
+    paperStockWeight?: number
   }>
   selectedMethod?: ShippingRate
   onSelect: (method: ShippingRate) => void
@@ -48,7 +48,7 @@ interface ShippingMethodSelectorProps {
 
 export function ShippingMethodSelector({
   destination,
-  packages,
+  items,
   selectedMethod,
   onSelect,
 }: ShippingMethodSelectorProps) {
@@ -71,22 +71,22 @@ export function ShippingMethodSelector({
     try {
       console.log('[ShippingMethodSelector] Fetching rates for:', {
         destination,
-        packagesCount: packages.length,
+        itemsCount: items.length,
       })
 
-      const response = await fetch('/api/shipping/rates', {
+      const response = await fetch('/api/shipping/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          destination: {
-            zipCode: destination.zipCode,
-            state: destination.state,
-            city: destination.city,
+          toAddress: {
             street: destination.street || '123 Main St',
-            countryCode: 'US',
+            city: destination.city,
+            state: destination.state,
+            zipCode: destination.zipCode,
+            country: 'US',
             isResidential: true,
           },
-          packages: packages.length > 0 ? packages : [{ weight: 1 }], // Default 1 lb if no packages
+          items: items,
         }),
       })
 
@@ -104,7 +104,8 @@ export function ShippingMethodSelector({
       console.log('[ShippingMethodSelector] API response:', {
         success: data.success,
         ratesCount: data.rates?.length || 0,
-        metadata: data.metadata,
+        totalWeight: data.totalWeight,
+        numBoxes: data.numBoxes,
       })
 
       if (data.success && data.rates && Array.isArray(data.rates)) {
@@ -112,10 +113,31 @@ export function ShippingMethodSelector({
           setError('No shipping options available for this address')
           setRates([])
         } else {
-          setRates(data.rates)
+          // Transform /api/shipping/calculate response to match ShippingRate format
+          const transformedRates = data.rates.map((rate: any) => ({
+            provider: rate.carrier === 'SOUTHWEST_CARGO' ? 'southwest-cargo' : 'fedex',
+            providerName: rate.service || rate.serviceName || rate.serviceCode,
+            serviceCode: rate.serviceCode || rate.service,
+            carrier: rate.carrier || 'FEDEX',
+            rate: {
+              amount: rate.cost || rate.rateAmount || 0,
+              currency: rate.currency || 'USD',
+            },
+            delivery: {
+              estimatedDays: {
+                min: rate.deliveryDays || rate.estimatedDays || 5,
+                max: rate.deliveryDays || rate.estimatedDays || 7,
+              },
+              text: `${rate.deliveryDays || rate.estimatedDays || 5} business days`,
+              guaranteed: rate.isGuaranteed || false,
+              date: rate.deliveryDate,
+            },
+          }))
+
+          setRates(transformedRates)
           // Auto-select first rate if none selected
-          if (!selectedMethod && data.rates.length > 0) {
-            onSelect(data.rates[0])
+          if (!selectedMethod && transformedRates.length > 0) {
+            onSelect(transformedRates[0])
           }
         }
       } else {
@@ -148,7 +170,8 @@ export function ShippingMethodSelector({
         </span>
       )
     }
-    if (rate.delivery.guaranteed) {
+    // Don't show "Guaranteed" badge for Standard Overnight
+    if (rate.delivery.guaranteed && rate.serviceCode !== 'STANDARD_OVERNIGHT') {
       return (
         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
           Guaranteed

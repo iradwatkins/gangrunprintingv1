@@ -149,9 +149,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Sort rates by price (ascending) and limit to top 3 cheapest options
+    const sortedRates = allRates.sort((a, b) => a.rate.amount - b.rate.amount)
+    const top3Rates = sortedRates.slice(0, 3)
+
+    console.log(`[Shipping API] Returning ${top3Rates.length} rates (top 3 cheapest from ${allRates.length} total)`)
+
     return NextResponse.json({
       success: true,
-      rates: allRates,
+      rates: top3Rates,
       requestId,
       metadata: {
         origin: DEFAULT_ORIGIN,
@@ -160,6 +166,8 @@ export async function POST(request: NextRequest) {
         modulesUsed: modulesToUse.map((m) => m.id),
         moduleStatus: registry.getStatus(),
         errors: Object.keys(errors).length > 0 ? errors : undefined,
+        totalRatesFound: allRates.length,
+        displayingTopRates: top3Rates.length,
       },
     })
   } catch (error) {
