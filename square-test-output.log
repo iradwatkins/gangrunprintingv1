@@ -1,0 +1,67 @@
+🧪 Testing Square Payment SDK - Capturing Console Logs
+
+================================================================================
+
+📍 Step 1: Navigating to homepage...
+📋 Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+🌐 NETWORK ERROR: https://analytics.ahrefs.com/analytics.js - csp
+📋 Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+🌐 NETWORK ERROR: https://analytics.ahrefs.com/analytics.js - csp
+🌐 NETWORK ERROR: https://gangrunprinting.com/about?_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/help-center?_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/contact?_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/checkout?_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/products?category=business-card&_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/track?_rsc=p3uyw - net::ERR_ABORTED
+
+📍 Step 2: Adding a product to cart...
+🌐 NETWORK ERROR: https://gangrunprinting.com/products/4x6-flyers-9pt-card-stock?_rsc=p3uyw - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/products/4x6-flyers-9pt-card-stock?_rsc=jn7m0 - net::ERR_ABORTED
+
+📍 Step 3: Navigating to checkout/payment page...
+📋 Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+🌐 NETWORK ERROR: https://analytics.ahrefs.com/analytics.js - csp
+📋 Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+🌐 NETWORK ERROR: https://analytics.ahrefs.com/analytics.js - csp
+🌐 NETWORK ERROR: https://gangrunprinting.com/?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/about?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/help-center?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/contact?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/checkout?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/checkout/shipping?_rsc=1p9gp - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/products?category=business-card&_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/quote?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/locations?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/track?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/privacy-policy?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/terms-of-service?_rsc=1p2we - net::ERR_ABORTED
+🌐 NETWORK ERROR: https://gangrunprinting.com/checkout?_rsc=1jkbw - net::ERR_ABORTED
+
+📍 Step 4: Looking for Square payment option...
+⚠️  Square payment button not found on page
+
+================================================================================
+
+📊 SUMMARY OF CONSOLE LOGS:
+
+🔍 Square SDK Logs:
+  1. Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+  2. Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+  3. Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+  4. Refused to load the script 'https://analytics.ahrefs.com/analytics.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com https://geoissuer.cardinalcommerce.com https://songbird.cardinalcommerce.com https://centinelapistag.cardinalcommerce.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+
+📸 Screenshot saved: square-payment-test.png
+
+================================================================================
+
+✅ Test completed! Check the logs above for Square SDK details.
+
+⏸️  Browser will close in 5 seconds...

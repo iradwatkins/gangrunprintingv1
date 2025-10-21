@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingBag, Trash2, ArrowRight, Upload } from 'lucide-react'
+import { ShoppingBag, Trash2, ArrowRight, Upload, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -150,7 +150,21 @@ export default function CartPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-muted-foreground">Quantity: {item.quantity}</span>
+                        <span className="text-sm text-muted-foreground">
+                          Qty: {item.quantity}
+                        </span>
+                        {item.productSlug && (
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="ghost"
+                          >
+                            <Link href={`/products/${item.productSlug}`}>
+                              <Edit className="h-3 w-3 mr-1" />
+                              Edit
+                            </Link>
+                          </Button>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-lg">${item.subtotal.toFixed(2)}</p>

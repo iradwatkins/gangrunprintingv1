@@ -1,0 +1,20 @@
+🧪 Testing Cash App Payment Component Directly...
+
+1️⃣ Testing with Business Cards product...
+Trying https://gangrunprinting.com/products/business-cards...
+Trying https://gangrunprinting.com/products/flyers...
+✅ Product loaded: https://gangrunprinting.com/products/flyers
+
+2️⃣ Checking payment page content...
+Page content: {
+  hasCashApp: false,
+  hasSquare: false,
+  hasPayPal: false,
+  hasPayment: false,
+  isEmpty: false
+}
+
+3️⃣ Looking for Cash App payment option...
+❌ Cash App button not found on page
+🏁 Test complete!
+

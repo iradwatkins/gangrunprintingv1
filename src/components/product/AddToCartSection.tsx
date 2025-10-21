@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/cart-context'
-import { useRouter } from 'next/navigation'
 import toast from '@/lib/toast'
 import type { SimpleProductConfiguration, UploadedFile } from '@/hooks/useProductConfiguration'
 
@@ -37,7 +36,6 @@ export function AddToCartSection({
   className = '',
 }: AddToCartSectionProps) {
   const { addItem } = useCart()
-  const router = useRouter()
 
   const quantity = getQuantityValue(configuration)
 
@@ -81,8 +79,7 @@ export function AddToCartSection({
     try {
       addItem(cartItem)
       toast.success('Product added to cart!')
-      // Redirect to checkout page for artwork upload and review
-      router.push('/checkout')
+      // Cart drawer will auto-open from context
     } catch (error) {
       toast.error('Failed to add product to cart')
       console.error('Add to cart error:', error)

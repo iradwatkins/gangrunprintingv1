@@ -60,12 +60,13 @@ export function SquareCardPayment({
     // Set isLoading to false immediately so containers render
     setIsLoading(false)
 
-    // console.log('[Square] Starting initialization process')
-    // console.log('[Square] Environment check:', {
-    //   appId: applicationId?.substring(0, 20) + '...',
-    //   locationId,
-    //   hasSquareSDK: typeof window.Square !== 'undefined',
-    // })
+    console.log('[Square] Starting initialization process')
+    console.log('[Square] Environment check:', {
+      appId: applicationId?.substring(0, 20) + '...',
+      locationId,
+      environment,
+      hasSquareSDK: typeof window.Square !== 'undefined',
+    })
 
     const initializeSquare = async () => {
       try {
@@ -84,15 +85,15 @@ export function SquareCardPayment({
           throw new Error('Square Web Payments SDK failed to load - please refresh the page')
         }
 
-        // console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
-        // console.log('[Square] Creating payments instance...')
+        console.log('[Square] Square SDK ready after', attempts * 100, 'ms')
+        console.log('[Square] Creating payments instance with:', { applicationId: applicationId?.substring(0, 20) + '...', locationId })
 
         const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
         setPayments(paymentsInstance)
-        // console.log('[Square] Payments instance created')
+        console.log('[Square] Payments instance created')
 
         // Initialize card
-        // console.log('[Square] Creating card instance...')
+        console.log('[Square] Creating card instance...')
         const cardInstance = await paymentsInstance.card({
           style: {
             '.input-container': {
@@ -129,10 +130,10 @@ export function SquareCardPayment({
           throw new Error('Card container element not found after 3 seconds')
         }
 
-        // console.log('[Square] Container found, attaching card...')
+        console.log('[Square] Container found, attaching card...')
         await cardInstance.attach('#square-card-container')
         setCard(cardInstance)
-        // console.log('[Square] Card attached successfully')
+        console.log('[Square] Card attached successfully')
 
         // Try to initialize Cash App Pay with payment request
         try {
@@ -174,7 +175,7 @@ export function SquareCardPayment({
         }
 
         setIsInitializing(false)
-        // console.log('[Square] Initialization complete')
+        console.log('[Square] Initialization complete')
       } catch (err) {
         console.error('[Square] Initialization error:', err)
         const errorMsg = err instanceof Error ? err.message : 'Unknown error'
@@ -183,14 +184,14 @@ export function SquareCardPayment({
       }
     }
 
-    // Safety timeout
+    // Safety timeout - increased to 30 seconds for slower connections
     const timeout = setTimeout(() => {
       if (isInitializing) {
-        console.error('[Square] Initialization timeout after 10 seconds')
+        console.error('[Square] Initialization timeout after 30 seconds')
         setError('Payment form initialization timeout. Please refresh the page or contact support.')
         setIsInitializing(false)
       }
-    }, 10000)
+    }, 30000)
 
     // Wait for DOM to be ready before initializing
     const initTimer = setTimeout(() => {
@@ -217,13 +218,13 @@ export function SquareCardPayment({
         return
       }
 
-      // console.log('[Square] Loading Square.js script...')
+      console.log('[Square] Loading Square.js script...')
       const script = document.createElement('script')
       // Use correct environment URL based on SQUARE_ENVIRONMENT
       const sdkUrl = environment === 'production'
         ? 'https://web.squarecdn.com/v1/square.js'
         : 'https://sandbox.web.squarecdn.com/v1/square.js'
-      // console.log(`[Square] Using ${environment} environment:`, sdkUrl)
+      console.log(`[Square] Using ${environment} environment:`, sdkUrl)
       script.src = sdkUrl
       script.async = true
 

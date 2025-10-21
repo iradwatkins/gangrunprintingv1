@@ -1,198 +1,233 @@
-/**
- * Test Payment Methods - PayPal & Cash App
- * Verifies payment buttons render correctly on checkout page
- */
+const puppeteer = require('puppeteer');
 
-const puppeteer = require('puppeteer')
-
-async function testPaymentMethods() {
-  console.log('\n🧪 Testing Payment Methods\n')
-  console.log('='.repeat(80))
+(async () => {
+  console.log('═══════════════════════════════════════════════════════════');
+  console.log('🧪 TEST 1: Payment Page with Cart + Shipping Data');
+  console.log('═══════════════════════════════════════════════════════════\n');
 
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  })
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  });
 
-  const page = await browser.newPage()
-
-  // Enable console logging from browser
-  page.on('console', (msg) => {
-    const type = msg.type()
-    const text = msg.text()
-
-    if (type === 'error') {
-      console.log(`❌ Browser Error: ${text}`)
-    } else if (text.includes('PayPal') || text.includes('Cash App')) {
-      console.log(`📝 Browser Log: ${text}`)
-    }
-  })
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1920, height: 1080 });
 
   try {
-    // Step 1: Navigate directly to payment page (bypass checkout for testing)
-    console.log('\n📍 Step 1: Navigating to payment page...')
+    // Step 1: Start fresh session
+    console.log('1️⃣ Starting fresh browser session...');
+    await page.goto('https://gangrunprinting.com', { waitUntil: 'networkidle0', timeout: 30000 });
+    console.log('✅ Homepage loaded\n');
 
-    // First, set up session storage with mock checkout data
-    await page.goto('https://gangrunprinting.com', { waitUntil: 'networkidle0' })
-
+    // Step 2: Inject cart and shipping data
+    console.log('2️⃣ Injecting test cart and shipping data...');
     await page.evaluate(() => {
-      // Mock shipping address
-      sessionStorage.setItem('checkout_shipping_address', JSON.stringify({
-        firstName: 'Test',
-        lastName: 'Customer',
-        email: 'test@example.com',
-        phone: '555-0123',
-        street: '123 Test St',
-        city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90210',
+      const cart = {
+        items: [{
+          id: 'test-1',
+          productId: '2',
+          productName: 'Flyers',
+          productSlug: 'flyers',
+          quantity: 100,
+          price: 49.99,
+          total: 49.99,
+          paperStockWeight: 1,
+          configuration: { size: '8.5x11', turnaround: 'Standard' }
+        }],
+        itemCount: 1,
+        subtotal: 49.99
+      };
+
+      const shipping = {
+        fullName: 'Test User',
+        address: '123 Main St',
+        city: 'Houston',
+        state: 'TX',
+        zip: '77001',
         country: 'US',
-      }))
+        email: 'test@test.com',
+        phone: '555-1234'
+      };
 
-      // Mock shipping method
-      sessionStorage.setItem('checkout_shipping_method', JSON.stringify({
-        carrier: 'FEDEX',
-        service: 'FEDEX_GROUND',
-        rate: {
-          amount: 15.00,
-          currency: 'USD'
-        }
-      }))
-    })
+      const shippingMethod = {
+        carrier: 'FedEx',
+        service: 'Ground',
+        rate: { amount: 12.50, currency: 'USD' }
+      };
 
-    // Navigate to payment page
+      localStorage.setItem('cart', JSON.stringify(cart));
+      sessionStorage.setItem('checkout_shipping_address', JSON.stringify(shipping));
+      sessionStorage.setItem('checkout_shipping_method', JSON.stringify(shippingMethod));
+    });
+    console.log('✅ Test data injected\n');
+
+    // Step 3: Navigate to payment page
+    console.log('3️⃣ Navigating to payment page...');
     await page.goto('https://gangrunprinting.com/checkout/payment', {
       waitUntil: 'networkidle0',
-      timeout: 30000,
-    })
+      timeout: 30000
+    });
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    console.log('✅ Payment page loaded\n');
 
-    console.log('✅ Payment page loaded')
-    await page.screenshot({ path: 'test-screenshots/payment-page.png', fullPage: true })
+    // Step 4: Analyze page
+    console.log('4️⃣ Analyzing payment page content...\n');
 
-    // Step 2: Check for NEXT_PUBLIC_PAYPAL_CLIENT_ID
-    console.log('\n📍 Step 2: Checking PayPal client ID in browser...')
+    const pageData = await page.evaluate(() => {
+      const bodyText = document.body.innerText;
 
-    const paypalClientId = await page.evaluate(() => {
-      return window.process?.env?.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-             'NOT FOUND - Check .env file'
-    })
+      return {
+        title: document.title,
+        hasSelectPayment: bodyText.includes('Select Payment Method'),
+        hasIncompleteCheckout: bodyText.includes('Incomplete Checkout'),
+        hasCreditCard: bodyText.includes('Credit') || bodyText.includes('Debit') || bodyText.includes('Card'),
+        hasCashApp: bodyText.includes('Cash App'),
+        hasPayPal: bodyText.includes('PayPal'),
+        hasScanQR: bodyText.includes('Scan QR'),
+        buttons: Array.from(document.querySelectorAll('button'))
+          .map(b => b.textContent.trim())
+          .filter(t => t.length > 0 && t.length < 100)
+      };
+    });
 
-    console.log(`   PayPal Client ID: ${paypalClientId.substring(0, 20)}...`)
+    console.log('📄 Page Analysis:');
+    console.log('   "Select Payment Method":', pageData.hasSelectPayment ? '✅ YES' : '❌ NO');
+    console.log('   "Incomplete Checkout":', pageData.hasIncompleteCheckout ? '⚠️ YES (ERROR)' : '✅ NO');
+    console.log('   Credit/Debit Card:', pageData.hasCreditCard ? '✅ YES' : '❌ NO');
+    console.log('   Cash App:', pageData.hasCashApp ? '✅ YES' : '❌ NO');
+    console.log('   PayPal:', pageData.hasPayPal ? '✅ YES' : '❌ NO');
 
-    // Step 3: Check if PayPal button option exists
-    console.log('\n📍 Step 3: Looking for PayPal payment option...')
-
-    const paypalButtonExists = await page.evaluate(() => {
-      const text = document.body.innerText
-      return text.includes('PayPal') || text.includes('paypal')
-    })
-
-    if (paypalButtonExists) {
-      console.log('✅ PayPal option text found on page')
-    } else {
-      console.log('❌ PayPal option NOT found on page')
-    }
-
-    // Step 4: Try to click PayPal option
-    console.log('\n📍 Step 4: Attempting to select PayPal...')
-
-    try {
-      // Wait for payment method buttons
-      await page.waitForSelector('button', { timeout: 5000 })
-
-      // Look for PayPal button by text
-      const paypalButton = await page.evaluateHandle(() => {
-        const buttons = Array.from(document.querySelectorAll('button'))
-        return buttons.find(btn => btn.textContent?.includes('PayPal'))
-      })
-
-      if (paypalButton) {
-        console.log('✅ Found PayPal button')
-        await paypalButton.asElement().click()
-        await page.waitForTimeout(2000)
-
-        await page.screenshot({ path: 'test-screenshots/paypal-selected.png', fullPage: true })
-
-        // Check if PayPal SDK loaded
-        const paypalSDKLoaded = await page.evaluate(() => {
-          return typeof window.paypal !== 'undefined'
-        })
-
-        if (paypalSDKLoaded) {
-          console.log('✅ PayPal SDK loaded successfully')
-        } else {
-          console.log('❌ PayPal SDK NOT loaded')
-        }
-
-        // Check for PayPal buttons container
-        const paypalButtonsExist = await page.evaluate(() => {
-          return document.querySelector('[data-paypal-button]') !== null ||
-                 document.querySelector('.paypal-buttons') !== null
-        })
-
-        if (paypalButtonsExist) {
-          console.log('✅ PayPal payment buttons rendered')
-        } else {
-          console.log('⚠️  PayPal payment buttons NOT rendered')
-        }
-      } else {
-        console.log('❌ Could not find PayPal button to click')
+    console.log('\n🔘 Payment-related buttons:');
+    pageData.buttons.forEach(btn => {
+      if (btn.toLowerCase().includes('cash') ||
+          btn.toLowerCase().includes('paypal') ||
+          btn.toLowerCase().includes('card') ||
+          btn.toLowerCase().includes('payment')) {
+        console.log('   ⭐', btn);
       }
-    } catch (err) {
-      console.log('❌ Error selecting PayPal:', (err).message)
-    }
+    });
 
-    // Step 5: Check for Cash App option
-    console.log('\n📍 Step 5: Looking for Cash App option...')
+    await page.screenshot({ path: 'test1-payment-page.png', fullPage: true });
+    console.log('\n✅ Screenshot: test1-payment-page.png\n');
 
-    const cashAppExists = await page.evaluate(() => {
-      const text = document.body.innerText
-      return text.includes('Cash App') || text.includes('CashApp')
-    })
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('📊 TEST 1 RESULTS');
+    console.log('═══════════════════════════════════════════════════════════');
 
-    if (cashAppExists) {
-      console.log('✅ Cash App option text found')
+    if (pageData.hasSelectPayment && pageData.hasCashApp && pageData.hasPayPal) {
+      console.log('✅ PASS: All payment options present');
+    } else if (pageData.hasIncompleteCheckout) {
+      console.log('❌ FAIL: "Incomplete Checkout" error shown');
     } else {
-      console.log('❌ Cash App option NOT found')
+      console.log('⚠️ PARTIAL: Missing payment options');
+      console.log('   Cash App:', pageData.hasCashApp ? '✅' : '❌');
+      console.log('   PayPal:', pageData.hasPayPal ? '✅' : '❌');
     }
-
-    // Step 6: Check network requests for errors
-    console.log('\n📍 Step 6: Checking for network errors...')
-
-    const failedRequests = []
-    page.on('requestfailed', (request) => {
-      failedRequests.push({
-        url: request.url(),
-        error: request.failure()?.errorText,
-      })
-    })
-
-    await page.waitForTimeout(2000)
-
-    if (failedRequests.length > 0) {
-      console.log(`❌ Found ${failedRequests.length} failed requests:`)
-      failedRequests.forEach((req) => {
-        console.log(`   - ${req.url}: ${req.error}`)
-      })
-    } else {
-      console.log('✅ No network errors detected')
-    }
-
-    console.log('\n' + '='.repeat(80))
-    console.log('📊 TEST SUMMARY')
-    console.log('='.repeat(80))
-    console.log(`PayPal Client ID: ${paypalClientId !== 'NOT FOUND - Check .env file' ? '✅' : '❌'}`)
-    console.log(`PayPal Option Visible: ${paypalButtonExists ? '✅' : '❌'}`)
-    console.log(`Cash App Option Visible: ${cashAppExists ? '✅' : '❌'}`)
-    console.log('='.repeat(80) + '\n')
+    console.log('═══════════════════════════════════════════════════════════\n\n');
 
   } catch (error) {
-    console.error('\n❌ Test failed:', error)
-    await page.screenshot({ path: 'test-screenshots/payment-error.png', fullPage: true })
-  } finally {
-    await browser.close()
+    console.error('❌ TEST 1 ERROR:', error.message);
+    await page.screenshot({ path: 'test1-error.png', fullPage: true });
   }
-}
 
-// Run test
-testPaymentMethods().catch(console.error)
+  await browser.close();
+
+  // TEST 2
+  console.log('═══════════════════════════════════════════════════════════');
+  console.log('🧪 TEST 2: Cash App QR Code Display');
+  console.log('═══════════════════════════════════════════════════════════\n');
+
+  const browser2 = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  });
+
+  const page2 = await browser2.newPage();
+  await page2.setViewport({ width: 1920, height: 1080 });
+
+  try {
+    await page2.goto('https://gangrunprinting.com', { waitUntil: 'networkidle0' });
+
+    await page2.evaluate(() => {
+      localStorage.setItem('cart', JSON.stringify({
+        items: [{
+          id: 'test-cashapp',
+          productId: '2',
+          productName: 'Test Flyers',
+          quantity: 100,
+          price: 99.99,
+          total: 99.99,
+          paperStockWeight: 1
+        }],
+        itemCount: 1,
+        subtotal: 99.99
+      }));
+
+      sessionStorage.setItem('checkout_shipping_address', JSON.stringify({
+        fullName: 'Test',
+        address: '123 St',
+        city: 'Austin',
+        state: 'TX',
+        zip: '78701'
+      }));
+
+      sessionStorage.setItem('checkout_shipping_method', JSON.stringify({
+        carrier: 'FedEx',
+        rate: { amount: 25.00 }
+      }));
+    });
+
+    await page2.goto('https://gangrunprinting.com/checkout/payment', { waitUntil: 'networkidle0' });
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    const cashAppButton = await page2.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      return buttons.find(b => b.textContent.includes('Cash App'))?.textContent.trim();
+    });
+
+    if (cashAppButton) {
+      console.log(`✅ Found Cash App button: "${cashAppButton}"\n`);
+
+      await page2.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        buttons.find(b => b.textContent.includes('Cash App'))?.click();
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 4000));
+
+      const qrData = await page2.evaluate(() => {
+        const bodyText = document.body.innerText;
+        const cashAppLink = Array.from(document.querySelectorAll('a'))
+          .find(a => a.href && a.href.includes('cash.app'));
+
+        return {
+          hasQR: bodyText.includes('QR') || bodyText.includes('Scan'),
+          cashAppUrl: cashAppLink?.href,
+          amounts: bodyText.match(/\$[\d,]+\.\d{2}/g) || []
+        };
+      });
+
+      console.log('📱 QR Code Check:');
+      console.log('   QR text present:', qrData.hasQR ? '✅' : '❌');
+      console.log('   Cash App link:', qrData.cashAppUrl || '❌ None');
+      console.log('   Amounts found:', qrData.amounts.join(', '));
+
+      await page2.screenshot({ path: 'test2-cashapp-qr.png', fullPage: true });
+
+      console.log('\n═══════════════════════════════════════════════════════════');
+      console.log('📊 TEST 2 RESULTS');
+      console.log('═══════════════════════════════════════════════════════════');
+      console.log(qrData.hasQR && qrData.cashAppUrl ? '✅ PASS: QR code displays' : '❌ FAIL');
+      console.log('═══════════════════════════════════════════════════════════');
+    } else {
+      console.log('❌ Cash App button NOT FOUND');
+      await page2.screenshot({ path: 'test2-no-button.png', fullPage: true });
+    }
+
+  } catch (error) {
+    console.error('❌ TEST 2 ERROR:', error.message);
+  }
+
+  await browser2.close();
+  console.log('\n🏁 Tests complete!\n');
+})();

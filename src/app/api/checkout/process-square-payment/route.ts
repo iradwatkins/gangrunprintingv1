@@ -23,8 +23,9 @@ const squareEnvironment = SQUARE_ENVIRONMENT === 'production'
 // console.log('[Square] Initializing client with environment:', SQUARE_ENVIRONMENT, '→', squareEnvironment)
 
 // Initialize Square client
+// NOTE: Square SDK v43+ uses 'token' parameter (not 'accessToken')
 const client = new SquareClient({
-  accessToken: SQUARE_ACCESS_TOKEN!,
+  token: SQUARE_ACCESS_TOKEN!,
   environment: squareEnvironment,
 })
 

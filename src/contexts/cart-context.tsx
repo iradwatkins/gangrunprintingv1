@@ -30,35 +30,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   const updatedState = (() => {
     switch (action.type) {
       case 'ADD_ITEM': {
-        // Check if exact same product configuration already exists
-        const existingIndex = state.items.findIndex(
-          (item) =>
-            item.productId === action.payload.productId &&
-            JSON.stringify(item.options) === JSON.stringify(action.payload.options)
-        )
-
-        if (existingIndex >= 0) {
-          // Update quantity of existing item
-          return {
-            ...state,
-            items: state.items.map((item, index) =>
-              index === existingIndex
-                ? {
-                    ...item,
-                    quantity: item.quantity + action.payload.quantity,
-                    subtotal: item.price * (item.quantity + action.payload.quantity),
-                  }
-                : item
-            ),
-            lastUpdated: new Date().toISOString(),
-          }
-        }
-
-        // Add new item to cart (support multiple products)
-        // Note: Drawer no longer auto-opens on add - user redirected to /cart page
+        // Each add to cart creates a new separate item (no quantity merging)
+        // Open drawer automatically when item is added
         return {
           ...state,
           items: [...state.items, action.payload],
+          isOpen: true, // Auto-open drawer
           lastUpdated: new Date().toISOString(),
         }
       }

@@ -1,0 +1,190 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - link "GangRun Printing" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "GangRun Printing" [ref=e8]
+        - generic [ref=e9]:
+          - link "Shopping cart total $0.00" [ref=e10] [cursor=pointer]:
+            - /url: /checkout
+            - img
+            - generic [ref=e11]: Cart
+          - button [ref=e12] [cursor=pointer]:
+            - img
+    - main [ref=e13]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - img [ref=e18]
+          - generic [ref=e22]: Product Not Found
+          - generic [ref=e23]: Sorry, we couldn't find the product you're looking for. It may have been removed or the link might be incorrect.
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - link "Browse Products" [ref=e26] [cursor=pointer]:
+              - /url: /products
+              - img
+              - text: Browse Products
+            - link "Go Home" [ref=e27] [cursor=pointer]:
+              - /url: /
+              - img
+              - text: Go Home
+          - generic [ref=e28]:
+            - heading "Popular Categories" [level=3] [ref=e29]
+            - generic [ref=e30]:
+              - link "Business Cards" [ref=e31] [cursor=pointer]:
+                - /url: /products?category=business-cards
+              - link "Flyers" [ref=e32] [cursor=pointer]:
+                - /url: /products?category=flyers
+              - link "Posters" [ref=e33] [cursor=pointer]:
+                - /url: /products?category=posters
+              - link "Banners" [ref=e34] [cursor=pointer]:
+                - /url: /products?category=banners
+    - contentinfo [ref=e35]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Subscribe to Our Newsletter" [level=3] [ref=e40]
+          - paragraph [ref=e41]: Get exclusive deals and printing tips delivered to your inbox
+        - generic [ref=e42]:
+          - textbox "Enter your email" [ref=e43]
+          - button "Subscribe" [ref=e44] [cursor=pointer]
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - link "GangRun Printing" [ref=e48] [cursor=pointer]:
+              - /url: /
+              - img "GangRun Printing" [ref=e49]
+            - paragraph [ref=e50]: Your trusted partner for professional printing services. Quality prints, fast turnaround, and exceptional service.
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - generic [ref=e55]: 1-800-PRINTING
+              - generic [ref=e56]:
+                - img [ref=e57]
+                - generic [ref=e60]: support@gangrunprinting.com
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - generic [ref=e65]: 123 Print Street, Houston, TX 77001
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e70]: "Mon-Fri: 8AM-8PM, Sat-Sun: 9AM-6PM"
+          - generic [ref=e71]:
+            - heading "Products" [level=3] [ref=e72]
+            - list [ref=e73]:
+              - listitem [ref=e74]:
+                - link "Business Cards" [ref=e75] [cursor=pointer]:
+                  - /url: /products?category=business-cards
+              - listitem [ref=e76]:
+                - link "Flyers & Brochures" [ref=e77] [cursor=pointer]:
+                  - /url: /products?category=flyers
+              - listitem [ref=e78]:
+                - link "Banners & Signs" [ref=e79] [cursor=pointer]:
+                  - /url: /products?category=banners
+              - listitem [ref=e80]:
+                - link "Stickers & Labels" [ref=e81] [cursor=pointer]:
+                  - /url: /products?category=stickers
+              - listitem [ref=e82]:
+                - link "Apparel" [ref=e83] [cursor=pointer]:
+                  - /url: /products?category=apparel
+              - listitem [ref=e84]:
+                - link "View All Products" [ref=e85] [cursor=pointer]:
+                  - /url: /products
+          - generic [ref=e86]:
+            - heading "Services" [level=3] [ref=e87]
+            - list [ref=e88]:
+              - listitem [ref=e89]:
+                - link "Design Services" [ref=e90] [cursor=pointer]:
+                  - /url: /quote
+              - listitem [ref=e91]:
+                - link "Bulk Orders" [ref=e92] [cursor=pointer]:
+                  - /url: /quote
+              - listitem [ref=e93]:
+                - link "Rush Printing" [ref=e94] [cursor=pointer]:
+                  - /url: /quote
+              - listitem [ref=e95]:
+                - link "Free Samples" [ref=e96] [cursor=pointer]:
+                  - /url: /quote
+              - listitem [ref=e97]:
+                - link "Custom Quotes" [ref=e98] [cursor=pointer]:
+                  - /url: /quote
+          - generic [ref=e99]:
+            - heading "Company" [level=3] [ref=e100]
+            - list [ref=e101]:
+              - listitem [ref=e102]:
+                - link "About Us" [ref=e103] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e104]:
+                - link "Contact Us" [ref=e105] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e106]:
+                - link "Locations" [ref=e107] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e108]:
+                - link "Careers" [ref=e109] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e110]:
+                - link "Blog" [ref=e111] [cursor=pointer]:
+                  - /url: /help-center
+          - generic [ref=e112]:
+            - heading "Support" [level=3] [ref=e113]
+            - list [ref=e114]:
+              - listitem [ref=e115]:
+                - link "Track Order" [ref=e116] [cursor=pointer]:
+                  - /url: /track
+              - listitem [ref=e117]:
+                - link "Help Center" [ref=e118] [cursor=pointer]:
+                  - /url: /help-center
+              - listitem [ref=e119]:
+                - link "Shipping Info" [ref=e120] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e121]:
+                - link "Return Policy" [ref=e122] [cursor=pointer]:
+                  - /url: /help-center
+              - listitem [ref=e123]:
+                - link "FAQs" [ref=e124] [cursor=pointer]:
+                  - /url: /help-center
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - generic [ref=e129]: ✓
+            - generic [ref=e130]: 100% Satisfaction Guarantee
+          - generic [ref=e131]:
+            - generic [ref=e133]: 🚚
+            - generic [ref=e134]: Free Shipping on Orders $99+
+          - generic [ref=e135]:
+            - generic [ref=e137]: 🔒
+            - generic [ref=e138]: Secure Payment Processing
+          - generic [ref=e139]:
+            - generic [ref=e141]: ♻️
+            - generic [ref=e142]: Eco-Friendly Printing
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - paragraph [ref=e145]: © 2024 GangRun Printing. All rights reserved.
+            - generic [ref=e146]:
+              - link "Privacy Policy" [ref=e147] [cursor=pointer]:
+                - /url: /privacy-policy
+              - link "Terms of Service" [ref=e148] [cursor=pointer]:
+                - /url: /terms-of-service
+              - link "Cookie Policy" [ref=e149] [cursor=pointer]:
+                - /url: /privacy-policy#cookies
+          - generic [ref=e150]:
+            - button [ref=e151] [cursor=pointer]:
+              - img
+            - button [ref=e152] [cursor=pointer]:
+              - img
+            - button [ref=e153] [cursor=pointer]:
+              - img
+            - button [ref=e154] [cursor=pointer]:
+              - img
+        - generic [ref=e155]:
+          - generic [ref=e156]: "We accept:"
+          - generic [ref=e157]:
+            - generic [ref=e158]: Visa
+            - generic [ref=e159]: Mastercard
+            - generic [ref=e160]: Amex
+            - generic [ref=e161]: PayPal
+            - generic [ref=e162]: Apple Pay
+            - generic [ref=e163]: Google Pay
+  - alert [ref=e164]: Product Not Found | GangRun Printing
+```

@@ -122,14 +122,12 @@ export function CartDrawer() {
 
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">Qty: </span>
-                        <span className="text-sm font-medium">{item.quantity}</span>
+                        <span className="text-xs text-muted-foreground">
+                          Qty: {item.quantity}
+                        </span>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">${item.subtotal.toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">
-                          ${item.price.toFixed(2)} each
-                        </p>
+                        <p className="font-semibold">${item.price.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
