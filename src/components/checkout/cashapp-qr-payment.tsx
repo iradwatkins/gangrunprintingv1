@@ -113,8 +113,12 @@ export function CashAppQRPayment({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span className="text-2xl">💚</span>
+        <CardTitle className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-lg bg-[#00D632] flex items-center justify-center p-1.5">
+            <svg viewBox="0 0 24 24" className="w-full h-full fill-white">
+              <path d="M23.59 3.47a5.11 5.11 0 0 0-3.05-3.05c-2.68-1-13.49-1-13.49-1S2.67.42 0 1.42A5.11 5.11 0 0 0-.53 4.47c-.16.8-.27 1.94-.33 3.06h.02A71.04 71.04 0 0 0-.81 12c.01 1.61.13 3.15.34 4.49a5.11 5.11 0 0 0 3.05 3.05c2.68 1 13.49 1 13.49 1s10.81.01 13.49-1a5.11 5.11 0 0 0 3.05-3.05c.16-.8.27-1.94.33-3.06h-.02a71.04 71.04 0 0 0 .03-4.47c-.01-1.61-.13-3.15-.34-4.49zM9.63 15.65V8.35L15.73 12l-6.1 3.65z"/>
+            </svg>
+          </div>
           Pay with Cash App
         </CardTitle>
       </CardHeader>
@@ -196,7 +200,11 @@ export function CashAppQRPayment({
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <span className="text-lg">💚</span>
+                <div className="h-5 w-5">
+                  <svg viewBox="0 0 24 24" className="w-full h-full fill-white">
+                    <path d="M23.59 3.47a5.11 5.11 0 0 0-3.05-3.05c-2.68-1-13.49-1-13.49-1S2.67.42 0 1.42A5.11 5.11 0 0 0-.53 4.47c-.16.8-.27 1.94-.33 3.06h.02A71.04 71.04 0 0 0-.81 12c.01 1.61.13 3.15.34 4.49a5.11 5.11 0 0 0 3.05 3.05c2.68 1 13.49 1 13.49 1s10.81.01 13.49-1a5.11 5.11 0 0 0 3.05-3.05c.16-.8.27-1.94.33-3.06h-.02a71.04 71.04 0 0 0 .03-4.47c-.01-1.61-.13-3.15-.34-4.49zM9.63 15.65V8.35L15.73 12l-6.1 3.65z"/>
+                  </svg>
+                </div>
                 Open in Cash App
               </a>
             </div>
