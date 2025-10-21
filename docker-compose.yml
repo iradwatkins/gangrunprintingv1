@@ -71,6 +71,10 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
+        - NEXT_PUBLIC_PAYPAL_CLIENT_ID=${NEXT_PUBLIC_PAYPAL_CLIENT_ID}
+        - NEXT_PUBLIC_SQUARE_APPLICATION_ID=${NEXT_PUBLIC_SQUARE_APPLICATION_ID}
+        - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
+        - NEXT_PUBLIC_SQUARE_ENVIRONMENT=${NEXT_PUBLIC_SQUARE_ENVIRONMENT}
     image: gangrunprinting:v1
     container_name: gangrunprinting_app
     ports:
