@@ -134,10 +134,21 @@ export function SquareCardPayment({
         setCard(cardInstance)
         // console.log('[Square] Card attached successfully')
 
-        // Try to initialize Cash App Pay
+        // Try to initialize Cash App Pay with payment request
         try {
           // console.log('[Cash App Pay] Attempting initialization...')
-          const cashAppInstance = await paymentsInstance.cashAppPay({
+
+          // Create payment request with amount details for Cash App
+          const paymentRequest = paymentsInstance.paymentRequest({
+            countryCode: 'US',
+            currencyCode: 'USD',
+            total: {
+              amount: total.toFixed(2),
+              label: 'Total',
+            },
+          })
+
+          const cashAppInstance = await paymentsInstance.cashAppPay(paymentRequest, {
             redirectURL: window.location.href,
             referenceId: `order-${Date.now()}`,
           })
