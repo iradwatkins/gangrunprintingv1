@@ -1,0 +1,12 @@
+{
+  "testDate": "2025-10-21T14:01:39.858Z",
+  "totalOrders": 0,
+  "successfulOrders": 0,
+  "failedOrders": 0,
+  "orders": [],
+  "summary": {
+    "allOrdersSuccessful": true,
+    "allExpectedServicesFound": true,
+    "averageFedexRatesFound": null
+  }
+}

@@ -59,8 +59,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Ahrefs Web Analytics - Track backlinks, LLM traffic, and referrers */}
         <Script
-          src="https://analytics.ahrefs.com/analytics.js"
           data-key="xmoVXl4/lDVkojG39HWDvQ"
+          src="https://analytics.ahrefs.com/analytics.js"
           strategy="afterInteractive"
         />
       </head>

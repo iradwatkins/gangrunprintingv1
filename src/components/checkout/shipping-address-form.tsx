@@ -110,11 +110,11 @@ export function ShippingAddressForm({
               First Name <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.firstName ? 'border-destructive' : ''}
               id="firstName"
+              placeholder="John"
               value={address.firstName || ''}
               onChange={(e) => handleChange('firstName', e.target.value)}
-              placeholder="John"
-              className={errors.firstName ? 'border-destructive' : ''}
             />
             {errors.firstName && (
               <p className="text-sm text-destructive">{errors.firstName}</p>
@@ -126,11 +126,11 @@ export function ShippingAddressForm({
               Last Name <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.lastName ? 'border-destructive' : ''}
               id="lastName"
+              placeholder="Doe"
               value={address.lastName || ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
-              placeholder="Doe"
-              className={errors.lastName ? 'border-destructive' : ''}
             />
             {errors.lastName && (
               <p className="text-sm text-destructive">{errors.lastName}</p>
@@ -144,12 +144,12 @@ export function ShippingAddressForm({
               Email <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.email ? 'border-destructive' : ''}
               id="email"
+              placeholder="john@example.com"
               type="email"
               value={address.email || ''}
               onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="john@example.com"
-              className={errors.email ? 'border-destructive' : ''}
             />
             {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
           </div>
@@ -159,12 +159,12 @@ export function ShippingAddressForm({
               Phone <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.phone ? 'border-destructive' : ''}
               id="phone"
+              placeholder="(555) 123-4567"
               type="tel"
               value={address.phone || ''}
               onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="(555) 123-4567"
-              className={errors.phone ? 'border-destructive' : ''}
             />
             {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
           </div>
@@ -176,11 +176,11 @@ export function ShippingAddressForm({
             Street Address <span className="text-destructive">*</span>
           </Label>
           <Input
+            className={errors.street ? 'border-destructive' : ''}
             id="street"
+            placeholder="123 Main Street"
             value={address.street || ''}
             onChange={(e) => handleChange('street', e.target.value)}
-            placeholder="123 Main Street"
-            className={errors.street ? 'border-destructive' : ''}
           />
           {errors.street && <p className="text-sm text-destructive">{errors.street}</p>}
         </div>
@@ -189,9 +189,9 @@ export function ShippingAddressForm({
           <Label htmlFor="street2">Apartment, Suite, etc. (Optional)</Label>
           <Input
             id="street2"
+            placeholder="Apt 4B"
             value={address.street2 || ''}
             onChange={(e) => handleChange('street2', e.target.value)}
-            placeholder="Apt 4B"
           />
         </div>
 
@@ -201,11 +201,11 @@ export function ShippingAddressForm({
               City <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.city ? 'border-destructive' : ''}
               id="city"
+              placeholder="Chicago"
               value={address.city || ''}
               onChange={(e) => handleChange('city', e.target.value)}
-              placeholder="Chicago"
-              className={errors.city ? 'border-destructive' : ''}
             />
             {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
           </div>
@@ -216,8 +216,8 @@ export function ShippingAddressForm({
             </Label>
             <Select value={address.state || ''} onValueChange={(value) => handleChange('state', value)}>
               <SelectTrigger
-                id="state"
                 className={errors.state ? 'border-destructive' : ''}
+                id="state"
               >
                 <SelectValue placeholder="Select state" />
               </SelectTrigger>
@@ -237,12 +237,12 @@ export function ShippingAddressForm({
               ZIP Code <span className="text-destructive">*</span>
             </Label>
             <Input
+              className={errors.zipCode ? 'border-destructive' : ''}
               id="zipCode"
+              maxLength={10}
+              placeholder="60173"
               value={address.zipCode || ''}
               onChange={(e) => handleChange('zipCode', e.target.value)}
-              placeholder="60173"
-              maxLength={10}
-              className={errors.zipCode ? 'border-destructive' : ''}
             />
             {errors.zipCode && <p className="text-sm text-destructive">{errors.zipCode}</p>}
           </div>

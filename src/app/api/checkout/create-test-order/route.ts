@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { OrderEmailService } from '@/lib/email/order-email-service'
+import { randomUUID } from 'crypto'
 
 interface CartItem {
   id: string
@@ -59,11 +60,13 @@ export async function POST(request: NextRequest) {
       // Create new customer
       customer = await prisma.user.create({
         data: {
+          id: randomUUID(),
           email: normalizedEmail,
           name:
             `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer',
           role: 'CUSTOMER',
           emailVerified: false,
+          updatedAt: new Date(),
         },
       })
     }

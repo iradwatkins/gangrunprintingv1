@@ -68,10 +68,10 @@ export function EditableTracking({ orderId, initialTrackingNumber, carrier }: Ed
         <span className="text-sm text-muted-foreground">Tracking Number</span>
         {!isEditing && trackingNumber && trackingUrl && (
           <a
-            href={trackingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            href={trackingUrl}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             Track Package
             <ExternalLink className="h-3 w-3" />
@@ -83,27 +83,27 @@ export function EditableTracking({ orderId, initialTrackingNumber, carrier }: Ed
         {isEditing ? (
           <>
             <Input
+              className="flex-1"
+              placeholder="Enter tracking number..."
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
-              placeholder="Enter tracking number..."
-              className="flex-1"
             />
             <Button
+              disabled={isSaving}
               size="sm"
               onClick={handleSave}
-              disabled={isSaving}
             >
               <Save className="h-4 w-4 mr-1" />
               Save
             </Button>
             <Button
+              disabled={isSaving}
               size="sm"
               variant="outline"
               onClick={() => {
                 setTrackingNumber(initialTrackingNumber || '')
                 setIsEditing(false)
               }}
-              disabled={isSaving}
             >
               Cancel
             </Button>

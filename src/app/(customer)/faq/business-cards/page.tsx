@@ -31,11 +31,11 @@ export default function BusinessCardFAQPage() {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="text-sm text-gray-600">
-            <Link href="/" className="hover:text-gray-900">
+            <Link className="hover:text-gray-900" href="/">
               Home
             </Link>
             {' / '}
-            <Link href="/faq" className="hover:text-gray-900">
+            <Link className="hover:text-gray-900" href="/faq">
               FAQ
             </Link>
             {' / '}
@@ -46,10 +46,10 @@ export default function BusinessCardFAQPage() {
 
       {/* FAQ Content */}
       <FAQPage
-        title="Business Card Printing FAQ"
+        showCategory
         description="Everything you need to know about printing professional business cards with GangRun Printing."
         faqs={businessCardFAQs}
-        showCategory
+        title="Business Card Printing FAQ"
       />
 
       {/* CTA Section */}
@@ -64,14 +64,14 @@ export default function BusinessCardFAQPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/products/business-cards"
               className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              href="/products/business-cards"
             >
               Order Business Cards
             </Link>
             <Link
-              href="/contact"
               className="px-8 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              href="/contact"
             >
               Contact Support
             </Link>
@@ -84,8 +84,8 @@ export default function BusinessCardFAQPage() {
         <h3 className="text-xl font-bold text-gray-900 mb-6">Related FAQ Pages</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <Link
-            href="/faq/flyers"
             className="p-6 bg-white border rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+            href="/faq/flyers"
           >
             <h4 className="font-semibold text-gray-900 mb-2">Flyer Printing FAQ</h4>
             <p className="text-sm text-gray-600">
@@ -93,8 +93,8 @@ export default function BusinessCardFAQPage() {
             </p>
           </Link>
           <Link
-            href="/faq"
             className="p-6 bg-white border rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+            href="/faq"
           >
             <h4 className="font-semibold text-gray-900 mb-2">General Printing FAQ</h4>
             <p className="text-sm text-gray-600">

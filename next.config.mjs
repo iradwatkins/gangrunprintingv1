@@ -2,6 +2,9 @@
 // import createNextIntlPlugin from 'next-intl/plugin'
 // const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
+// Bundle analyzer for build optimization
+import withBundleAnalyzer from '@next/bundle-analyzer'
+
 // Sentry configuration - Phase 3 Enterprise Enhancement
 import { withSentryConfig } from '@sentry/nextjs'
 
@@ -278,7 +281,14 @@ const nextConfig = {
 
 // Apply plugins in order
 // next-intl plugin disabled - i18n not in use
-let finalConfig = nextConfig
+
+// Bundle analyzer - enable with ANALYZE=true npm run build
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+// Wrap config with bundle analyzer first
+let finalConfig = bundleAnalyzer(nextConfig)
 
 // Add Sentry if DSN is configured
 if (process.env.NEXT_PUBLIC_SENTRY_DSN) {

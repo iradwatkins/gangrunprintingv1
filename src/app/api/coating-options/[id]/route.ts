@@ -61,7 +61,7 @@ export async function DELETE(
       where: { id },
       include: {
         _count: {
-          select: { paperStockCoatings: true },
+          select: { PaperStockCoating: true },
         },
       },
     })
@@ -70,7 +70,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Coating option not found' }, { status: 404 })
     }
 
-    if (coatingWithRelations._count.paperStockCoatings > 0) {
+    if (coatingWithRelations._count.PaperStockCoating > 0) {
       return NextResponse.json(
         { error: 'Cannot delete coating option that is in use by paper stocks' },
         { status: 400 }

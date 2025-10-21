@@ -6,7 +6,7 @@
  * User approves a decision (A, B, or C)
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { seoBrain } from '@/lib/seo-brain/orchestrator'

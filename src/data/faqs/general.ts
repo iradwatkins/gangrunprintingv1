@@ -4,7 +4,7 @@
  * Common questions about GangRun Printing services
  */
 
-import { FAQItem } from '@/components/seo/FAQSchema'
+import { type FAQItem } from '@/components/seo/FAQSchema'
 
 export const generalFAQs: FAQItem[] = [
   {

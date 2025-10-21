@@ -6,7 +6,7 @@
  * Starts a new 200-city landing page campaign
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generate200CityPages } from '@/lib/seo-brain/city-page-generator'

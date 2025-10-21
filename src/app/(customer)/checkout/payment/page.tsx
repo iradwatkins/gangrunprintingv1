@@ -128,9 +128,9 @@ export default function PaymentPage() {
         {/* Header */}
         <div className="mb-8">
           <Button
+            className="mb-4"
             variant="ghost"
             onClick={handleBackToShipping}
-            className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Shipping
@@ -235,12 +235,12 @@ export default function PaymentPage() {
               <div>
                 <SquareCardPayment
                   applicationId={squareAppId}
+                  environment={squareEnvironment}
                   locationId={squareLocationId}
                   total={total}
-                  environment={squareEnvironment}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
                   onBack={() => setSelectedMethod(null)}
+                  onPaymentError={handlePaymentError}
+                  onPaymentSuccess={handlePaymentSuccess}
                 />
               </div>
             )}
@@ -258,12 +258,12 @@ export default function PaymentPage() {
                   <CardContent className="space-y-4">
                     <PayPalButton
                       total={total}
-                      onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
+                      onSuccess={handlePaymentSuccess}
                     />
                     <Button
-                      variant="outline"
                       className="w-full"
+                      variant="outline"
                       onClick={() => setSelectedMethod(null)}
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" />

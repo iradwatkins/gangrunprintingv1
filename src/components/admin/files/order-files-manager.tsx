@@ -236,7 +236,7 @@ export function OrderFilesManager({ orderId }: Props) {
             </div>
             <div className="flex items-center gap-2">
               {files.length > 0 && (
-                <Button size="sm" variant="outline" asChild>
+                <Button asChild size="sm" variant="outline">
                   <a
                     download
                     href={`/api/admin/orders/${orderId}/download-files`}
@@ -500,9 +500,9 @@ function FileListItem({
         {thumbnailUrl ? (
           <div className="relative w-full h-full">
             <Image
+              fill
               alt={file.label || file.filename}
               className="object-cover"
-              fill
               sizes="80px"
               src={thumbnailUrl}
             />

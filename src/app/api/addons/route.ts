@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
         sortOrder: sortOrder || 0,
         isActive: isActive !== undefined ? isActive : true,
         adminNotes,
+        updatedAt: new Date(),
       },
     })
 

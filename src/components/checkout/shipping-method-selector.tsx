@@ -69,6 +69,11 @@ export function ShippingMethodSelector({
     setError(null)
 
     try {
+      console.log('[ShippingMethodSelector] Fetching rates for:', {
+        destination,
+        packagesCount: packages.length,
+      })
+
       const response = await fetch('/api/shipping/rates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -86,23 +91,42 @@ export function ShippingMethodSelector({
       })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch shipping rates')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('[ShippingMethodSelector] API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        })
+        throw new Error(errorData.error || errorData.message || 'Failed to fetch shipping rates')
       }
 
       const data = await response.json()
+      console.log('[ShippingMethodSelector] API response:', {
+        success: data.success,
+        ratesCount: data.rates?.length || 0,
+        metadata: data.metadata,
+      })
 
-      if (data.success && data.rates) {
-        setRates(data.rates)
-        // Auto-select first rate if none selected
-        if (!selectedMethod && data.rates.length > 0) {
-          onSelect(data.rates[0])
+      if (data.success && data.rates && Array.isArray(data.rates)) {
+        if (data.rates.length === 0) {
+          setError('No shipping options available for this address')
+          setRates([])
+        } else {
+          setRates(data.rates)
+          // Auto-select first rate if none selected
+          if (!selectedMethod && data.rates.length > 0) {
+            onSelect(data.rates[0])
+          }
         }
       } else {
-        setError(data.error || 'No shipping rates available')
+        const errorMsg = data.error || 'No shipping rates available'
+        console.error('[ShippingMethodSelector] Invalid response format:', data)
+        setError(errorMsg)
       }
     } catch (err) {
-      console.error('Shipping rates error:', err)
-      setError('Failed to load shipping rates')
+      console.error('[ShippingMethodSelector] Shipping rates error:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load shipping rates'
+      setError(errorMessage)
       toast.error('Could not load shipping options. Please try again.')
     } finally {
       setLoading(false)
@@ -166,8 +190,8 @@ export function ShippingMethodSelector({
           <div className="text-center py-8">
             <p className="text-destructive mb-4">{error}</p>
             <button
-              onClick={fetchShippingRates}
               className="text-sm text-primary hover:underline"
+              onClick={fetchShippingRates}
             >
               Try again
             </button>
@@ -215,11 +239,11 @@ export function ShippingMethodSelector({
           }}
         >
           <div className="space-y-3">
-            {rates.map((rate) => (
-              <div key={rate.serviceCode} className="relative">
+            {rates.map((rate, index) => (
+              <div key={`${rate.provider}-${rate.serviceCode}-${index}`} className="relative">
                 <Label
-                  htmlFor={rate.serviceCode}
                   className="cursor-pointer block"
+                  htmlFor={`${rate.provider}-${rate.serviceCode}-${index}`}
                 >
                   <Card
                     className={`border transition-all ${
@@ -231,9 +255,9 @@ export function ShippingMethodSelector({
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-3">
                         <RadioGroupItem
-                          id={rate.serviceCode}
-                          value={rate.serviceCode}
                           className="mt-0.5"
+                          id={`${rate.provider}-${rate.serviceCode}-${index}`}
+                          value={rate.serviceCode}
                         />
                         <div className="flex items-center space-x-3 flex-1">
                           <div

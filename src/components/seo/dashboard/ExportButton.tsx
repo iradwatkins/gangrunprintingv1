@@ -135,7 +135,7 @@ export function ExportButton({ data, disabled = false }: ExportButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" disabled={disabled || isExporting}>
+        <Button disabled={disabled || isExporting} variant="outline">
           <Download className="mr-2 h-4 w-4" />
           {isExporting ? 'Exporting...' : 'Export'}
         </Button>

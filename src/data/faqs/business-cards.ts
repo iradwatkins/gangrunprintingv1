@@ -5,7 +5,7 @@
  * Clear question-answer format that AI bots can easily parse
  */
 
-import { FAQItem } from '@/components/seo/FAQSchema'
+import { type FAQItem } from '@/components/seo/FAQSchema'
 
 export const businessCardFAQs: FAQItem[] = [
   {

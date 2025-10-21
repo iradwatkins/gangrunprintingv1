@@ -4,7 +4,7 @@
  * Optimized for AI search engines
  */
 
-import { FAQItem } from '@/components/seo/FAQSchema'
+import { type FAQItem } from '@/components/seo/FAQSchema'
 
 export const flyerFAQs: FAQItem[] = [
   {

@@ -125,6 +125,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           expires_at: expiresAt ? Math.floor(expiresAt.getTime() / 1000) : null,
           token_type: 'Bearer',
           scope: 'profile email',
+          updatedAt: new Date(),
         },
       })
     } else {
@@ -162,6 +163,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             expires_at: expiresAt ? Math.floor(expiresAt.getTime() / 1000) : null,
             token_type: 'Bearer',
             scope: 'profile email',
+            updatedAt: new Date(),
           },
         })
       } else {

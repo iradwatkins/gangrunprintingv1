@@ -122,9 +122,9 @@ export function ShippingPreview({ cartItems, onShippingSelected, selectedShippin
         <div className="flex gap-2">
           <Input
             id="shipping-zip"
+            maxLength={10}
             placeholder="Enter zip code"
             value={zipCode}
-            maxLength={10}
             onChange={(e) => {
               const value = e.target.value.replace(/[^0-9-]/g, '')
               setZipCode(value)
@@ -136,9 +136,9 @@ export function ShippingPreview({ cartItems, onShippingSelected, selectedShippin
             }}
           />
           <Button
-            onClick={calculateShipping}
             disabled={isLoading || !zipCode}
             variant="outline"
+            onClick={calculateShipping}
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -169,10 +169,10 @@ export function ShippingPreview({ cartItems, onShippingSelected, selectedShippin
                 key={index}
                 className="flex items-center space-x-3 border rounded-lg p-3 hover:bg-muted/50 cursor-pointer"
               >
-                <RadioGroupItem value={index.toString()} id={`rate-${index}`} />
+                <RadioGroupItem id={`rate-${index}`} value={index.toString()} />
                 <label
-                  htmlFor={`rate-${index}`}
                   className="flex-1 flex items-center justify-between cursor-pointer"
+                  htmlFor={`rate-${index}`}
                 >
                   <div className="flex items-center gap-2">
                     <Truck className="h-4 w-4 text-muted-foreground" />

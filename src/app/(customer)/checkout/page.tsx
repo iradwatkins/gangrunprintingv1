@@ -133,7 +133,7 @@ export default function CartPage() {
                         {/* Artwork Files */}
                         {item.artworkFiles && item.artworkFiles.length > 0 && (
                           <div className="mt-2">
-                            <FileThumbnails files={item.artworkFiles} size="sm" maxDisplay={3} />
+                            <FileThumbnails files={item.artworkFiles} maxDisplay={3} size="sm" />
                           </div>
                         )}
                       </div>
@@ -174,9 +174,9 @@ export default function CartPage() {
               </CardHeader>
               <CardContent>
                 <ArtworkUpload
-                  onFilesChange={handleFilesChange}
                   maxFiles={10}
                   maxSizeMB={50}
+                  onFilesChange={handleFilesChange}
                 />
 
                 {/* File Preview/Thumbnails */}
@@ -191,9 +191,9 @@ export default function CartPage() {
                           <div className="aspect-square rounded-lg overflow-hidden bg-muted border-2 border-green-200">
                             {file.preview ? (
                               <img
-                                src={file.preview}
                                 alt={file.file.name}
                                 className="w-full h-full object-cover"
+                                src={file.preview}
                               />
                             ) : (
                               <div className="flex items-center justify-center h-full">

@@ -145,8 +145,8 @@ export function CoreWebVitalsCard({
                 </div>
               </div>
               <Progress
-                value={100 - getProgressValue(vital.key, vital.value)}
                 className="h-2"
+                value={100 - getProgressValue(vital.key, vital.value)}
               />
             </div>
           )

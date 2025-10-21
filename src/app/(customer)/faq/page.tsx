@@ -97,8 +97,8 @@ export default function FAQIndexPage() {
             return (
               <Link
                 key={category.href}
-                href={category.href}
                 className="bg-white p-6 rounded-lg border hover:border-blue-500 hover:shadow-lg transition-all group"
+                href={category.href}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
@@ -125,10 +125,10 @@ export default function FAQIndexPage() {
       {/* General FAQs */}
       <div className="bg-white py-12">
         <FAQPage
-          title="General Printing Questions"
+          showCategory
           description="Common questions about GangRun Printing services, processes, and policies."
           faqs={generalFAQs}
-          showCategory
+          title="General Printing Questions"
         />
       </div>
 
@@ -144,14 +144,14 @@ export default function FAQIndexPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/contact"
               className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              href="/contact"
             >
               Contact Support
             </Link>
             <Link
-              href="/help-center"
               className="px-8 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              href="/help-center"
             >
               Help Center
             </Link>

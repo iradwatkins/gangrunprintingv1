@@ -24,11 +24,11 @@ export default function FlyerFAQPage() {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="text-sm text-gray-600">
-            <Link href="/" className="hover:text-gray-900">
+            <Link className="hover:text-gray-900" href="/">
               Home
             </Link>
             {' / '}
-            <Link href="/faq" className="hover:text-gray-900">
+            <Link className="hover:text-gray-900" href="/faq">
               FAQ
             </Link>
             {' / '}
@@ -39,10 +39,10 @@ export default function FlyerFAQPage() {
 
       {/* FAQ Content */}
       <FAQPage
-        title="Flyer Printing FAQ"
+        showCategory
         description="Common questions about printing promotional flyers, marketing materials, and event programs."
         faqs={flyerFAQs}
-        showCategory
+        title="Flyer Printing FAQ"
       />
 
       {/* CTA Section */}
@@ -57,14 +57,14 @@ export default function FlyerFAQPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/products/flyers"
               className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              href="/products/flyers"
             >
               Order Flyers
             </Link>
             <Link
-              href="/contact"
               className="px-8 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              href="/contact"
             >
               Contact Support
             </Link>
@@ -77,8 +77,8 @@ export default function FlyerFAQPage() {
         <h3 className="text-xl font-bold text-gray-900 mb-6">Related FAQ Pages</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <Link
-            href="/faq/business-cards"
             className="p-6 bg-white border rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+            href="/faq/business-cards"
           >
             <h4 className="font-semibold text-gray-900 mb-2">Business Card FAQ</h4>
             <p className="text-sm text-gray-600">
@@ -86,8 +86,8 @@ export default function FlyerFAQPage() {
             </p>
           </Link>
           <Link
-            href="/faq"
             className="p-6 bg-white border rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+            href="/faq"
           >
             <h4 className="font-semibold text-gray-900 mb-2">General Printing FAQ</h4>
             <p className="text-sm text-gray-600">

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         AddOnSubOption: {
           orderBy: { displayOrder: 'asc' },
         },
-        productAddOns: {
+        ProductAddOn: {
           include: {
             Product: {
               select: {

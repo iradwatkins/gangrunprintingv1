@@ -204,7 +204,7 @@ export const FEDEX_SERVICES: Record<string, FedExService> = {
     isGuaranteed: false,
     maxWeightLbs: 150,
     requiresSignature: false,
-    allowsResidential: false, // Business delivery only
+    allowsResidential: true, // FIX: Allow residential (displays as "FedEx Home Delivery" for residential addresses)
     allowsHoldAtLocation: true,
     allowsSaturdayDelivery: false,
     premiumMultiplier: 1.0,

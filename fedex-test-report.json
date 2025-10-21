@@ -1,0 +1,73 @@
+{
+  "testDate": "2025-10-21T14:07:25.786Z",
+  "totalOrders": 4,
+  "successfulOrders": 0,
+  "failedOrders": 4,
+  "orders": [
+    {
+      "scenario": "Residential - Ground Home Delivery",
+      "success": false,
+      "fedexRatesFound": 0,
+      "fedexServices": [],
+      "selectedService": "",
+      "selectedServiceName": "",
+      "shippingCost": "",
+      "totalCost": "",
+      "screenshots": [
+        "test-screenshots/order1-step1-product-page.png",
+        "test-screenshots/order1-error.png"
+      ],
+      "error": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button[type=\"submit\"]' is not a valid selector."
+    },
+    {
+      "scenario": "Business - FedEx Ground",
+      "success": false,
+      "fedexRatesFound": 0,
+      "fedexServices": [],
+      "selectedService": "",
+      "selectedServiceName": "",
+      "shippingCost": "",
+      "totalCost": "",
+      "screenshots": [
+        "test-screenshots/order2-step1-product-page.png",
+        "test-screenshots/order2-error.png"
+      ],
+      "error": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button[type=\"submit\"]' is not a valid selector."
+    },
+    {
+      "scenario": "Residential - FedEx 2Day",
+      "success": false,
+      "fedexRatesFound": 0,
+      "fedexServices": [],
+      "selectedService": "",
+      "selectedServiceName": "",
+      "shippingCost": "",
+      "totalCost": "",
+      "screenshots": [
+        "test-screenshots/order3-step1-product-page.png",
+        "test-screenshots/order3-error.png"
+      ],
+      "error": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button[type=\"submit\"]' is not a valid selector."
+    },
+    {
+      "scenario": "Business - Standard Overnight",
+      "success": false,
+      "fedexRatesFound": 0,
+      "fedexServices": [],
+      "selectedService": "",
+      "selectedServiceName": "",
+      "shippingCost": "",
+      "totalCost": "",
+      "screenshots": [
+        "test-screenshots/order4-step1-product-page.png",
+        "test-screenshots/order4-error.png"
+      ],
+      "error": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Add to Cart\"), button[type=\"submit\"]' is not a valid selector."
+    }
+  ],
+  "summary": {
+    "allOrdersSuccessful": false,
+    "allExpectedServicesFound": false,
+    "averageFedexRatesFound": 0
+  }
+}

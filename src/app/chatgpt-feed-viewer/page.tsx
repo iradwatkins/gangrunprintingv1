@@ -65,8 +65,8 @@ export default function ChatGPTFeedViewer() {
             Live data from: <strong>https://gangrunprinting.com/feeds/chatgpt-products.json</strong>
           </p>
           <button
-            onClick={loadFeed}
             className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            onClick={loadFeed}
           >
             🔄 Refresh Data
           </button>
@@ -117,9 +117,9 @@ export default function ChatGPTFeedViewer() {
                 className="bg-white rounded-xl shadow-2xl overflow-hidden hover:shadow-3xl hover:-translate-y-1 transition-all"
               >
                 <img
-                  src={product.image_link}
                   alt={product.title}
                   className="w-full h-48 object-cover bg-gray-100"
+                  src={product.image_link}
                   onError={(e) => {
                     e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23f5f5f5" width="400" height="200"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
                   }}
@@ -162,10 +162,10 @@ export default function ChatGPTFeedViewer() {
                   </div>
 
                   <a
-                    href={product.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="block mt-4 bg-purple-600 hover:bg-purple-700 text-white text-center py-3 rounded-lg font-semibold transition-colors"
+                    href={product.link}
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     View Product →
                   </a>

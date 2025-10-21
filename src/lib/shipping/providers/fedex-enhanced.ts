@@ -159,7 +159,9 @@ export class FedExProviderEnhanced implements ShippingProvider {
     // If no API credentials, return test rates
     if (!this.config.clientId || !this.config.accountNumber) {
       console.warn('[FedEx] No API credentials, returning test rates')
-      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+      const testRates = this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+      const filteredRates = this.filterByEnabledServices(testRates)
+      return this.applyMarkup(filteredRates)
     }
 
     try {
@@ -202,8 +204,10 @@ export class FedExProviderEnhanced implements ShippingProvider {
       return this.applyMarkup(filteredRates)
     } catch (error) {
       console.error('[FedEx] Rate fetch failed:', error)
-      // Fallback to test rates
-      return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+      // Fallback to test rates with filtering
+      const testRates = this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+      const filteredRates = this.filterByEnabledServices(testRates)
+      return this.applyMarkup(filteredRates)
     }
   }
 
@@ -387,7 +391,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
       return []
     }
 
-    return response.output.rateReplyDetails
+    const allRates = response.output.rateReplyDetails
       .map((detail) => {
         const serviceCode = detail.serviceType
         const serviceInfo = getServiceByCode(serviceCode)
@@ -431,6 +435,30 @@ export class FedExProviderEnhanced implements ShippingProvider {
         } as ShippingRate
       })
       .filter((rate): rate is ShippingRate => rate !== null)
+
+    // Deduplicate by serviceCode, keeping the lowest price for each service
+    // This fixes React key duplicate warnings and ensures clean UI display
+    const deduplicatedRates = allRates.reduce((unique, rate) => {
+      const existing = unique.find((r) => r.serviceCode === rate.serviceCode)
+      if (!existing) {
+        // New service code, add it
+        return [...unique, rate]
+      } else if (rate.rateAmount < existing.rateAmount) {
+        // Found cheaper rate for same service, replace existing
+        return [...unique.filter((r) => r.serviceCode !== rate.serviceCode), rate]
+      }
+      // Keep existing (cheaper or same price)
+      return unique
+    }, [] as ShippingRate[])
+
+    // Log deduplication if any occurred
+    if (allRates.length !== deduplicatedRates.length) {
+      console.log(
+        `[FedEx] Deduplicated ${allRates.length} rates → ${deduplicatedRates.length} unique services`
+      )
+    }
+
+    return deduplicatedRates
   }
 
   /**
@@ -666,6 +694,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
 
   /**
    * Get test/estimated rates (enhanced with more services)
+   * DEBUG: Added Oct 21 2025 - Should return exactly 4 rates
    */
   private getTestRates(
     packages: ShippingPackage[],
@@ -679,11 +708,12 @@ export class FedExProviderEnhanced implements ShippingProvider {
     const rates: ShippingRate[] = []
 
     if (!needsFreight) {
-      // Standard parcel services
+      // Standard parcel services - MUST be exactly 4
       const services = [
         { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
         { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
-        { code: 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
+        // FIX: Use GROUND_HOME_DELIVERY for residential (allowsResidential: true), FEDEX_GROUND for business
+        { code: isResidential ? 'GROUND_HOME_DELIVERY' : 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
         { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
       ]
 

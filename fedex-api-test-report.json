@@ -1,0 +1,116 @@
+{
+  "testDate": "2025-10-21T14:09:14.353Z",
+  "total": 4,
+  "passed": 4,
+  "failed": 0,
+  "results": [
+    {
+      "scenario": "Residential - Los Angeles (expect GROUND_HOME_DELIVERY)",
+      "success": true,
+      "fedexRatesFound": 4,
+      "expectedCount": 4,
+      "serviceCodes": [
+        "STANDARD_OVERNIGHT",
+        "FEDEX_2_DAY",
+        "GROUND_HOME_DELIVERY",
+        "SMART_POST"
+      ],
+      "missingServices": [],
+      "rates": [
+        {
+          "serviceCode": "STANDARD_OVERNIGHT"
+        },
+        {
+          "serviceCode": "FEDEX_2_DAY"
+        },
+        {
+          "serviceCode": "GROUND_HOME_DELIVERY"
+        },
+        {
+          "serviceCode": "SMART_POST"
+        }
+      ]
+    },
+    {
+      "scenario": "Business - Chicago (expect FEDEX_GROUND)",
+      "success": true,
+      "fedexRatesFound": 4,
+      "expectedCount": 4,
+      "serviceCodes": [
+        "STANDARD_OVERNIGHT",
+        "FEDEX_2_DAY",
+        "FEDEX_GROUND",
+        "SMART_POST"
+      ],
+      "missingServices": [],
+      "rates": [
+        {
+          "serviceCode": "STANDARD_OVERNIGHT"
+        },
+        {
+          "serviceCode": "FEDEX_2_DAY"
+        },
+        {
+          "serviceCode": "FEDEX_GROUND"
+        },
+        {
+          "serviceCode": "SMART_POST"
+        }
+      ]
+    },
+    {
+      "scenario": "Residential - Miami (expect GROUND_HOME_DELIVERY)",
+      "success": true,
+      "fedexRatesFound": 4,
+      "expectedCount": 4,
+      "serviceCodes": [
+        "STANDARD_OVERNIGHT",
+        "FEDEX_2_DAY",
+        "GROUND_HOME_DELIVERY",
+        "SMART_POST"
+      ],
+      "missingServices": [],
+      "rates": [
+        {
+          "serviceCode": "STANDARD_OVERNIGHT"
+        },
+        {
+          "serviceCode": "FEDEX_2_DAY"
+        },
+        {
+          "serviceCode": "GROUND_HOME_DELIVERY"
+        },
+        {
+          "serviceCode": "SMART_POST"
+        }
+      ]
+    },
+    {
+      "scenario": "Business - New York (expect FEDEX_GROUND)",
+      "success": true,
+      "fedexRatesFound": 4,
+      "expectedCount": 4,
+      "serviceCodes": [
+        "STANDARD_OVERNIGHT",
+        "FEDEX_2_DAY",
+        "FEDEX_GROUND",
+        "SMART_POST"
+      ],
+      "missingServices": [],
+      "rates": [
+        {
+          "serviceCode": "STANDARD_OVERNIGHT"
+        },
+        {
+          "serviceCode": "FEDEX_2_DAY"
+        },
+        {
+          "serviceCode": "FEDEX_GROUND"
+        },
+        {
+          "serviceCode": "SMART_POST"
+        }
+      ]
+    }
+  ]
+}

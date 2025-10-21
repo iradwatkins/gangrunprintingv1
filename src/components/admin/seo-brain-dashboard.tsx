@@ -142,7 +142,7 @@ export function SEOBrainDashboard() {
             <p className="text-sm text-muted-foreground">Autonomous 200-city optimization</p>
           </div>
         </div>
-        <Button onClick={triggerAnalysis} disabled={!selectedCampaign}>
+        <Button disabled={!selectedCampaign} onClick={triggerAnalysis}>
           <Activity className="mr-2 h-4 w-4" />
           Analyze Now
         </Button>
@@ -159,10 +159,10 @@ export function SEOBrainDashboard() {
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                onClick={() => setSelectedCampaign(campaign.id)}
                 className={`cursor-pointer rounded-lg border p-4 transition-colors ${
                   selectedCampaign === campaign.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
                 }`}
+                onClick={() => setSelectedCampaign(campaign.id)}
               >
                 <div className="font-medium">{campaign.productName}</div>
                 <div className="mt-2 flex items-center justify-between text-sm">
@@ -307,7 +307,7 @@ export function SEOBrainDashboard() {
                           <span className="text-xs text-muted-foreground">{option.confidence}% confidence</span>
                         </div>
                         <div className="mb-3 text-sm">{option.action}</div>
-                        <Button size="sm" onClick={() => handleDecision(decision.id, opt)} className="w-full">
+                        <Button className="w-full" size="sm" onClick={() => handleDecision(decision.id, opt)}>
                           Select {opt}
                         </Button>
                       </div>

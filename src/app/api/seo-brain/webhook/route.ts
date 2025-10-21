@@ -6,7 +6,7 @@
  * Handles responses from Telegram bot
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { seoBrain } from '@/lib/seo-brain/orchestrator'
 

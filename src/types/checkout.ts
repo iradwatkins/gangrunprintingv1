@@ -71,15 +71,3 @@ export interface OrderInfo {
   createdAt?: string
   paidAt?: string
 }
-
-/**
- * Shipping rate selection details
- */
-export interface ShippingRate {
-  carrier: string
-  serviceName: string
-  rateAmount: number
-  estimatedDays?: number
-  transitDays?: number
-  isAirportDelivery?: boolean
-}

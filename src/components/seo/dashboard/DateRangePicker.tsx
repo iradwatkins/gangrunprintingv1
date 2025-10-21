@@ -47,19 +47,19 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="justify-start text-left font-normal">
+        <Button className="justify-start text-left font-normal" variant="outline">
           <Calendar className="mr-2 h-4 w-4" />
           {displayText}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
+      <PopoverContent align="end" className="w-auto p-0">
         <div className="p-3 space-y-2">
           <p className="text-sm font-medium mb-2">Select Date Range</p>
           {PRESETS.map((preset) => (
             <Button
               key={preset.label}
-              variant="ghost"
               className="w-full justify-start"
+              variant="ghost"
               onClick={() => handlePresetSelect(preset)}
             >
               {preset.label}

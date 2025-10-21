@@ -106,7 +106,7 @@ export function CartDrawer() {
                         {/* Artwork Files */}
                         {item.artworkFiles && item.artworkFiles.length > 0 && (
                           <div className="mt-2">
-                            <FileThumbnails files={item.artworkFiles} size="sm" maxDisplay={3} />
+                            <FileThumbnails files={item.artworkFiles} maxDisplay={3} size="sm" />
                           </div>
                         )}
                       </div>

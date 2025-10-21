@@ -7,9 +7,9 @@
 
 import { prisma } from '@/lib/prisma'
 import { ollamaClient } from './ollama-client'
-import { WinnerPattern } from './winner-analyzer'
-import { PerformanceMetrics } from './performance-analyzer'
-import { DecisionOption } from './telegram-notifier'
+import { type WinnerPattern } from './winner-analyzer'
+import { type PerformanceMetrics } from './performance-analyzer'
+import { type DecisionOption } from './telegram-notifier'
 
 export interface ImprovementPlan {
   pageId: string

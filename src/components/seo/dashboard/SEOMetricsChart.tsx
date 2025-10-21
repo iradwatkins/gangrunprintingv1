@@ -56,30 +56,30 @@ export function SEOMetricsChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer height={300} width="100%">
           <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
             <XAxis
-              dataKey="date"
               className="text-xs"
+              dataKey="date"
               tick={{ fill: 'currentColor' }}
             />
             <YAxis
-              yAxisId="position"
-              reversed={showPosition}
+              className="text-xs"
               domain={showPosition ? [0, 100] : undefined}
               hide={!showPosition}
-              className="text-xs"
-              tick={{ fill: 'currentColor' }}
               label={showPosition ? { value: 'Position', angle: -90, position: 'insideLeft' } : undefined}
+              reversed={showPosition}
+              tick={{ fill: 'currentColor' }}
+              yAxisId="position"
             />
             <YAxis
-              yAxisId="traffic"
-              orientation="right"
-              hide={!showClicks && !showImpressions}
               className="text-xs"
-              tick={{ fill: 'currentColor' }}
+              hide={!showClicks && !showImpressions}
               label={showClicks || showImpressions ? { value: 'Traffic', angle: 90, position: 'insideRight' } : undefined}
+              orientation="right"
+              tick={{ fill: 'currentColor' }}
+              yAxisId="traffic"
             />
             <Tooltip
               contentStyle={{
@@ -91,35 +91,35 @@ export function SEOMetricsChart({
             <Legend />
             {showPosition && (
               <Line
-                yAxisId="position"
-                type="monotone"
                 dataKey="position"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
                 dot={{ fill: 'hsl(var(--primary))' }}
                 name="Position"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                type="monotone"
+                yAxisId="position"
               />
             )}
             {showClicks && (
               <Line
-                yAxisId="traffic"
-                type="monotone"
                 dataKey="clicks"
-                stroke="hsl(142 76% 36%)"
-                strokeWidth={2}
                 dot={{ fill: 'hsl(142 76% 36%)' }}
                 name="Clicks"
+                stroke="hsl(142 76% 36%)"
+                strokeWidth={2}
+                type="monotone"
+                yAxisId="traffic"
               />
             )}
             {showImpressions && (
               <Line
-                yAxisId="traffic"
-                type="monotone"
                 dataKey="impressions"
-                stroke="hsl(221 83% 53%)"
-                strokeWidth={2}
                 dot={{ fill: 'hsl(221 83% 53%)' }}
                 name="Impressions"
+                stroke="hsl(221 83% 53%)"
+                strokeWidth={2}
+                type="monotone"
+                yAxisId="traffic"
               />
             )}
           </LineChart>

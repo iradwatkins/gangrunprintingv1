@@ -7,7 +7,7 @@
  * @route GET /api/admin/crawler-analytics
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 
 /**

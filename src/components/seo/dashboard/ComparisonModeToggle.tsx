@@ -23,7 +23,7 @@ export function ComparisonModeToggle({ enabled, onChange }: ComparisonModeToggle
     >
       <TrendingUp className="mr-2 h-4 w-4" />
       Compare Periods
-      {enabled && <Badge variant="secondary" className="ml-2">Active</Badge>}
+      {enabled && <Badge className="ml-2" variant="secondary">Active</Badge>}
     </Button>
   )
 }

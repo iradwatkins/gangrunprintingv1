@@ -10,6 +10,88 @@
 
 ---
 
+## 🚨 CRITICAL: FEDEX SHIPPING DIMENSIONS VALIDATION (October 21, 2025)
+
+### **THIS IS A PERMANENT FIX - NEVER MODIFY WITHOUT READING DOCUMENTATION**
+
+**Problem**: FedEx shipping rates API returns 400 "Invalid request" when cart items contain dimensions with undefined values.
+
+**Root Cause**: Cart items have `dimensions: { length: undefined, width: undefined, height: undefined }` which fails backend Zod validation.
+
+**Solution Location**: `/src/app/(customer)/checkout/shipping/page.tsx` (lines 41-85)
+
+### **MANDATORY VALIDATION PATTERN (DO NOT CHANGE):**
+
+```typescript
+// CRITICAL: Only include dimensions if ALL values are fully defined as valid numbers
+const packages = items.map((item) => {
+  const pkg = { weight: item.paperStockWeight || 1 }
+
+  // Must check BOTH existence AND type
+  if (
+    item.dimensions?.length &&
+    item.dimensions?.width &&
+    item.dimensions?.height &&
+    typeof item.dimensions.length === 'number' &&
+    typeof item.dimensions.width === 'number' &&
+    typeof item.dimensions.height === 'number'
+  ) {
+    pkg.dimensions = {
+      length: item.dimensions.length,
+      width: item.dimensions.width,
+      height: item.dimensions.height,
+    }
+  }
+  // If incomplete, OMIT dimensions entirely
+  return pkg
+})
+```
+
+### **Git Search Terms for This Issue:**
+- `FEDEX-DIMENSIONS-VALIDATION`
+- `FEDEX-400-ERROR`
+- `FEDEX-INVALID-REQUEST`
+- `FEDEX-CHECKOUT-BLOCKED`
+
+### **Protection Layers:**
+1. ✅ **In-code comments** with 🚨 warnings in source file
+2. ✅ **Permanent documentation**: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md`
+3. ✅ **CLAUDE.md memory** (this section)
+4. ✅ **Test script**: `test-fedex-api-direct.js` (must pass 4/4 tests)
+
+### **If Checkout Breaks with "Invalid request" Error:**
+
+1. **Check if validation was removed**:
+   ```bash
+   grep -A 20 "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION" \
+     src/app/\(customer\)/checkout/shipping/page.tsx
+   ```
+
+2. **Run test script**:
+   ```bash
+   node test-fedex-api-direct.js
+   # Must pass 4/4 tests
+   ```
+
+3. **Read full documentation**:
+   `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md`
+
+4. **Restore from git if needed**:
+   ```bash
+   git log --all --grep="FEDEX-DIMENSIONS-VALIDATION"
+   git checkout <commit-hash> -- src/app/\(customer\)/checkout/shipping/page.tsx
+   ```
+
+### **Key Rule:**
+**The dimensions property must be FULLY VALID or COMPLETELY OMITTED. There is no middle ground.**
+- ✅ `{ weight: 1 }` - Valid (no dimensions)
+- ✅ `{ weight: 1, dimensions: { length: 10, width: 5, height: 2 } }` - Valid (all numbers)
+- ❌ `{ weight: 1, dimensions: { length: undefined } }` - BREAKS CHECKOUT
+
+**Full Documentation**: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md` (DO NOT DELETE)
+
+---
+
 ## 🔒 EXCLUSIVE PORT ALLOCATION (October 14, 2025)
 
 ### **GANGRUNPRINTING.COM - 5 DEDICATED PORTS - DOCKER DEPLOYMENT**

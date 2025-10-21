@@ -57,10 +57,10 @@ export function FileThumbnails({
         >
           {file.preview || file.url ? (
             <Image
-              src={file.preview || file.url || ''}
-              alt={file.name}
               fill
+              alt={file.name}
               className="object-cover"
+              src={file.preview || file.url || ''}
             />
           ) : (
             <div className="flex flex-col items-center justify-center p-1">

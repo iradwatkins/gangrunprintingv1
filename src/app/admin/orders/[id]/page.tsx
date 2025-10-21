@@ -620,9 +620,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
               {/* Editable Tracking Number */}
               <EditableTracking
-                orderId={order.id}
-                initialTrackingNumber={order.trackingNumber}
                 carrier={order.carrier}
+                initialTrackingNumber={order.trackingNumber}
+                orderId={order.id}
               />
             </div>
           </CollapsibleSection>

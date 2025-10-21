@@ -240,8 +240,8 @@ export default function SimpleQuantityTest({
       <div className="p-6 border border-red-200 rounded-lg bg-red-50" data-testid="product-configuration-error">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path clipRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fillRule="evenodd" />
             </svg>
           </div>
           <div className="flex-1">
@@ -259,16 +259,16 @@ export default function SimpleQuantityTest({
               )}
             </div>
             <button
+              className="mt-3 inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              data-testid="retry-button"
               onClick={() => {
                 setError('')
                 setLoading(true)
                 window.location.reload()
               }}
-              className="mt-3 inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-              data-testid="retry-button"
             >
-              <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
               </svg>
               Try Again
             </button>
@@ -697,8 +697,8 @@ export default function SimpleQuantityTest({
         <div>
           <Label className="text-sm font-semibold uppercase">PAPER STOCK</Label>
           <Select
-            value={selectedPaper}
             data-testid="paper-stock-select"
+            value={selectedPaper}
             onValueChange={(value) => {
               setSelectedPaper(value)
               // Reset coating and sides when paper changes
@@ -929,9 +929,9 @@ export default function SimpleQuantityTest({
       {isConfigurationComplete ? (
         <Button
           className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-6"
+          data-testid="add-to-cart-button"
           size="lg"
           onClick={handleAddToCart}
-          data-testid="add-to-cart-button"
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
           Continue to Upload Artwork

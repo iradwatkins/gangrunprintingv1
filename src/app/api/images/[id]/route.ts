@@ -157,15 +157,15 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     // Check if image is in use
-    if (image._count.productImages > 0) {
-      const productNames = image.productImages.map((pi) => pi.Product.name).join(', ')
+    if (image._count.ProductImage > 0) {
+      const productNames = image.ProductImage.map((pi: any) => pi.Product.name).join(', ')
       return createErrorResponse(
-        `Cannot delete image. It is currently used by ${image._count.productImages} product(s): ${productNames}`,
+        `Cannot delete image. It is currently used by ${image._count.ProductImage} product(s): ${productNames}`,
         400,
         {
           inUse: true,
-          usageCount: image._count.productImages,
-          products: image.productImages.map((pi) => ({
+          usageCount: image._count.ProductImage,
+          products: image.ProductImage.map((pi: any) => ({
             id: pi.Product.id,
             name: pi.Product.name,
           })),

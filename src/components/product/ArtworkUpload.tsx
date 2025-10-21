@@ -199,23 +199,23 @@ export function ArtworkUpload({
             : 'border-muted-foreground/25 hover:border-primary/50',
           files.length === 0 && 'p-12'
         )}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <input
-          type="file"
-          id="artwork-upload"
-          className="hidden"
           multiple
           accept={Object.values(ACCEPTED_FILE_TYPES).flat().join(',')}
+          className="hidden"
+          id="artwork-upload"
+          type="file"
           onChange={handleFileInput}
         />
 
         {files.length === 0 ? (
           <label
-            htmlFor="artwork-upload"
             className="flex flex-col items-center justify-center cursor-pointer"
+            htmlFor="artwork-upload"
           >
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <Upload className="w-8 h-8 text-primary" />
@@ -235,7 +235,7 @@ export function ArtworkUpload({
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold">Uploaded Files ({files.length}/{maxFiles})</h4>
-              <label htmlFor="artwork-upload" className="cursor-pointer">
+              <label className="cursor-pointer" htmlFor="artwork-upload">
                 <span className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                   <Upload className="w-4 h-4" />
                   Add More
@@ -254,10 +254,10 @@ export function ArtworkUpload({
                   <div className="w-full h-full flex items-center justify-center p-2">
                     {uploadedFile.preview ? (
                       <Image
-                        src={uploadedFile.preview}
-                        alt={uploadedFile.file.name}
                         fill
+                        alt={uploadedFile.file.name}
                         className="object-cover"
+                        src={uploadedFile.preview}
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center text-center">
@@ -286,9 +286,9 @@ export function ArtworkUpload({
 
                   {/* Remove Button */}
                   <button
+                    className="absolute top-1 left-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                     type="button"
                     onClick={() => removeFile(uploadedFile.id)}
-                    className="absolute top-1 left-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                   >
                     <X className="w-4 h-4" />
                   </button>

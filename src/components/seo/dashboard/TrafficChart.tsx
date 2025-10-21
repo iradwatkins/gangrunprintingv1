@@ -60,27 +60,27 @@ export function TrafficChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer height={300} width="100%">
           <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
             <XAxis
+              className="text-xs"
               dataKey="date"
-              className="text-xs"
               tick={{ fill: 'currentColor' }}
             />
             <YAxis
-              yAxisId="count"
               className="text-xs"
-              tick={{ fill: 'currentColor' }}
               label={{ value: 'Count', angle: -90, position: 'insideLeft' }}
+              tick={{ fill: 'currentColor' }}
+              yAxisId="count"
             />
             <YAxis
-              yAxisId="ctr"
-              orientation="right"
               className="text-xs"
-              tick={{ fill: 'currentColor' }}
-              label={{ value: 'CTR %', angle: 90, position: 'insideRight' }}
               domain={[0, 100]}
+              label={{ value: 'CTR %', angle: 90, position: 'insideRight' }}
+              orientation="right"
+              tick={{ fill: 'currentColor' }}
+              yAxisId="ctr"
             />
             <Tooltip
               contentStyle={{
@@ -97,29 +97,29 @@ export function TrafficChart({
             />
             <Legend />
             <Bar
-              yAxisId="count"
               dataKey="clicks"
               fill="hsl(142 76% 36%)"
               name="Clicks"
               radius={[4, 4, 0, 0]}
+              yAxisId="count"
             />
             <Bar
-              yAxisId="count"
               dataKey="impressions"
               fill="hsl(221 83% 53%)"
+              fillOpacity={0.6}
               name="Impressions"
               radius={[4, 4, 0, 0]}
-              fillOpacity={0.6}
+              yAxisId="count"
             />
             {data.some(d => d.ctr !== undefined) && (
               <Line
-                yAxisId="ctr"
-                type="monotone"
                 dataKey="ctr"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
                 dot={{ fill: 'hsl(var(--primary))' }}
                 name="CTR"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                type="monotone"
+                yAxisId="ctr"
               />
             )}
           </ComposedChart>

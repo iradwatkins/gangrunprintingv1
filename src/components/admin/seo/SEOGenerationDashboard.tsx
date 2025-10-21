@@ -278,7 +278,7 @@ export function SEOGenerationDashboard() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="single" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="single">
         <TabsList>
           <TabsTrigger value="single">Single Product</TabsTrigger>
           <TabsTrigger value="bulk">Bulk Generation</TabsTrigger>
@@ -286,7 +286,7 @@ export function SEOGenerationDashboard() {
         </TabsList>
 
         {/* Single Product Generation */}
-        <TabsContent value="single" className="space-y-4">
+        <TabsContent className="space-y-4" value="single">
           <Card>
             <CardHeader>
               <CardTitle>Generate SEO Content</CardTitle>
@@ -320,28 +320,28 @@ export function SEOGenerationDashboard() {
                 <div className="space-y-2">
                   <Label>Word Count</Label>
                   <Input
+                    max={300}
+                    min={100}
                     type="number"
                     value={wordCount}
                     onChange={(e) => setWordCount(parseInt(e.target.value))}
-                    min={100}
-                    max={300}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Temperature (0.5 = consistent, 0.9 = creative)</Label>
                   <Input
+                    max={0.9}
+                    min={0.5}
+                    step={0.1}
                     type="number"
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    min={0.5}
-                    max={0.9}
-                    step={0.1}
                   />
                 </div>
               </div>
 
-              <Button onClick={generateSingleProduct} disabled={!selectedProduct || generating}>
+              <Button disabled={!selectedProduct || generating} onClick={generateSingleProduct}>
                 {generating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -367,9 +367,9 @@ export function SEOGenerationDashboard() {
                     </div>
                   </div>
                   <Textarea
-                    value={previewContent.content}
                     readOnly
                     className="min-h-[200px]"
+                    value={previewContent.content}
                   />
                   {!previewContent.approved && (
                     <Button onClick={() => approveContent(previewContent.id)}>
@@ -384,7 +384,7 @@ export function SEOGenerationDashboard() {
         </TabsContent>
 
         {/* Bulk Generation */}
-        <TabsContent value="bulk" className="space-y-4">
+        <TabsContent className="space-y-4" value="bulk">
           <Card>
             <CardHeader>
               <CardTitle>Bulk Generation</CardTitle>
@@ -414,8 +414,8 @@ export function SEOGenerationDashboard() {
               )}
 
               <Button
-                onClick={generateBulk}
                 disabled={bulkGenerating || productsWithoutSEO.length === 0}
+                onClick={generateBulk}
               >
                 {bulkGenerating ? (
                   <>
@@ -434,7 +434,7 @@ export function SEOGenerationDashboard() {
         </TabsContent>
 
         {/* Results */}
-        <TabsContent value="results" className="space-y-4">
+        <TabsContent className="space-y-4" value="results">
           <Card>
             <CardHeader>
               <CardTitle>Generation Results</CardTitle>

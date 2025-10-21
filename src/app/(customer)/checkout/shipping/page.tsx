@@ -38,12 +38,51 @@ export default function ShippingPage() {
     }
   }, [items, router])
 
-  // Calculate package weights from cart items
-  // Ensure weight is at least 0.1 lbs (API minimum) and default to 1 lb if not set
-  const packages = items.map((item) => ({
-    weight: item.paperStockWeight && item.paperStockWeight >= 0.1 ? item.paperStockWeight : 1,
-    dimensions: item.dimensions,
-  }))
+  // ============================================================================
+  // 🚨 CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION - DO NOT MODIFY 🚨
+  // ============================================================================
+  // Date Fixed: 2025-10-21
+  // Issue: FedEx API validation fails when dimensions object contains undefined values
+  // Root Cause: Cart items have dimensions: { length: undefined, width: undefined, height: undefined }
+  // Impact: Customers see "Invalid request" 400 errors, cannot complete checkout
+  //
+  // SOLUTION (MANDATORY - DO NOT CHANGE):
+  // - Only include dimensions property if ALL three values (length, width, height) are:
+  //   1. Defined (not null/undefined)
+  //   2. Valid numbers (typeof === 'number')
+  // - If ANY dimension is missing or invalid, OMIT the entire dimensions object
+  // - Backend Zod schema requires dimensions properties to be numbers if object exists
+  //
+  // Git Search Terms: FEDEX-DIMENSIONS-VALIDATION FEDEX-400-ERROR FEDEX-INVALID-REQUEST
+  // Documentation: /docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md
+  // See CLAUDE.md for permanent memory reference
+  // ============================================================================
+  const packages = items.map((item) => {
+    const pkg: { weight: number; dimensions?: { length: number; width: number; height: number } } = {
+      weight: item.paperStockWeight && item.paperStockWeight >= 0.1 ? item.paperStockWeight : 1,
+    }
+
+    // CRITICAL: Only include dimensions if ALL values are fully defined as valid numbers
+    // This prevents FedEx API validation errors from undefined dimension values
+    if (
+      item.dimensions?.length &&
+      item.dimensions?.width &&
+      item.dimensions?.height &&
+      typeof item.dimensions.length === 'number' &&
+      typeof item.dimensions.width === 'number' &&
+      typeof item.dimensions.height === 'number'
+    ) {
+      pkg.dimensions = {
+        length: item.dimensions.length,
+        width: item.dimensions.width,
+        height: item.dimensions.height,
+      }
+    }
+    // If dimensions are incomplete, we intentionally OMIT the property entirely
+    // FedEx API accepts packages without dimensions, but NOT with undefined values
+
+    return pkg
+  })
 
   const validateAddress = (): boolean => {
     const newErrors: Record<string, string> = {}
@@ -115,7 +154,7 @@ export default function ShippingPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/checkout" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4">
+          <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4" href="/checkout">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Cart
           </Link>
@@ -131,8 +170,8 @@ export default function ShippingPage() {
             {/* Shipping Address Form */}
             <ShippingAddressForm
               address={shippingAddress}
-              onChange={setShippingAddress}
               errors={errors}
+              onChange={setShippingAddress}
             />
 
             {/* Shipping Method Selector */}
@@ -153,8 +192,8 @@ export default function ShippingPage() {
             {/* Airport Selector (Southwest Cargo only) */}
             {selectedShippingMethod?.carrier === 'SOUTHWEST_CARGO' && shippingAddress.state && (
               <AirportSelector
-                state={shippingAddress.state}
                 selectedAirportId={selectedAirportId}
+                state={shippingAddress.state}
                 onSelect={setSelectedAirportId}
               />
             )}
@@ -198,9 +237,9 @@ export default function ShippingPage() {
                 {/* Continue Button */}
                 <Button
                   className="w-full"
+                  disabled={isProcessing || !selectedShippingMethod}
                   size="lg"
                   onClick={handleContinueToPayment}
-                  disabled={isProcessing || !selectedShippingMethod}
                 >
                   Continue to Payment
                   <ArrowRight className="ml-2 h-4 w-4" />

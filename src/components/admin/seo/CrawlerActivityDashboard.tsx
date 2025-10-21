@@ -112,12 +112,12 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
           {([7, 30, 90] as const).map((d) => (
             <button
               key={d}
-              onClick={() => setDays(d)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 days === d
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 border hover:border-blue-300'
               }`}
+              onClick={() => setDays(d)}
             >
               {d}d
             </button>
@@ -185,11 +185,11 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
             <p className="text-sm text-amber-700">
               It may take 24-48 hours after submitting your sitemap before crawlers discover your site.
               Make sure you've submitted sitemaps to{' '}
-              <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" className="underline">
+              <a className="underline" href="https://search.google.com/search-console" rel="noopener noreferrer" target="_blank">
                 Google Search Console
               </a>
               {' '}and{' '}
-              <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener noreferrer" className="underline">
+              <a className="underline" href="https://www.bing.com/webmasters" rel="noopener noreferrer" target="_blank">
                 Bing Webmaster Tools
               </a>.
             </p>
@@ -206,7 +206,7 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs className="w-full" defaultValue="all">
             <TabsList className="mb-4">
               <TabsTrigger value="all">All Crawlers</TabsTrigger>
               <TabsTrigger value="search">Search Engines</TabsTrigger>
@@ -214,22 +214,22 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
             </TabsList>
 
             <TabsContent value="all">
-              <CrawlerList crawlers={crawlers} getCategoryIcon={getCategoryIcon} getCategoryColor={getCategoryColor} />
+              <CrawlerList crawlers={crawlers} getCategoryColor={getCategoryColor} getCategoryIcon={getCategoryIcon} />
             </TabsContent>
 
             <TabsContent value="search">
               <CrawlerList
                 crawlers={crawlers.filter(c => c.category === 'Search Engine')}
-                getCategoryIcon={getCategoryIcon}
                 getCategoryColor={getCategoryColor}
+                getCategoryIcon={getCategoryIcon}
               />
             </TabsContent>
 
             <TabsContent value="ai">
               <CrawlerList
                 crawlers={crawlers.filter(c => c.category === 'AI Search')}
-                getCategoryIcon={getCategoryIcon}
                 getCategoryColor={getCategoryColor}
+                getCategoryIcon={getCategoryIcon}
               />
             </TabsContent>
           </Tabs>
@@ -256,7 +256,7 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
                 2
               </div>
               <div>
-                <strong>Create FAQ Content:</strong> AI bots love question-answer format. Visit <a href="/faq" className="text-blue-600 underline">/faq</a> to see examples.
+                <strong>Create FAQ Content:</strong> AI bots love question-answer format. Visit <a className="text-blue-600 underline" href="/faq">/faq</a> to see examples.
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -303,7 +303,7 @@ function CrawlerList({ crawlers, getCategoryIcon, getCategoryColor }: CrawlerLis
             <div>
               <h4 className="font-semibold text-gray-900">{crawler.name}</h4>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs" variant="outline">
                   {crawler.category}
                 </Badge>
                 {crawler.lastSeen && (

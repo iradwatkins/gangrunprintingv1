@@ -273,9 +273,9 @@ export default function SEOPerformancePage() {
 
       {/* Data Refresh Indicator */}
       <DataRefreshIndicator
+        isLoading={isLoading}
         lastUpdate={lastUpdated}
         onRefresh={loadSEOData}
-        isLoading={isLoading}
       />
 
       {/* Summary Cards */}
@@ -364,7 +364,7 @@ export default function SEOPerformancePage() {
       )}
 
       {/* Charts Section */}
-      <Tabs defaultValue="metrics" className="space-y-4">
+      <Tabs className="space-y-4" defaultValue="metrics">
         <TabsList>
           <TabsTrigger value="metrics">SEO Metrics</TabsTrigger>
           <TabsTrigger value="traffic">Traffic</TabsTrigger>
@@ -372,29 +372,29 @@ export default function SEOPerformancePage() {
           <TabsTrigger value="crawlers">🤖 Crawler Activity</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="metrics" className="space-y-4">
+        <TabsContent className="space-y-4" value="metrics">
           <SEOMetricsChart
             data={metricsChartData}
-            title="Ranking & Traffic Trends"
             description="30-day trend of position, clicks, and impressions"
+            title="Ranking & Traffic Trends"
           />
         </TabsContent>
 
-        <TabsContent value="traffic" className="space-y-4">
+        <TabsContent className="space-y-4" value="traffic">
           <TrafficChart
             data={trafficChartData}
-            title="Click & Impression Trends"
             description="30-day traffic performance"
+            title="Click & Impression Trends"
           />
         </TabsContent>
 
         {pageSpeedData && (
-          <TabsContent value="performance" className="space-y-4">
+          <TabsContent className="space-y-4" value="performance">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <CoreWebVitalsCard
                 data={pageSpeedData.vitals}
-                title="Core Web Vitals"
                 description="Page performance metrics"
+                title="Core Web Vitals"
               />
               <Card>
                 <CardHeader>
@@ -456,7 +456,7 @@ export default function SEOPerformancePage() {
           </TabsContent>
         )}
 
-        <TabsContent value="crawlers" className="space-y-4">
+        <TabsContent className="space-y-4" value="crawlers">
           <CrawlerActivityDashboard />
         </TabsContent>
       </Tabs>

@@ -1,0 +1,125 @@
+
+🚀 Starting FedEx Shipping Test Suite
+================================================================================
+
+
+================================================================================
+🚀 Order 1: Residential - Ground Home Delivery
+================================================================================
+📍 Step 1: Navigating to product page...
+   ✅ Product page loaded
+📍 Step 2: Adding to cart...
+   ❌ Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+📊 Result Summary:
+   Success: ❌ NO
+   FedEx Rates Found: 0
+   Expected Service: Home Delivery
+   Service Found: N/A
+   Shipping Cost: N/A
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+================================================================================
+🚀 Order 2: Business - FedEx Ground
+================================================================================
+📍 Step 1: Navigating to product page...
+   ✅ Product page loaded
+📍 Step 2: Adding to cart...
+   ❌ Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+📊 Result Summary:
+   Success: ❌ NO
+   FedEx Rates Found: 0
+   Expected Service: Ground
+   Service Found: N/A
+   Shipping Cost: N/A
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+================================================================================
+🚀 Order 3: Residential - FedEx 2Day
+================================================================================
+📍 Step 1: Navigating to product page...
+   ✅ Product page loaded
+📍 Step 2: Adding to cart...
+   ❌ Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+📊 Result Summary:
+   Success: ❌ NO
+   FedEx Rates Found: 0
+   Expected Service: 2Day
+   Service Found: N/A
+   Shipping Cost: N/A
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+================================================================================
+🚀 Order 4: Business - Standard Overnight
+================================================================================
+📍 Step 1: Navigating to product page...
+   ✅ Product page loaded
+📍 Step 2: Adding to cart...
+   ❌ Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+📊 Result Summary:
+   Success: ❌ NO
+   FedEx Rates Found: 0
+   Expected Service: Overnight
+   Service Found: N/A
+   Shipping Cost: N/A
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+
+
+================================================================================
+📊 FINAL TEST REPORT
+================================================================================
+
+SUMMARY
+-------
+Total Orders: 4
+Successful: 0
+Failed: 4
+Success Rate: 0.0%
+Average FedEx Rates Found: 0.0
+
+DETAILED RESULTS
+----------------
+
+1. Residential - Ground Home Delivery
+   Status: ❌ FAILED
+   FedEx Rates: 0
+   Expected Service: Not Found
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+   Screenshots: 2
+
+2. Business - FedEx Ground
+   Status: ❌ FAILED
+   FedEx Rates: 0
+   Expected Service: Not Found
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+   Screenshots: 2
+
+3. Residential - FedEx 2Day
+   Status: ❌ FAILED
+   FedEx Rates: 0
+   Expected Service: Not Found
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+   Screenshots: 2
+
+4. Business - Standard Overnight
+   Status: ❌ FAILED
+   FedEx Rates: 0
+   Expected Service: Not Found
+   Error: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Add to Cart"), button[type="submit"]' is not a valid selector.
+   Screenshots: 2
+
+FEDEX SHIPPING VERIFICATION
+----------------------------
+❌ All orders showed 3+ FedEx rates
+❌ All expected services were found
+
+CONCLUSION
+----------
+❌ SOME TESTS FAILED - Review details above
+
+📁 Report saved: fedex-test-report.json
+================================================================================
+

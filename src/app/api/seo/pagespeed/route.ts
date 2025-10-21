@@ -4,7 +4,7 @@
  * Provides PageSpeed performance data with authentication and rate limiting.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import {
   analyzeURL,

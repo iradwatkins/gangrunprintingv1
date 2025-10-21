@@ -48,8 +48,8 @@ export function FAQSchema({ faqs, pageTitle, pageDescription }: FAQSchemaProps) 
 
   return (
     <script
-      type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      type="application/ld+json"
     />
   )
 }
@@ -115,8 +115,8 @@ export function FAQPage({ title, description, faqs, showCategory }: FAQPageProps
     <>
       <FAQSchema
         faqs={faqs}
-        pageTitle={title}
         pageDescription={description}
+        pageTitle={title}
       />
 
       <div className="max-w-4xl mx-auto px-4 py-12">

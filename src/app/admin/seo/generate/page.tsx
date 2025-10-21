@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { validateRequest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { SEOGenerationDashboard } from '@/components/admin/seo/SEOGenerationDashboard'
