@@ -14,7 +14,8 @@ interface PayPalButtonProps {
 export function PayPalButton({ total, onSuccess, onError }: PayPalButtonProps) {
   const [error, setError] = useState<string | null>(null)
 
-  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
+  // Hardcoded PayPal Client ID (production)
+  const clientId = 'ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht'
 
   if (!clientId) {
     return (
