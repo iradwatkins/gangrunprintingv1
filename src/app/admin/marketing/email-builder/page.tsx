@@ -41,6 +41,21 @@ function EmailBuilderPageContent() {
     } else if (templateId) {
       fetchTemplate()
     } else {
+      // Initialize blank template for new email
+      setTemplate({
+        id: '',
+        name: 'New Email Template',
+        subject: '',
+        previewText: '',
+        components: [],
+        globalStyles: {
+          backgroundColor: '#ffffff',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '16px',
+          lineHeight: '1.5',
+          textColor: '#333333',
+        },
+      })
       setLoading(false)
     }
   }, [campaignId, templateId])
@@ -271,6 +286,9 @@ function EmailBuilderPageContent() {
     return <div className="p-6">Loading email builder...</div>
   }
 
+  console.log('EmailBuilderPage - template:', template)
+  console.log('EmailBuilderPage - rendering')
+
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
@@ -305,9 +323,7 @@ function EmailBuilderPageContent() {
 
       {/* Email Builder */}
       <div className="flex-1">
-        {template && (
-          <EmailBuilder template={template} onPreview={handlePreview} onSave={handleSave} />
-        )}
+        <EmailBuilder template={template} onPreview={handlePreview} onSave={handleSave} />
       </div>
 
       {/* Preview Dialog */}

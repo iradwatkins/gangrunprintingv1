@@ -287,14 +287,14 @@ export default function CampaignsPage() {
                 <Select
                   value={newCampaign.segmentId}
                   onValueChange={(value) =>
-                    setNewCampaign((prev) => ({ ...prev, segmentId: value }))
+                    setNewCampaign((prev) => ({ ...prev, segmentId: value === 'all' ? '' : value }))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All customers" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All customers</SelectItem>
+                    <SelectItem value="all">All customers</SelectItem>
                     {segments.map((segment) => (
                       <SelectItem key={segment.id} value={segment.id}>
                         {segment.name} ({segment.count} customers)

@@ -613,6 +613,8 @@ function ComponentEditor({
 }
 
 export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps) {
+  console.log('EmailBuilder - received template:', template)
+
   const [currentTemplate, setCurrentTemplate] = useState<EmailTemplate>(
     template || {
       name: 'New Email Template',
@@ -711,7 +713,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
   const selectedComponent = currentTemplate.components.find((c) => c.id === selectedComponentId)
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-full bg-gray-50">
       {/* Left Sidebar - Components */}
       <div className="w-64 bg-white border-r p-4 overflow-y-auto">
         <h3 className="font-semibold mb-4">Components</h3>

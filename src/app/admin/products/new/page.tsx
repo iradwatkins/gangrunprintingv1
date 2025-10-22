@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ProductImageUpload } from '@/components/admin/product-image-upload' // Multi-image upload component
+import { AIProductDesigner } from '@/components/admin/ai-product-designer'
 import { useProductForm } from '@/hooks/use-product-form'
 import toast from '@/lib/toast'
 import {
@@ -199,6 +200,16 @@ export default function NewProductPage() {
     )
   }
 
+  // Handle AI-generated content
+  const handleAIContentGenerated = (seoContent: any) => {
+    updateFormData({
+      name: seoContent.name || formData.name,
+      description: seoContent.description || formData.description,
+    })
+
+    toast.success('AI content applied! Review and adjust as needed.')
+  }
+
   // Quick fill for testing
   const handleQuickFill = () => {
     if (
@@ -245,6 +256,10 @@ export default function NewProductPage() {
           <h1 className="text-3xl font-bold">Create Product</h1>
         </div>
         <div className="flex gap-2">
+          <AIProductDesigner
+            onContentGenerated={handleAIContentGenerated}
+            defaultProductName={formData.name}
+          />
           <Button
             className="border-purple-300 text-purple-600 hover:bg-purple-50"
             title="Quick fill form with test data"

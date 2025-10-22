@@ -41,10 +41,10 @@ export class SouthwestCargoProvider implements ShippingProvider {
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
 
 
-    // Calculate pickup and dash rates
+    // Calculate both PICKUP and DASH rates
+    // Both require customer airport pickup (no home delivery)
     const pickupRate = this.calculatePickupRate(billableWeight)
     const dashRate = this.calculateDashRate(billableWeight)
-
 
     // Apply markup if configured
     const markup = 1 + (SOUTHWEST_CARGO_CONFIG.markupPercentage || 0) / 100
@@ -56,16 +56,16 @@ export class SouthwestCargoProvider implements ShippingProvider {
         serviceName: 'Southwest Cargo Pickup',
         rateAmount: roundWeight(pickupRate * markup, 2),
         currency: 'USD',
-        estimatedDays: 3, // Standard pickup delivery time
+        estimatedDays: 3, // Standard service - 3 business days
         isGuaranteed: false,
       },
       {
         carrier: this.carrier,
         serviceCode: 'SOUTHWEST_CARGO_DASH',
-        serviceName: 'Southwest Cargo Dash',
+        serviceName: 'Southwest Cargo Dash (Next Flight Guaranteed)',
         rateAmount: roundWeight(dashRate * markup, 2),
         currency: 'USD',
-        estimatedDays: 1, // Dash delivery (next available flight)
+        estimatedDays: 1, // Premium - next available flight
         isGuaranteed: true,
       },
     ]
@@ -120,20 +120,26 @@ export class SouthwestCargoProvider implements ShippingProvider {
   }
 
   /**
-   * Calculate Southwest Cargo Pickup rate
-   * Formula: baseRate + (weight × additionalPerPound) + handlingFee
+   * Calculate Southwest Cargo Pickup rate (Standard Service)
+   * Formula: baseRate + (weight × additionalPerPound) for 51+ lbs tier
    */
   private calculatePickupRate(weight: number): number {
     const pickupTiers = SOUTHWEST_CARGO_RATES.pickup.weightTiers
 
     for (const tier of pickupTiers) {
       if (weight <= tier.maxWeight) {
+        // If no per-pound charge, use flat rate
+        if (tier.additionalPerPound === 0) {
+          return tier.baseRate + tier.handlingFee
+        }
+
+        // For 51+ lbs: multiply full weight by per-pound rate
         const additionalCost = weight * tier.additionalPerPound
         return tier.baseRate + additionalCost + tier.handlingFee
       }
     }
 
-    // Fallback (shouldn't happen with Infinity maxWeight)
+    // Fallback
     const lastTier = pickupTiers[pickupTiers.length - 1]
     const additionalCost = weight * lastTier.additionalPerPound
     return lastTier.baseRate + additionalCost + lastTier.handlingFee
@@ -141,21 +147,37 @@ export class SouthwestCargoProvider implements ShippingProvider {
 
   /**
    * Calculate Southwest Cargo Dash rate
-   * Formula: baseRate + (weight × additionalPerPound) + handlingFee
+   * Formula varies by tier:
+   * - Tiers with 0 additionalPerPound: baseRate + handlingFee (flat rate)
+   * - Tiers with additionalPerPound > 0: baseRate + ((weight - tierThreshold) × additionalPerPound) + handlingFee
+   *
+   * Example: 150 lbs in 101+ tier with baseRate $148, additionalPerPound $1.90
+   * = $148 + ((150 - 100) × $1.90) = $148 + $95 = $243
    */
   private calculateDashRate(weight: number): number {
     const dashTiers = SOUTHWEST_CARGO_RATES.dash.weightTiers
+    let previousTierMax = 0
 
     for (const tier of dashTiers) {
       if (weight <= tier.maxWeight) {
-        const additionalCost = weight * tier.additionalPerPound
+        // If no per-pound charge, use flat rate
+        if (tier.additionalPerPound === 0) {
+          return tier.baseRate + tier.handlingFee
+        }
+
+        // Calculate weight over the previous tier's maximum
+        const weightOverThreshold = weight - previousTierMax
+        const additionalCost = weightOverThreshold * tier.additionalPerPound
+
         return tier.baseRate + additionalCost + tier.handlingFee
       }
+      previousTierMax = tier.maxWeight
     }
 
     // Fallback (shouldn't happen with Infinity maxWeight)
     const lastTier = dashTiers[dashTiers.length - 1]
-    const additionalCost = weight * lastTier.additionalPerPound
+    const weightOverThreshold = weight - previousTierMax
+    const additionalCost = weightOverThreshold * lastTier.additionalPerPound
     return lastTier.baseRate + additionalCost + lastTier.handlingFee
   }
 

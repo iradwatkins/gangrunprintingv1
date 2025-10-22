@@ -67,7 +67,7 @@ export class CampaignService {
         utmCampaign: data.name.toLowerCase().replace(/\s+/g, '-'),
       },
       include: {
-        segment: true,
+        CustomerSegment: true,
       },
     })
   }
@@ -77,8 +77,8 @@ export class CampaignService {
       where: { id },
       data,
       include: {
-        segment: true,
-        analytics: true,
+        CustomerSegment: true,
+        CampaignAnalytics: true,
       },
     })
   }
@@ -87,16 +87,16 @@ export class CampaignService {
     return await prisma.marketingCampaign.findUnique({
       where: { id },
       include: {
-        segment: true,
-        sends: {
+        CustomerSegment: true,
+        CampaignSend: {
           take: 10,
           orderBy: { createdAt: 'desc' },
         },
-        analytics: {
+        CampaignAnalytics: {
           orderBy: { date: 'desc' },
           take: 30,
         },
-        abTests: true,
+        CampaignABTest: true,
       },
     })
   }
@@ -132,10 +132,10 @@ export class CampaignService {
       prisma.marketingCampaign.findMany({
         where,
         include: {
-          segment: true,
+          CustomerSegment: true,
           _count: {
             select: {
-              sends: true,
+              CampaignSend: true,
             },
           },
         },
@@ -196,7 +196,7 @@ export class CampaignService {
     const campaign = await prisma.marketingCampaign.findUnique({
       where: { id },
       include: {
-        segment: true,
+        CustomerSegment: true,
       },
     })
 
@@ -220,8 +220,8 @@ export class CampaignService {
     // Get recipients from segment or all marketing-opted-in users
     let recipients: { id: string; email: string; name: string | null }[] = []
 
-    if (campaign.segment) {
-      const customerIds = campaign.segment.customerIds
+    if (campaign.CustomerSegment) {
+      const customerIds = campaign.CustomerSegment.customerIds
       recipients = await prisma.user.findMany({
         where: {
           id: { in: customerIds },

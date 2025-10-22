@@ -128,11 +128,16 @@ model Airport {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Order     Order[]
+  latitude  Float? // For distance calculations
+  longitude Float? // For distance calculations
+
+  Order              Order[]
+  GeographicLocation GeographicLocation[] // Linked cities for pickup
 
   @@index([code])
   @@index([isActive])
   @@index([state])
+  @@index([operator])
 }
 
 model CampaignABTest {
@@ -961,6 +966,12 @@ model Product {
   isLandingPageProduct Boolean @default(false) // Hidden product for landing page sets
   landingPageSetId     String? // Link to LandingPageSet if this is a landing page product
 
+  // AI-Generated Content Tracking (Landing Page AI System)
+  imageGenerationMethod String?   @default("manual") // 'ai-generated', 'manual'
+  imagePromptsUsed      String[]  @default([]) // Array of prompt names used for AI images
+  seoScore              Float? // Overall SEO quality score 0-100
+  lastOptimizedAt       DateTime? // Last time AI optimization was applied
+
   // Relations for parent-child products
   ParentProduct            Product?                   @relation("ProductHierarchy", fields: [parentProductId], references: [id])
   ChildProducts            Product[]                  @relation("ProductHierarchy")
@@ -988,6 +999,7 @@ model Product {
   CityLandingPage          CityLandingPage[]
   ProductDesignSet         ProductDesignSet[]
   ProductSEOContent        ProductSEOContent[]
+  ProductPerformance       ProductPerformance[] // AI System performance tracking
 
   @@index([categoryId])
   @@index([slug])
@@ -2403,8 +2415,9 @@ model City {
   updatedAt DateTime @updatedAt
 
   // Relations
-  CityLandingPage CityLandingPage[]
-  Product         Product[] // City-specific products
+  CityLandingPage     CityLandingPage[]
+  Product             Product[] // City-specific products
+  GeographicLocation  GeographicLocation[] // Airport pickup locations
 
   @@unique([name, state])
   @@index([rank])
@@ -2531,15 +2544,23 @@ model CityLandingPage {
   conversionRate Float?
   conversions    Int    @default(0) // Legacy
 
+  // AI-Generated Pickup Locations (Landing Page AI System)
+  aiGeneratedPickupCopy String? @db.Text // Subtle pickup location copy
+  pickupLocations       Json? // Array of { airportId, code, displayName, distance }
+  seoScore              Float? // Page SEO quality score 0-100
+  contentVersion        Int       @default(1) // Track content revisions
+  lastOptimizedAt       DateTime? // Last AI optimization
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  LandingPageSet LandingPageSet? @relation(fields: [landingPageSetId], references: [id], onDelete: Cascade)
-  Product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  City           City            @relation(fields: [cityId], references: [id])
-  Order          Order[] // Orders attributed to this landing page
+  LandingPageSet     LandingPageSet?      @relation(fields: [landingPageSetId], references: [id], onDelete: Cascade)
+  Product            Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  City               City                 @relation(fields: [cityId], references: [id])
+  Order              Order[] // Orders attributed to this landing page
+  ProductPerformance ProductPerformance[] // AI System performance tracking
 
   @@unique([productId, cityId])
   @@index([landingPageSetId])
@@ -2708,4 +2729,162 @@ model StatusTransition {
   @@unique([fromStatusId, toStatusId])
   @@index([fromStatusId])
   @@index([toStatusId])
+}
+
+// ============================================================================
+// LANDING PAGE AI SYSTEM - Multi-Agent SEO Optimization
+// ============================================================================
+
+// Geographic Locations - Links cities to nearby airports for pickup
+model GeographicLocation {
+  id          String   @id @default(cuid())
+  cityId      String
+  airportId   String
+  distance    Float // Miles from city center
+  displayName String // "O'Hare area", "Midway area"
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  City    City    @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  Airport Airport @relation(fields: [airportId], references: [id], onDelete: Cascade)
+
+  @@index([cityId, sortOrder])
+  @@index([cityId, isActive])
+}
+
+// Product Performance Tracking - Time-series data for ML
+model ProductPerformance {
+  id                 String   @id @default(cuid())
+  productId          String?
+  cityLandingPageId  String?
+
+  // Rankings
+  googleRanking Int?
+  keyword       String
+  searchVolume  Int?
+  difficulty    Int? // 0-100
+
+  // Engagement
+  impressions Int   @default(0)
+  clicks      Int   @default(0)
+  ctr         Float?
+
+  // Conversions
+  views          Int     @default(0)
+  addToCarts     Int     @default(0)
+  conversions    Int     @default(0)
+  conversionRate Float?
+  revenue        Decimal @default(0) @db.Decimal(10, 2)
+  avgOrderValue  Decimal? @db.Decimal(10, 2)
+
+  // Metadata
+  recordedAt DateTime @default(now())
+  source     String // 'google-search-console', 'analytics'
+  metadata   Json?
+
+  Product          Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  CityLandingPage  CityLandingPage? @relation(fields: [cityLandingPageId], references: [id], onDelete: Cascade)
+
+  @@index([productId, recordedAt])
+  @@index([cityLandingPageId, recordedAt])
+  @@index([keyword])
+}
+
+// SEO Patterns - Machine-learned patterns from successful content
+model SEOPattern {
+  id          String   @id @default(cuid())
+  patternType String // 'keyword', 'content-structure', 'image-count'
+  description String
+  category    String? // 'business-cards', 'postcards'
+
+  // Evidence
+  successCount    Int   @default(0)
+  failureCount    Int   @default(0)
+  confidenceScore Float @default(0) // 0-100
+
+  // Pattern data
+  data             Json
+  successExamples  String[] @default([])
+  failureExamples  String[] @default([])
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastTestedAt DateTime?
+
+  @@index([patternType, confidenceScore])
+  @@index([category, confidenceScore])
+}
+
+// SEO Suggestions - AI-generated optimization queue
+model SEOSuggestion {
+  id             String   @id @default(cuid())
+  targetType     String // 'Product', 'CityLandingPage'
+  targetId       String
+  suggestionType String // 'add-keyword', 'update-title'
+  title          String
+  description    String
+
+  // Impact estimation
+  expectedImpact  String // 'High', 'Medium', 'Low'
+  estimatedBoost  Json?
+
+  // Status
+  status   String  @default("pending") // 'pending', 'approved', 'rejected', 'implemented'
+  priority Int     @default(5) // 1-10
+
+  // Implementation tracking
+  approvedBy            String?
+  approvedAt            DateTime?
+  implementedAt         DateTime?
+  testingStartedAt      DateTime?
+  testingCompletedAt    DateTime?
+
+  // Results
+  beforeMetrics Json?
+  afterMetrics  Json?
+  actualImpact  Json?
+  roi           Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes     String?
+
+  @@index([targetType, targetId])
+  @@index([status, priority])
+  @@index([createdAt])
+}
+
+// AI Agent Execution Tracking - Monitor cost & performance
+model AIAgentExecution {
+  id        String   @id @default(cuid())
+  agentType String // 'seo-expert', 'keyword-research', 'image-generation'
+  taskType  String // 'product-creation', 'city-page-generation'
+
+  // Model info
+  modelProvider String // 'claude-code', 'anthropic-api', 'google-imagen'
+  modelName     String
+
+  // Usage metrics
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int?
+  cost         Decimal @default(0) @db.Decimal(10, 6)
+
+  // Performance
+  qualityScore  Float? // 0-100
+  executionTime Int // milliseconds
+  success       Boolean
+  errorMessage  String?
+
+  // Context
+  targetType String?
+  targetId   String?
+  metadata   Json?
+
+  executedAt DateTime @default(now())
+
+  @@index([agentType, modelProvider])
+  @@index([executedAt])
+  @@index([cost])
 }

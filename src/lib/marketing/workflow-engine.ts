@@ -122,8 +122,8 @@ export class WorkflowEngine {
     return await prisma.marketingWorkflow.findUnique({
       where: { id },
       include: {
-        segment: true,
-        executions: {
+        CustomerSegment: true,
+        WorkflowExecution: {
           take: 10,
           orderBy: { createdAt: 'desc' },
         },
@@ -134,10 +134,10 @@ export class WorkflowEngine {
   static async getWorkflows(): Promise<MarketingWorkflow[]> {
     return await prisma.marketingWorkflow.findMany({
       include: {
-        segment: true,
+        CustomerSegment: true,
         _count: {
           select: {
-            executions: true,
+            WorkflowExecution: true,
           },
         },
       },
@@ -210,8 +210,8 @@ export class WorkflowEngine {
     const execution = await prisma.workflowExecution.findUnique({
       where: { id: executionId },
       include: {
-        workflow: true,
-        user: true,
+        MarketingWorkflow: true,
+        User: true,
       },
     })
 
@@ -219,7 +219,7 @@ export class WorkflowEngine {
       return
     }
 
-    const { workflow, user } = execution
+    const { MarketingWorkflow: workflow, User: user } = execution
     const steps = workflow.steps as WorkflowStep[]
 
     if (!steps || steps.length === 0) {
@@ -274,7 +274,7 @@ export class WorkflowEngine {
 
   private static async executeStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     switch (step.type) {
@@ -299,7 +299,7 @@ export class WorkflowEngine {
 
   private static async executeEmailStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowEmailStep
@@ -310,7 +310,7 @@ export class WorkflowEngine {
 
     // Create a campaign for this email
     const campaign = await CampaignService.createCampaign({
-      name: `Workflow: ${execution.workflow.name} - ${step.name}`,
+      name: `Workflow: ${execution.MarketingWorkflow.name} - ${step.name}`,
       type: CampaignType.EMAIL,
       subject: settings.subject,
       content: settings.content,
@@ -336,7 +336,7 @@ export class WorkflowEngine {
 
   private static async executeSMSStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowSMSStep
@@ -348,7 +348,7 @@ export class WorkflowEngine {
     // Create SMS campaign
     const smsCampaign = await prisma.sMSCampaign.create({
       data: {
-        name: `Workflow: ${execution.workflow.name} - ${step.name}`,
+        name: `Workflow: ${execution.MarketingWorkflow.name} - ${step.name}`,
         message: settings.message,
         createdBy: 'system',
       },
@@ -370,7 +370,7 @@ export class WorkflowEngine {
 
   private static async executeWaitStep(
     step: WorkflowStep,
-    execution: WorkflowExecution
+    execution: WorkflowExecution & { MarketingWorkflow: any }
   ): Promise<any> {
     const settings = step.settings as WorkflowWaitStep
 
@@ -387,7 +387,7 @@ export class WorkflowEngine {
 
   private static async executeConditionStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowConditionStep
@@ -434,7 +434,7 @@ export class WorkflowEngine {
 
   private static async executeWebhookStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowWebhookStep
@@ -480,7 +480,7 @@ export class WorkflowEngine {
 
   private static async executeTagStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowTagStep
@@ -515,7 +515,7 @@ export class WorkflowEngine {
 
   private static async executeUpdateUserStep(
     step: WorkflowStep,
-    execution: WorkflowExecution,
+    execution: WorkflowExecution & { MarketingWorkflow: any },
     user: any
   ): Promise<any> {
     const settings = step.settings as WorkflowUpdateUserStep

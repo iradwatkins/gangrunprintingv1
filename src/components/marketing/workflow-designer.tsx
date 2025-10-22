@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import {
+import ReactFlow, {
   Node,
   Edge,
   addEdge,

@@ -6,59 +6,72 @@
 import type { SouthwestCargoRates } from './types'
 
 /**
- * Southwest Cargo pricing structure (from WooCommerce)
+ * Southwest Cargo pricing structure (Official 2025 Rates)
+ * Source: NFG_GeneralCommodityUS48SJU20250101.pdf & SS_GeneralCommodity_RateSheet
+ * Origin: Zone 2 (Chicago) - All airport shipping starts from Chicago
  * Based on 82 airports nationwide
  */
 export const SOUTHWEST_CARGO_RATES: SouthwestCargoRates = {
   pickup: {
-    // Southwest Cargo Pickup - Airport pickup service
+    // Southwest Cargo Pickup (Standard Service) - Airport Pickup
+    // Zone 2 (Chicago) Origin
+    // Economy pricing - always cheaper than DASH
     weightTiers: [
       {
-        // 0-50 lbs
+        // 0-50 lbs - Flat rate
         maxWeight: 50,
         baseRate: 80.0,
         additionalPerPound: 0,
         handlingFee: 0,
       },
       {
-        // 51-100 lbs
-        maxWeight: 100,
-        baseRate: 102.0,
-        additionalPerPound: 1.75,
-        handlingFee: 0,
-      },
-      {
-        // 101+ lbs
+        // 51+ lbs - Base rate + per-pound charge (economy pricing)
+        // Formula: $102 + (weight × $0.42)
+        // Example: 75 lbs = $102 + (75 × $0.42) = $102 + $31.50 = $133.50
+        // 100 lbs = $102 + (100 × $0.42) = $144 (below DASH $148)
+        // 150 lbs = $102 + (150 × $0.42) = $165 (well below DASH $243)
         maxWeight: Infinity,
-        baseRate: 133.0,
-        additionalPerPound: 1.75,
-        handlingFee: 10.0,
+        baseRate: 102.0,
+        additionalPerPound: 0.42,
+        handlingFee: 0,
       },
     ],
   },
   dash: {
-    // Southwest Cargo Dash - Next available flight (premium)
+    // NFG (Next Flight Guaranteed) - Premium Service
+    // Zone 2 (Chicago) Origin → Zone B (most destinations)
+    // Source: N0000_GeneralCommodityUS48SJU20250101.pdf
+    // This is the PREMIUM service - guaranteed next available flight
     weightTiers: [
       {
-        // 0-50 lbs
+        // 0-25 lbs - Base Rate
+        maxWeight: 25,
+        baseRate: 100.0,
+        additionalPerPound: 0,
+        handlingFee: 0,
+      },
+      {
+        // 26-50 lbs - Base Rate
         maxWeight: 50,
-        baseRate: 85.0,
+        baseRate: 117.0,
         additionalPerPound: 0,
-        handlingFee: 10.0,
+        handlingFee: 0,
       },
       {
-        // 51-100 lbs
+        // 51-100 lbs - Base Rate
         maxWeight: 100,
-        baseRate: 133.0,
+        baseRate: 148.0,
         additionalPerPound: 0,
-        handlingFee: 10.0,
+        handlingFee: 0,
       },
       {
-        // 101+ lbs
+        // Over 100 lbs - Base + per-pound over 100
+        // Formula: $148 + ((weight - 100) × $1.90)
+        // Example: 150 lbs = $148 + (50 × $1.90) = $148 + $95 = $243
         maxWeight: Infinity,
-        baseRate: 133.0,
-        additionalPerPound: 1.75,
-        handlingFee: 10.0,
+        baseRate: 148.0,
+        additionalPerPound: 1.90,
+        handlingFee: 0,
       },
     ],
   },
