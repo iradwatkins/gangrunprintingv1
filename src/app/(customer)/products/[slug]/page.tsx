@@ -6,6 +6,7 @@ import { type Metadata } from 'next'
 import { generateAllProductSchemas } from '@/lib/schema-generators'
 import { type PrismaProductImage } from '@/types/product'
 import { getApprovedProductSEO, generateProductMetaTags } from '@/lib/seo-brain/generate-product-seo'
+import { Breadcrumbs, BreadcrumbSchema } from '@/components/customer/breadcrumbs'
 
 // Force dynamic rendering to prevent chunk loading issues
 export const dynamic = 'force-dynamic'
@@ -297,6 +298,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Generate JSON-LD structured data for SEO and AI
   const schemas = generateAllProductSchemas(transformedProduct as any)
 
+  // Build breadcrumbs
+  const breadcrumbs = product.ProductCategory
+    ? [
+        {
+          label: product.ProductCategory.name,
+          href: `/category/${product.ProductCategory.slug}`,
+        },
+        { label: product.name, href: `/products/${product.slug}` },
+      ]
+    : [{ label: product.name, href: `/products/${product.slug}` }]
+
   // Pass the server-fetched data to the client component with error boundary
   return (
     <>
@@ -309,11 +321,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         />
       ))}
 
-      {/* Error boundary temporarily disabled for build */}
-      <ProductDetailClient
-        configuration={serializedConfiguration}
-        product={transformedProduct as any}
-      />
+      {/* Breadcrumb Schema */}
+      <BreadcrumbSchema items={breadcrumbs} />
+
+      <div className="container mx-auto px-4 py-4">
+        {/* Breadcrumbs Navigation */}
+        <Breadcrumbs className="mb-6" items={breadcrumbs} />
+
+        {/* Error boundary temporarily disabled for build */}
+        <ProductDetailClient
+          configuration={serializedConfiguration}
+          product={transformedProduct as any}
+        />
+      </div>
     </>
   )
 }

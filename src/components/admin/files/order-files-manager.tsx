@@ -22,6 +22,7 @@ import {
   FileArchive,
 } from 'lucide-react';
 import { FileUploadDialog } from './file-upload-dialog';
+import { SimpleFileUpload } from './simple-file-upload';
 import { FileMessageDialog } from './file-message-dialog';
 import toast from '@/lib/toast';
 import {
@@ -247,10 +248,7 @@ export function OrderFilesManager({ orderId }: Props) {
                   </a>
                 </Button>
               )}
-              <Button size="sm" onClick={() => setUploadDialogOpen(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload File
-              </Button>
+              <SimpleFileUpload orderId={orderId} onSuccess={fetchFiles} />
             </div>
           </div>
         </CardHeader>
@@ -259,10 +257,9 @@ export function OrderFilesManager({ orderId }: Props) {
             <div className="text-center py-12 border-2 border-dashed rounded-lg">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
-              <Button size="sm" variant="outline" onClick={() => setUploadDialogOpen(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload First File
-              </Button>
+              <div className="flex justify-center">
+                <SimpleFileUpload orderId={orderId} onSuccess={fetchFiles} />
+              </div>
             </div>
           ) : (
             <>

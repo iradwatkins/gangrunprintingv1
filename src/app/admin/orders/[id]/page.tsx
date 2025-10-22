@@ -42,6 +42,7 @@ import { VendorAssignment } from '@/components/admin/vendor-assignment'
 import { OrderFilesManager } from '@/components/admin/files/order-files-manager'
 import { CollapsibleSection } from '@/components/admin/collapsible-section'
 import { EditableTracking } from '@/components/admin/orders/editable-tracking'
+import { CustomerUploadsGallery } from '@/components/admin/orders/customer-uploads-gallery'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -314,6 +315,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </Alert>
       )}
 
+      {/* Customer Uploaded Files - Prominent Display */}
+      <CustomerUploadsGallery orderId={order.id} />
+
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Order Details */}
@@ -574,13 +578,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             title="Shipping & Tracking"
           >
             <div className="space-y-4">
-              {/* Shipping Method */}
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Shipping Method</span>
-                <span className="text-sm font-medium">
-                  {order.shippingMethod || 'Not specified'}
-                </span>
-              </div>
+              {/* Shipping Method - Prominent Display */}
+              {order.shippingMethod && (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-1">Shipping Method</p>
+                  <p className="text-base font-semibold text-primary">
+                    {order.shippingMethod}
+                  </p>
+                </div>
+              )}
 
               {/* Carrier */}
               {order.carrier && (

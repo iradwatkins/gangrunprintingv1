@@ -100,6 +100,11 @@ export default function CategoriesPage() {
     name: '',
     slug: '',
     description: '',
+    imageUrl: '',
+    thumbnailUrl: '',
+    metaTitle: '',
+    metaDescription: '',
+    seoKeywords: [] as string[],
     sortOrder: 0,
     isActive: true,
     isHidden: false,
@@ -206,6 +211,11 @@ export default function CategoriesPage() {
       name: '',
       slug: '',
       description: '',
+      imageUrl: '',
+      thumbnailUrl: '',
+      metaTitle: '',
+      metaDescription: '',
+      seoKeywords: [],
       sortOrder: 0,
       isActive: true,
       isHidden: false,
@@ -222,6 +232,11 @@ export default function CategoriesPage() {
       name: category.name,
       slug: category.slug,
       description: category.description || '',
+      imageUrl: (category as any).imageUrl || '',
+      thumbnailUrl: (category as any).thumbnailUrl || '',
+      metaTitle: (category as any).metaTitle || '',
+      metaDescription: (category as any).metaDescription || '',
+      seoKeywords: (category as any).seoKeywords || [],
       sortOrder: category.sortOrder,
       isActive: category.isActive,
       isHidden: category.isHidden,
@@ -530,6 +545,100 @@ export default function CategoriesPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
+            </div>
+
+            {/* IMAGE & SEO FIELDS */}
+            <div className="col-span-4 border-t pt-4">
+              <p className="text-sm font-medium mb-3">Images & SEO</p>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="imageUrl">
+                Hero Image URL
+              </Label>
+              <Input
+                className="col-span-3"
+                id="imageUrl"
+                placeholder="https://example.com/category-hero.jpg"
+                value={formData.imageUrl}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="thumbnailUrl">
+                Thumbnail URL
+              </Label>
+              <Input
+                className="col-span-3"
+                id="thumbnailUrl"
+                placeholder="https://example.com/category-thumb.jpg"
+                value={formData.thumbnailUrl}
+                onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="metaTitle">
+                SEO Meta Title
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="metaTitle"
+                  maxLength={60}
+                  placeholder="e.g., Business Card Printing Services"
+                  value={formData.metaTitle}
+                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                />
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  Max 60 characters recommended ({formData.metaTitle.length}/60)
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="metaDescription">
+                SEO Meta Description
+              </Label>
+              <div className="col-span-3">
+                <Textarea
+                  id="metaDescription"
+                  maxLength={160}
+                  placeholder="Brief description for search engines"
+                  rows={2}
+                  value={formData.metaDescription}
+                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                />
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  Max 160 characters recommended ({formData.metaDescription.length}/160)
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="seoKeywords">
+                SEO Keywords
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="seoKeywords"
+                  placeholder="business cards, printing, custom cards (comma separated)"
+                  value={formData.seoKeywords.join(', ')}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      seoKeywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean),
+                    })
+                  }
+                />
+                <span className="text-xs text-muted-foreground mt-1 block">
+                  Separate keywords with commas
+                </span>
+              </div>
+            </div>
+
+            <div className="col-span-4 border-t pt-4">
+              <p className="text-sm font-medium mb-3">Settings</p>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">

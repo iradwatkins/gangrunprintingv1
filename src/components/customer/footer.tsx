@@ -21,11 +21,11 @@ import { Separator } from '@/components/ui/separator'
 
 const footerLinks = {
   products: [
-    { name: 'Business Cards', href: '/products?category=business-cards' },
-    { name: 'Flyers & Brochures', href: '/products?category=flyers' },
-    { name: 'Banners & Signs', href: '/products?category=banners' },
-    { name: 'Stickers & Labels', href: '/products?category=stickers' },
-    { name: 'Apparel', href: '/products?category=apparel' },
+    { name: 'Business Cards', href: '/category/business-cards' },
+    { name: 'Flyers & Brochures', href: '/category/flyers' },
+    { name: 'Banners & Signs', href: '/category/banners' },
+    { name: 'Stickers & Labels', href: '/category/stickers' },
+    { name: 'Apparel', href: '/category/apparel' },
     { name: 'View All Products', href: '/products' },
   ],
   services: [

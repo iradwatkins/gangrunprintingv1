@@ -23,6 +23,8 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { prisma } from '@/lib/prisma'
 import Image from 'next/image'
+import { HomepageHero } from '@/components/customer/homepage-hero'
+import { CategoryGrid } from '@/components/customer/category-grid'
 
 const testimonials = [
   {
@@ -168,54 +170,9 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background">
-        <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
-        <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 xl:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="space-y-8 animate-slide-up">
-              <Badge className="inline-flex items-center gap-1 px-3 py-1">
-                <Zap className="w-3 h-3" />
-                Same Day Printing Available
-              </Badge>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight">
-                Professional Printing
-                <span className="text-primary"> Made Simple</span>
-              </h1>
-              <p className="text-lg sm:text-xl text-muted-foreground">
-                High-quality printing services with fast turnaround times. From business cards to
-                banners, we bring your ideas to life.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild className="group" size="lg">
-                  <Link href="/products">
-                    <Package className="mr-2 h-5 w-5" />
-                    Start Your Order
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link href="/track">Track Order</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="relative order-first lg:order-last">
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 p-4 sm:p-6 md:p-8">
-                  {['Business Cards', 'Flyers', 'Banners', 'Stickers'].map((item, i) => (
-                    <div
-                      key={i}
-                      className="bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 transform hover:scale-105 transition-transform"
-                    >
-                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded mb-1 sm:mb-2" />
-                      <p className="text-xs sm:text-sm font-medium text-center">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Hero Section with Rotating Specials */}
+      <section className="container mx-auto px-4 py-8">
+        <HomepageHero />
       </section>
 
       {/* Quick Stats */}
@@ -254,7 +211,7 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {productCategories.map((category) => (
-              <Link key={category.id} href={`/products?category=${category.slug}`}>
+              <Link key={category.id} href={`/category/${category.slug}`}>
                 <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer overflow-hidden">
                   <div className="aspect-[4/3] relative bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
                     {category._count.Product > 10 && (

@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // CATEGORY URL REDIRECTS: Redirect old category URLs to new structure
+  if (request.nextUrl.pathname.startsWith('/products/flyers')) {
+    return NextResponse.redirect(new URL('/category/flyers', request.url))
+  }
+  if (request.nextUrl.pathname.startsWith('/products/business-cards')) {
+    return NextResponse.redirect(new URL('/category/business-cards', request.url))
+  }
+  if (request.nextUrl.pathname.startsWith('/products/brochures')) {
+    return NextResponse.redirect(new URL('/category/brochures', request.url))
+  }
+  // Add more category redirects as needed...
+
   // CRITICAL FIX: Handle large file uploads to prevent ERR_CONNECTION_CLOSED
   if (
     request.nextUrl.pathname.startsWith('/api/products/upload-image') ||

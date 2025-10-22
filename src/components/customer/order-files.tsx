@@ -15,8 +15,21 @@ import {
   Clock,
   AlertCircle,
   Eye,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react'
 import toast from '@/lib/toast'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface OrderFile {
   id: string
@@ -73,6 +86,11 @@ const approvalStatusConfig = {
 export function CustomerOrderFiles({ orderId }: Props) {
   const [files, setFiles] = useState<OrderFile[]>([])
   const [loading, setLoading] = useState(true)
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false)
+  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED')
+  const [approvalMessage, setApprovalMessage] = useState('')
+  const [fileToApprove, setFileToApprove] = useState<OrderFile | null>(null)
+  const [isApproving, setIsApproving] = useState(false)
 
   const fetchFiles = async () => {
     try {
@@ -98,6 +116,52 @@ export function CustomerOrderFiles({ orderId }: Props) {
   useEffect(() => {
     fetchFiles()
   }, [orderId])
+
+  const handleApprovalClick = (file: OrderFile, action: 'APPROVED' | 'REJECTED') => {
+    setFileToApprove(file)
+    setApprovalAction(action)
+    setApprovalMessage('')
+    setApprovalDialogOpen(true)
+  }
+
+  const handleApprovalConfirm = async () => {
+    if (!fileToApprove) return
+
+    setIsApproving(true)
+    try {
+      const response = await fetch(`/api/orders/${orderId}/files/${fileToApprove.id}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: approvalAction,
+          message: approvalMessage || undefined,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success(
+          approvalAction === 'APPROVED'
+            ? 'File approved successfully! Production will proceed.'
+            : 'Feedback submitted. We will review your comments.'
+        )
+        // Refresh files list
+        await fetchFiles()
+        setApprovalDialogOpen(false)
+        setFileToApprove(null)
+        setApprovalMessage('')
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Failed to submit approval')
+      }
+    } catch (error) {
+      console.error('Error submitting approval:', error)
+      toast.error('Failed to submit approval')
+    } finally {
+      setIsApproving(false)
+    }
+  }
 
   const formatFileSize = (bytes?: number) => {
     if (!bytes) return 'Unknown size'
@@ -132,6 +196,7 @@ export function CustomerOrderFiles({ orderId }: Props) {
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -224,6 +289,8 @@ export function CustomerOrderFiles({ orderId }: Props) {
                   file={file}
                   formatFileSize={formatFileSize}
                   getFileIcon={getFileIcon}
+                  onApprove={file.approvalStatus === 'WAITING' ? () => handleApprovalClick(file, 'APPROVED') : undefined}
+                  onReject={file.approvalStatus === 'WAITING' ? () => handleApprovalClick(file, 'REJECTED') : undefined}
                 />
               ))}
             </div>
@@ -242,6 +309,89 @@ export function CustomerOrderFiles({ orderId }: Props) {
         )}
       </CardContent>
     </Card>
+
+    {/* Approval Dialog */}
+    <Dialog open={approvalDialogOpen} onOpenChange={setApprovalDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {approvalAction === 'APPROVED' ? 'Approve File' : 'Request Changes'}
+          </DialogTitle>
+          <DialogDescription>
+            {approvalAction === 'APPROVED'
+              ? 'Confirm that you approve this file for production.'
+              : 'Let us know what changes are needed.'}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {fileToApprove && (
+            <Alert>
+              <FileText className="h-4 w-4" />
+              <AlertDescription>
+                <strong>{fileToApprove.label || fileToApprove.filename}</strong>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {approvalAction === 'REJECTED' && (
+            <div className="space-y-2">
+              <Label htmlFor="approval-message">
+                What changes would you like to request? *
+              </Label>
+              <Textarea
+                required
+                id="approval-message"
+                placeholder="Please explain what needs to be changed..."
+                rows={4}
+                value={approvalMessage}
+                onChange={(e) => setApprovalMessage(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Your feedback will help us make the necessary corrections.
+              </p>
+            </div>
+          )}
+
+          {approvalAction === 'APPROVED' && (
+            <div className="space-y-2">
+              <Label htmlFor="approval-message">
+                Additional notes (optional)
+              </Label>
+              <Textarea
+                id="approval-message"
+                placeholder="Any additional comments..."
+                rows={3}
+                value={approvalMessage}
+                onChange={(e) => setApprovalMessage(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button disabled={isApproving} variant="outline" onClick={() => setApprovalDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            className={
+              approvalAction === 'APPROVED'
+                ? 'bg-green-600 hover:bg-green-700'
+                : ''
+            }
+            disabled={isApproving || (approvalAction === 'REJECTED' && !approvalMessage.trim())}
+            onClick={handleApprovalConfirm}
+          >
+            {isApproving
+              ? 'Submitting...'
+              : approvalAction === 'APPROVED'
+                ? 'Confirm Approval'
+                : 'Submit Feedback'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
 
@@ -249,10 +399,14 @@ function CustomerFileItem({
   file,
   formatFileSize,
   getFileIcon,
+  onApprove,
+  onReject,
 }: {
   file: OrderFile
   formatFileSize: (bytes?: number) => string
   getFileIcon: (mimeType?: string) => any
+  onApprove?: () => void
+  onReject?: () => void
 }) {
   const FileIcon = getFileIcon(file.mimeType)
   const statusConfig = approvalStatusConfig[file.approvalStatus]
@@ -295,6 +449,36 @@ function CustomerFileItem({
         </div>
         <Badge className={`${statusConfig.color} flex-shrink-0`}>{statusConfig.label}</Badge>
       </div>
+
+      {/* Approval Buttons - Only show for files awaiting approval */}
+      {(onApprove || onReject) && file.approvalStatus === 'WAITING' && (
+        <div className="pt-3 border-t">
+          <p className="text-sm font-medium mb-3">Please review and approve this file:</p>
+          <div className="flex gap-2">
+            {onApprove && (
+              <Button
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                size="lg"
+                onClick={onApprove}
+              >
+                <ThumbsUp className="h-5 w-5 mr-2" />
+                Approve
+              </Button>
+            )}
+            {onReject && (
+              <Button
+                className="flex-1"
+                size="lg"
+                variant="outline"
+                onClick={onReject}
+              >
+                <ThumbsDown className="h-5 w-5 mr-2" />
+                Request Changes
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Feedback Messages */}
       {file.FileMessage.length > 0 && (

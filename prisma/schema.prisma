@@ -1056,6 +1056,14 @@ model ProductCategory {
   parentCategoryId String?
   vendorId         String? // VENDOR SYSTEM: Default vendor for products in this category (determines shipping options)
   brokerDiscount   Int               @default(0) // Default broker discount percentage (0-100) for products in this category
+
+  // CATEGORY IMAGES & SEO (Shopify-style enhancement)
+  imageUrl         String? // Category banner/hero image URL
+  thumbnailUrl     String? // Category thumbnail for grid display
+  metaTitle        String? // SEO meta title (max 60 chars recommended)
+  metaDescription  String? // SEO meta description (max 160 chars recommended)
+  seoKeywords      String[]          @default([]) // SEO keywords array
+
   createdAt        DateTime          @default(now())
   updatedAt        DateTime
   Product          Product[]
