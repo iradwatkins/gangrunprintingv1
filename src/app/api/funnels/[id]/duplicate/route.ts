@@ -51,7 +51,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         timezone: originalFunnel.timezone,
         seoTitle: originalFunnel.seoTitle,
         seoDescription: originalFunnel.seoDescription,
-        settings: originalFunnel.settings,
+        settings: originalFunnel.settings as any,
 
         // Duplicate steps
         FunnelStep: {
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
             slug: step.slug,
             type: step.type,
             position: step.position,
-            config: step.config,
-            design: step.design,
+            config: step.config as any,
+            design: step.design as any,
             seoTitle: step.seoTitle,
             seoDescription: step.seoDescription,
             isActive: step.isActive,

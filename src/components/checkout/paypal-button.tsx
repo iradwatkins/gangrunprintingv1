@@ -19,7 +19,7 @@ interface PayPalOrderDetails {
 
 interface PayPalButtonProps {
   total: number
-  onSuccess: (details: PayPalOrderDetails) => void
+  onSuccess: (result: Record<string, unknown>) => void
   onError: (error: string) => void
 }
 

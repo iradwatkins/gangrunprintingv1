@@ -73,9 +73,9 @@ export default function PaymentPage() {
     loadOrderData()
   }, [router])
 
-  const handlePaymentSuccess = (details: PayPalOrderDetails) => {
+  const handlePaymentSuccess = (result: Record<string, unknown>) => {
     try {
-      console.log('[Payment] Payment successful:', details)
+      console.log('[Payment] Payment successful:', result)
 
       // Clear cart
       clearCart()

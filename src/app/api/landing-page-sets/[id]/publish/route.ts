@@ -136,7 +136,7 @@ export async function POST(
             content: content.aiIntro, // Legacy field
             contentSections: content.contentSections,
             faqSchema: content.faqSchema,
-            schemaMarkup: null, // Will generate schema markup in next iteration
+            schemaMarkup: null as any, // Will generate schema markup in next iteration
             status: 'published',
             published: true,
             publishedAt: new Date()

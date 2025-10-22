@@ -21,7 +21,7 @@ interface PayPalOrderDetails {
 
 interface CashAppQRPaymentProps {
   total: number
-  onPaymentSuccess: (details: PayPalOrderDetails) => void
+  onPaymentSuccess: (result: Record<string, unknown>) => void
   onPaymentError: (error: string) => void
   onBack: () => void
 }
