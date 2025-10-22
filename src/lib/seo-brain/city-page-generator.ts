@@ -75,8 +75,6 @@ export async function generate200CityPages(
   for (let i = 0; i < cities.length; i += batchSize) {
     const batch = cities.slice(i, i + batchSize)
 
-      `[SEO Brain] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(cities.length / batchSize)} (Cities ${i + 1}-${Math.min(i + batchSize, cities.length)})`
-    )
 
     // Process batch in parallel
     const batchResults = await Promise.allSettled(

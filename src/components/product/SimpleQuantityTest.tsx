@@ -87,9 +87,6 @@ export default function SimpleQuantityTest({
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]) // Track selected addon IDs
 
   useEffect(() => {
-      '[SimpleQuantityTest] useEffect triggered. initialConfiguration:',
-      !!initialConfiguration
-    )
 
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {

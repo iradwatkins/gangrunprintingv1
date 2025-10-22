@@ -70,11 +70,6 @@ export class SouthwestCargoProvider implements ShippingProvider {
       },
     ]
 
-    rates.forEach((rate, index) => {
-        `   ${index + 1}. ${rate.serviceName}: $${rate.rateAmount.toFixed(2)} (${rate.estimatedDays} days)`
-      )
-    })
-
     return rates
   }
 

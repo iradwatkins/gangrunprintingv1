@@ -60,12 +60,6 @@ export function SquareCardPayment({
     // Set isLoading to false immediately so containers render
     setIsLoading(false)
 
-      appId: applicationId?.substring(0, 20) + '...',
-      locationId,
-      environment,
-      hasSquareSDK: typeof window.Square !== 'undefined',
-    })
-
     const initializeSquare = async () => {
       try {
         // Load Square.js script dynamically

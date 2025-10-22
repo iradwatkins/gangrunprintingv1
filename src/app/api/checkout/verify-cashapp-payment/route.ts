@@ -16,11 +16,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { paymentLink, amount } = body
 
-      paymentLink,
-      amount,
-      timestamp: new Date().toISOString(),
-    })
-
     // TODO: Implement actual Cash App payment verification
     // For now, return mock success for testing
     // In production, you would:

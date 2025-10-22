@@ -168,12 +168,6 @@ function getIconForName(iconName: string): string {
 }
 
 export default function ProductDetailClient({ product, configuration }: ProductDetailClientProps) {
-  // Debug logging
-    productId: product?.id,
-    hasConfiguration: !!configuration,
-    quantitiesCount: configuration?.quantities?.length || 0,
-  })
-
   // Track product view in Google Analytics
   useEffect(() => {
     if (product) {

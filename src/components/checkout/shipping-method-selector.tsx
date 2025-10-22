@@ -69,10 +69,6 @@ export function ShippingMethodSelector({
     setError(null)
 
     try {
-        destination,
-        itemsCount: items.length,
-      })
-
       const response = await fetch('/api/shipping/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,11 +96,6 @@ export function ShippingMethodSelector({
       }
 
       const data = await response.json()
-        success: data.success,
-        ratesCount: data.rates?.length || 0,
-        totalWeight: data.totalWeight,
-        numBoxes: data.numBoxes,
-      })
 
       if (data.success && data.rates && Array.isArray(data.rates)) {
         if (data.rates.length === 0) {

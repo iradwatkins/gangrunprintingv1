@@ -4,6 +4,7 @@
 class SafeLogger {
   debug(message: string, meta?: any) {
     if (process.env.NODE_ENV === 'development') {
+      console.error(
         `[DEBUG] ${new Date().toISOString()} ${message}`,
         meta ? JSON.stringify(meta) : ''
       )
@@ -30,9 +31,6 @@ class SafeLogger {
   }
 
   log(level: string, message: string, meta?: any) {
-      `[${level.toUpperCase()}] ${new Date().toISOString()} ${message}`,
-      meta ? JSON.stringify(meta) : ''
-    )
   }
 
   child(meta?: any) {

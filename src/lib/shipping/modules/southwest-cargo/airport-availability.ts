@@ -38,8 +38,6 @@ async function getAvailableStates(): Promise<Set<string>> {
     cachedStates = new Set(airports.map((airport) => airport.state.toUpperCase()))
     cacheTimestamp = now
 
-      `[Southwest Cargo] Loaded ${cachedStates.size} states from ${airports.length} airports`
-    )
 
     return cachedStates
   } catch (error) {

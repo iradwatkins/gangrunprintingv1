@@ -456,12 +456,6 @@ export class FedExProviderEnhanced implements ShippingProvider {
       return unique
     }, [] as ShippingRate[])
 
-    // Log deduplication if any occurred
-    if (allRates.length !== deduplicatedRates.length) {
-        `[FedEx] Deduplicated ${allRates.length} rates → ${deduplicatedRates.length} unique services`
-      )
-    }
-
     return deduplicatedRates
   }
 
