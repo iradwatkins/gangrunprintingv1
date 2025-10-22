@@ -100,6 +100,29 @@ const packages = items.map((item) => {
 
 ### **Protected Database Tables (NEVER Hard Delete Without Permission)**
 
+Your entire product configuration system consists of **6 critical data types** + **6 critical SETS**.
+
+**IMPORTANT**: Both the individual items AND the SETS are equally critical and protected.
+
+### **🛡️ THE 6 CRITICAL SETS (PRIMARY PROTECTION)**
+
+These SETS are how you organize and group your product options:
+
+| Set Type | Database Table | Count | Protection Level |
+|----------|---------------|-------|------------------|
+| **Size Sets** | `SizeGroup` | 21 records | 🔴 CRITICAL |
+| **Quantity Sets** | `QuantityGroup` | 5 records | 🔴 CRITICAL |
+| **Paper Stock Sets** | `PaperStockSet` | 9 records | 🔴 CRITICAL |
+| **Addon Sets** | `AddOnSet` | 2 records | 🔴 CRITICAL |
+| **Design Sets** | `DesignSet` | 1 record | 🔴 CRITICAL |
+| **Turnaround Time Sets** | `TurnaroundTimeSet` | 4 records | 🔴 CRITICAL |
+
+**Total: 42 SETS** - All are protected with the same priority as passwords.
+
+---
+
+### **📋 COMPLETE DATA INVENTORY (Items + Sets)**
+
 Your entire product configuration system consists of **6 critical data types**:
 
 #### **1. SIZES** ✅
@@ -190,7 +213,20 @@ model AddOn {
 
 ### **Verification Commands**
 
-**Check all configuration data counts:**
+**Quick check - Verify all 6 SETS (Primary Protection):**
+```bash
+docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db -c "
+SELECT 'Size Sets' as set_type, COUNT(*) FROM \"SizeGroup\"
+UNION ALL SELECT 'Quantity Sets', COUNT(*) FROM \"QuantityGroup\"
+UNION ALL SELECT 'Paper Stock Sets', COUNT(*) FROM \"PaperStockSet\"
+UNION ALL SELECT 'Addon Sets', COUNT(*) FROM \"AddOnSet\"
+UNION ALL SELECT 'Design Sets', COUNT(*) FROM \"DesignSet\"
+UNION ALL SELECT 'Turnaround Sets', COUNT(*) FROM \"TurnaroundTimeSet\";
+"
+# Expected: 21, 5, 9, 2, 1, 4 (Total: 42 sets)
+```
+
+**Complete check - Verify all configuration data counts:**
 ```bash
 docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db -c "
 SELECT 'Sizes' as type, COUNT(*) FROM \"SizeGroup\"
@@ -203,12 +239,23 @@ UNION ALL SELECT 'Turnarounds', COUNT(*) FROM \"TurnaroundTime\";
 ```
 
 **Expected Counts (Baseline October 21, 2025):**
-- Sizes: 21 groups
-- Quantities: 5 groups
+
+**SETS (CRITICAL - Primary grouping system):**
+- Size Sets (`SizeGroup`): 21 sets
+- Quantity Sets (`QuantityGroup`): 5 sets
+- Paper Stock Sets (`PaperStockSet`): 9 sets
+- Addon Sets (`AddOnSet`): 2 sets
+- Design Sets (`DesignSet`): 1 set
+- Turnaround Time Sets (`TurnaroundTimeSet`): 4 sets
+- **Total SETS: 42**
+
+**INDIVIDUAL ITEMS:**
+- Standard Sizes: 4 items
+- Standard Quantities: 6 items
 - Paper Stocks: 7 stocks
 - Addons: 20 addons
-- Designs: 5 options
-- Turnarounds: 6 times
+- Design Options: 5 options
+- Turnaround Times: 6 times
 
 ### **Recovery Strategy**
 
