@@ -8,11 +8,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, CreditCard, ArrowLeft, CheckCircle } from 'lucide-react'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
 import { PayPalButton } from '@/components/checkout/paypal-button'
-import { CashAppQRPayment } from '@/components/checkout/cashapp-qr-payment'
 import { useCart } from '@/contexts/cart-context'
 import toast from '@/lib/toast'
 
-type PaymentMethod = 'square' | 'paypal' | 'cashapp' | null
+type PaymentMethod = 'square' | 'paypal' | null
 
 interface PayPalOrderDetails {
   id: string
@@ -168,7 +167,7 @@ export default function PaymentPage() {
                   <CardTitle>Select Payment Method</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Square Card Payment */}
+                  {/* Square Payment (Card + Cash App Pay) */}
                   <button
                     className="w-full p-6 border-2 rounded-lg hover:border-primary hover:bg-accent transition-all text-left group"
                     onClick={() => setSelectedMethod('square')}
@@ -181,34 +180,9 @@ export default function PaymentPage() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg">Credit/Debit Card</h3>
+                          <h3 className="font-semibold text-lg">Card or Cash App</h3>
                           <p className="text-sm text-muted-foreground">
-                            Visa, Mastercard, American Express, Discover
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        Select →
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Cash App Pay - QR Code */}
-                  <button
-                    className="w-full p-6 border-2 rounded-lg hover:border-primary hover:bg-accent transition-all text-left group"
-                    onClick={() => setSelectedMethod('cashapp')}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-lg bg-[#00D632] flex items-center justify-center p-2">
-                          <svg className="w-full h-full fill-white" viewBox="0 0 24 24">
-                            <path d="M23.59 3.47a5.11 5.11 0 0 0-3.05-3.05c-2.68-1-13.49-1-13.49-1S2.67.42 0 1.42A5.11 5.11 0 0 0-.53 4.47c-.16.8-.27 1.94-.33 3.06h.02A71.04 71.04 0 0 0-.81 12c.01 1.61.13 3.15.34 4.49a5.11 5.11 0 0 0 3.05 3.05c2.68 1 13.49 1 13.49 1s10.81.01 13.49-1a5.11 5.11 0 0 0 3.05-3.05c.16-.8.27-1.94.33-3.06h-.02a71.04 71.04 0 0 0 .03-4.47c-.01-1.61-.13-3.15-.34-4.49zM9.63 15.65V8.35L15.73 12l-6.1 3.65z"/>
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-lg">Cash App - Scan QR Code</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Scan with your phone to pay securely
+                            Credit/Debit Cards, Cash App Pay
                           </p>
                         </div>
                       </div>
@@ -300,16 +274,6 @@ export default function PaymentPage() {
                   </CardContent>
                 </Card>
               </div>
-            )}
-
-            {/* Cash App QR Payment Component */}
-            {selectedMethod === 'cashapp' && (
-              <CashAppQRPayment
-                total={total}
-                onBack={() => setSelectedMethod(null)}
-                onPaymentError={handlePaymentError}
-                onPaymentSuccess={handlePaymentSuccess}
-              />
             )}
 
             {/* Missing Configuration Warning */}
