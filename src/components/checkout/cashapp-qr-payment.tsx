@@ -7,9 +7,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, Check } from 'lucide-react'
 import QRCode from 'qrcode'
 
+interface PayPalOrderDetails {
+  id: string
+  status: string
+  payer?: {
+    name?: {
+      given_name: string
+      surname: string
+    }
+    email_address?: string
+  }
+}
+
 interface CashAppQRPaymentProps {
   total: number
-  onPaymentSuccess: (result: Record<string, unknown>) => void
+  onPaymentSuccess: (details: PayPalOrderDetails) => void
   onPaymentError: (error: string) => void
   onBack: () => void
 }

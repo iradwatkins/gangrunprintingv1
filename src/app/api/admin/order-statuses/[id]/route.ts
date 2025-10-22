@@ -261,6 +261,7 @@ export async function DELETE(
 
       await prisma.statusHistory.createMany({
         data: orders.map((order) => ({
+          id: crypto.randomUUID(),
           orderId: order.id,
           fromStatus: status.slug,
           toStatus: reassignToSlug,

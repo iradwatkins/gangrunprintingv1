@@ -14,6 +14,18 @@ import toast from '@/lib/toast'
 
 type PaymentMethod = 'square' | 'paypal' | 'cashapp' | null
 
+interface PayPalOrderDetails {
+  id: string
+  status: string
+  payer?: {
+    name?: {
+      given_name: string
+      surname: string
+    }
+    email_address?: string
+  }
+}
+
 export default function PaymentPage() {
   const router = useRouter()
   const { items, subtotal, clearCart, itemCount } = useCart()
@@ -61,9 +73,9 @@ export default function PaymentPage() {
     loadOrderData()
   }, [router])
 
-  const handlePaymentSuccess = async (result: Record<string, unknown>) => {
+  const handlePaymentSuccess = (details: PayPalOrderDetails) => {
     try {
-      console.log('[Payment] Payment successful:', result)
+      console.log('[Payment] Payment successful:', details)
 
       // Clear cart
       clearCart()

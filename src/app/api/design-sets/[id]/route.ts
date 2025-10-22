@@ -135,6 +135,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
           await tx.designSetItem.createMany({
             data: optionsWithDefault.map((option, index) => ({
+              id: crypto.randomUUID(),
               designSetId: id,
               designOptionId: option.id,
               isDefault: option.isDefault,

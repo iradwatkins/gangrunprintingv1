@@ -195,9 +195,8 @@ export default function ShippingPage() {
             {/* Airport Selector (Southwest Cargo only) */}
             {selectedShippingMethod?.carrier === 'SOUTHWEST_CARGO' && shippingAddress.state && (
               <AirportSelector
-                selectedAirportId={selectedAirportId}
-                state={shippingAddress.state}
-                onSelect={setSelectedAirportId}
+                selectedAirportId={selectedAirportId ?? null}
+                onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
               />
             )}
           </div>

@@ -138,6 +138,7 @@ export async function POST(request: NextRequest) {
         // Create status history entry
         await prisma.statusHistory.create({
           data: {
+            id: crypto.randomUUID(),
             orderId: order.id,
             fromStatus: order.status,
             toStatus: targetStatus.slug,
