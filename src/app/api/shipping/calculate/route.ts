@@ -59,7 +59,13 @@ export async function POST(request: NextRequest) {
     const productIds = items.map(item => item.productId).filter((id): id is string => !!id)
 
     let hasFreeShipping = false
-    let productsData: any[] = []
+
+    interface ProductWithMetadata {
+      id: string
+      metadata: unknown
+    }
+
+    let productsData: ProductWithMetadata[] = []
 
     if (productIds.length > 0) {
       productsData = await prisma.product.findMany({
@@ -229,15 +235,25 @@ export async function POST(request: NextRequest) {
         'SOUTHWEST_DASH', // Southwest Dash express delivery
       ]
 
-      rates = rates.filter((rate: any) => {
-        const serviceCode = rate.serviceCode || rate.service
+      interface ApiRate {
+        serviceCode?: string
+        service?: string
+        cost?: number
+        rateAmount?: number
+      }
+
+      rates = rates.filter((rate: unknown) => {
+        const r = rate as ApiRate
+        const serviceCode = r.serviceCode || r.service
         return ALLOWED_SERVICE_CODES.includes(serviceCode)
       })
 
       // Sort rates by price (lowest to highest)
-      rates.sort((a: any, b: any) => {
-        const priceA = typeof a.cost === 'number' ? a.cost : a.rateAmount || 0
-        const priceB = typeof b.cost === 'number' ? b.cost : b.rateAmount || 0
+      rates.sort((a: unknown, b: unknown) => {
+        const rateA = a as ApiRate
+        const rateB = b as ApiRate
+        const priceA = typeof rateA.cost === 'number' ? rateA.cost : rateA.rateAmount || 0
+        const priceB = typeof rateB.cost === 'number' ? rateB.cost : rateB.rateAmount || 0
         return priceA - priceB
       })
     } catch (timeoutError) {
