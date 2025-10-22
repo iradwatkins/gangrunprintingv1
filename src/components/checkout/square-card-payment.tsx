@@ -48,9 +48,7 @@ export function SquareCardPayment({
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [card, setCard] = useState<any>(null)
-  const [cashAppPay, setCashAppPay] = useState<any>(null)
   const [payments, setPayments] = useState<any>(null)
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'cashapp'>('card')
   const initAttempted = useRef(false)
 
   useEffect(() => {
@@ -76,7 +74,6 @@ export function SquareCardPayment({
         if (!window.Square) {
           throw new Error('Square Web Payments SDK failed to load - please refresh the page')
         }
-
 
         const paymentsInstance = (window.Square as any).payments(applicationId, locationId)
         setPayments(paymentsInstance)
@@ -120,54 +117,6 @@ export function SquareCardPayment({
         await cardInstance.attach('#square-card-container')
         setCard(cardInstance)
 
-        // Try to initialize Cash App Pay with payment request
-        try {
-
-          // Create payment request with amount details for Cash App
-          // IMPORTANT: Square requires amount as decimal string in DOLLARS (e.g., "261.02"), NOT cents
-          // Per official docs: https://developer.squareup.com/reference/sdks/web/payments/cash-app-pay
-          const amountInDollars = total.toFixed(2)
-          const paymentRequest = paymentsInstance.paymentRequest({
-            countryCode: 'US',
-            currencyCode: 'USD',
-            total: {
-              amount: amountInDollars,
-              label: 'Total',
-            },
-          })
-
-          const cashAppInstance = await paymentsInstance.cashAppPay(paymentRequest, {
-            redirectURL: window.location.href,
-            referenceId: `order-${Date.now()}`,
-          })
-
-          // Wait for Cash App container
-          let cashAppContainer = document.getElementById('square-cashapp-container')
-          let cashAppAttempts = 0
-          while (!cashAppContainer && cashAppAttempts < 30) {
-            await new Promise((resolve) => setTimeout(resolve, 100))
-            cashAppContainer = document.getElementById('square-cashapp-container')
-            cashAppAttempts++
-          }
-
-          if (cashAppContainer) {
-            await cashAppInstance.attach('#square-cashapp-container')
-            setCashAppPay(cashAppInstance)
-            console.log('[Cash App Pay] Successfully initialized and attached')
-          } else {
-            console.warn('[Cash App Pay] Container not found')
-          }
-        } catch (cashAppError: any) {
-          console.error('[Cash App Pay] Initialization failed:', cashAppError)
-          console.error('[Cash App Pay] Error details:', {
-            message: cashAppError?.message,
-            code: cashAppError?.code,
-            field: cashAppError?.field,
-            type: cashAppError?.type
-          })
-          // Cash App Pay failed - continue with card-only mode
-        }
-
         setIsInitializing(false)
       } catch (err) {
         console.error('[Square] Initialization error:', err)
@@ -197,9 +146,6 @@ export function SquareCardPayment({
       if (card) {
         card.destroy()
       }
-      if (cashAppPay) {
-        cashAppPay.destroy()
-      }
     }
   }, [applicationId, locationId])
 
@@ -212,9 +158,10 @@ export function SquareCardPayment({
 
       const script = document.createElement('script')
       // Use correct environment URL based on SQUARE_ENVIRONMENT
-      const sdkUrl = environment === 'production'
-        ? 'https://web.squarecdn.com/v1/square.js'
-        : 'https://sandbox.web.squarecdn.com/v1/square.js'
+      const sdkUrl =
+        environment === 'production'
+          ? 'https://web.squarecdn.com/v1/square.js'
+          : 'https://sandbox.web.squarecdn.com/v1/square.js'
       script.src = sdkUrl
       script.async = true
 
@@ -238,10 +185,9 @@ export function SquareCardPayment({
     setError(null)
 
     try {
-
       const verificationDetails = {
         intent: 'CHARGE',
-        amount: (Math.round(total * 100)).toString(),
+        amount: Math.round(total * 100).toString(),
         currencyCode: 'USD',
         billingContact: billingContact || {
           givenName: 'Customer',
@@ -254,7 +200,6 @@ export function SquareCardPayment({
       const result = await card.tokenize(verificationDetails)
 
       if (result.status === 'OK') {
-
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
           headers: {
@@ -275,56 +220,14 @@ export function SquareCardPayment({
           throw new Error(paymentResult.error || 'Payment failed')
         }
       } else {
-        const errorMessages = result.errors?.map((error: Record<string, unknown>) => error.message).join(', ')
+        const errorMessages = result.errors
+          ?.map((error: Record<string, unknown>) => error.message)
+          .join(', ')
         throw new Error(errorMessages || 'Card validation failed')
       }
     } catch (err) {
       console.error('[Square] Payment error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Payment processing failed'
-      setError(errorMessage)
-      onPaymentError(errorMessage)
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const handleCashAppPayment = async () => {
-    if (!cashAppPay || !payments) return
-
-    setIsProcessing(true)
-    setError(null)
-
-    try {
-      const result = await cashAppPay.tokenize()
-
-      if (result.status === 'OK') {
-
-        const response = await fetch('/api/checkout/process-square-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sourceId: result.token,
-            amount: Math.round(total * 100),
-            currency: 'USD',
-          }),
-        })
-
-        const paymentResult = await response.json()
-
-        if (paymentResult.success) {
-          onPaymentSuccess(paymentResult)
-        } else {
-          throw new Error(paymentResult.error || 'Payment failed')
-        }
-      } else {
-        const errorMessages = result.errors?.map((error: Record<string, unknown>) => error.message).join(', ')
-        throw new Error(errorMessages || 'Cash App validation failed')
-      }
-    } catch (err) {
-      console.error('[Cash App Pay] Payment error:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Cash App payment failed'
       setError(errorMessage)
       onPaymentError(errorMessage)
     } finally {
@@ -352,12 +255,8 @@ export function SquareCardPayment({
                 </div>
                 <div className="flex-1 space-y-3">
                   <div>
-                    <h3 className="text-lg font-bold text-red-900 mb-1">
-                      Payment Declined
-                    </h3>
-                    <p className="text-sm text-red-700 leading-relaxed">
-                      {error}
-                    </p>
+                    <h3 className="text-lg font-bold text-red-900 mb-1">Payment Declined</h3>
+                    <p className="text-sm text-red-700 leading-relaxed">{error}</p>
                   </div>
 
                   <div className="bg-white/80 rounded-lg p-4 border border-red-200">
@@ -391,72 +290,26 @@ export function SquareCardPayment({
             </div>
           )}
 
-          {/* Payment Method Selection */}
-          {cashAppPay && (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Select Payment Method</label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  className={`p-4 border-2 rounded-lg font-semibold transition-all ${
-                    paymentMethod === 'card'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                  } ${!card ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={!card}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  <CreditCard className="h-5 w-5 mx-auto mb-2" />
-                  Credit Card
-                </button>
-                <button
-                  className={`p-4 border-2 rounded-lg font-semibold transition-all ${
-                    paymentMethod === 'cashapp'
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                  } ${!cashAppPay ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={!cashAppPay}
-                  onClick={() => setPaymentMethod('cashapp')}
-                >
-                  💚 Cash App Pay
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Card Payment Section */}
-          {paymentMethod === 'card' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Card Details</label>
-              <div
-                className="min-h-[60px] p-3 border rounded-md bg-background relative"
-                id="square-card-container"
-              >
-                {isInitializing && (
-                  <div className="flex items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    <span className="ml-3 text-sm text-muted-foreground">Loading payment form...</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Your card information is secure and encrypted by Square
-              </p>
+          <div>
+            <label className="block text-sm font-medium mb-2">Card Details</label>
+            <div
+              className="min-h-[60px] p-3 border rounded-md bg-background relative"
+              id="square-card-container"
+            >
+              {isInitializing && (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span className="ml-3 text-sm text-muted-foreground">
+                    Loading payment form...
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Cash App Payment Section */}
-          {paymentMethod === 'cashapp' && cashAppPay && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Cash App Pay</label>
-              <div
-                className="min-h-[60px] p-3 border rounded-md bg-background"
-                id="square-cashapp-container"
-              />
-              <p className="text-xs text-muted-foreground mt-2">
-                Click the Cash App button to complete your payment
-              </p>
-            </div>
-          )}
+            <p className="text-xs text-muted-foreground mt-2">
+              Your card information is secure and encrypted by Square
+            </p>
+          </div>
 
           <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-4">
@@ -470,8 +323,8 @@ export function SquareCardPayment({
               </Button>
               <Button
                 className="flex-1"
-                disabled={isProcessing || (paymentMethod === 'card' && !card) || (paymentMethod === 'cashapp' && !cashAppPay)}
-                onClick={paymentMethod === 'card' ? handleCardPayment : handleCashAppPayment}
+                disabled={isProcessing || !card}
+                onClick={handleCardPayment}
               >
                 {isProcessing ? (
                   <>
