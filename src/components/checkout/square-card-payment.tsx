@@ -341,7 +341,7 @@ export function SquareCardPayment({
                 <div className="flex-1 space-y-3">
                   <div>
                     <h3 className="text-lg font-bold text-red-900 mb-1">
-                      Payment System Unavailable
+                      Payment Declined
                     </h3>
                     <p className="text-sm text-red-700 leading-relaxed">
                       {error}
@@ -353,32 +353,26 @@ export function SquareCardPayment({
                     <ul className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold mt-0.5">→</span>
-                        <span>Refresh this page and try again</span>
+                        <span>Double-check your card number, expiration date, and CVV</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold mt-0.5">→</span>
-                        <span>Check your internet connection</span>
+                        <span>Try a different payment method</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold mt-0.5">→</span>
-                        <span>Contact our support team if the issue persists</span>
+                        <span>Contact your bank if the problem continues</span>
                       </li>
                     </ul>
                   </div>
 
-                  <div className="flex flex-wrap gap-3 pt-2">
+                  <div className="flex justify-center pt-2">
                     <button
-                      onClick={() => window.location.reload()}
-                      className="flex-1 min-w-[140px] px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                      onClick={() => setError(null)}
+                      className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                     >
-                      🔄 Refresh Page
+                      Try Again
                     </button>
-                    <a
-                      href="/contact"
-                      className="flex-1 min-w-[140px] px-6 py-3 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-center"
-                    >
-                      💬 Contact Support
-                    </a>
                   </div>
                 </div>
               </div>
