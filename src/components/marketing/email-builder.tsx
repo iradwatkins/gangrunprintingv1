@@ -896,21 +896,19 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
         </div>
       </div>
 
-      {/* Right Sidebar - Component Editor */}
-      <div className="w-80 bg-white border-l p-4 overflow-y-auto">
-        {selectedComponent ? (
-          <>
-            <h3 className="font-semibold mb-4">
-              Edit{' '}
-              {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
-            </h3>
-            <ComponentEditor
-              component={selectedComponent}
-              onUpdate={(updates) => updateComponent(selectedComponent.id, updates)}
-            />
-          </>
-        ) : null}
-      </div>
+      {/* Right Sidebar - Component Editor (only show when component selected) */}
+      {selectedComponent && (
+        <div className="w-80 bg-white border-l p-4 overflow-y-auto">
+          <h3 className="font-semibold mb-4">
+            Edit{' '}
+            {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
+          </h3>
+          <ComponentEditor
+            component={selectedComponent}
+            onUpdate={(updates) => updateComponent(selectedComponent.id, updates)}
+          />
+        </div>
+      )}
     </div>
   )
 }
