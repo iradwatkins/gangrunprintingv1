@@ -153,10 +153,19 @@ export function SquareCardPayment({
           if (cashAppContainer) {
             await cashAppInstance.attach('#square-cashapp-container')
             setCashAppPay(cashAppInstance)
+            console.log('[Cash App Pay] Successfully initialized and attached')
           } else {
             console.warn('[Cash App Pay] Container not found')
           }
         } catch (cashAppError: any) {
+          console.error('[Cash App Pay] Initialization failed:', cashAppError)
+          console.error('[Cash App Pay] Error details:', {
+            message: cashAppError?.message,
+            code: cashAppError?.code,
+            field: cashAppError?.field,
+            type: cashAppError?.type
+          })
+          // Cash App Pay failed - continue with card-only mode
         }
 
         setIsInitializing(false)
