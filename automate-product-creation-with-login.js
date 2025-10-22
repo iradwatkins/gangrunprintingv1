@@ -8,10 +8,20 @@ const REAL_DATA = {
   turnaroundTimeSetId: 'cmg46sc7u001k12ymd9w3p9uk',
 }
 
-// Login credentials (from CLAUDE.md)
+// SECURITY: Load admin credentials from environment variables
+// Set these before running: export ADMIN_EMAIL="..." ADMIN_PASSWORD="..."
 const ADMIN_CREDENTIALS = {
-  email: 'iradwatkins@gmail.com',
-  password: 'Iw2006js!',
+  email: process.env.ADMIN_EMAIL || '',
+  password: process.env.ADMIN_PASSWORD || '',
+}
+
+// Validate credentials are set
+if (!ADMIN_CREDENTIALS.email || !ADMIN_CREDENTIALS.password) {
+  console.error('❌ ERROR: Admin credentials not set in environment')
+  console.error('   Please set ADMIN_EMAIL and ADMIN_PASSWORD:')
+  console.error('   export ADMIN_EMAIL="your_email@example.com"')
+  console.error('   export ADMIN_PASSWORD="your_password"')
+  process.exit(1)
 }
 
 // 4 REAL Products to create

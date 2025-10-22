@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function CreateFunnelButton() {
   const router = useRouter()
@@ -40,13 +41,18 @@ export function CreateFunnelButton() {
       if (res.ok) {
         const funnel = await res.json()
         setOpen(false)
+        toast.success('Funnel created successfully!')
         router.push(`/admin/funnels/${funnel.id}`)
         router.refresh()
       } else {
-        alert('Failed to create funnel')
+        const errorData = await res.json().catch(() => ({}))
+        toast.error(errorData.error || 'Failed to create funnel. Please try again.')
       }
     } catch (error) {
-      alert('Failed to create funnel')
+      console.error('Error creating funnel:', error)
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create funnel. Please try again.'
+      )
     } finally {
       setLoading(false)
     }

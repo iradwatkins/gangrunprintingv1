@@ -1,13 +1,27 @@
 #!/bin/bash
 
+# SECURITY: Load database credentials from environment
+# Set DB_PASSWORD in your environment or .env file (not committed to git)
+if [ -z "$DB_PASSWORD" ]; then
+    echo "❌ ERROR: DB_PASSWORD environment variable not set"
+    echo "   Please set it before running this script:"
+    echo "   export DB_PASSWORD='your_database_password'"
+    exit 1
+fi
+
+DB_HOST="${DB_HOST:-172.22.0.1}"
+DB_PORT="${DB_PORT:-5435}"
+DB_USER="${DB_USER:-gangrun_user}"
+DB_NAME="${DB_NAME:-gangrun_db}"
+
 echo "🔍 IMAGE UPLOAD MONITOR - Starting..."
 echo "📊 Monitoring database for image uploads in real-time"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 # Get initial counts
-INITIAL_IMAGES=$(PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -tAc "SELECT COUNT(*) FROM \"Image\";")
-INITIAL_PRODUCT_IMAGES=$(PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -tAc "SELECT COUNT(*) FROM \"ProductImage\";")
+INITIAL_IMAGES=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT COUNT(*) FROM \"Image\";")
+INITIAL_PRODUCT_IMAGES=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT COUNT(*) FROM \"ProductImage\";")
 
 echo "📈 Initial State:"
 echo "   Images in database: $INITIAL_IMAGES"
@@ -22,8 +36,8 @@ LAST_PRODUCT_IMAGE_COUNT=$INITIAL_PRODUCT_IMAGES
 
 while true; do
     # Check current counts
-    CURRENT_IMAGES=$(PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -tAc "SELECT COUNT(*) FROM \"Image\";")
-    CURRENT_PRODUCT_IMAGES=$(PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db -tAc "SELECT COUNT(*) FROM \"ProductImage\";")
+    CURRENT_IMAGES=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT COUNT(*) FROM \"Image\";")
+    CURRENT_PRODUCT_IMAGES=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "SELECT COUNT(*) FROM \"ProductImage\";")
     
     # Check if Image table changed
     if [ "$CURRENT_IMAGES" != "$LAST_IMAGE_COUNT" ]; then
@@ -31,7 +45,7 @@ while true; do
         echo "   Count: $LAST_IMAGE_COUNT → $CURRENT_IMAGES"
         
         # Get the latest image details
-        PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db << SQL
+        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" << SQL
 SELECT 
     '   📸 Latest Image:' as info,
     id,
@@ -55,7 +69,7 @@ SQL
         echo "   Count: $LAST_PRODUCT_IMAGE_COUNT → $CURRENT_PRODUCT_IMAGES"
         
         # Get the latest link details
-        PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db << SQL
+        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" << SQL
 SELECT 
     '   🔗 Link Details:' as info,
     pi.id as link_id,

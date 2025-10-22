@@ -42,6 +42,9 @@ export function PayInvoiceButton({ invoiceId, amount }: PayInvoiceButtonProps) {
 
   return (
     <Button
+      aria-busy={isProcessing}
+      aria-disabled={isProcessing}
+      aria-label={`Pay invoice amount of $${(amount / 100).toFixed(2)}`}
       className="w-full md:w-auto min-w-[200px]"
       disabled={isProcessing}
       size="lg"
@@ -49,12 +52,12 @@ export function PayInvoiceButton({ invoiceId, amount }: PayInvoiceButtonProps) {
     >
       {isProcessing ? (
         <>
-          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          <Loader2 aria-hidden="true" className="h-5 w-5 mr-2 animate-spin" />
           Processing...
         </>
       ) : (
         <>
-          <CreditCard className="h-5 w-5 mr-2" />
+          <CreditCard aria-hidden="true" className="h-5 w-5 mr-2" />
           Pay ${(amount / 100).toFixed(2)} Now
         </>
       )}

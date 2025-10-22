@@ -25,13 +25,23 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+# SECURITY: NEVER commit any .env files - they contain secrets
 .env
+.env*.local
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
 .env.production
 .env.production.local
 .env.sandbox
 .env.dokploy
 .env.n8n
+.env.docker
+*.env
+!.env.example
+!.env.*.example
 
 # vercel
 .vercel

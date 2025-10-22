@@ -5,23 +5,38 @@ import { useState } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
+interface PayPalOrderDetails {
+  id: string
+  status: string
+  payer?: {
+    name?: {
+      given_name: string
+      surname: string
+    }
+    email_address?: string
+  }
+}
+
 interface PayPalButtonProps {
   total: number
-  onSuccess: (details: any) => void
+  onSuccess: (details: PayPalOrderDetails) => void
   onError: (error: string) => void
 }
 
 export function PayPalButton({ total, onSuccess, onError }: PayPalButtonProps) {
   const [error, setError] = useState<string | null>(null)
 
-  // Hardcoded PayPal Client ID (production)
-  const clientId = 'ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht'
+  // SECURITY: Load PayPal Client ID from environment variable
+  // This should be set in .env as NEXT_PUBLIC_PAYPAL_CLIENT_ID
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 
   if (!clientId) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>PayPal is not configured. Please contact support.</AlertDescription>
+        <AlertDescription>
+          PayPal is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID environment variable.
+        </AlertDescription>
       </Alert>
     )
   }

@@ -74,7 +74,7 @@ const navigationStructure = [
       },
       {
         title: 'Add-ons',
-        href: '/admin/add-ons',
+        href: '/admin/addons',
         icon: Palette,
         description: 'Printing add-ons',
       },

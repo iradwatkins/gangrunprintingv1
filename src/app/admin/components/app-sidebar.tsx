@@ -111,7 +111,7 @@ const data = {
         },
         {
           title: 'Add-ons',
-          url: '/admin/add-ons',
+          url: '/admin/addons',
         },
         {
           title: 'Add-on Sets',
