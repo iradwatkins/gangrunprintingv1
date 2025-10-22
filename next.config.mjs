@@ -25,15 +25,36 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: [
+      // UI component libraries
       '@radix-ui/react-icons',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-label',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-radio-group',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-switch',
       'lucide-react',
+      // Utility libraries
       'date-fns',
       'lodash-es',
+      // Form libraries
+      'react-hook-form',
+      'zod',
     ],
     serverActions: {
       bodySizeLimit: '20mb',
     },
   },
+
+  // Compression (handled by Next.js in production)
+  compress: true,
 
   // React strict mode
   reactStrictMode: true,
@@ -238,8 +259,59 @@ const nextConfig = {
       }
     }
 
-    // Simplified webpack config - let Next.js handle optimization
-    // Complex chunk splitting was causing webpack runtime errors
+    // Performance optimization: Reduce HTTP requests by creating fewer, larger chunks
+    // Target: 22 chunks → ~10 chunks for better Pingdom/Lighthouse scores
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            // Vendor chunk for all node_modules
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendor',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+            // UI libraries chunk (Radix, Lucide, etc.)
+            ui: {
+              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react|class-variance-authority|clsx|tailwind-merge)[\\/]/,
+              name: 'ui',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Form libraries chunk (React Hook Form, Zod)
+            forms: {
+              test: /[\\/]node_modules[\\/](react-hook-form|zod|@hookform)[\\/]/,
+              name: 'forms',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Date/utility libraries
+            utils: {
+              test: /[\\/]node_modules[\\/](date-fns|lodash-es)[\\/]/,
+              name: 'utils',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Common chunks used across multiple pages
+            commons: {
+              name: 'commons',
+              minChunks: 2,
+              priority: 5,
+              reuseExistingChunk: true,
+            },
+          },
+          // Increase chunk size limits to create fewer chunks
+          maxInitialRequests: 10, // Down from default 30
+          maxAsyncRequests: 10,   // Down from default 30
+          minSize: 40000,         // 40KB minimum (up from 20KB default)
+          maxSize: 244000,        // 244KB maximum chunks
+        },
+      }
+    }
 
     return config
   },

@@ -1,0 +1,630 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GangRun Printing API",
+    "version": "1.0.0",
+    "description": "Professional printing services API - Manage products, orders, shipping, and payments. **Use /v1 endpoints for all new integrations.**",
+    "contact": {
+      "name": "GangRun Printing Support",
+      "email": "iradwatkins@gmail.com",
+      "url": "https://gangrunprinting.com"
+    },
+    "x-api-id": "gangrun-printing-api",
+    "x-audience": "external"
+  },
+  "servers": [
+    {
+      "url": "https://gangrunprinting.com/api",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3020/api",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Products",
+      "description": "Product catalog management"
+    },
+    {
+      "name": "Orders",
+      "description": "Order processing and management"
+    },
+    {
+      "name": "Shipping",
+      "description": "Shipping rates and carriers"
+    },
+    {
+      "name": "Checkout",
+      "description": "Checkout and payment processing"
+    },
+    {
+      "name": "Categories",
+      "description": "Product categories"
+    },
+    {
+      "name": "Pricing",
+      "description": "Price calculations"
+    }
+  ],
+  "paths": {
+    "/v1/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get all products (v1)",
+        "description": "**[v1 - Stable]** Retrieve a list of all active products with optional filtering. Use this endpoint for new integrations.",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Filter by category slug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search products by name or description",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get product by ID (v1)",
+        "description": "**[v1 - Stable]** Retrieve detailed information about a specific product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Product ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/products/{id}/configuration": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get product configuration",
+        "description": "Get available sizes, quantities, paper stocks, and addons for a product",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Product ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductConfiguration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/categories": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Get all categories (v1)",
+        "description": "**[v1 - Stable]** Retrieve all product categories",
+        "responses": {
+          "200": {
+            "description": "List of categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pricing/calculate": {
+      "post": {
+        "tags": ["Pricing"],
+        "summary": "Calculate product price (v1)",
+        "description": "**[v1 - Stable]** Calculate the total price for a product configuration",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculated price",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/shipping/calculate": {
+      "post": {
+        "tags": ["Shipping"],
+        "summary": "Calculate shipping rates (v1)",
+        "description": "**[v1 - Stable]** Get available shipping rates for cart items and destination",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShippingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Available shipping rates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShippingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout/process-square-payment": {
+      "post": {
+        "tags": ["Checkout"],
+        "summary": "Process Square payment",
+        "description": "Process a payment using Square payment gateway",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payment failed"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get order by ID",
+        "description": "Retrieve order details",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Order ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Product ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug"
+          },
+          "description": {
+            "type": "string",
+            "description": "Product description"
+          },
+          "basePrice": {
+            "type": "number",
+            "description": "Base price in USD"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Product availability"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductConfiguration": {
+        "type": "object",
+        "properties": {
+          "sizes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "number"
+                },
+                "height": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "quantities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "priceMultiplier": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "paperStocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "number"
+                },
+                "finish": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "addons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["FLAT", "PERCENTAGE", "PER_PIECE"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "PricingRequest": {
+        "type": "object",
+        "required": ["productId", "quantity"],
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "sizeId": {
+            "type": "string"
+          },
+          "paperStockId": {
+            "type": "string"
+          },
+          "addons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "turnaroundTimeId": {
+            "type": "string"
+          }
+        }
+      },
+      "PricingResponse": {
+        "type": "object",
+        "properties": {
+          "basePrice": {
+            "type": "number",
+            "description": "Base product price"
+          },
+          "addonsCost": {
+            "type": "number",
+            "description": "Total cost of addons"
+          },
+          "turnaroundMultiplier": {
+            "type": "number",
+            "description": "Turnaround time multiplier"
+          },
+          "finalPrice": {
+            "type": "number",
+            "description": "Final total price"
+          }
+        }
+      },
+      "ShippingRequest": {
+        "type": "object",
+        "required": ["items", "destination"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "weight": {
+                  "type": "number"
+                },
+                "dimensions": {
+                  "type": "object",
+                  "properties": {
+                    "length": {
+                      "type": "number"
+                    },
+                    "width": {
+                      "type": "number"
+                    },
+                    "height": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string",
+                "default": "US"
+              }
+            }
+          }
+        }
+      },
+      "ShippingResponse": {
+        "type": "object",
+        "properties": {
+          "rates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "carrier": {
+                  "type": "string",
+                  "description": "Shipping carrier name"
+                },
+                "service": {
+                  "type": "string",
+                  "description": "Service level"
+                },
+                "cost": {
+                  "type": "number",
+                  "description": "Shipping cost in USD"
+                },
+                "deliveryDays": {
+                  "type": "number",
+                  "description": "Estimated delivery days"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PaymentRequest": {
+        "type": "object",
+        "required": ["sourceId", "amount"],
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "description": "Payment token from Square"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount in USD"
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "shippingAddress": {
+            "type": "object"
+          }
+        }
+      },
+      "PaymentResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "paymentId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "orderNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "CONFIRMED", "PRODUCTION", "SHIPPED", "DELIVERED"]
+          },
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "shippingAddress": {
+            "type": "object"
+          },
+          "trackingNumber": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
