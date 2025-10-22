@@ -90,12 +90,6 @@ export async function analyzePerformance(campaignId: string): Promise<Performanc
     const winners = pageMetrics.slice(0, winnerCount)
     const losers = pageMetrics.slice(-loserCount).reverse()
 
-      totalPages: pageMetrics.length,
-      winners: winners.length,
-      losers: losers.length,
-      avgScore: avgScore.toFixed(2),
-    })
-
     return {
       campaignId,
       totalPages: pageMetrics.length,

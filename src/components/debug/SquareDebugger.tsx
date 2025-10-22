@@ -111,9 +111,6 @@ export default function SquareDebugger() {
             <button
               className="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
               onClick={() => {
-                  appId: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
-                  locationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
-                })
                 alert('Check browser console for detailed logs')
               }}
             >

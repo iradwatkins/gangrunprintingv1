@@ -90,9 +90,6 @@ export default function SimpleQuantityTest({
 
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {
-        '[SimpleQuantityTest] Quantities count:',
-        initialConfiguration.quantities?.length || 0
-      )
       const data = initialConfiguration
 
       setQuantities(data.quantities || [])
@@ -112,9 +109,6 @@ export default function SimpleQuantityTest({
       setSelectedDesignOption(defaultOption?.id || '')
 
       setLoading(false)
-        '[SimpleQuantityTest] Configuration applied. Quantities state:',
-        data.quantities?.length || 0
-      )
       return // Don't fetch from API if we have server data
     } else {
     }
@@ -153,10 +147,6 @@ export default function SimpleQuantityTest({
         }
 
         const data = await response.json()
-          quantities: data.quantities?.length,
-          sizes: data.sizes?.length,
-          paperStocks: data.paperStocks?.length,
-        })
 
         if (!mounted) return
 
