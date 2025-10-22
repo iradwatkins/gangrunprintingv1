@@ -92,6 +92,156 @@ const packages = items.map((item) => {
 
 ---
 
+## 🛡️ CRITICAL: PRODUCT CONFIGURATION DATABASE (October 21, 2025)
+
+### **THESE DATABASE RECORDS ARE AS IMPORTANT AS PASSWORDS - NEVER DELETE**
+
+**User Statement**: "They are just as important as the passwords. We should be able to add and edit them, but they are very important."
+
+### **Protected Database Tables (NEVER Hard Delete Without Permission)**
+
+Your entire product configuration system consists of **6 critical data types**:
+
+#### **1. SIZES** ✅
+- `StandardSize` - 4 records
+- `SizeGroup` (Sets) - 21 records
+- `ProductSize` - Product-specific sizes
+- `ProductSizeGroup` - Product-size group relationships
+
+#### **2. QUANTITIES** ✅
+- `StandardQuantity` - 6 records
+- `QuantityGroup` (Sets) - 5 records
+- `ProductQuantity` - Product-specific quantities
+- `ProductQuantityGroup` - Product-quantity group relationships
+
+#### **3. PAPER STOCKS** ✅
+- `PaperStock` - 7 records (CRITICAL)
+- `PaperStockSet` - 9 records
+- `PaperStockSetItem` - 15 records
+- `PaperStockCoating` - 11 records
+- `PaperStockSides` - 21 records
+- `ProductPaperStock` - Product-paper stock relationships
+- `ProductPaperStockSet` - Product-paper stock set relationships
+- `VendorPaperStock` - Vendor paper stock mappings
+
+#### **4. ADDONS** ✅
+- `AddOn` - 20 records (CRITICAL)
+- `AddOnSet` - 2 records
+- `AddOnSetItem` - 23 records
+- `AddOnSubOption` - 21 records
+- `ProductAddOn` - Product-addon relationships
+- `ProductAddOnSet` - Product-addon set relationships
+
+#### **5. DESIGNS** ✅
+- `DesignOption` - 5 records
+- `DesignSet` - 1 record
+- `DesignSetItem` - 5 records
+- `ProductDesignSet` - Product-design set relationships
+
+#### **6. TURNAROUND TIMES** ✅
+- `TurnaroundTime` - 6 records
+- `TurnaroundTimeSet` - 4 records
+- `TurnaroundTimeSetItem` - 10 records
+- `ProductTurnaroundTimeSet` - Product-turnaround set relationships
+
+### **Allowed Operations (Safe)**
+
+✅ **CREATE** - Add new records (new sizes, addons, paper stocks, etc.)
+```typescript
+// Example: Create new addon
+await prisma.addOn.create({ data: { name: "New Addon", ... } })
+```
+
+✅ **UPDATE** - Edit existing records (prices, descriptions, configurations)
+```typescript
+// Example: Update addon price
+await prisma.addOn.update({ where: { id }, data: { configuration: {...} } })
+```
+
+✅ **SOFT DELETE** - Mark as inactive (preserves data)
+```typescript
+// Example: Deactivate addon
+await prisma.addOn.update({ where: { id }, data: { isActive: false } })
+```
+
+### **Forbidden Operations (Require Explicit Permission)**
+
+❌ **HARD DELETE** - Permanent deletion of records
+```typescript
+// FORBIDDEN without permission:
+await prisma.addOn.delete({ where: { id } })
+await prisma.paperStock.deleteMany({})
+```
+
+❌ **DROP TABLES** - Deleting entire tables
+```sql
+-- FORBIDDEN:
+DROP TABLE "AddOn";
+DROP TABLE "PaperStock";
+```
+
+❌ **DESTRUCTIVE MIGRATIONS** - Changing table structure that loses data
+```prisma
+// FORBIDDEN without permission:
+model AddOn {
+  // Removing fields, changing types, etc.
+}
+```
+
+### **Verification Commands**
+
+**Check all configuration data counts:**
+```bash
+docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db -c "
+SELECT 'Sizes' as type, COUNT(*) FROM \"SizeGroup\"
+UNION ALL SELECT 'Quantities', COUNT(*) FROM \"QuantityGroup\"
+UNION ALL SELECT 'Paper Stocks', COUNT(*) FROM \"PaperStock\"
+UNION ALL SELECT 'Addons', COUNT(*) FROM \"AddOn\"
+UNION ALL SELECT 'Designs', COUNT(*) FROM \"DesignOption\"
+UNION ALL SELECT 'Turnarounds', COUNT(*) FROM \"TurnaroundTime\";
+"
+```
+
+**Expected Counts (Baseline October 21, 2025):**
+- Sizes: 21 groups
+- Quantities: 5 groups
+- Paper Stocks: 7 stocks
+- Addons: 20 addons
+- Designs: 5 options
+- Turnarounds: 6 times
+
+### **Recovery Strategy**
+
+**Daily Database Backups:**
+```bash
+# Automated via cron (already set up)
+docker exec gangrunprinting-postgres pg_dump -U gangrun_user gangrun_db \
+  > /root/backups/gangrun-db-$(date +%Y%m%d).sql
+```
+
+**Restore Product Configuration:**
+```bash
+# If data accidentally deleted, restore from latest backup
+docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
+  < /root/backups/gangrun-db-YYYYMMDD.sql
+```
+
+### **Git Search Terms for Future Reference**
+- `PRODUCT-CONFIGURATION-PROTECTION`
+- `DATABASE-CRITICAL-DATA`
+- `NEVER-DELETE-PRODUCT-DATA`
+
+### **Key Rules**
+1. **Treat like passwords** - Never carelessly modify or delete
+2. **Add/Edit freely** - Normal operations are encouraged
+3. **Soft delete only** - Use `isActive: false` instead of hard deletes
+4. **Ask first** - If unsure about deletion, ask the user
+5. **Verify counts** - After migrations, verify record counts match baseline
+
+**These records represent your entire product catalog configuration. Losing them = customers cannot configure or purchase products.**
+
+---
+
 ## 🔒 EXCLUSIVE PORT ALLOCATION (October 14, 2025)
 
 ### **GANGRUNPRINTING.COM - 5 DEDICATED PORTS - DOCKER DEPLOYMENT**
