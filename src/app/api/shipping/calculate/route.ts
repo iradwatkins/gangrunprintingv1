@@ -231,8 +231,8 @@ export async function POST(request: NextRequest) {
         'FEDEX_2_DAY',
         'STANDARD_OVERNIGHT',
         'SMART_POST', // Ground Economy
-        'SOUTHWEST_CARGO', // Southwest Cargo airport pickup
-        'SOUTHWEST_DASH', // Southwest Dash express delivery
+        'SOUTHWEST_CARGO_PICKUP', // Southwest Cargo airport pickup (Standard - 3 days)
+        'SOUTHWEST_CARGO_DASH', // Southwest Dash express delivery (Premium - Next Flight Guaranteed)
       ]
 
       interface ApiRate {
