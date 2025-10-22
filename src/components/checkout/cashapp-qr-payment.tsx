@@ -47,27 +47,72 @@ export function CashAppQRPayment({
     setError(null)
 
     try {
-      // Create Cash App payment link
-      // Format: $cashtag/amount
-      const cashtag = 'gangrunprinting' // Your Cash App cashtag
-      const amount = total.toFixed(2)
+      // Get Square environment variables
+      const squareAppId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID
+      const squareLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
+      const squareEnvironment = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT || 'sandbox'
 
-      // Cash App deep link format
-      const cashAppLink = `https://cash.app/$${cashtag}/${amount}`
+      if (!squareAppId || !squareLocationId) {
+        throw new Error('Square configuration missing. Please contact support.')
+      }
 
-      setPaymentLink(cashAppLink)
+      // Load Square.js script if not already loaded
+      if (!window.Square) {
+        const script = document.createElement('script')
+        script.src = squareEnvironment === 'production'
+          ? 'https://web.squarecdn.com/v1/square.js'
+          : 'https://sandbox.web.squarecdn.com/v1/square.js'
+        script.async = true
 
-      // Generate QR code
-      const qrDataURL = await QRCode.toDataURL(cashAppLink, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#00D632', // Cash App green
-          light: '#FFFFFF',
+        await new Promise((resolve, reject) => {
+          script.onload = resolve
+          script.onerror = reject
+          document.head.appendChild(script)
+        })
+
+        // Wait for Square SDK to be available
+        let attempts = 0
+        while (!window.Square && attempts < 50) {
+          await new Promise(r => setTimeout(r, 100))
+          attempts++
+        }
+      }
+
+      if (!window.Square) {
+        throw new Error('Failed to load Square SDK')
+      }
+
+      // Initialize Square Payments
+      const payments = (window.Square as any).payments(squareAppId, squareLocationId)
+
+      // IMPORTANT: Convert total to cents (Square requirement)
+      const amountInCents = Math.round(total * 100).toString()
+
+      // Create payment request with amount in cents
+      const paymentRequest = payments.paymentRequest({
+        countryCode: 'US',
+        currencyCode: 'USD',
+        total: {
+          amount: amountInCents,
+          label: 'Total',
         },
       })
 
-      setQRCodeDataURL(qrDataURL)
+      // Create Cash App Pay instance
+      const cashAppPayInstance = await payments.cashAppPay(paymentRequest, {
+        redirectURL: window.location.href,
+        referenceId: `order-${Date.now()}`,
+      })
+
+      // Generate QR code using Square's method
+      const qrCode = await cashAppPayInstance.getQRCode()
+
+      setQRCodeDataURL(qrCode)
+      setPaymentLink(window.location.href)
+
+      // Store instance for tokenization
+      ;(window as any).__cashAppPayInstance = cashAppPayInstance
+
     } catch (err) {
       console.error('[Cash App QR] Error generating payment:', err)
       const errorMsg = err instanceof Error ? err.message : 'Failed to generate payment QR code'
@@ -83,33 +128,40 @@ export function CashAppQRPayment({
     setError(null)
 
     try {
-      // In a real implementation, you would:
-      // 1. Have customer scan QR and pay via Cash App
-      // 2. Customer clicks "I've Paid" button
-      // 3. Backend verifies payment via Cash App API webhooks
-      // 4. Once verified, call onPaymentSuccess
+      // Get the Cash App Pay instance
+      const cashAppPayInstance = (window as any).__cashAppPayInstance
 
-      // For now, simulate payment confirmation
-      // TODO: Implement actual Cash App payment verification
+      if (!cashAppPayInstance) {
+        throw new Error('Cash App Pay not initialized. Please refresh and try again.')
+      }
 
-      // Simulate API call to verify payment
-      const response = await fetch('/api/checkout/verify-cashapp-payment', {
+      // Tokenize the payment
+      const result = await cashAppPayInstance.tokenize()
+
+      if (result.status !== 'OK') {
+        const errorMessages = result.errors?.map((error: any) => error.message).join(', ')
+        throw new Error(errorMessages || 'Cash App payment failed')
+      }
+
+      // Process payment through Square API
+      const response = await fetch('/api/checkout/process-square-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          paymentLink,
-          amount: total,
+          sourceId: result.token,
+          amount: Math.round(total * 100), // Amount in cents
+          currency: 'USD',
         }),
       })
 
-      const result = await response.json()
+      const paymentResult = await response.json()
 
-      if (result.success) {
-        onPaymentSuccess(result)
+      if (paymentResult.success) {
+        onPaymentSuccess(paymentResult)
       } else {
-        throw new Error(result.error || 'Payment verification failed')
+        throw new Error(paymentResult.error || 'Payment processing failed')
       }
     } catch (err) {
       console.error('[Cash App QR] Payment confirmation error:', err)
@@ -202,22 +254,11 @@ export function CashAppQRPayment({
               </h4>
             </div>
 
-            {/* Mobile Link Alternative */}
+            {/* Mobile Note */}
             <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">On mobile? Tap the button below:</p>
-              <a
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                href={paymentLink}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <div className="h-5 w-5">
-                  <svg className="w-full h-full fill-white" viewBox="0 0 24 24">
-                    <path d="M23.59 3.47a5.11 5.11 0 0 0-3.05-3.05c-2.68-1-13.49-1-13.49-1S2.67.42 0 1.42A5.11 5.11 0 0 0-.53 4.47c-.16.8-.27 1.94-.33 3.06h.02A71.04 71.04 0 0 0-.81 12c.01 1.61.13 3.15.34 4.49a5.11 5.11 0 0 0 3.05 3.05c2.68 1 13.49 1 13.49 1s10.81.01 13.49-1a5.11 5.11 0 0 0 3.05-3.05c.16-.8.27-1.94.33-3.06h-.02a71.04 71.04 0 0 0 .03-4.47c-.01-1.61-.13-3.15-.34-4.49zM9.63 15.65V8.35L15.73 12l-6.1 3.65z"/>
-                  </svg>
-                </div>
-                Open in Cash App
-              </a>
+              <p className="text-sm text-muted-foreground">
+                On mobile? The QR code will automatically open Cash App when ready.
+              </p>
             </div>
 
             {/* Payment Confirmation */}
