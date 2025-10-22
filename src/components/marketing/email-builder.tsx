@@ -909,12 +909,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
               onUpdate={(updates) => updateComponent(selectedComponent.id, updates)}
             />
           </>
-        ) : (
-          <div className="text-center py-12 text-gray-500">
-            <Settings className="w-8 h-8 mx-auto mb-2" />
-            <p>Select a component to edit its properties</p>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   )
