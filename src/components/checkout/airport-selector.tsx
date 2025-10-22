@@ -96,7 +96,7 @@ export function AirportSelector({ state, onAirportSelected, selectedAirportId }:
   return (
     <div className="space-y-2">
       <Label htmlFor="airport-selector">Airport Pickup (Southwest)</Label>
-      <Select value={selectedAirportId || 'none'} onValueChange={handleAirportChange}>
+      <Select value={selectedAirportId ?? undefined} onValueChange={handleAirportChange}>
         <SelectTrigger id="airport-selector">
           <SelectValue placeholder="-- Select One --" />
         </SelectTrigger>
