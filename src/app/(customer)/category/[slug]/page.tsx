@@ -50,14 +50,20 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 // Generate static params for all active categories (ISR optimization)
 export async function generateStaticParams() {
-  const categories = await prisma.productCategory.findMany({
-    where: { isActive: true },
-    select: { slug: true },
-  })
+  try {
+    const categories = await prisma.productCategory.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+    })
 
-  return categories.map((category) => ({
-    slug: category.slug,
-  }))
+    return categories.map((category) => ({
+      slug: category.slug,
+    }))
+  } catch (error) {
+    // During build time, database might not be available
+    console.warn('Could not fetch categories for static generation:', error)
+    return []
+  }
 }
 
 async function getCategoryData(slug: string) {
