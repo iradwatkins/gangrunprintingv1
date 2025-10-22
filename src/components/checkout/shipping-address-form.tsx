@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -30,6 +31,9 @@ interface ShippingAddressFormProps {
   address: Partial<ShippingAddress>
   onChange: (address: Partial<ShippingAddress>) => void
   errors?: Record<string, string>
+  user?: { id: string; email: string; name?: string } | null
+  onSaveAddressChange?: (shouldSave: boolean) => void
+  shouldSaveAddress?: boolean
 }
 
 const US_STATES = [
@@ -89,6 +93,9 @@ export function ShippingAddressForm({
   address,
   onChange,
   errors = {},
+  user,
+  onSaveAddressChange,
+  shouldSaveAddress = false,
 }: ShippingAddressFormProps) {
   const handleChange = (field: keyof ShippingAddress, value: string) => {
     onChange({ ...address, [field]: value })
@@ -247,6 +254,20 @@ export function ShippingAddressForm({
             {errors.zipCode && <p className="text-sm text-destructive">{errors.zipCode}</p>}
           </div>
         </div>
+
+        {/* Save Address Option for logged-in users */}
+        {user && onSaveAddressChange && (
+          <div className="flex items-center space-x-2 pt-4 border-t">
+            <Checkbox
+              id="saveAddress"
+              checked={shouldSaveAddress}
+              onCheckedChange={(checked) => onSaveAddressChange(checked as boolean)}
+            />
+            <Label htmlFor="saveAddress" className="text-sm cursor-pointer">
+              Save this address to my account for faster checkout
+            </Label>
+          </div>
+        )}
 
         <input type="hidden" value="US" />
       </CardContent>

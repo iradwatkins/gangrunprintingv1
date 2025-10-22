@@ -16,16 +16,21 @@ import {
   type ShippingRate,
 } from '@/components/checkout/shipping-method-selector'
 import { AirportSelector } from '@/components/checkout/airport-selector'
+import { SavedAddresses } from '@/components/checkout/saved-addresses'
+import { useUser } from '@/hooks/use-user'
 import toast from '@/lib/toast'
 import Link from 'next/link'
 
 export default function ShippingPage() {
   const router = useRouter()
   const { items, subtotal, itemCount } = useCart()
+  const { user } = useUser()
 
   const [shippingAddress, setShippingAddress] = useState<Partial<ShippingAddress>>({
     country: 'US',
   })
+  const [showManualForm, setShowManualForm] = useState(false)
+  const [shouldSaveAddress, setShouldSaveAddress] = useState(false)
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<ShippingRate | undefined>()
   const [selectedAirportId, setSelectedAirportId] = useState<string | undefined>()
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -84,6 +89,28 @@ export default function ShippingPage() {
     paperStockWeight: item.paperStockWeight,
   }))
 
+  const handleSavedAddressSelect = (address: any) => {
+    setShippingAddress({
+      firstName: address.name.split(' ')[0] || '',
+      lastName: address.name.split(' ').slice(1).join(' ') || '',
+      email: user?.email || '',
+      phone: address.phone || user?.phoneNumber || '',
+      company: address.company || '',
+      street: address.street,
+      street2: address.street2 || '',
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      country: address.country || 'US',
+    })
+    setShowManualForm(true)
+    setErrors({}) // Clear any previous errors
+  }
+
+  const handleNewAddress = () => {
+    setShowManualForm(true)
+  }
+
   const validateAddress = (): boolean => {
     const newErrors: Record<string, string> = {}
 
@@ -110,7 +137,7 @@ export default function ShippingPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleContinueToPayment = () => {
+  const handleContinueToPayment = async () => {
     if (!validateAddress()) {
       toast.error('Please fill in all required fields')
       return
@@ -130,15 +157,48 @@ export default function ShippingPage() {
       return
     }
 
-    // Store shipping information in sessionStorage
-    sessionStorage.setItem('checkout_shipping_address', JSON.stringify(shippingAddress))
-    sessionStorage.setItem('checkout_shipping_method', JSON.stringify(selectedShippingMethod))
-    if (selectedAirportId) {
-      sessionStorage.setItem('checkout_airport_id', selectedAirportId)
-    }
+    setIsProcessing(true)
 
-    // Navigate to payment page
-    router.push('/checkout/payment')
+    try {
+      // Save address if user requested it
+      if (user && shouldSaveAddress && shippingAddress.firstName) {
+        await fetch('/api/user/addresses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            label: 'Shipping Address',
+            name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            company: '',
+            street: shippingAddress.street,
+            street2: shippingAddress.street2 || '',
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            zipCode: shippingAddress.zipCode,
+            country: shippingAddress.country || 'US',
+            phone: shippingAddress.phone,
+            isDefault: false,
+          }),
+        })
+        toast.success('Address saved to your account')
+      }
+
+      // Store shipping information in sessionStorage
+      sessionStorage.setItem('checkout_shipping_address', JSON.stringify(shippingAddress))
+      sessionStorage.setItem('checkout_shipping_method', JSON.stringify(selectedShippingMethod))
+      if (selectedAirportId) {
+        sessionStorage.setItem('checkout_airport_id', selectedAirportId)
+      }
+
+      // Navigate to payment page
+      router.push('/checkout/payment')
+    } catch (error) {
+      console.error('Error saving address:', error)
+      toast.error('Failed to save address, but continuing to payment')
+      // Continue to payment even if saving address fails
+      router.push('/checkout/payment')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (items.length === 0) {
@@ -167,12 +227,26 @@ export default function ShippingPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Forms */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Saved Addresses (for logged-in users) */}
+            {user && !showManualForm && (
+              <SavedAddresses
+                userId={user.id}
+                onSelectAddress={handleSavedAddressSelect}
+                onNewAddress={handleNewAddress}
+              />
+            )}
+
             {/* Shipping Address Form */}
-            <ShippingAddressForm
-              address={shippingAddress}
-              errors={errors}
-              onChange={setShippingAddress}
-            />
+            {(!user || showManualForm) && (
+              <ShippingAddressForm
+                address={shippingAddress}
+                errors={errors}
+                onChange={setShippingAddress}
+                user={user}
+                onSaveAddressChange={setShouldSaveAddress}
+                shouldSaveAddress={shouldSaveAddress}
+              />
+            )}
 
             {/* Airport Selector (appears BEFORE shipping methods if state has Southwest airports) */}
             {shippingAddress.state && (

@@ -9,7 +9,9 @@ import { AlertCircle, CreditCard, ArrowLeft, CheckCircle } from 'lucide-react'
 import { SquareCardPayment } from '@/components/checkout/square-card-payment'
 import { PayPalButton } from '@/components/checkout/paypal-button'
 import { CashAppQRPayment } from '@/components/checkout/cashapp-qr-payment'
+import { SavedPaymentMethods } from '@/components/checkout/saved-payment-methods'
 import { useCart } from '@/contexts/cart-context'
+import { useUser } from '@/hooks/use-user'
 import toast from '@/lib/toast'
 
 type PaymentMethod = 'square' | 'paypal' | 'cashapp' | null
@@ -29,7 +31,10 @@ interface PayPalOrderDetails {
 export default function PaymentPage() {
   const router = useRouter()
   const { items, subtotal, clearCart, itemCount } = useCart()
+  const { user } = useUser()
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(null)
+  const [selectedSavedPaymentMethod, setSelectedSavedPaymentMethod] = useState<any>(null)
+  const [showManualPayment, setShowManualPayment] = useState(false)
   const [shippingAddress, setShippingAddress] = useState<any>(null)
   const [shippingMethod, setShippingMethod] = useState<any>(null)
   const [airportId, setAirportId] = useState<string | undefined>()
@@ -94,6 +99,17 @@ export default function PaymentPage() {
     }
   }
 
+  const handleSavedPaymentMethodSelect = (paymentMethod: any) => {
+    setSelectedSavedPaymentMethod(paymentMethod)
+    setSelectedMethod('square') // Use Square for saved payment methods
+    setShowManualPayment(false)
+  }
+
+  const handleNewPaymentMethod = () => {
+    setShowManualPayment(true)
+    setSelectedSavedPaymentMethod(null)
+  }
+
   const handlePaymentError = (error: string) => {
     console.error('[Payment] Payment error:', error)
     toast.error(error)
@@ -156,8 +172,17 @@ export default function PaymentPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Payment Methods */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Saved Payment Methods (for logged-in users) */}
+            {user && !showManualPayment && !selectedMethod && (
+              <SavedPaymentMethods
+                userId={user.id}
+                onSelectPaymentMethod={handleSavedPaymentMethodSelect}
+                onNewPaymentMethod={handleNewPaymentMethod}
+              />
+            )}
+
             {/* Payment Method Selection */}
-            {!selectedMethod && (
+            {(!user || showManualPayment) && !selectedMethod && (
               <Card>
                 <CardHeader>
                   <CardTitle>Select Payment Method</CardTitle>
@@ -262,6 +287,8 @@ export default function PaymentPage() {
                   environment={squareEnvironment}
                   locationId={squareLocationId}
                   total={total}
+                  savedPaymentMethod={selectedSavedPaymentMethod}
+                  user={user}
                   onBack={() => setSelectedMethod(null)}
                   onPaymentError={handlePaymentError}
                   onPaymentSuccess={handlePaymentSuccess}

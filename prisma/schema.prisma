@@ -93,25 +93,49 @@ model AddOnSubOption {
 }
 
 model Address {
-  id        String   @id
-  userId    String
-  label     String?
-  name      String
-  company   String?
-  street    String
-  street2   String?
-  city      String
-  state     String
-  zipCode   String
-  country   String   @default("United States")
-  phone     String?
-  isDefault Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String                 @id
+  userId                String
+  label                 String?
+  name                  String
+  company               String?
+  street                String
+  street2               String?
+  city                  String
+  state                 String
+  zipCode               String
+  country               String                 @default("United States")
+  phone                 String?
+  isDefault             Boolean                @default(false)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime @updatedAt
+  User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  SavedPaymentMethod    SavedPaymentMethod[]   @relation("BillingAddress")
 
   @@index([userId])
   @@index([userId, isDefault])
+}
+
+model SavedPaymentMethod {
+  id               String   @id
+  userId           String
+  squareCustomerId String   // Square customer profile reference
+  squareCardId     String   // Square tokenized card reference
+  nickname         String?  // "Personal Visa", "Business Card"
+  maskedNumber     String   // "****-****-****-1234"
+  cardBrand        String   // "VISA", "MASTERCARD", etc.
+  expiryMonth      Int
+  expiryYear       Int
+  isDefault        Boolean  @default(false)
+  billingAddressId String?  // Link to Address table
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  BillingAddress  Address? @relation("BillingAddress", fields: [billingAddressId], references: [id])
+
+  @@index([userId])
+  @@index([userId, isDefault])
+  @@unique([userId, squareCardId])
 }
 
 model Airport {
@@ -1706,6 +1730,7 @@ model User {
   PushNotification  PushNotification[]
   PushSubscription  PushSubscription[]
   Quote             Quote[]
+  SavedPaymentMethod SavedPaymentMethod[]
   SMSSend           SMSSend[]
   session           Session[]
   TenantUser        TenantUser[]

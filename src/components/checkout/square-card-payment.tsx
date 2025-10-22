@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { AlertCircle, Lock, CreditCard } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
@@ -22,6 +24,13 @@ interface SquareCardPaymentProps {
     countryCode?: string
     postalCode?: string
   }
+  savedPaymentMethod?: {
+    id: string
+    squareCardId: string
+    maskedNumber: string
+    cardBrand: string
+  } | null
+  user?: { id: string; email: string; name?: string } | null
   onPaymentSuccess: (result: Record<string, unknown>) => void
   onPaymentError: (error: string) => void
   onBack: () => void
@@ -39,6 +48,8 @@ export function SquareCardPayment({
   total,
   environment = 'sandbox',
   billingContact,
+  savedPaymentMethod,
+  user,
   onPaymentSuccess,
   onPaymentError,
   onBack,
@@ -49,6 +60,7 @@ export function SquareCardPayment({
   const [error, setError] = useState<string | null>(null)
   const [card, setCard] = useState<any>(null)
   const [payments, setPayments] = useState<any>(null)
+  const [shouldSavePaymentMethod, setShouldSavePaymentMethod] = useState(false)
   const initAttempted = useRef(false)
 
   useEffect(() => {
@@ -179,51 +191,95 @@ export function SquareCardPayment({
   }
 
   const handleCardPayment = async () => {
-    if (!card || !payments) return
-
     setIsProcessing(true)
     setError(null)
 
     try {
-      const verificationDetails = {
-        intent: 'CHARGE',
-        amount: Math.round(total * 100).toString(),
-        currencyCode: 'USD',
-        billingContact: billingContact || {
-          givenName: 'Customer',
-          familyName: '',
-        },
-        customerInitiated: true,
-        sellerKeyedIn: false,
-      }
+      let sourceId: string
+      let paymentResult: any
 
-      const result = await card.tokenize(verificationDetails)
-
-      if (result.status === 'OK') {
+      if (savedPaymentMethod) {
+        // Use saved payment method
         const response = await fetch('/api/checkout/process-square-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            sourceId: result.token,
+            cardId: savedPaymentMethod.squareCardId,
             amount: Math.round(total * 100),
             currency: 'USD',
+            useSavedCard: true,
           }),
         })
 
-        const paymentResult = await response.json()
-
-        if (paymentResult.success) {
-          onPaymentSuccess(paymentResult)
-        } else {
-          throw new Error(paymentResult.error || 'Payment failed')
-        }
+        paymentResult = await response.json()
       } else {
-        const errorMessages = result.errors
-          ?.map((error: Record<string, unknown>) => error.message)
-          .join(', ')
-        throw new Error(errorMessages || 'Card validation failed')
+        // Process new card
+        if (!card || !payments) {
+          throw new Error('Payment form not initialized')
+        }
+
+        const verificationDetails = {
+          intent: 'CHARGE',
+          amount: Math.round(total * 100).toString(),
+          currencyCode: 'USD',
+          billingContact: billingContact || {
+            givenName: 'Customer',
+            familyName: '',
+          },
+          customerInitiated: true,
+          sellerKeyedIn: false,
+        }
+
+        const result = await card.tokenize(verificationDetails)
+
+        if (result.status === 'OK') {
+          sourceId = result.token
+
+          // Save payment method if requested
+          if (user && shouldSavePaymentMethod) {
+            try {
+              await fetch('/api/user/payment-methods', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sourceId,
+                  nickname: 'Card from checkout',
+                  isDefault: false,
+                }),
+              })
+            } catch (saveError) {
+              console.warn('Failed to save payment method:', saveError)
+              // Don't fail the payment if saving fails
+            }
+          }
+
+          const response = await fetch('/api/checkout/process-square-payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sourceId,
+              amount: Math.round(total * 100),
+              currency: 'USD',
+            }),
+          })
+
+          paymentResult = await response.json()
+        } else {
+          const errorMessages = result.errors
+            ?.map((error: Record<string, unknown>) => error.message)
+            .join(', ')
+          throw new Error(errorMessages || 'Card validation failed')
+        }
+      }
+
+      if (paymentResult.success) {
+        onPaymentSuccess(paymentResult)
+      } else {
+        throw new Error(paymentResult.error || 'Payment failed')
       }
     } catch (err) {
       console.error('[Square] Payment error:', err)
@@ -290,26 +346,57 @@ export function SquareCardPayment({
             </div>
           )}
 
-          {/* Card Payment Section */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Card Details</label>
-            <div
-              className="min-h-[60px] p-3 border rounded-md bg-background relative"
-              id="square-card-container"
-            >
-              {isInitializing && (
-                <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  <span className="ml-3 text-sm text-muted-foreground">
-                    Loading payment form...
-                  </span>
+          {/* Payment Method Section */}
+          {savedPaymentMethod ? (
+            <div>
+              <label className="block text-sm font-medium mb-2">Using Saved Payment Method</label>
+              <div className="p-4 border rounded-md bg-muted/50">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">{savedPaymentMethod.maskedNumber}</p>
+                    <p className="text-sm text-muted-foreground capitalize">
+                      {savedPaymentMethod.cardBrand.replace('_', ' ').toLowerCase()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium mb-2">Card Details</label>
+              <div
+                className="min-h-[60px] p-3 border rounded-md bg-background relative"
+                id="square-card-container"
+              >
+                {isInitializing && (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="ml-3 text-sm text-muted-foreground">
+                      Loading payment form...
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Your card information is secure and encrypted by Square
+              </p>
+
+              {/* Save Payment Method Option */}
+              {user && (
+                <div className="flex items-center space-x-2 mt-3 pt-3 border-t">
+                  <Checkbox
+                    id="savePaymentMethod"
+                    checked={shouldSavePaymentMethod}
+                    onCheckedChange={(checked) => setShouldSavePaymentMethod(checked as boolean)}
+                  />
+                  <Label htmlFor="savePaymentMethod" className="text-sm cursor-pointer">
+                    Save this payment method to my account for faster checkout
+                  </Label>
                 </div>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Your card information is secure and encrypted by Square
-            </p>
-          </div>
+          )}
 
           <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-4">
@@ -323,7 +410,7 @@ export function SquareCardPayment({
               </Button>
               <Button
                 className="flex-1"
-                disabled={isProcessing || !card}
+                disabled={isProcessing || (!card && !savedPaymentMethod)}
                 onClick={handleCardPayment}
               >
                 {isProcessing ? (

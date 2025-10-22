@@ -1,33 +1,37 @@
-'use client'
-
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { CreditCard, Plus } from 'lucide-react'
+import { validateRequest } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { redirect } from 'next/navigation'
 import AccountWrapper from '@/components/account/account-wrapper'
+import { PaymentMethodManager } from '@/components/account/payment-method-manager'
 
-export default function PaymentMethodsPage() {
+export default async function PaymentMethodsPage() {
+  const { user } = await validateRequest()
+
+  if (!user) {
+    redirect('/auth/signin')
+  }
+
+  const [paymentMethods, addresses] = await Promise.all([
+    prisma.savedPaymentMethod.findMany({
+      where: { userId: user.id },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+      include: {
+        BillingAddress: true,
+      },
+    }),
+    prisma.address.findMany({
+      where: { userId: user.id },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+    }),
+  ])
+
   return (
     <AccountWrapper>
       <div className="max-w-4xl">
         <h1 className="text-3xl font-bold mb-2">Payment Methods</h1>
         <p className="text-muted-foreground mb-8">Manage your saved payment methods</p>
 
-        <div className="grid gap-4 mb-4">
-          <Button className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Payment Method
-          </Button>
-        </div>
-
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <CreditCard className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
-              <p className="mb-4">No payment methods saved</p>
-              <p className="text-sm">Add payment methods for faster checkout</p>
-            </div>
-          </CardContent>
-        </Card>
+        <PaymentMethodManager paymentMethods={paymentMethods} addresses={addresses} />
       </div>
     </AccountWrapper>
   )
