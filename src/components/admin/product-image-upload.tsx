@@ -96,6 +96,7 @@ function SortableImageItem({
               <img
                 alt={image.alt || `Product image ${index + 1}`}
                 className="w-full h-full object-cover"
+                loading="lazy"
                 src={image.thumbnailUrl || image.url}
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

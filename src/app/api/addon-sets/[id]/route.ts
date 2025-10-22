@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+import { cache } from '@/lib/redis'
 
 // GET /api/addon-sets/[id] - Get a specific addon set
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -11,6 +12,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!id) {
       return NextResponse.json({ error: 'Addon set ID is required' }, { status: 400 })
     }
+
+    // Cache key includes the addon set ID
+    const cacheKey = `addon:set:${id}`
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
 
     const addOnSet = await prisma.addOnSet.findUnique({
       where: { id },
@@ -63,6 +69,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       AddOnSetItem: undefined,
       ProductAddOnSet: undefined,
     }
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, transformed, 3600)
 
     return NextResponse.json(transformed)
   } catch (error) {

@@ -129,6 +129,7 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
               <img
                 alt={proof.label || proof.filename}
                 className="object-contain w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+                loading="lazy"
                 src={proof.fileUrl}
                 onClick={() => setPreviewOpen(true)}
               />
@@ -229,6 +230,7 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
               <img
                 alt={proof.label || proof.filename}
                 className="w-full h-auto"
+                loading="lazy"
                 src={proof.fileUrl}
               />
             ) : proof.fileUrl.match(/\.pdf$/i) ? (

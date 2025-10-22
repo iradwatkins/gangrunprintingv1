@@ -2,12 +2,18 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+import { cache } from '@/lib/redis'
 
 // GET /api/sizes - List all size groups
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const activeOnly = searchParams.get('active') === 'true'
+
+    // Cache key varies based on active filter
+    const cacheKey = activeOnly ? 'sizes:list:active' : 'sizes:list:all'
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
 
     const where: Record<string, unknown> = {}
     if (activeOnly) {
@@ -35,6 +41,9 @@ export async function GET(request: NextRequest) {
         .filter((v) => v),
       hasCustomOption: group.values.toLowerCase().includes('custom'),
     }))
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, processedGroups, 3600)
 
     return NextResponse.json(processedGroups)
   } catch (error) {

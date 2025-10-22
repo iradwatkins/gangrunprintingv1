@@ -155,7 +155,7 @@ export function CashAppQRPayment({
                   <img
                     alt="Cash App Payment QR Code"
                     className="w-[300px] h-[300px]"
-                    src={qrCodeDataURL}
+                    loading="lazy" src={qrCodeDataURL}
                   />
                 )}
               </div>

@@ -102,7 +102,7 @@ export function ShippingSelection({
         </div>
         <div className="flex items-center justify-center p-8 border-2 border-dashed rounded-lg">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <span className="ml-3 text-gray-600">Calculating shipping rates...</span>
+          <span className="ml-3 text-gray-700">Calculating shipping rates...</span>
         </div>
       </div>
     )

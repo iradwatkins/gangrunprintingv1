@@ -1,12 +1,25 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { cache } from '@/lib/redis'
 
 export async function GET(): Promise<unknown> {
   try {
+    // Cache key for sides options
+    const cacheKey = 'sides:options:list'
+
+    // Try to get from cache first
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached)
+    }
+
     const sidesOptions = await prisma.sidesOption.findMany({
       orderBy: { name: 'asc' },
     })
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, sidesOptions, 3600)
 
     return NextResponse.json(sidesOptions)
   } catch (error) {

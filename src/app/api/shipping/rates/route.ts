@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { generateRequestId } from '@/lib/api-response'
 import { getShippingRegistry } from '@/lib/shipping/module-registry'
+import { cache } from '@/lib/redis'
 
 // Request validation schema
 const RateRequestSchema = z.object({
@@ -77,6 +78,20 @@ export async function POST(request: NextRequest) {
     // Build packages array (support single package or multiple)
     const packagesToShip = packages || (pkg ? [pkg] : [{ weight: 1 }]) // Default to 1 lb if neither provided
 
+    // Create cache key based on key parameters
+    const totalWeight = packagesToShip.reduce((sum, p) => sum + p.weight, 0)
+    const cacheKey = `shipping:rates:${destination.zipCode}:${destination.state}:${totalWeight}:${requestedProviders?.join(',') || 'all'}`
+
+    // Check cache first (5-minute TTL for shipping rates)
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json({
+        ...cached,
+        cached: true,
+        requestId,
+      })
+    }
+
     // Get shipping registry
     const registry = getShippingRegistry()
 
@@ -150,11 +165,9 @@ export async function POST(request: NextRequest) {
     const sortedRates = allRates.sort((a, b) => a.rate.amount - b.rate.amount)
     const top3Rates = sortedRates.slice(0, 3)
 
-
-    return NextResponse.json({
+    const responseData = {
       success: true,
       rates: top3Rates,
-      requestId,
       metadata: {
         origin: DEFAULT_ORIGIN,
         packagesCount: packagesToShip.length,
@@ -165,6 +178,14 @@ export async function POST(request: NextRequest) {
         totalRatesFound: allRates.length,
         displayingTopRates: top3Rates.length,
       },
+    }
+
+    // Cache for 5 minutes (300 seconds) - shipping rates change more frequently
+    await cache.set(cacheKey, responseData, 300)
+
+    return NextResponse.json({
+      ...responseData,
+      requestId,
     })
   } catch (error) {
     console.error('Shipping rate error:', error)

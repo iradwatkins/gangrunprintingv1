@@ -2,9 +2,15 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+import { cache } from '@/lib/redis'
 
 export async function GET(): Promise<unknown> {
   try {
+    // Cache key for paper stocks
+    const cacheKey = 'paper:stocks:list'
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const paperStocks = await prisma.paperStock.findMany({
       orderBy: { name: 'asc' },
       include: {
@@ -80,6 +86,9 @@ export async function GET(): Promise<unknown> {
         productsCount: stock.PaperStockSetItem.length,
       }
     })
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, transformed, 3600)
 
     return NextResponse.json(transformed)
   } catch (error) {

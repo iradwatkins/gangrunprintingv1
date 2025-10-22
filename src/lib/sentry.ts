@@ -27,6 +27,16 @@ export function initSentry() {
     // Debug mode for development
     debug: process.env.NODE_ENV === 'development',
 
+    // Enable structured logging (experimental feature)
+    _experiments: {
+      enableLogs: true,
+    },
+
+    // Integrations - Console logging
+    integrations: [
+      Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    ],
+
     // Error filtering
     beforeSend(event, hint) {
       // Filter out known non-critical errors

@@ -133,7 +133,7 @@ export function ChatWidget() {
                 <p className="text-xs text-muted-foreground">Powered by AI</p>
               </div>
             </div>
-            <Button size="icon" variant="ghost" onClick={() => setIsOpen(false)}>
+            <Button aria-label="Close chat" size="icon" variant="ghost" onClick={() => setIsOpen(false)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -209,13 +209,14 @@ export function ChatWidget() {
               }}
             >
               <Input
+                aria-label="Chat message input"
                 className="flex-1"
                 disabled={isLoading}
                 placeholder="Type your message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
-              <Button disabled={isLoading || !input.trim()} size="icon" type="submit">
+              <Button aria-label="Send message" disabled={isLoading || !input.trim()} size="icon" type="submit">
                 <Send className="h-4 w-4" />
               </Button>
             </form>

@@ -16,6 +16,7 @@ import { ThemeInjector } from '@/components/theme/theme-injector'
 
 const inter = Inter({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'], // Only load needed weights for optimal performance
   variable: '--font-sans',
   display: 'swap', // Prevents font preload warnings and improves performance
 })

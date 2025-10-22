@@ -102,10 +102,12 @@ export function ImageUpload({
             <img
               alt="Preview"
               className="w-full h-full object-cover"
+              loading="lazy"
               src={value}
               onError={() => onChange('')}
             />
             <Button
+              aria-label="Remove image"
               className="absolute top-2 right-2"
               size="sm"
               variant="destructive"

@@ -1,9 +1,24 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { cache } from '@/lib/redis'
 
 // Simple working products endpoint for testing
 export async function GET(request: NextRequest) {
   try {
+    // Cache key for products list
+    const cacheKey = 'products:simple:list'
+
+    // Try to get from cache first
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: cached,
+        count: cached.length,
+        message: `Found ${cached.length} products (cached)`,
+        cached: true,
+      })
+    }
 
     const products = await prisma.product.findMany({
       take: 10,
@@ -74,12 +89,15 @@ export async function GET(request: NextRequest) {
       orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
 
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, products, 3600)
 
     return NextResponse.json({
       success: true,
       data: products,
       count: products.length,
       message: `Found ${products.length} products`,
+      cached: false,
     })
   } catch (error) {
     console.error('❌ Products API Error:', error)

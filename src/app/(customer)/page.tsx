@@ -25,6 +25,12 @@ import { prisma } from '@/lib/prisma'
 import Image from 'next/image'
 import { HomepageHero } from '@/components/customer/homepage-hero'
 import { CategoryGrid } from '@/components/customer/category-grid'
+import {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  generateCombinedSchema,
+  schemaToJsonLd,
+} from '@/lib/seo/schema'
 
 const testimonials = [
   {
@@ -168,8 +174,20 @@ export default async function Home() {
           take: 6,
         })
 
+  // Generate schema markup
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gangrunprinting.com'
+  const organizationSchema = generateOrganizationSchema(baseUrl)
+  const websiteSchema = generateWebSiteSchema(baseUrl)
+  const combinedSchema = generateCombinedSchema(organizationSchema, websiteSchema)
+
   return (
     <main className="min-h-screen">
+      {/* JSON-LD Schema Markup for SEO */}
+      <script
+        dangerouslySetInnerHTML={{ __html: schemaToJsonLd(combinedSchema) }}
+        type="application/ld+json"
+      />
+
       {/* Hero Section with Rotating Specials */}
       <section className="container mx-auto px-4 py-8">
         <HomepageHero />

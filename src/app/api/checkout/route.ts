@@ -8,13 +8,14 @@ import { sendOrderConfirmationWithFiles, sendAdminOrderNotification } from '@/li
 import { createOrUpdateSquareCustomer, createSquareCheckout, createSquareOrder } from '@/lib/square'
 import { OrderService } from '@/services/OrderService'
 import type { CreateOrderInput } from '@/types/service'
+import { triggerOrderPlaced } from '@/lib/marketing/workflow-events'
 
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
     const data = await request.json()
 
-    const { items, email, name, phone, shippingAddress, billingAddress, shippingMethod } = data
+    const { items, email, name, phone, shippingAddress, billingAddress, shippingMethod, funnelId, funnelStepId } = data
 
     // Get landing page source from cookie for attribution tracking
     const landingPageSource = request.cookies.get('landing_page_source')?.value || null
@@ -160,6 +161,8 @@ export async function POST(request: NextRequest) {
         shipping,
         total,
       },
+      funnelId: funnelId || undefined,
+      funnelStepId: funnelStepId || undefined,
       metadata: {
         squareCustomerId,
         squareOrderId,
@@ -178,11 +181,24 @@ export async function POST(request: NextRequest) {
 
     const order = orderResult.data
 
-    // Trigger N8N workflow for order creation
+    // Trigger N8N workflow for order creation (vendor notifications only)
     try {
       await N8NWorkflows.onOrderCreated(order.id)
     } catch (n8nError) {
       // Don't fail the order if N8N fails
+    }
+
+    // Trigger FunnelKit workflow for customer emails and analytics
+    if (user?.id) {
+      try {
+        await triggerOrderPlaced(user.id, order.id, {
+          orderNumber: order.orderNumber,
+          total: order.total,
+          items: orderItems,
+        })
+      } catch (workflowError) {
+        // Don't fail the order if workflow fails
+      }
     }
 
     // Fetch order with items for emails

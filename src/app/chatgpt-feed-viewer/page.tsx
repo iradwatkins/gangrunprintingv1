@@ -119,7 +119,7 @@ export default function ChatGPTFeedViewer() {
                 <img
                   alt={product.title}
                   className="w-full h-48 object-cover bg-gray-100"
-                  src={product.image_link}
+                  loading="lazy" src={product.image_link}
                   onError={(e) => {
                     e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23f5f5f5" width="400" height="200"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
                   }}

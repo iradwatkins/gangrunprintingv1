@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { createId } from '@paralleldrive/cuid2'
+import { cache } from '@/lib/redis'
 
 const createTurnaroundTimeSchema = z.object({
   name: z.string().min(1).max(50),
@@ -24,6 +25,15 @@ const updateTurnaroundTimeSchema = createTurnaroundTimeSchema.partial()
 // GET /api/turnaround-times
 export async function GET(): Promise<unknown> {
   try {
+    // Cache key for turnaround times
+    const cacheKey = 'turnaround:times:list'
+
+    // Try to get from cache first
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached)
+    }
+
     const turnaroundTimes = await prisma.turnaroundTime.findMany({
       orderBy: [{ sortOrder: 'asc' }, { daysMin: 'asc' }],
       include: {
@@ -34,6 +44,9 @@ export async function GET(): Promise<unknown> {
         },
       },
     })
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, turnaroundTimes, 3600)
 
     return NextResponse.json(turnaroundTimes)
   } catch (error) {

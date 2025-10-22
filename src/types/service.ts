@@ -59,6 +59,8 @@ export interface CreateOrderInput {
   }
   metadata?: Record<string, any>
   adminNotes?: string
+  funnelId?: string
+  funnelStepId?: string
 }
 
 export interface OrderItemInput {

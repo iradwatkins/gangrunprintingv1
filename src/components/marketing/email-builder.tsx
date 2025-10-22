@@ -181,7 +181,7 @@ function SortableComponent({
               <img
                 alt={component.content.alt}
                 className="max-w-full h-auto"
-                src={component.content.src}
+                loading="lazy" src={component.content.src}
                 style={{ width: component.content.width }}
               />
             ) : (

@@ -360,7 +360,7 @@ export default function FileUploadZone({
                       <img
                         alt={file.originalName}
                         className="w-12 h-12 rounded object-cover border"
-                        src={file.thumbnailUrl}
+                        loading="lazy" src={file.thumbnailUrl}
                         onError={(e) => {
                           // Fallback to icon if thumbnail fails to load
                           const target = e.target as HTMLImageElement

@@ -7,6 +7,7 @@ import {
   SendStatus,
 } from '@prisma/client'
 import { CampaignService } from './campaign-service'
+import { createId } from '@paralleldrive/cuid2'
 
 export interface WorkflowTrigger {
   type: 'event' | 'schedule' | 'condition'
@@ -87,6 +88,7 @@ export class WorkflowEngine {
   ): Promise<MarketingWorkflow> {
     return await prisma.marketingWorkflow.create({
       data: {
+        id: createId(),
         name,
         description,
         trigger,
@@ -189,6 +191,7 @@ export class WorkflowEngine {
 
     const execution = await prisma.workflowExecution.create({
       data: {
+        id: createId(),
         workflowId,
         userId,
         triggerData,

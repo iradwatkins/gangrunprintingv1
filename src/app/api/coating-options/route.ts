@@ -2,12 +2,25 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { getErrorCode } from '@/lib/error-utils'
+import { cache } from '@/lib/redis'
 
 export async function GET(): Promise<unknown> {
   try {
+    // Cache key for coating options
+    const cacheKey = 'coating:options:list'
+
+    // Try to get from cache first
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached)
+    }
+
     const coatingOptions = await prisma.coatingOption.findMany({
       orderBy: { name: 'asc' },
     })
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, coatingOptions, 3600)
 
     return NextResponse.json(coatingOptions)
   } catch (error) {

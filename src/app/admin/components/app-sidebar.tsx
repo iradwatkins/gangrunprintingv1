@@ -145,6 +145,10 @@ const data = {
           url: '/admin/analytics',
         },
         {
+          title: 'Funnel Analytics',
+          url: '/admin/funnel-analytics',
+        },
+        {
           title: 'SEO Performance',
           url: '/admin/seo/performance',
         },

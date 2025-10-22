@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto'
 import { type NextRequest } from 'next/server'
 import { withRateLimit, RateLimitPresets } from '@/lib/rate-limit'
 import { ProductService } from '@/services/ProductService'
+import { cache } from '@/lib/redis'
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -549,6 +550,10 @@ export async function POST(request: NextRequest) {
         maxWait: 5000,  // Increased from 3s to 5s
       }
     )
+
+    // Invalidate product and category caches after successful creation
+    await cache.clearPattern('products:*')
+    await cache.clearPattern('categories:*')
 
     // Transform product for frontend compatibility
     const transformedProduct = transformProductForFrontend(product)

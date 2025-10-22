@@ -1,10 +1,20 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { themeManager } from '@/lib/theme-manager'
 import { validateRequest } from '@/lib/auth'
+import { cache } from '@/lib/redis'
 
 export async function GET(): Promise<unknown> {
   try {
+    // Cache key for themes
+    const cacheKey = 'themes:list'
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const themes = await themeManager.getThemes()
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, themes, 3600)
+
     return NextResponse.json(themes)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch themes' }, { status: 500 })

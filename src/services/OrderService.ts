@@ -51,6 +51,8 @@ export class OrderService {
             orderNumber,
             email: input.email,
             userId: input.userId,
+            funnelId: input.funnelId,
+            funnelStepId: input.funnelStepId,
             subtotal,
             tax,
             shipping,

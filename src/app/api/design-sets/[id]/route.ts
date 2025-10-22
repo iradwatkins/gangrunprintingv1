@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { z } from 'zod'
+import { cache } from '@/lib/redis'
 
 // Schema for updating a design set
 const updateDesignSetSchema = z.object({
@@ -24,6 +25,12 @@ const updateDesignSetSchema = z.object({
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+
+    // Cache key includes the design set ID
+    const cacheKey = `design:set:${id}`
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const set = await prisma.designSet.findUnique({
       where: { id },
       include: {
@@ -55,6 +62,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })),
       productDesignSets: set.ProductDesignSet || [],
     }
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, transformedSet, 3600)
 
     return NextResponse.json(transformedSet)
   } catch (error) {

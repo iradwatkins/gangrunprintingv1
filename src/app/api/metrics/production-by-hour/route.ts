@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { cache } from '@/lib/redis'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -10,6 +11,12 @@ export const revalidate = 0
  */
 export async function GET() {
   try {
+    // Cache key includes today's date for daily cache
+    const todayStr = new Date().toISOString().split('T')[0]
+    const cacheKey = `metrics:production:hourly:${todayStr}`
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -59,14 +66,19 @@ export async function GET() {
     ).length
     const completionRate = totalJobs > 0 ? (completed / totalJobs) * 100 : 0
 
-    return NextResponse.json({
+    const responseData = {
       hourlyData,
       metrics: {
         totalJobs,
         completed,
         completionRate,
       },
-    })
+    }
+
+    // Cache for 15 minutes (900 seconds) - metrics update throughout day
+    await cache.set(cacheKey, responseData, 900)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error('[GET /api/metrics/production-by-hour] Error:', error)
     return NextResponse.json(

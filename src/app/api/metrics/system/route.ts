@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { cache } from '@/lib/redis'
 
 const execAsync = promisify(exec)
 
@@ -26,6 +27,11 @@ interface SystemMetrics {
  */
 export async function GET() {
   try {
+    // Cache key for system metrics
+    const cacheKey = 'metrics:system'
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const startTime = Date.now()
 
     // Get today's data for revenue and active users
@@ -121,6 +127,9 @@ export async function GET() {
       memory,
       disk,
     }
+
+    // Cache for 15 minutes (900 seconds) - system metrics change frequently
+    await cache.set(cacheKey, metrics, 900)
 
     return NextResponse.json(metrics)
   } catch (error) {

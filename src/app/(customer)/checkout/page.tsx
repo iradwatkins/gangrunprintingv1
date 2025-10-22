@@ -207,6 +207,7 @@ export default function CartPage() {
                               <img
                                 alt={file.file.name}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                                 src={file.preview}
                               />
                             ) : (

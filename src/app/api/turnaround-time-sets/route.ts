@@ -1,10 +1,16 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
+import { cache } from '@/lib/redis'
 
 // GET /api/turnaround-time-sets - List all turnaround time sets
 export async function GET(request: NextRequest) {
   try {
+    // Cache key for turnaround time sets
+    const cacheKey = 'turnaround:sets:list'
+    const cached = await cache.get(cacheKey)
+    if (cached) return NextResponse.json(cached)
+
     const sets = await prisma.turnaroundTimeSet.findMany({
       include: {
         TurnaroundTimeSetItem: {
@@ -20,6 +26,9 @@ export async function GET(request: NextRequest) {
         sortOrder: 'asc',
       },
     })
+
+    // Cache for 1 hour (3600 seconds)
+    await cache.set(cacheKey, sets, 3600)
 
     return NextResponse.json(sets)
   } catch (error) {

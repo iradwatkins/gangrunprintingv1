@@ -56,7 +56,7 @@ export function PageCanvas({
           return (
             <img
               alt={element.content.alt || ''}
-              src={element.content.url || 'https://via.placeholder.com/400x300'}
+              loading="lazy" src={element.content.url || 'https://via.placeholder.com/400x300'}
               style={{ ...baseStyles, width: element.content.width || '100%' }}
             />
           )

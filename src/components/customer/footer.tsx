@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
 const footerLinks = {
@@ -71,7 +72,8 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <Input className="max-w-sm" placeholder="Enter your email" type="email" />
+              <Label htmlFor="newsletter-email" className="sr-only">Email address for newsletter</Label>
+              <Input id="newsletter-email" className="max-w-sm" placeholder="Enter your email" type="email" />
               <Button className="bg-primary hover:bg-primary/90">Subscribe</Button>
             </div>
           </div>

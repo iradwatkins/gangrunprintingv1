@@ -21,7 +21,7 @@ export async function GET(): Promise<unknown> {
     // Get recent activity metrics
     const now = new Date()
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-    const [recentOrders, activeSessions] = await Promise.all([
+    const [recentOrders, activeSessions, revenueToday] = await Promise.all([
       prisma.order.count({
         where: {
           createdAt: {
@@ -35,6 +35,14 @@ export async function GET(): Promise<unknown> {
             gte: now,
           },
         },
+      }),
+      // Business metric: Revenue in last 24 hours
+      prisma.order.aggregate({
+        where: {
+          createdAt: { gte: oneDayAgo },
+          status: { in: ['CONFIRMATION', 'PRODUCTION', 'SHIPPED', 'DELIVERED'] },
+        },
+        _sum: { total: true },
       }),
     ])
 
@@ -94,6 +102,12 @@ export async function GET(): Promise<unknown> {
           orders: orderCount,
           recentOrders24h: recentOrders,
           activeSessions: activeSessions,
+        },
+        business: {
+          revenue24h: revenueToday._sum.total || 0,
+          avgOrderValue24h:
+            recentOrders > 0 ? Math.round(((revenueToday._sum.total || 0) / recentOrders) * 100) / 100 : 0,
+          activeUsers: activeSessions,
         },
         memory: memoryMB,
         performance: {
