@@ -125,6 +125,12 @@ export function CashAppQRPayment({
 
         console.log('[Cash App Pay] Event listener added')
 
+        // Set isInitializing to false so the container div renders
+        setIsInitializing(false)
+
+        // Give React time to render the container
+        await new Promise((resolve) => setTimeout(resolve, 200))
+
         // Wait for container to be available
         let container = document.getElementById('cash-app-pay')
         let containerAttempts = 0
@@ -151,7 +157,6 @@ export function CashAppQRPayment({
         console.log('[Cash App Pay] Button attached successfully')
 
         setCashAppPay(cashAppPayInstance)
-        setIsInitializing(false)
       } catch (err) {
         console.error('[Cash App Pay] Initialization error:', err)
         const errorMsg = err instanceof Error ? err.message : 'Failed to initialize Cash App Pay'
