@@ -124,13 +124,14 @@ export function SquareCardPayment({
         try {
 
           // Create payment request with amount details for Cash App
-          // IMPORTANT: Square requires amount as string in smallest currency unit (cents)
-          const amountInCents = Math.round(total * 100).toString()
+          // IMPORTANT: Square requires amount as decimal string in DOLLARS (e.g., "261.02"), NOT cents
+          // Per official docs: https://developer.squareup.com/reference/sdks/web/payments/cash-app-pay
+          const amountInDollars = total.toFixed(2)
           const paymentRequest = paymentsInstance.paymentRequest({
             countryCode: 'US',
             currencyCode: 'USD',
             total: {
-              amount: amountInCents,
+              amount: amountInDollars,
               label: 'Total',
             },
           })
