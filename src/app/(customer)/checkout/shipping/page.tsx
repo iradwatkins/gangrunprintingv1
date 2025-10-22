@@ -174,6 +174,15 @@ export default function ShippingPage() {
               onChange={setShippingAddress}
             />
 
+            {/* Airport Selector (appears BEFORE shipping methods if state has Southwest airports) */}
+            {shippingAddress.state && (
+              <AirportSelector
+                state={shippingAddress.state}
+                selectedAirportId={selectedAirportId ?? null}
+                onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
+              />
+            )}
+
             {/* Shipping Method Selector */}
             {shippingAddress.zipCode && shippingAddress.state && shippingAddress.city && (
               <ShippingMethodSelector
@@ -185,15 +194,8 @@ export default function ShippingPage() {
                 }}
                 items={shippingItems}
                 selectedMethod={selectedShippingMethod}
+                selectedAirportId={selectedAirportId}
                 onSelect={setSelectedShippingMethod}
-              />
-            )}
-
-            {/* Airport Selector (Southwest Cargo only) */}
-            {selectedShippingMethod?.carrier === 'SOUTHWEST_CARGO' && shippingAddress.state && (
-              <AirportSelector
-                selectedAirportId={selectedAirportId ?? null}
-                onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
               />
             )}
           </div>

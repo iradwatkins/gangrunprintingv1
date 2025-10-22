@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { HexColorPicker, HexColor } from 'react-colorful'
+import { HexColorPicker, HexColorInput } from 'react-colorful'
 import { Button } from '@/components/ui/button'
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'

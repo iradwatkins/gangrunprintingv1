@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         city: true,
         state: true,
       },
-      orderBy: [{ state: 'asc' }, { name: 'asc' }],
+      orderBy: [{ city: 'asc' }],
     })
 
     return NextResponse.json({

@@ -43,6 +43,7 @@ interface ShippingMethodSelectorProps {
     paperStockWeight?: number
   }>
   selectedMethod?: ShippingRate
+  selectedAirportId?: string
   onSelect: (method: ShippingRate) => void
 }
 
@@ -50,6 +51,7 @@ export function ShippingMethodSelector({
   destination,
   items,
   selectedMethod,
+  selectedAirportId,
   onSelect,
 }: ShippingMethodSelectorProps) {
   const [rates, setRates] = useState<ShippingRate[]>([])
@@ -62,7 +64,7 @@ export function ShippingMethodSelector({
     }
 
     fetchShippingRates()
-  }, [destination.zipCode, destination.state, destination.city])
+  }, [destination.zipCode, destination.state, destination.city, selectedAirportId])
 
   const fetchShippingRates = async () => {
     setLoading(true)
@@ -265,57 +267,64 @@ export function ShippingMethodSelector({
           }}
         >
           <div className="space-y-3">
-            {rates.map((rate, index) => (
-              <div key={`${rate.provider}-${rate.serviceCode}-${index}`} className="relative">
-                <Label
-                  className="cursor-pointer block"
-                  htmlFor={`${rate.provider}-${rate.serviceCode}-${index}`}
-                >
-                  <Card
-                    className={`border transition-all ${
-                      selectedMethod?.serviceCode === rate.serviceCode
-                        ? 'border-primary ring-2 ring-primary/20'
-                        : 'border-border hover:border-primary/50'
-                    }`}
+            {rates.map((rate, index) => {
+              // Check if this is a Southwest rate and no airport is selected
+              const isSouthwest = rate.carrier === 'SOUTHWEST_CARGO'
+              const needsAirport = isSouthwest && !selectedAirportId
+
+              return (
+                <div key={`${rate.provider}-${rate.serviceCode}-${index}`} className="relative">
+                  <Label
+                    className={`block ${needsAirport ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    htmlFor={`${rate.provider}-${rate.serviceCode}-${index}`}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <RadioGroupItem
-                          className="mt-0.5"
-                          id={`${rate.provider}-${rate.serviceCode}-${index}`}
-                          value={rate.serviceCode}
-                        />
-                        <div className="flex items-center space-x-3 flex-1">
-                          <div
-                            className={`p-2 rounded-lg ${
-                              selectedMethod?.serviceCode === rate.serviceCode
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            {getCarrierIcon(rate.carrier)}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="font-medium">{rate.providerName}</p>
-                              <p className="font-semibold">
-                                ${rate.rate.amount.toFixed(2)}
-                              </p>
+                    <Card
+                      className={`border transition-all ${
+                        selectedMethod?.serviceCode === rate.serviceCode
+                          ? 'border-primary ring-2 ring-primary/20'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem
+                            className="mt-0.5"
+                            id={`${rate.provider}-${rate.serviceCode}-${index}`}
+                            value={rate.serviceCode}
+                            disabled={needsAirport}
+                          />
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div
+                              className={`p-2 rounded-lg ${
+                                selectedMethod?.serviceCode === rate.serviceCode
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              {getCarrierIcon(rate.carrier)}
                             </div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm text-muted-foreground">
-                                {rate.delivery.text}
-                              </p>
-                              {getCarrierBadge(rate)}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <p className="font-medium">{rate.providerName}</p>
+                                <p className="font-semibold">
+                                  {needsAirport ? 'N/A' : `$${rate.rate.amount.toFixed(2)}`}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm text-muted-foreground">
+                                  {needsAirport ? 'Please select an airport for price' : rate.delivery.text}
+                                </p>
+                                {!needsAirport && getCarrierBadge(rate)}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Label>
-              </div>
-            ))}
+                      </CardContent>
+                    </Card>
+                  </Label>
+                </div>
+              )
+            })}
           </div>
         </RadioGroup>
 
