@@ -337,10 +337,58 @@ export function SquareCardPayment({
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertCircle className="h-6 w-6 text-red-600" />
+                  </div>
+                </div>
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-lg font-bold text-red-900 mb-1">
+                      Payment System Unavailable
+                    </h3>
+                    <p className="text-sm text-red-700 leading-relaxed">
+                      {error}
+                    </p>
+                  </div>
+
+                  <div className="bg-white/80 rounded-lg p-4 border border-red-200">
+                    <p className="text-sm font-semibold text-gray-900 mb-2">What you can do:</p>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold mt-0.5">→</span>
+                        <span>Refresh this page and try again</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold mt-0.5">→</span>
+                        <span>Check your internet connection</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold mt-0.5">→</span>
+                        <span>Contact our support team if the issue persists</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="flex-1 min-w-[140px] px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    >
+                      🔄 Refresh Page
+                    </button>
+                    <a
+                      href="/contact"
+                      className="flex-1 min-w-[140px] px-6 py-3 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-center"
+                    >
+                      💬 Contact Support
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Payment Method Selection */}
