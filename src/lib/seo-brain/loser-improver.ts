@@ -240,7 +240,6 @@ export async function executeImprovement(params: {
         break
     }
 
-    console.log('[Loser Improver] Applied changes:', changes)
 
     return {
       success: true,

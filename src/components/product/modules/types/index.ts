@@ -186,7 +186,6 @@ export function validateModuleInterface<T>(moduleProps: T, expectedInterface: st
   }
 
   // Future implementation: Runtime interface validation
-  // console.log(`Validating ${expectedInterface} interface:`, moduleProps)
   return true
 }
 
@@ -202,14 +201,7 @@ export function debugModulePricing(
   }
 
   console.group(`💰 ${moduleName} Pricing Contribution`)
-  // console.log('Base Price:', pricingContribution.basePrice)
-  // console.log('Multiplier:', pricingContribution.multiplier)
-  // console.log('Addon Cost:', pricingContribution.addonCost)
-  // console.log('Per-Unit Cost:', pricingContribution.perUnitCost)
-  // console.log('Percentage Cost:', pricingContribution.percentageCost)
-  // console.log('Is Valid:', pricingContribution.isValid)
   if (pricingContribution.calculation) {
-    // console.log('Calculation:', pricingContribution.calculation)
   }
   console.groupEnd()
 }

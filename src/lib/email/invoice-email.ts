@@ -289,7 +289,6 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
       replyTo: 'billing@gangrunprinting.com',
     })
 
-    // console.log(`✅ Invoice ${params.invoiceNumber} sent to ${params.to}`)
   } catch (error) {
     console.error('❌ Failed to send invoice email:', error)
     throw new Error(`Failed to send invoice email: ${error instanceof Error ? error.message : 'Unknown error'}`)

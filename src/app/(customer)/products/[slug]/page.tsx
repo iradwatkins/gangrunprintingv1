@@ -195,13 +195,11 @@ async function getProduct(slug: string) {
 // Helper function to fetch product configuration - calls the API endpoint via HTTP
 async function getProductConfiguration(productId: string) {
   try {
-    console.log('[ProductPage] Fetching configuration for product:', productId)
 
     // Use fetch to call the API endpoint
     // In Docker, use internal port; works in both dev and production
     const apiUrl = `http://localhost:3002/api/products/${productId}/configuration`
 
-    console.log('[ProductPage] API URL:', apiUrl)
 
     const response = await fetch(apiUrl, {
       cache: 'no-store', // Don't cache during SSR
@@ -210,7 +208,6 @@ async function getProductConfiguration(productId: string) {
       },
     })
 
-    console.log('[ProductPage] API Response status:', response.status)
 
     if (!response.ok) {
       console.error('[ProductPage] API returned error status:', response.status)
@@ -218,7 +215,6 @@ async function getProductConfiguration(productId: string) {
     }
 
     const configuration = await response.json()
-    console.log('[ProductPage] Configuration fetched successfully. Quantities:', configuration?.quantities?.length || 0)
 
     return configuration
   } catch (error) {

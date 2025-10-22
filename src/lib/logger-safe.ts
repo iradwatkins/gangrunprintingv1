@@ -4,7 +4,6 @@
 class SafeLogger {
   debug(message: string, meta?: any) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(
         `[DEBUG] ${new Date().toISOString()} ${message}`,
         meta ? JSON.stringify(meta) : ''
       )
@@ -12,7 +11,6 @@ class SafeLogger {
   }
 
   info(message: string, meta?: any) {
-    console.log(`[INFO] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
   }
 
   warn(message: string, meta?: any) {
@@ -28,12 +26,10 @@ class SafeLogger {
 
   http(message: string, meta?: any) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[HTTP] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
     }
   }
 
   log(level: string, message: string, meta?: any) {
-    console.log(
       `[${level.toUpperCase()}] ${new Date().toISOString()} ${message}`,
       meta ? JSON.stringify(meta) : ''
     )

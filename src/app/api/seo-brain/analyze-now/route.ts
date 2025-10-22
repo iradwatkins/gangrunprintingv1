@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'campaignId required' }, { status: 400 })
     }
 
-    console.log('[SEO Brain] Manual analysis triggered for campaign:', campaignId)
 
     // Trigger analysis (runs in background)
     seoBrain.analyzeCampaign(campaignId).catch((error) => {

@@ -75,7 +75,6 @@ export default function PaymentPage() {
 
   const handlePaymentSuccess = (result: Record<string, unknown>) => {
     try {
-      console.log('[Payment] Payment successful:', result)
 
       // Clear cart
       clearCart()

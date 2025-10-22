@@ -101,7 +101,6 @@ IMPORTANT: Output ONLY the final content. No reasoning, no explanations, just th
   const generationTime = Date.now() - startTime
   const actualWordCount = content.trim().split(/\s+/).length
 
-  console.log(`[SEO Brain] Generated ${actualWordCount} words in ${generationTime}ms`)
 
   // Save to database
   const saved = await prisma.productSEOContent.create({

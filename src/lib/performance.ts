@@ -288,7 +288,6 @@ export async function measurePerformance<T>(name: string, fn: () => T | Promise<
     const duration = performance.now() - start
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Performance: ${name} took ${duration}ms`)
     }
 
     return result

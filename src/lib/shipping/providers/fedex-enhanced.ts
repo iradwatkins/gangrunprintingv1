@@ -140,7 +140,6 @@ export class FedExProviderEnhanced implements ShippingProvider {
         // Update authorization header
         this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken!.access_token}`
 
-        // console.log('[FedEx] Successfully authenticated')
       },
       undefined, // No token refresh callback for authentication itself
       'FedEx OAuth2 Authentication'
@@ -158,7 +157,6 @@ export class FedExProviderEnhanced implements ShippingProvider {
   ): Promise<ShippingRate[]> {
     // PERFORMANCE: If test mode enabled, return instant test rates (< 50ms)
     if (this.config.testMode) {
-      console.log('[FedEx] Test mode enabled, returning instant test rates')
       const testRates = this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
       const filteredRates = this.filterByEnabledServices(testRates)
       return this.applyMarkup(filteredRates)
@@ -254,7 +252,6 @@ export class FedExProviderEnhanced implements ShippingProvider {
     // Convert back to ShippingPackage format
     const optimizedPackages = convertToShippingPackages(packingResult, packages[0]?.value)
 
-    // console.log(
     //   `[FedEx] Optimized ${packages.length} packages → ${optimizedPackages.length} boxes (estimated savings: ${((1 - optimizedPackages.length / packages.length) * 100).toFixed(0)}%)`
     // )
 
@@ -461,7 +458,6 @@ export class FedExProviderEnhanced implements ShippingProvider {
 
     // Log deduplication if any occurred
     if (allRates.length !== deduplicatedRates.length) {
-      console.log(
         `[FedEx] Deduplicated ${allRates.length} rates → ${deduplicatedRates.length} unique services`
       )
     }

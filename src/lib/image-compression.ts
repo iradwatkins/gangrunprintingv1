@@ -167,7 +167,6 @@ export async function compressImageForAPI(
   const originalHeight = metadata.height || 0
 
   /*
-  console.log(
     `📊 Original image: ${originalWidth}x${originalHeight}, ${(buffer.length / 1024 / 1024).toFixed(2)} MB`
   )
   */
@@ -188,7 +187,6 @@ export async function compressImageForAPI(
       targetHeight = maxDimension
       targetWidth = Math.round(maxDimension * aspectRatio)
     }
-    // console.log(`📐 Resizing to: ${targetWidth}x${targetHeight}`)
   }
 
   // Determine format and compression strategy
@@ -242,7 +240,6 @@ export async function compressImageForAPI(
     const base64Size = Buffer.byteLength(base64, 'utf8')
 
     /*
-    console.log(
       `🔄 Attempt ${attempts}: Quality ${quality}%, Size: ${(base64Size / 1024 / 1024).toFixed(2)} MB`
     )
     */
@@ -338,7 +335,6 @@ export async function compressWithRetry(
     // First attempt: Normal compression
     return await compressImageForAPI(input, options)
   } catch (error) {
-    // console.log('⚠️  First compression attempt failed, trying aggressive mode...')
 
     // Second attempt: Aggressive compression
     return await compressImageForAPI(input, {

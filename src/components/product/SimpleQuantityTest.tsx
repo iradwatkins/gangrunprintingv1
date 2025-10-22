@@ -87,15 +87,12 @@ export default function SimpleQuantityTest({
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]) // Track selected addon IDs
 
   useEffect(() => {
-    console.log(
       '[SimpleQuantityTest] useEffect triggered. initialConfiguration:',
       !!initialConfiguration
     )
 
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {
-      console.log('[SimpleQuantityTest] Using server-fetched configuration')
-      console.log(
         '[SimpleQuantityTest] Quantities count:',
         initialConfiguration.quantities?.length || 0
       )
@@ -118,13 +115,11 @@ export default function SimpleQuantityTest({
       setSelectedDesignOption(defaultOption?.id || '')
 
       setLoading(false)
-      console.log(
         '[SimpleQuantityTest] Configuration applied. Quantities state:',
         data.quantities?.length || 0
       )
       return // Don't fetch from API if we have server data
     } else {
-      console.log('[SimpleQuantityTest] No initialConfiguration, will fetch from API')
     }
 
     // Fallback: Fetch from API if no initial configuration provided
@@ -135,7 +130,6 @@ export default function SimpleQuantityTest({
       return
     }
 
-    console.log('[SimpleQuantityTest] Fetching configuration from API (fallback)')
     let mounted = true
     const timeoutId = setTimeout(() => {
       if (mounted && loading) {
@@ -147,7 +141,6 @@ export default function SimpleQuantityTest({
 
     async function fetchData() {
       try {
-        console.log('[SimpleQuantityTest] START FETCH for product:', productId)
 
         const controller = new AbortController()
         const fetchTimeout = setTimeout(() => controller.abort(), 8000)
@@ -157,14 +150,12 @@ export default function SimpleQuantityTest({
         })
         clearTimeout(fetchTimeout)
 
-        console.log('[SimpleQuantityTest] Response received:', response.status)
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`)
         }
 
         const data = await response.json()
-        console.log('[SimpleQuantityTest] Data parsed successfully:', {
           quantities: data.quantities?.length,
           sizes: data.sizes?.length,
           paperStocks: data.paperStocks?.length,
@@ -188,7 +179,6 @@ export default function SimpleQuantityTest({
         const defaultOption = data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
         setSelectedDesignOption(defaultOption?.id || '')
 
-        console.log('[SimpleQuantityTest] State updated, setting loading to false')
         setLoading(false)
         clearTimeout(timeoutId)
       } catch (err) {
@@ -392,12 +382,6 @@ export default function SimpleQuantityTest({
   const calculateDesignPrice = (design: any) => {
     if (!design) return 0
 
-    console.log('[calculateDesignPrice] Design option:', design)
-    console.log('[calculateDesignPrice] Pricing type:', design.pricingType)
-    console.log('[calculateDesignPrice] Base price:', design.basePrice)
-    console.log('[calculateDesignPrice] Side one price:', design.sideOnePrice)
-    console.log('[calculateDesignPrice] Side two price:', design.sideTwoPrice)
-    console.log('[calculateDesignPrice] Selected design side:', selectedDesignSide)
 
     // FREE design option
     if (design.pricingType === 'FREE') {
@@ -407,7 +391,6 @@ export default function SimpleQuantityTest({
     // FLAT pricing (single fixed price)
     if (design.pricingType === 'FLAT' && design.basePrice) {
       const price = design.basePrice
-      console.log('[calculateDesignPrice] FLAT price:', price)
       return price
     }
 
@@ -415,18 +398,14 @@ export default function SimpleQuantityTest({
     if (design.pricingType === 'SIDE_BASED') {
       if (selectedDesignSide === 'oneSide') {
         const price = design.sideOnePrice || 0
-        console.log('[calculateDesignPrice] SIDE_BASED oneSide price:', price)
         return price
       } else if (selectedDesignSide === 'twoSides') {
         const price = design.sideTwoPrice || 0
-        console.log('[calculateDesignPrice] SIDE_BASED twoSides price:', price)
         return price
       }
-      console.log('[calculateDesignPrice] SIDE_BASED but no side selected')
       return 0 // No side selected yet
     }
 
-    console.log('[calculateDesignPrice] No matching pricing type, returning 0')
     return 0
   }
 
@@ -457,21 +436,15 @@ export default function SimpleQuantityTest({
     const addonPrice = calculateAddonPrice()
     const designPrice = getSelectedDesignPrice()
 
-    console.log('[calculateTotalPrice] Base price:', basePrice)
-    console.log('[calculateTotalPrice] Addon price:', addonPrice)
-    console.log('[calculateTotalPrice] Design price:', designPrice)
-    console.log('[calculateTotalPrice] Selected turnaround:', selectedTurnaroundObj)
 
     // If no turnaround time selected, return base + addons + design
     if (!selectedTurnaroundObj) {
       const total = basePrice + addonPrice + designPrice
-      console.log('[calculateTotalPrice] Total (no turnaround):', total)
       return total
     }
 
     // Add turnaround time pricing to base price, then add addons and design
     const total = calculateTurnaroundPrice(selectedTurnaroundObj) + addonPrice + designPrice
-    console.log('[calculateTotalPrice] Total (with turnaround):', total)
     return total
   }
 

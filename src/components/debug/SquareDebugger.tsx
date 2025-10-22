@@ -34,7 +34,6 @@ export default function SquareDebugger() {
 
       setChecks(debugChecks)
       console.table(debugChecks)
-      console.log('[Square Debug] Full check results:', debugChecks)
 
       // Determine status
       if (!debugChecks.scriptInDOM) {
@@ -112,10 +111,6 @@ export default function SquareDebugger() {
             <button
               className="w-full bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-xs"
               onClick={() => {
-                console.log('[Square Debug] Manual check triggered')
-                console.log('window.Square:', window.Square)
-                console.log('Card container:', document.getElementById('card-container'))
-                console.log('Env vars:', {
                   appId: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
                   locationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
                 })

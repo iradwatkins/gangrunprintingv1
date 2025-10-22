@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get('email')
 
   // Security: Don't log sensitive user information
-  // console.log(`Magic link verification request: ${requestId}`)
   if (!token || !email) {
     return NextResponse.redirect(new URL('/auth/verify?error=missing_params', request.url))
   }
@@ -25,7 +24,6 @@ export async function GET(request: NextRequest) {
     const { user, session } = await verifyMagicLink(token, email)
 
     // Log success without exposing user ID
-    // console.log(`Magic link verified successfully`)
 
     // Create the redirect response
     const redirectUrl = new URL('/account/dashboard', request.url)
@@ -36,14 +34,12 @@ export async function GET(request: NextRequest) {
     response.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
     // Log cookie set without exposing details
-    // console.log(`Session cookie set for redirect`)
 
     // Add a small delay to ensure database operations are committed
     // This prevents race conditions where the redirect happens before session is fully committed
     await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Log completion
-    // console.log(`Verification completed`)
 
     return response
   } catch (error) {

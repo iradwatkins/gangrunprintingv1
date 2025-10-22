@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    console.log('[SEO Brain Webhook] Received decision:', text)
 
     // Find most recent pending decision
     const pendingDecision = await prisma.sEOBrainDecision.findFirst({
@@ -36,7 +35,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!pendingDecision) {
-      console.log('[SEO Brain Webhook] No pending decisions found')
       return NextResponse.json({ ok: true })
     }
 
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('[SEO Brain Webhook] Decision approved:', text, 'for', pendingDecision.id)
 
     // Execute the decision
     await seoBrain.executeDecision(pendingDecision.id, text)

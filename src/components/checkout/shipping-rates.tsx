@@ -50,10 +50,6 @@ export function ShippingRates({
   onRateSelected,
   onAirportSelected,
 }: ShippingRatesProps) {
-  // console.log('🎯 ShippingRates COMPONENT MOUNTED/RENDERED')
-  // console.log('   - toAddress:', toAddress)
-  // console.log('   - items:', items)
-  // console.log('   - items.length:', items?.length)
 
   const [rates, setRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(true)
@@ -78,27 +74,19 @@ export function ShippingRates({
   }, [addressKey, itemsKey])
 
   useEffect(() => {
-    // console.log('🔵 ShippingRates useEffect triggered')
-    // console.log('   - addressKey:', addressKey)
-    // console.log('   - itemsKey:', itemsKey)
-    // console.log('   - hasFetchedRef:', hasFetchedRef.current)
 
     // Only fetch once per address/items combination
     if (hasFetchedRef.current) {
-      // console.log('🔄 ShippingRates: Skipping duplicate fetch')
       return
     }
 
-    // console.log('⏰ ShippingRates: Setting timeout to fetch in 300ms')
     // Add a small delay to avoid rapid API calls
     const timer = setTimeout(() => {
-      // console.log('⏰ ShippingRates: Timeout fired, calling fetchShippingRates()')
       fetchShippingRates()
       hasFetchedRef.current = true
     }, 300)
 
     return () => {
-      // console.log('🧹 ShippingRates: Cleanup - clearing timeout')
       clearTimeout(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,20 +94,9 @@ export function ShippingRates({
 
   const fetchShippingRates = async () => {
     // Debug logging
-    // console.log('='.repeat(80))
-    // console.log('🚚 ShippingRates: STARTING FETCH')
-    // console.log('='.repeat(80))
-    // console.log('📦 ShippingRates: Items:', JSON.stringify(items, null, 2))
-    // console.log('📍 ShippingRates: Address:', JSON.stringify(toAddress, null, 2))
-    // console.log('📍 ShippingRates: Address validation:')
-    // console.log('   - street:', toAddress.street, '(empty?', !toAddress.street, ')')
-    // console.log('   - city:', toAddress.city, '(empty?', !toAddress.city, ')')
-    // console.log('   - state:', toAddress.state, '(empty?', !toAddress.state, ')')
-    // console.log('   - zipCode:', toAddress.zipCode, '(empty?', !toAddress.zipCode, ')')
 
     // Log each item's structure in detail
     items.forEach((item, index) => {
-      // console.log(`📦 Item ${index}:`, {
       //   productId: item.productId,
       //   quantity: item.quantity,
       //   width: item.width,
@@ -130,7 +107,6 @@ export function ShippingRates({
     })
 
     if (!toAddress.street || !toAddress.city || !toAddress.state || !toAddress.zipCode) {
-      // console.log('❌ ShippingRates: Incomplete address - showing error')
       setError('Please enter a complete shipping address')
       setLoading(false)
       setRates([]) // Clear any old rates
@@ -145,7 +121,6 @@ export function ShippingRates({
     const firstProductId = items[0]?.productId
 
     if (firstProductId) {
-      // console.log('🏭 ShippingRates: Fetching vendor address for product:', firstProductId)
       try {
         const vendorResponse = await fetch(`/api/products/${firstProductId}/vendor-address`)
         if (vendorResponse.ok) {
@@ -159,17 +134,13 @@ export function ShippingRates({
               country: vendorData.address.country || 'US',
               isResidential: false,
             }
-            // console.log('✅ ShippingRates: Using vendor address from', vendorData.vendorName + ':', fromAddress)
           } else {
-            // console.log('⚠️ ShippingRates: No vendor address found, using default')
           }
         }
       } catch (error) {
-        // console.log('⚠️ ShippingRates: Could not fetch vendor address, using default:', error)
       }
     }
 
-    // console.log('✅ ShippingRates: Making API call with payload:', {
     //   toAddress,
     //   items,
     //   fromAddress: fromAddress || 'default',
@@ -199,10 +170,6 @@ export function ShippingRates({
         throw new Error(data.error || 'Failed to calculate shipping')
       }
 
-      // console.log('✅ ShippingRates: Full API response:', data)
-      // console.log('✅ ShippingRates: Received rates:', data.rates)
-      // console.log('✅ ShippingRates: Total weight:', data.totalWeight)
-      // console.log('✅ ShippingRates: Success status:', data.success)
 
       setRates(data.rates || [])
       setTotalWeight(data.totalWeight || '0')
@@ -213,10 +180,7 @@ export function ShippingRates({
         const rateId = `${firstRate.carrier}-${firstRate.serviceCode}`
         setSelectedRate(rateId)
         onRateSelected(firstRate)
-        // console.log('✅ ShippingRates: Auto-selected rate:', firstRate)
       } else {
-        // console.log('⚠️ ShippingRates: No rates returned - array is empty or undefined')
-        // console.log('⚠️ ShippingRates: data.rates value:', data.rates)
       }
     } catch (err) {
       console.error('❌ ShippingRates: Error fetching rates:', err)

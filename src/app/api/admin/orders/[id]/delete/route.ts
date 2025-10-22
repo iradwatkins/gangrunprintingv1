@@ -89,7 +89,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     for (const filePath of filesToDelete) {
       try {
         await minioClient.removeObject(bucketName, filePath)
-        // console.log(`Deleted file: ${filePath}`)
       } catch (error) {
         console.error(`Error deleting file ${filePath}:`, error)
         deleteErrors.push(filePath)

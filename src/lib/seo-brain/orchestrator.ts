@@ -32,7 +32,6 @@ export class SEOBrainOrchestrator {
    * Analyze all active city landing pages and make decisions
    */
   async analyzeAndDecide(): Promise<void> {
-    console.log('[SEO Brain] Starting analysis cycle...')
 
     // Get all active campaigns
     const activeCampaigns = await prisma.productCampaignQueue.findMany({
@@ -47,7 +46,6 @@ export class SEOBrainOrchestrator {
       await this.analyzeCampaign(campaign.id)
     }
 
-    console.log('[SEO Brain] Analysis cycle complete')
   }
 
   /**
@@ -75,7 +73,6 @@ export class SEOBrainOrchestrator {
       },
     })
 
-    console.log(`[SEO Brain] Analyzing ${cityPages.length} city pages for campaign: ${campaign.productName}`)
 
     // Calculate performance metrics
     const performances = cityPages.map((page) => ({
@@ -104,7 +101,6 @@ export class SEOBrainOrchestrator {
     const bottomCount = Math.max(10, Math.floor(performances.length * 0.2))
     const losers = sortedByScore.slice(-bottomCount)
 
-    console.log(`[SEO Brain] Found ${winners.length} winners and ${losers.length} losers`)
 
     // Process winners
     await this.processWinners(winners, campaign.productName)
@@ -138,7 +134,6 @@ export class SEOBrainOrchestrator {
   private async processWinners(winners: any[], productName: string): Promise<void> {
     if (winners.length === 0) return
 
-    console.log(`[SEO Brain] Processing ${winners.length} winners`)
 
     // Send alert about top performers
     const top3 = winners.slice(0, 3)
@@ -171,7 +166,6 @@ export class SEOBrainOrchestrator {
   ): Promise<void> {
     if (losers.length === 0) return
 
-    console.log(`[SEO Brain] Processing ${losers.length} losers`)
 
     // For each loser, create a decision request
     for (const loser of losers.slice(0, 5)) {
@@ -266,7 +260,6 @@ export class SEOBrainOrchestrator {
         entityId: cityPage.id,
       })
 
-      console.log(`[SEO Brain] Decision request sent for: ${cityPage.slug}`)
 
       // Only send 5 decisions per cycle to avoid overwhelming user
       await new Promise((resolve) => setTimeout(resolve, 1000)) // 1 second delay between alerts
@@ -360,7 +353,6 @@ export class SEOBrainOrchestrator {
       return
     }
 
-    console.log(`[SEO Brain] Executing decision ${decisionId} with option ${selectedOption}`)
 
     // Update decision record
     await prisma.sEOBrainDecision.update({
@@ -384,7 +376,6 @@ export class SEOBrainOrchestrator {
     // TODO: Implement actual execution logic based on option
     // This will call the appropriate optimizer/generator functions
 
-    console.log(`[SEO Brain] Would execute: ${selected.action}`)
 
     // Update decision status
     await prisma.sEOBrainDecision.update({

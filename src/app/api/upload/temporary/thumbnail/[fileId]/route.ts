@@ -31,7 +31,6 @@ export async function GET(
     const client = getMinioClient()
 
     // List objects to find the thumbnail path
-    console.log(`[Thumbnail API] Searching for thumbnail: ${fileId}`)
     const objectsStream = client.listObjectsV2(BUCKETS.UPLOADS, `temp/`, true)
 
     let thumbnailPath = null
@@ -39,13 +38,11 @@ export async function GET(
     for await (const obj of objectsStream) {
       if (obj.name?.includes(`thumbnails/${fileId}.jpg`)) {
         thumbnailPath = obj.name
-        console.log(`[Thumbnail API] Found thumbnail at: ${thumbnailPath}`)
         break
       }
     }
 
     if (!thumbnailPath) {
-      console.log(`[Thumbnail API] Thumbnail not found for: ${fileId}`)
       // Return placeholder instead of JSON error
       return new NextResponse(PLACEHOLDER_THUMBNAIL, {
         status: 200,
@@ -66,7 +63,6 @@ export async function GET(
     }
     const buffer = Buffer.concat(chunks)
 
-    console.log(`[Thumbnail API] Serving thumbnail: ${fileId} (${buffer.length} bytes)`)
 
     // Return the thumbnail with appropriate headers
     return new NextResponse(buffer, {

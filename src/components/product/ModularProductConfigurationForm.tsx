@@ -147,7 +147,6 @@ export default function ModularProductConfigurationForm({
         onChange={updateSize}
         onExactSizeChange={(exactSize) => {
           // Handle exact size change if needed
-          // console.log('Exact size:', exactSize)
         }}
       />
 

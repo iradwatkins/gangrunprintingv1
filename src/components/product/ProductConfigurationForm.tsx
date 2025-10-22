@@ -385,7 +385,6 @@ export default function ProductConfigurationForm({
               id="exactSize"
               onCheckedChange={(checked) => {
                 // TODO: Handle exact size with new configuration
-                // console.log('Exact size:', checked)
               }}
             />
             <Label

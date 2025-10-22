@@ -108,7 +108,6 @@ export async function analyzeWinners(params: {
       },
     })
 
-    console.log('[Winner Analyzer] Pattern extracted and saved')
 
     return {
       success: true,

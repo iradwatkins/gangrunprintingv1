@@ -216,7 +216,6 @@ export async function sendMagicLink(email: string, name?: string): Promise<void>
     authLogger.error('Failed to send magic link email:', error)
     // For development, log the link if email fails
     if (process.env.NODE_ENV === 'development') {
-      // console.log('Dev fallback - Magic link:', magicLink)
     }
     throw new Error('Failed to send magic link email. Please try again.')
   }

@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { paymentLink, amount } = body
 
-    console.log('[Cash App Verify] Payment verification request:', {
       paymentLink,
       amount,
       timestamp: new Date().toISOString(),

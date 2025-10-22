@@ -352,7 +352,6 @@ class StructuredLogger {
     if (process.env.NODE_ENV === 'development') {
       // Pretty print in development
       const color = this.getLogColor(entry.level)
-      console.log(
         `%c[${entry.level.toUpperCase()}] %c${entry.timestamp} %c${entry.context}:%c ${entry.message}`,
         `color: ${color}; font-weight: bold;`,
         'color: #6b7280;',
@@ -362,7 +361,6 @@ class StructuredLogger {
       )
     } else {
       // Structured JSON in production
-      console.log(JSON.stringify(entry))
     }
   }
 

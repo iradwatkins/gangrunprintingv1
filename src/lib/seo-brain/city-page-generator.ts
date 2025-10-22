@@ -53,7 +53,6 @@ export async function generate200CityPages(
   failed: number
   results: CityPageGenerationResult[]
 }> {
-  console.log(`[SEO Brain] Starting 200-city generation for campaign: ${campaignId}`)
 
   // Get top 200 US cities
   const cities = await getTop200USCities()
@@ -63,7 +62,6 @@ export async function generate200CityPages(
   let failed = 0
 
   // Step 1: Generate main product image (ONE TIME)
-  console.log(`[SEO Brain] Generating main product image...`)
   const mainProductImage = await generateMainProductImage(productSpec)
 
   if (!mainProductImage.success) {
@@ -71,14 +69,12 @@ export async function generate200CityPages(
     return { success: false, generated: 0, failed: 200, results: [] }
   }
 
-  console.log(`[SEO Brain] ✅ Main product image generated: ${mainProductImage.url}`)
 
   // Step 2: Generate city pages in batches of 10
   const batchSize = 10
   for (let i = 0; i < cities.length; i += batchSize) {
     const batch = cities.slice(i, i + batchSize)
 
-    console.log(
       `[SEO Brain] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(cities.length / batchSize)} (Cities ${i + 1}-${Math.min(i + batchSize, cities.length)})`
     )
 
@@ -112,7 +108,6 @@ export async function generate200CityPages(
     }
 
     // Progress update
-    console.log(`[SEO Brain] Batch complete. Total: ${generated} generated, ${failed} failed`)
 
     // Small delay between batches to avoid overwhelming Ollama
     await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -128,7 +123,6 @@ export async function generate200CityPages(
     },
   })
 
-  console.log(`[SEO Brain] ✅ City generation complete: ${generated}/200 successful`)
 
   return {
     success: generated > 0,
@@ -201,7 +195,6 @@ async function generateSingleCityPage(params: {
   const { city, campaignId, productSpec, mainProductImageUrl, ollamaClient } = params
 
   try {
-    console.log(`[SEO Brain]   Generating: ${city.name}, ${city.state}`)
 
     // Step 1: Generate city-specific content (500 words + 10 benefits + 15 FAQs)
     const content = await generateCompleteCityContent({
@@ -284,7 +277,6 @@ async function generateSingleCityPage(params: {
       },
     })
 
-    console.log(`[SEO Brain]   ✅ Created: ${city.name}, ${city.state} (${slug})`)
 
     return {
       success: true,

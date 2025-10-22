@@ -357,7 +357,6 @@ export async function generateStaticParams() {
   // Skip static generation during Docker builds (no DB available)
   // Pages will be generated on-demand at runtime using ISR
   if (process.env.DOCKER_BUILD === 'true' || !process.env.DATABASE_URL?.includes('localhost')) {
-    // console.log('Skipping static generation - Docker build environment detected')
     return []
   }
 

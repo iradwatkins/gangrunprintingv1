@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
     // Parse webhook event
     const event: SquareWebhookEvent = JSON.parse(rawBody)
 
-    // console.log(`[Square Webhook] Received event: ${event.type}`)
 
     // Handle different event types
     switch (event.type) {
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        // console.log(`[Square Webhook] Unhandled event type: ${event.type}`)
     }
 
     return NextResponse.json({ success: true })
@@ -93,11 +91,9 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
 
   const { id: paymentId, amount_money, status, reference_id } = payment
 
-  // console.log(`[Square Webhook] Payment created: ${paymentId} - Status: ${status}`)
 
   // Only process completed payments
   if (status !== 'COMPLETED') {
-    // console.log(`[Square Webhook] Payment not completed, status: ${status}`)
     return
   }
 
@@ -118,7 +114,6 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
 
   // Prevent duplicate processing
   if (order.status !== 'PENDING_PAYMENT') {
-    // console.log(`[Square Webhook] Order ${reference_id} already processed (${order.status})`)
     return
   }
 
@@ -132,7 +127,6 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
   // Process payment via OrderService
   try {
     await OrderService.processPayment(order.id, paymentId, paidAmount)
-    // console.log(`[Square Webhook] Successfully processed payment for ${reference_id}`)
   } catch (error) {
     console.error(`[Square Webhook] Failed to process payment:`, error)
     throw error
@@ -151,7 +145,6 @@ async function handlePaymentUpdated(event: SquareWebhookEvent): Promise<void> {
 
   const { id: paymentId, status, reference_id } = payment
 
-  // console.log(`[Square Webhook] Payment updated: ${paymentId} - Status: ${status}`)
 
   if (!reference_id) {
     return
@@ -197,7 +190,6 @@ async function handlePaymentFailed(orderId: string, reason: string): Promise<voi
   })
 
   // TODO: Send payment failed email
-  // console.log(`[Square Webhook] Payment failed for order ${orderId}`)
 }
 
 /**

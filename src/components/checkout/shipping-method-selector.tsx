@@ -69,7 +69,6 @@ export function ShippingMethodSelector({
     setError(null)
 
     try {
-      console.log('[ShippingMethodSelector] Fetching rates for:', {
         destination,
         itemsCount: items.length,
       })
@@ -101,7 +100,6 @@ export function ShippingMethodSelector({
       }
 
       const data = await response.json()
-      console.log('[ShippingMethodSelector] API response:', {
         success: data.success,
         ratesCount: data.rates?.length || 0,
         totalWeight: data.totalWeight,

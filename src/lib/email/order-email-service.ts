@@ -63,7 +63,6 @@ export class OrderEmailService {
         text: this.generatePlainText(order, 'CONFIRMATION'),
       })
 
-      // console.log(`[Email] Order confirmation sent to ${order.email}`)
     } catch (error) {
       console.error('[Email] Failed to send order confirmation:', error)
       throw error
@@ -99,7 +98,6 @@ export class OrderEmailService {
         text: `Your order ${order.orderNumber} is now in production. Estimated completion: ${estimatedCompletion}`,
       })
 
-      // console.log(`[Email] Production notification sent to ${order.email}`)
     } catch (error) {
       console.error('[Email] Failed to send production email:', error)
       throw error
@@ -153,7 +151,6 @@ export class OrderEmailService {
         text: `Your order ${order.orderNumber} has shipped via ${carrier}. Tracking: ${trackingNumber}. Track at: ${trackingUrl}`,
       })
 
-      // console.log(`[Email] Shipping notification sent to ${order.email}`)
     } catch (error) {
       console.error('[Email] Failed to send shipping notification:', error)
       throw error
@@ -207,7 +204,6 @@ export class OrderEmailService {
         text: `Your order ${order.orderNumber} is ready for pickup at ${pickupLocation}`,
       })
 
-      // console.log(`[Email] Pickup notification sent to ${order.email}`)
     } catch (error) {
       console.error('[Email] Failed to send pickup notification:', error)
       throw error
@@ -266,7 +262,6 @@ export class OrderEmailService {
         text: `Your order ${order.orderNumber} is on hold. Reason: ${reason}. Action required: ${actionRequired}`,
       })
 
-      // console.log(`[Email] On-hold notification sent to ${order.email}`)
     } catch (error) {
       console.error('[Email] Failed to send on-hold notification:', error)
       throw error

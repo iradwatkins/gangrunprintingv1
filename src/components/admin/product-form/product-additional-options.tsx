@@ -35,7 +35,6 @@ export function ProductAdditionalOptions({
 }: ProductAdditionalOptionsProps) {
   // Debug logging
   /*
-  console.log('ProductAdditionalOptions loaded:', {
     addOnSets: addOnSets?.length || 0,
     turnaroundTimeSets: turnaroundTimeSets?.length || 0,
     currentSelections: formData,
@@ -71,7 +70,6 @@ export function ProductAdditionalOptions({
           <Select
             value={formData.selectedAddOnSet || 'none'}
             onValueChange={(value) => {
-              // console.log('Add-on set selected:', value)
               onUpdate({ selectedAddOnSet: value === 'none' ? '' : value })
             }}
           >
@@ -122,7 +120,6 @@ export function ProductAdditionalOptions({
           <Select
             value={formData.selectedTurnaroundTimeSet || 'none'}
             onValueChange={(value) => {
-              // console.log('Turnaround time set selected:', value)
               onUpdate({ selectedTurnaroundTimeSet: value === 'none' ? '' : value })
             }}
           >

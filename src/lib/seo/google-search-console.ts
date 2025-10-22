@@ -199,7 +199,6 @@ export async function trackAllProductsSEO() {
     select: { id: true, name: true, slug: true },
   })
 
-  // console.log(`📊 Tracking SEO for ${products.length} products...`)
 
   const results = []
 
@@ -214,7 +213,6 @@ export async function trackAllProductsSEO() {
       })
 
       /*
-      console.log(
         `✅ ${product.name}: ${result.rankings.length} keywords, ${result.alerts.length} alerts`
       )
       */

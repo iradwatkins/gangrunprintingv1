@@ -91,7 +91,6 @@ export function CashAppQRPayment({
 
       // For now, simulate payment confirmation
       // TODO: Implement actual Cash App payment verification
-      console.log('[Cash App QR] Payment confirmation needed for:', paymentLink)
 
       // Simulate API call to verify payment
       const response = await fetch('/api/checkout/verify-cashapp-payment', {

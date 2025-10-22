@@ -49,7 +49,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     // ADMIN OVERRIDE: Admins can change to any status (no transition validation)
     // This allows quick status updates without being restricted by workflow rules
-    // console.log(`[Status Update] Admin ${user.email} changing order ${id} from ${order.status} to ${toStatus}`)
 
     // Update status via service
     await OrderService.updateStatus({

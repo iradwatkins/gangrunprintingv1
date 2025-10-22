@@ -60,7 +60,6 @@ export class FileApprovalEmailService {
         text: this.generateProofReadyText(order, proofFile, trackingUrl),
       });
 
-      // console.log(`[Email] Proof ready notification sent to ${order.email}`);
     } catch (error) {
       console.error('[Email] Failed to send proof ready notification:', error);
       throw error;
@@ -107,7 +106,6 @@ export class FileApprovalEmailService {
         text: this.generateProofApprovedText(order, proofFile, allProofsApproved),
       });
 
-      // console.log(`[Email] Proof approved notification sent to admin`);
     } catch (error) {
       console.error('[Email] Failed to send proof approved notification:', error);
       throw error;
@@ -148,7 +146,6 @@ export class FileApprovalEmailService {
         text: this.generateProofRejectedText(order, proofFile, changeRequested),
       });
 
-      // console.log(`[Email] Proof rejected notification sent to admin`);
     } catch (error) {
       console.error('[Email] Failed to send proof rejected notification:', error);
       throw error;
@@ -188,7 +185,6 @@ export class FileApprovalEmailService {
         text: this.generateArtworkUploadedText(order, files),
       });
 
-      // console.log(`[Email] Artwork uploaded notification sent to admin`);
     } catch (error) {
       console.error('[Email] Failed to send artwork uploaded notification:', error);
       throw error;

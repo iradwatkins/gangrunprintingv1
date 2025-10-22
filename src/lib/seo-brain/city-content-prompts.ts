@@ -251,7 +251,6 @@ export async function generateCompleteCityContent(params: {
 }> {
   const { city, productName, productSpec, ollamaClient } = params
 
-  console.log(`[SEO Brain] Generating premium content for ${city.name}, ${city.state}...`)
 
   // Generate introduction (500 words)
   const introPrompt = generateCityIntroPrompt({ city, productName, productSpec })
@@ -273,7 +272,6 @@ export async function generateCompleteCityContent(params: {
   // Generate image prompt
   const imagePrompt = generateCityHeroImagePrompt({ city, productName, productSpec })
 
-  console.log(`[SEO Brain] ✅ Content generated for ${city.name}`)
 
   return {
     introduction,

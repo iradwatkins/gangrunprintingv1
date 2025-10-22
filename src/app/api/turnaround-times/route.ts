@@ -45,10 +45,8 @@ export async function GET(): Promise<unknown> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    // console.log('Creating turnaround time:', body)
 
     const data = createTurnaroundTimeSchema.parse(body)
-    // console.log('Parsed turnaround time data:', data)
 
     const turnaroundTime = await prisma.turnaroundTime.create({
       data: {

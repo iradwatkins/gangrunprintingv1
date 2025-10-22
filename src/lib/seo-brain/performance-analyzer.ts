@@ -90,7 +90,6 @@ export async function analyzePerformance(campaignId: string): Promise<Performanc
     const winners = pageMetrics.slice(0, winnerCount)
     const losers = pageMetrics.slice(-loserCount).reverse()
 
-    console.log('[Performance Analyzer] Analysis complete:', {
       totalPages: pageMetrics.length,
       winners: winners.length,
       losers: losers.length,
@@ -163,7 +162,6 @@ export async function createPerformanceSnapshot(analysis: PerformanceAnalysis): 
       data: snapshots,
     })
 
-    console.log('[Performance Analyzer] Created', snapshots.length, 'performance snapshots')
   } catch (error) {
     console.error('[Performance Analyzer] Snapshot error:', error)
     // Don't throw - snapshots are optional

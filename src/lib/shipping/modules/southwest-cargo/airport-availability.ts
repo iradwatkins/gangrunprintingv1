@@ -38,7 +38,6 @@ async function getAvailableStates(): Promise<Set<string>> {
     cachedStates = new Set(airports.map((airport) => airport.state.toUpperCase()))
     cacheTimestamp = now
 
-    console.log(
       `[Southwest Cargo] Loaded ${cachedStates.size} states from ${airports.length} airports`
     )
 
@@ -61,7 +60,6 @@ export async function isStateAvailable(state: string): Promise<boolean> {
   const availableStates = await getAvailableStates()
   const isAvailable = availableStates.has(state.toUpperCase())
 
-  console.log(`[Southwest Cargo] State ${state} availability:`, isAvailable)
 
   return isAvailable
 }
@@ -80,5 +78,4 @@ export async function getAirportCount(): Promise<number> {
 export function clearCache(): void {
   cachedStates = null
   cacheTimestamp = 0
-  console.log('[Southwest Cargo] Airport cache cleared')
 }

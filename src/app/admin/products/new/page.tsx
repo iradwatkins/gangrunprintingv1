@@ -50,7 +50,6 @@ export default function NewProductPage() {
 
   const handleSubmit = async () => {
     // DEBUG: Log form state before validation to diagnose issues
-    // console.log('[DEBUG] Product creation - Form state before submit:', {
     //   name: formData.name,
     //   categoryId: formData.categoryId,
     //   images: formData.images,

@@ -58,7 +58,6 @@ export function useQuantityModule({
     moduleType: ModuleType.QUANTITY,
     onError: (error) => {
       // Could log errors, send to monitoring, etc.
-      // console.log(`Quantity Module Error:`, error)
     },
   })
 
@@ -225,7 +224,6 @@ export function useSizeModule({
   const moduleErrors = useModuleErrors({
     moduleType: ModuleType.SIZE,
     onError: (error) => {
-      // console.log(`Size Module Error:`, error)
     },
   })
 
@@ -970,7 +968,6 @@ export function useImageModule(options: UseImageModuleOptions) {
   const moduleErrors = useModuleErrors({
     moduleType: ModuleType.IMAGES,
     onError: (error) => {
-      // console.log(`Image Module Error:`, error)
       onError?.(new Error(error.message))
     },
   })

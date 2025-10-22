@@ -49,18 +49,15 @@ export default function ShippingPage() {
         if (savedAddress) {
           const parsed = JSON.parse(savedAddress)
           setShippingAddress(parsed)
-          console.log('[Shipping] Restored saved address from previous session')
         }
 
         if (savedMethod) {
           const parsed = JSON.parse(savedMethod)
           setSelectedShippingMethod(parsed)
-          console.log('[Shipping] Restored saved shipping method from previous session')
         }
 
         if (savedAirport) {
           setSelectedAirportId(savedAirport)
-          console.log('[Shipping] Restored saved airport from previous session')
         }
       } catch (error) {
         console.error('[Shipping] Error loading saved data:', error)

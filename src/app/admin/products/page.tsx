@@ -98,13 +98,11 @@ export default function ProductsPage() {
     if (!confirm('Are you sure you want to delete this product?')) return
 
     try {
-      // console.log('[Admin] Deleting product:', productId)
       const response = await fetch(`/api/products/${productId}`, {
         method: 'DELETE',
         credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
-      // console.log('[Admin] Delete response status:', response.status)
 
       if (response.ok) {
         toast.success('Product deleted')

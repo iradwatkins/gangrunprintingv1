@@ -38,17 +38,10 @@ const calculateRequestSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  // console.log('='.repeat(80))
-  // console.log('[Shipping API] 🚀 REQUEST RECEIVED at', new Date().toISOString())
-  // console.log('='.repeat(80))
   try {
     const rawBody = await request.text()
-    // console.log('[Shipping API] Raw body (first 500 chars):', rawBody.substring(0, 500))
 
     const body = JSON.parse(rawBody)
-    // console.log('[Shipping API] Parsed body:', JSON.stringify(body, null, 2))
-    // console.log('[Shipping API] toAddress exists?', !!body.toAddress)
-    // console.log('[Shipping API] items exists?', !!body.items)
 
     const validation = calculateRequestSchema.safeParse(body)
 
@@ -86,7 +79,6 @@ export async function POST(request: NextRequest) {
 
     // If free shipping, return immediately with $0 rate
     if (hasFreeShipping) {
-      // console.log('[Shipping API] 🎉 FREE SHIPPING APPLIED - Returning $0 rate')
       return NextResponse.json({
         success: true,
         rates: [
@@ -114,8 +106,6 @@ export async function POST(request: NextRequest) {
       isResidential: false,
     }
 
-    // console.log('[Shipping API] Ship from:', shipFrom)
-    // console.log('[Shipping API] Ship to:', toAddress)
 
     // PERFORMANCE: Batch fetch all paper stocks in parallel (was sequential per-item)
     const paperStockIds = items.map(item => item.paperStockId).filter((id): id is string => !!id)
@@ -168,7 +158,6 @@ export async function POST(request: NextRequest) {
       totalWeight += weight
     }
 
-    // console.log('[Shipping API] Total product weight:', totalWeight, 'lbs')
 
     // Split into boxes using standard box dimensions and 36lb max weight
     const boxes = splitIntoBoxes(totalWeight)
@@ -212,7 +201,6 @@ export async function POST(request: NextRequest) {
       const ratePromises = modulesToUse.map(module =>
         module.provider.getRates(shipFrom, toAddress, packages)
           .then(moduleRates => {
-            // console.log(`[Shipping API] ✅ ${module.name} returned ${moduleRates.length} rates`)
             return moduleRates
           })
           .catch(err => {

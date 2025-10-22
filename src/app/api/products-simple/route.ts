@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prisma'
 // Simple working products endpoint for testing
 export async function GET(request: NextRequest) {
   try {
-    // console.log('📊 Fetching products...')
 
     const products = await prisma.product.findMany({
       take: 10,
@@ -75,7 +74,6 @@ export async function GET(request: NextRequest) {
       orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
     })
 
-    // console.log(`✅ Found ${products.length} products`)
 
     return NextResponse.json({
       success: true,

@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     // Log the incoming request for debugging
-    console.log('[Shipping API] Incoming request:', JSON.stringify(body, null, 2))
 
     const validation = RateRequestSchema.safeParse(body)
 
@@ -105,7 +104,6 @@ export async function POST(request: NextRequest) {
 
     for (const module of modulesToUse) {
       try {
-        console.log(`[Shipping API] Fetching rates from ${module.name} (${module.id})`)
 
         const moduleRates = await module.provider.getRates(
           DEFAULT_ORIGIN,
@@ -140,7 +138,6 @@ export async function POST(request: NextRequest) {
           })
         })
 
-        console.log(`[Shipping API] ${module.name} returned ${moduleRates.length} rates`)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         console.error(`[Shipping API] ${module.name} error:`, errorMessage)
@@ -153,7 +150,6 @@ export async function POST(request: NextRequest) {
     const sortedRates = allRates.sort((a, b) => a.rate.amount - b.rate.amount)
     const top3Rates = sortedRates.slice(0, 3)
 
-    console.log(`[Shipping API] Returning ${top3Rates.length} rates (top 3 cheapest from ${allRates.length} total)`)
 
     return NextResponse.json({
       success: true,

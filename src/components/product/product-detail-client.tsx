@@ -169,7 +169,6 @@ function getIconForName(iconName: string): string {
 
 export default function ProductDetailClient({ product, configuration }: ProductDetailClientProps) {
   // Debug logging
-  console.log('[ProductDetailClient] Received props:', {
     productId: product?.id,
     hasConfiguration: !!configuration,
     quantitiesCount: configuration?.quantities?.length || 0,
@@ -320,7 +319,6 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                   }}
                   productId={product.id}
                   onAddonChange={(addonId: string, selected: boolean) => {
-                    // console.log('Addon changed:', addonId, selected)
                   }}
                 />
               ) : (
