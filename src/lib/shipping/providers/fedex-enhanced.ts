@@ -594,7 +594,17 @@ export class FedExProviderEnhanced implements ShippingProvider {
 
         const trackResult = response.data.output.completeTrackResults[0].trackResults[0]
 
-        const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: any) => ({
+        interface FedExScanEvent {
+          date: string
+          scanLocation: {
+            city: string
+            stateOrProvinceCode: string
+          }
+          eventDescription: string
+          derivedStatusCode: string
+        }
+
+        const events: TrackingEvent[] = (trackResult.scanEvents || []).map((event: FedExScanEvent) => ({
           timestamp: new Date(event.date),
           location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
           status: event.derivedStatus || event.eventType,
@@ -670,7 +680,14 @@ export class FedExProviderEnhanced implements ShippingProvider {
   /**
    * Format address for FedEx API
    */
-  private formatAddress(address: ShippingAddress): any {
+  private formatAddress(address: ShippingAddress): {
+    streetLines: string[]
+    city: string
+    stateOrProvinceCode: string
+    postalCode: string
+    countryCode: string
+    residential: boolean
+  } {
     return {
       streetLines: [address.street, address.street2].filter(Boolean),
       city: address.city,

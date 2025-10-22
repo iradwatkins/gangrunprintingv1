@@ -65,7 +65,17 @@ export async function POST(request: NextRequest) {
 
     // Create Square order
     let squareOrderId: string | undefined
-    let squareLineItems: any[] = []
+
+    interface SquareLineItem {
+      name: string
+      quantity: string
+      basePriceMoney: {
+        amount: bigint
+        currency: string
+      }
+    }
+
+    let squareLineItems: SquareLineItem[] = []
     try {
       squareLineItems = orderItems.map((item: Record<string, unknown>) => ({
         name: item.productName as string,

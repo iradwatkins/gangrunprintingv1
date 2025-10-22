@@ -117,7 +117,7 @@ export function ShippingRates({
     setError(null)
 
     // Fetch vendor address for the product (if productId exists)
-    let fromAddress: any = undefined
+    let fromAddress: ShippingRatesProps['toAddress'] | undefined = undefined
     const firstProductId = items[0]?.productId
 
     if (firstProductId) {

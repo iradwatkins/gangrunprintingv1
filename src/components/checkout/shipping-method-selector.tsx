@@ -112,7 +112,21 @@ export function ShippingMethodSelector({
           setRates([])
         } else {
           // Transform /api/shipping/calculate response to match ShippingRate format
-          const transformedRates = data.rates.map((rate: any) => ({
+          interface ApiShippingRate {
+            carrier?: string
+            service?: string
+            serviceName?: string
+            serviceCode?: string
+            cost?: number
+            rateAmount?: number
+            currency?: string
+            deliveryDays?: number
+            estimatedDays?: number
+            isGuaranteed?: boolean
+            deliveryDate?: string
+          }
+
+          const transformedRates = data.rates.map((rate: ApiShippingRate) => ({
             provider: rate.carrier === 'SOUTHWEST_CARGO' ? 'southwest-cargo' : 'fedex',
             providerName: rate.service || rate.serviceName || rate.serviceCode,
             serviceCode: rate.serviceCode || rate.service,
