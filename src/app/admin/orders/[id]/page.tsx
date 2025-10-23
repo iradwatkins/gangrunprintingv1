@@ -45,6 +45,7 @@ import { CollapsibleSection } from '@/components/admin/collapsible-section'
 import { EditableTracking } from '@/components/admin/orders/editable-tracking'
 import { EditableOrderStatus } from '@/components/admin/orders/editable-order-status'
 import { CustomerUploadsGallery } from '@/components/admin/orders/customer-uploads-gallery'
+import { PrintOrderButton } from '@/components/admin/orders/print-order-button'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -302,15 +303,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               Download Invoice
             </a>
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => window.print()}
-            title="Print this page"
-          >
-            <Printer className="h-4 w-4 mr-2" />
-            Print Order
-          </Button>
+          <PrintOrderButton />
           <Button asChild size="sm" variant="outline">
             <Link href={`/admin/orders/${order.id}/edit`}>
               <Edit className="h-4 w-4 mr-2" />
