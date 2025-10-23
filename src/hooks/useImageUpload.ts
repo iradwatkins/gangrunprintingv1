@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useErrorHandler } from '@/stores/errorStore'
 import { useLoadingManager } from '@/stores/loadingStore'
+import { useChunkedUpload } from './useChunkedUpload'
 
 export interface CustomerImage {
   id: string
@@ -26,6 +27,19 @@ export function useImageUpload({ productId, onImagesChange }: UseImageUploadProp
   const [images, setImages] = useState<CustomerImage[]>([])
   const [uploadingFiles, setUploadingFiles] = useState<File[]>([])
 
+  // Initialize chunked upload for large files
+  const chunkedUpload = useChunkedUpload({
+    chunkSize: 10 * 1024 * 1024, // 10MB chunks
+    maxRetries: 5,
+    timeout: 60000,
+    onProgress: (progress) => {
+      updateProgress(progress)
+    },
+    onError: (error) => {
+      handleError(error)
+    },
+  })
+
   // Handle image upload with centralized loading and error handling
   const uploadImages = useCallback(
     async (files: File[]) => {
@@ -38,21 +52,52 @@ export function useImageUpload({ productId, onImagesChange }: UseImageUploadProp
           async () => {
             const uploadPromises = files.map(async (file, index) => {
               try {
-                const formData = new FormData()
-                formData.append('file', file)
-                formData.append('productId', productId)
-                formData.append('isCustomerUpload', 'true')
+                // Determine if file is large enough to benefit from chunking (>5MB)
+                const CHUNK_THRESHOLD = 5 * 1024 * 1024 // 5MB
+                const useChunking = file.size > CHUNK_THRESHOLD
 
-                const response = await fetch('/api/products/upload-customer-image', {
-                  method: 'POST',
-                  body: formData,
-                })
+                let uploadResponse: any
 
-                if (!response.ok) {
+                if (useChunking) {
+                  console.log(`Using chunked upload for ${file.name} (${file.size} bytes)`)
+
+                  // Use chunked upload for large files
+                  const chunkResult = await chunkedUpload.uploadFile(file)
+
+                  // After chunked upload, send to product image endpoint with session ID
+                  uploadResponse = await fetch('/api/products/upload-customer-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      sessionId: chunkResult.sessionId,
+                      productId,
+                      fileName: file.name,
+                      fileSize: file.size,
+                      mimeType: file.type,
+                      isCustomerUpload: true,
+                      isChunked: true,
+                    }),
+                  })
+                } else {
+                  console.log(`Using direct upload for ${file.name} (${file.size} bytes)`)
+
+                  // Use direct upload for smaller files
+                  const formData = new FormData()
+                  formData.append('file', file)
+                  formData.append('productId', productId)
+                  formData.append('isCustomerUpload', 'true')
+
+                  uploadResponse = await fetch('/api/products/upload-customer-image', {
+                    method: 'POST',
+                    body: formData,
+                  })
+                }
+
+                if (!uploadResponse.ok) {
                   throw new Error(`Upload failed for ${file.name}`)
                 }
 
-                const data = await response.json()
+                const data = await uploadResponse.json()
 
                 const newImage: CustomerImage = {
                   id: data.id,
@@ -97,9 +142,10 @@ export function useImageUpload({ productId, onImagesChange }: UseImageUploadProp
         // Errors are already handled in the individual upload promises
       } finally {
         setUploadingFiles([])
+        chunkedUpload.reset()
       }
     },
-    [productId, onImagesChange, withLoading, handleError, showSuccess]
+    [productId, onImagesChange, withLoading, handleError, showSuccess, chunkedUpload]
   )
 
   // Handle image deletion with centralized error handling

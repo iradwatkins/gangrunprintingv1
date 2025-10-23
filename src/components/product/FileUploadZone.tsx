@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Upload, X, FileImage, File, AlertCircle, CheckCircle } from 'lucide-react'
+import { Upload, X, FileImage, File, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useChunkedUpload } from '@/hooks/useChunkedUpload'
 
 interface UploadedFile {
   fileId: string
@@ -61,16 +62,24 @@ export default function FileUploadZone({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
+  const [currentFileIndex, setCurrentFileIndex] = useState(0)
+  const [totalFiles, setTotalFiles] = useState(0)
   const [errors, setErrors] = useState<string[]>([])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Generate session ID for this upload session
-  const sessionId = useRef<string>()
-  if (!sessionId.current) {
-    sessionId.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  }
+  // Initialize chunked upload hook
+  const chunkedUpload = useChunkedUpload({
+    chunkSize: 10 * 1024 * 1024, // 10MB chunks
+    maxRetries: 5,
+    timeout: 60000,
+    onProgress: (progress) => {
+      // Progress is handled by chunkedUpload.progress
+    },
+    onError: (error) => {
+      setErrors((prev) => [...prev, error.message])
+    },
+  })
 
   const validateFiles = (files: FileList): { valid: File[]; errors: string[] } => {
     const validFiles: File[] = []
@@ -117,70 +126,54 @@ export default function FileUploadZone({
 
     setUploading(true)
     setErrors([])
+    setTotalFiles(files.length)
+
+    const successfulUploads: UploadedFile[] = []
 
     try {
-      const formData = new FormData()
+      // Upload files sequentially with chunking
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        setCurrentFileIndex(i + 1)
 
-      // Add each file to form data
-      files.forEach((file, index) => {
-        formData.append(`file${index}`, file)
-      })
+        console.log(`Uploading file ${i + 1}/${files.length}: ${file.name}`)
 
-      // Create XMLHttpRequest for progress tracking
-      const xhr = new XMLHttpRequest()
+        try {
+          // Use chunked upload for this file
+          const result = await chunkedUpload.uploadFile(file)
 
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = (event.loaded / event.total) * 100
-          setUploadProgress((prev) => ({
-            ...prev,
-            global: percentComplete,
-          }))
-        }
-      })
-
-      // Handle response
-      const uploadPromise = new Promise<UploadedFile[]>((resolve, reject) => {
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            try {
-              const result = JSON.parse(xhr.responseText)
-              resolve(result.files)
-            } catch (e) {
-              reject(new Error('Invalid server response'))
-            }
-          } else {
-            try {
-              const error = JSON.parse(xhr.responseText)
-              reject(new Error(error.error || 'Upload failed'))
-            } catch (e) {
-              reject(new Error(`Upload failed with status ${xhr.status}`))
-            }
+          // After successful upload, get merged file data from the chunk endpoint
+          // The last chunk returns the merged file
+          const uploadedFile: UploadedFile = {
+            fileId: result.sessionId,
+            originalName: file.name,
+            size: file.size,
+            mimeType: file.type,
+            uploadedAt: new Date().toISOString(),
+            isImage: file.type.startsWith('image/'),
           }
+
+          successfulUploads.push(uploadedFile)
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : 'Upload failed'
+          setErrors((prev) => [...prev, `${file.name}: ${errorMsg}`])
+          console.error(`Failed to upload ${file.name}:`, error)
         }
+      }
 
-        xhr.onerror = () => reject(new Error('Network error during upload'))
-        xhr.ontimeout = () => reject(new Error('Upload timeout'))
-      })
-
-      // Configure and send request
-      xhr.open('POST', '/api/upload/temporary')
-      xhr.setRequestHeader('x-session-id', sessionId.current!)
-      xhr.timeout = 60000 // 60 second timeout
-      xhr.send(formData)
-
-      const newFiles = await uploadPromise
-
-      // Update state
-      const updatedFiles = [...uploadedFiles, ...newFiles]
-      setUploadedFiles(updatedFiles)
-      onFilesUploaded?.(updatedFiles)
+      // Update state with all successful uploads
+      if (successfulUploads.length > 0) {
+        const updatedFiles = [...uploadedFiles, ...successfulUploads]
+        setUploadedFiles(updatedFiles)
+        onFilesUploaded?.(updatedFiles)
+      }
     } catch (error) {
-      setErrors([error instanceof Error ? error.message : 'Upload failed'])
+      setErrors((prev) => [...prev, error instanceof Error ? error.message : 'Upload failed'])
     } finally {
       setUploading(false)
-      setUploadProgress({})
+      setCurrentFileIndex(0)
+      setTotalFiles(0)
+      chunkedUpload.reset()
     }
   }
 
@@ -288,17 +281,31 @@ export default function FileUploadZone({
         {uploading ? (
           <div className="space-y-4">
             <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              {chunkedUpload.retryAttempt > 0 ? (
+                <RefreshCw className="h-8 w-8 text-orange-500 animate-spin" />
+              ) : (
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              )}
             </div>
-            <p className="text-sm text-gray-600">Uploading files...</p>
-            {uploadProgress.global && (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                Uploading file {currentFileIndex} of {totalFiles}
+                {chunkedUpload.totalChunks > 1 &&
+                  ` (chunk ${chunkedUpload.currentChunk}/${chunkedUpload.totalChunks})`}
+              </p>
+              {chunkedUpload.retryAttempt > 0 && (
+                <p className="text-xs text-orange-600 font-medium">
+                  Retry attempt {chunkedUpload.retryAttempt} of 5...
+                </p>
+              )}
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-primary h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress.global}%` }}
+                  style={{ width: `${chunkedUpload.progress}%` }}
                 ></div>
               </div>
-            )}
+              <p className="text-xs text-center text-gray-500">{Math.round(chunkedUpload.progress)}%</p>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
