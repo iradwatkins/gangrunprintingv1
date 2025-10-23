@@ -21,6 +21,9 @@ interface ProofReadyEmailProps {
   proofUrl: string;
   trackingUrl: string;
   adminMessage?: string;
+  approveUrl?: string;
+  rejectUrl?: string;
+  hasAttachment?: boolean;
 }
 
 export const ProofReadyEmail = ({
@@ -30,6 +33,9 @@ export const ProofReadyEmail = ({
   proofUrl,
   trackingUrl,
   adminMessage,
+  approveUrl,
+  rejectUrl,
+  hasAttachment,
 }: ProofReadyEmailProps) => {
   return (
     <EmailLayout preview={`Your proof is ready for approval - Order ${orderNumber}`}>
@@ -50,6 +56,12 @@ export const ProofReadyEmail = ({
           before we proceed with production.
         </Text>
 
+        {hasAttachment && (
+          <Text style={attachmentNotice}>
+            📎 <strong>Your proof file is attached to this email</strong> for easy viewing. You can also download it from the link below.
+          </Text>
+        )}
+
         {/* Proof Details */}
         <Section style={proofBox}>
           <Text style={proofLabel}>
@@ -65,9 +77,24 @@ export const ProofReadyEmail = ({
 
         {/* Action Buttons */}
         <Section style={buttonContainer}>
-          <Button href={trackingUrl} style={primaryButton}>
-            Review & Approve Proof
-          </Button>
+          {approveUrl && rejectUrl ? (
+            <>
+              <Button href={approveUrl} style={approveButton}>
+                ✅ Approve Proof
+              </Button>
+              <Button href={rejectUrl} style={rejectButton}>
+                🔄 Request Changes
+              </Button>
+              <Text style={orText}>or</Text>
+              <Button href={trackingUrl} style={secondaryButton}>
+                View Order Details
+              </Button>
+            </>
+          ) : (
+            <Button href={trackingUrl} style={primaryButton}>
+              Review & Approve Proof
+            </Button>
+          )}
         </Section>
 
         <Hr style={divider} />
@@ -230,6 +257,66 @@ const footerNote = {
 const link = {
   color: '#3b82f6',
   textDecoration: 'underline',
+};
+
+const attachmentNotice = {
+  fontSize: '14px',
+  lineHeight: '20px',
+  color: '#059669',
+  backgroundColor: '#d1fae5',
+  padding: '12px',
+  borderRadius: '6px',
+  marginBottom: '20px',
+  border: '1px solid #34d399',
+};
+
+const approveButton = {
+  backgroundColor: '#10b981',
+  borderRadius: '6px',
+  color: '#ffffff',
+  fontSize: '16px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '12px 24px',
+  marginRight: '12px',
+  marginBottom: '8px',
+};
+
+const rejectButton = {
+  backgroundColor: '#f59e0b',
+  borderRadius: '6px',
+  color: '#ffffff',
+  fontSize: '16px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '12px 24px',
+  marginLeft: '12px',
+  marginBottom: '8px',
+};
+
+const secondaryButton = {
+  backgroundColor: '#6b7280',
+  borderRadius: '6px',
+  color: '#ffffff',
+  fontSize: '14px',
+  fontWeight: '500',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '10px 20px',
+  marginTop: '12px',
+};
+
+const orText = {
+  textAlign: 'center' as const,
+  fontSize: '14px',
+  color: '#6b7280',
+  margin: '8px 0',
+  display: 'block',
 };
 
 export default ProofReadyEmail;

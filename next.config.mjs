@@ -2,11 +2,11 @@
 // import createNextIntlPlugin from 'next-intl/plugin'
 // const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
-// Bundle analyzer for build optimization
-import withBundleAnalyzer from '@next/bundle-analyzer'
+// Bundle analyzer for build optimization (conditionally imported)
+// import withBundleAnalyzer from '@next/bundle-analyzer'
 
-// Sentry configuration - Phase 3 Enterprise Enhancement
-import { withSentryConfig } from '@sentry/nextjs'
+// Sentry configuration - Phase 3 Enterprise Enhancement (conditionally imported)
+// import { withSentryConfig } from '@sentry/nextjs'
 
 // Node.js path module for absolute paths
 import path from 'path'
@@ -354,29 +354,36 @@ const nextConfig = {
 // Apply plugins in order
 // next-intl plugin disabled - i18n not in use
 
-// Bundle analyzer - enable with ANALYZE=true npm run build
-const bundleAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-})
-
-// Wrap config with bundle analyzer first
-let finalConfig = bundleAnalyzer(nextConfig)
+// Bundle analyzer - conditionally enable with ANALYZE=true npm run build
+let finalConfig = nextConfig
+if (process.env.ANALYZE === 'true') {
+  const withBundleAnalyzer = require('@next/bundle-analyzer')
+  const bundleAnalyzer = withBundleAnalyzer({
+    enabled: true,
+  })
+  finalConfig = bundleAnalyzer(nextConfig)
+}
 
 // Add Sentry if DSN is configured
 if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-  const sentryWebpackOptions = {
-    silent: true,
-    hideSourceMaps: true,
-    widenClientFileUpload: true,
-  }
+  try {
+    const { withSentryConfig } = require('@sentry/nextjs')
+    const sentryWebpackOptions = {
+      silent: true,
+      hideSourceMaps: true,
+      widenClientFileUpload: true,
+    }
 
-  const sentryOptions = {
-    org: process.env.SENTRY_ORG || 'gangrun-printing',
-    project: process.env.SENTRY_PROJECT || 'gangrun-printing',
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-  }
+    const sentryOptions = {
+      org: process.env.SENTRY_ORG || 'gangrun-printing',
+      project: process.env.SENTRY_PROJECT || 'gangrun-printing',
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    }
 
-  finalConfig = withSentryConfig(finalConfig, sentryOptions, sentryWebpackOptions)
+    finalConfig = withSentryConfig(finalConfig, sentryOptions, sentryWebpackOptions)
+  } catch (error) {
+    console.warn('Sentry package not found, continuing without Sentry configuration')
+  }
 }
 
 export default finalConfig

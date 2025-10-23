@@ -20,6 +20,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   FileArchive,
+  Mail,
+  Send,
 } from 'lucide-react';
 import { FileUploadDialog } from './file-upload-dialog';
 import { SimpleFileUpload } from './simple-file-upload';
@@ -112,6 +114,12 @@ export function OrderFilesManager({ orderId }: Props) {
   const [fileToApprove, setFileToApprove] = useState<OrderFile | null>(null);
   const [isApproving, setIsApproving] = useState(false);
 
+  // Email proof dialog state
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
+  const [fileToEmail, setFileToEmail] = useState<OrderFile | null>(null);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
   const fetchFiles = async () => {
     try {
       const response = await fetch(`/api/orders/${orderId}/files`);
@@ -192,6 +200,44 @@ export function OrderFilesManager({ orderId }: Props) {
       toast.error('Failed to process approval');
     } finally {
       setIsApproving(false);
+    }
+  };
+
+  const handleEmailProof = (file: OrderFile) => {
+    setFileToEmail(file);
+    setEmailMessage('');
+    setEmailDialogOpen(true);
+  };
+
+  const handleSendEmail = async () => {
+    if (!fileToEmail) return;
+
+    setIsSendingEmail(true);
+    try {
+      const response = await fetch(`/api/orders/${orderId}/files/${fileToEmail.id}/send-proof`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: emailMessage || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Proof email sent successfully! Customer will be notified.');
+        setEmailDialogOpen(false);
+        setFileToEmail(null);
+        setEmailMessage('');
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to send proof email');
+      }
+    } catch (error) {
+      console.error('Error sending proof email:', error);
+      toast.error('Failed to send proof email');
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -288,6 +334,7 @@ export function OrderFilesManager({ orderId }: Props) {
                             ? (file) => handleApprovalClick(file, 'REJECTED')
                             : undefined
                         }
+                        onSendEmail={isAdmin ? handleEmailProof : undefined}
                         onViewMessages={(file) => {
                           setSelectedFile(file);
                           setMessageDialogOpen(true);
@@ -364,6 +411,7 @@ export function OrderFilesManager({ orderId }: Props) {
                             ? (file) => handleApprovalClick(file, 'REJECTED')
                             : undefined
                         }
+                        onSendEmail={isAdmin ? handleEmailProof : undefined}
                         onViewMessages={(file) => {
                           setSelectedFile(file);
                           setMessageDialogOpen(true);
@@ -463,6 +511,67 @@ export function OrderFilesManager({ orderId }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Email Proof Dialog */}
+      <AlertDialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send Proof Email</AlertDialogTitle>
+            <AlertDialogDescription>
+              Send this proof to the customer for approval with an optional message.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-4 py-4">
+            {fileToEmail && (
+              <div className="text-sm">
+                <p className="font-medium">{fileToEmail.label || fileToEmail.filename}</p>
+                <p className="text-muted-foreground">
+                  {fileTypeLabels[fileToEmail.fileType]}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="email-message">Message to Customer (Optional)</Label>
+              <Textarea
+                id="email-message"
+                placeholder="Add a message about this proof..."
+                rows={4}
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                This message will be included in the email along with the proof attachment.
+              </p>
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSendingEmail}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              disabled={isSendingEmail}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSendEmail();
+              }}
+            >
+              {isSendingEmail ? (
+                <>
+                  <Send className="h-4 w-4 mr-2 animate-pulse" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Send Proof Email
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
@@ -473,6 +582,7 @@ function FileListItem({
   onViewMessages,
   onApprove,
   onReject,
+  onSendEmail,
   formatFileSize,
   getFileIcon,
 }: {
@@ -481,6 +591,7 @@ function FileListItem({
   onViewMessages: (file: OrderFile) => void;
   onApprove?: (file: OrderFile) => void;
   onReject?: (file: OrderFile) => void;
+  onSendEmail?: (file: OrderFile) => void;
   formatFileSize: (bytes?: number) => string;
   getFileIcon: (mimeType?: string) => any;
 }) {
@@ -560,6 +671,17 @@ function FileListItem({
             onClick={() => onReject(file)}
           >
             <ThumbsDown className="h-4 w-4" />
+          </Button>
+        )}
+        {onSendEmail && (
+          <Button
+            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            size="icon"
+            title="Send proof email to customer"
+            variant="ghost"
+            onClick={() => onSendEmail(file)}
+          >
+            <Mail className="h-4 w-4" />
           </Button>
         )}
         <Button size="icon" variant="ghost" onClick={() => window.open(file.fileUrl, '_blank')}>

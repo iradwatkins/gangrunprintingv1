@@ -5,7 +5,8 @@
  */
 
 import { render } from '@react-email/render';
-import { sendEmail } from '@/lib/resend';
+import { sendEmail, downloadFileFromMinIO } from '@/lib/resend';
+import { getMinioClient, BUCKETS } from '@/lib/minio-client';
 import { ProofReadyEmail } from './templates/proof-ready';
 import { ProofApprovedEmail } from './templates/proof-approved';
 import { ProofRejectedEmail } from './templates/proof-rejected';
@@ -62,6 +63,79 @@ export class FileApprovalEmailService {
 
     } catch (error) {
       console.error('[Email] Failed to send proof ready notification:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send proof with image attachment to customer
+   * This is the enhanced version that includes the actual image file
+   */
+  static async sendProofWithAttachment(
+    order: OrderData,
+    proofFile: {
+      id: string;
+      label?: string;
+      filename: string;
+      fileUrl: string;
+      mimeType?: string;
+      fileSize?: number;
+    },
+    adminMessage?: string
+  ): Promise<void> {
+    try {
+      const approveUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/proof-approval/${order.id}/${proofFile.id}?action=approve`;
+      const rejectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/proof-approval/${order.id}/${proofFile.id}?action=reject`;
+      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/track/${order.orderNumber}`;
+
+      // Download file from MinIO as attachment
+      let attachment;
+      try {
+        // Extract the MinIO object path from the file URL
+        const minioPath = proofFile.fileUrl.replace(/^\/api\/upload\/temporary\//, '').replace(/^\/api\/files\/permanent\//, '');
+        const fileBuffer = await downloadFileFromMinIO(BUCKETS.UPLOADS, minioPath);
+        
+        attachment = {
+          filename: proofFile.filename,
+          content: fileBuffer,
+          contentType: proofFile.mimeType || 'application/octet-stream',
+        };
+      } catch (attachmentError) {
+        console.warn('[Email] Failed to download file as attachment, sending without attachment:', attachmentError);
+        attachment = null;
+      }
+
+      const emailHtml = render(
+        ProofReadyEmail({
+          customerName: order.User?.name || undefined,
+          orderNumber: order.orderNumber,
+          proofLabel: proofFile.label || proofFile.filename,
+          proofUrl: proofFile.fileUrl,
+          trackingUrl,
+          adminMessage,
+          approveUrl,
+          rejectUrl,
+          hasAttachment: !!attachment,
+        })
+      );
+
+      const emailData: any = {
+        to: order.email,
+        from: `${this.FROM_NAME} <${this.FROM_EMAIL}>`,
+        subject: `📧 Your Proof is Ready for Approval - Order ${order.orderNumber}`,
+        html: emailHtml,
+        text: this.generateProofWithAttachmentText(order, proofFile, approveUrl, rejectUrl, adminMessage),
+      };
+
+      // Add attachment if successfully downloaded
+      if (attachment) {
+        emailData.attachments = [attachment];
+      }
+
+      await sendEmail(emailData);
+
+    } catch (error) {
+      console.error('[Email] Failed to send proof with attachment:', error);
       throw error;
     }
   }
@@ -285,6 +359,47 @@ ${files.map((f) => `- ${f.label || f.filename}`).join('\n')}
 Please review the files and create a proof for customer approval.
 
 GangRun Printing Admin
+    `.trim();
+  }
+
+  /**
+   * Helper: Generate plain text for proof with attachment email
+   */
+  private static generateProofWithAttachmentText(
+    order: OrderData,
+    proofFile: { label?: string; filename: string },
+    approveUrl: string,
+    rejectUrl: string,
+    adminMessage?: string
+  ): string {
+    return `
+Your Proof is Ready for Approval!
+
+Order #${order.orderNumber}
+
+${order.User?.name ? `Hi ${order.User.name}` : 'Hello'},
+
+Your proof file "${proofFile.label || proofFile.filename}" is ready for review and is attached to this email.
+
+${adminMessage ? `Message from our team:\n${adminMessage}\n` : ''}
+
+IMPORTANT: Please review your proof carefully and check for:
+- Spelling and grammar
+- Colors and image quality  
+- Layout and alignment
+- Contact information accuracy
+
+TO APPROVE: Click here or reply with "APPROVE"
+${approveUrl}
+
+TO REQUEST CHANGES: Click here or reply with your requested changes
+${rejectUrl}
+
+We cannot be held responsible for errors that are approved in the proof.
+
+Questions? Reply to this email or call 1-800-PRINTING
+
+GangRun Printing
     `.trim();
   }
 }
