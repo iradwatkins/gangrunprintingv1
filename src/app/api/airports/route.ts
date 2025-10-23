@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Get airports with minimal data for dropdown
+    // Get airports with full data for locations page display
     const airports = await prisma.airport.findMany({
       where: whereClause,
       select: {
@@ -33,6 +33,11 @@ export async function GET(request: NextRequest) {
         name: true,
         city: true,
         state: true,
+        address: true,
+        zip: true,
+        hours: true,
+        operator: true,
+        carrier: true,
       },
       orderBy: [{ city: 'asc' }],
     })
