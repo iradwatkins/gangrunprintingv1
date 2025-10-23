@@ -110,14 +110,13 @@ export function OrdersTableWithBulkActions({
               <TableHead>Uploads</TableHead>
               <TableHead>Tracking Number</TableHead>
               <TableHead>Origin</TableHead>
-              <TableHead>Shipment Tracking</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell className="text-center py-8" colSpan={8}>
+                <TableCell className="text-center py-8" colSpan={9}>
                   {searchQuery || statusFilter !== 'all'
                     ? 'No orders found matching your filters'
                     : 'No orders yet. Orders will appear here when customers place them.'}
@@ -245,17 +244,6 @@ export function OrdersTableWithBulkActions({
                       </span>
                     </TableCell>
 
-                    {/* Shipment Tracking (carrier + tracking display) */}
-                    <TableCell>
-                      {order.trackingNumber && order.carrier ? (
-                        <div className="text-xs">
-                          <p className="font-medium">{order.carrier}</p>
-                          <p className="text-muted-foreground font-mono">{order.trackingNumber}</p>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
 
                     {/* Actions */}
                     <TableCell>
