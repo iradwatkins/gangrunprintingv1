@@ -54,7 +54,70 @@ interface Category {
   }
 }
 
-export default function Header() {
+interface MenuItem {
+  id: string
+  label: string
+  linkType: string
+  linkValue: string
+  iconUrl?: string | null
+  imageUrl?: string | null
+  isActive: boolean
+  openInNewTab: boolean
+  Children?: MenuItem[]
+}
+
+interface MenuSection {
+  id: string
+  title: string
+  description?: string | null
+  column: number
+  showTitle: boolean
+  iconUrl?: string | null
+  items: MenuItem[]
+}
+
+interface Menu {
+  id: string
+  name: string
+  type: string
+  items: MenuItem[]
+  sections: MenuSection[]
+}
+
+interface QuickLink {
+  id: string
+  label: string
+  linkType: string
+  linkValue: string
+  iconUrl?: string | null
+  badgeText?: string | null
+  badgeColor?: string | null
+}
+
+interface HeaderProps {
+  menu?: Menu | null
+  quickLinks?: QuickLink[]
+  fallbackCategories?: Category[]
+}
+
+function getMenuItemHref(item: MenuItem): string {
+  switch (item.linkType) {
+    case 'CATEGORY':
+      return `/category/${item.linkValue}`
+    case 'PRODUCT':
+      return `/product/${item.linkValue}`
+    case 'PAGE':
+      return item.linkValue
+    case 'EXTERNAL':
+      return item.linkValue
+    case 'CUSTOM':
+      return item.linkValue
+    default:
+      return '#'
+  }
+}
+
+export default function Header({ menu, quickLinks = [], fallbackCategories = [] }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
@@ -62,27 +125,20 @@ export default function Header() {
   const [isSignedIn, setIsSignedIn] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
-  const [categories, setCategories] = useState<Category[]>([])
-  const [categoriesLoaded, setCategoriesLoaded] = useState(false)
 
-  // Fetch categories from database
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/product-categories?active=true&topLevel=true')
-        if (response.ok) {
-          const data = await response.json()
-          setCategories(data)
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error)
-      } finally {
-        setCategoriesLoaded(true)
-      }
-    }
-
-    fetchCategories()
-  }, [])
+  // Use menu items if available, otherwise fall back to categories
+  const menuItems = menu?.items || []
+  const hasMegaMenu = menu && menu.sections.length > 0
+  const displayQuickLinks = quickLinks.length > 0 ? quickLinks :
+    fallbackCategories.slice(0, 5).map(cat => ({
+      id: cat.id,
+      label: cat.name,
+      linkType: 'CATEGORY',
+      linkValue: cat.slug,
+      iconUrl: null,
+      badgeText: null,
+      badgeColor: null,
+    }))
 
   // Check user authentication status
   useEffect(() => {
@@ -143,13 +199,11 @@ export default function Header() {
         setIsSignedIn(false)
         router.push('/auth/signin?message=signed_out')
       } else {
-        // Still update state and redirect even if logout failed
         setUser(null)
         setIsSignedIn(false)
         router.push('/auth/signin')
       }
     } catch (error) {
-      // Still update state and redirect even if logout failed
       setUser(null)
       setIsSignedIn(false)
       router.push('/auth/signin')
@@ -157,7 +211,6 @@ export default function Header() {
   }
 
   const handleInstallApp = async () => {
-    // Trigger PWA installation
     const installEvent = (window as any).deferredPrompt
     if (installEvent) {
       installEvent.prompt()
@@ -191,8 +244,8 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {/* Print Products Dropdown with Dynamic Categories */}
-            {categoriesLoaded && categories.length > 0 && (
+            {/* Print Products Menu (Database-driven or fallback) */}
+            {(menuItems.length > 0 || fallbackCategories.length > 0) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -207,22 +260,80 @@ export default function Header() {
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link className="cursor-pointer" href="/products">
-                      All Products
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {categories.map((category) => (
-                    <DropdownMenuItem key={category.id} asChild>
-                      <Link className="cursor-pointer" href={`/category/${category.slug}`}>
-                        {category.name}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                <DropdownMenuContent align="start" className={hasMegaMenu ? 'w-[600px] p-4' : 'w-56'}>
+                  {hasMegaMenu ? (
+                    // Mega Menu Layout
+                    <div className="grid grid-cols-3 gap-4">
+                      {menu.sections.map((section) => (
+                        <div key={section.id}>
+                          {section.showTitle && (
+                            <div className="font-semibold text-sm mb-2 text-primary">
+                              {section.title}
+                            </div>
+                          )}
+                          {section.description && (
+                            <p className="text-xs text-muted-foreground mb-2">
+                              {section.description}
+                            </p>
+                          )}
+                          <div className="space-y-1">
+                            {section.items.map((item) => (
+                              <Link
+                                key={item.id}
+                                href={getMenuItemHref(item)}
+                                className="block px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
+                                target={item.openInNewTab ? '_blank' : undefined}
+                              >
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : menuItems.length > 0 ? (
+                    // Custom Menu Items
+                    <>
+                      <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link className="cursor-pointer" href="/products">
+                          All Products
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {menuItems.map((item) => (
+                        <DropdownMenuItem key={item.id} asChild>
+                          <Link
+                            className="cursor-pointer"
+                            href={getMenuItemHref(item)}
+                            target={item.openInNewTab ? '_blank' : undefined}
+                          >
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  ) : (
+                    // Fallback to Categories
+                    <>
+                      <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link className="cursor-pointer" href="/products">
+                          All Products
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {fallbackCategories.map((category) => (
+                        <DropdownMenuItem key={category.id} asChild>
+                          <Link className="cursor-pointer" href={`/category/${category.slug}`}>
+                            {category.name}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -416,8 +527,8 @@ export default function Header() {
                 </div>
 
                 <nav className="mt-6 flex flex-col space-y-1">
-                  {/* Print Products with Dynamic Categories */}
-                  {categoriesLoaded && categories.length > 0 && (
+                  {/* Print Products */}
+                  {(menuItems.length > 0 || fallbackCategories.length > 0) && (
                     <div>
                       <Link href="/products" onClick={() => setMobileMenuOpen(false)}>
                         <Button
@@ -432,21 +543,38 @@ export default function Header() {
                         </Button>
                       </Link>
                       <div className="ml-6 mt-1 space-y-1">
-                        {categories.map((category) => (
-                          <Link
-                            key={category.id}
-                            href={`/category/${category.slug}`}
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <Button
-                              className="w-full justify-start text-sm"
-                              size="sm"
-                              variant="ghost"
-                            >
-                              {category.name}
-                            </Button>
-                          </Link>
-                        ))}
+                        {menuItems.length > 0
+                          ? menuItems.map((item) => (
+                              <Link
+                                key={item.id}
+                                href={getMenuItemHref(item)}
+                                onClick={() => setMobileMenuOpen(false)}
+                                target={item.openInNewTab ? '_blank' : undefined}
+                              >
+                                <Button
+                                  className="w-full justify-start text-sm"
+                                  size="sm"
+                                  variant="ghost"
+                                >
+                                  {item.label}
+                                </Button>
+                              </Link>
+                            ))
+                          : fallbackCategories.map((category) => (
+                              <Link
+                                key={category.id}
+                                href={`/category/${category.slug}`}
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                <Button
+                                  className="w-full justify-start text-sm"
+                                  size="sm"
+                                  variant="ghost"
+                                >
+                                  {category.name}
+                                </Button>
+                              </Link>
+                            ))}
                       </div>
                     </div>
                   )}
@@ -571,19 +699,27 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Desktop Quick Links for Categories */}
-      {categoriesLoaded && categories.length > 0 && (
+      {/* Quick Links Bar (Database-driven) */}
+      {displayQuickLinks.length > 0 && (
         <div className="hidden lg:block border-t bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="flex items-center space-x-6 py-2">
               <span className="text-sm font-medium text-muted-foreground">Quick Links:</span>
-              {categories.slice(0, 5).map((category) => (
+              {displayQuickLinks.map((link) => (
                 <Link
-                  key={category.id}
-                  className="text-sm hover:text-primary transition-colors"
-                  href={`/category/${category.slug}`}
+                  key={link.id}
+                  className="text-sm hover:text-primary transition-colors flex items-center gap-1"
+                  href={getMenuItemHref(link as any)}
                 >
-                  {category.name}
+                  {link.label}
+                  {link.badgeText && (
+                    <Badge
+                      className="ml-1 text-xs"
+                      style={{ backgroundColor: link.badgeColor || undefined }}
+                    >
+                      {link.badgeText}
+                    </Badge>
+                  )}
                 </Link>
               ))}
               <Link

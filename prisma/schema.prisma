@@ -1024,6 +1024,7 @@ model Product {
   ProductDesignSet         ProductDesignSet[]
   ProductSEOContent        ProductSEOContent[]
   ProductPerformance       ProductPerformance[] // AI System performance tracking
+  FeaturedProductSelection FeaturedProductSelection[] // Menu system featured products
 
   @@index([categoryId])
   @@index([slug])
@@ -2912,4 +2913,133 @@ model AIAgentExecution {
   @@index([agentType, modelProvider])
   @@index([executedAt])
   @@index([cost])
+}
+
+// ============================================================================
+// MENU MANAGEMENT SYSTEM
+// ============================================================================
+
+// Main menu container (Header, Footer, Mobile, etc.)
+model Menu {
+  id          String     @id @default(cuid())
+  name        String     @unique // e.g., "Header Menu", "Footer Menu", "Mobile Menu"
+  type        MenuType
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  items    MenuItem[]
+  sections MenuSection[]
+
+  @@index([type])
+  @@index([isActive])
+}
+
+// Individual menu items (categories, products, pages, links)
+model MenuItem {
+  id         String       @id @default(cuid())
+  menuId     String
+  sectionId  String? // For mega menu - which section this item belongs to
+  parentId   String? // For nested menu items
+  label      String
+  linkType   MenuLinkType
+  linkValue  String // Category slug, product slug, page slug, or full URL
+  iconUrl    String? // Custom icon URL
+  imageUrl   String? // Feature image for mega menu
+  sortOrder  Int          @default(0)
+  isActive   Boolean      @default(true)
+  openInNewTab Boolean    @default(false)
+  customClass String? // Custom CSS class for styling
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  Menu        Menu          @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  Section     MenuSection?  @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  Parent      MenuItem?     @relation("MenuItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  Children    MenuItem[]    @relation("MenuItemChildren")
+
+  @@index([menuId])
+  @@index([sectionId])
+  @@index([parentId])
+  @@index([sortOrder])
+  @@index([linkType])
+}
+
+// Custom sections for mega menu (e.g., "Popular", "New", "By Category")
+model MenuSection {
+  id          String     @id @default(cuid())
+  menuId      String
+  title       String // e.g., "Popular Products", "Shop by Category"
+  description String?
+  column      Int        @default(1) // For multi-column layouts (1-4)
+  sortOrder   Int        @default(0)
+  showTitle   Boolean    @default(true)
+  isActive    Boolean    @default(true)
+  iconUrl     String? // Optional icon for section header
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  Menu  Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  items MenuItem[]
+
+  @@index([menuId])
+  @@index([sortOrder])
+}
+
+// Quick links bar (appears below main header)
+model QuickLink {
+  id          String       @id @default(cuid())
+  label       String
+  linkType    MenuLinkType
+  linkValue   String // Category slug, product slug, or URL
+  sortOrder   Int          @default(0)
+  isActive    Boolean      @default(true)
+  iconUrl     String?
+  badgeText   String? // Optional badge (e.g., "New", "Sale")
+  badgeColor  String? // Badge color hex code
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+}
+
+// Featured product selections (homepage)
+model FeaturedProductSelection {
+  id               String    @id @default(cuid())
+  productId        String
+  sortOrder        Int       @default(0)
+  isActive         Boolean   @default(true)
+  customTitle      String? // Override product title
+  customDescription String? // Override product description
+  customImageUrl   String? // Override product image
+  showBadge        Boolean   @default(false)
+  badgeText        String? // e.g., "Best Seller", "New"
+  badgeColor       String? // Badge color hex code
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([sortOrder])
+  @@index([isActive])
+}
+
+// Enum types for menu system
+enum MenuType {
+  HEADER
+  FOOTER
+  MOBILE
+  SIDEBAR
+  CUSTOM
+}
+
+enum MenuLinkType {
+  CATEGORY // Links to product category
+  PRODUCT // Links to specific product
+  PAGE // Links to internal page
+  EXTERNAL // External URL
+  CUSTOM // Custom path
 }
